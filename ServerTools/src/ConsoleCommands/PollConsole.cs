@@ -70,7 +70,6 @@ namespace ServerTools
                         PersistentContainer.Instance.PollData = _newPollData;
                         PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                         PersistentContainer.Instance.PollOpen = true;
-                        PersistentContainer.Instance.Save();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] A new poll has opened for {0} hour. Poll message: {1}", _hours, _message));
                         using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
                         {
@@ -94,7 +93,6 @@ namespace ServerTools
                         PersistentContainer.Instance.PollData = null;
                         PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                         PersistentContainer.Instance.PollOpen = false;
-                        PersistentContainer.Instance.Save();
                         SdtdConsole.Instance.Output("[SERVERTOOLS] The open poll has been cancelled");
                         using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
                         {
@@ -125,7 +123,6 @@ namespace ServerTools
                             PersistentContainer.Instance.PollData = null;
                             PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                             PersistentContainer.Instance.PollOpen = false;
-                            PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output("[SERVERTOOLS] The open poll has been stopped but no announcement made due to missing data");
                             using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
                             {
@@ -144,7 +141,6 @@ namespace ServerTools
                             {
                                 PersistentContainer.Instance.PollData = null;
                                 PersistentContainer.Instance.PollOpen = false;
-                                PersistentContainer.Instance.Save();
                                 SdtdConsole.Instance.Output("[SERVERTOOLS] The open poll has been stopped but no announcement made due to no votes");
                                 using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
                                 {
@@ -239,7 +235,6 @@ namespace ServerTools
                             PersistentContainer.Instance.PollData = null;
                             PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                             PersistentContainer.Instance.PollOpen = false;
-                            PersistentContainer.Instance.Save();
                             string _phrase926;
                             if (!Phrases.Dict.TryGetValue(926, out _phrase926))
                             {
@@ -399,7 +394,6 @@ namespace ServerTools
                                 PersistentContainer.Instance.PollData = _newPollData;
                                 PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                                 PersistentContainer.Instance.PollOpen = true;
-                                PersistentContainer.Instance.Save();
                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] A new poll has opened for {0} hour. Poll message: {1}", _pollHours, _message));
                                 return;
                             }
@@ -478,7 +472,6 @@ namespace ServerTools
                             PersistentContainer.Instance.PollData = _newPollData;
                             PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                             PersistentContainer.Instance.PollOpen = true;
-                            PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Poll {0} has been opened for {1} hour", _number, _hours));
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Message: {0}", _poll.Key[2]));
                             using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))

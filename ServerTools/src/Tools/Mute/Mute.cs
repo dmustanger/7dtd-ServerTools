@@ -45,7 +45,6 @@ namespace ServerTools
                             else
                             {
                                 PersistentContainer.Instance.Players[_id].MuteTime = 0;
-                                PersistentContainer.Instance.Save();
                             }
                         }
                     }
@@ -74,7 +73,6 @@ namespace ServerTools
                         _mutedPlayers.Add(_PlayertoMute.entityId);
                         PrivateMutes[_cInfo.entityId] = _mutedPlayers;
                         PersistentContainer.Instance.ClientMuteList = PrivateMutes;
-                        PersistentContainer.Instance.Save();
                         Phrases.Dict.TryGetValue(752, out string _phrase752);
                         _phrase752 = _phrase752.Replace("{PlayerName}", _PlayertoMute.playerName);
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase752 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -93,7 +91,6 @@ namespace ServerTools
                     _mutedPlayers.Add(_PlayertoMute.entityId);
                     PrivateMutes.Add(_cInfo.entityId, _mutedPlayers);
                     PersistentContainer.Instance.ClientMuteList = PrivateMutes;
-                    PersistentContainer.Instance.Save();
                     Phrases.Dict.TryGetValue(752, out string _phrase752);
                     _phrase752 = _phrase752.Replace("{PlayerName}", _PlayertoMute.playerName);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase752 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -125,7 +122,6 @@ namespace ServerTools
                                 PrivateMutes.Remove(_cInfo.entityId);
                             }
                             PersistentContainer.Instance.ClientMuteList = PrivateMutes;
-                            PersistentContainer.Instance.Save();
                             PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromEntityId(_id);
                             if (_pdf != null)
                             {
@@ -209,7 +205,6 @@ namespace ServerTools
                         {
                             Mutes.Remove(_id);
                             PersistentContainer.Instance.Players[_id].MuteTime = 0;
-                            PersistentContainer.Instance.Save();
                         }
                     }
                 }

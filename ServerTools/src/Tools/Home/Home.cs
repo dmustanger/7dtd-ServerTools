@@ -30,7 +30,6 @@ namespace ServerTools
                     {
                         string _sposition = x + "," + y + "," + z;
                         PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1 = _sposition;
-                        PersistentContainer.Instance.Save();
                         Phrases.Dict.TryGetValue(732, out string _phrase732);
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase732 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -161,7 +160,6 @@ namespace ServerTools
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
             }
             PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1 = DateTime.Now;
-            PersistentContainer.Instance.Save();
         }
 
         public static void DelHome1(ClientInfo _cInfo)
@@ -169,7 +167,6 @@ namespace ServerTools
             if (!string.IsNullOrEmpty(PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1))
             {
                 PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1 = "";
-                PersistentContainer.Instance.Save();
                 Phrases.Dict.TryGetValue(742, out string _phrase742);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase742 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
@@ -194,7 +191,6 @@ namespace ServerTools
                 {
                     string _sposition = x + "," + y + "," + z;
                     PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2 = _sposition;
-                    PersistentContainer.Instance.Save();
                     Phrases.Dict.TryGetValue(736, out string _phrase736);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase736 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -338,7 +334,6 @@ namespace ServerTools
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
             }
             PersistentContainer.Instance.Players[_cInfo.playerId].LastHome2 = DateTime.Now;
-            PersistentContainer.Instance.Save();
         }
 
         public static void DelHome2(ClientInfo _cInfo)
@@ -346,7 +341,6 @@ namespace ServerTools
             if (!string.IsNullOrEmpty(PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2))
             {
                 PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2 = "";
-                PersistentContainer.Instance.Save();
                 Phrases.Dict.TryGetValue(738, out string _phrase738);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase738 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
@@ -475,7 +469,6 @@ namespace ServerTools
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 }
                 PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1 = DateTime.Now;
-                PersistentContainer.Instance.Save();
             }
         }
 
@@ -597,13 +590,12 @@ namespace ServerTools
                 }
                 if (Home2_Delay)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1 = DateTime.Now;
+                    PersistentContainer.Instance.Players[_cInfo.playerId].LastHome2 = DateTime.Now;
                 }
                 else
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastHome2 = DateTime.Now;
+                    PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1 = DateTime.Now;
                 }
-                PersistentContainer.Instance.Save();
             }
         }
 

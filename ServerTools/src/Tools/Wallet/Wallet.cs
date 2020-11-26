@@ -26,7 +26,6 @@ namespace ServerTools
         {
             int _walletValue = PersistentContainer.Instance.Players[_steamid].PlayerWallet;
             PersistentContainer.Instance.Players[_steamid].PlayerWallet = _walletValue + _amount;
-            PersistentContainer.Instance.Save();
         }
 
         public static void SubtractCoinsFromWallet(string _steamid, int _amount)
@@ -37,13 +36,11 @@ namespace ServerTools
                 _newValue = 0;
             }
             PersistentContainer.Instance.Players[_steamid].PlayerWallet = _newValue;
-            PersistentContainer.Instance.Save();
         }
 
         public static void ClearWallet(ClientInfo _cInfo)
         {
             PersistentContainer.Instance.Players[_cInfo.playerId].PlayerWallet = 0;
-            PersistentContainer.Instance.Save();
         }
     }
 }

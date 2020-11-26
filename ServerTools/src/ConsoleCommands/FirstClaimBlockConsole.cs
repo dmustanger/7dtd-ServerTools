@@ -74,7 +74,6 @@ namespace ServerTools
                                 PersistentContainer.Instance.Players[_id].FirstClaimBlock = false;
                             }
                         }
-                        PersistentContainer.Instance.Save();
                         SdtdConsole.Instance.Output("[SERVERTOOLS] First claim block reset for all players.");
                     }
                     else
@@ -83,7 +82,6 @@ namespace ServerTools
                         if (p != null)
                         {
                             PersistentContainer.Instance.Players[_params[1]].FirstClaimBlock = false;
-                            PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] First claim block reset for {0}.", _params[1]));
                         }
                         else

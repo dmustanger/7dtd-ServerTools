@@ -178,7 +178,6 @@ namespace ServerTools
                                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                                 }
                                 PersistentContainer.Instance.Players[_cInfo.playerId].LastLobby = DateTime.Now;
-                                PersistentContainer.Instance.Save();
                             }
                         }
                     }
@@ -209,7 +208,6 @@ namespace ServerTools
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                         LobbyPlayers.Remove(_cInfo.entityId);
                         PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
-                        PersistentContainer.Instance.Save();
                     }
                     else
                     {
@@ -232,7 +230,6 @@ namespace ServerTools
             {
                 Lobby.LobbyPlayers.Remove(_cInfo.entityId);
                 PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
-                PersistentContainer.Instance.Save();
                 Phrases.Dict.TryGetValue(247, out string _phrase247);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase247 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }

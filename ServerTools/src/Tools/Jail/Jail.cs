@@ -93,7 +93,6 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_PlayertoJail.playerId].JailTime = 60;
             PersistentContainer.Instance.Players[_PlayertoJail.playerId].JailName= _PlayertoJail.playerName;
             PersistentContainer.Instance.Players[_PlayertoJail.playerId].JailDate = DateTime.Now;
-            PersistentContainer.Instance.Save();
             Phrases.Dict.TryGetValue(190, out string _phrase190);
             ChatHook.ChatMessage(_PlayertoJail, LoadConfig.Chat_Response_Color + _phrase190 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             if (Jail_Shock)
@@ -145,7 +144,6 @@ namespace ServerTools
                         {
                             Jailed.Remove(_PlayertoUnJail.playerId);
                             PersistentContainer.Instance.Players[_PlayertoUnJail.playerId].JailTime = 0;
-                            PersistentContainer.Instance.Save();
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_PlayertoUnJail.entityId];
                             EntityBedrollPositionList _position = _player.SpawnPoints;
                             if (_position.Count > 0 && (PersistentOperations.ClaimedByAllyOrSelf(_PlayertoUnJail.playerId, _position.GetPos()) || PersistentOperations.ClaimedByNone(_PlayertoUnJail.playerId, _position.GetPos())))
@@ -248,7 +246,6 @@ namespace ServerTools
                             Zones.Forgive.Remove(_cInfo.entityId);
                             Jailed.Remove(_cInfoKiller.playerId);
                             PersistentContainer.Instance.Players[_cInfoKiller.playerId].JailTime = 0;
-                            PersistentContainer.Instance.Save();
                             EntityBedrollPositionList _position = _player.SpawnPoints;
                             if (_position.Count > 0)
                             {
@@ -301,7 +298,6 @@ namespace ServerTools
                                 {
                                     Jailed.Remove(_id);
                                     PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = 0;
-                                    PersistentContainer.Instance.Save();
                                     EntityBedrollPositionList _position = _player.SpawnPoints;
                                     if (_position.Count > 0)
                                     {
@@ -320,7 +316,6 @@ namespace ServerTools
                             {
                                 Jailed.Remove(_id);
                                 PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = 0;
-                                PersistentContainer.Instance.Save();
                             }
                         }
                     }
@@ -355,7 +350,6 @@ namespace ServerTools
                             else
                             {
                                 PersistentContainer.Instance.Players[_id].JailTime = 0;
-                                PersistentContainer.Instance.Save();
                             }
                         }
                     }

@@ -68,7 +68,6 @@ namespace ServerTools
                 sw.Close();
             }
             PersistentContainer.Instance.Players[_cInfo.playerId].LastLog = DateTime.Now;
-            PersistentContainer.Instance.Save();
             Phrases.Dict.TryGetValue(525, out string _phrase525);
             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase525 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             Log.Out(string.Format("[SERVERTOOLS] Report sent by player {0} {1} and saved to the report logs", _cInfo.playerName, _cInfo.playerId));

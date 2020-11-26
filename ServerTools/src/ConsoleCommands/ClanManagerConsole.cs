@@ -148,7 +148,6 @@ namespace ServerTools
                             }
                             PersistentContainer.Instance.Players[_params[1]].ClanOfficer = false;
                             PersistentContainer.Instance.Players[_params[1]].ClanName = "";
-                            PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Deleted {0} with id {1} from the clan system", _playerName, _params[1]));
                         }
                         else

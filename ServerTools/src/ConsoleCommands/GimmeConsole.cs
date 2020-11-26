@@ -76,7 +76,6 @@ namespace ServerTools
                                 PersistentContainer.Instance.Players[_id].LastGimme = DateTime.Now.AddYears(-1);
                             }
                         }
-                        PersistentContainer.Instance.Save();
                         SdtdConsole.Instance.Output("[SERVERTOOLS] Gimme delay reset for all players.");
                     }
                     else
@@ -85,7 +84,6 @@ namespace ServerTools
                         if (p != null)
                         {
                             PersistentContainer.Instance.Players[_params[1]].LastGimme = DateTime.Now.AddYears(-1);
-                            PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gimme delay reset for {0}.", _params[1]));
                         }
                         else

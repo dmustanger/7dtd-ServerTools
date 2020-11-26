@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool IsRunning = false;
         public static int StopServerMinutes, _eventTime, _shutdown, _shutdownBloodmoonOver;
-        private static int CoreCount = 0, TwoSecondTick, FiveSecondTick, TenSecondTick, SixtySecondTick, _watchList, _nightAlert, 
+        private static int CoreCount = 0, _twoSecondTick, _fiveSecondTick, _tenSecondTick, _oneMinTick, _fiveMinTick, _watchList, _nightAlert, 
             _horde, _lottery, _breakTime, _invalidItems, _weatherVote, _bloodmoon, _playerLogs, _autoSaveWorld, _infoTicker, _restartVote,
             _restartVoteCycle, StopServerSeconds, _kickVote, _muteVote, _eventInvitation, _eventOpen, _zoneReminder, _tracking, _realWorldTime, _shutdownBloodmoon, _autoBackup;
         private static System.Timers.Timer Core = new System.Timers.Timer();
@@ -35,10 +35,11 @@ namespace ServerTools
 
         private static void Tick(object sender, ElapsedEventArgs e)
         {
-            TwoSecondTick++;
-            FiveSecondTick++;
-            TenSecondTick++;
-            SixtySecondTick++;
+            _twoSecondTick++;
+            _fiveSecondTick++;
+            _tenSecondTick++;
+            _oneMinTick++;
+            _fiveMinTick++;
             Exec();
         }
 
@@ -59,9 +60,9 @@ namespace ServerTools
             };
         }
 
-        public static void NewPlayerExecTimer(ClientInfo _cInfo)
+        public static void NewPlayerTimer(ClientInfo _cInfo)
         {
-            System.Timers.Timer _newPlayerExecTimer = new System.Timers.Timer(3000);
+            System.Timers.Timer _newPlayerExecTimer = new System.Timers.Timer(5000);
             _newPlayerExecTimer.AutoReset = false;
             _newPlayerExecTimer.Start();
             _newPlayerExecTimer.Elapsed += (sender, e) =>
@@ -71,9 +72,9 @@ namespace ServerTools
             };
         }
 
-        public static void NewPlayerStartingItemsTimer(ClientInfo _cInfo)
+        public static void StartingItemsTimer(ClientInfo _cInfo)
         {
-            System.Timers.Timer _newPlayerStartingItemsTimer = new System.Timers.Timer(2000);
+            System.Timers.Timer _newPlayerStartingItemsTimer = new System.Timers.Timer(3000);
             _newPlayerStartingItemsTimer.AutoReset = false;
             _newPlayerStartingItemsTimer.Start();
             _newPlayerStartingItemsTimer.Elapsed += (sender, e) =>
@@ -121,7 +122,7 @@ namespace ServerTools
 
         public static void SaveDelay()
         {
-            System.Timers.Timer _saveDelay = new System.Timers.Timer(500);
+            System.Timers.Timer _saveDelay = new System.Timers.Timer(1000);
             _saveDelay.AutoReset = false;
             _saveDelay.Start();
             _saveDelay.Elapsed += (sender, e) =>
@@ -518,9 +519,9 @@ namespace ServerTools
                 {
                     Jail.StatusCheck();
                 }
-                if (TwoSecondTick >= 2)
+                if (_twoSecondTick >= 2)
                 {
-                    TwoSecondTick = 0;
+                    _twoSecondTick = 0;
                     if (WorldRadius.IsEnabled)
                     {
                         WorldRadius.Exec();
@@ -530,9 +531,9 @@ namespace ServerTools
                         PlayerChecks.Exec();
                     }
                 }
-                if (FiveSecondTick >= 5)
+                if (_fiveSecondTick >= 5)
                 {
-                    FiveSecondTick = 0;
+                    _fiveSecondTick = 0;
                     if (Zones.IsEnabled)
                     {
                         Zones.HostileCheck();
@@ -542,17 +543,17 @@ namespace ServerTools
                         PlayerStats.Exec();
                     }
                 }
-                if (TenSecondTick >= 10)
+                if (_tenSecondTick >= 10)
                 {
-                    TenSecondTick = 0;
+                    _tenSecondTick = 0;
                     if (EntityCleanup.IsEnabled)
                     {
                         EntityCleanup.EntityCheck();
                     }
                 }
-                if (SixtySecondTick >= 60)
+                if (_oneMinTick >= 60)
                 {
-                    SixtySecondTick = 0;
+                    _oneMinTick = 0;
                     if (Jail.IsEnabled && Jail.Jailed.Count > 0)
                     {
                         Jail.Clear();
@@ -565,6 +566,11 @@ namespace ServerTools
                     {
                         BloodmoonWarrior.Exec();
                     }
+                }
+                if (_fiveMinTick >= 300)
+                {
+                    _fiveMinTick = 0;
+                    StateManager.Save();
                 }
                 if (WeatherVote.IsEnabled && WeatherVote.VoteOpen)
                 {
@@ -929,12 +935,12 @@ namespace ServerTools
 
         private static void Init2(object sender, ElapsedEventArgs e, ClientInfo _cInfo)
         {
-            API.NewPlayerExec1(_cInfo);
+            API.NewPlayerExec(_cInfo);
         }
 
         private static void Init3(object sender, ElapsedEventArgs e, ClientInfo _cInfo)
         {
-            API.NewPlayerExec2(_cInfo);
+            StartingItems.Exec(_cInfo);
         }
 
         private static void Init4(object sender, ElapsedEventArgs e, ClientInfo _cInfo)

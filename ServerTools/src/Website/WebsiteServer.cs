@@ -263,7 +263,6 @@ namespace ServerTools.Website
                                                 {
                                                     TimeOut.Remove(_clientIp);
                                                     PersistentContainer.Instance.WebsiteTimeoutList = TimeOut;
-                                                    PersistentContainer.Instance.Save();
                                                 }
                                                 IsAllowed(_request, _response, _clientIp);
                                             }
@@ -346,7 +345,6 @@ namespace ServerTools.Website
                                 PageHits.Remove(_clientIp);
                                 TimeOut.Add(_clientIp, DateTime.Now);
                                 PersistentContainer.Instance.WebsiteTimeoutList = TimeOut;
-                                PersistentContainer.Instance.Save();
                             }
                             else
                             {
@@ -549,7 +547,6 @@ namespace ServerTools.Website
                                                     LoginAttempts.Remove(_ip);
                                                     TimeOut.Add(_ip, DateTime.Now);
                                                     PersistentContainer.Instance.WebsiteTimeoutList = TimeOut;
-                                                    PersistentContainer.Instance.Save();
                                                     return;
                                                 }
                                                 else
@@ -659,7 +656,6 @@ namespace ServerTools.Website
                                     if (!string.IsNullOrEmpty(_decryptSplit[1]) && Clients.Contains(_decryptSplit[1]))
                                     {
                                         PersistentContainer.Instance.Players[_decryptSplit[1]].WP = _decryptSplit[2];
-                                        PersistentContainer.Instance.Save();
                                         _responseMessage += SetKey(_id, _clientHandle);
                                         _response.StatusCode = 200;
                                         Writer(string.Format("Website client {0} has set a new pass from IP {1}", _decryptSplit[1], _request.RemoteEndPoint.Address.ToString()));
@@ -1191,7 +1187,6 @@ namespace ServerTools.Website
                                                 {
                                                     Mute.Mutes.Remove(_cInfo.playerId);
                                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = 0;
-                                                    PersistentContainer.Instance.Save();
                                                     Writer(string.Format("Website client {0} has unmuted {1} from IP {2}", _decryptSplit[1], _decryptSplit[2], _request.RemoteEndPoint.Address.ToString()));
                                                 }
                                                 else
@@ -1200,7 +1195,6 @@ namespace ServerTools.Website
                                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = -1;
                                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteName = _cInfo.playerName;
                                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteDate = DateTime.Now;
-                                                    PersistentContainer.Instance.Save();
                                                     Writer(string.Format("Website client {0} has muted {1} from IP {2}", _decryptSplit[1], _decryptSplit[2], _request.RemoteEndPoint.Address.ToString()));
                                                 }
 
@@ -1263,7 +1257,6 @@ namespace ServerTools.Website
                                                         EntityBedrollPositionList _position = _player.SpawnPoints;
                                                         Jail.Jailed.Remove(_cInfo.playerId);
                                                         PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = 0;
-                                                        PersistentContainer.Instance.Save();
                                                         if (_position != null && _position.Count > 0)
                                                         {
                                                             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_position[0].x, -1, _position[0].z), null, false));
@@ -1294,7 +1287,6 @@ namespace ServerTools.Website
                                                     PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = -1;
                                                     PersistentContainer.Instance.Players[_cInfo.playerId].JailName = _cInfo.playerName;
                                                     PersistentContainer.Instance.Players[_cInfo.playerId].JailDate = DateTime.Now;
-                                                    PersistentContainer.Instance.Save();
                                                     Writer(string.Format("Website client {0} has jailed {1} from IP {2}", _decryptSplit[1], _decryptSplit[2], _request.RemoteEndPoint.Address.ToString()));
                                                 }
                                             }

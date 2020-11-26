@@ -1479,7 +1479,6 @@ namespace ServerTools
                                         string[] _harcorestats = { _cInfo.playerName, _player.Score.ToString(), _lifeTime.ToString(), _deaths.ToString(), "0" };
                                         PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats = _harcorestats;
                                         PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled = true;
-                                        PersistentContainer.Instance.Save();
                                         Phrases.Dict.TryGetValue(601, out string _phrase601);
                                         _phrase601 = _phrase601.Replace("{CommandPrivate}", ChatHook.Command_Private);
                                         _phrase601 = _phrase601.Replace("{Command127}", Hardcore.Command127);

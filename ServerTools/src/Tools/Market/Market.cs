@@ -169,7 +169,6 @@ namespace ServerTools
                                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                             }
                             PersistentContainer.Instance.Players[_cInfo.playerId].LastMarket = DateTime.Now;
-                            PersistentContainer.Instance.Save();
                         }
                     }
                 }
@@ -199,7 +198,6 @@ namespace ServerTools
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                         MarketPlayers.Remove(_cInfo.entityId);
                         PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
-                        PersistentContainer.Instance.Save();
                     }
                     else
                     {
@@ -225,7 +223,6 @@ namespace ServerTools
                 if (Market.Return)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
-                    PersistentContainer.Instance.Save();
                     Phrases.Dict.TryGetValue(255, out string _phrase255);
                     _phrase255 = _phrase255.Replace("{CommandPrivate}", ChatHook.Command_Private);
                     _phrase255 = _phrase255.Replace("{Command51}", Command51);

@@ -42,7 +42,6 @@ namespace ServerTools
                     if (_cInfo != null)
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].CountryBanImmune = true;
-                        PersistentContainer.Instance.Save();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added Id {0} to the Country Ban Immunity list.", _params[1]));
                     }
                     else
@@ -62,7 +61,6 @@ namespace ServerTools
                     if (_cInfo != null)
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].CountryBanImmune = false;
-                        PersistentContainer.Instance.Save();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed Id {0} from the Country Ban Immunity list.", _params[1]));
                     }
                     else

@@ -197,7 +197,6 @@ namespace ServerTools
                     p.Waypoints = new Dictionary<string, string>();
                     p.WP = "";
                     p.ZoneDeathTime = new DateTime();
-                    PersistentContainer.Instance.Save();
                 }
                 string _phrase401;
                 if (!Phrases.Dict.TryGetValue(401, out _phrase401))

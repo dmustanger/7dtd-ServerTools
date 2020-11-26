@@ -1,12 +1,10 @@
 ﻿using ServerTools;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using ServerTools.AntiCheat;
 
 public static class Injections
 {
-
     public static bool DamageResponse_Prefix(EntityAlive __instance, DamageResponse _dmResponse)
     {
         try

@@ -239,14 +239,12 @@ namespace ServerTools
                                     else
                                     {
                                         PersistentContainer.Instance.Players[_cInfo.playerId].EventOver = true;
-                                        PersistentContainer.Instance.Save();
                                         Event.Teams.Remove(_cInfo.playerId);
                                     }
                                 }
                                 else
                                 {
                                     PersistentContainer.Instance.Players[_eventPlayer.Key].EventOver = true;
-                                    PersistentContainer.Instance.Save();
                                     Event.Teams.Remove(_eventPlayer.Key);
                                 }
                             }
@@ -342,7 +340,6 @@ namespace ServerTools
                                 _events.Add(_eventData);
                                 PersistentContainer.Instance.Players[_steamId].Events = _events;
                             }
-                            PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output("[SERVERTOOLS] The event setup has been saved to the list");
                             return;
                         }
@@ -433,7 +430,6 @@ namespace ServerTools
                             List<List<string>> _events = PersistentContainer.Instance.Players[_steamId].Events;
                             _events.RemoveAt(_id - 1);
                             PersistentContainer.Instance.Players[_steamId].Events = _events;
-                            PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed event id: {0}", _id));
                             return;
                         }
@@ -477,7 +473,6 @@ namespace ServerTools
                                         int.TryParse(_cords[2], out _z);
                                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                                         PersistentContainer.Instance.Players[_cInfo.playerId].EventReturnPosition = "";
-                                        PersistentContainer.Instance.Save();
                                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have been removed from the event and sent to your return point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed event player with id: {0}. They have been sent to their return point", _params[1]));
                                         return;
@@ -485,7 +480,6 @@ namespace ServerTools
                                     else
                                     {
                                         PersistentContainer.Instance.Players[_cInfo.playerId].EventOver = true;
-                                        PersistentContainer.Instance.Save();
                                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find event player with id: {0}. They have been set to auto return", _params[1]));
                                         return;
                                     }
@@ -493,7 +487,6 @@ namespace ServerTools
                                 else
                                 {
                                     PersistentContainer.Instance.Players[_params[1]].EventOver = true;
-                                    PersistentContainer.Instance.Save();
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find event player with id: {0}. They have been set to auto return", _params[1]));
                                     return;
                                 }

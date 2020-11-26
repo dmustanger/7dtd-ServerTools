@@ -123,7 +123,6 @@ namespace ServerTools
                                 PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = _jailTime;
                                 PersistentContainer.Instance.Players[_cInfo.playerId].JailName = _cInfo.playerName;
                                 PersistentContainer.Instance.Players[_cInfo.playerId].JailDate = DateTime.Now;
-                                PersistentContainer.Instance.Save();
                                 if (_jailTime > 0)
                                 {
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have put {0} in jail for {1} minutes.", _cInfo.playerName, _jailTime));
@@ -148,7 +147,6 @@ namespace ServerTools
                                     PersistentContainer.Instance.Players[_params[1]].JailTime = _jailTime;
                                     PersistentContainer.Instance.Players[_params[1]].JailName = _cInfo.playerName;
                                     PersistentContainer.Instance.Players[_params[1]].JailDate = DateTime.Now;
-                                    PersistentContainer.Instance.Save();
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with Id {0} can not be found online but has been set for jail.", _params[1]));
                                     return;
                                 }
@@ -186,7 +184,6 @@ namespace ServerTools
                                     EntityBedrollPositionList _position = _player.SpawnPoints;
                                     Jail.Jailed.Remove(_cInfo.playerId);
                                     PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = 0;
-                                    PersistentContainer.Instance.Save();
                                     if (_position != null && _position.Count > 0)
                                     {
                                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_position[0].x, -1, _position[0].z), null, false));

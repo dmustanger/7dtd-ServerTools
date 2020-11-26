@@ -189,7 +189,8 @@ namespace ServerTools.AntiCheat
                         string _name = _block.Block.GetBlockName().ToLower();
                         if (_block.type == BlockValue.Air.type || _block.Block.isMultiBlock || _block.Block.IsTerrainDecoration || _block.Block.IsDecoration
                             || _name.Contains("ladder") || _name.Contains("trellis")
-                            || _name.Contains("arch") || _name.ToLower().Contains("ramp"))
+                            || _name.Contains("arch") || _name.ToLower().Contains("ramp")
+                            || _name.Contains("drawbridge"))
                         {
                             return false;
                         }

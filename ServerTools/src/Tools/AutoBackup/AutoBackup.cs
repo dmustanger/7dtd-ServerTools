@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Pathfinding.Ionic.Zip;
+using Pathfinding.Ionic.Zlib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -8,8 +10,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false;
         public static int Delay = 240, Backup_Count = 5, Compression_Level = 0;
-        public static string Destination = "";
-        private static string SaveDirectory = GameUtils.GetSaveGameDir();
+        public static string Destination = "", SaveDirectory = GameUtils.GetSaveGameDir();
 
         public static void Exec()
         {
@@ -58,12 +59,16 @@ namespace ServerTools
                         if (_files != null && _files.Length > Backup_Count)//files are not null or empty
                         {
                             DeleteFiles(_files);//exec file delete
-                            Log.Out("[SERVERTOOLS] Auto backup clean up complete");
+                            Log.Out("[SERVERTOOLS] Auto backup clean up complete of old files");
                         }
                         DirectoryInfo _destDirInfo = new DirectoryInfo(Destination);//destination dir
                         if (_destDirInfo != null)
                         {
-                            Save(_destDirInfo);//exec save method
+                            Save(_destDirInfo);//exec file save
+                        }
+                        else
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Auto backup could not locate the save directory: {0}", Destination));
                         }
                     }
                 }
@@ -122,25 +127,25 @@ namespace ServerTools
             try
             {
                 string[] _files = Directory.GetFiles(SaveDirectory, "*", SearchOption.AllDirectories);
-                Pathfinding.Ionic.Zlib.CompressionLevel _compression = Pathfinding.Ionic.Zlib.CompressionLevel.Default;
+                CompressionLevel _compression = CompressionLevel.Default;
                 if (Compression_Level == 0)
                 {
-                    _compression = Pathfinding.Ionic.Zlib.CompressionLevel.None;
+                    _compression = CompressionLevel.None;
                 }
                 else if (Compression_Level == 1)
                 {
-                    _compression = Pathfinding.Ionic.Zlib.CompressionLevel.BestSpeed;
+                    _compression = CompressionLevel.BestSpeed;
                 }
                 else if (Compression_Level >= 2)
                 {
-                    _compression = Pathfinding.Ionic.Zlib.CompressionLevel.BestCompression;
+                    _compression = CompressionLevel.BestCompression;
                 }
                 ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Starting auto backup. You might experience periods of lag and slow down until complete" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 string _location = _destinationDirInfo.FullName + string.Format("/Backup_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
                 string _name = string.Format("Backup_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
-                using (Pathfinding.Ionic.Zip.ZipFile zip = new Pathfinding.Ionic.Zip.ZipFile(_location))
+                using (ZipFile zip = new ZipFile(_location))
                 {
-                    zip.UseZip64WhenSaving = Pathfinding.Ionic.Zip.Zip64Option.Always;
+                    zip.UseZip64WhenSaving = Zip64Option.Always;
                     zip.CompressionLevel = _compression;
                     zip.ParallelDeflateThreshold = -1;
                     for (int i = 0; i < _files.Length; i++)
@@ -148,10 +153,19 @@ namespace ServerTools
                         string _file = _files[i];
                         zip.AddFile(_file).FileName = _file.Substring(_file.IndexOf(SaveDirectory));
                     }
+                    _files = Directory.GetFiles(API.ConfigPath, "ServerTools.bin", SearchOption.AllDirectories);
+                    if (_files != null)
+                    {
+                        for (int i = 0; i < _files.Length; i++)
+                        {
+                            string _file = _files[i];
+                            zip.AddFile(_file);
+                        }
+                    }
                     zip.Save(Path.ChangeExtension(_location, ".zip"));
-                    Log.Out(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at {0}. File is named {1}", _destinationDirInfo.FullName, _name + ".zip"));
-                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Auto backup completed successfully" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
+                Log.Out(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at {0}. File is named {1}", _destinationDirInfo.FullName, _name + ".zip"));
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Auto backup completed successfully" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             catch (Exception e)
             {

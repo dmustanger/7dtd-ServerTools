@@ -202,7 +202,6 @@ namespace ServerTools
                 if (ItemList.Count > 0)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems = true;
-                    PersistentContainer.Instance.Save();
                     World world = GameManager.Instance.World;
                     List<string> _itemList = ItemList.Keys.ToList();
                     for (int i = 0; i < _itemList.Count; i++)

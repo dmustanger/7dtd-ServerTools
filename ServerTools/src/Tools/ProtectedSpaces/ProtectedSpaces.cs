@@ -383,7 +383,6 @@ namespace ServerTools
                 }
             }
             PersistentContainer.Instance.ProtectedSpace = _protected;
-            PersistentContainer.Instance.Save();
         }
 
         public static void RemoveProtection(List<string[]> _vectors)
@@ -459,7 +458,6 @@ namespace ServerTools
                 }
             }
             PersistentContainer.Instance.ProtectedSpace = _protected;
-            PersistentContainer.Instance.Save();
         }
 
         public static void UnloadProtection()
@@ -523,7 +521,6 @@ namespace ServerTools
             }
             _protected.Clear();
             PersistentContainer.Instance.ProtectedSpace = _protected;
-            PersistentContainer.Instance.Save();
         }
     }
 }

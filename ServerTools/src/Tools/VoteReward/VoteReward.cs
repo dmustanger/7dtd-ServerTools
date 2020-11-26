@@ -271,7 +271,6 @@ namespace ServerTools
                                 ItemOrBlockCounter(_cInfo, Reward_Count);
                             }
                             PersistentContainer.Instance.Players[_cInfo.playerId].LastVote = DateTime.Now;
-                            PersistentContainer.Instance.Save();
                         }
                         catch
                         {
@@ -333,7 +332,6 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
                             PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                            PersistentContainer.Instance.Save();
                             ItemOrBlockRandom(_cInfo);
                             Phrases.Dict.TryGetValue(305, out string _phrase305);
                             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -341,7 +339,6 @@ namespace ServerTools
                         else
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = _voteWeekCount + 1;
-                            PersistentContainer.Instance.Save();
                             int _remainingVotes = Weekly_Votes - _voteWeekCount + 1;
                             DateTime _date2 = _lastVoteWeek.AddDays(7);
                             Phrases.Dict.TryGetValue(306, out string _phrase306);
@@ -356,7 +353,6 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                        PersistentContainer.Instance.Save();
                         int _remainingVotes = Weekly_Votes - 1;
                         DateTime _date2 = DateTime.Now.AddDays(7);
                         Phrases.Dict.TryGetValue(306, out string _phrase306);
@@ -438,7 +434,6 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                        PersistentContainer.Instance.Save();
                         Entityspawn(_cInfo);
                         Phrases.Dict.TryGetValue(305, out string _phrase305);
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -446,7 +441,6 @@ namespace ServerTools
                     else
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = _voteWeekCount + 1;
-                        PersistentContainer.Instance.Save();
                         int _remainingVotes = Weekly_Votes - _voteWeekCount + 1;
                         DateTime _date2 = _lastVoteWeek.AddDays(7);
                         Phrases.Dict.TryGetValue(306, out string _phrase306);
@@ -461,7 +455,6 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
                     PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                    PersistentContainer.Instance.Save();
                     int _remainingVotes = Weekly_Votes - 1;
                     DateTime _date2 = DateTime.Now.AddDays(7);
                     Phrases.Dict.TryGetValue(306, out string _phrase306);

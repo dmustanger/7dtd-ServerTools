@@ -49,7 +49,6 @@ namespace ServerTools
                 int.TryParse(_cords[2], out z);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                 PersistentContainer.Instance.Players[_cInfo.playerId].NewSpawn = true;
-                PersistentContainer.Instance.Save();
                 Phrases.Dict.TryGetValue(212, out string _phrase212);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase212 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (Return)
@@ -88,7 +87,6 @@ namespace ServerTools
                     int.TryParse(_oldCords[2], out z);
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                     PersistentContainer.Instance.Players[_cInfo.playerId].NewSpawnPosition = "";
-                    PersistentContainer.Instance.Save();
                     Phrases.Dict.TryGetValue(216, out string _phrase216);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase216 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }

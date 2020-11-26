@@ -73,7 +73,6 @@ namespace ServerTools
                         if (_player != null && _player.IsSpawned() && !_player.IsDead())
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems = true;
-                            PersistentContainer.Instance.Save();
                             List<string> _itemList = StartingItems.ItemList.Keys.ToList();
                             for (int i = 0; i < _itemList.Count; i++)
                             {

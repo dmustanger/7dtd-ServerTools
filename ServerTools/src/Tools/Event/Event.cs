@@ -53,7 +53,6 @@ namespace ServerTools
                     int z = (int)_position.z;
                     string _sposition = x + "," + y + "," + z;
                     PersistentContainer.Instance.Players[_cInfo.playerId].EventReturnPosition = _sposition;
-                    PersistentContainer.Instance.Save();
                     Phrases.Dict.TryGetValue(774, out string _phrase774);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase774 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -90,13 +89,11 @@ namespace ServerTools
                             else
                             {
                                 PersistentContainer.Instance.Players[_eventClientInfo.playerId].EventSpawn = true;
-                                PersistentContainer.Instance.Save();
                             }
                         }
                         else
                         {
                             PersistentContainer.Instance.Players[_eventClientInfo.playerId].EventSpawn = true;
-                            PersistentContainer.Instance.Save();
                         }
                     }
                     int _eventTime = Time * 60;
@@ -169,7 +166,6 @@ namespace ServerTools
                     Teams.Remove(_eventPlayer.Key);
                 }
             }
-            PersistentContainer.Instance.Save();
             ClientInfo _cInfo = ConnectionManager.Instance.Clients.GetForPlayerName(Operator);
             Open = false;
             Teams.Clear();
@@ -208,7 +204,6 @@ namespace ServerTools
                     int.TryParse(_cords[2], out int _z);
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                     PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn = false;
-                    PersistentContainer.Instance.Save();
                     Phrases.Dict.TryGetValue(785, out string _phrase785);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase785 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -216,7 +211,6 @@ namespace ServerTools
             else
             {
                 PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn = false;
-                PersistentContainer.Instance.Save();
                 Phrases.Dict.TryGetValue(786, out string _phrase786);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase786 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }

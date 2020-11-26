@@ -901,7 +901,6 @@ namespace ServerTools
                     _delays.Add(_c1[0], DateTime.Now);
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays = _delays;
                 }
-                PersistentContainer.Instance.Save();
                 string[] _r;
                 if (Dict.TryGetValue(_message, out _r))
                 {

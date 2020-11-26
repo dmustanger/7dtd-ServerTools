@@ -65,7 +65,6 @@ namespace ServerTools
                                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _bounty);
                                     int _currentbounty = PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty;
                                     PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _currentbounty + _bounty;
-                                    PersistentContainer.Instance.Save();
                                     using (StreamWriter sw = new StreamWriter(filepath, true))
                                     {
                                         sw.WriteLine(string.Format("{0}: {1} {2} added {3} bounty to {4} {5}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bounty, _cInfo2.playerId, _cInfo2.playerName));
@@ -74,7 +73,7 @@ namespace ServerTools
                                         sw.Close();
                                     }
                                     Phrases.Dict.TryGetValue(535, out string _phrase535);
-                                    _phrase535 = _phrase535.Replace("{Value}", Minimum_Bounty.ToString());
+                                    _phrase535 = _phrase535.Replace("{Value}", _bounty.ToString());
                                     _phrase535 = _phrase535.Replace("{PlayerName}", _cInfo2.playerName);
                                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase535 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -106,7 +105,6 @@ namespace ServerTools
                                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Minimum_Bounty);
                                 int _currentbounty = PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty;
                                 PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _currentbounty + Minimum_Bounty;
-                                PersistentContainer.Instance.Save();
                                 using (StreamWriter sw = new StreamWriter(filepath, true))
                                 {
                                     sw.WriteLine(string.Format("{0}: {1} {2} added {3} bounty to {4} {5}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, Minimum_Bounty, _cInfo2.playerId, _cInfo2.playerName));
@@ -139,7 +137,7 @@ namespace ServerTools
         {
             try
             {
-                if (_cInfo1.playerId != null && _cInfo2.playerId != null)
+                if (_cInfo1.playerId != null && _player1 != null && _player2 != null && _cInfo2.playerId != null)
                 {
                     PersistentPlayerData _ppd1 = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo1.playerId);
                     PersistentPlayerData _ppd2 = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo2.playerId);
@@ -147,84 +145,12 @@ namespace ServerTools
                     {
                         if (!_player1.Party.ContainsMember(_player2) && !_player2.Party.ContainsMember(_player1))
                         {
-                            if (ClanManager.IsEnabled)
-                            {
-                                if (ClanManager.ClanMember.Contains(_cInfo1.playerId) && ClanManager.ClanMember.Contains(_cInfo2.playerId))
-                                {
-                                    if (PersistentContainer.Instance.Players[_cInfo1.playerId].ClanName != null && PersistentContainer.Instance.Players[_cInfo2.playerId].ClanName != null)
-                                    {
-                                        string _clanName1 = PersistentContainer.Instance.Players[_cInfo1.playerId].ClanName;
-                                        string _clanName2 = PersistentContainer.Instance.Players[_cInfo2.playerId].ClanName;
-                                        if (!string.IsNullOrEmpty(_clanName1) && !string.IsNullOrEmpty(_clanName2))
-                                        {
-                                            if (_clanName1 == _clanName2)
-                                            {
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            int _victimBounty = PersistentContainer.Instance.Players[_cInfo1.playerId].Bounty;
-                            int _victimBountyHunter = PersistentContainer.Instance.Players[_cInfo1.playerId].BountyHunter;
-                            if (_victimBounty > 0)
-                            {
-                                int _killerWallet = PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet;
-                                int _killerBounty = PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty;
-                                int _killerBountyHunter = PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter;
-                                if (Kill_Streak > 0)
-                                {
-                                    int _victimBountyPlus = _victimBounty + Bonus;
-                                    if (_killerBountyHunter + 1 >= Kill_Streak)
-                                    {
-                                        PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBountyPlus;
-                                        PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter = _killerBountyHunter + 1;
-                                        PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _killerBounty + Bonus;
-                                        using (StreamWriter sw = new StreamWriter(filepath, true))
-                                        {
-                                            sw.WriteLine(string.Format("{0}: {1} {2} has collected {3} bounties without dying. Their bounty has increased.", DateTime.Now, _cInfo2.playerId, _cInfo2.playerName, _killerBountyHunter + 1));
-                                            sw.WriteLine();
-                                            sw.Flush();
-                                            sw.Close();
-                                        }
-                                        Phrases.Dict.TryGetValue(531, out string _phrase531);
-                                        _phrase531 = _phrase531.Replace("{PlayerName}", _cInfo2.playerName);
-                                        _phrase531 = _phrase531.Replace("{Value}", _killerBountyHunter + 1.ToString());
-                                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase531 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                    }
-                                    else if (_killerBountyHunter + 1 < Kill_Streak)
-                                    {
-                                        PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBounty;
-                                        PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter = _killerBountyHunter + 1;
-                                    }
-                                    if (_victimBountyHunter >= Kill_Streak)
-                                    {
-                                        using (StreamWriter sw = new StreamWriter(filepath, true))
-                                        {
-                                            sw.WriteLine(string.Format("{0}: {1} {2} has died. Their kill streak came to an end by {3}.", DateTime.Now, _cInfo1.playerId, _cInfo1.playerName, _cInfo2.playerName));
-                                            sw.WriteLine();
-                                            sw.Flush();
-                                            sw.Close();
-                                        }
-                                        Phrases.Dict.TryGetValue(532, out string _phrase532);
-                                        _phrase532 = _phrase532.Replace("{Victim}", _cInfo1.playerName);
-                                        _phrase532 = _phrase532.Replace("{Killer}", _cInfo2.playerName);
-                                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase532 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                    }
-                                }
-                                else
-                                {
-                                    PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBounty;
-                                }
-                                PersistentContainer.Instance.Players[_cInfo1.playerId].Bounty = 0;
-                                PersistentContainer.Instance.Players[_cInfo1.playerId].BountyHunter = 0;
-                                PersistentContainer.Instance.Save();
-                                Phrases.Dict.TryGetValue(533, out string _phrase533);
-                                _phrase533 = _phrase533.Replace("{Victim}", _cInfo1.playerName);
-                                _phrase533 = _phrase533.Replace("{Killer}", _cInfo2.playerName);
-                                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase533 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            }
+                            ProcessPlayerKilled(_cInfo1, _cInfo2);
                         }
+                    }
+                    else if (!_player1.Party.ContainsMember(_player2) && !_player2.Party.ContainsMember(_player1))
+                    {
+                        ProcessPlayerKilled(_cInfo1, _cInfo2);
                     }
                 }
             }
@@ -234,28 +160,99 @@ namespace ServerTools
             }
         }
 
+        private static void ProcessPlayerKilled(ClientInfo _cInfo1, ClientInfo _cInfo2)
+        {
+            try
+            {
+                int _victimBounty = PersistentContainer.Instance.Players[_cInfo1.playerId].Bounty;
+                int _victimBountyHunter = PersistentContainer.Instance.Players[_cInfo1.playerId].BountyHunter; //victim kill streak
+                if (_victimBounty > 0)
+                {
+                    int _killerWallet = PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet;
+                    int _killerBounty = PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty;
+                    int _killerBountyHunter = PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter; //killer kill streak
+                    if (Kill_Streak > 0)
+                    {
+                        int _newKillerBountyHunter = _killerBountyHunter + 1;
+                        if (_newKillerBountyHunter >= Kill_Streak)
+                        {
+                            PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBounty + Bonus;
+                            PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter = _newKillerBountyHunter;
+                            PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _killerBounty + Bonus;
+                            using (StreamWriter sw = new StreamWriter(filepath, true))
+                            {
+                                sw.WriteLine(string.Format("{0}: {1} {2} has collected the bounty on {3} {4}.", DateTime.Now, _cInfo2.playerId, _cInfo2.playerName, _cInfo2.playerId, _cInfo2.playerName));
+                                sw.WriteLine();
+                                sw.WriteLine(string.Format("{0}: {1} {2} has collected {3} bounties without dying. Their kill streak and bounty have increased.", DateTime.Now, _cInfo2.playerId, _cInfo2.playerName, _newKillerBountyHunter));
+                                sw.WriteLine();
+                                sw.Flush();
+                                sw.Close();
+                            }
+                            Phrases.Dict.TryGetValue(531, out string _phrase531);
+                            _phrase531 = _phrase531.Replace("{PlayerName}", _cInfo2.playerName);
+                            _phrase531 = _phrase531.Replace("{Value}", _newKillerBountyHunter.ToString());
+                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase531 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        }
+                        else if (_killerBountyHunter + 1 < Kill_Streak)
+                        {
+                            PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBounty;
+                            PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter = _newKillerBountyHunter;
+                        }
+                        if (_victimBountyHunter >= Kill_Streak)
+                        {
+                            Phrases.Dict.TryGetValue(532, out string _phrase532);
+                            _phrase532 = _phrase532.Replace("{Victim}", _cInfo1.playerName);
+                            _phrase532 = _phrase532.Replace("{Killer}", _cInfo2.playerName);
+                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase532 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        }
+                    }
+                    else
+                    {
+                        PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBounty;
+                        using (StreamWriter sw = new StreamWriter(filepath, true))
+                        {
+                            sw.WriteLine(string.Format("{0}: {1} {2} has collected the bounty on {3} {4}.", DateTime.Now, _cInfo2.playerId, _cInfo2.playerName, _cInfo2.playerId, _cInfo2.playerName));
+                            sw.WriteLine();
+                            sw.Flush();
+                            sw.Close();
+                        }
+                    }
+                    PersistentContainer.Instance.Players[_cInfo1.playerId].Bounty = 0;
+                    PersistentContainer.Instance.Players[_cInfo1.playerId].BountyHunter = 0;
+                    Phrases.Dict.TryGetValue(533, out string _phrase533);
+                    _phrase533 = _phrase533.Replace("{Victim}", _cInfo1.playerName);
+                    _phrase533 = _phrase533.Replace("{Killer}", _cInfo2.playerName);
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase533 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Bounties.ProcessPlayerKilled: {0}", e.Message));
+            }
+        }
+
         public static void ConsoleEdit(string _id, int _value)
         {
             int _oldBounty = PersistentContainer.Instance.Players[_id].Bounty;
             if (_value > 0)
             {
-                PersistentContainer.Instance.Players[_id].Bounty = _oldBounty + _value;
-                PersistentContainer.Instance.Save();
-                SdtdConsole.Instance.Output(string.Format("Bounty edit was successful for {0}. The new value is set to {1}", _id, _oldBounty + _value));
+                int _newBounty = _oldBounty + _value;
+                PersistentContainer.Instance.Players[_id].Bounty = _newBounty;
+                SdtdConsole.Instance.Output(string.Format("Bounty edit was successful for {0}. The new value is set to {1}", _id, _newBounty));
             }
             else
             {
-                if (_oldBounty - _value < 0)
+                int _newBounty = _oldBounty - _value;
+                if (_newBounty < 0)
                 {
                     PersistentContainer.Instance.Players[_id].Bounty = 0;
                     SdtdConsole.Instance.Output(string.Format("Bounty edit was successful for {0}. The new value is {1}", _id, 0));
                 }
                 else
                 {
-                    PersistentContainer.Instance.Players[_id].Bounty = _oldBounty - _value;
-                    SdtdConsole.Instance.Output(string.Format("Bounty edit was successful for {0}. The new value is {1}", _id, _oldBounty - _value));
+                    PersistentContainer.Instance.Players[_id].Bounty = _newBounty;
+                    SdtdConsole.Instance.Output(string.Format("Bounty edit was successful for {0}. The new value is {1}", _id, _newBounty));
                 }
-                PersistentContainer.Instance.Save();
             }
         }
 
@@ -265,7 +262,6 @@ namespace ServerTools
             if (p != null)
             {
                 p.Bounty = 0;
-                PersistentContainer.Instance.Save();
                 SdtdConsole.Instance.Output(string.Format("Bounty was removed successfully for {0}", _id));
             }
         }
@@ -281,7 +277,7 @@ namespace ServerTools
                     int _currentbounty = PersistentContainer.Instance.Players[_cInfo.playerId].Bounty;
                     if (_currentbounty > 0)
                     {
-                        SdtdConsole.Instance.Output(string.Format("{0}, # {1}. Current bounty: {2}.", _cInfo.playerName, _cInfo.entityId, _currentbounty));
+                        SdtdConsole.Instance.Output(string.Format("Entity Id: {0} Name: {1} Current bounty: {2}", _cInfo.entityId, _cInfo.playerName, _currentbounty));
                     }
                 }
             }

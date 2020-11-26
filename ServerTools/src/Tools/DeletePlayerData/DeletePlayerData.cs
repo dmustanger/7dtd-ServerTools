@@ -94,7 +94,6 @@ namespace ServerTools
                     PersistentContainer.Instance.PollOpen = false;
                     PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                     PersistentContainer.Instance.Track = new List<string[]>();
-                    PersistentContainer.Instance.Save();
                     Log.Out(string.Format("[SERVERTOOLS] Detected a new or unplayed map and old save data. Old data has been cleared from ServerTools"));
                 }
             }

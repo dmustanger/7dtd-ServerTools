@@ -171,7 +171,6 @@ namespace ServerTools
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 if (_player != null)
                 {
-                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player.position.x, (int)_player.position.y, (int)_player.position.z), null, false));
                     if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
                         if (Wallet.GetCurrentCoins(_cInfo2.playerId) >= Command_Cost)
@@ -183,13 +182,13 @@ namespace ServerTools
                             Phrases.Dict.TryGetValue(370, out string _phrase370);
                             _phrase370 = _phrase370.Replace("{CoinName}", Wallet.Coin_Name);
                             ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase370 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            return;
                         }
                     }
-                    PersistentContainer.Instance.Players[_cInfo2.playerId].LastFriendTele = DateTime.Now;
-                    PersistentContainer.Instance.Save();
                     Phrases.Dict.TryGetValue(367, out string _phrase367);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase367 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-
+                    ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase367 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player.position.x, (int)_player.position.y, (int)_player.position.z), null, false));
+                    PersistentContainer.Instance.Players[_cInfo2.playerId].LastFriendTele = DateTime.Now;
                 }
             }
             else

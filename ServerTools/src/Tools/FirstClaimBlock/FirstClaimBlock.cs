@@ -35,7 +35,6 @@ namespace ServerTools
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                 PersistentContainer.Instance.Players[_cInfo.playerId].FirstClaimBlock = true;
-                PersistentContainer.Instance.Save();
                 Phrases.Dict.TryGetValue(701, out string _phrase701);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase701 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }

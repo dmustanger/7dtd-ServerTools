@@ -113,7 +113,6 @@ namespace ServerTools
                                 PersistentContainer.Instance.WebsiteClientList = _clients;
                             }
                             PersistentContainer.Instance.Players[_params[1]].WP = _password;
-                            PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added {0} to the website client list. Their password is {1}", _params[1], _password));
                             return;
                         }
@@ -148,7 +147,6 @@ namespace ServerTools
                                 PersistentContainer.Instance.WebsiteClientList = _clients;
                             }
                             PersistentContainer.Instance.Players[_params[1]].WP = "";
-                            PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed {0} from the website client list", _params[1]));
                             return;
                         }
@@ -181,7 +179,6 @@ namespace ServerTools
                                 Dictionary<string, DateTime> _timeouts = PersistentContainer.Instance.WebsiteTimeoutList;
                                 _timeouts.Remove(_params[1]);
                                 PersistentContainer.Instance.WebsiteTimeoutList = _timeouts;
-                                PersistentContainer.Instance.Save();
                             }
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] IP {0} has been removed from the time out list", _params[1]));
                         }
@@ -202,7 +199,6 @@ namespace ServerTools
                             }
                             string _password = WebsiteServer.SetPassword();
                             PersistentContainer.Instance.Players[_params[1]].WP = _password;
-                            PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Client {0} has been reset. Their password is {1}", _params[1], _password));
                             return;
                         }
@@ -233,7 +229,6 @@ namespace ServerTools
                                 {
                                     _banList.Add(_ip);
                                     PersistentContainer.Instance.WebsiteBanList = _banList;
-                                    PersistentContainer.Instance.Save();
                                 }
                             }
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] IP {0} has been added to the website ban list", _ip));
@@ -258,7 +253,6 @@ namespace ServerTools
                                 {
                                     _banList.Remove(_ip);
                                     PersistentContainer.Instance.WebsiteBanList = _banList;
-                                    PersistentContainer.Instance.Save();
                                 }
                             }
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] IP {0} has been removed from the website ban list", _ip));
@@ -295,7 +289,6 @@ namespace ServerTools
                                 {
                                     _timeoutList.Add(_ip, DateTime.Now);
                                     PersistentContainer.Instance.WebsiteTimeoutList = _timeoutList;
-                                    PersistentContainer.Instance.Save();
                                 }
                             }
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] IP {0} has been added to the website timeout list", _ip));
@@ -320,7 +313,6 @@ namespace ServerTools
                                 {
                                     _timeoutList.Remove(_ip);
                                     PersistentContainer.Instance.WebsiteTimeoutList = _timeoutList;
-                                    PersistentContainer.Instance.Save();
                                 }
                             }
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] IP {0} has been removed from the website timeout list", _ip));

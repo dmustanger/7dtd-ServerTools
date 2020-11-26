@@ -245,7 +245,6 @@ namespace ServerTools
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 }
                 PersistentContainer.Instance.Players[_cInfo.playerId].LastPrayer = DateTime.Now;
-                PersistentContainer.Instance.Save();
             }
         }
     }

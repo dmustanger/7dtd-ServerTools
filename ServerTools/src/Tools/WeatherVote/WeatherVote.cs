@@ -153,7 +153,6 @@ namespace ServerTools
             Sun.Clear(); Rain.Clear(); Snow.Clear();
             _weather = "";
             PersistentContainer.Instance.LastWeather = DateTime.Now;
-            PersistentContainer.Instance.Save();
         }
     }
 }

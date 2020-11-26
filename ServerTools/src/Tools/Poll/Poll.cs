@@ -42,7 +42,6 @@ namespace ServerTools
                 Dictionary<string, bool> _votes = PersistentContainer.Instance.PollVote;
                 _votes.Add(_cInfo.playerId, true);
                 PersistentContainer.Instance.PollVote = _votes;
-                PersistentContainer.Instance.Save();
                 using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
                 {
                     sw.WriteLine(string.Format("{0}: Player {1} {2} has voted yes in the poll.", DateTime.Now, _cInfo.playerName, _cInfo.playerId));
@@ -68,7 +67,6 @@ namespace ServerTools
                 Dictionary<string, bool> _votes = PersistentContainer.Instance.PollVote;
                 _votes.Add(_cInfo.playerId, false);
                 PersistentContainer.Instance.PollVote = _votes;
-                PersistentContainer.Instance.Save();
                 using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
                 {
                     sw.WriteLine(string.Format("{0}: Player {1} {2} has voted no in the poll.", DateTime.Now, _cInfo.playerName, _cInfo.playerId));
@@ -107,7 +105,6 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.PollData = null;
                         PersistentContainer.Instance.PollOpen = false;
-                        PersistentContainer.Instance.Save();
                         using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
                         {
                             sw.WriteLine(string.Format("{0}: The poll has finished but no votes were cast.", DateTime.Now));

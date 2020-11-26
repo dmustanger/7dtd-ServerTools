@@ -114,7 +114,6 @@ namespace ServerTools
             }
             SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), (ClientInfo)null);
             PersistentContainer.Instance.Players[_cInfo.playerId].LastKillMe = DateTime.Now;
-            PersistentContainer.Instance.Save();
         }
     }
 }

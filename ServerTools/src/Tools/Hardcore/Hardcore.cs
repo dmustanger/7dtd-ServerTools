@@ -119,7 +119,6 @@ namespace ServerTools
                 _p.VoteWeekCount = 0;
                 _p.WP = "";
                 _p.ZoneDeathTime = new DateTime();
-                PersistentContainer.Instance.Save();
                 Hardcore.Disconnect(_cInfo, _newStats);
             }
         }
@@ -269,7 +268,6 @@ namespace ServerTools
                                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _cost);
                                     _stats[2] = (_extraLives + 1).ToString();
                                     PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats = _stats;
-                                    PersistentContainer.Instance.Save();
                                     Phrases.Dict.TryGetValue(597, out string _phrase597);
                                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase597 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -408,7 +406,6 @@ namespace ServerTools
                     p.Waypoints = new Dictionary<string, string>();
                     p.WP = "";
                     p.ZoneDeathTime = new DateTime();
-                    PersistentContainer.Instance.Save();
                 }
             }
             catch (Exception e)

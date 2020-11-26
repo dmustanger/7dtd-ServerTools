@@ -847,7 +847,6 @@ namespace ServerTools
                         }
                     }
                 }
-                PersistentContainer.Instance.Save();
             }
             catch (Exception e)
             {
@@ -930,7 +929,6 @@ namespace ServerTools
                     }
                 }
                 PersistentContainer.Instance.ProtectedZone = _protected;
-                PersistentContainer.Instance.Save();
             }
             catch (Exception e)
             {
@@ -1002,7 +1000,6 @@ namespace ServerTools
                 }
                 _protected.Clear();
                 PersistentContainer.Instance.ProtectedZone = _protected;
-                PersistentContainer.Instance.Save();
             }
             catch (Exception e)
             {

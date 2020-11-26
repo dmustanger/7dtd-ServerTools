@@ -9,7 +9,7 @@ namespace ServerTools
 
         public static void Load()
         {
-            PatchTools.ApplyPatches();
+            RunTimePatch.PatchAll();
             if (!Timers.IsRunning)
             {
                 Timers.TimerStart();
@@ -202,14 +202,6 @@ namespace ServerTools
             if (!ProtectedSpaces.IsRunning && ProtectedSpaces.IsEnabled)
             {
                 ProtectedSpaces.Load();
-            }
-            if (Packages.IsRunning && !Packages.IsEnabled)
-            {
-                Packages.Unload();
-            }
-            if (!Packages.IsRunning && Packages.IsEnabled)
-            {
-                Packages.Load();
             }
             if (ClanManager.IsEnabled)
             {

@@ -1,15 +1,22 @@
 ﻿CHANGELOG
 
-19.2.6
-Built using Alpha 19 stable assets
+19.3.0
+Built using Alpha 19 experimental assets
 Functioning with 19 stable and experimental. Untested with other versions
 
+Added ServerTools.bin to the auto back up system
 Added Player_Damage_Limit option to Damage_Detector tool
 Added option Time to Death_Spot. Controls how long a player can use /died
-Added check to Net_Packages NetPackagePlayerData to prevent false positive
 Fixed warning on start up of missing Animal_Tracking entry
 Fixed Combat_Logger option Exit_Time applying too fast
-Updated Net_Packages tool for better cheat prevention
+Fixed Friend_Teleport chat response going to the wrong player
+Fixed Flight_Detector false positive from powered draw bridge
+Fixed Starting_Items method process and simplified it
+Changed save data points to automated timer
+Changed data save process during shutdown to prevent data loss
+Changed new player detection. No longer saved in the bin file
+Removed Net_Packages tool. Game devs have added their own manipulation
+prevention
 
 19.2.5
 Built using Alpha 19 stable assets
