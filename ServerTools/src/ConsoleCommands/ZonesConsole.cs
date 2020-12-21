@@ -10,7 +10,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools] - Enable, setup a new zone or list existing zones.";
+            return "[ServerTools] - Enable, disable, add, remove or list zones.";
         }
 
         public override string GetHelp()
@@ -34,7 +34,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Zones", "zones", "st-zones"};
+            return new string[] { "st-Zones", "zns", "st-zns"};
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

@@ -97,15 +97,8 @@ namespace ServerTools
                         {
                             if (!int.TryParse(_line.GetAttribute("DelayBetweenUses"), out _delay))
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Using default value of 0 for DelayBetweenUses of Custom Commands entry {1} because of invalid (non-numeric) value: {0}", subChild.OuterXml, _line.GetAttribute("Trigger")));
-                            }
-                        }
-                        int _number = 0;
-                        if (_line.HasAttribute("Number"))
-                        {
-                            if (!int.TryParse(_line.GetAttribute("Number"), out _number))
-                            {
-                                _number = Dict.Count + 1;
+                                string _stringDelay = _line.GetAttribute("DelayBetweenUses");
+                                Log.Out(string.Format("[SERVERTOOLS] Using default value of 0 for DelayBetweenUses of custom command because of invalid (non-numeric) value {0}", _stringDelay));
                             }
                         }
                         int _cost = 0;
@@ -113,7 +106,8 @@ namespace ServerTools
                         {
                             if (!int.TryParse(_line.GetAttribute("Cost"), out _cost))
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Using default value of 0 for cost of custom commands entry {1} because of invalid (non-numeric) value: {0}", subChild.OuterXml, _line.GetAttribute("Trigger")));
+                                string _stringCost = _line.GetAttribute("Cost");
+                                Log.Out(string.Format("[SERVERTOOLS] Using default value of 0 for Cost of custom command because of invalid (non-numeric) value {0}", _stringCost));
                             }
                         }
                         string _trigger = _line.GetAttribute("Trigger");
@@ -121,7 +115,7 @@ namespace ServerTools
                         string _hidden = _line.GetAttribute("Hidden");
                         string _permission = _line.GetAttribute("Permission");
                         string[] _s = { _response, _hidden, _permission };
-                        int[] _c = { _number, _delay, _cost };
+                        int[] _c = { _delay, _cost };
                         if (!Dict.ContainsKey(_trigger))
                         {
                             Dict.Add(_trigger, _s);
@@ -159,32 +153,32 @@ namespace ServerTools
                         int[] _value;
                         if (Dict1.TryGetValue(kvp.Key, out _value))
                         {
-                            sw.WriteLine(string.Format("        <Command Number=\"{0}\" Trigger=\"{1}\" Response=\"{2}\" DelayBetweenUses=\"{3}\" Hidden=\"{4}\" Permission=\"{5}\" Cost=\"{6}\" />", _value[0], kvp.Key, kvp.Value[0], _value[1], kvp.Value[1], kvp.Value[2], _value[2]));
+                            sw.WriteLine(string.Format("        <Command Trigger=\"{0}\" Response=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Permission=\"{4}\" Cost=\"{5}\" />", kvp.Key, kvp.Value[0], _value[0], kvp.Value[1], kvp.Value[2], _value[1]));
                         }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <Command Number=\"1\" Trigger=\"help\" Response=\"global Type " + ChatHook.Command_Private + Command15 + " for a list of chat commands.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"2\" Trigger=\"info\" Response=\"global Server Info: \" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"whisper Visit YourSiteHere to see the rules.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"whisper Visit YourSiteHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"whisper The Teamspeak3 info is YourInfoHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"spawnz\" Response=\"ser {EntityId} 40 @ 4 11 14 ^ whisper Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"7\" Trigger=\"discord\" Response=\"whisper The discord channel is ...\" DelayBetweenUses=\"20\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"8\" Trigger=\"cc8\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"9\" Trigger=\"cc9\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"10\" Trigger=\"cc10\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"11\" Trigger=\"cc11\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"12\" Trigger=\"cc12\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"13\" Trigger=\"cc13\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"14\" Trigger=\"cc14\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"15\" Trigger=\"cc15\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"16\" Trigger=\"cc16\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"17\" Trigger=\"cc17\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"18\" Trigger=\"cc18\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"19\" Trigger=\"cc19\" Response=\"First command ^ {Delay} 30 ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"20\" Trigger=\"cc20\" Response=\"First command ^ Second command ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"help\" Response=\"global Type " + ChatHook.Command_Private + Command15 + " for a list of chat commands.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"info\" Response=\"global Server Info: \" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"rules\" Response=\"whisper Visit YourSiteHere to see the rules.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"website\" Response =\"whisper Visit YourSiteHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"teamspeak\" Response=\"whisper The Teamspeak3 info is YourInfoHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"spawnz\" Response=\"ser {EntityId} 40 @ 4 11 14 ^ whisper Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"discord\" Response=\"whisper The discord channel is ...\" DelayBetweenUses=\"20\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"cc8\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"cc9\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"cc10\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"cc11\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"cc12\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"cc13\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"cc14\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"cc15\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"cc16\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"cc17\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"cc18\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"cc19\" Response=\"First command ^ {Delay} 30 ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"cc20\" Response=\"First command ^ Second command ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                 }
                 sw.WriteLine("    </Commands>");
                 sw.WriteLine("</CustomCommands>");
@@ -746,9 +740,9 @@ namespace ServerTools
                         {
                             if (Permission(_cInfo, _message))
                             {
-                                if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_c1[0]))
+                                if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_message))
                                 {
-                                    DateTime _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_c1[0]];
+                                    DateTime _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_message];
                                     Delay(_cInfo, _message, _c1, _lastUse);
                                 }
                                 else
@@ -759,9 +753,9 @@ namespace ServerTools
                         }
                         else
                         {
-                            if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_c1[0]))
+                            if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_message))
                             {
-                                DateTime _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_c1[0]];
+                                DateTime _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_message];
                                 Delay(_cInfo, _message, _c1, _lastUse);
                             }
                             else
@@ -811,13 +805,13 @@ namespace ServerTools
                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                     if (DateTime.Now < _dt)
                     {
-                        int _newDelay = _c1[1] / 2;
+                        int _newDelay = _c1[0] / 2;
                         TimePass(_cInfo, _message, _timePassed, _newDelay, _c1);
                         return;
                     }
                 }
             }
-            TimePass(_cInfo, _message, _timePassed, _c1[1], _c1);
+            TimePass(_cInfo, _message, _timePassed, _c1[0], _c1);
         }
 
         private static void TimePass(ClientInfo _cInfo, string _message, int _timePassed, int _delay, int[] _c1)
@@ -854,13 +848,13 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.IsEnabled && _c1[2] > 0)
+                if (Wallet.IsEnabled && _c1[1] > 0)
                 {
                     int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
-                    if (_currentCoins >= _c1[2])
+                    if (_currentCoins >= _c1[1])
                     {
-                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _c1[2]);
-                        CommandDelay(_cInfo, _message, _c1);
+                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _c1[1]);
+                        CommandDelay(_cInfo, _message);
                     }
                     else
                     {
@@ -871,7 +865,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    CommandDelay(_cInfo, _message, _c1);
+                    CommandDelay(_cInfo, _message);
                 }
             }
             catch (Exception e)
@@ -880,25 +874,25 @@ namespace ServerTools
             }
         }
 
-        private static void CommandDelay(ClientInfo _cInfo, string _message, int[] _c1)
+        private static void CommandDelay(ClientInfo _cInfo, string _message)
         {
             try
             {
                 if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.Count > 0)
                 {
-                    if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_c1[0]))
+                    if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_message))
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_c1[0]] = DateTime.Now;
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_message] = DateTime.Now;
                     }
                     else
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.Add(_c1[0], DateTime.Now);
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.Add(_message, DateTime.Now);
                     }
                 }
                 else
                 {
-                    Dictionary<int, DateTime> _delays = new Dictionary<int, DateTime>();
-                    _delays.Add(_c1[0], DateTime.Now);
+                    Dictionary<string, DateTime> _delays = new Dictionary<string, DateTime>();
+                    _delays.Add(_message, DateTime.Now);
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays = _delays;
                 }
                 string[] _r;

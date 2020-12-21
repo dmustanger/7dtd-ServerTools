@@ -9,7 +9,10 @@ namespace ServerTools
 
         public static void Load()
         {
-            RunTimePatch.PatchAll();
+            if (!RunTimePatch.Applied)
+            {
+                RunTimePatch.PatchAll();
+            }
             if (!Timers.IsRunning)
             {
                 Timers.TimerStart();

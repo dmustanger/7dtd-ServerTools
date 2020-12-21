@@ -20,7 +20,7 @@ namespace ServerTools
         private bool clanOwner;
         private Dictionary<string, string> clanRequestToJoin;
         private bool countryBanImmune;
-        private Dictionary<int, DateTime> customCommandDelays;
+        private Dictionary<string, DateTime> customCommandDelays;
         private bool eventOver;
         private string eventReturnPosition;
         private bool eventSpawn;
@@ -227,7 +227,7 @@ namespace ServerTools
             }
         }
 
-        public Dictionary<int, DateTime> CustomCommandDelays
+        public Dictionary<string, DateTime> CustomCommandDelays
         {
             get
             {

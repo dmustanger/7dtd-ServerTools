@@ -39,7 +39,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Event", "event", "st-ev" };
+            return new string[] { "st-Event", "ev", "st-ev" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

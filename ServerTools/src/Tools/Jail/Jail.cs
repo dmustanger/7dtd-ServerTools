@@ -193,15 +193,14 @@ namespace ServerTools
                     if (_cInfo != null)
                     {
                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                        if (_player.Spawned)
+                        if (_player.Spawned && _player.IsAlive())
                         {
-                            int _x, _y, _z;
                             string[] _cords = Jail_Position.Split(',');
-                            int.TryParse(_cords[0], out _x);
-                            int.TryParse(_cords[1], out _y);
-                            int.TryParse(_cords[2], out _z);
+                            int.TryParse(_cords[0], out int _x);
+                            int.TryParse(_cords[1], out int _y);
+                            int.TryParse(_cords[2], out int _z);
                             Vector3 _vector3 = _player.position;
-                            if ((_x - _vector3.x) * (_x - _vector3.x) + (_z - _vector3.z) * (_z - _vector3.z) >= Jail_Size * Jail_Size || _vector3.y > _y + Jail_Size || _vector3.y < _y + Jail_Size) 
+                            if ((_x - _vector3.x) * (_x - _vector3.x) + (_z - _vector3.z) * (_z - _vector3.z) >= Jail_Size * Jail_Size) 
                             {
                                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                                 if (Jail_Shock)

@@ -20,7 +20,7 @@ namespace ServerTools
         public static List<bool[]> Box2 = new List<bool[]>();
         private const string file = "Zones.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static Dictionary<int, string[]> zoneSetup1 = new Dictionary<int, string[]>();
         public static Dictionary<int, bool[]> zoneSetup2 = new Dictionary<int, bool[]>();
@@ -43,7 +43,7 @@ namespace ServerTools
                 Reminder.Clear();
                 ZoneInfo.Clear();
                 ZonePvE.Clear();
-                fileWatcher.Dispose();
+                FileWatcher.Dispose();
                 IsRunning = false;
                 UnloadProtectedZones();
             }
@@ -251,7 +251,7 @@ namespace ServerTools
 
         public static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
+            FileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -278,15 +278,15 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
@@ -322,6 +322,7 @@ namespace ServerTools
                                 {
                                     Response(_cInfo, _box1[5]);
                                 }
+                                _info[0] = _box1[2];
                                 _info[1] = _box1[4];
                                 _info[2] = _box1[6];
                                 ZoneInfo[_player.entityId] = _info;

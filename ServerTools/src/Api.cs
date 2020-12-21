@@ -105,8 +105,7 @@ namespace ServerTools
                             PersistentOperations.SessionTime(_cInfo);
                             if (_respawnReason == RespawnType.EnterMultiplayer)//New player spawning. Game bug has returning players trigger this on server restarts
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Test EnterMultiplayer: distanceWalked {0} currentLife {1} totalTimePlayed {2}", _player.distanceWalked, _player.currentLife, _player.totalTimePlayed));
-                                if (_player.distanceWalked == 0 && _player.currentLife <= 5 && _player.totalTimePlayed <= 5)
+                                if (_player.distanceWalked < 5 && _player.currentLife <= 5 && _player.totalTimePlayed <= 5)
                                 {
                                     Timers.NewPlayerTimer(_cInfo);
                                 }
@@ -117,7 +116,6 @@ namespace ServerTools
                             }
                             else if (_respawnReason == RespawnType.JoinMultiplayer)//Old player spawning
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Test JoinMultiplayer: distanceWalked {0} currentLife {1} totalTimePlayed {2}", _player.distanceWalked, _player.currentLife, _player.totalTimePlayed));
                                 if (_player.distanceWalked == 0 && _player.currentLife <= 5 && _player.totalTimePlayed <= 5)
                                 {
                                     Timers.NewPlayerTimer(_cInfo);

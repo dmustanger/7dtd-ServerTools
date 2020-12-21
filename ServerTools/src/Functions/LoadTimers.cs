@@ -281,6 +281,10 @@ namespace ServerTools
             {
                 Log.Out("Bank enabled");
             }
+            if (BattleLogger.IsEnabled)
+            {
+                Log.Out("Battle logger enabled");
+            }
             if (EntityCleanup.BlockIsEnabled)
             {
                 Log.Out("Block cleanup enabled");
@@ -347,11 +351,11 @@ namespace ServerTools
             }
             if (EntityCleanup.FallingTreeEnabled)
             {
-                Log.Out("Falling tree cleanup enabled");
+                Log.Out("Entity falling tree cleanup enabled");
             }
-            if (BattleLogger.IsEnabled)
+            if (FallingBlocks.IsEnabled)
             {
-                Log.Out("Exit enabled");
+                Log.Out("Falling blocks remover enabled");
             }
             if (FirstClaimBlock.IsEnabled)
             {

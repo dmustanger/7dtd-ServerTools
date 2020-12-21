@@ -12,10 +12,10 @@ namespace ServerTools
         public static string Command57 = "shop", Command58 = "shop buy";
         private const string file = "Shop.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static SortedDictionary<int, string[]> dict = new SortedDictionary<int, string[]>();
-        private static SortedDictionary<int, int[]> dict1 = new SortedDictionary<int, int[]>();
-        public static List<string> categories = new List<string>();
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        public static SortedDictionary<int, string[]> Dict = new SortedDictionary<int, string[]>();
+        public static SortedDictionary<int, int[]> Dict1 = new SortedDictionary<int, int[]>();
+        public static List<string> Categories = new List<string>();
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -30,10 +30,10 @@ namespace ServerTools
         {
             if (!IsEnabled && IsRunning)
             {
-                dict.Clear();
-                dict1.Clear();
-                categories.Clear();
-                fileWatcher.Dispose();
+                Dict.Clear();
+                Dict1.Clear();
+                Categories.Clear();
+                FileWatcher.Dispose();
                 IsRunning = false;
             }
         }
@@ -59,9 +59,9 @@ namespace ServerTools
             {
                 if (childNode.Name == "Items")
                 {
-                    dict.Clear();
-                    dict1.Clear();
-                    categories.Clear();
+                    Dict.Clear();
+                    Dict1.Clear();
+                    Categories.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -134,16 +134,20 @@ namespace ServerTools
                         {
                             _secondaryname = _name;
                         }
-                        ItemValue _itemValue = ItemClass.GetItem(_name, true);
+                        ItemValue _itemValue = ItemClass.GetItem(_name, false);
                         if (_itemValue.type == ItemValue.None.type)
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop entry because item could not be found: {0}", _name));
                             continue;
                         }
-                        string _category = _line.GetAttribute("Category").ToLower();
-                        if (!categories.Contains(_category))
+                        if (_count > _itemValue.ItemClass.Stacknumber.Value)
                         {
-                            categories.Add(_category);
+                            _count = _itemValue.ItemClass.Stacknumber.Value;
+                        }
+                        string _category = _line.GetAttribute("Category").ToLower();
+                        if (!Categories.Contains(_category))
+                        {
+                            Categories.Add(_category);
                         }
                         if (_quality < 1)
                         {
@@ -153,32 +157,32 @@ namespace ServerTools
                         {
                             _quality = 600;
                         }
-                        if (!dict.ContainsKey(_item))
+                        if (!Dict.ContainsKey(_item))
                         {
                             string[] _strings = new string[] { _name, _secondaryname, _category };
-                            dict.Add(_item, _strings);
+                            Dict.Add(_item, _strings);
                             int[] _integers = new int[] { _count, _quality, _price };
-                            dict1.Add(_item, _integers);
+                            Dict1.Add(_item, _integers);
                         }
                     }
                 }
             }
         }
 
-        private static void UpdateXml()
+        public static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
+            FileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Shop>");
                 sw.WriteLine("    <Items>");
-                if (dict.Count > 0)
+                if (Dict.Count > 0)
                 {
-                    foreach (KeyValuePair<int, string[]> kvp in dict)
+                    foreach (KeyValuePair<int, string[]> kvp in Dict)
                     {
                         int[] _values;
-                        if (dict1.TryGetValue(kvp.Key, out _values))
+                        if (Dict1.TryGetValue(kvp.Key, out _values))
                         {
                             sw.WriteLine(string.Format("        <Shop Item=\"{0}\" Name=\"{1}\" SecondaryName=\"{2}\" Count=\"{3}\" Quality=\"{4}\" Price=\"{5}\" Category=\"{6}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], _values[0], _values[1], _values[2], kvp.Value[2]));
                         }
@@ -204,15 +208,15 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
@@ -227,7 +231,7 @@ namespace ServerTools
 
         public static void PosCheck(ClientInfo _cInfo, string _categoryOrItem, int _form, int _count)
         {
-            if (dict.Count > 0)
+            if (Dict.Count > 0)
             {
                 EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
                 if (_player != null)
@@ -314,13 +318,13 @@ namespace ServerTools
             Phrases.Dict.TryGetValue(341, out string _phrase341);
             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase341 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             string _categories = "";
-            if (categories.Count > 1)
+            if (Categories.Count > 1)
             {
-                _categories = string.Join(", ", categories.ToArray());
+                _categories = string.Join(", ", Categories.ToArray());
             }
-            else if (categories.Count == 1)
+            else if (Categories.Count == 1)
             {
-                _categories = categories[0];
+                _categories = Categories[0];
             }
             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _categories + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             Phrases.Dict.TryGetValue(342, out string _phrase342);
@@ -331,18 +335,18 @@ namespace ServerTools
 
         public static void ShowCategory(ClientInfo _cInfo, string _category)
         {
-            if (categories.Contains(_category))
+            if (Categories.Contains(_category))
             {
                 int _count = 0;
-                for (int i = 0; i <= dict.Count; i++)
+                for (int i = 0; i <= Dict.Count; i++)
                 {
                     string[] _dictValues;
-                    if (dict.TryGetValue(i, out _dictValues))
+                    if (Dict.TryGetValue(i, out _dictValues))
                     {
                         if (_dictValues[2] == _category)
                         {
                             int[] _dict1Values;
-                            if (dict1.TryGetValue(i, out _dict1Values))
+                            if (Dict1.TryGetValue(i, out _dict1Values))
                             {
                                 if (_dict1Values[1] > 1)
                                 {
@@ -390,11 +394,11 @@ namespace ServerTools
 
         public static void Walletcheck(ClientInfo _cInfo, int _item, int _count)
         {
-            if (dict.ContainsKey(_item))
+            if (Dict.ContainsKey(_item))
             {
-                if (dict.TryGetValue(_item, out string[] _stringValues))
+                if (Dict.TryGetValue(_item, out string[] _stringValues))
                 {
-                    if (dict1.TryGetValue(_item, out int[] _integerValues))
+                    if (Dict1.TryGetValue(_item, out int[] _integerValues))
                     {
                         int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
                         int _newAmount = _integerValues[2] * _count;

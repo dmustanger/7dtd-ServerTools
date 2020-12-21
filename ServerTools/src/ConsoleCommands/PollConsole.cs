@@ -32,7 +32,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Poll", "poll", "st-poll" };
+            return new string[] { "st-Poll", "pll", "st-pll" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

@@ -143,7 +143,7 @@ namespace ServerTools
                     p.ClanOwner = false;
                     p.ClanRequestToJoin = new Dictionary<string, string>();
                     p.CountryBanImmune = false;
-                    p.CustomCommandDelays = new Dictionary<int, DateTime>();
+                    p.CustomCommandDelays = new Dictionary<string, DateTime>();
                     p.FirstClaimBlock = false;
                     p.GyroId = 0;
                     p.HardcoreEnabled = false;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -20,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Hordes", "hordes", "st-hordes" };
+            return new string[] { "st-Hordes", "hrd", "st-hrd" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

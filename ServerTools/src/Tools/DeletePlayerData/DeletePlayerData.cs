@@ -32,7 +32,7 @@ namespace ServerTools
                             _p.ClanOwner = false;
                             _p.ClanRequestToJoin = new Dictionary<string, string>();
                             _p.CountryBanImmune = false;
-                            _p.CustomCommandDelays = new Dictionary<int, DateTime>();
+                            _p.CustomCommandDelays = new Dictionary<string, DateTime>();
                             _p.FirstClaimBlock = false;
                             _p.GyroId = 0;
                             _p.HardcoreEnabled = false;

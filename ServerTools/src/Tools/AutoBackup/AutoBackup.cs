@@ -3,6 +3,7 @@ using Pathfinding.Ionic.Zlib;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace ServerTools
 {
@@ -11,6 +12,7 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false;
         public static int Delay = 240, Backup_Count = 5, Compression_Level = 0;
         public static string Destination = "", SaveDirectory = GameUtils.GetSaveGameDir();
+        private static Thread th;
 
         public static void Exec()
         {
@@ -20,57 +22,10 @@ namespace ServerTools
                 {
                     Log.Out("[SERVERTOOLS] Starting auto backup process");
                     IsRunning = true;
-                    DirectoryInfo _saveDirInfo = new DirectoryInfo(SaveDirectory);//save dir
-                    if (string.IsNullOrEmpty(Destination) && _saveDirInfo != null)
-                    {
-                        if (!Directory.Exists(API.ConfigPath + "/WorldBackup"))
-                        {
-                            Directory.CreateDirectory(API.ConfigPath + "/WorldBackup");
-                            Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at {0} and backup resumed", API.ConfigPath + "/WorldBackup"));
-                        }
-                        string[] _files = Directory.GetFiles(API.ConfigPath + "/WorldBackup/", "*.zip", SearchOption.AllDirectories);//get files from save directory. This is the default destination
-                        if (_files != null && _files.Length > Backup_Count)//files are not null or empty
-                        {
-                            DeleteFiles(_files);//exec file delete
-                            Log.Out("[SERVERTOOLS] Auto backup clean up complete");
-                        }
-                        DirectoryInfo _destDirInfo = new DirectoryInfo(API.ConfigPath + "/WorldBackup/");//destination dir
-                        if (_destDirInfo != null)
-                        {
-                            Save(_destDirInfo);//exec save method
-                        }
-                    }
-                    else if (_saveDirInfo != null && !string.IsNullOrEmpty(Destination))
-                    {
-                        if (!Directory.Exists(Destination))
-                        {
-                            Directory.CreateDirectory(Destination);
-                            Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at {0} and backup resumed", Destination));
-                        }
-                        string[] _files = { };
-                        if (!Destination.EndsWith("\\") || !Destination.EndsWith("\n") || !Destination.EndsWith("/"))
-                        {
-                            _files = Directory.GetFiles(Destination + "/", "*.zip", SearchOption.AllDirectories);//get files from save directory. This is a custom location
-                        }
-                        else
-                        {
-                            _files = Directory.GetFiles(Destination, "*.zip", SearchOption.AllDirectories);//get files from save directory. This is a custom location
-                        }
-                        if (_files != null && _files.Length > Backup_Count)//files are not null or empty
-                        {
-                            DeleteFiles(_files);//exec file delete
-                            Log.Out("[SERVERTOOLS] Auto backup clean up complete of old files");
-                        }
-                        DirectoryInfo _destDirInfo = new DirectoryInfo(Destination);//destination dir
-                        if (_destDirInfo != null)
-                        {
-                            Save(_destDirInfo);//exec file save
-                        }
-                        else
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Auto backup could not locate the save directory: {0}", Destination));
-                        }
-                    }
+                    th = new Thread(new ThreadStart(Process));
+                    th.IsBackground = true;
+                    th.Priority = ThreadPriority.BelowNormal;
+                    th.Start();
                 }
                 catch (Exception e)
                 {
@@ -82,6 +37,69 @@ namespace ServerTools
                 }
                 IsRunning = false;
             }
+        }
+
+        private static void Process()
+        {
+            try
+            {
+                DirectoryInfo _saveDirInfo = new DirectoryInfo(SaveDirectory);//save dir
+                if (string.IsNullOrEmpty(Destination) && _saveDirInfo != null)
+                {
+                    if (!Directory.Exists(API.ConfigPath + "/WorldBackup"))
+                    {
+                        Directory.CreateDirectory(API.ConfigPath + "/WorldBackup");
+                        Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at {0} and backup resumed", API.ConfigPath + "/WorldBackup"));
+                    }
+                    string[] _files = Directory.GetFiles(API.ConfigPath + "/WorldBackup/", "*.zip", SearchOption.AllDirectories);//get files from save directory. This is the default destination
+                    if (_files != null && _files.Length > Backup_Count)//files are not null or empty
+                    {
+                        DeleteFiles(_files);//exec file delete
+                        Log.Out("[SERVERTOOLS] Auto backup clean up complete");
+                    }
+                    DirectoryInfo _destDirInfo = new DirectoryInfo(API.ConfigPath + "/WorldBackup/");//destination dir
+                    if (_destDirInfo != null)
+                    {
+                        Save(_destDirInfo);//exec save method
+                    }
+                }
+                else if (_saveDirInfo != null && !string.IsNullOrEmpty(Destination))
+                {
+                    if (!Directory.Exists(Destination))
+                    {
+                        Directory.CreateDirectory(Destination);
+                        Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at {0} and backup resumed", Destination));
+                    }
+                    string[] _files = { };
+                    if (!Destination.EndsWith("\\") || !Destination.EndsWith("\n") || !Destination.EndsWith("/"))
+                    {
+                        _files = Directory.GetFiles(Destination + "/", "*.zip", SearchOption.AllDirectories);//get files from save directory. This is a custom location
+                    }
+                    else
+                    {
+                        _files = Directory.GetFiles(Destination, "*.zip", SearchOption.AllDirectories);//get files from save directory. This is a custom location
+                    }
+                    if (_files != null && _files.Length > Backup_Count)//files are not null or empty
+                    {
+                        DeleteFiles(_files);//exec file delete
+                        Log.Out("[SERVERTOOLS] Auto backup clean up complete of old files");
+                    }
+                    DirectoryInfo _destDirInfo = new DirectoryInfo(Destination);//destination dir
+                    if (_destDirInfo != null)
+                    {
+                        Save(_destDirInfo);//exec file save
+                    }
+                    else
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Auto backup could not locate the save directory: {0}", Destination));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Process: {0}", e.Message));
+            }
+            th.Abort();
         }
 
         private static void DeleteFiles(string[] _files)

@@ -1,5 +1,27 @@
 ﻿CHANGELOG
 
+19.3.1
+Built using Alpha 19 experimental assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added Falling_Blocks_Remover tool. Removes falling blocks to improve
+performance
+Added console commands to generate a maze
+Added thread process to control CPU load during Auto_Backup. Backup
+may take longer than before but should cause less load
+Added console commands to add/remove/list Shop items
+Fixed the Jail tool not functioning properly
+Fixed Wallet tool option PVP not applying
+Fixed Admin_Chat_Commands tool not enabling
+Fixed Admin_List tool not enabling
+Fixed max stack size for Shop items added to Shop.xml
+Fixed max stack size for Gimme items added to Gimme.xml
+Fixed max stack size for Starting_Items added to StartingItems.xml
+Fixed multiple console commands overlapping their short forms
+Changed ProcessDamage class to pull item names from xml data
+Removed Number field from Custom_Commands.xml
+Removed output log test from API on player join
+
 19.3.0
 Built using Alpha 19 experimental assets
 Functioning with 19 stable and experimental. Untested with other versions

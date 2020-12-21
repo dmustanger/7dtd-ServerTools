@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Suicide", "suicide", "st-suicide" };
+            return new string[] { "st-Suicide", "scide", "st-scide" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

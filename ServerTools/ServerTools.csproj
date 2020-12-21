@@ -48,6 +48,7 @@
     <Compile Include="src\ConsoleCommands\DeletePlayerData.cs" />
     <Compile Include="src\ConsoleCommands\FlyingConsole.cs" />
     <Compile Include="src\ConsoleCommands\GodmodeDetectorConsole.cs" />
+    <Compile Include="src\ConsoleCommands\MazeConsole.cs" />
     <Compile Include="src\ConsoleCommands\MessageColorConsole.cs" />
     <Compile Include="src\ConsoleCommands\PrivateMessageConsole.cs" />
     <Compile Include="src\ConsoleCommands\ProtectedSpaceConsole.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="src\Tools\BloodmoonWarrior\BloodmoonWarrior.cs" />
     <Compile Include="src\Tools\BreakTime\BreakTime.cs" />
     <Compile Include="src\Tools\ConsoleCommandLog\Console_Command_Log.cs" />
+    <Compile Include="src\Tools\FallingBlocks\FallingBlocks.cs" />
     <Compile Include="src\Tools\Market\Market.cs" />
     <Compile Include="src\Tools\OutputLog\OutputLog.cs" />
     <Compile Include="src\Tools\Poll\Poll.cs" />

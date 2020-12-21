@@ -59,7 +59,7 @@ namespace ServerTools
                     {
                         _message.Substring(1);
                     }
-                    if (_message.StartsWith("  "))
+                    else if (_message.StartsWith("  "))
                     {
                         _message.Substring(2);
                     }
@@ -820,7 +820,7 @@ namespace ServerTools
                         if (Shop.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(Shop.Command57 + " "))//show specific category
                         {
                             string _category = _message.ToLower().Replace(Shop.Command57 + " ", "");
-                            if (Shop.categories.Contains(_category))
+                            if (Shop.Categories.Contains(_category))
                             {
                                 Shop.PosCheck(_cInfo, _category, 2, 0);
                             }

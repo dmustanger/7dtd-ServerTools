@@ -25,7 +25,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Mute", "mute", "st-mute" };
+            return new string[] { "st-Mute", "mt", "st-mt" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

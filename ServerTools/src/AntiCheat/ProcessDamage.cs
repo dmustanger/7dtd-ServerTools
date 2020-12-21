@@ -35,7 +35,7 @@ namespace ServerTools.AntiCheat
                                     {
                                         if (Damage_Detector)
                                         {
-                                            ItemValue _itemValue = ItemClass.GetItem(_dmResponse.Source.ItemClass.GetItemName(), true);
+                                            ItemValue _itemValue = ItemClass.GetItem(_dmResponse.Source.ItemClass.Name, true);
                                             if (_itemValue != null)
                                             {
                                                 int _distance = (int)_player2.GetDistance(__instance);
@@ -164,7 +164,7 @@ namespace ServerTools.AntiCheat
                                     EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
                                     if (_player != null)
                                     {
-                                        ItemValue _itemValue = ItemClass.GetItem(_dmResponse.Source.ItemClass.GetItemName(), true);
+                                        ItemValue _itemValue = ItemClass.GetItem(_dmResponse.Source.ItemClass.Name, true);
                                         if (_itemValue != null)
                                         {
                                             if (Damage_Detector)

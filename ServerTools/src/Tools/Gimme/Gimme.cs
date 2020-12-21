@@ -129,15 +129,11 @@ namespace ServerTools
                             continue;
                         }
                         string _item = _line.GetAttribute("Name");
-                        ItemClass _class = ItemClass.GetItemClass(_item, true);
-                        Block _block = Block.GetBlockByName(_item, true);
-                        if (_class == null)
+                        ItemValue _itemValue = ItemClass.GetItem(_item, false);
+                        if (_itemValue.type == ItemValue.None.type)
                         {
-                            if (_block == null)
-                            {
-                                Log.Out(string.Format("[SERVERTOOLS] Gimme entry skipped. Item not found: {0}", _item));
-                                continue;
-                            }
+                            Log.Out(string.Format("[SERVERTOOLS] Gimme entry skipped. Item not found: {0}", _item));
+                            continue;
                         }
                         string _secondaryname;
                         if (_line.HasAttribute("SecondaryName"))
@@ -147,6 +143,14 @@ namespace ServerTools
                         else
                         {
                             _secondaryname = _item;
+                        }
+                        if (_minCount > _itemValue.ItemClass.Stacknumber.Value)
+                        {
+                            _minCount = _itemValue.ItemClass.Stacknumber.Value;
+                        }
+                        if (_maxCount > _itemValue.ItemClass.Stacknumber.Value)
+                        {
+                            _maxCount = _itemValue.ItemClass.Stacknumber.Value;
                         }
                         if (!Dict.ContainsKey(_item))
                         {

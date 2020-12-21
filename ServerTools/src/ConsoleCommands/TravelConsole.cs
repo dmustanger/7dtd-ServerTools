@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Travel", "travel", "st-travel" };
+            return new string[] { "st-Travel", "tvl", "st-tvl" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

@@ -28,7 +28,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Wallet", "wallet", "st-wallet" };
+            return new string[] { "st-Wallet", "wlt", "st-wlt" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

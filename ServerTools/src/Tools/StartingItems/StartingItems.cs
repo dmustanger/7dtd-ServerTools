@@ -96,22 +96,15 @@ namespace ServerTools
                             _quality = 1;
                         }
                         string _item = _line.GetAttribute("Name");
-                        ItemClass _class;
-                        Block _block;
-                        if (int.TryParse(_item, out int _id))
-                        {
-                            _class = ItemClass.GetForId(_id);
-                            _block = Block.GetBlockByName(_item, true);
-                        }
-                        else
-                        {
-                            _class = ItemClass.GetItemClass(_item, true);
-                            _block = Block.GetBlockByName(_item, true);
-                        }
-                        if (_class == null && _block == null)
+                        ItemValue _itemValue = ItemClass.GetItem(_item, false);
+                        if (_itemValue.type == ItemValue.None.type)
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Starting item entry skipped. Item not found: {0}", _item));
                             continue;
+                        }
+                        if (_count > _itemValue.ItemClass.Stacknumber.Value)
+                        {
+                            _count = _itemValue.ItemClass.Stacknumber.Value;
                         }
                         if (!ItemList.ContainsKey(_item))
                         {

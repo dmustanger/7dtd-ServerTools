@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Motd", "motd", "st-motd" };
+            return new string[] { "st-Motd", "md", "st-md" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

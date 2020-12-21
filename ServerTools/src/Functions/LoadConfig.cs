@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class LoadConfig
     {
-        public const string version = "19.3.0";
+        public const string version = "19.3.1";
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
         private const string configFile = "ServerToolsConfig.xml";
@@ -121,6 +121,50 @@ namespace ServerTools
                         }
                         switch (_line.GetAttribute("Name"))
                         {
+                            case "Admin_Chat_Commands":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Chat_Commands entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out AdminChat.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Chat_Commands entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
+                            case "Admin_List":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_List entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out AdminList.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_List entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Admin_Level"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_List entry because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out AdminList.Admin_Level))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_List entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Moderator_Level"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_List entry because of missing 'Moderator_Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Moderator_Level"), out AdminList.Mod_Level))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_List entry because of invalid (non-numeric) value for 'Moderator_Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "Animal_Tracking":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -1108,6 +1152,28 @@ namespace ServerTools
                                 if (!bool.TryParse(_line.GetAttribute("Delete_Gyros"), out EntityCleanup.Gyros))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry because of invalid (True/False) value for 'Delete_Gyros' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
+                            case "Falling_Blocks_Remover":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Falling_Blocks_Remover entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out FallingBlocks.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Falling_Blocks_Remover entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Log"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Falling_Blocks_Remover entry because of missing 'Log' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Log"), out FallingBlocks.OutputLog))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Falling_Blocks_Remover entry because of invalid (True/False) value for 'Log' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -3074,6 +3140,16 @@ namespace ServerTools
                                     continue;
                                 }
                                 Wallet.Coin_Name = _line.GetAttribute("Coin_Name");
+                                if (!_line.HasAttribute("PVP"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry because of missing 'PVP' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("PVP"), out Wallet.PVP))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry because of invalid (True/False) value for 'PVP' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 if (!_line.HasAttribute("Zombie_Kill_Value"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry because of missing 'Zombie_Kill_Value' attribute: {0}", subChild.OuterXml));
@@ -3431,6 +3507,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Dupe_Log\" Enable=\"{0}\" />", DupeLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Entity_Cleanup\" Enable=\"{0}\" Falling_Blocks=\"{1}\" Falling_Tree=\"{2}\" Entity_Underground=\"{3}\" Delete_Bicycles=\"{4}\" />", EntityCleanup.IsEnabled, EntityCleanup.BlockIsEnabled, EntityCleanup.FallingTreeEnabled, EntityCleanup.Underground, EntityCleanup.Bicycles));
                 sw.WriteLine(string.Format("        <Tool Name=\"Entity_Cleanup_Extended\" Delete_MiniBikes=\"{0}\" Delete_MotorBikes=\"{1}\" Delete_Jeeps=\"{2}\" Delete_Gyros=\"{3}\" />", EntityCleanup.MiniBikes, EntityCleanup.MotorBikes, EntityCleanup.Jeeps, EntityCleanup.Gyros));
+                sw.WriteLine(string.Format("        <Tool Name=\"Falling_Blocks_Remover\" Enable=\"{0}\" Log=\"{1}\" />", FallingBlocks.IsEnabled, FallingBlocks.OutputLog));
                 sw.WriteLine(string.Format("        <Tool Name=\"First_Claim_Block\" Enable=\"{0}\" />", FirstClaimBlock.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Flying_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", PlayerChecks.FlyEnabled, PlayerChecks.Flying_Admin_Level, PlayerChecks.Flying_Flags));
                 sw.WriteLine(string.Format("        <Tool Name=\"FPS\" Enable=\"{0}\" Set_Target=\"{1}\" />", Fps.IsEnabled, Fps.Set_Target));

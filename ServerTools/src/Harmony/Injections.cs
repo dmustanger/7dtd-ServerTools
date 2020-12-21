@@ -9,7 +9,7 @@ public static class Injections
     {
         try
         {
-            if (ProcessDamage.Damage_Detector || Zones.IsEnabled || Lobby.IsEnabled)
+            if (ProcessDamage.Damage_Detector || Zones.IsEnabled || Lobby.IsEnabled || Market.IsEnabled)
             {
                 return ProcessDamage.ProcessPlayerDamage(__instance, _dmResponse);
             }
@@ -80,6 +80,21 @@ public static class Injections
         catch (Exception e)
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ServerConsoleCommand_Postfix: {0}", e.Message));
+        }
+    }
+
+    public static void AddFallingBlock_Postfix(Vector3i _block)
+    {
+        try
+        {
+            if (FallingBlocks.IsEnabled)
+            {
+                FallingBlocks.Exec(_block);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.AddFallingBlock_Postfix: {0}", e.Message));
         }
     }
 }
