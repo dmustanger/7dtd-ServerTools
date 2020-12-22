@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using UnityEngine;
 
@@ -747,7 +748,7 @@ namespace ServerTools
         {
             try
             {
-                foreach (KeyValuePair<int, DateTime> time in Reminder)
+                foreach (KeyValuePair<int, DateTime> time in Reminder.ToArray())
                 {
                     ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(time.Key);
                     if (_cInfo != null)

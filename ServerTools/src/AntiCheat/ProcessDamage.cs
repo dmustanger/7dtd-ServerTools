@@ -35,7 +35,7 @@ namespace ServerTools.AntiCheat
                                     {
                                         if (Damage_Detector)
                                         {
-                                            ItemValue _itemValue = ItemClass.GetItem(_dmResponse.Source.ItemClass.Name, true);
+                                            ItemValue _itemValue = ItemClass.GetItem(_player2.inventory.holdingItem.Name, false);
                                             if (_itemValue != null)
                                             {
                                                 int _distance = (int)_player2.GetDistance(__instance);
@@ -64,44 +64,42 @@ namespace ServerTools.AntiCheat
                                                 }
                                             }
                                         }
-                                        if (Zones.IsEnabled)
+                                        if (Zones.IsEnabled && (Zones.ZonePvE.Contains(__instance.entityId) || Zones.ZonePvE.Contains(_cInfo2.entityId)))
                                         {
-                                            if (Zones.ZonePvE.Contains(__instance.entityId) || Zones.ZonePvE.Contains(_cInfo2.entityId))
+                                            Phrases.Dict.TryGetValue(323, out string _phrase323);
+                                            ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase323 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            if (!_player1.IsFriendsWith(_player2))
                                             {
-                                                Phrases.Dict.TryGetValue(323, out string _phrase323);
-                                                ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase323 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                                if (!_player1.IsFriendsWith(_player2))
+                                                if (PersistentOperations.PvEViolations.ContainsKey(_cInfo2.entityId))
                                                 {
-                                                    if (PersistentOperations.PvEViolations.ContainsKey(_cInfo2.entityId))
+                                                    PersistentOperations.PvEViolations.TryGetValue(_cInfo2.entityId, out int _violations);
+                                                    _violations++;
+                                                    PersistentOperations.PvEViolations[_cInfo2.entityId] = _violations;
+                                                    if (PersistentOperations.Jail_Violation > 0 && _violations == PersistentOperations.Jail_Violation)
                                                     {
-                                                        PersistentOperations.PvEViolations.TryGetValue(_cInfo2.entityId, out int _flags);
-                                                        _flags++;
-                                                        if (PersistentOperations.Jail_Violation > 0 && _flags >= PersistentOperations.Jail_Violation)
-                                                        {
-                                                            Jail(_cInfo2, __instance);
-                                                        }
-                                                        if (PersistentOperations.Kill_Violation > 0 && _flags >= PersistentOperations.Kill_Violation)
-                                                        {
-                                                            Kill(_cInfo2);
-                                                        }
-                                                        if (PersistentOperations.Kick_Violation > 0 && _flags >= PersistentOperations.Kick_Violation)
-                                                        {
-                                                            Kick(_cInfo2);
-                                                        }
-                                                        if (PersistentOperations.Ban_Violation > 0 && _flags >= PersistentOperations.Ban_Violation)
-                                                        {
-                                                            Ban(_cInfo2);
-                                                        }
+                                                        Jail(_cInfo2, __instance);
                                                     }
-                                                    else
+                                                    if (PersistentOperations.Kill_Violation > 0 && _violations == PersistentOperations.Kill_Violation)
                                                     {
-                                                        PersistentOperations.PvEViolations.Add(_cInfo2.entityId, 1);
+                                                        Kill(_cInfo2);
+                                                    }
+                                                    if (PersistentOperations.Kick_Violation > 0 && _violations == PersistentOperations.Kick_Violation)
+                                                    {
+                                                        Kick(_cInfo2);
+                                                    }
+                                                    if (PersistentOperations.Ban_Violation > 0 && _violations == PersistentOperations.Ban_Violation)
+                                                    {
+                                                        Ban(_cInfo2);
                                                     }
                                                 }
-                                                return false;
+                                                else
+                                                {
+                                                    PersistentOperations.PvEViolations.Add(_cInfo2.entityId, 1);
+                                                }
                                             }
+                                            return false;
                                         }
-                                        if (Lobby.IsEnabled && Lobby.PvE && Lobby.LobbyPlayers.Contains(__instance.entityId) || Market.IsEnabled && Market.PvE && Market.MarketPlayers.Contains(__instance.entityId))
+                                        else if ((Lobby.IsEnabled && Lobby.PvE && Lobby.LobbyPlayers.Contains(__instance.entityId)) || (Market.IsEnabled && Market.PvE && Market.MarketPlayers.Contains(__instance.entityId)))
                                         {
                                             Phrases.Dict.TryGetValue(260, out string _phrase260);
                                             ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase260 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -111,19 +109,20 @@ namespace ServerTools.AntiCheat
                                                 {
                                                     PersistentOperations.PvEViolations.TryGetValue(_cInfo2.entityId, out int _violations);
                                                     _violations++;
-                                                    if (PersistentOperations.Jail_Violation > 0 && _violations >= PersistentOperations.Jail_Violation)
+                                                    PersistentOperations.PvEViolations[_cInfo2.entityId] = _violations;
+                                                    if (PersistentOperations.Jail_Violation > 0 && _violations == PersistentOperations.Jail_Violation)
                                                     {
                                                         Jail(_cInfo2, __instance);
                                                     }
-                                                    if (PersistentOperations.Kill_Violation > 0 && _violations >= PersistentOperations.Kill_Violation)
+                                                    if (PersistentOperations.Kill_Violation > 0 && _violations == PersistentOperations.Kill_Violation)
                                                     {
                                                         Kill(_cInfo2);
                                                     }
-                                                    if (PersistentOperations.Kick_Violation > 0 && _violations >= PersistentOperations.Kick_Violation)
+                                                    if (PersistentOperations.Kick_Violation > 0 && _violations == PersistentOperations.Kick_Violation)
                                                     {
                                                         Kick(_cInfo2);
                                                     }
-                                                    else if (PersistentOperations.Ban_Violation > 0 && _violations >= PersistentOperations.Ban_Violation)
+                                                    else if (PersistentOperations.Ban_Violation > 0 && _violations == PersistentOperations.Ban_Violation)
                                                     {
                                                         Ban(_cInfo2);
                                                     }
@@ -164,7 +163,7 @@ namespace ServerTools.AntiCheat
                                     EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
                                     if (_player != null)
                                     {
-                                        ItemValue _itemValue = ItemClass.GetItem(_dmResponse.Source.ItemClass.Name, true);
+                                        ItemValue _itemValue = ItemClass.GetItem(_player.inventory.holdingItem.Name, false);
                                         if (_itemValue != null)
                                         {
                                             if (Damage_Detector)
@@ -344,7 +343,7 @@ namespace ServerTools.AntiCheat
 
         private static void Jail(ClientInfo _cInfoKiller, EntityAlive _cInfoVictim)
         {
-            SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0} 120", _cInfoKiller.playerId), null);
+            SdtdConsole.Instance.ExecuteSync(string.Format("st-Jail add {0} 120", _cInfoKiller.playerId), null);
             if (!Zones.Forgive.ContainsKey(_cInfoVictim.entityId))
             {
                 Zones.Forgive.Add(_cInfoVictim.entityId, _cInfoKiller.entityId);

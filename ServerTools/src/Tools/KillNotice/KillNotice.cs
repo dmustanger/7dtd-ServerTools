@@ -9,9 +9,9 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, Show_Level = false, Show_Damage = false;
         private const string file = "KillNotice.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static Dictionary<string, string> dict = new Dictionary<string, string>();
+        private static Dictionary<string, string> Dict = new Dictionary<string, string>();
         public static Dictionary<int, int> Damage = new Dictionary<int, int>();
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
 
         public static void Load()
@@ -27,8 +27,8 @@ namespace ServerTools
         {
             if (!IsEnabled && IsRunning)
             {
-                dict.Clear();
-                fileWatcher.Dispose();
+                Dict.Clear();
+                FileWatcher.Dispose();
                 IsRunning = false;
             }
         }
@@ -54,7 +54,7 @@ namespace ServerTools
             {
                 if (childNode.Name == "Weapons")
                 {
-                    dict.Clear();
+                    Dict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -84,9 +84,9 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Kill Notice entry skipped. Weapon not found: {0}", _name));
                             continue;
                         }
-                        if (!dict.ContainsKey(_name))
+                        if (!Dict.ContainsKey(_name))
                         {
-                            dict.Add(_name, _line.GetAttribute("NewName"));
+                            Dict.Add(_name, _line.GetAttribute("NewName"));
                         }
                     }
                 }
@@ -100,15 +100,15 @@ namespace ServerTools
 
         private static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
+            FileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<KillNotice>");
                 sw.WriteLine("    <Weapons>");
-                if (dict.Count > 0)
+                if (Dict.Count > 0)
                 {
-                    foreach (KeyValuePair<string, string> kvp in dict)
+                    foreach (KeyValuePair<string, string> kvp in Dict)
                     {
                         sw.WriteLine(string.Format("        <Weapon Name=\"{0}\" NewName=\"{1}\" />", kvp.Key, kvp.Value));
                     }
@@ -141,15 +141,15 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
@@ -165,9 +165,9 @@ namespace ServerTools
         public static void Exec(ClientInfo _cInfo, EntityPlayer _victim, ClientInfo _cInfo2, EntityPlayer _killer, string _holdingItem)
         {
             string _item = _holdingItem;
-            if (dict.ContainsKey(_holdingItem))
+            if (Dict.ContainsKey(_holdingItem))
             {
-                dict.TryGetValue(_holdingItem, out _item);
+                Dict.TryGetValue(_holdingItem, out _item);
             }
             if (Show_Level)
             {

@@ -143,12 +143,12 @@ namespace ServerTools
                     PersistentPlayerData _ppd2 = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo2.playerId);
                     if (_ppd1.ACL != null && !_ppd1.ACL.Contains(_cInfo2.playerId) && _ppd2.ACL != null && !_ppd2.ACL.Contains(_cInfo1.playerId))
                     {
-                        if (!_player1.Party.ContainsMember(_player2) && !_player2.Party.ContainsMember(_player1))
+                        if (_player1.Party != null && !_player1.Party.ContainsMember(_player2) && _player2.Party != null && !_player2.Party.ContainsMember(_player1))
                         {
                             ProcessPlayerKilled(_cInfo1, _cInfo2);
                         }
                     }
-                    else if (!_player1.Party.ContainsMember(_player2) && !_player2.Party.ContainsMember(_player1))
+                    else if (_player1.Party != null && !_player1.Party.ContainsMember(_player2) && _player2.Party != null && !_player2.Party.ContainsMember(_player1))
                     {
                         ProcessPlayerKilled(_cInfo1, _cInfo2);
                     }

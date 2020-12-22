@@ -1,5 +1,14 @@
 ﻿CHANGELOG
 
+19.3.2
+Built using Alpha 19 experimental assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Fixed PvE violations not applying properly
+Fixed Error in Zones.ReminderExec
+Fixed Error in ProcessDamage.ProcessPlayerDamage
+Fixed Error in Bounties.PlayerKilled
+
 19.3.1
 Built using Alpha 19 experimental assets
 Functioning with 19 stable and experimental. Untested with other versions
