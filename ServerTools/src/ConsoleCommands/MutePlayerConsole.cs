@@ -13,10 +13,10 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. mute add <steamId/entityId>\n" +
-                "  2. mute add <steamId/entityId> <time>\n" +
-                "  3. mute remove <steamId>\n" +
-                "  4. mute list\n" +
+                "  1. st-Mute add <steamId/entityId>\n" +
+                "  2. st-Mute add <steamId/entityId> <time>\n" +
+                "  3. st-Mute remove <steamId>\n" +
+                "  4. st-Mute list\n" +
                 "1. Adds a steam Id to the mute list for 60 minutes\n" +
                 "2. Adds a steam Id to the mute list for a specific time\n" +
                 "3. Removes a steam Id from the mute list\n" +
@@ -111,7 +111,7 @@ namespace ServerTools
                             ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_id);
                             if (_cInfo != null)
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have been unmuted.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "You have been unmuted.[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                             Mute.Mutes.Remove(_id);
                             PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = 0;

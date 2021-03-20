@@ -120,7 +120,7 @@ namespace ServerTools
                                             Phrases.Dict.TryGetValue(901, out string _phrase901);
                                             _phrase901 = _phrase901.Replace("{Value}", _itemCount.ToString());
                                             _phrase901 = _phrase901.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase901 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase901 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
                                     else
@@ -155,7 +155,7 @@ namespace ServerTools
                                     Phrases.Dict.TryGetValue(901, out string _phrase901);
                                     _phrase901 = _phrase901.Replace("{Value}", _itemCount.ToString());
                                     _phrase901 = _phrase901.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase901 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase901 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else

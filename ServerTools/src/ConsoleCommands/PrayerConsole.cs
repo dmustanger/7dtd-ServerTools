@@ -35,7 +35,7 @@ namespace ServerTools
                     if (Prayer.IsEnabled)
                     {
                         Prayer.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Prayer has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (Prayer.IsEnabled)
                     {
                         Prayer.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Prayer has been set to on"));
                         return;
                     }

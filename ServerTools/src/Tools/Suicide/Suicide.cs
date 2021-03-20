@@ -57,7 +57,7 @@ namespace ServerTools
                 _phrase31 = _phrase31.Replace("{Command21}", Command21);
                 _phrase31 = _phrase31.Replace("{Command22}", Command22);
                 _phrase31 = _phrase31.Replace("{Command23}", Command23);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase31 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase31 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -82,7 +82,7 @@ namespace ServerTools
                                 if (!_player.IsFriendsWith(_player2))
                                 {
                                     Phrases.Dict.TryGetValue(32, out string _phrase32);
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase32 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase32 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                             }
@@ -105,7 +105,7 @@ namespace ServerTools
                             if (((int)_player.position.x - (int)_pos2.x) * ((int)_player.position.x - (int)_pos2.x) + ((int)_player.position.z - (int)_pos2.z) * ((int)_player.position.z - (int)_pos2.z) <= 10 * 10)
                             {
                                 Phrases.Dict.TryGetValue(33, out string _phrase33);
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase33 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase33 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 return;
                             }
                         }

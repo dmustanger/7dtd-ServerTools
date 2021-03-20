@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. al off\n" +
-                   "  2. al on\n" +
+                   "  1. st-al off\n" +
+                   "  2. st-al on\n" +
                    "1. Turn off your admin list\n" +
                    "2. Turn on your admin list\n";
         }
@@ -38,7 +38,7 @@ namespace ServerTools
                     if (AdminList.IsEnabled)
                     {
                         AdminList.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Admin list has been set to off"));
                         return;
                     }
@@ -53,7 +53,7 @@ namespace ServerTools
                     if (!AdminList.IsEnabled)
                     {
                         AdminList.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Admin list has been set to on"));
                         return;
                     }

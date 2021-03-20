@@ -95,7 +95,7 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(497, out string _phrase497);
                 _phrase497 = _phrase497.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase497 = _phrase497.Replace("{TimeRemaining}", _timeleft.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase497 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase497 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -110,7 +110,7 @@ namespace ServerTools
             {
                 Phrases.Dict.TryGetValue(499, out string _phrase499);
                 _phrase499 = _phrase499.Replace("{CoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase499 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase499 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -130,7 +130,7 @@ namespace ServerTools
                 if (!PersistentOperations.ClaimedByAllyOrSelf(_cInfo.playerId, _vec3i))
                 {
                     Phrases.Dict.TryGetValue(491, out string _phrase491);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase491 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase491 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }
             }
@@ -184,13 +184,13 @@ namespace ServerTools
                 }
                 Phrases.Dict.TryGetValue(492, out string _phrase492);
                 _phrase492 = _phrase492.Replace("{Vehicle}", _vehicleName);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase492 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase492 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
                 Phrases.Dict.TryGetValue(498, out string _phrase498);
                 _phrase498 = _phrase498.Replace("{Vehicle}", _vehicleName);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase498 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase498 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -257,13 +257,13 @@ namespace ServerTools
                                         PersistentContainer.Instance.Players[_cInfo.playerId].LastGyro = DateTime.Now;
                                     }
                                     Phrases.Dict.TryGetValue(493, out string _phrase493);
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase493 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase493 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                                 else
                                 {
                                     Phrases.Dict.TryGetValue(496, out string _phrase496);
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase496 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase496 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                             }
@@ -271,12 +271,12 @@ namespace ServerTools
                     }
                 }
                 Phrases.Dict.TryGetValue(495, out string _phrase495);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase495 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase495 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
                 Phrases.Dict.TryGetValue(494, out string _phrase494);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase494 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase494 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

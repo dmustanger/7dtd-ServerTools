@@ -23,11 +23,11 @@ namespace ServerTools
         private List<string[]> protectedSpace;
         private List<string[]> protectedZone;
         private List<string[]> track;
-        private Dictionary<string, string[]> websiteAuthorizedList;
-        private Dictionary<string, DateTime> websiteAuthorizedTimeList;
-        private List<string> websiteBanList;
-        private List<string> websiteClientList;
-        private Dictionary<string, DateTime> websiteTimeoutList;
+        private Dictionary<string, string[]> webPanelAuthorizedList;
+        private Dictionary<string, DateTime> webPanelAuthorizedTimeList;
+        private List<string> webPanelBanList;
+        private List<string> webPanelClientList;
+        private Dictionary<string, DateTime> webPanelTimeoutList;
 
         public static PersistentContainer Instance
         {
@@ -227,11 +227,11 @@ namespace ServerTools
         {
             get
             {
-                return websiteAuthorizedList;
+                return webPanelAuthorizedList;
             }
             set
             {
-                websiteAuthorizedList = value;
+                webPanelAuthorizedList = value;
             }
         }
 
@@ -239,47 +239,47 @@ namespace ServerTools
         {
             get
             {
-                return websiteAuthorizedTimeList;
+                return webPanelAuthorizedTimeList;
             }
             set
             {
-                websiteAuthorizedTimeList = value;
+                webPanelAuthorizedTimeList = value;
             }
         }
 
-        public List<string> WebsiteBanList
+        public List<string> WebPanelBanList
         {
             get
             {
-                return websiteBanList;
+                return webPanelBanList;
             }
             set
             {
-                websiteBanList = value;
+                webPanelBanList = value;
             }
         }
 
-        public List<string> WebsiteClientList
+        public List<string> WebPanelClientList
         {
             get
             {
-                return websiteClientList;
+                return webPanelClientList;
             }
             set
             {
-                websiteClientList = value;
+                webPanelClientList = value;
             }
         }
 
-        public Dictionary<string, DateTime> WebsiteTimeoutList
+        public Dictionary<string, DateTime> WebPanelTimeoutList
         {
             get
             {
-                return websiteTimeoutList;
+                return webPanelTimeoutList;
             }
             set
             {
-                websiteTimeoutList = value;
+                webPanelTimeoutList = value;
             }
         }
     }

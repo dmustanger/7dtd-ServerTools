@@ -43,7 +43,7 @@ namespace ServerTools
                     if (ClanManager.IsEnabled)
                     {
                         ClanManager.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan manager has been set to off"));
                         return;
                     }
@@ -58,7 +58,7 @@ namespace ServerTools
                     if (!ClanManager.IsEnabled)
                     {
                         ClanManager.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan manager has been set to on"));
                         return;
                     }
@@ -136,7 +136,7 @@ namespace ServerTools
                                                     _phrase121 = "You have been removed from the clan {ClanName}.";
                                                 }
                                                 _phrase121 = _phrase121.Replace("{ClanName}", _clanName);
-                                                ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase121 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase121 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                             }
                                         }
                                         else if (p.ClanInvite != null && p.ClanInvite == _clanName)
@@ -185,7 +185,7 @@ namespace ServerTools
                                         if (_cInfo2 != null)
                                         {
                                             Phrases.Dict.TryGetValue(91, out string _phrase91);
-                                            ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase91 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase91 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
                                     else if (p.ClanInvite != null && p.ClanInvite == _params[1])

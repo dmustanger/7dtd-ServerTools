@@ -13,9 +13,9 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. ab off\n" +
-                   "  2. ab on\n" +
-                   "  3. ab\n" +
+                   "  1. st-ab off\n" +
+                   "  2. st-ab on\n" +
+                   "  3. st-ab\n" +
                    "1. Turn off world auto backup\n" +
                    "2. Turn on world auto backup\n" +
                    "3. Start a backup manually\n";
@@ -47,7 +47,7 @@ namespace ServerTools
                     if (AutoBackup.IsEnabled)
                     {
                         AutoBackup.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auto backup has been set to off"));
                         return;
                     }
@@ -62,7 +62,7 @@ namespace ServerTools
                     if (!AutoBackup.IsEnabled)
                     {
                         AutoBackup.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auto backup has been set to on"));
                         return;
                     }

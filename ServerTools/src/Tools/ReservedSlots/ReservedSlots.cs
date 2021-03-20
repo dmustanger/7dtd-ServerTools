@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -15,7 +14,7 @@ namespace ServerTools
         public static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> Kicked = new Dictionary<string, DateTime>();
         private static string file = "ReservedSlots.xml", filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -30,7 +29,7 @@ namespace ServerTools
         {
             Dict.Clear();
             Dict1.Clear();
-            fileWatcher.Dispose();
+            FileWatcher.Dispose();
             IsRunning = false;
         }
 
@@ -105,7 +104,7 @@ namespace ServerTools
 
         public static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
+            FileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -115,8 +114,7 @@ namespace ServerTools
                 {
                     foreach (KeyValuePair<string, DateTime> kvp in Dict)
                     {
-                        string _name = "";
-                        Dict1.TryGetValue(kvp.Key, out _name);
+                        Dict1.TryGetValue(kvp.Key, out string _name);
                         sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" Name=\"{1}\" Expires=\"{2}\" />", kvp.Key, _name, kvp.Value.ToString()));
                     }
                 }
@@ -129,15 +127,15 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
@@ -174,20 +172,20 @@ namespace ServerTools
                     {
                         Phrases.Dict.TryGetValue(64, out string _phrase64);
                         _phrase64 = _phrase64.Replace("{DateTime}", _dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase64 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase64 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
                         Phrases.Dict.TryGetValue(65, out string _phrase65);
                         _phrase65 = _phrase65.Replace("{DateTime}", _dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase65 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase65 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
                 Phrases.Dict.TryGetValue(66, out string _phrase66);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase66 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase66 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

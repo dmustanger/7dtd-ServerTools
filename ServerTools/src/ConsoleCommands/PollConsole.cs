@@ -241,7 +241,7 @@ namespace ServerTools
                                 _phrase926 = "Poll: {Message}";
                             }
                             _phrase926 = _phrase926.Replace("{Message}", _pollData[2]);
-                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase926 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase926 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                             string _phrase925;
                             if (!Phrases.Dict.TryGetValue(925, out _phrase925))
                             {
@@ -249,7 +249,7 @@ namespace ServerTools
                             }
                             _phrase925 = _phrase925.Replace("{YesVote}", _yes.ToString());
                             _phrase925 = _phrase925.Replace("{NoVote}", _no.ToString());
-                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase925 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase925 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                             return;
                         }
                     }
@@ -378,7 +378,7 @@ namespace ServerTools
                                     _phrase926 = "Poll: {Message}";
                                 }
                                 _phrase926 = _phrase926.Replace("{Message}", _pollData[2]);
-                                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase926 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase926 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                 string _phrase925;
                                 if (!Phrases.Dict.TryGetValue(925, out _phrase925))
                                 {
@@ -386,7 +386,7 @@ namespace ServerTools
                                 }
                                 _phrase925 = _phrase925.Replace("{YesVote}", _yes.ToString());
                                 _phrase925 = _phrase925.Replace("{NoVote}", _no.ToString());
-                                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase925 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase925 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                 _params.RemoveAt(0);
                                 _params.RemoveAt(0);
                                 string _message = string.Join(" ", _params.ToArray());

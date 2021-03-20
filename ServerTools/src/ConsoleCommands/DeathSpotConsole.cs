@@ -35,7 +35,7 @@ namespace ServerTools
                     if (DeathSpot.IsEnabled)
                     {
                         DeathSpot.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Death spot has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!DeathSpot.IsEnabled)
                     {
                         DeathSpot.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Death spot has been set to on"));
                         return;
                     }

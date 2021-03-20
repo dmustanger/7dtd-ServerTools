@@ -20,14 +20,14 @@ namespace ServerTools
                         Phrases.Dict.TryGetValue(811, out string _phrase811);
                         _phrase811 = _phrase811.Replace("{PlayerName}", _cInfo1.playerName);
                         _phrase811 = _phrase811.Replace("{EntityId}", _cInfo1.entityId.ToString());
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase811 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase811 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
                 Phrases.Dict.TryGetValue(812, out string _phrase812);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase812 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase812 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

@@ -35,7 +35,7 @@ namespace ServerTools
                     if (Report.IsEnabled)
                     {
                         Report.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Report has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!Report.IsEnabled)
                     {
                         Report.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Report has been set to on"));
                         return;
                     }

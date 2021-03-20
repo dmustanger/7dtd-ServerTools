@@ -57,8 +57,10 @@
     <Compile Include="src\ConsoleCommands\SecureVehicleAccessConsole.cs" />
     <Compile Include="src\ConsoleCommands\SecureLootAccessConsole.cs" />
     <Compile Include="src\ConsoleCommands\ScoutPlayerConsole.cs" />
+    <Compile Include="src\ConsoleCommands\SpawnActiveBlocks.cs" />
     <Compile Include="src\ConsoleCommands\WaypointsConsole.cs" />
-    <Compile Include="src\ConsoleCommands\WebsiteConsole.cs" />
+    <Compile Include="src\ConsoleCommands\WebPanelConsole.cs" />
+    <Compile Include="src\Functions\EventSchedule.cs" />
     <Compile Include="src\Harmony\RunTimePatch.cs" />
     <Compile Include="src\Harmony\Injections.cs" />
     <Compile Include="src\Serialize\ItemStackSerializable.cs" />
@@ -71,6 +73,7 @@
     <Compile Include="src\Tools\FallingBlocks\FallingBlocks.cs" />
     <Compile Include="src\Tools\Market\Market.cs" />
     <Compile Include="src\Tools\OutputLog\OutputLog.cs" />
+    <Compile Include="src\Tools\POIProtection\POIProtection.cs" />
     <Compile Include="src\Tools\Poll\Poll.cs" />
     <Compile Include="src\Tools\ProtectedSpaces\ProtectedSpaces.cs" />
     <Compile Include="src\Tools\DeletePlayerData\DeletePlayerData.cs" />
@@ -152,7 +155,7 @@
     <Compile Include="src\Tools\CustomCommands\CustomCommands.cs" />
     <Compile Include="src\Tools\Event\Event.cs" />
     <Compile Include="src\Functions\LoadProcess.cs" />
-    <Compile Include="src\Functions\LoadTriggers.cs" />
+    <Compile Include="src\Functions\Triggers.cs" />
     <Compile Include="src\PersistentOperations\PersistentOperations.cs" />
     <Compile Include="src\PersistentData\PersistentContainer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayer.cs" />
@@ -162,7 +165,8 @@
     <Compile Include="src\Tools\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\CredentialCheck.cs" />
     <Compile Include="src\AntiCheat\TeleportCheck.cs" />
-    <Compile Include="src\AntiCheat\WorldRadius.cs" />
+    <Compile Include="src\Tools\SleeperRespawn\SleeperRespawn.cs" />
+    <Compile Include="src\Tools\WorldRadius\WorldRadius.cs" />
     <Compile Include="src\AntiCheat\PlayerStats.cs" />
     <Compile Include="src\AntiCheat\PlayerLogs.cs" />
     <Compile Include="src\AntiCheat\InvalidItems.cs" />
@@ -226,12 +230,12 @@
     <Compile Include="src\ConsoleCommands\PollConsole.cs" />
     <Compile Include="src\Tools\CountryBan\CountryBan.cs" />
     <Compile Include="src\Tools\EntityCleanup\EntityCleanup.cs" />
-    <Compile Include="src\Functions\LoadConfig.cs" />
-    <Compile Include="src\Functions\LoadMods.cs" />
-    <Compile Include="src\Functions\LoadPhrases.cs" />
+    <Compile Include="src\Functions\Config.cs" />
+    <Compile Include="src\Functions\Mods.cs" />
+    <Compile Include="src\Functions\Phrases.cs" />
     <Compile Include="src\ConsoleCommands\MaxPingConsole.cs" />
     <Compile Include="src\ConsoleCommands\PingImmunityConsole.cs" />
-    <Compile Include="src\Functions\LoadTimers.cs" />
+    <Compile Include="src\Functions\Timers.cs" />
     <Compile Include="src\Tools\HighPingKicker\HighPingKicker.cs" />
     <Compile Include="src\ConsoleCommands\EntityRemoveConsole.cs" />
     <Compile Include="src\Tools\Hordes\Hordes.cs" />
@@ -249,9 +253,9 @@
     <Compile Include="src\Tools\VoteReward\VoteReward.cs" />
     <Compile Include="src\Tools\Watchlist\Watchlist.cs" />
     <Compile Include="src\Tools\Waypoints\Waypoints.cs" />
-    <Compile Include="src\Website\Console.cs" />
-    <Compile Include="src\Website\MimeType.cs" />
-    <Compile Include="src\Website\WebsiteServer.cs" />
+    <Compile Include="src\WebPanel\Console.cs" />
+    <Compile Include="src\WebPanel\MimeType.cs" />
+    <Compile Include="src\WebPanel\WebPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ModInfo.xml">

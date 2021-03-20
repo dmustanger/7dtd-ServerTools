@@ -129,22 +129,6 @@ namespace ServerTools
             return false;
         }
 
-        public static bool BloodMoonOver()
-        {
-            try
-            {
-                if (Shutdown.Bloodmoon && !SkyManager.BloodMoon() && !GameManager.Instance.World.IsDark())
-                {
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.BloodMoonOver: {0}", e.Message));
-            }
-            return false;
-        }
-
         public static List<ClientInfo> ClientList()
         {
             List<ClientInfo> _clientList = ConnectionManager.Instance.Clients.List.ToList();
@@ -604,51 +588,6 @@ namespace ServerTools
             }
         }
 
-        public static void BedBug(string _persistentPlayerId)
-        {
-            try
-            {
-                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_persistentPlayerId);
-                if (_player != null)
-                {
-                    EntityBedrollPositionList _bedrollList = _player.SpawnPoints;
-                    if (_bedrollList != null)
-                    {
-                        Vector3i _bedrollPosition = _bedrollList.GetPos();
-                        List<EntityPlayer> _playerList = PersistentOperations.PlayerList();
-                        if (_bedrollPosition != null && _playerList != null)
-                        {
-                            for (int i = 0; i < _playerList.Count; i++)
-                            {
-                                EntityPlayer _player2 = _playerList[i];
-                                if (_player2 != null && _player2 != _player && _player2.SpawnPoints != null && _player2.SpawnPoints.GetPos().Equals(_bedrollPosition))
-                                {
-                                    PersistentPlayerData _ppd = PersistentOperations.GetPersistentPlayerDataFromSteamId(_persistentPlayerId);
-                                    if (_ppd != null && !_player2.SpawnPoints.GetPos().Equals(_ppd.BedrollPos))
-                                    {
-                                        _player2.SpawnPoints.Set(_ppd.BedrollPos);
-                                        continue;
-                                    }
-                                    _player2.SpawnPoints.Clear();
-                                    GameManager.Instance.World.ObjectOnMapRemove(EnumMapObjectType.SleepingBag, _player2.entityId);
-                                    ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.SleepingBag, _player2.entityId), false, -1, -1, -1, -1);
-                                    ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromEntityId(_player2.entityId);
-                                    if (_cInfo2 != null)
-                                    {
-                                        ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + "Detected bug with your bed. Check your bed and replace if needed[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.BedBug: {0}", e.Message));
-            }
-        }
-
         public static void EntityIdList()
         {
             if (EntityClass.list.Dict != null && EntityClass.list.Dict.Count > 0)
@@ -661,6 +600,36 @@ namespace ServerTools
                         EntityId.Add(_count, _entityClass.Key);
                         _count++;
                     }
+                }
+            }
+        }
+
+        public static void ReturnBlock(ClientInfo _cInfo, string _blockName, int _quantity)
+        {
+            EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+            if (_player != null && _player.IsSpawned() && !_player.IsDead())
+            {
+                World _world = GameManager.Instance.World;
+                ItemValue _itemValue = ItemClass.GetItem(_blockName, false);
+                if (_itemValue != null)
+                {
+                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                    {
+                        entityClass = EntityClass.FromString("item"),
+                        id = EntityFactory.nextEntityID++,
+                        itemStack = new ItemStack(_itemValue, _quantity),
+                        pos = _world.Players.dict[_cInfo.entityId].position,
+                        rot = new Vector3(20f, 0f, 20f),
+                        lifetime = 60f,
+                        belongsPlayerId = _cInfo.entityId
+                    });
+                    _world.SpawnEntityInWorld(entityItem);
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                    _world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                    Phrases.Dict.TryGetValue(901, out string _phrase901);
+                    _phrase901 = _phrase901.Replace("{Value}", _quantity.ToString());
+                    _phrase901 = _phrase901.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase901 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }

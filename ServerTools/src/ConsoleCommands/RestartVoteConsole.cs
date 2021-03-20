@@ -36,7 +36,7 @@ namespace ServerTools
                     if (RestartVote.IsEnabled)
                     {
                         RestartVote.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Restart vote has been set to off"));
                         return;
                     }
@@ -51,7 +51,7 @@ namespace ServerTools
                     if (!RestartVote.IsEnabled)
                     {
                         RestartVote.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Restart vote has been set to on"));
                         return;
                     }

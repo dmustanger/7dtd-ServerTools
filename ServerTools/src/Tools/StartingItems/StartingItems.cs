@@ -68,27 +68,27 @@ namespace ServerTools
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("Name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring starting item entry because of missing Name attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry because of missing Name attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("Count"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring starting item entry because of missing Count attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry because of missing Count attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("Quality"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring starting item entry because of missing Quality attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry because of missing Quality attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!int.TryParse(_line.GetAttribute("Count"), out int _count))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring starting item entry because of invalid (non-numeric) value for 'Count' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry because of invalid (non-numeric) value for 'Count' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!int.TryParse(_line.GetAttribute("Quality"), out int _quality))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring starting item entry because of invalid (non-numeric) value for 'Quality' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry because of invalid (non-numeric) value for 'Quality' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (_quality < 1)
@@ -99,18 +99,20 @@ namespace ServerTools
                         ItemValue _itemValue = ItemClass.GetItem(_item, false);
                         if (_itemValue.type == ItemValue.None.type)
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Starting item entry skipped. Item not found: {0}", _item));
+                            Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry skipped. Item not found: {0}", _item));
                             continue;
                         }
                         if (_count > _itemValue.ItemClass.Stacknumber.Value)
                         {
                             _count = _itemValue.ItemClass.Stacknumber.Value;
+                            Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} was set above the max stack value. It has been reduced to the maximum of {1}", _item, _count));
                         }
-                        if (!ItemList.ContainsKey(_item))
+                        if (ItemList.ContainsKey(_item))
                         {
-                            int[] _c = new int[] { _count, _quality };
-                            ItemList.Add(_item, _c);
+                            Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} has a duplicate entry", _item));
                         }
+                        int[] _c = new int[] { _count, _quality };
+                        ItemList.Add(_item, _c);
                     }
                 }
             }
@@ -228,7 +230,7 @@ namespace ServerTools
                     Log.Out(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
                     Phrases.Dict.TryGetValue(841, out string _phrase841);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase841 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase841 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

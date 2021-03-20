@@ -35,7 +35,7 @@ namespace ServerTools
                     if (InfoTicker.IsEnabled)
                     {
                         InfoTicker.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] InfoTicker has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!InfoTicker.IsEnabled)
                     {
                         InfoTicker.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] InfoTicker has been set to on"));
                         return;
                     }

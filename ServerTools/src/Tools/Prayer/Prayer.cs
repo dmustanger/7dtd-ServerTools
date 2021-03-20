@@ -206,7 +206,7 @@ namespace ServerTools
                 _phrase821 = _phrase821.Replace("{TimeRemaining}", _timeleft.ToString());
                 _phrase821 = _phrase821.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase821 = _phrase821.Replace("{Command126}", Command126);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase821 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase821 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -222,7 +222,7 @@ namespace ServerTools
                 {
                     Phrases.Dict.TryGetValue(822, out string _phrase822);
                     _phrase822 = _phrase822.Replace("{CoinName}", Wallet.Coin_Name);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase822 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase822 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -239,7 +239,7 @@ namespace ServerTools
                 string randomKey = Keys[random.Next(Dict.Count)];
                 string _message = Dict[randomKey];
                 SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.playerId, randomKey), null);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);

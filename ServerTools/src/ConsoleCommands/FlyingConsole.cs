@@ -36,7 +36,7 @@ namespace ServerTools
                     if (PlayerChecks.FlyEnabled)
                     {
                         PlayerChecks.FlyEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Flying has been set to off"));
                         return;
                     }
@@ -51,7 +51,7 @@ namespace ServerTools
                     if (!PlayerChecks.FlyEnabled)
                     {
                         PlayerChecks.FlyEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Flying has been set to on"));
                         return;
                     }

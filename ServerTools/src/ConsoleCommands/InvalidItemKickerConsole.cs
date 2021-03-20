@@ -36,7 +36,7 @@ namespace ServerTools
                     if (InvalidItems.IsEnabled)
                     {
                         InvalidItems.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid item kicker has been set to off"));
                         return;
                     }
@@ -51,7 +51,7 @@ namespace ServerTools
                     if (!InvalidItems.IsEnabled)
                     {
                         InvalidItems.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid item kicker has been set to on"));
                         return;
                     }

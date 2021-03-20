@@ -41,7 +41,7 @@ namespace ServerTools
                     if (Lobby.IsEnabled)
                     {
                         Lobby.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Lobby has been set to off"));
                         return;
                     }
@@ -56,7 +56,7 @@ namespace ServerTools
                     if (!Lobby.IsEnabled)
                     {
                         Lobby.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Lobby has been set to on"));
                         return;
                     }
@@ -84,7 +84,7 @@ namespace ServerTools
                     _phrase551 = _phrase551.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase551 = _phrase551.Replace("{LobbyPosition}", _lposition);
                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0}", _phrase551));
-                    LoadConfig.WriteXml();
+                    Config.WriteXml();
                 }
                 else
                 {

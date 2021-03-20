@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Teleports a backpack. Backpack can not be attached to a player.\n" +
-                "Usage: bt <BackpackId> <EntityId>\n" +
-                "Usage: bt <BackpackId> <X> <Y> <Z>\n";
+                "Usage: st-bt <BackpackId> <EntityId>\n" +
+                "Usage: st-bt <BackpackId> <X> <Y> <Z>\n";
         }
 
         public override string[] GetCommands()

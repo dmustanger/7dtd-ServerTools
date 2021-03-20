@@ -54,7 +54,7 @@ namespace ServerTools.AntiCheat
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase991), null);
                                                     Phrases.Dict.TryGetValue(992, out string _phrase992);
                                                     _phrase992 = _phrase992.Replace("{PlayerName}", _cInfo.playerName);
-                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase992 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase992 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                 }
                                                 if (Ban_Enabled)
                                                 {
@@ -62,7 +62,7 @@ namespace ServerTools.AntiCheat
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase993), null);
                                                     Phrases.Dict.TryGetValue(994, out string _phrase994);
                                                     _phrase994 = _phrase994.Replace("{PlayerName}", _cInfo.playerName);
-                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase994 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase994 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                 }
                                             }
                                             if (p_Stamina > 250)
@@ -81,7 +81,7 @@ namespace ServerTools.AntiCheat
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase995), null);
                                                     Phrases.Dict.TryGetValue(996, out string _phrase996);
                                                     _phrase996 = _phrase996.Replace("{PlayerName}", _cInfo.playerName);
-                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase996 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase996 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                 }
                                                 if (Ban_Enabled)
                                                 {
@@ -89,7 +89,7 @@ namespace ServerTools.AntiCheat
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban {0} \"{1}\"", _cInfo.playerId, _phrase997), null);
                                                     Phrases.Dict.TryGetValue(998, out string _phrase998);
                                                     _phrase998 = _phrase998.Replace("{PlayerName}", _cInfo.playerName);
-                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase998 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase998 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                 }
                                             }
                                             if (p_jumpStrength >= 1.5)
@@ -108,7 +108,7 @@ namespace ServerTools.AntiCheat
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase999), null);
                                                     Phrases.Dict.TryGetValue(1000, out string _phrase1000);
                                                     _phrase1000 = _phrase1000.Replace("{PlayerName}", _cInfo.playerName);
-                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1000 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1000 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                 }
                                                 if (Ban_Enabled)
                                                 {
@@ -116,7 +116,7 @@ namespace ServerTools.AntiCheat
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban {0} \"{1}\"", _cInfo.playerId, _phrase1001), null);
                                                     Phrases.Dict.TryGetValue(1002, out string _phrase1002);
                                                     _phrase1002 = _phrase1002.Replace("{PlayerName}", _cInfo.playerName);
-                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1002 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1002 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                 }
                                             }
                                             if (p_height > 1.8 || p_height < 1.7)
@@ -135,7 +135,7 @@ namespace ServerTools.AntiCheat
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase1003), null);
                                                     Phrases.Dict.TryGetValue(1004, out string _phrase1004);
                                                     _phrase1004 = _phrase1004.Replace("{PlayerName}", _cInfo.playerName);
-                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1004 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1004 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                 }
                                                 if (Ban_Enabled)
                                                 {
@@ -143,7 +143,7 @@ namespace ServerTools.AntiCheat
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban {0} \"{1}\"", _cInfo.playerId, _phrase1005), null);
                                                     Phrases.Dict.TryGetValue(1006, out string _phrase1006);
                                                     _phrase1006 = _phrase1006.Replace("{PlayerName}", _cInfo.playerName);
-                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1006 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1006 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                 }
                                             }
                                             if (p_speedForward > Max_Speed)
@@ -162,7 +162,7 @@ namespace ServerTools.AntiCheat
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase1007), null);
                                                     Phrases.Dict.TryGetValue(1008, out string _phrase1008);
                                                     _phrase1008 = _phrase1008.Replace("{PlayerName}", _cInfo.playerName);
-                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1008 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1008 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                 }
                                                 if (Ban_Enabled)
                                                 {
@@ -170,7 +170,7 @@ namespace ServerTools.AntiCheat
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban {0} \"{1}\"", _cInfo.playerId, _phrase1009), null);
                                                     Phrases.Dict.TryGetValue(1010, out string _phrase1010);
                                                     _phrase1010 = _phrase1010.Replace("{PlayerName}", _cInfo.playerName);
-                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1010 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1010 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                 }
                                             }
                                         }

@@ -12,11 +12,11 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. bwf off\n" +
-                   "  2. bwf on\n" +
-                   "  3. bwf add <word>\n" +
-                   "  4. bwf remove <word>\n" +
-                   "  5. bwf list\n" +
+                   "  1. st-bwf off\n" +
+                   "  2. st-bwf on\n" +
+                   "  3. st-bwf add <word>\n" +
+                   "  4. st-bwf remove <word>\n" +
+                   "  5. st-bwf list\n" +
                    "1. Turn off the bad word filter\n" +
                    "2. Turn on the bad word filter\n" +
                    "3. Add a word to the list\n" +
@@ -41,7 +41,7 @@ namespace ServerTools
                     if (Badwords.IsEnabled)
                     {
                         Badwords.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bad word filter has been set to off"));
                         return;
                     }
@@ -61,7 +61,7 @@ namespace ServerTools
                     if (!Badwords.IsEnabled)
                     {
                         Badwords.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bad word filter has been set to on"));
                         return;
                     }

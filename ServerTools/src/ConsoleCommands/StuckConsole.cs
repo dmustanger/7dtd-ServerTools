@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Stuck off\n" +
-                   "  2. Stuck on\n" +
+                   "  1. st-Stuck off\n" +
+                   "  2. st-Stuck on\n" +
                    "1. Turn off stuck\n" +
                    "2. Turn on stuck\n";
         }
@@ -35,7 +35,7 @@ namespace ServerTools
                     if (Stuck.IsEnabled)
                     {
                         Stuck.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Stuck has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!Stuck.IsEnabled)
                     {
                         Stuck.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Stuck has been set to on"));
                         return;
                     }

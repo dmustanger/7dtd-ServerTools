@@ -74,7 +74,7 @@ namespace ServerTools
                 _phrase431 = _phrase431.Replace("{TimeRemaining}", _timeleft.ToString());
                 _phrase431 = _phrase431.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase431 = _phrase431.Replace("{Command61}", Command61);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase431 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase431 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -89,7 +89,7 @@ namespace ServerTools
             {
                 Phrases.Dict.TryGetValue(433, out string _phrase433);
                 _phrase433 = _phrase433.Replace("{CoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase433 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase433 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -139,14 +139,14 @@ namespace ServerTools
                     else
                     {
                         Phrases.Dict.TryGetValue(432, out string _phrase432);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase432 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase432 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
                 Phrases.Dict.TryGetValue(434, out string _phrase434);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase434 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase434 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

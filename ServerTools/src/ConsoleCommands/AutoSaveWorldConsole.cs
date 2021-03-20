@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. asw off\n" +
-                   "  2. asw on\n" +
+                   "  1. st-asw off\n" +
+                   "  2. st-asw on\n" +
                    "1. Turn off the world auto save\n" +
                    "2. Turn on the world auto save\n";
         }
@@ -35,7 +35,7 @@ namespace ServerTools
                     if (AutoSaveWorld.IsEnabled)
                     {
                         AutoSaveWorld.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auto save world has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!AutoSaveWorld.IsEnabled)
                     {
                         AutoSaveWorld.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auto save world has been set to on"));
                         return;
                     }

@@ -35,7 +35,7 @@ namespace ServerTools
                     if (Loc.IsEnabled)
                     {
                         Loc.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Location has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!Loc.IsEnabled)
                     {
                         Loc.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Location has been set to on"));
                         return;
                     }

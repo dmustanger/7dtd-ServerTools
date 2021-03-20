@@ -331,7 +331,7 @@ namespace ServerTools.AntiCheat
             _phrase11 = _phrase11.Replace("{ItemName}", _name);
             _phrase11 = _phrase11.Replace("{ItemCount}", _count.ToString());
             _phrase11 = _phrase11.Replace("{MaxPerStack}", _maxAllowed.ToString());
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase11 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase11 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 
         private static void Ban(ClientInfo _cInfo, string _name)
@@ -341,7 +341,7 @@ namespace ServerTools.AntiCheat
             Phrases.Dict.TryGetValue(12, out string _phrase12);
             _phrase12 = _phrase12.Replace("{PlayerName}", _cInfo.playerName);
             _phrase12 = _phrase12.Replace("{ItemName}", _name);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase12 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase12 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
         private static void Flag1(ClientInfo _cInfo, string _name)
@@ -357,7 +357,7 @@ namespace ServerTools.AntiCheat
             Phrases.Dict.TryGetValue(15, out string _phrase15);
             _phrase15 = _phrase15.Replace("{PlayerName}", _cInfo.playerName);
             _phrase15 = _phrase15.Replace("{ItemName}", _name);
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase15 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase15 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 
         private static void Flag2(ClientInfo _cInfo, string _name)
@@ -373,7 +373,7 @@ namespace ServerTools.AntiCheat
             Phrases.Dict.TryGetValue(16, out string _phrase16);
             _phrase16 = _phrase16.Replace("{PlayerName}", _cInfo.playerName);
             _phrase16 = _phrase16.Replace("{ItemName}", _name);
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase16 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase16 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 
         private static void Flag3(ClientInfo _cInfo, string _name)
@@ -391,7 +391,7 @@ namespace ServerTools.AntiCheat
             Phrases.Dict.TryGetValue(13, out string _phrase13);
             _phrase13 = _phrase13.Replace("{PlayerName}", _cInfo.playerName);
             _phrase13 = _phrase13.Replace("{ItemName}", _name);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase13 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase13 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
         public static void CheckStorage()

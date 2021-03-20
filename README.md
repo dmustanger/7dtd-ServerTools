@@ -5,16 +5,15 @@ Server tools for 7 days to die dedicated servers<br>
 <br>
 Go to the releases tab and check for the latest files https://github.com/dmustanger/7dtd-ServerTools/releases <br>
 <br>
-Download and extract the Mods folder found inside the .zip file.<br>
+Download and extract the files.<br>
 <br>
-Copy the Mods folder to the installation directory of your dedicated server. Example: C:\7DaysToDieServers\Dedicated<br>
+Copy the Mods folder to the root directory of your server.<br>
 <br>
 Start the server.<br>
 <br>
-It will create another folder called ServerTools. It will be in the same folder your Mods folder is located.<br>
-The mod will auto create the main config file inside of this folder.<br>
-Enable each tool from the mod you want via your ServerToolsConfig.xml<br>
-Once a tool is enabled, if it has a xml file then it will auto create them in the ServerTools folder.<br>
+The mod will auto create the config file in the game save directory.<br>
+Enable each part of the mod you want via ..\your game save directory\ServerTools\ServerToolsConfig.xml<br>
+Once a module is enabled, if it has a config it will auto create them in the ServerTools folder.<br>
 <br>
 <br>
 <br>
@@ -26,15 +25,12 @@ Anti Cheat<br>
 <br>
 Automatically detects and deals with cheaters. Customizable<br>
 <br>
-Detects: flying above or below ground, god mode, specatator mode, invalid items, invalid stack sizes, family share accounts. <br>
-<br>
-Player stats: height, speed, jump strength, max stamina, max health.<br>
-<br>
-Maximum damage to players, entities and blocks.<br>
+Detects: flying above or below ground, hatch elevator, teleport, invalid items, invalid stack sizes, family share accounts, <br>
+player stats such as height, speed, jump strength, max stamina, max health, available skill points.<br>
 <br>
 Logs all player's inventory to a file for later review. Set the time between loggings. Default is once per minute.<br>
 <br>
-Records player's IP address and location in the world.<br>
+Records player's IP address and location to the inventory log.<br>
 <br>
 Records identical items and stacks found in a players inventory. These are not necessarily duped but this gives a record.<br>
 <br>
@@ -53,11 +49,11 @@ Weather vote: vote to change the weather<br>
 <br>
 Teleport to friend: request to teleport to a friend. They must accept the request in a time limit<br>
 <br>
-Shop and wallet: make a custom shop list for players to buy from. Wallet is calculated automatically<br>
+Shop and wallet: make a custom shop list for players to buy from. Wallet is calculated automatically. Can only shop in trader zone<br>
 <br>
-Vote rewards: players receive rewards from a custom list you setup after they vote at https://7daystodie-servers.com<br>
+Vote rewards: for players voting your server at https://7daystodie-servers.com website<br>
 <br>
-Travel: players can travel to specific locations when in the right location<br>
+Travel: for players to travel to specific locations when in the right location. Can teleport a bike. Custom delay<br>
 <br>
 Starting items: new players receive all the items from the StartingItems.xml<br>
 <br>
@@ -65,70 +61,73 @@ First claim block: players can type /claim to receive a single claim block. Prev
 <br>
 Give item: give item directly into a players inventory or all online players. Drops to the ground if their inventory is full<br>
 <br>
-Admin List: players can see an ingame list of currently online admins and moderators<br>
+Give block: give block directly into a players inventory or all online players. Drops to the ground if their inventory is full<br>
+<br>
+Admin List: players can type trigger an ingame list of currently online admins and moderators<br>
 <br>
 Command delays: multiple commands have delay times. Players can not use the command until the delay has expired since last use<br>
+<br>
+Command delay reset: reset any player command delays via the console<br>
 <br>
 Temporary ban: console command tempban to allow a limited ban time for moderators or low tier admins<br>
 <br>
 Custom chat command triggers: commands use / and ! to initialize commands but they can be set to any symbol<br>
 <br>
-Falling entities: automatically deletes zombies, trees and items that fall below the world<br>
+Stuck entity: automatically sends bikes, bags, and zombies to the world surface to prevent errors and server lag<br>
+<br>
+Admin alerts: detections that require manual inspection is sent to currently online admins<br>
 <br>
 Chat colors and prefixes: administrators, moderators, donators/reserved players, special players can all get custom chat colors and prefix<br>
 <br>
 Auto shutdown: the server will auto shutdown after a scheduled time frame. Initiates shutdown system with alerts, world save, countdown<br>
 <br>
-Animal spawning: made to be like an animal tracking system. Players spawn a random animal from a list of entity id you can choose<br>
+Animal spawning: made to be like an animal tracking system. Players spawn a random animal from a list<br>
 <br>
 Stealth admins: while chat color and prefix is active, admins can disable their chat color to stay hidden<br>
 <br>
-Reserved players: reserve players on a list which will allow them to join the server if full and a non reserved player can be kicked<br>
-This also helps with admins joining a full server. It will kick a reserved player if it must but attempt a non reserved first<br>
+Reserved players: based on session time. Final slot can only be filled by admin or reserved status player. Boots players passed max session time to make space for others. Reserved and admins are never kicked<br>
 <br>
-Custom commands: make your own commands and set optional delays, command costs, permission requirement or hide it from /commands response<br>
+Custom commands: Make your own commands and set optional delays for the first ten entries<br>
 <br>
-Check next shutdown: can check when the next scheduled shutdown period is<br>
+Check next shutdown: Can check when the next scheduled shutdown period is<br>
 <br>
 Reservation check: players can check the expiration time for their reserved status<br>
 <br>
-Gimme system: players can spawn a free item periodically<br>
+Gimme system: players can spawn a free item periodically with a custom delay<br>
 <br>
-Suicide commands: players can commit suicide with a few different suicide commands. /Hang, /wrist, /suicide<br>
+Killme command: players can commit suicide with a custom delay<br>
 <br>
-Set home: saves a home location so that players can teleport to it. Can teleport with friends<br>
+Set home: save a home location so players can teleport to it with a custom delay<br>
 <br>
-Set home 2: a second home location that optionally can be set for donators only<br>
+Set home 2: a second home location that can be set for donators only<br>
 <br>
-High ping kicker: kicks players that have too high of a ping<br>
+High ping kicker: kicks players that have a ping too high<br>
 <br>
 Chat logger: saves all in game chat to a file for later review<br>
 <br>
-Bad word filter: replaces any words used in chat that matches ones from a list. Can also filter bad player names<br>
+Bad word filter: replaces any words used in chat that matches ones from a list. Can also change bad player names to Invalid Name-No commands<br>
 <br>
 Message of the day: shows players a custom message upon entering the server<br>
 <br>
-Infoticker: automatically displays custom server messages. Can be set to display in a random order or sequential<br>
+Infoticker: automatically displays custom server messages. Can be set to display in a random order<br>
 <br>
 Auto world save: automatically saves the world based on custom delay time<br>
 <br>
 Watchlist: players listed here will be able to join but send online admins an alert when they are in game<br>
 <br>
-Custom phrases: any phrases listed in the phrase file can be set to a custom value<br>
+Custom phrases: any phrases listed in the phrase file can be set to a custom response<br>
 <br>
-Custom command triggers: any command trigger listed in the trigger file can be set to a custom value<br>
-<br>
-Admin chat: sends all online admins a direct private message<br>
+Admin chat: admins can send all other online admins a direct private message<br>
 <br>
 Clan manager: create clan tags, add players, hire officers and rule the server as a elite crew<br>
 <br>
 Remove entity: remove a live entity from the game using its entity id via console<br>
 <br>
-Reset player profile: will kick the player and delete their saved data via console<br>
+Reset player profile: an easy console command will kick and delete the saved data of a player<br>
 <br>
 Stopserver command: easily shutdown your server with an alert system and countdown so players are aware<br>
 <br>
-Lottery: players can open a lottery for any players to buy in. Lottery draws after 10 players join, 1 hour has passed or server is shutting down<br>
+Lottery: players can open a lottery for any players to buy in. Lottery draws after 10 players join or 1 hour has gone by<br>
 <br>
 Hardcore: limited life count. Kicked and profile deleted if out of lives. Stats recorded<br>
 <br>
@@ -146,9 +145,7 @@ Restart vote: vote to restart the server. Requires at least 10 players online an
 <br>
 Player list: shows all online player names and entity id so players can use commands against them<br>
 <br>
-Lobby: teleports to a defined location. Allows players to return when finished but they must stay inside the lobby<br>
-<br>
-Market: teleports to a defined location. Allows players to return when finished but they must stay inside the market<br>
+Lobby: teleports to a defined location. Allows players to return when finished but they must be with in 50 blocks to the lobby location<br>
 <br>
 Real world time: displays the real world time based on the servers local time<br>
 <br>
@@ -156,51 +153,19 @@ Fps: allows you to set the target server fps on server load up<br>
 <br>
 Location: players can check their world location, response is their x, y, z cordinates<br>
 <br>
-Auction: place an item inside a secure loot and use commands for it to be removed and listed for sale in the auction<br>
+Auction: place an item inside a secure loot and use commands to remove it and sell it in the auction<br>
 <br>
 Wallet: takes note of player kills, zombie kills, deaths and spent coins. Calculates a total for use in the shop, auction, bounties<br>
 <br>
 Bank: allows players to deposit in game coins or wallet coins to a bank account. Exchange coin types through the bank<br>
 <br>
-Vehicle teleport: save a vehicle while inside a claimed space. Teleport the vehicle if close enough to it<br>
+Bike: save a bike id while inside a claimed space. Return a saved bike if close enough to it<br>
 <br>
-Death spot: players can return to where they died<br>
+Death return: while enabled, players can return to where they died<br>
 <br>
-Command costs: set a price required to use certain commands. Dependant on ingame wallet and earning coins by killing zombies/players. In game coins such as casino coin can be transferred through the bank<br>
+Entity cleanup: removes falling blocks, stuck falling trees<br>
 <br>
-Country ban: blocks players attempting to join with an ip matching specific country ranges. Uses ISO country codes<br>
-<br>
-Bloodmoon warrior: players that are chosen by Hades on the bloodmoon must survive the night and kill enough zombies for a reward<br>
-<br>
-Falling blocks removal: all falling blocks are removed immediately to prevent server lag from block collapse<br>
-<br>
-Break reminder: reminds players to stretch and take a break if they have been playing too long<br>
-<br>
-Login notice: shows a custom notice when specific players join<br>
-<br>
-Jail: players can be jailed manually or from PvE violations that will trap them within a specific range of a set postion. Optional electric fence for attempted escapes<br>
-<br>
-Kill notice: shows the PvP combat with more information upon kills. Can show final damage, player levels and weapons used<br>
-<br>
-Message color: change the default chat message color for everyone<br>
-<br>
-Mute: players can mute each other or be muted from all chat function by an admin<br>
-<br>
-New player teleport: teleports new players to a designated position<br>
-<br>
-Night alert: will give periodic alerts to how many hours remain before night<br>
-<br>
-Poll: setup polls for players to vote on<br>
-<br>
-Prayer: gives players a buff from a custom list. Recommend making new buffs with longer durations<br>
-<br>
-Private messages: players can send private messages to each other<br>
-<br>
-Scout players: players can check for tracks of nearby players within a limited range<br>
-<br>
-Tracking: logs all player movement for admins to review via console<br>
-<br>
-Waypoints: players can setup teleport waypoints and can teleport with friends<br>
+Command costs: set a price required to use certain commands. Dependant on ingame wallet and earning coins by killing zombies. In game coins such as casino coin can be transferred through the bank<br>
 <br>
 <br> 
 <br>

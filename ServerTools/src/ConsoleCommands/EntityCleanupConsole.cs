@@ -35,7 +35,7 @@ namespace ServerTools
                     if (EntityCleanup.IsEnabled)
                     {
                         EntityCleanup.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Entity cleanup has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!EntityCleanup.IsEnabled)
                     {
                         EntityCleanup.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Entity cleanup has been set to on"));
                         return;
                     }

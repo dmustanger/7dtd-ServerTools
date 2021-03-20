@@ -1,5 +1,47 @@
 ﻿CHANGELOG
 
+19.4.0
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added POI_Protection tool. Prevents players from placing beds/claims
+in a POI
+Added POI_Protection phrases to Phrases.xml
+Added New_Player_Extended to main config
+Added option Block_During_Bloodmoon to New_Player_Extended. This will stop
+new players from joining the server during the bloodmoon
+Added console commands to spawn blocks in the world
+Added console command Global. Similar to Say but changes the name
+to Server_Response_Name from Chat_Command_Response tool
+Added Sleeper_Spawn tool. Resets all sleeper spawns on server startup
+Added option Alter_Message_Color to Chat_Command_Response_Extended. Friend 
+and party chat colors will apply to the message as well if enabled
+Added event schedule to improve response times of automation
+Fixed console command help instructions for st-Maze
+Fixed console command st-Maze not utilizing custom block for inner walls
+Fixed initial shutdown alerts not showing in chat
+Fixed High_Ping_Kicker tool not functioning properly
+Fixed Message_Color tool not functioning properly
+Fixed Real_World_Time tool not functioning properly
+Fixed chat command /shutdown
+Changed file name ServerToolsPhrases.xml to Phrases.xml
+Changed Website tool name to Web_Panel
+Changed internal code for detection of bloodmoons
+Changed flight detection to avoid false positives underground
+Changed tool delays to reset when altered. Advancing or reducing a delay
+will reset the time remaining
+Changed Website tool name to Web_Panel and updated internal code
+Changed StartingItems.xml to allow multiple entries with the same name. It
+will now log duplicates to the output log
+Changed phrase #422
+Updated HowToSetup.xml
+Updated console command st-Maze with more options
+Updated Bad_Word_Filter to isolate words
+Updated Country_Ban IP file for reduced size and latest additions
+Removed Battle_Logger alert on player death reminding them about /exit
+Removed phrase #422 and 423. #424 is now #422
+Removed bed bug fix due to no longer being necessary
+
 19.3.2
 Built using Alpha 19 experimental assets
 Functioning with 19 stable and experimental. Untested with other versions

@@ -128,9 +128,9 @@ namespace ServerTools
                             string _msg2 = _setup[1] + "[-]";
                             string _msg3 = "Type " + ChatHook.Command_Private + Event.Command100 + " if you want to join the event. You will return to where you first signed up when it completes.[-]";
                             _msg1 = _msg1.Replace("{EventName}", _setup[0]);
-                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _msg1, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _msg2, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _msg3, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _msg1, -1, Config.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _msg2, -1, Config.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _msg3, -1, Config.Server_Response_Name, EChatType.Global, null);
                         }
                         else
                         {
@@ -234,7 +234,7 @@ namespace ServerTools
                                         int.TryParse(_cords[2], out _z);
                                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                                         Event.Teams.Remove(_cInfo.playerId);
-                                        ChatHook.ChatMessage(null, "The event has ended. Thank you for playing.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        ChatHook.ChatMessage(null, "The event has ended. Thank you for playing.[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                     else
                                     {
@@ -271,7 +271,7 @@ namespace ServerTools
                                 Event.EventName = "";
                                 Event.Teams.Clear();
                                 SdtdConsole.Instance.Output("[SERVERTOOLS] The event invitation has been stopped");
-                                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "The event invitation has been stopped", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                ChatHook.ChatMessage(null, Config.Chat_Response_Color + "The event invitation has been stopped", -1, Config.Server_Response_Name, EChatType.Global, null);
                                 return;
                             }
                             else
@@ -473,7 +473,7 @@ namespace ServerTools
                                         int.TryParse(_cords[2], out _z);
                                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                                         PersistentContainer.Instance.Players[_cInfo.playerId].EventReturnPosition = "";
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have been removed from the event and sent to your return point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "You have been removed from the event and sent to your return point.[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed event player with id: {0}. They have been sent to their return point", _params[1]));
                                         return;
                                     }

@@ -36,7 +36,7 @@ namespace ServerTools
                     if (PlayerStats.IsEnabled)
                     {
                         PlayerStats.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player stat check has been set to off"));
                         return;
                     }
@@ -51,7 +51,7 @@ namespace ServerTools
                     if (!PlayerStats.IsEnabled)
                     {
                         PlayerStats.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player stat check has been set to on"));
                         return;
                     }

@@ -35,7 +35,7 @@ namespace ServerTools
                     if (WeatherVote.IsEnabled)
                     {
                         WeatherVote.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Weather vote has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!WeatherVote.IsEnabled)
                     {
                         WeatherVote.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Weather vote has been set to on"));
                         return;
                     }

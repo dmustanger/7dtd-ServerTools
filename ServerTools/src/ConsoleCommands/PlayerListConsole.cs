@@ -35,7 +35,7 @@ namespace ServerTools
                     if (PlayerList.IsEnabled)
                     {
                         PlayerList.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player list has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!PlayerList.IsEnabled)
                     {
                         PlayerList.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player list has been set to on"));
                         return;
                     }

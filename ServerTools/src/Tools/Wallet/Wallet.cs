@@ -13,7 +13,7 @@ namespace ServerTools
             Phrases.Dict.TryGetValue(861, out string _phrase861);
             _phrase861 = _phrase861.Replace("{Value}", _currentCoins.ToString());
             _phrase861 = _phrase861.Replace("{CoinName}", Wallet.Coin_Name);
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase861 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase861 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static int GetCurrentCoins(string _steamid)

@@ -12,9 +12,9 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. at off\n" +
-                   "  2. at on\n" +
-                   "  3. at reset <steamId/entityId/playerName>\n" +
+                   "  1. st-at off\n" +
+                   "  2. st-at on\n" +
+                   "  3. st-at reset <steamId/entityId/playerName>\n" +
                    "1. Turn off animal tracking\n" +
                    "2. Turn on animal tracking\n" +
                    "3. Reset the delay status of a player for the animal tracking command\n";
@@ -38,7 +38,7 @@ namespace ServerTools
                     if (Animals.IsEnabled)
                     {
                         Animals.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking has been set to off"));
                         return;
                     }
@@ -53,7 +53,7 @@ namespace ServerTools
                     if (!Animals.IsEnabled)
                     {
                         Animals.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking has been set to on"));
                         return;
                     }

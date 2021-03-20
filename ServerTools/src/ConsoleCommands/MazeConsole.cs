@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace ServerTools
 {
     class MazeConsole : ConsoleCmdAbstract
     {
-        Dictionary<string, Dictionary<Vector3i, BlockValue>> Undo = new Dictionary<string, Dictionary<Vector3i, BlockValue>>();
+        public static Dictionary<string, Dictionary<Vector3i, BlockValue>> Undo = new Dictionary<string, Dictionary<Vector3i, BlockValue>>();
 
         public override string GetDescription()
         {
@@ -16,14 +17,15 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. maze add {Blocks} {Floors} {Difficulty}\n" +
-                   "  2. maze add {Blocks} {Floors} {Difficulty} {BlockName}\n" +
-                   "  3. maze undo\n" +
-                   "1. Generate a maze with this width of blocks, floors and difficulty\n" +
-                   "2. Generate a maze with this width of blocks, floors, difficulty and block name" +
+                   "  1. st-mz add {Blocks} {Floors}\n" +
+                   "  2. st-mz add {Blocks} {Floors} {BlockName}\n" +
+                   "  3. st-mz undo\n" +
+                   "1. Generate a maze with this width of blocks, floors\n" +
+                   "2. Generate a maze with this width of blocks, floors and inner block name that forms the walls" +
                    "3. Revert the maze last generated to the original blocks" +
-                   "*Note* Undo command is limited to the user that spawned the maze. Server restarts remove the old data" +
-                   "*Note* Difficulty: Easy 1, Medium 2, Hard 3. Changes the length of path";
+                   "*Note*" +
+                   "Undo command is limited to the user that spawned the maze. Server restarts remove the old data" +
+                   "Difficulty: Easy 1, Medium 2, Hard 3. Changes the length of path";
         }
 
         public override string[] GetCommands()
@@ -284,57 +286,59 @@ namespace ServerTools
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _glassCeilingBlockValue);
                                                                         }
                                                                     }
+                                                                    Thread.Sleep(1000);
                                                                     foreach (var _block in _mazeForm)
                                                                     {
-                                                                        if (_block.Value == "...")
+                                                                        BlockValue _newBlockValue = _world.GetBlock(_block.Key);
+                                                                        if (_block.Value == "..." && !_newBlockValue.Equals(_block.Value))
                                                                         {
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _stoneBlockValue);
                                                                         }
-                                                                        else if (_block.Value == "steel")
+                                                                        else if (_block.Value == "steel" && !_newBlockValue.Equals(_block.Value))
                                                                         {
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _steelBlockValue);
                                                                         }
-                                                                        else if (_block.Value == "glassWall")
+                                                                        else if (_block.Value == "glassWall" && !_newBlockValue.Equals(_block.Value))
                                                                         {
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _glassBlockValue);
                                                                         }
-                                                                        else if (_block.Value == "wall")
+                                                                        else if (_block.Value == "wall" && !_newBlockValue.Equals(_block.Value))
                                                                         {
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _concreteBlockValue);
                                                                         }
-                                                                        else if (_block.Value == "wallPassage")
+                                                                        else if (_block.Value == "wallPassage" && !_newBlockValue.Equals(_block.Value))
                                                                         {
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _concreteBlockValue);
                                                                         }
-                                                                        else if (_block.Value == "air")
+                                                                        else if (_block.Value == "air" && !_newBlockValue.Equals(_block.Value))
                                                                         {
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                         }
-                                                                        else if (_block.Value == "path")
+                                                                        else if (_block.Value == "path" && !_newBlockValue.Equals(_block.Value))
                                                                         {
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                         }
-                                                                        else if (_block.Value == "ladder1")
+                                                                        else if (_block.Value == "ladder1" && !_newBlockValue.Equals(_block.Value))
                                                                         {
                                                                             _ladderValue.rotation = 1;
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                         }
-                                                                        else if (_block.Value == "ladder2")
+                                                                        else if (_block.Value == "ladder2" && !_newBlockValue.Equals(_block.Value))
                                                                         {
                                                                             _ladderValue.rotation = 3;
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                         }
-                                                                        else if (_block.Value == "ladder3")
+                                                                        else if (_block.Value == "ladder3" && !_newBlockValue.Equals(_block.Value))
                                                                         {
                                                                             _ladderValue.rotation = 3;
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                         }
-                                                                        else if (_block.Value == "ladder4")
+                                                                        else if (_block.Value == "ladder4" && !_newBlockValue.Equals(_block.Value))
                                                                         {
                                                                             _ladderValue.rotation = 4;
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                         }
-                                                                        else if (_block.Value == "glass")
+                                                                        else if (_block.Value == "glass" && !_newBlockValue.Equals(_block.Value))
                                                                         {
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _glassCeilingBlockValue);
                                                                         }
@@ -397,11 +401,11 @@ namespace ServerTools
                                                                             }
                                                                             else if (_block.Value == "wall")
                                                                             {
-                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, _concreteBlockValue);
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, _customBlockValue);
                                                                             }
                                                                             else if (_block.Value == "wallPassage")
                                                                             {
-                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, _concreteBlockValue);
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, _customBlockValue);
                                                                             }
                                                                             else if (_block.Value == "air")
                                                                             {
@@ -436,57 +440,59 @@ namespace ServerTools
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _glassCeilingBlockValue);
                                                                             }
                                                                         }
+                                                                        Thread.Sleep(1000);
                                                                         foreach (var _block in _mazeForm)
                                                                         {
-                                                                            if (_block.Value == "...")
+                                                                            BlockValue _newBlockValue = _world.GetBlock(_block.Key);
+                                                                            if (_block.Value == "..." && !_newBlockValue.Equals(_block.Value))
                                                                             {
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _stoneBlockValue);
                                                                             }
-                                                                            else if (_block.Value == "steel")
+                                                                            else if (_block.Value == "steel" && !_newBlockValue.Equals(_block.Value))
                                                                             {
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _steelBlockValue);
                                                                             }
-                                                                            else if (_block.Value == "glassWall")
+                                                                            else if (_block.Value == "glassWall" && !_newBlockValue.Equals(_block.Value))
                                                                             {
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _glassBlockValue);
                                                                             }
-                                                                            else if (_block.Value == "wall")
+                                                                            else if (_block.Value == "wall" && !_newBlockValue.Equals(_block.Value))
                                                                             {
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _concreteBlockValue);
                                                                             }
-                                                                            else if (_block.Value == "wallPassage")
+                                                                            else if (_block.Value == "wallPassage" && !_newBlockValue.Equals(_block.Value))
                                                                             {
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _concreteBlockValue);
                                                                             }
-                                                                            else if (_block.Value == "air")
+                                                                            else if (_block.Value == "air" && !_newBlockValue.Equals(_block.Value))
                                                                             {
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                             }
-                                                                            else if (_block.Value == "path")
+                                                                            else if (_block.Value == "path" && !_newBlockValue.Equals(_block.Value))
                                                                             {
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                             }
-                                                                            else if (_block.Value == "ladder1")
+                                                                            else if (_block.Value == "ladder1" && !_newBlockValue.Equals(_block.Value))
                                                                             {
                                                                                 _ladderValue.rotation = 1;
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                             }
-                                                                            else if (_block.Value == "ladder2")
+                                                                            else if (_block.Value == "ladder2" && !_newBlockValue.Equals(_block.Value))
                                                                             {
                                                                                 _ladderValue.rotation = 3;
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                             }
-                                                                            else if (_block.Value == "ladder3")
+                                                                            else if (_block.Value == "ladder3" && !_newBlockValue.Equals(_block.Value))
                                                                             {
                                                                                 _ladderValue.rotation = 3;
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                             }
-                                                                            else if (_block.Value == "ladder4")
+                                                                            else if (_block.Value == "ladder4" && !_newBlockValue.Equals(_block.Value))
                                                                             {
                                                                                 _ladderValue.rotation = 4;
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                             }
-                                                                            else if (_block.Value == "glass")
+                                                                            else if (_block.Value == "glass" && !_newBlockValue.Equals(_block.Value))
                                                                             {
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _glassCeilingBlockValue);
                                                                             }
@@ -603,12 +609,12 @@ namespace ServerTools
                                     GameManager.Instance.World.SetBlockRPC(_block.Key, _block.Value);
                                 }
                                 Undo.Remove(_senderInfo.RemoteClientInfo.playerId);
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Your last maze has been reverted to the original blocks"));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The maze you last spawned has been undone"));
                                 return;
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have not generated a maze. Unable to undo"));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have not spawned a maze. Unable to undo"));
                                 return;
                             }
                         }

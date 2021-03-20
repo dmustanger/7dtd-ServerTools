@@ -12,10 +12,10 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. sd off\n" +
-                   "  2. sd on\n" +
-                   "1. Turn off the shutdown process\n" +
-                   "2. Turn on the shutdown process\n";
+                   "  1. st-sd off\n" +
+                   "  2. st-sd on\n" +
+                   "1. Turn off the auto shutdown process\n" +
+                   "2. Turn on the auto shutdown process\n";
         }
         public override string[] GetCommands()
         {
@@ -35,8 +35,8 @@ namespace ServerTools
                     if (Shutdown.IsEnabled)
                     {
                         Shutdown.IsEnabled = false;
-                        LoadConfig.WriteXml();
-                        StopServer.CountingDown = false;
+                        Config.WriteXml();
+                        StopServer.ShuttingDown = false;
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Shutdown has been set to off"));
                         return;
                     }
@@ -51,7 +51,7 @@ namespace ServerTools
                     if (!Shutdown.IsEnabled)
                     {
                         Shutdown.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Shutdown has been set to on"));
                         return;
                     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Text;
 
 namespace ServerTools
@@ -29,19 +30,19 @@ namespace ServerTools
                                 {
                                     using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
                                     {
-                                        string _line, _cleanLine;
+                                        string _line;
                                         string[] _split;
                                         long _0, _1;
                                         while ((_line = sr.ReadLine()) != null)
                                         {
-                                            _cleanLine = _line.Replace("\"", "");
-                                            _split = _cleanLine.Split(',');
+                                            _split = _line.Split(',');
                                             long.TryParse(_split[0], out _0);
                                             long.TryParse(_split[1], out _1);
                                             BannedCountries.Add(new long[] { _0, _1 }, _split[2]);
                                         }
                                     }
                                 }
+                                return;
                             }
                         }
                     }
@@ -61,28 +62,14 @@ namespace ServerTools
         {
             try
             {
-                if (BannedCountries != null && BannedCountries.Count > 0)
+                if (BannedCountries != null && BannedCountries.Count > 0 && _cInfo != null && !string.IsNullOrEmpty(_cInfo.ip))
                 {
-                    if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.ip))
+                    long _ipInteger = ConvertIPToLong(_cInfo.ip);
+                    foreach (var ipRange in BannedCountries)
                     {
-                        string[] _split = _cInfo.ip.Split('.');
-                        long.TryParse(_split[0], out long _block1);
-                        long.TryParse(_split[1], out long _block2);
-                        long.TryParse(_split[2], out long _block3);
-                        long.TryParse(_split[3], out long _block4);
-                        _block1 = _block1 * 16777216;
-                        _block2 = _block2 * 65536;
-                        _block3 = _block3 * 256;
-                        long _ipv4 = _block1 + _block2 + _block3 + _block4;
-                        foreach (var i in BannedCountries)
+                        if (_ipInteger >= ipRange.Key[0] && _ipInteger <= ipRange.Key[1] && Countries_Not_Allowed.Contains(ipRange.Value))
                         {
-                            if (_ipv4 >= i.Key[0] && _ipv4 <= i.Key[1])
-                            {
-                                if (Countries_Not_Allowed.Contains(i.Value))
-                                {
-                                    return true;
-                                }
-                            }
+                            return true;
                         }
                     }
                 }
@@ -92,6 +79,27 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in CountryBan.IsCountryBanned: {0}", e.Message));
             }
             return false;
+        }
+
+        public static long ConvertIPToLong(string ipAddress)
+        {
+            try
+            {
+                if (IPAddress.TryParse(ipAddress, out IPAddress _ip))
+                {
+                    byte[] _bytes = _ip.MapToIPv4().GetAddressBytes();
+                    return 16777216L * _bytes[0] +
+                        65536 * _bytes[1] +
+                        256 * _bytes[2] +
+                        _bytes[3]
+                        ;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in CountryBan.ConvertIPToLong: {0}", e.Message));
+            }
+            return 0;
         }
     }
 }

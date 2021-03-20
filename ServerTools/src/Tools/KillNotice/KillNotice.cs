@@ -183,7 +183,7 @@ namespace ServerTools
                         _phrase543 = _phrase543.Replace("{Level2}", _victim.Progression.Level.ToString());
                         _phrase543 = _phrase543.Replace("{Item}", _item);
                         _phrase543 = _phrase543.Replace("{Damage}", _damage.ToString());
-                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase543 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase543 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         return;
                     }
                 }
@@ -193,7 +193,7 @@ namespace ServerTools
                 _phrase542 = _phrase542.Replace("{Name2}", _cInfo.playerName);
                 _phrase542 = _phrase542.Replace("{Level2}", _victim.Progression.Level.ToString());
                 _phrase542 = _phrase542.Replace("{Item}", _item);
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase542 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase542 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -207,7 +207,7 @@ namespace ServerTools
                         _phrase541 = _phrase541.Replace("{Name2}", _cInfo.playerName);
                         _phrase541 = _phrase541.Replace("{Item}", _item);
                         _phrase541 = _phrase541.Replace("{Damage}", _damage.ToString());
-                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase541 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase541 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         return;
                     }
                 }
@@ -215,7 +215,7 @@ namespace ServerTools
                 _phrase544 = _phrase544.Replace("{Name1}", _cInfo2.playerName);
                 _phrase544 = _phrase544.Replace("{Name2}", _cInfo.playerName);
                 _phrase544 = _phrase544.Replace("{Item}", _item);
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase544 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase544 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
         }
     }

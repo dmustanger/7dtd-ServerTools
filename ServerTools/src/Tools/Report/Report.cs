@@ -29,7 +29,7 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(521, out string _phrase521);
                 _phrase521 = _phrase521.Replace("{DelayBetweenUses}", Delay.ToString());
                 _phrase521 = _phrase521.Replace("{TimeRemaining}", _timeleft.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase521 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase521 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -40,7 +40,7 @@ namespace ServerTools
             {
                 Phrases.Dict.TryGetValue(524, out string _phrase524);
                 _phrase524 = _phrase524.Replace("{Length}", Length.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase524 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase524 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
             Vector3 _pos = GameManager.Instance.World.Players.dict[_cInfo.entityId].position;
@@ -56,7 +56,7 @@ namespace ServerTools
                         _phrase522 = _phrase522.Replace("{Position}", _pos.ToString());
                         _phrase522 = _phrase522.Replace("{PlayerName}", _cInfo.playerName);
                         _phrase522 = _phrase522.Replace("{Message}", _message);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase522 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase522 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -69,7 +69,7 @@ namespace ServerTools
             }
             PersistentContainer.Instance.Players[_cInfo.playerId].LastLog = DateTime.Now;
             Phrases.Dict.TryGetValue(525, out string _phrase525);
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase525 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase525 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             Log.Out(string.Format("[SERVERTOOLS] Report sent by player {0} {1} and saved to the report logs", _cInfo.playerName, _cInfo.playerId));
         }
     }

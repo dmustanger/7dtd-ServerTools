@@ -35,7 +35,7 @@ namespace ServerTools
                     if (ChatHook.ChatFlood)
                     {
                         ChatHook.ChatFlood = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Chat flood protection has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!ChatHook.ChatFlood)
                     {
                         ChatHook.ChatFlood = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Chat flood protection has been set to on"));
                         return;
                     }

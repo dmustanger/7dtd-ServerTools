@@ -40,7 +40,7 @@ namespace ServerTools
                     if (WorldRadius.IsEnabled)
                     {
                         WorldRadius.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] World radius has been set to off"));
                         return;
                     }
@@ -55,7 +55,7 @@ namespace ServerTools
                     if (!WorldRadius.IsEnabled)
                     {
                         WorldRadius.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] World radius has been set to on"));
                         return;
                     }
@@ -76,7 +76,7 @@ namespace ServerTools
                     if (int.TryParse(_params[1], out _radius))
                     {
                         WorldRadius.Normal_Player = _radius;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] World radius for normal players has been set to {0}", _radius));
                         return;
                     }
@@ -97,7 +97,7 @@ namespace ServerTools
                     if (int.TryParse(_params[1], out _radius))
                     {
                         WorldRadius.Reserved = _radius;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] World radius for reserved players has been set to {0}", _radius));
                         return;
                     }

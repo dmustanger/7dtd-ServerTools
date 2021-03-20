@@ -16,7 +16,7 @@ namespace ServerTools
                 int _timeRemaining = _dusk - _24HourTime;
                 Phrases.Dict.TryGetValue(801, out string _phrase801);
                 _phrase801 = _phrase801.Replace("{Value}", _timeRemaining.ToString());
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase801 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase801 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
         }
     }

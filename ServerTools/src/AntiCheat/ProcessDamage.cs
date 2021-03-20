@@ -59,7 +59,7 @@ namespace ServerTools.AntiCheat
                                                     }
                                                     Phrases.Dict.TryGetValue(951, out string _phrase951);
                                                     _phrase951 = _phrase951.Replace("{PlayerName}", _cInfo2.playerName);
-                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase951 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase951 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                     return false;
                                                 }
                                             }
@@ -67,7 +67,7 @@ namespace ServerTools.AntiCheat
                                         if (Zones.IsEnabled && (Zones.ZonePvE.Contains(__instance.entityId) || Zones.ZonePvE.Contains(_cInfo2.entityId)))
                                         {
                                             Phrases.Dict.TryGetValue(323, out string _phrase323);
-                                            ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase323 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase323 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                             if (!_player1.IsFriendsWith(_player2))
                                             {
                                                 if (PersistentOperations.PvEViolations.ContainsKey(_cInfo2.entityId))
@@ -102,7 +102,7 @@ namespace ServerTools.AntiCheat
                                         else if ((Lobby.IsEnabled && Lobby.PvE && Lobby.LobbyPlayers.Contains(__instance.entityId)) || (Market.IsEnabled && Market.PvE && Market.MarketPlayers.Contains(__instance.entityId)))
                                         {
                                             Phrases.Dict.TryGetValue(260, out string _phrase260);
-                                            ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase260 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase260 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                             if (!_player1.IsFriendsWith(_player2))
                                             {
                                                 if (PersistentOperations.PvEViolations.ContainsKey(_cInfo2.entityId))
@@ -189,7 +189,7 @@ namespace ServerTools.AntiCheat
                                                     }
                                                     Phrases.Dict.TryGetValue(951, out string _phrase951);
                                                     _phrase951 = _phrase951.Replace("{PlayerName}", _cInfo.playerName);
-                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase951 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase951 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                     return false;
                                                 }
                                             }
@@ -208,7 +208,7 @@ namespace ServerTools.AntiCheat
             return true;
         }
 
-        public static bool ProcessBlockDamage(GameManager __instance, string _persistentPlayerId, List<BlockChangeInfo> _blocksToChange)
+        public static bool ProcessBlockChange(GameManager __instance, string _persistentPlayerId, List<BlockChangeInfo> _blocksToChange)
         {
             try
             {
@@ -218,18 +218,42 @@ namespace ServerTools.AntiCheat
                     for (int i = 0; i < _blocksToChange.Count; i++)
                     {
                         BlockChangeInfo _newBlockInfo = _blocksToChange[i];//new block info
-                        BlockValue _blockValue = _world.GetBlock(_newBlockInfo.pos);//old block value
+                        BlockValue _oldBlockValue = _world.GetBlock(_newBlockInfo.pos);//old block value
+                        Block _oldBlock = _oldBlockValue.Block;
                         if (_newBlockInfo != null && _newBlockInfo.bChangeBlockValue)//new block value
                         {
-                            if (_blockValue.type == BlockValue.Air.type)//old block was air
+                            Block _newBlock = _newBlockInfo.blockValue.Block;
+                            if (_oldBlockValue.type == BlockValue.Air.type)//old block was air
                             {
-                                if (_newBlockInfo.blockValue.Block is BlockSleepingBag)//placed a sleeping bag
+                                if (_newBlock is BlockSleepingBag)//placed a sleeping bag
                                 {
-                                    PersistentOperations.BedBug(_persistentPlayerId);
+                                    if (POIProtection.IsEnabled && POIProtection.Bed && _world.IsPositionWithinPOI(_newBlockInfo.pos.ToVector3(), 5))
+                                    {
+                                        ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
+                                        if (_cInfo != null)
+                                        {
+                                            GameManager.Instance.World.SetBlockRPC(_newBlockInfo.pos, BlockValue.Air);
+                                            PersistentOperations.ReturnBlock(_cInfo, _newBlock.GetBlockName(), 1);
+                                            Phrases.Dict.TryGetValue(1031, out string _phrase1031);
+                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1031 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                            return false;
+                                        }
+                                    }
                                 }
-                                else if (_newBlockInfo.blockValue.Block is BlockLandClaim)//placed a land claim
+                                else if (_newBlock is BlockLandClaim)//placed a land claim
                                 {
-                                    
+                                    if (POIProtection.IsEnabled && POIProtection.Claim && _world.IsPositionWithinPOI(_newBlockInfo.pos.ToVector3(), 5))
+                                    {
+                                        ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
+                                        if (_cInfo != null)
+                                        {
+                                            GameManager.Instance.World.SetBlockRPC(_newBlockInfo.pos, BlockValue.Air);
+                                            PersistentOperations.ReturnBlock(_cInfo, _newBlock.GetBlockName(), 1);
+                                            Phrases.Dict.TryGetValue(1032, out string _phrase1032);
+                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1032 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                            return false;
+                                        }
+                                    }
                                 }
                                 if (BlockLogger.IsEnabled)//placed block
                                 {
@@ -241,58 +265,90 @@ namespace ServerTools.AntiCheat
                             {
                                 if (_newBlockInfo.blockValue.type == BlockValue.Air.type)//new block is air
                                 {
-                                    if (_blockValue.type == BlockValue.Air.type)//replaced block
+                                    if (_oldBlockValue.type == BlockValue.Air.type)//replaced block
                                     {
                                         return true;
                                     }
-                                    if (_blockValue.Block is BlockLandClaim)//removed claim
+                                    if (_oldBlockValue.Block is BlockLandClaim)//removed claim
                                     {
                                         if (!string.IsNullOrEmpty(_persistentPlayerId))//id is valid
                                         {
                                             if (!PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, _newBlockInfo.pos))
                                             {
-                                                int _total = _blockValue.Block.MaxDamage - _blockValue.damage;
-                                                if (_blockValue.Block.MaxDamage - _blockValue.damage >= Block_Damage_Limit)
+                                                int _total = _oldBlock.MaxDamage - _oldBlockValue.damage;
+                                                if (_oldBlock.MaxDamage - _oldBlockValue.damage >= Block_Damage_Limit)
                                                 {
-                                                    BlockPenalty(_total, _persistentPlayerId);
+                                                    ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
+                                                    if (_cInfo != null)
+                                                    {
+                                                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                                        {
+                                                            BlockPenalty(_total, _persistentPlayerId);
+                                                            return false;
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                    if (!_blockValue.Block.CanPickup && !PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, _newBlockInfo.pos))//old block can not be picked up and unclaimed space
+                                    if (!_oldBlock.CanPickup && !PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, _newBlockInfo.pos))//old block can not be picked up and unclaimed space
                                     {
-                                        int _total = _blockValue.Block.MaxDamage - _blockValue.damage;
+                                        int _total = _oldBlock.MaxDamage - _oldBlockValue.damage;
                                         if (_total >= Block_Damage_Limit)
                                         {
-                                            BlockPenalty(_total, _persistentPlayerId);
+                                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
+                                            if (_cInfo != null)
+                                            {
+                                                if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                                {
+                                                    BlockPenalty(_total, _persistentPlayerId);
+                                                    return false;
+                                                }
+                                            }
                                         }
                                     }
                                 }
-                                else if (_blockValue.Block.blockID == _newBlockInfo.blockValue.Block.blockID)//block is the same
+                                else if (_oldBlock.blockID == _newBlock.blockID)//block is the same
                                 {
                                     if (_newBlockInfo.bChangeDamage)//block took damage
                                     {
-                                        int _total = _newBlockInfo.blockValue.damage - _blockValue.damage;
+                                        int _total = _newBlockInfo.blockValue.damage - _oldBlockValue.damage;
                                         if (_total >= Block_Damage_Limit)
                                         {
-                                            BlockPenalty(_total, _persistentPlayerId);
+                                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
+                                            if (_cInfo != null)
+                                            {
+                                                if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                                {
+                                                    BlockPenalty(_total, _persistentPlayerId);
+                                                    return false;
+                                                }
+                                            }
                                         }
                                     }
-                                    if (_blockValue.damage == _newBlockInfo.blockValue.damage || _newBlockInfo.blockValue.damage == 0)//block replaced
+                                    if (_oldBlockValue.damage == _newBlockInfo.blockValue.damage || _newBlockInfo.blockValue.damage == 0)//block replaced
                                     {
                                         return true;
                                     }
                                 }
-                                else if (_blockValue.Block.DowngradeBlock.Block.blockID == _newBlockInfo.blockValue.Block.blockID)//downgraded
+                                else if (_oldBlock.DowngradeBlock.Block.blockID == _newBlock.blockID)//downgraded
                                 {
-                                    if (_blockValue.damage == _newBlockInfo.blockValue.damage || _newBlockInfo.blockValue.damage == 0)
+                                    if (_oldBlockValue.damage == _newBlockInfo.blockValue.damage || _newBlockInfo.blockValue.damage == 0)
                                     {
                                         return true;
                                     }
-                                    int _total = _blockValue.Block.MaxDamage - _blockValue.damage + _newBlockInfo.blockValue.damage;
+                                    int _total = _oldBlock.MaxDamage - _oldBlockValue.damage + _newBlockInfo.blockValue.damage;
                                     if (_total >= Block_Damage_Limit)
                                     {
-                                        BlockPenalty(_total, _persistentPlayerId);
+                                        ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
+                                        if (_cInfo != null)
+                                        {
+                                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                            {
+                                                BlockPenalty(_total, _persistentPlayerId);
+                                                return false;
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -330,7 +386,7 @@ namespace ServerTools.AntiCheat
                             }
                             Phrases.Dict.TryGetValue(951, out string _phrase951);
                             _phrase951 = _phrase951.Replace("{PlayerName}", _cInfo.playerName);
-                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase951 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase951 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         }
                     }
                 }
@@ -354,7 +410,7 @@ namespace ServerTools.AntiCheat
             }
             Phrases.Dict.TryGetValue(204, out string _phrase204);
             _phrase204 = _phrase204.Replace("{PlayerName}", _cInfoKiller.playerName);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase204 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase204 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
         private static void Kill(ClientInfo _cInfo)
@@ -362,7 +418,7 @@ namespace ServerTools.AntiCheat
             SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), null);
             Phrases.Dict.TryGetValue(324, out string _phrase324);
             _phrase324 = _phrase324.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase324 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase324 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
         private static void Kick(ClientInfo _cInfo)
@@ -371,7 +427,7 @@ namespace ServerTools.AntiCheat
             SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase326), null);
             Phrases.Dict.TryGetValue(325, out string _phrase325);
             _phrase325 = _phrase325.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase325 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase325 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
         private static void Ban(ClientInfo _cInfo)
@@ -380,7 +436,13 @@ namespace ServerTools.AntiCheat
             SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase328), null);
             Phrases.Dict.TryGetValue(327, out string _phrase327);
             _phrase327 = _phrase327.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase327 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase327 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+        }
+
+        public static bool ProcessExplosion()
+        {
+
+            return true;
         }
     }
 }

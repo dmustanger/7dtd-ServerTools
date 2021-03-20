@@ -35,7 +35,7 @@ namespace ServerTools
                     if (ChatLog.IsEnabled)
                     {
                         ChatLog.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Chat log has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!ChatLog.IsEnabled)
                     {
                         ChatLog.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Chat log has been set to on"));
                         return;
                     }

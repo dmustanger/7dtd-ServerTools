@@ -35,7 +35,7 @@ namespace ServerTools
                     if (HighPingKicker.IsEnabled)
                     {
                         HighPingKicker.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] High ping kicker has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!HighPingKicker.IsEnabled)
                     {
                         HighPingKicker.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] High ping kicker has been set to on"));
                         return;
                     }

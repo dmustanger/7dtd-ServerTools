@@ -16,7 +16,7 @@ namespace ServerTools
 
         public static void Exec()
         {
-            if (!IsRunning && !StopServer.CountingDown)
+            if (!IsRunning && !StopServer.ShuttingDown)
             {
                 try
                 {
@@ -158,7 +158,7 @@ namespace ServerTools
                 {
                     _compression = CompressionLevel.BestCompression;
                 }
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Starting auto backup. You might experience periods of lag and slow down until complete" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + "Starting auto backup. You might experience periods of lag and slow down until complete" + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 string _location = _destinationDirInfo.FullName + string.Format("/Backup_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
                 string _name = string.Format("Backup_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
                 using (ZipFile zip = new ZipFile(_location))
@@ -183,7 +183,7 @@ namespace ServerTools
                     zip.Save(Path.ChangeExtension(_location, ".zip"));
                 }
                 Log.Out(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at {0}. File is named {1}", _destinationDirInfo.FullName, _name + ".zip"));
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Auto backup completed successfully" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + "Auto backup completed successfully" + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
             catch (Exception e)
             {

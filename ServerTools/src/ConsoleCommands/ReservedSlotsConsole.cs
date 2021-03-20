@@ -44,7 +44,7 @@ namespace ServerTools
                     if (ReservedSlots.IsEnabled)
                     {
                         ReservedSlots.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Reserved slots has been set to off"));
                         return;
                     }
@@ -59,7 +59,7 @@ namespace ServerTools
                     if (!ReservedSlots.IsEnabled)
                     {
                         ReservedSlots.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Reserved slots has been set to on"));
                         return;
                     }

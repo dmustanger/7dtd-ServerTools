@@ -14,19 +14,19 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. ps off\n" +
-                   "  2. ps on\n" +
-                   "  3. ps add\n" +
-                   "  4. ps add <x> <z> <x> <z>\n" +
-                   "  5. ps cancel\n" +
-                   "  6. ps remove\n" +
-                   "  7. ps remove <#>\n" +
-                   "  8. ps list\n" +
+                   "  1. st-ps off\n" +
+                   "  2. st-ps on\n" +
+                   "  3. st-ps add\n" +
+                   "  4. st-ps add <x> <z> <x> <z>\n" +
+                   "  5. st-ps cancel\n" +
+                   "  6. st-ps remove\n" +
+                   "  7. st-ps remove <#>\n" +
+                   "  8. st-ps list\n" +
                    "1. Turn off ProtectedSpaces\n" +
                    "2. Turn on ProtectedSpaces\n" +
                    "3. Add a protected space. Stand in the south west corner, use add, stand in the north east corner and use add again\n" +
                    "4. Add a protected space. Set the south west corner and north east corner using specific coordinates\n" +
-                   "5. Cancels the first saved point you set by using the add command\n" +
+                   "5. Cancels the saved corner positions\n" +
                    "6. Remove the entire protected space you are standing in, if one exists\n" +
                    "7. Remove a specific protected space from the list. The number is shown in the list\n" +
                    "8. Shows the protected spaces list\n" +
@@ -52,7 +52,7 @@ namespace ServerTools
                     if (ProtectedSpaces.IsEnabled)
                     {
                         ProtectedSpaces.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces has been set to off"));
                         return;
                     }
@@ -67,7 +67,7 @@ namespace ServerTools
                     if (!ProtectedSpaces.IsEnabled)
                     {
                         ProtectedSpaces.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces has been set to on"));
                         return;
                     }
@@ -88,7 +88,7 @@ namespace ServerTools
                     {
                         if (_senderInfo.RemoteClientInfo == null)
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Not a client"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No client info found. Join the server as a client before using this command"));
                             return;
                         }
                         EntityPlayer _player = PersistentOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.playerId);
@@ -195,10 +195,10 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Not a client"));
                         return;
                     }
-                    if (ProtectedSpaces.IsEnabled && ProtectedSpaces.Vectors.ContainsKey(_senderInfo.RemoteClientInfo.entityId))
+                    if (ProtectedSpaces.Vectors.ContainsKey(_senderInfo.RemoteClientInfo.entityId))
                     {
                         ProtectedSpaces.Vectors.Remove(_senderInfo.RemoteClientInfo.entityId);
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Cancelled the saved first position for a protected space. Use add to start again"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Cancelled your saved corner positions"));
                         return;
                     }
                     else

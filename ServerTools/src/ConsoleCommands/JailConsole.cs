@@ -44,7 +44,7 @@ namespace ServerTools
                     if (Jail.IsEnabled)
                     {
                         Jail.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jail has been set to off"));
                         return;
                     }
@@ -59,7 +59,7 @@ namespace ServerTools
                     if (!Jail.IsEnabled)
                     {
                         Jail.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jail has been set to on"));
                         return;
                     }
@@ -127,13 +127,13 @@ namespace ServerTools
                                 {
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have put {0} in jail for {1} minutes", _cInfo.playerName, _jailTime));
                                     Phrases.Dict.TryGetValue(190, out string _phrase190);
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase190 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase190 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 if (_jailTime == -1)
                                 {
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have put {0} in jail for life", _cInfo.playerName));
                                     Phrases.Dict.TryGetValue(190, out string _phrase190);
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase190 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase190 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }

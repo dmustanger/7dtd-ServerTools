@@ -12,7 +12,7 @@ namespace ServerTools
             string _fps = GameManager.Instance.fps.Counter.ToString();
             Phrases.Dict.TryGetValue(41, out string _phrase41);
             _phrase41 = _phrase41.Replace("{Fps}", _fps);
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase41 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase41 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void SetTarget()

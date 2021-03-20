@@ -38,7 +38,7 @@ namespace ServerTools
                     if (CredentialCheck.IsEnabled)
                     {
                         CredentialCheck.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Credentials has been set to off"));
                         return;
                     }
@@ -53,7 +53,7 @@ namespace ServerTools
                     if (!CredentialCheck.IsEnabled)
                     {
                         CredentialCheck.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Credentials has been set to on"));
                         return;
                     }

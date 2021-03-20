@@ -35,7 +35,7 @@ namespace ServerTools
                     if (Market.IsEnabled)
                     {
                         Market.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Market has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!Market.IsEnabled)
                     {
                         Market.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Market has been set to on"));
                         return;
                     }

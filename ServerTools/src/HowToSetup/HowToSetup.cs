@@ -13,14 +13,14 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine(string.Format("This was drafted for version {0}", LoadConfig.version));
+                sw.WriteLine(string.Format("This was drafted for version {0}", Config.version));
                 sw.WriteLine();
                 sw.WriteLine("The noted above version is automatic and may not reflect the state of this file.");
                 sw.WriteLine();
                 sw.WriteLine("ServerTools was coded and tested under a Windows operating system. If you find bugs, report them to");
                 sw.WriteLine("https://github.com/dmustanger/7dtd-ServerTools/issues");
                 sw.WriteLine();
-                sw.WriteLine("This version is compatible with 7 Days to Die: Alpha 18");
+                sw.WriteLine("This version is compatible with 7 Days to Die: Alpha 19");
                 sw.WriteLine();
                 sw.WriteLine("Open the ServerToolsConfig.xml found in the servertools folder inside your dedicated server installation directory. You will need to enable and set each tools options to match your server preferences.");
                 sw.WriteLine();
@@ -624,7 +624,7 @@ namespace ServerTools
                 sw.WriteLine("Set a numeric value set of x, y, z position for Jail_Position");
                 sw.WriteLine("Set True or False for Jail_Shock");
                 sw.WriteLine();
-                sw.WriteLine("Enables the jail system for naughty players. This muct be enabled to utilize other tools that send a player to jail.");
+                sw.WriteLine("Enables the jail system for naughty players. This must be enabled to utilize other tools that send a player to jail.");
                 sw.WriteLine("Jail_Size controls how far a player can stray from the jail before it teleports them back to the Jail_Position.");
                 sw.WriteLine("Jail_Position controls where a jailed player is sent to. This is the x, y, z position.");
                 sw.WriteLine("Jail shock will apply the shock buff to them if they try to leave the prison area.");

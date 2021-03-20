@@ -71,7 +71,7 @@ namespace ServerTools
                 int _timeleft = _delay - _timepassed;
                 Phrases.Dict.TryGetValue(391, out string _phrase391);
                 _phrase391 = _phrase391.Replace("{TimeRemaining}", _timeleft.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase391 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase391 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -86,7 +86,7 @@ namespace ServerTools
             {
                 Phrases.Dict.TryGetValue(392, out string _phrase392);
                 _phrase392 = _phrase392.Replace("{CoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase392 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase392 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -145,7 +145,7 @@ namespace ServerTools
                 }
                 Phrases.Dict.TryGetValue(393, out string _phrase393);
                 _phrase393 = _phrase393.Replace("{Radius}", _nextRadius.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase393 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase393 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
@@ -155,7 +155,7 @@ namespace ServerTools
             else
             {
                 Phrases.Dict.TryGetValue(394, out string _phrase394);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase394 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase394 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

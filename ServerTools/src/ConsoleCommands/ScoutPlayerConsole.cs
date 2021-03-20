@@ -35,7 +35,7 @@ namespace ServerTools
                     if (ScoutPlayer.IsEnabled)
                     {
                         ScoutPlayer.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Scout player has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!ScoutPlayer.IsEnabled)
                     {
                         ScoutPlayer.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Scout player has been set to on"));
                         return;
                     }

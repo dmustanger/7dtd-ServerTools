@@ -57,22 +57,29 @@ namespace ServerTools
 
         public static void Cleanup()
         {
-            if (PersistentContainer.Instance.Track != null && PersistentContainer.Instance.Track.Count > 0)
+            try
             {
-                Log.Out("[SERVERTOOLS] Deleting old tracking logs");
-                List<string[]> _trackLog = PersistentContainer.Instance.Track;
-                for (int i = 0; i < _trackLog.Count; i++)
+                if (PersistentContainer.Instance != null && PersistentContainer.Instance.Track != null && PersistentContainer.Instance.Track.Count > 0)
                 {
-                    string[] _trackData = _trackLog[i];
-                    DateTime.TryParse(_trackData[0], out DateTime _date);
-                    if (_date.AddDays(2) >= DateTime.Now)
+                    Log.Out("[SERVERTOOLS] Deleting old tracking logs");
+                    List<string[]> _trackLog = PersistentContainer.Instance.Track;
+                    for (int i = 0; i < _trackLog.Count; i++)
                     {
-                        _trackLog.Remove(_trackData);
+                        string[] _trackData = _trackLog[i];
+                        DateTime.TryParse(_trackData[0], out DateTime _date);
+                        if (_date.AddDays(2) >= DateTime.Now)
+                        {
+                            _trackLog.Remove(_trackData);
+                        }
                     }
+                    PersistentContainer.Instance.Track = _trackLog;
                 }
-                PersistentContainer.Instance.Track = _trackLog;
+                Log.Out("[SERVERTOOLS] Tracking log clean up completed");
             }
-            Log.Out("[SERVERTOOLS] Tracking log clean up completed");
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Tracking.Cleanup: {0}", e.Message));
+            }
         }
     }
 }

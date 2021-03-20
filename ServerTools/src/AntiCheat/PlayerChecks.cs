@@ -47,7 +47,7 @@ namespace ServerTools.AntiCheat
                                             Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, using spectator mode @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
                                             Phrases.Dict.TryGetValue(961, out string _phrase961);
                                             _phrase961 = _phrase961.Replace("{PlayerName}", _cInfo.playerName);
-                                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase961 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase961 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                             continue;
                                         }
                                     }
@@ -69,7 +69,7 @@ namespace ServerTools.AntiCheat
                                             Log.Warning("[SERVERTOOLS] Detected \"{0}\", Steam id {1}, using godmode @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
                                             Phrases.Dict.TryGetValue(971, out string _phrase971);
                                             _phrase971 = _phrase971.Replace("{PlayerName}", _cInfo.playerName);
-                                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase971 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase971 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                             continue;
                                         }
                                     }
@@ -99,7 +99,8 @@ namespace ServerTools.AntiCheat
                                                 if (Flag.ContainsKey(_cInfo.entityId))
                                                 {
                                                     Flag.TryGetValue(_cInfo.entityId, out int _flags);
-                                                    if (_flags + 1 >= Flying_Flags)
+                                                    _flags++;
+                                                    if (_flags >= Flying_Flags)
                                                     {
                                                         Flag.Remove(_cInfo.entityId);
                                                         Phrases.Dict.TryGetValue(982, out string _phrase982);
@@ -116,12 +117,12 @@ namespace ServerTools.AntiCheat
                                                         Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying @ {2} {3} {4}. Steam Id has been banned", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
                                                         Phrases.Dict.TryGetValue(981, out string _phrase981);
                                                         _phrase981 = _phrase981.Replace("{PlayerName}", _cInfo.playerName);
-                                                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase981 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase981 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                         continue;
                                                     }
                                                     else
                                                     {
-                                                        Flag[_cInfo.entityId] = _flags + 1;
+                                                        Flag[_cInfo.entityId] = _flags;
                                                     }
                                                 }
                                                 else
@@ -162,12 +163,12 @@ namespace ServerTools.AntiCheat
         {
             for (float k = y - 2.5f; k <= (y + 2f); k++)
             {
-                for (float i = x - 1.5f; i <= (x + 1.5f); i++)
+                for (float i = x - 1.75f; i <= (x + 1.75f); i++)
                 {
-                    for (float j = z - 1.5f; j <= (z + 1.5f); j++)
+                    for (float j = z - 1.75f; j <= (z + 1.75f); j++)
                     {
-                        BlockValue Block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
-                        if (Block.type != BlockValue.Air.type)
+                        BlockValue _block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
+                        if (_block.type != BlockValue.Air.type)
                         {
                             return false;
                         }
@@ -179,18 +180,14 @@ namespace ServerTools.AntiCheat
 
         private static bool GroundCheck(float x, float y, float z)
         {
-            for (float k = y - 1f; k <= (y + 2f); k++)
+            for (float k = y - 1.5f; k <= (y + 2f); k++)
             {
-                for (float i = x - 1.5f; i <= (x + 1.5f); i++)
+                for (float i = x - 1.75f; i <= (x + 1.75f); i++)
                 {
-                    for (float j = z - 1.5f; j <= (z + 1.5f); j++)
+                    for (float j = z - 1.75f; j <= (z + 1.75f); j++)
                     {
                         BlockValue _block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
-                        string _name = _block.Block.GetBlockName().ToLower();
-                        if (_block.type == BlockValue.Air.type || _block.Block.isMultiBlock || _block.Block.IsTerrainDecoration || _block.Block.IsDecoration
-                            || _name.Contains("ladder") || _name.Contains("trellis")
-                            || _name.Contains("arch") || _name.ToLower().Contains("ramp")
-                            || _name.Contains("drawbridge"))
+                        if (_block.type == BlockValue.Air.type || !Block.list[_block.type].shape.IsTerrain())
                         {
                             return false;
                         }

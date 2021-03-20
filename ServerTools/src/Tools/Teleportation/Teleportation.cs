@@ -23,7 +23,7 @@ namespace ServerTools
                             if (((_player.position.x - _entity.position.x) * (_player.position.x - _entity.position.x) + (_player.position.z - _entity.position.z) * (_player.position.z - _entity.position.z)) < 50f * 50f)
                             {
                                 Phrases.Dict.TryGetValue(851, out string _phrase851);
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase851 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase851 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 return true;
                             }
                         }
@@ -44,7 +44,7 @@ namespace ServerTools
                     if (((_player.position.x - _player2.position.x) * (_player.position.x - _player2.position.x) + (_player.position.z - _player2.position.z) * (_player.position.z - _player2.position.z)) < 100f * 100f)
                     {
                         Phrases.Dict.TryGetValue(852, out string _phrase852);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase852 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase852 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         return true;
                     }
                 }
@@ -58,7 +58,7 @@ namespace ServerTools
             if (_player.AttachedToEntity != null)
             {
                 Phrases.Dict.TryGetValue(853, out string _phrase853);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase853 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase853 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 return true;
             }
             return false;

@@ -16,11 +16,11 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. auc off\n" +
-                   "  2. auc on\n" +
-                   "  3. auc cancel <Id>\n" +
-                   "  4. auc clear <Id>\n" +
-                   "  5. auc list\n" +
+                   "  1. st-auc off\n" +
+                   "  2. st-auc on\n" +
+                   "  3. st-auc cancel <Id>\n" +
+                   "  4. st-auc clear <Id>\n" +
+                   "  5. st-auc list\n" +
                    "1. Turn off the auction\n" +
                    "2. Turn on the auction\n" +
                    "3. Cancel the auction Id and return it to the owner\n" +
@@ -47,7 +47,7 @@ namespace ServerTools
                     if (Auction.IsEnabled)
                     {
                         Auction.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auction has been set to off"));
                         return;
                     }
@@ -62,7 +62,7 @@ namespace ServerTools
                     if (!Auction.IsEnabled)
                     {
                         Auction.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auction has been set to on"));
                         return;
                     }
@@ -123,7 +123,7 @@ namespace ServerTools
                                                     sw.Flush();
                                                     sw.Close();
                                                 }
-                                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Your auction item has returned to you.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "Your auction item has returned to you.[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                             }
                                             else
                                             {

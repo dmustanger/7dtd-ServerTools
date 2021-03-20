@@ -39,7 +39,7 @@ namespace ServerTools
         {
             try
             {
-                LoadProcess.Load(1);
+                LoadProcess.Load();
             }
             catch (Exception e)
             {
@@ -49,11 +49,18 @@ namespace ServerTools
 
         private static void GameShutdown()
         {
-            StateManager.Save();
-            OutputLog.Shutdown();
-            Timers.TimerStop();
-            Timers.ShutdownFailsafe();
-            StopServer.ShuttingDown = true;
+            try
+            {
+                StateManager.Save();
+                OutputLog.Shutdown();
+                Timers.TimerStop();
+                Timers.ShutdownFailsafe();
+                StopServer.ShuttingDown = true;
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.GameShutdown: {0}", e.Message));
+            }
         }
 
         private static bool PlayerLogin(ClientInfo _cInfo, string _message, StringBuilder _stringBuild)//Initiating player login
@@ -63,8 +70,11 @@ namespace ServerTools
                 Log.Out("[SERVERTOOLS] Player connected");
                 if (StopServer.NoEntry)
                 {
-                    _stringBuild = new StringBuilder("Server is shutting down. Rejoin when it restarts");
-                    return false;
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Server is shutting down. Rejoin when it restarts\"", _cInfo.playerId), null);
+                }
+                if (NewPlayer.Block_During_Bloodmoon && PersistentOperations.BloodMoonSky())
+                {
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.playerId), null);
                 }
             }
             catch (Exception e)
@@ -103,9 +113,9 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].PlayerName = _cInfo.playerName;
                             PersistentOperations.SessionTime(_cInfo);
-                            if (_respawnReason == RespawnType.EnterMultiplayer)//New player spawning. Game bug has returning players trigger this on server restarts
+                            if (_respawnReason == RespawnType.EnterMultiplayer)//New player spawning. Game bug can trigger this incorrectly
                             {
-                                if (_player.distanceWalked < 5 && _player.currentLife <= 5 && _player.totalTimePlayed <= 5)
+                                if (_player.distanceWalked < 1 && _player.totalTimePlayed <= 1)
                                 {
                                     Timers.NewPlayerTimer(_cInfo);
                                 }
@@ -116,7 +126,7 @@ namespace ServerTools
                             }
                             else if (_respawnReason == RespawnType.JoinMultiplayer)//Old player spawning
                             {
-                                if (_player.distanceWalked == 0 && _player.currentLife <= 5 && _player.totalTimePlayed <= 5)
+                                if (_player.distanceWalked < 1 && _player.totalTimePlayed <= 10)
                                 {
                                     Timers.NewPlayerTimer(_cInfo);
                                 }
@@ -537,10 +547,10 @@ namespace ServerTools
                 Dictionary<string, string> _clanRequests = PersistentContainer.Instance.Players[_cInfo.playerId].ClanRequestToJoin;
                 if (_clanRequests != null && _clanRequests.Count > 0)
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "New clan requests from:[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "New clan requests from:[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     foreach (var _request in _clanRequests)
                     {
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _request.Value + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _request.Value + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -559,10 +569,6 @@ namespace ServerTools
             if (Bloodmoon.IsEnabled && Bloodmoon.Show_On_Respawn)
             {
                 Bloodmoon.Exec(_cInfo);
-            }
-            if (BattleLogger.IsEnabled)
-            {
-                BattleLogger.AlertPlayer(_cInfo);
             }
             if (Event.Open && Event.Teams.ContainsKey(_cInfo.playerId))
             {
@@ -596,14 +602,14 @@ namespace ServerTools
                 string _response = "Type {CommandPrivate}{Command50} to teleport back to your death position. There is a time limit.";
                 _response = _response.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _response = _response.Replace("{Command50}", Zones.Command50);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _response + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 PersistentContainer.Instance.Players[_cInfo.playerId].ZoneDeathTime = DateTime.Now;
                 if (Zones.Forgive.ContainsKey(_cInfo.entityId))
                 {
                     string _response2 = "Type {CommandPrivate}{Command55} to release your killer from jail.";
                     _response2 = _response2.Replace("{CommandPrivate}", ChatHook.Command_Private);
                     _response2 = _response2.Replace("{Command55}", Jail.Command55);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response2 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _response2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }

@@ -14,9 +14,9 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. ss <minutes>\n" +
-                "  2. ss cancel\n" +
-                "1. Starts a shutdown process with a countdown for this long\n" +
+                "  1. st-ss <minutes>\n" +
+                "  2. st-ss cancel\n" +
+                "1. Starts a shutdown process with a countdown for the specified time\n" +
                 "2. Cancels the shutdown\n";
         }
 
@@ -36,27 +36,31 @@ namespace ServerTools
                 }
                 if (_params[0] == "cancel")
                 {
-                    if (!StopServer.CountingDown)
+                    if (!StopServer.ShuttingDown)
                     {
                         SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver is not running");
                     }
                     else
                     {
-                        StopServer.CountingDown = false;
+                        StopServer.ShuttingDown = false;
                         StopServer.NoEntry = false;
                         Lottery.ShuttingDown = false;
                         if (Shutdown.IsEnabled)
                         {
-                            Timers._shutdown = 0;
+                            EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(Shutdown.Delay));
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled and the next shutdown has been reset");
                         }
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled");
+                        else
+                        {
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled");
+                        }
                     }
                 }
                 else
                 {
-                    if (StopServer.CountingDown)
+                    if (StopServer.ShuttingDown)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Server is already set to shutdown"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Server is already set to shutdown. Cancel it if you wish to set a new countdown"));
                     }
                     else
                     {

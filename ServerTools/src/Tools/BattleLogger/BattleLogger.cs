@@ -202,7 +202,7 @@ namespace ServerTools
                                 if (_player.position != _pos)
                                 {
                                     Phrases.Dict.TryGetValue(671, out string _phrase671);
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase671 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase671 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                             }
@@ -249,7 +249,7 @@ namespace ServerTools
             Phrases.Dict.TryGetValue(672, out string _phrase672);
             _phrase672 = _phrase672.Replace("{CommandPrivate}", ChatHook.Command_Private);
             _phrase672 = _phrase672.Replace("{Command131}", Command131);
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase672 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase672 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
     }
 }

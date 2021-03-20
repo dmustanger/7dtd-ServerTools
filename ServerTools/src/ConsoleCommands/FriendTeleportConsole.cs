@@ -35,7 +35,7 @@ namespace ServerTools
                     if (FriendTeleport.IsEnabled)
                     {
                         FriendTeleport.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Friend teleport has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!FriendTeleport.IsEnabled)
                     {
                         FriendTeleport.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Friend teleport has been set to on"));
                         return;
                     }

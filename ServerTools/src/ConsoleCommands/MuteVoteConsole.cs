@@ -35,7 +35,7 @@ namespace ServerTools
                     if (MuteVote.IsEnabled)
                     {
                         MuteVote.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Mute vote has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!MuteVote.IsEnabled)
                     {
                         MuteVote.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Mute vote has been set to on"));
                         return;
                     }

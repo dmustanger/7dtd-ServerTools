@@ -37,7 +37,7 @@ namespace ServerTools
                     if (FirstClaimBlock.IsEnabled)
                     {
                         FirstClaimBlock.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] First claim block has been set to off"));
                         return;
                     }
@@ -52,7 +52,7 @@ namespace ServerTools
                     if (!FirstClaimBlock.IsEnabled)
                     {
                         FirstClaimBlock.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] First claim block has been set to on"));
                         return;
                     }

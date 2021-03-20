@@ -13,7 +13,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. ShutdownCheck\n" +
+                   "  1. st-ShutdownCheck\n" +
                    "1. Shows the next scheduled shutdown\n";
         }
 
@@ -28,44 +28,23 @@ namespace ServerTools
             {
                 if (Shutdown.IsEnabled)
                 {
-                    if (!Shutdown.Bloodmoon)
+                    if (_senderInfo.RemoteClientInfo != null && _senderInfo.RemoteClientInfo.playerId != null)
                     {
-                        if (!Event.Open)
+                        EventSchedule.Schedule.TryGetValue("Shutdown", out DateTime _timeLeft);
+                        TimeSpan varTime = _timeLeft - DateTime.Now;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _remainingTime = (int)fractionalMinutes;
+                        if (_remainingTime <= 10 && Event.Open)
                         {
-                            try
-                            {
-                                int _time;
-                                if (Shutdown.BloodmoonOver)
-                                {
-                                    _time = Shutdown.Delay - (Timers._shutdownBloodmoonOver / 60);
-                                }
-                                else
-                                {
-                                    _time = Shutdown.Delay - (Timers._shutdown / 60);
-                                }
-                                if (_time < 0)
-                                {
-                                    _time = 0;
-                                }
-                                string _message = string.Format("[SERVERTOOLS] The next shutdown is in {0:00} H : {1:00} M", _time / 60, _time % 60);
-                                SdtdConsole.Instance.Output(_message);
-                                return;
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Out(string.Format("[SERVERTOOLS] Error in NextShutdownConsole.Execute: {0}.", e));
-                            }
-                        }
-                        else
-                        {
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] The server is set to shutdown after the event is over.");
+                            Phrases.Dict.TryGetValue(422, out string _phrase422);
+                            ChatHook.ChatMessage(_senderInfo.RemoteClientInfo, Config.Chat_Response_Color + _phrase422 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             return;
                         }
-                    }
-                    else
-                    {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] The server is set to shutdown after the bloodmoon is over.");
-                        return;
+                        string TimeLeft;
+                        TimeLeft = string.Format("{0:00} H : {1:00} M", _remainingTime / 60, _remainingTime % 60);
+                        Phrases.Dict.TryGetValue(421, out string _phrase421);
+                        _phrase421 = _phrase421.Replace("{TimeLeft}", TimeLeft);
+                        ChatHook.ChatMessage(_senderInfo.RemoteClientInfo, Config.Chat_Response_Color + _phrase421 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else

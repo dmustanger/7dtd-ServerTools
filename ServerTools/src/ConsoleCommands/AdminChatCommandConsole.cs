@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. acc off\n" +
-                   "  2. acc on\n" +
+                   "  1. st-acc off\n" +
+                   "  2. st-acc on\n" +
                    "1. Turn off server admin chat commands\n" +
                    "2. Turn on server admin chat commands\n";
         }
@@ -38,7 +38,7 @@ namespace ServerTools
                     if (AdminChat.IsEnabled)
                     {
                         AdminChat.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Admin chat commands has been set to off"));
                         return;
                     }
@@ -53,7 +53,7 @@ namespace ServerTools
                     if (!AdminChat.IsEnabled)
                     {
                         AdminChat.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Admin chat commands has been set to on"));
                         return;
                     }

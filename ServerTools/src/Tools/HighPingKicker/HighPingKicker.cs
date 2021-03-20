@@ -188,7 +188,7 @@ namespace ServerTools
             _phrase1 = _phrase1.Replace("{PlayerName}", _cInfo.playerName);
             _phrase1 = _phrase1.Replace("{PlayerPing}", _cInfo.ping.ToString());
             _phrase1 = _phrase1.Replace("{MaxPing}", Max_Ping.ToString());
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             Phrases.Dict.TryGetValue(2, out string _phrase2);
             _phrase2 = _phrase2.Replace("{PlayerPing}", _cInfo.ping.ToString());
             _phrase2 = _phrase2.Replace("{MaxPing}", Max_Ping.ToString());

@@ -102,9 +102,11 @@ namespace ServerTools
                     sw.WriteLine("        <Bad Word=\"ass\" />");
                     sw.WriteLine("        <Bad Word=\"cunt\" />");
                     sw.WriteLine("        <Bad Word=\"faggit\" />");
-                    sw.WriteLine("        <Bad Word=\"piss\" />");
-                    sw.WriteLine("        <Bad Word=\"p!ss\" />");
+                    sw.WriteLine("        <Bad Word=\"trannysaurus\" />");
+                    sw.WriteLine("        <Bad Word=\"cracker\" />");
+                    sw.WriteLine("        <Bad Word=\"cr@cker\" />");
                     sw.WriteLine("        <Bad Word=\"fuck\" />");
+                    sw.WriteLine("        <Bad Word=\"shit\" />");
                 }
                 sw.WriteLine("    </BadWords>");
                 sw.WriteLine("</BadWordFilter>");

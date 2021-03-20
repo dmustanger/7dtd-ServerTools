@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Xml;
 
 namespace ServerTools
@@ -145,7 +144,7 @@ namespace ServerTools
                             {
                                 _phrase140 = _phrase140.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase140 = _phrase140.Replace("{Reason}", _reason);
-                                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _phrase140 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo1, Config.Chat_Response_Color + _phrase140 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }

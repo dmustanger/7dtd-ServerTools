@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. bank off\n" +
-                   "  2. bank on\n" +
+                   "  1. st-bank off\n" +
+                   "  2. st-bank on\n" +
                    "1. Turn off the bank\n" +
                    "2. Turn on the bank\n";
         }
@@ -38,7 +38,7 @@ namespace ServerTools
                     if (Bank.IsEnabled)
                     {
                         Bank.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bank has been set to off"));
                         return;
                     }
@@ -53,7 +53,7 @@ namespace ServerTools
                     if (!Bank.IsEnabled)
                     {
                         Bank.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bank has been set to on"));
                         return;
                     }

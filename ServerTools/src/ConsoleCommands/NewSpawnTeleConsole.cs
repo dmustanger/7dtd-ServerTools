@@ -35,7 +35,7 @@ namespace ServerTools
                     if (NewSpawnTele.IsEnabled)
                     {
                         NewSpawnTele.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] New spawn tele has been set to off"));
                         return;
                     }
@@ -50,7 +50,7 @@ namespace ServerTools
                     if (!NewSpawnTele.IsEnabled)
                     {
                         NewSpawnTele.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] New spawn tele has been set to on"));
                         return;
                     }

@@ -15,7 +15,7 @@ namespace ServerTools
                 ClientInfo _cInfo = _cInfoList[i];
                 if (_cInfo != null && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= ChatHook.Mod_Level && _sender.playerId != _cInfo.playerId)
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper, null);
                 }
             }
         }

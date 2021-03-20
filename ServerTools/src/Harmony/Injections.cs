@@ -26,13 +26,30 @@ public static class Injections
         __state = false;
         try
         {
-            int _maxCount = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
-            if (ReservedSlots.IsEnabled && _playerId != null && _playerId.Length == 17 && ConnectionManager.Instance.ClientCount() > _maxCount)
+            if (_playerId != null && _playerId.Length == 17)
             {
-                if (ReservedSlots.FullServer(_playerId))
+                int __maxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
+                if (ReservedSlots.IsEnabled && ConnectionManager.Instance.ClientCount() > __maxPlayers)
                 {
-                    GamePrefs.Set(EnumGamePrefs.ServerMaxPlayerCount, _maxCount + 1);
-                    __state = true;
+                    if (ReservedSlots.FullServer(_playerId))
+                    {
+                        GamePrefs.Set(EnumGamePrefs.ServerMaxPlayerCount, __maxPlayers + 1);
+                        __state = true;
+                        return;
+                    }
+                }
+                if (NewPlayer.IsEnabled && NewPlayer.Block_During_Bloodmoon && SkyManager.BloodMoon())
+                {
+                    PersistentPlayerData _ppd = PersistentOperations.GetPersistentPlayerDataFromSteamId(_playerId);
+                    if (_ppd == null)
+                    {
+                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_playerId);
+                        if (_cInfo != null)
+                        {
+                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerDenied>().Setup(new GameUtils.KickPlayerData(GameUtils.EKickReason.ManualKick, 0, default(DateTime), "[ServerTools] - New players are kicked during the bloodmoon. Please return after the bloodmoon is over")));
+                            return;
+                        }
+                    }
                 }
             }
         }
@@ -48,8 +65,8 @@ public static class Injections
         {
             if (__state)
             {
-                int _maxCount = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
-                GamePrefs.Set(EnumGamePrefs.ServerMaxPlayerCount, _maxCount - 1);
+                int _maxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
+                GamePrefs.Set(EnumGamePrefs.ServerMaxPlayerCount, _maxPlayers - 1);
             }
         }
         catch (Exception e)
@@ -62,7 +79,7 @@ public static class Injections
     {
         try
         {
-            return ProcessDamage.ProcessBlockDamage(__instance, persistentPlayerId, _blocksToChange);
+            return ProcessDamage.ProcessBlockChange(__instance, persistentPlayerId, _blocksToChange);
         }
         catch (Exception e)
         {

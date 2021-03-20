@@ -247,7 +247,7 @@ namespace ServerTools
                                             KilledZombies.Add(_cInfo.playerId, 0);
                                             Phrases.Dict.TryGetValue(691, out string _phrase691);
                                             _phrase691 = _phrase691.Replace("{Count}", Zombie_Kills.ToString());
-                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase691 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase691 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
                                 }
@@ -293,12 +293,12 @@ namespace ServerTools
                                         _player.bPlayerStatsChanged = true;
                                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(_player));
                                         Phrases.Dict.TryGetValue(692, out string _phrase692);
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase692 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase692 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                     else
                                     {
                                         Phrases.Dict.TryGetValue(693, out string _phrase693);
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase693 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase693 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                             }

@@ -44,7 +44,7 @@ namespace ServerTools
                     if (Shop.IsEnabled)
                     {
                         Shop.IsEnabled = false;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Shop has been set to off"));
                         return;
                     }
@@ -59,7 +59,7 @@ namespace ServerTools
                     if (!Shop.IsEnabled)
                     {
                         Shop.IsEnabled = true;
-                        LoadConfig.WriteXml();
+                        Config.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Shop has been set to on"));
                         return;
                     }
