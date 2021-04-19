@@ -21,7 +21,6 @@ namespace ServerTools
         {
             try
             {
-                //Date = DateTime.Now;
                 Logger.Main.LogCallbacks += LogAction;
             }
             catch (Exception e)
@@ -63,23 +62,6 @@ namespace ServerTools
                 //        sw.Close();
                 //    }
                 //}
-                if (BattleLogger.IsEnabled)
-                {
-                    if (msg.Contains("NET: LiteNetLib: Client disconnect from:") && msg.Contains("(RemoteConnectionClose)"))
-                    {
-                        string _ip = msg.Replace("NET: LiteNetLib: Client disconnect from: ", "*");
-                        _ip = _ip.Split('*').Last();
-                        _ip = _ip.Split(':').First();
-                        if (!BattleLogger.DisconnectedIp.ContainsKey(_ip))
-                        {
-                            BattleLogger.DisconnectedIp.Add(_ip, DateTime.Now);
-                        }
-                        else
-                        {
-                            BattleLogger.DisconnectedIp[_ip] = DateTime.Now;
-                        }
-                    }
-                }
             }
             catch (Exception e)
             {

@@ -33,14 +33,12 @@ namespace ServerTools
                 }
                 if (_params.Count == 2)
                 {
-                    int _entityId1;
-                    if (!int.TryParse(_params[0], out _entityId1))
+                    if (!int.TryParse(_params[0], out int _entityId1))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack id value: {0}", _entityId1));
                         return;
                     }
-                    int _entityId2;
-                    if (!int.TryParse(_params[1], out _entityId2))
+                    if (!int.TryParse(_params[1], out int _entityId2))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack id value: {0}", _entityId2));
                         return;

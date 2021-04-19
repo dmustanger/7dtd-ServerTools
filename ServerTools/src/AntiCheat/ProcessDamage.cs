@@ -255,6 +255,10 @@ namespace ServerTools.AntiCheat
                                         }
                                     }
                                 }
+                                else if (_newBlock is BlockPowered)//placed a electric block
+                                {
+                                    Log.Out(string.Format("[SERVERTOOLS] New block is a powered block named {0}", _newBlock.GetBlockName()));
+                                }
                                 if (BlockLogger.IsEnabled)//placed block
                                 {
                                     BlockLogger.Log(_persistentPlayerId, _newBlockInfo);

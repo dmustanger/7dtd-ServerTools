@@ -30,9 +30,9 @@ namespace ServerTools
                 string _mposition = x + "," + y + "," + z;
                 Market_Position = _mposition;
                 Config.WriteXml();
-                Phrases.Dict.TryGetValue(257, out string _phrase257);
-                _phrase257 = _phrase257.Replace("{MarketPosition}", Market_Position);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase257 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(256, out string _phrase256);
+                _phrase256 = _phrase256.Replace("{MarketPosition}", Market_Position);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase256 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -95,7 +95,7 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                Phrases.Dict.TryGetValue(258, out string _phrase251);
+                Phrases.Dict.TryGetValue(251, out string _phrase251);
                 _phrase251 = _phrase251.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase251 = _phrase251.Replace("{TimeRemaining}", _timeleft.ToString());
                 _phrase251 = _phrase251.Replace("{CommandPrivate}", ChatHook.Command_Private);
@@ -123,53 +123,64 @@ namespace ServerTools
             if (Market.Market_Position != "0,0,0" || Market.Market_Position != "0 0 0" || Market.Market_Position != "")
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                if (Player_Check)
+                if (_player != null)
                 {
-                    if (Teleportation.PCheck(_cInfo, _player))
+                    if (!Market.MarketPlayers.Contains(_cInfo.entityId))
                     {
-                        return;
-                    }
-                }
-                if (Zombie_Check)
-                {
-                    if (Teleportation.ZCheck(_cInfo, _player))
-                    {
-                        return;
-                    }
-                }
-                if (!Teleportation.Teleporting.Contains(_cInfo.entityId))
-                {
-                    Teleportation.Teleporting.Add(_cInfo.entityId);
-                }
-                int x, y, z;
-                if (Return)
-                {
-                    Vector3 _position = _player.GetPosition();
-                    x = (int)_position.x;
-                    y = (int)_position.y;
-                    z = (int)_position.z;
-                    string _mposition = x + "," + y + "," + z;
-                    MarketPlayers.Add(_cInfo.entityId);
-                    PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = _mposition;
-                    Phrases.Dict.TryGetValue(252, out string _phrase252);
-                    _phrase252 = _phrase252.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                    _phrase252 = _phrase252.Replace("{Command51}", Command51);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase252 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                }
-                string[] _cords = Market.Market_Position.Split(',').ToArray();
-                if (int.TryParse(_cords[0], out int _x))
-                {
-                    if (int.TryParse(_cords[1], out int _y))
-                    {
-                        if (int.TryParse(_cords[2], out int _z))
+                        if (Player_Check)
                         {
-                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
-                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            if (Teleportation.PCheck(_cInfo, _player))
                             {
-                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                                return;
                             }
-                            PersistentContainer.Instance.Players[_cInfo.playerId].LastMarket = DateTime.Now;
                         }
+                        if (Zombie_Check)
+                        {
+                            if (Teleportation.ZCheck(_cInfo, _player))
+                            {
+                                return;
+                            }
+                        }
+                        if (!Teleportation.Teleporting.Contains(_cInfo.entityId))
+                        {
+                            Teleportation.Teleporting.Add(_cInfo.entityId);
+                        }
+                        int x, y, z;
+                        if (Return)
+                        {
+                            Vector3 _position = _player.GetPosition();
+                            x = (int)_position.x;
+                            y = (int)_position.y;
+                            z = (int)_position.z;
+                            string _mposition = x + "," + y + "," + z;
+                            MarketPlayers.Add(_cInfo.entityId);
+                            PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = _mposition;
+                            Phrases.Dict.TryGetValue(252, out string _phrase252);
+                            _phrase252 = _phrase252.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase252 = _phrase252.Replace("{Command51}", Command51);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase252 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
+                        string[] _cords = Market.Market_Position.Split(',').ToArray();
+                        if (int.TryParse(_cords[0], out int _x))
+                        {
+                            if (int.TryParse(_cords[1], out int _y))
+                            {
+                                if (int.TryParse(_cords[2], out int _z))
+                                {
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                                    {
+                                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                                    }
+                                    PersistentContainer.Instance.Players[_cInfo.playerId].LastMarket = DateTime.Now;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Phrases.Dict.TryGetValue(250, out string _phrase250);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase250 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }

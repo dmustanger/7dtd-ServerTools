@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ServerTools
 {
-    public class StopServerCommandConsole : ConsoleCmdAbstract
+    class StopServerCommandConsole : ConsoleCmdAbstract
     {
 
         public override string GetDescription()

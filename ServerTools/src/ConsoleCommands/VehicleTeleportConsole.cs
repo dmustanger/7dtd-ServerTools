@@ -12,13 +12,13 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. VehicleTeleport off\n" +
-                   "  2. VehicleTeleport on\n" +
-                   "  3. VehicleTeleport bike\n" +
-                   "  4. VehicleTeleport minibike\n" +
-                   "  5. VehicleTeleport motorbike\n" +
-                   "  6. VehicleTeleport jeep\n" +
-                   "  7. VehicleTeleport gyro\n" +
+                   "  1. st-vt off\n" +
+                   "  2. st-vt on\n" +
+                   "  3. st-vt bike\n" +
+                   "  4. st-vt minibike\n" +
+                   "  5. st-vt motorbike\n" +
+                   "  6. st-vt jeep\n" +
+                   "  7. st-vt gyro\n" +
                    "1. Turn off the vehicle teleport tool\n" +
                    "2. Turn on the vehicle teleport tool\n" +
                    "3. Turn on/off the vehicle teleport for bike\n" +
@@ -29,7 +29,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-VehicleTeleport", "st-vt", "st-vt" };
+            return new string[] { "st-VehicleTeleport", "vt", "st-vt" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

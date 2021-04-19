@@ -29,23 +29,30 @@ namespace ServerTools.AntiCheat
                             {
                                 if (_player.IsSpawned())
                                 {
-                                    var x = (int)_player.position.x;
-                                    var y = (int)_player.position.y;
-                                    var z = (int)_player.position.z;
-                                    var region_x = x / 512;
-                                    if (x < 0)
+                                    var _x = (int)_player.position.x;
+                                    var _y = (int)_player.position.y;
+                                    var _z = (int)_player.position.z;
+                                    double _regionX, _regionZ;
+                                    if (_player.position.x < 0)
                                     {
-                                        region_x--;
+                                        _regionX = Math.Truncate(_player.position.x / 512) - 1;
                                     }
-                                    var region_z = z / 512;
-                                    if (z < 0)
+                                    else
                                     {
-                                        region_z--;
+                                        _regionX = Math.Truncate(_player.position.x / 512);
+                                    }
+                                    if (_player.position.z < 0)
+                                    {
+                                        _regionZ = Math.Truncate(_player.position.z / 512) - 1;
+                                    }
+                                    else
+                                    {
+                                        _regionZ = Math.Truncate(_player.position.z / 512);
                                     }
                                     string _ip = _cInfo.ip;
                                     using (StreamWriter sw = new StreamWriter(Filepath, true))
                                     {
-                                        sw.WriteLine(string.Format("{0}: \"{1}\" SteamId {2}. IP Address {3} at Position: {4} X {5} Y {6} Z in RegionFile: r.{7}.{8}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, _ip, x, y, z, region_x, region_z));
+                                        sw.WriteLine(string.Format("{0}: \"{1}\" SteamId {2}. IP Address {3} at Position: {4} X {5} Y {6} Z in RegionFile: r.{7}.{8}.7rg", DateTime.Now, _cInfo.playerName, _cInfo.playerId, _ip, _x, _y, _z, _regionX, _regionZ));
                                         sw.WriteLine();
                                         sw.Flush();
                                         sw.Close();

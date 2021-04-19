@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-PlayerList", "pl", "st-pl" };
+            return new string[] { "st-PlayerList", "plist", "st-plist" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

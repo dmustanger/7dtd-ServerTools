@@ -38,6 +38,10 @@ namespace ServerTools
                 Lottery.StartLotto();
             }
             Lottery.ShuttingDown = true;
+            if (ExitCommand.IsEnabled)
+            {
+                ExitCommand.Players.Clear();
+            }
             if (Delay < 1)
             {
                 Delay = 1;
@@ -59,7 +63,6 @@ namespace ServerTools
         public static void OneMinuteRemains()
         {
             NoEntry = true;
-            BattleLogger.Exit.Clear();
             Phrases.Dict.TryGetValue(171, out string _phrase171);
             Alert(_phrase171, 1);
             Phrases.Dict.TryGetValue(170, out string _phrase170);

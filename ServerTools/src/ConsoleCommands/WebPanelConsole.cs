@@ -14,17 +14,17 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. st-wp off\n" +
-                   "  2. st-wp on\n" +
-                   "  3. st-wp add {steamId}\n" +
-                   "  4. st-wp remove {steamId}\n" +
-                   "  5. st-wp reset {steamId}\n" +
-                   "  6. st-wp timeout add {IP}\n" +
-                   "  7. st-wp timeout remove {IP}\n" +
-                   "  8. st-wp ban add {IP}\n" +
-                   "  9. st-wp ban remove {IP}\n" +
-                   "  10. st-wp restart\n" +
-                   "  11. st-wp list\n" +
+                   "  1. st-web off\n" +
+                   "  2. st-web on\n" +
+                   "  3. st-web add {steamId}\n" +
+                   "  4. st-web remove {steamId}\n" +
+                   "  5. st-web reset {steamId}\n" +
+                   "  6. st-web timeout add {IP}\n" +
+                   "  7. st-web timeout remove {IP}\n" +
+                   "  8. st-web ban add {IP}\n" +
+                   "  9. st-web ban remove {IP}\n" +
+                   "  10. st-web restart\n" +
+                   "  11. st-web list\n" +
                    "1. Turn off the web panel\n" +
                    "2. Turn on the web panel\n" +
                    "3. Add a client id to the web panel list\n" +
@@ -40,7 +40,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Webpanel", "wp", "st-wp" };
+            return new string[] { "st-Webpanel", "web", "st-web" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

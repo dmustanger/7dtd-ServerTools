@@ -12,10 +12,19 @@ namespace ServerTools
             {
                 if (_blockPosition != null)
                 {
-                    GameManager.Instance.World.SetBlockRPC(_blockPosition, BlockValue.Air);
-                    if (OutputLog)
+                    BlockValue _blockValue = GameManager.Instance.World.GetBlock(_blockPosition);
+                    Block _block = _blockValue.Block;
+                    if (_block is BlockSleepingBag || _block.IsDecoration || _block.IsPlant() || _block.isMultiBlock || _blockValue.Equals(BlockValue.Air))
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Falling block removed at position {0}", _blockPosition));
+                        return;
+                    }
+                    else
+                    {
+                        GameManager.Instance.World.SetBlockRPC(_blockPosition, BlockValue.Air);
+                        if (OutputLog)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Falling block removed at position {0}", _blockPosition));
+                        }
                     }
                 }
             }

@@ -53,6 +53,7 @@
     <Compile Include="src\ConsoleCommands\PrivateMessageConsole.cs" />
     <Compile Include="src\ConsoleCommands\ProtectedSpaceConsole.cs" />
     <Compile Include="src\ConsoleCommands\PrayerConsole.cs" />
+    <Compile Include="src\ConsoleCommands\RegionResetConsole.cs" />
     <Compile Include="src\ConsoleCommands\SecureDoorAccessConsole.cs" />
     <Compile Include="src\ConsoleCommands\SecureVehicleAccessConsole.cs" />
     <Compile Include="src\ConsoleCommands\SecureLootAccessConsole.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="src\Tools\Poll\Poll.cs" />
     <Compile Include="src\Tools\ProtectedSpaces\ProtectedSpaces.cs" />
     <Compile Include="src\Tools\DeletePlayerData\DeletePlayerData.cs" />
+    <Compile Include="src\Tools\RegionReset\RegionReset.cs" />
     <Compile Include="src\Tools\Session\Session.cs" />
     <Compile Include="src\Tools\ChatColorPrefix\ChatColorPrefix.cs" />
     <Compile Include="src\Tools\ScoutPlayer\ScoutPlayer.cs" />
@@ -161,7 +163,7 @@
     <Compile Include="src\PersistentData\PersistentPlayer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayers.cs" />
     <Compile Include="src\PersistentData\StateManager.cs" />
-    <Compile Include="src\Tools\BattleLogger\BattleLogger.cs" />
+    <Compile Include="src\Tools\ExitCommand\ExitCommand.cs" />
     <Compile Include="src\Tools\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\CredentialCheck.cs" />
     <Compile Include="src\AntiCheat\TeleportCheck.cs" />
@@ -199,7 +201,7 @@
     <Compile Include="src\Tools\MuteVote\MuteVote.cs" />
     <Compile Include="src\Tools\Report\Report.cs" />
     <Compile Include="src\Tools\RestartVote\RestartVote.cs" />
-    <Compile Include="src\Tools\Home\Home.cs" />
+    <Compile Include="src\Tools\Homes\Homes.cs" />
     <Compile Include="src\Tools\Travel\Travel.cs" />
     <Compile Include="src\Tools\WeatherVote\WeatherVote.cs" />
     <Compile Include="src\Tools\LoginNotice\LoginNotice.cs" />

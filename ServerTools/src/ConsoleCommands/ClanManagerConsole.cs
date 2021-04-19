@@ -12,12 +12,12 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. ClanManager off\n" +
-                   "  2. ClanManager on\n" +
-                   "  3. ClanManager list\n" +
-                   "  4. ClanManager list <ClanName>\n" +
-                   "  5. ClanManager delete <ClanName>\n" +
-                   "  6. ClanManager delete <SteamId>\n" +
+                   "  1. st-cm off\n" +
+                   "  2. st-cm on\n" +
+                   "  3. st-cm list\n" +
+                   "  4. st-cm list <ClanName>\n" +
+                   "  5. st-cm delete <ClanName>\n" +
+                   "  6. st-cm delete <SteamId>\n" +
                    "1. Turn off clan manager\n" +
                    "2. Turn on clan manager\n" +
                    "3. Shows a list of the clans\n" +
@@ -27,7 +27,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-ClanManager", "cm", "st-cm" };
+            return new string[] { "st-ClanManager", "clan", "st-cm" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

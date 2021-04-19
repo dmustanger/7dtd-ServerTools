@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
 using UnityEngine;
@@ -30,8 +29,8 @@ namespace ServerTools.Website
         public static string SITE_DIR = "";
         public static string Password = "";
         private static string Port = "";
-        private static string _File = string.Format("WebsiteLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string FilePath = string.Format("{0}/Logs/WebsiteLogs/{1}", API.ConfigPath, _File);
+        private static string _File = string.Format("WebPanelLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static string FilePath = string.Format("{0}/Logs/WebPanelLogs/{1}", API.ConfigPath, _File);
         private static HttpListener Listener = new HttpListener();
         private static readonly Version HttpVersion = new Version(1, 1);
         private static System.Random Rnd = new System.Random();
@@ -79,11 +78,11 @@ namespace ServerTools.Website
                         for (int i = 0; i < _directories.Length; i++)
                         {
                             string _directory = _directories[i];
-                            if (_directory.ToLower().Contains("servertools"))
+                            if (_directory.Contains("ServerTools"))
                             {
-                                if (Directory.Exists(_directory + "/Website/"))
+                                if (Directory.Exists(_directory + "/WebPanel/"))
                                 {
-                                    SITE_DIR = _directory + "/Website/";
+                                    SITE_DIR = _directory + "/WebPanel/";
                                     DirFound = true;
                                 }
                             }
@@ -204,34 +203,10 @@ namespace ServerTools.Website
                             }
                         }
                         Port = _host4.ToString();
+                        Listener.Prefixes.Add(string.Format("http://*:{0}/", Port));
                         Listener.Prefixes.Add(string.Format("http://*:{0}/st.html/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/favicon.ico/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Img/BloodBorder.png/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Img/Lock.png/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Img/STLogo.png/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Img/TrainStation.jpg/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Img/UserIcon.png/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/JS/scripts.js/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Font/7DaysLater.ttf/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/Handshake/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/Secure/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/SignIn/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/NewPass/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/SetPass/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/SignOut/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/Log/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/Command/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/Players/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/Config/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/UpdateConfig/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/Kick/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/Ban/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/Mute/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/Jail/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/Post/Reward/", Port));
-                        Listener.Prefixes.Add(string.Format("http://*:{0}/API/", Port));
                         Listener.Start();
-                        string _localPage = "http://localhost:" + _host4.ToString() + "/st.html/";
+                        string _localPage = "http://localhost:" + _host4.ToString() + "/st.html";
                         Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel has opened on port {0}", _host4.ToString()));
                         Log.Out(string.Format("[SERVERTOOLS] Use {0} or if accessing it remotely, replace localhost with your server IP of {1}", _localPage, _externalIp));
                         while (Listener.IsListening)
@@ -242,9 +217,29 @@ namespace ServerTools.Website
                                 HttpListenerRequest _request = _context.Request;
                                 HttpListenerResponse _response = _context.Response;
                                 string _clientIp = _request.RemoteEndPoint.Address.ToString();
-                                //insert stream logger later
-                                if (_request.Url.AbsoluteUri.Length < 101 && !_request.Url.AbsoluteUri.Contains("<script>") && GameManager.Instance.World != null)
+                                Writer(string.Format("Web Panel request from IP: {0}", _clientIp));
+                                if (_request.Url.AbsoluteUri.Length < 101 && GameManager.Instance.World != null)
                                 {
+                                    if (_request.Url.AbsoluteUri.Contains("<script>"))
+                                    {
+                                        if (!BannedIP.Contains(_clientIp))
+                                        {
+                                            if (!_request.IsLocal)
+                                            {
+                                                BannedIP.Add(_clientIp);
+                                                Writer(string.Format("Banned IP: {0} for attempting to run a script at address {1}", _clientIp, _request.Url.AbsoluteUri));
+                                            }
+                                            else
+                                            {
+                                                Writer(string.Format("Detected local IP: {0}. Attempting to run a script at address {1}", _clientIp, _request.Url.AbsoluteUri));
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Writer(string.Format("Detected banned IP: {0}. Attempting to run a script at address {1}", _clientIp, _request.Url.AbsoluteUri));
+                                        }
+                                        return;
+                                    }
                                     if (!BannedIP.Contains(_clientIp))
                                     {
                                         if (!TimeOut.ContainsKey(_clientIp))
@@ -259,22 +254,19 @@ namespace ServerTools.Website
                                             int _timepassed = (int)fractionalMinutes;
                                             if (_timepassed >= 10)
                                             {
-                                                if (TimeOut.ContainsKey(_clientIp))
-                                                {
-                                                    TimeOut.Remove(_clientIp);
-                                                    PersistentContainer.Instance.WebPanelTimeoutList = TimeOut;
-                                                }
+                                                TimeOut.Remove(_clientIp);
+                                                PersistentContainer.Instance.WebPanelTimeoutList = TimeOut;
                                                 IsAllowed(_request, _response, _clientIp);
                                             }
                                             else
                                             {
-                                                Writer(string.Format("Request denied for IP on timeout list: {0}", _clientIp));
+                                                Writer(string.Format("Request denied for IP: {0} on timeout until: {1}", _clientIp, _timeout));
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        Writer(string.Format("Request denied for IP on ban list: {0}", _clientIp));
+                                        Writer(string.Format("Request denied for banned IP: {0}", _clientIp));
                                     }
                                 }
                                 _response.Close();
@@ -301,8 +293,6 @@ namespace ServerTools.Website
                 Listener.Stop();
                 Listener.Close();
                 Unload();
-                Load();
-                Writer(string.Format("Restarted web panel automatically"));
             }
         }
 
@@ -317,22 +307,7 @@ namespace ServerTools.Website
                 //    string[] command = Regex.Split(_uri, "/api/");
                 //    //Response(_uri, _response, true, command[1]);
                 //}
-                if (_uri.EndsWith("st.html/"))
-                {
-                    _uri = _uri.Remove(0, _uri.IndexOf("st.html")).TrimEnd('/');
-                }
-                else if (_uri.Contains("favicon"))
-                {
-                    _uri = _uri.Remove(0, _uri.IndexOf("favicon")).TrimEnd('/');
-                }
-                else if (_uri.Contains("Post/"))
-                {
-                    _uri = _uri.Remove(0, _uri.IndexOf("Post/") + 5).TrimEnd('/');
-                }
-                else if (_uri.Contains(":" + Port))
-                {
-                    _uri = _uri.Remove(0, _uri.IndexOf(":" + Port) + Port.Length + 10).TrimEnd('/');
-                }
+                _uri = _uri.Remove(0, _uri.IndexOf(Port) + Port.Length + 1);
                 if (_request.HttpMethod == "GET")
                 {
                     if (_uri == "st.html")
@@ -340,26 +315,30 @@ namespace ServerTools.Website
                         if (PageHits.ContainsKey(_clientIp))
                         {
                             PageHits.TryGetValue(_clientIp, out int _count);
-                            if (_count + 1 >= 10)
+                            if (_count++ >= 5)
                             {
                                 PageHits.Remove(_clientIp);
                                 TimeOut.Add(_clientIp, DateTime.Now);
                                 PersistentContainer.Instance.WebPanelTimeoutList = TimeOut;
+                                Writer(string.Format("Web panel request denied: {0} for IP {1}. Client in time out", SITE_DIR + _uri, _clientIp));
                             }
                             else
                             {
                                 PageHits[_clientIp] = _count + 1;
+                                Writer(string.Format("Web panel request granted: {0} for IP {1}", SITE_DIR + _uri, _clientIp));
                                 GET(_request, _response, _uri);
                             }
                         }
                         else
                         {
                             PageHits.Add(_clientIp, 1);
+                            Writer(string.Format("Web panel request granted: {0} for IP {1}", SITE_DIR + _uri, _clientIp));
                             GET(_request, _response, _uri);
                         }
                     }
-                    else if (!_uri.Contains("html"))
+                    else
                     {
+                        Writer(string.Format("Web panel request granted: {0} for IP {1}", SITE_DIR + _uri, _clientIp));
                         GET(_request, _response, _uri);
                     }
                 }
@@ -383,7 +362,7 @@ namespace ServerTools.Website
                 }
                 else
                 {
-                    Writer(string.Format("Unaccepted method requested by IP {0}", _request.RemoteEndPoint.Address.ToString()));
+                    Writer(string.Format("Unaccepted method requested by IP {0}", _clientIp));
                 }
             }
             catch (Exception e)
@@ -411,7 +390,6 @@ namespace ServerTools.Website
                         _response.ContentLength64 = (long)_c.Length;
                         _response.ContentEncoding = Encoding.UTF8;
                         _response.OutputStream.Write(_c, 0, _c.Length);
-                        Writer(string.Format("Web panel request: {0} from IP {1}", SITE_DIR + _uri, _request.RemoteEndPoint.Address.ToString()));
                     }
                     else
                     {

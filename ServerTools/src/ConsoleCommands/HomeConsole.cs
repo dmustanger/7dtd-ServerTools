@@ -34,31 +34,31 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (Home.IsEnabled)
+                    if (Homes.IsEnabled)
                     {
-                        Home.IsEnabled = false;
+                        Homes.IsEnabled = false;
                         Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Home has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Home is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes is already off"));
                         return;
                     }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (!Home.IsEnabled)
+                    if (!Homes.IsEnabled)
                     {
-                        Home.IsEnabled = true;
+                        Homes.IsEnabled = true;
                         Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Home has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Home is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes is already on"));
                         return;
                     }
                 }
@@ -77,13 +77,12 @@ namespace ServerTools
                     PersistentPlayer p = PersistentContainer.Instance.Players[_params[1]];
                     if (p != null)
                     {
-                        PersistentContainer.Instance.Players[_params[1]].LastHome1 = DateTime.Now.AddYears(-1);
-                        PersistentContainer.Instance.Players[_params[1]].LastHome2 = DateTime.Now.AddYears(-1);
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Home delay reset for {0}.", _params[1]));
+                        PersistentContainer.Instance.Players[_params[1]].LastHome = DateTime.Now.AddYears(-1);
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes delay reset for {0}.", _params[1]));
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with id {0} does not have a Home delay to reset.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with id {0} does not have a Homes delay to reset.", _params[1]));
                     }
                 }
                 else

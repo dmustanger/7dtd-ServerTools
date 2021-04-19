@@ -15,13 +15,13 @@ public class @AdminsConsole : ConsoleCmdAbstract
     public override string GetHelp()
     {
         return "Usage:\n" +
-            "  1. @A Your message\n" +
+            "  1. st-@a Your message\n" +
             "1. Sends your private chat message to all online admins.\n";
     }
 
     public override string[] GetCommands()
     {
-        return new string[] { "st-@Admin", "@A", "@a" };
+        return new string[] { "st-@Admin", "@admin", "st-@a" };
     }
 
     public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-CustomCommands", "cc", "st-cc" };
+            return new string[] { "st-CustomCommands", "custom", "st-cc" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

@@ -77,24 +77,29 @@ namespace ServerTools.AntiCheat
                                     {
                                         if (!Teleportation.Teleporting.Contains(_cInfo.entityId) && _player.IsSpawned() && _player.IsAlive() &&!_player.IsStuck && !_player.isSwimming && _player.AttachedToEntity == null)
                                         {
+                                            if (OldY.ContainsKey(_cInfo.entityId))
+                                            {
+                                                OldY.TryGetValue(_cInfo.entityId, out float lastY);
+                                                OldY[_cInfo.entityId] = _player.position.y;
+                                                if (lastY - _player.position.y >= 4)
+                                                {
+                                                    if (Flag.ContainsKey(_cInfo.entityId))
+                                                    {
+                                                        Flag.Remove(_cInfo.entityId);
+                                                    }
+                                                    continue;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                OldY.Add(_cInfo.entityId, _player.position.y);
+                                            }
                                             if (AirCheck(_player.position.x, _player.position.y, _player.position.z) || GroundCheck(_player.position.x, _player.position.y, _player.position.z))
                                             {
-                                                if (OldY.ContainsKey(_cInfo.entityId))
+                                                EntityPlayer _nearbyPlayer = GameManager.Instance.World.GetClosestPlayer(_player, 1f, false);
+                                                if (_nearbyPlayer != null)
                                                 {
-                                                    OldY.TryGetValue(_cInfo.entityId, out float lastY);
-                                                    OldY[_cInfo.entityId] = _player.position.y;
-                                                    if (lastY - _player.position.y >= 4)
-                                                    {
-                                                        if (Flag.ContainsKey(_cInfo.entityId))
-                                                        {
-                                                            Flag.Remove(_cInfo.entityId);
-                                                        }
-                                                        continue;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    OldY.Add(_cInfo.entityId, _player.position.y);
+                                                    continue;
                                                 }
                                                 if (Flag.ContainsKey(_cInfo.entityId))
                                                 {
@@ -163,12 +168,26 @@ namespace ServerTools.AntiCheat
         {
             for (float k = y - 2.5f; k <= (y + 2f); k++)
             {
-                for (float i = x - 1.75f; i <= (x + 1.75f); i++)
+                for (float i = x - 2f; i <= (x + 2f); i++)
                 {
-                    for (float j = z - 1.75f; j <= (z + 1.75f); j++)
+                    for (float j = z - 2f; j <= (z + 2f); j++)
                     {
                         BlockValue _block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
                         if (_block.type != BlockValue.Air.type)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            for (float k = y - 2f; k <= y; k++)
+            {
+                for (float i = x - 4f; i <= (x + 4f); i++)
+                {
+                    for (float j = z - 4f; j <= (z + 4f); j++)
+                    {
+                        BlockValue _block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
+                        if (_block.Block.GetBlockName().Contains("MetalPillar"))
                         {
                             return false;
                         }
@@ -180,11 +199,11 @@ namespace ServerTools.AntiCheat
 
         private static bool GroundCheck(float x, float y, float z)
         {
-            for (float k = y - 1.5f; k <= (y + 2f); k++)
+            for (float k = y - 2f; k <= (y + 1.5f); k++)
             {
-                for (float i = x - 1.75f; i <= (x + 1.75f); i++)
+                for (float i = x - 2f; i <= (x + 2f); i++)
                 {
-                    for (float j = z - 1.75f; j <= (z + 1.75f); j++)
+                    for (float j = z - 2f; j <= (z + 2f); j++)
                     {
                         BlockValue _block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
                         if (_block.type == BlockValue.Air.type || !Block.list[_block.type].shape.IsTerrain())

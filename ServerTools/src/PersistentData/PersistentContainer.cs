@@ -20,8 +20,8 @@ namespace ServerTools
         private Dictionary<string[], string> pollOld;
         private bool pollOpen;
         private Dictionary<string, bool> pollVote;
-        private List<string[]> protectedSpace;
-        private List<string[]> protectedZone;
+        private List<int[]> protectedSpace;
+        private List<string> regionReset;
         private List<string[]> track;
         private Dictionary<string, string[]> webPanelAuthorizedList;
         private Dictionary<string, DateTime> webPanelAuthorizedTimeList;
@@ -187,7 +187,7 @@ namespace ServerTools
             }
         }
 
-        public List<string[]> ProtectedSpace
+        public List<int[]> ProtectedSpace
         {
             get
             {
@@ -199,15 +199,15 @@ namespace ServerTools
             }
         }
 
-        public List<string[]> ProtectedZone
+        public List<string> RegionReset
         {
             get
             {
-                return protectedZone;
+                return regionReset;
             }
             set
             {
-                protectedZone = value;
+                regionReset = value;
             }
         }
 

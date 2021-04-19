@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using ServerTools.AntiCheat;
+using ServerTools.Website;
 
 namespace ServerTools
 {
@@ -53,9 +54,10 @@ namespace ServerTools
             {
                 StateManager.Save();
                 OutputLog.Shutdown();
+                WebPanel.Unload();
+                RegionReset.Exec();
                 Timers.TimerStop();
                 Timers.ShutdownFailsafe();
-                StopServer.ShuttingDown = true;
             }
             catch (Exception e)
             {
@@ -147,9 +149,9 @@ namespace ServerTools
                                 }
                             }
                         }
-                        if (BattleLogger.IsEnabled && !BattleLogger.Exit.Contains(_cInfo.playerId) && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > BattleLogger.Admin_Level)
+                        if (ExitCommand.IsEnabled && !ExitCommand.Players.ContainsKey(_cInfo.entityId) && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > ExitCommand.Admin_Level)
                         {
-                            BattleLogger.Exit.Add(_cInfo.playerId);
+                            ExitCommand.Players.Add(_cInfo.entityId, _player.position);
                         }
                     }
                 }
@@ -259,26 +261,13 @@ namespace ServerTools
             {
                 if (_cInfo != null)
                 {
-                    if (_bShutdown)
-                    {
-                        Log.Out("[SERVERTOOLS] Server shutdown, player disconnected.");
-                    }
-                    else if (BattleLogger.IsEnabled && BattleLogger.Exit.Contains(_cInfo.playerId))
-                    {
-                        string _ip = _cInfo.ip;
-                        if (_ip.Contains(":"))
-                        {
-                            _ip = _ip.Split(':').First();
-                        }
-                        Timers.BattleLogDelay(_cInfo, _ip);
-                        Log.Out("[SERVERTOOLS] Player disconnected");
-                    }
-                    else
-                    {
-                        Log.Out("[SERVERTOOLS] Player disconnected");
-                    }
+                    Log.Out("[SERVERTOOLS] Player disconnected");
                     if (!string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId != -1)
                     {
+                        if (ExitCommand.IsEnabled && ExitCommand.Players.ContainsKey(_cInfo.entityId) && !_bShutdown)
+                        {
+                            Timers.ExitWithoutCommand(_cInfo, _cInfo.ip);
+                        }
                         if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
                         {
                             FriendTeleport.Dict.Remove(_cInfo.entityId);
@@ -346,14 +335,6 @@ namespace ServerTools
                         if (BloodmoonWarrior.WarriorList.Contains(_cInfo.playerId))
                         {
                             BloodmoonWarrior.WarriorList.Remove(_cInfo.playerId);
-                        }
-                        if (BattleLogger.Exit.Contains(_cInfo.playerId))
-                        {
-                            BattleLogger.Exit.Remove(_cInfo.playerId);
-                        }
-                        if (BattleLogger.ExitPos.ContainsKey(_cInfo.playerId))
-                        {
-                            BattleLogger.ExitPos.Remove(_cInfo.playerId);
                         }
                         if (KillNotice.Damage.ContainsKey(_cInfo.entityId))
                         {
@@ -463,9 +444,9 @@ namespace ServerTools
                 {
                     Bloodmoon.Exec(_cInfo);
                 }
-                if (BattleLogger.IsEnabled)
+                if (ExitCommand.IsEnabled)
                 {
-                    BattleLogger.AlertPlayer(_cInfo);
+                    ExitCommand.AlertPlayer(_cInfo);
                 }
                 if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && !PersistentContainer.Instance.PollVote.ContainsKey(_cInfo.playerId))
                 {
@@ -534,9 +515,9 @@ namespace ServerTools
             {
                 Shutdown.NextShutdown(_cInfo);
             }
-            if (BattleLogger.IsEnabled)
+            if (ExitCommand.IsEnabled)
             {
-                BattleLogger.AlertPlayer(_cInfo);
+                ExitCommand.AlertPlayer(_cInfo);
             }
             if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && !PersistentContainer.Instance.PollVote.ContainsKey(_cInfo.playerId))
             {

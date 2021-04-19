@@ -13,11 +13,11 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. rs off\n" +
-                   "  2. rs on\n" +
-                   "  3. rs add <steamId/entityId> <playerName> <days to expire>\n" +
-                   "  4. rs remove <steamId/entityId>\n" +
-                   "  5. rs list\n" +
+                   "  1. st-rs off\n" +
+                   "  2. st-rs on\n" +
+                   "  3. st-rs add <steamId> <playerName> <days to expire>\n" +
+                   "  4. st-rs remove <steamId/entityId>\n" +
+                   "  5. st-rs list\n" +
                    "1. Turn off reserved slots\n" +
                    "2. Turn on reserved slots\n" +
                    "3. Adds a steamID to the Reserved Slots list\n" +
@@ -76,7 +76,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 4, found {0}", _params.Count));
                         return;
                     }
-                    if (_params[1].Length < 1 || _params[1].Length > 17)
+                    if (_params[1].Length != 17)
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id: Invalid Id {0}", _params[1]));
                         return;
@@ -86,8 +86,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id. {0} is already in the Reserved slots list", _params[1]));
                         return;
                     }
-                    double _daysToExpire;
-                    if (!double.TryParse(_params[3], out _daysToExpire))
+                    if (!double.TryParse(_params[3], out double _daysToExpire))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid days to expire: {0}", _params[3]));
                         return;

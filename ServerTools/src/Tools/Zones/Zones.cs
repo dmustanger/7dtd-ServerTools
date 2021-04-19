@@ -46,7 +46,6 @@ namespace ServerTools
                 ZonePvE.Clear();
                 FileWatcher.Dispose();
                 IsRunning = false;
-                UnloadProtectedZones();
             }
         }
 
@@ -140,11 +139,6 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing NoZombie attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("Protected"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Protected attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
                         else
                         {
                             string _circle = _line.GetAttribute("Circle");
@@ -165,19 +159,13 @@ namespace ServerTools
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for NoZombie attribute: {0}.", subChild.OuterXml));
                                 continue;
                             }
-                            string _protect = _line.GetAttribute("Protected");
-                            if (!bool.TryParse(_protect, out bool _result4))
-                            {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for Protected attribute: {0}.", subChild.OuterXml));
-                                continue;
-                            }
                             string[] box1 = { _line.GetAttribute("Corner1"), _line.GetAttribute("Corner2"), _line.GetAttribute("Name"), _line.GetAttribute("EntryMessage"), _line.GetAttribute("ExitMessage"),
                             _line.GetAttribute("Response"), _line.GetAttribute("ReminderNotice") };
                             if (box1[5] == "")
                             {
                                 box1[5] = "**";
                             }
-                            bool[] box2 = { _result1, _result2, _result3, _result4 };
+                            bool[] box2 = { _result1, _result2, _result3 };
                             if (!Box1.Contains(box1))
                             {
                                 Box1.Add(box1);
@@ -235,19 +223,6 @@ namespace ServerTools
                     }
                 }
             }
-            AddProtectedZones(_addProtection);
-            if (PersistentContainer.Instance.ProtectedZone != null && PersistentContainer.Instance.ProtectedZone.Count > 0)
-            {
-                List<string[]> _protectedZones = PersistentContainer.Instance.ProtectedZone;
-                for (int i = 0; i < _protectedZones.Count; i++)
-                {
-                    if (!_addProtection.Contains(_protectedZones[i]))
-                    {
-                        _removeProtection.Add(_protectedZones[i]);
-                    }
-                }
-            }
-            RemoveProtectedZones(_removeProtection);
         }
 
         public static void UpdateXml()
@@ -264,15 +239,15 @@ namespace ServerTools
                     {
                         string[] _box1 = Box1[i];
                         bool[] _box2 = Box2[i];
-                        sw.WriteLine(string.Format("        <Zone Corner1=\"{0}\" Corner2=\"{1}\" Circle=\"{2}\" Name=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" Response=\"{6}\" ReminderNotice=\"{7}\" PvE=\"{8}\" NoZombie=\"{9}\" Protected=\"{10}\" />", _box1[0], _box1[1], _box2[0], _box1[2], _box1[3], _box1[4], _box1[5], _box1[6], _box2[1], _box2[2], _box2[3]));
+                        sw.WriteLine(string.Format("        <Zone Corner1=\"{0}\" Corner2=\"{1}\" Circle=\"{2}\" Name=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" Response=\"{6}\" ReminderNotice=\"{7}\" PvE=\"{8}\" NoZombie=\"{9}\" />", _box1[0], _box1[1], _box2[0], _box1[2], _box1[3], _box1[4], _box1[5], _box1[6], _box2[1], _box2[2]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <!-- <Zone Corner1=\"-8000,0,8000\" Corner2=\"8000,200,0\" Circle=\"false\" Name=\"North\" EntryMessage=\"You are entering the Northern side\" ExitMessage=\"You have exited the Northern Side\" Response=\"\" ReminderNotice=\"You are still in the North\" PvE=\"false\" NoZombie=\"false\" Protected=\"false\" /> -->");
-                    sw.WriteLine("        <!-- <Zone Corner1=\"-8000,0,-1\" Corner2=\"8000,200,-8000\" Circle=\"false\" Name=\"South\" EntryMessage=\"You are entering the Southern side\" ExitMessage=\"You have exited the Southern Side\" Response=\"whisper {PlayerName} you have entered the south side ^ ser {EntityId} 40 @ 4\" ReminderNotice=\"You are still in the South\" PvE=\"false\" NoZombie=\"false\" Protected=\"false\" /> -->");
-                    sw.WriteLine("        <!-- <Zone Corner1=\"-100,0,-90\" Corner2=\"40\" Circle=\"true\" Name=\"Market\" EntryMessage=\"You have entered the Market\" ExitMessage=\"You have exited the Market\" Response=\"whisper {PlayerName} you have entered the market\" ReminderNotice=\"\" PvE=\"true\" NoZombie=\"true\" Protected=\"true\" /> -->");
-                    sw.WriteLine("        <!-- <Zone Corner1=\"0,0,0\" Corner2=\"25,105,25\" Circle=\"false\" Name=\"Lobby\" EntryMessage=\"You have entered the Lobby\" ExitMessage=\"You have exited the Lobby\" Response=\"**\" ReminderNotice=\"You have been in the lobby for a long time...\" PvE=\"true\" NoZombie=\"true\" Protected=\"true\" /> -->");
+                    sw.WriteLine("        <!-- <Zone Corner1=\"-8000,0,8000\" Corner2=\"8000,200,0\" Circle=\"false\" Name=\"North\" EntryMessage=\"You are entering the Northern side\" ExitMessage=\"You have exited the Northern Side\" Response=\"\" ReminderNotice=\"You are still in the North\" PvE=\"false\" NoZombie=\"false\" /> -->");
+                    sw.WriteLine("        <!-- <Zone Corner1=\"-8000,0,-1\" Corner2=\"8000,200,-8000\" Circle=\"false\" Name=\"South\" EntryMessage=\"You are entering the Southern side\" ExitMessage=\"You have exited the Southern Side\" Response=\"whisper {PlayerName} you have entered the south side ^ ser {EntityId} 40 @ 4\" ReminderNotice=\"You are still in the South\" PvE=\"false\" NoZombie=\"false\" /> -->");
+                    sw.WriteLine("        <!-- <Zone Corner1=\"-100,0,-90\" Corner2=\"40\" Circle=\"true\" Name=\"Market\" EntryMessage=\"You have entered the Market\" ExitMessage=\"You have exited the Market\" Response=\"whisper {PlayerName} you have entered the market\" ReminderNotice=\"\" PvE=\"true\" NoZombie=\"true\" /> -->");
+                    sw.WriteLine("        <!-- <Zone Corner1=\"0,0,0\" Corner2=\"25,105,25\" Circle=\"false\" Name=\"Lobby\" EntryMessage=\"You have entered the Lobby\" ExitMessage=\"You have exited the Lobby\" Response=\"**\" ReminderNotice=\"You have been in the lobby for a long time...\" PvE=\"true\" NoZombie=\"true\" /> -->");
                 }
                 sw.WriteLine("    </Zone>");
                 sw.WriteLine("</Zones>");
@@ -772,240 +747,6 @@ namespace ServerTools
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in Zones.ReminderExec: {0}", e.Message));
-            }
-        }
-
-        public static void AddProtectedZones(List <string[]> _vectors)
-        {
-            try
-            {
-                List<string[]> _protected = new List<string[]>();
-                if (PersistentContainer.Instance.ProtectedZone != null && PersistentContainer.Instance.ProtectedZone.Count > 0)
-                {
-                    _protected = PersistentContainer.Instance.ProtectedZone;
-                }
-                List<Chunk> _chunkList = new List<Chunk>();
-                for (int i = 0; i < _vectors.Count; i++)
-                {
-                    if (_vectors[i].Length < 4)
-                    {
-                        continue;
-                    }
-                    int _xMin = int.Parse(_vectors[i][0]), _zMin = int.Parse(_vectors[i][1]), _xMax = int.Parse(_vectors[i][2]), _zMax = int.Parse(_vectors[i][3]);
-                    int _xMinFix = _xMin, _zMinFix = _zMin, _xMaxFix = _xMax, _zMaxFix = _zMax;
-                    if (_xMin > _xMax)
-                    {
-                        _xMinFix = _xMax;
-                        _xMaxFix = _xMin;
-                    }
-                    if (_zMin > _zMax)
-                    {
-                        _zMinFix = _zMax;
-                        _zMaxFix = _zMin;
-                    }
-                    string[] _vectorsFixed = { _xMinFix.ToString(), _zMinFix.ToString(), _xMaxFix.ToString(), _zMaxFix.ToString() };
-                    if (!_protected.Contains(_vectorsFixed))
-                    {
-                        _protected.Add(_vectorsFixed);
-                        for (int j = _xMinFix; j <= _xMaxFix; j++)
-                        {
-                            for (int k = _zMinFix; k <= _zMaxFix; k++)
-                            {
-                                if (GameManager.Instance.World.IsChunkAreaLoaded(j, 1, k))
-                                {
-                                    Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
-                                    if (!_chunkList.Contains(_chunk))
-                                    {
-                                        _chunkList.Add(_chunk);
-                                    }
-                                    Bounds bounds = _chunk.GetAABB();
-                                    int _x = j - (int)bounds.min.x, _z = k - (int)bounds.min.z;
-                                    _chunk.SetTraderArea(_x, _z, true);
-                                }
-                                else
-                                {
-                                    continue;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (_chunkList.Count > 0)
-                {
-                    for (int i = 0; i < _chunkList.Count; i++)
-                    {
-                        Chunk _chunk = _chunkList[i];
-                        List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                        if (_clientList != null && _clientList.Count > 0)
-                        {
-                            for (int j = 0; j < _clientList.Count; j++)
-                            {
-                                ClientInfo _cInfo2 = _clientList[j];
-                                if (_cInfo2 != null)
-                                {
-                                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.AddProtectedZones: {0}", e.Message));
-            }
-        }
-
-        public static void RemoveProtectedZones(List<string[]> _vectors)
-        {
-            try
-            {
-                List<string[]> _protected = new List<string[]>();
-                if (PersistentContainer.Instance.ProtectedZone != null && PersistentContainer.Instance.ProtectedZone.Count > 0)
-                {
-                    _protected = PersistentContainer.Instance.ProtectedZone;
-                }
-                List<Chunk> _chunkList = new List<Chunk>();
-                for (int i = 0; i < _vectors.Count; i++)
-                {
-                    if (_vectors[i].Length < 4)
-                    {
-                        continue;
-                    }
-                    int _xMin = int.Parse(_vectors[i][0]), _zMin = int.Parse(_vectors[i][1]), _xMax = int.Parse(_vectors[i][2]), _zMax = int.Parse(_vectors[i][3]);
-                    int _xMinFix = _xMin, _zMinFix = _zMin, _xMaxFix = _xMax, _zMaxFix = _zMax;
-                    if (_xMin > _xMax)
-                    {
-                        _xMinFix = _xMax;
-                        _xMaxFix = _xMin;
-                    }
-                    if (_zMin > _zMax)
-                    {
-                        _zMinFix = _zMax;
-                        _zMaxFix = _zMin;
-                    }
-                    string[] _vectorsFixed = { _xMinFix.ToString(), _zMinFix.ToString(), _xMaxFix.ToString(), _zMaxFix.ToString() };
-                    if (_protected.Contains(_vectorsFixed))
-                    {
-                        _protected.Remove(_vectorsFixed);
-                        for (int j = _xMinFix; j <= _xMaxFix; j++)
-                        {
-                            for (int k = _zMinFix; k <= _zMaxFix; k++)
-                            {
-                                if (GameManager.Instance.World.IsChunkAreaLoaded(j, 1, k))
-                                {
-                                    Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
-                                    if (!_chunkList.Contains(_chunk))
-                                    {
-                                        _chunkList.Add(_chunk);
-                                    }
-                                    Bounds bounds = _chunk.GetAABB();
-                                    int _x = j - (int)bounds.min.x, _z = k - (int)bounds.min.z;
-                                    _chunk.SetTraderArea(_x, _z, false);
-                                }
-                                else
-                                {
-                                    continue;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (_chunkList.Count > 0)
-                {
-                    for (int i = 0; i < _chunkList.Count; i++)
-                    {
-                        Chunk _chunk = _chunkList[i];
-                        List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                        if (_clientList != null && _clientList.Count > 0)
-                        {
-                            for (int j = 0; j < _clientList.Count; j++)
-                            {
-                                ClientInfo _cInfo2 = _clientList[j];
-                                if (_cInfo2 != null)
-                                {
-                                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
-                                }
-                            }
-                        }
-                    }
-                }
-                PersistentContainer.Instance.ProtectedZone = _protected;
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.RemoveProtectedZones: {0}", e.Message));
-            }
-        }
-
-        public static void UnloadProtectedZones()
-        {
-            try
-            {
-                List<string[]> _protected = new List<string[]>();
-                if (PersistentContainer.Instance.ProtectedZone != null && PersistentContainer.Instance.ProtectedZone.Count > 0)
-                {
-                    _protected = PersistentContainer.Instance.ProtectedZone;
-                }
-                List<Chunk> _chunkList = new List<Chunk>();
-                for (int i = 0; i < _protected.Count; i++)
-                {
-                    string[] _vector = _protected[i];
-                    int _xMin = int.Parse(_vector[0]), _zMin = int.Parse(_vector[1]), _xMax = int.Parse(_vector[2]), _zMax = int.Parse(_vector[3]);
-                    int _xMinAlt = _xMin, _zMinAlt = _zMin, _xMaxAlt = _xMax, _zMaxAlt = _zMax;
-                    if (_xMin > _xMax)
-                    {
-                        _xMinAlt = _xMax;
-                        _xMaxAlt = _xMin;
-                    }
-                    if (_zMin > _zMax)
-                    {
-                        _zMinAlt = _zMax;
-                        _zMaxAlt = _zMin;
-                    }
-                    for (int j = _xMinAlt; j <= _xMaxAlt; j++)
-                    {
-                        for (int k = _zMinAlt; k <= _zMaxAlt; k++)
-                        {
-                            if (GameManager.Instance.World.IsChunkAreaLoaded(j, 1, k))
-                            {
-                                Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
-                                if (!_chunkList.Contains(_chunk))
-                                {
-                                    _chunkList.Add(_chunk);
-                                }
-                                Bounds bounds = _chunk.GetAABB();
-                                int _x = j - (int)bounds.min.x, _z = k - (int)bounds.min.z;
-                                _chunk.SetTraderArea(_x, _z, false);
-                            }
-                        }
-                    }
-                }
-                if (_chunkList.Count > 0)
-                {
-                    for (int i = 0; i < _chunkList.Count; i++)
-                    {
-                        Chunk _chunk = _chunkList[i];
-                        List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                        if (_clientList != null && _clientList.Count > 0)
-                        {
-                            for (int j = 0; j < _clientList.Count; j++)
-                            {
-                                ClientInfo _cInfo2 = _clientList[j];
-                                if (_cInfo2 != null)
-                                {
-                                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
-                                }
-                            }
-                        }
-                    }
-                }
-                _protected.Clear();
-                PersistentContainer.Instance.ProtectedZone = _protected;
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.UnloadProtectedZones: {0}", e.Message));
             }
         }
     }

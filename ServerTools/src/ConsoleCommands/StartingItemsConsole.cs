@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-StartingItems", "si", "st-si" };
+            return new string[] { "st-StartingItems", "sti", "st-sti" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -63,6 +63,7 @@ namespace ServerTools
                 else
                 {
                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    return;
                 }
             }
             catch (Exception e)

@@ -117,15 +117,15 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("        <Trigger Number=\"1\" Default=\"sethome\" Replacement=\"sethome\" />");
-                    sw.WriteLine("        <Trigger Number=\"2\" Default=\"home\" Replacement=\"home\" />");
-                    sw.WriteLine("        <Trigger Number=\"3\" Default=\"fhome\" Replacement=\"fhome\" />");
-                    sw.WriteLine("        <Trigger Number=\"4\" Default=\"delhome\" Replacement=\"delhome\" />");
-                    sw.WriteLine("        <Trigger Number=\"5\" Default=\"sethome2\" Replacement=\"sethome2\" />");
-                    sw.WriteLine("        <Trigger Number=\"6\" Default=\"home2\" Replacement=\"home2\" />");
-                    sw.WriteLine("        <Trigger Number=\"7\" Default=\"fhome2\" Replacement=\"fhome2\" />");
-                    sw.WriteLine("        <Trigger Number=\"8\" Default=\"delhome2\" Replacement=\"delhome2\" />");
-                    sw.WriteLine("        <Trigger Number=\"9\" Default=\"go\" Replacement=\"go\" />");
+                    sw.WriteLine("        <Trigger Number=\"1\" Default=\"home\" Replacement=\"home\" />");
+                    sw.WriteLine("        <Trigger Number=\"2\" Default=\"fhome\" Replacement=\"fhome\" />");
+                    sw.WriteLine("        <Trigger Number=\"3\" Default=\"home save\" Replacement=\"home save\" />");
+                    sw.WriteLine("        <Trigger Number=\"4\" Default=\"home del\" Replacement=\"home del\" />");
+                    sw.WriteLine("        <Trigger Number=\"5\" Default=\"go home\" Replacement=\"go home\" />");
+                    sw.WriteLine("        <Trigger Number=\"6\" Default=\"\" Replacement=\"\" />");
+                    sw.WriteLine("        <Trigger Number=\"7\" Default=\"\" Replacement=\"\" />");
+                    sw.WriteLine("        <Trigger Number=\"8\" Default=\"\" Replacement=\"\" />");
+                    sw.WriteLine("        <Trigger Number=\"9\" Default=\"\" Replacement=\"\" />");
                     sw.WriteLine("        <Trigger Number=\"10\" Default=\"go way\" Replacement=\"go way\" />");
                     sw.WriteLine("        <Trigger Number=\"11\" Default=\"top3\" Replacement=\"top3\" />");
                     sw.WriteLine("        <Trigger Number=\"12\" Default=\"score\" Replacement=\"score\" />");
@@ -285,39 +285,39 @@ namespace ServerTools
                 {
                     if (kvp.Key == 1)
                     {
-                        Home.Command1 = kvp.Value[1];
+                        Homes.Command1 = kvp.Value[1];
                     }
                     else if (kvp.Key == 2)
                     {
-                        Home.Command2 = kvp.Value[1];
+                        Homes.Command2 = kvp.Value[1];
                     }
                     else if (kvp.Key == 3)
                     {
-                        Home.Command3 = kvp.Value[1];
+                        Homes.Command3 = kvp.Value[1];
                     }
                     else if (kvp.Key == 4)
                     {
-                        Home.Command4 = kvp.Value[1];
+                        Homes.Command4 = kvp.Value[1];
                     }
                     else if (kvp.Key == 5)
                     {
-                        Home.Command5 = kvp.Value[1];
+                        Homes.Command5 = kvp.Value[1];
                     }
                     else if (kvp.Key == 6)
                     {
-                        Home.Command6 = kvp.Value[1];
+                        
                     }
                     else if (kvp.Key == 7)
                     {
-                        Home.Command7 = kvp.Value[1];
+                        
                     }
                     else if (kvp.Key == 8)
                     {
-                        Home.Command8 = kvp.Value[1];
+                        
                     }
                     else if (kvp.Key == 9)
                     {
-                        Home.Command9 = kvp.Value[1];
+                        
                     }
                     else if (kvp.Key == 10)
                     {
@@ -805,11 +805,11 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 131)
                     {
-                        BattleLogger.Command131 = kvp.Value[1];
+                        ExitCommand.Command131 = kvp.Value[1];
                     }
                     else if (kvp.Key == 132)
                     {
-                        BattleLogger.Command132 = kvp.Value[1];
+                        ExitCommand.Command132 = kvp.Value[1];
                     }
                 }
             }

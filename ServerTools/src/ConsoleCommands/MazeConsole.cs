@@ -458,11 +458,11 @@ namespace ServerTools
                                                                             }
                                                                             else if (_block.Value == "wall" && !_newBlockValue.Equals(_block.Value))
                                                                             {
-                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, _concreteBlockValue);
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, _customBlockValue);
                                                                             }
                                                                             else if (_block.Value == "wallPassage" && !_newBlockValue.Equals(_block.Value))
                                                                             {
-                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, _concreteBlockValue);
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, _customBlockValue);
                                                                             }
                                                                             else if (_block.Value == "air" && !_newBlockValue.Equals(_block.Value))
                                                                             {

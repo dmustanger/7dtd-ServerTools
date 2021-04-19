@@ -32,8 +32,7 @@ namespace ServerTools
         private string[] hardcoreStats;
         private bool highPingImmune;
         private string highPingImmuneName;
-        private string homePosition1;
-        private string homePosition2;
+        private Dictionary<string, string> homes;
         private DateTime jailDate;
         private string jailName;
         private int jailTime;
@@ -44,8 +43,7 @@ namespace ServerTools
         private DateTime lastFriendTele;
         private DateTime lastGimme;
         private DateTime lastGyro;
-        private DateTime lastHome1;
-        private DateTime lastHome2;
+        private DateTime lastHome;
         private DateTime lastJeep;
         private DateTime lastJoined;
         private DateTime lastKillMe;
@@ -371,27 +369,15 @@ namespace ServerTools
             }
         }
 
-        public string HomePosition1
+        public Dictionary<string, string> Homes
         {
             get
             {
-                return homePosition1;
+                return homes;
             }
             set
             {
-                homePosition1 = value;
-            }
-        }
-
-        public string HomePosition2
-        {
-            get
-            {
-                return homePosition2;
-            }
-            set
-            {
-                homePosition2 = value;
+                homes = value;
             }
         }
 
@@ -503,27 +489,15 @@ namespace ServerTools
             }
         }
 
-        public DateTime LastHome1
+        public DateTime LastHome
         {
             get
             {
-                return lastHome1;
+                return lastHome;
             }
             set
             {
-                lastHome1 = value;
-            }
-        }
-
-        public DateTime LastHome2
-        {
-            get
-            {
-                return lastHome2;
-            }
-            set
-            {
-                lastHome2 = value;
+                lastHome = value;
             }
         }
 

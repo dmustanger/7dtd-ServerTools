@@ -189,11 +189,11 @@ namespace ServerTools
                                     ChunkClusterList _chunklist = GameManager.Instance.World.ChunkClusters;
                                     for (int i = 0; i < _chunklist.Count; i++)
                                     {
-                                        ChunkCluster _chunk = _chunklist[i];
-                                        _chunkArray = _chunk.GetChunkArray();
-                                        foreach (Chunk _c in _chunkArray)
+                                        ChunkCluster _chunkCluster = _chunklist[i];
+                                        _chunkArray = _chunkCluster.GetChunkArray();
+                                        foreach (Chunk _chunk in _chunkArray)
                                         {
-                                            _tiles = _c.GetTileEntities();
+                                            _tiles = _chunk.GetTileEntities();
                                             foreach (TileEntity _tile in _tiles.dict.Values)
                                             {
                                                 TileEntityType type = _tile.GetTileEntityType();

@@ -7,7 +7,7 @@ namespace ServerTools
     class Waypoints
     {
         public static bool IsEnabled = false, PvP_Check = false, Zombie_Check = false, Vehicle = false;
-        public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Donator_Max_Waypoints = 4, Command_Cost = 0;
+        public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Reserved_Max_Waypoints = 4, Command_Cost = 0;
         public static string Command10 = "go way", Command106 = "waypoint", Command107 = "way", Command108 = "wp", Command109 = "fwaypoint", Command110 = "fway", Command111 = "fwp", 
             Command112 = "waypoint save", Command113 = "way save", Command114 = "ws", Command115 = "waypoint del", Command116 = "way del", Command117 = "wd";
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
@@ -23,7 +23,7 @@ namespace ServerTools
                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                     if (DateTime.Now < _dt)
                     {
-                        ListResult(_cInfo, Donator_Max_Waypoints);
+                        ListResult(_cInfo, Reserved_Max_Waypoints);
                         return;
                     }
                 }
@@ -132,7 +132,7 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(271, out string _phrase271);
                 _phrase271 = _phrase271.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase271 = _phrase271.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase271 = _phrase271.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase271 = _phrase271.Replace("{Value}", _timeleft.ToString());
                 _phrase271 = _phrase271.Replace("{Command106}", Command106);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase271 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
@@ -148,8 +148,8 @@ namespace ServerTools
                     Entity _attachedEntity = _player.AttachedToEntity;
                     if (_attachedEntity != null)
                     {
-                        Phrases.Dict.TryGetValue(281, out string _phrase281);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase281 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue(853, out string _phrase853);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase853 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         return;
                     }
                 }
@@ -268,7 +268,7 @@ namespace ServerTools
                 ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                 if (DateTime.Now < _dt)
                 {
-                    SavePoint(_cInfo, _waypoint, Donator_Max_Waypoints);
+                    SavePoint(_cInfo, _waypoint, Reserved_Max_Waypoints);
                     return;
                 }
             }

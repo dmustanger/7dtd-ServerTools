@@ -1,5 +1,56 @@
 ﻿CHANGELOG
 
+19.4.1
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added console commands for region reset
+Changed console command st-WebPanel short form to st-web
+Changed console command st-Admin short form to st-@a
+Changed console command st-ClanManager short form to clan
+Changed console command st-CustomCommands short form to custom
+Changed console command st-PlayerList short form to plist and st-plist
+Changed console command st-PlayerLogs short form to plogs and st-plogs
+Changed console command st-PrivateMessage short form to pmsg
+Changed console command st-ShutdownCheck short form to scheck
+Changed console command st-StartingItems short form to sti and st-sti
+Changed console command st-VehicleTeleport short form to vt
+Changed Lobby and Market commands so players can no longer teleport again
+if already inside of those spaces
+Changed Custom_Commands to automatically add new commands that require 
+permission to the ServerAdmin.xml at level 0
+Changed EventTriggers #1-9 to function with the Home tool update
+Changed Battle_Logger to Exit_Command
+Changed Home to Homes
+Changed Exit_Command to no longer check player distance or people near by
+Changed Waypoints option Donator_Max_Waypoints to Reserved_Max_Waypoints
+Changed Bounties so when a new bounty is added it will show in global chat
+Fixed Protected_Spaces getting stuck as protected. If you have an existing
+area that is protected improperly, use the console commands to fix it
+Fixed Falling_Blocks_Remover triggering improperly
+Fixed Web_Panel creating an error on startup and failing to load
+Fixed Maze generator setting the wrong block type when using custom blocks
+Fixed Friend and Party chat colors. They now apply to the prefix only
+Fixed Player_Logs recording the wrong region
+Fixed Market tool utilizing the wrong phrases
+Fixed console command st-SpawnEntityRadius not working properly
+Fixed possible bug in reported remaining shutdown time if at a negative
+Updated phrase #250,261,271,281,285,535,674,731-747,753,755,757,758,759,762
+Updated Homes tool to allow more home positions. Players must set new
+home points and use names. Set how many are available in options
+Updated Flying_Detector to ignore players standing on street lights
+Updated Flying_Detector to ignore players standing on players
+Updated Maze generator to check the state of blocks after spawn
+Updated Web_Panel to no longer require / at the end of the address
+Updated Web_Panel security
+Removed Alter_Message_Color option from Chat_Command_Response_Extended
+Removed Zone protection. Protection must be run through Protected_Spaces
+*Note* Highly recommend deleting your EventTriggers.xml and Phrases.xml
+while the server is off. It will generate new ones on server startup.
+This is to get them up to date with the latest changes. If you have custom
+triggers or phrases, back up the file before deletion and place your custom
+changes in to the new files after they regenerate
+
 19.4.0
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

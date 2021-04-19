@@ -74,8 +74,7 @@ namespace ServerTools
                 _p.HardcoreStats = new string[0];
                 _p.HighPingImmune = false;
                 _p.HighPingImmuneName = "";
-                _p.HomePosition1 = "";
-                _p.HomePosition2 = "";
+                _p.Homes = new Dictionary<string, string>();
                 _p.JailDate = new DateTime();
                 _p.JailName = "";
                 _p.JailTime = 0;
@@ -86,8 +85,7 @@ namespace ServerTools
                 _p.LastFriendTele = new DateTime();
                 _p.LastGimme = new DateTime();
                 _p.LastGyro = new DateTime();
-                _p.LastHome1 = new DateTime();
-                _p.LastHome2 = new DateTime();
+                _p.LastHome = new DateTime();
                 _p.LastJeep = new DateTime();
                 _p.LastJoined = new DateTime();
                 _p.LastKillMe = new DateTime();
@@ -360,8 +358,7 @@ namespace ServerTools
                     p.HardcoreStats = new string[0];
                     p.HighPingImmune = false;
                     p.HighPingImmuneName = "";
-                    p.HomePosition1 = "";
-                    p.HomePosition2 = "";
+                    p.Homes = new Dictionary<string, string>();
                     p.JailDate = new DateTime();
                     p.JailName = "";
                     p.JailTime = 0;
@@ -372,8 +369,7 @@ namespace ServerTools
                     p.LastFriendTele = new DateTime();
                     p.LastGimme = new DateTime();
                     p.LastGyro = new DateTime();
-                    p.LastHome1 = new DateTime();
-                    p.LastHome2 = new DateTime();
+                    p.LastHome = new DateTime();
                     p.LastJeep = new DateTime();
                     p.LastJoined = new DateTime();
                     p.LastKillMe = new DateTime();

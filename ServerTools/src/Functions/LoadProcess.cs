@@ -70,9 +70,9 @@ namespace ServerTools
                 {
                     Directory.CreateDirectory(API.ConfigPath + "/Logs/ConsoleCommandLogs");
                 }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/WebsiteLogs"))
+                if (!Directory.Exists(API.ConfigPath + "/Logs/WebPanelLogs"))
                 {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/WebsiteLogs");
+                    Directory.CreateDirectory(API.ConfigPath + "/Logs/WebPanelLogs");
                 }
                 if (!Directory.Exists(API.ConfigPath + "/Logs/OutputLogs"))
                 {
@@ -322,7 +322,7 @@ namespace ServerTools
                         }
                     }
                 }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/WebsiteLogs");
+                files = Directory.GetFiles(API.ConfigPath + "/Logs/WebPanelLogs");
                 if (files != null && files.Length > 0)
                 {
                     foreach (string file in files)

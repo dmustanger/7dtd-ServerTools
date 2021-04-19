@@ -75,7 +75,7 @@ namespace ServerTools
                                     Phrases.Dict.TryGetValue(535, out string _phrase535);
                                     _phrase535 = _phrase535.Replace("{Value}", _bounty.ToString());
                                     _phrase535 = _phrase535.Replace("{PlayerName}", _cInfo2.playerName);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase535 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase535 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                 }
                                 else
                                 {

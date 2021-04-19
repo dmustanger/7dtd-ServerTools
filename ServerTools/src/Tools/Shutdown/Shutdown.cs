@@ -57,6 +57,10 @@ namespace ServerTools
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase422 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         return;
                     }
+                    if (_remainingTime < 0)
+                    {
+                        _remainingTime = 0;
+                    }
                     string TimeLeft;
                     TimeLeft = string.Format("{0:00} H : {1:00} M", _remainingTime / 60, _remainingTime % 60);
                     Phrases.Dict.TryGetValue(421, out string _phrase421);

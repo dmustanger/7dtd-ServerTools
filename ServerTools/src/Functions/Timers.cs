@@ -96,21 +96,21 @@ namespace ServerTools
             };
         }
 
-        public static void BattleLogPlayerExit(string _id, int _time)
+        public static void ExitWithCommand(int _id, int _time)
         {
-            System.Timers.Timer _exitTimer = new System.Timers.Timer(_time * 1000);
-            _exitTimer.AutoReset = false;
-            _exitTimer.Start();
-            _exitTimer.Elapsed += (sender, e) =>
+            System.Timers.Timer _exitCommand = new System.Timers.Timer(_time * 1000);
+            _exitCommand.AutoReset = false;
+            _exitCommand.Start();
+            _exitCommand.Elapsed += (sender, e) =>
             {
                 Init5(sender, e, _id);
-                _exitTimer.Close();
+                _exitCommand.Close();
             };
         }
 
-        public static void BattleLogDelay(ClientInfo _cInfo, string _ip)
+        public static void ExitWithoutCommand(ClientInfo _cInfo, string _ip)
         {
-            System.Timers.Timer _exitDelay = new System.Timers.Timer(2500);
+            System.Timers.Timer _exitDelay = new System.Timers.Timer(1500);
             _exitDelay.AutoReset = false;
             _exitDelay.Start();
             _exitDelay.Elapsed += (sender, e) =>
@@ -281,7 +281,7 @@ namespace ServerTools
             {
                 Log.Out("Bank enabled");
             }
-            if (BattleLogger.IsEnabled)
+            if (ExitCommand.IsEnabled)
             {
                 Log.Out("Battle logger enabled");
             }
@@ -461,9 +461,9 @@ namespace ServerTools
             {
                 Log.Out("Shutdown enabled");
             }
-            if (Home.IsEnabled)
+            if (Homes.IsEnabled)
             {
-                Log.Out("Set home enabled");
+                Log.Out("Homes enabled");
             }
             if (Shop.IsEnabled)
             {
@@ -756,14 +756,14 @@ namespace ServerTools
             Hardcore.KickPlayer(_cInfo);
         }
 
-        private static void Init5(object sender, ElapsedEventArgs e, string _id)
+        private static void Init5(object sender, ElapsedEventArgs e, int _id)
         {
-            BattleLogger.PlayerExit(_id);
+            ExitCommand.ExitWithCommand(_id);
         }
 
         private static void Init6(object sender, ElapsedEventArgs e, ClientInfo _cInfo, string _ip)
         {
-            BattleLogger.BattleLog(_cInfo, _ip);
+            ExitCommand.ExitWithoutCommand(_cInfo, _ip);
         }
     }
 }

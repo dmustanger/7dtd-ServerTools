@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-ShutdownCheck", "sc", "st-sc" };
+            return new string[] { "st-ShutdownCheck", "scheck", "st-sc" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
