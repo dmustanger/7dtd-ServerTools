@@ -642,3 +642,4 @@ D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-19.4.2\ServerTools\
 D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-19.4.2\ServerTools\obj\Release\ServerTools.csproj.GenerateResource.cache
 D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-19.4.2\ServerTools\obj\Release\ServerTools.csproj.CopyComplete
 D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-19.4.2\ServerTools\obj\Release\ServerTools.dll
+D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-19.4.2\ServerTools\obj\Release\ServerTools.csprojAssemblyReference.cache

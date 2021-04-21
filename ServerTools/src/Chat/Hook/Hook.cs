@@ -18,7 +18,7 @@ namespace ServerTools
         {
             try
             {
-                if (!string.IsNullOrEmpty(_message) && _cInfo != null && _mainName != Config.Server_Response_Name && _senderId != -1)
+                if (!string.IsNullOrEmpty(_message) && _cInfo != null && _mainName != Config.Server_Response_Name)
                 {
                     if (Mute.IsEnabled && Mute.Mutes.Contains(_cInfo.playerId))
                     {
@@ -84,7 +84,7 @@ namespace ServerTools
                         {
                             _message.Substring(2);
                         }
-                        if (!_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public))
+                        if (!_message.StartsWith("@") && _senderId != -1 && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public))
                         {
                             if (ChatLog.IsEnabled)
                             {
