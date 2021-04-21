@@ -172,15 +172,7 @@ namespace ServerTools
                 int _y = (int)_position.y;
                 int _z = (int)_position.z;
                 Vector3i _vec3i = new Vector3i(_x, _y, _z);
-                if (PersistentOperations.ClaimedByNone(_cInfo.playerId, _vec3i))
-                {
-                    CommandCost(_cInfo, _waypoint, _position, _friends);
-                }
-                else
-                {
-                    Phrases.Dict.TryGetValue(272, out string _phrase272);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase272 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                }
+                CommandCost(_cInfo, _waypoint, _position, _friends);
             }
         }       
 
@@ -211,14 +203,20 @@ namespace ServerTools
             {
                 Dictionary<string, string> _waypoints = PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints;
                 _waypoints.TryGetValue(_waypoint, out string _waypointPos);
-                if (_friends)
-                {
-                    FriendInvite(_cInfo, _position, _waypointPos);
-                }
                 string[] _cords = _waypointPos.Split(',');
                 int.TryParse(_cords[0], out int _x);
                 int.TryParse(_cords[1], out int _y);
                 int.TryParse(_cords[2], out int _z);
+                if (PersistentOperations.ClaimedByNone(_cInfo.playerId, new Vector3i(_x, _y, _z)))
+                {
+                    Phrases.Dict.TryGetValue(272, out string _phrase272);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase272 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    return;
+                }
+                if (_friends)
+                {
+                    FriendInvite(_cInfo, _position, _waypointPos);
+                }
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                 PersistentContainer.Instance.Players[_cInfo.playerId].LastWaypoint = DateTime.Now;
                 if (Wallet.IsEnabled && Command_Cost >= 1)
@@ -392,8 +390,7 @@ namespace ServerTools
 
         public static void FriendWaypoint(ClientInfo _cInfo)
         {
-            DateTime _dt;
-            Invite.TryGetValue(_cInfo.entityId, out _dt);
+            Invite.TryGetValue(_cInfo.entityId, out DateTime _dt);
             {
                 TimeSpan varTime = DateTime.Now - _dt;
                 double fractionalMinutes = varTime.TotalMinutes;

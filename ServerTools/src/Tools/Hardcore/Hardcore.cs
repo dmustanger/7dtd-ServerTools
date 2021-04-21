@@ -260,7 +260,7 @@ namespace ServerTools
                                 {
                                     Life_Price = 0;
                                 }
-                                int _cost = Life_Price * _extraLives;
+                                int _cost = Life_Price * _extraLives++;
                                 if (Wallet.GetCurrentCoins(_cInfo.playerId) >= _cost)
                                 {
                                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _cost);

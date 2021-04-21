@@ -8,7 +8,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, PvP_Check = false, Zombie_Check = false, Vehicle_Check = false, Return = false;
         public static int Delay_Between_Uses = 0, Max_Homes = 2, Reserved_Max_Homes = 4, Command_Cost = 0;
-        public static string Command1 = "home", Command2 = "fhome", Command3 = "home save", Command4 = "home del", Command5 = "go home";
+        public static string Command1 = "home", Command2 = "fhome", Command3 = "home save", Command4 = "home del", Command5 = "go home",
+            Command6 = "sethome";
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> FriendPosition = new Dictionary<int, string>();
 
@@ -201,15 +202,7 @@ namespace ServerTools
                     int _y = (int)_position.y;
                     int _z = (int)_position.z;
                     Vector3i _vec3i = new Vector3i(_x, _y, _z);
-                    if (PersistentOperations.ClaimedByAllyOrSelf(_cInfo.playerId, _vec3i))
-                    {
-                        CommandCost(_cInfo, _home, _position, _friends);
-                    }
-                    else
-                    {
-                        Phrases.Dict.TryGetValue(735, out string _phrase735);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase735 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    CommandCost(_cInfo, _home, _position, _friends);
                 }
             }
             catch (Exception e)
@@ -254,14 +247,20 @@ namespace ServerTools
                 {
                     Dictionary<string, string> _homes = PersistentContainer.Instance.Players[_cInfo.playerId].Homes;
                     _homes.TryGetValue(_home, out string _homePos);
-                    if (_friends)
-                    {
-                        FriendInvite(_cInfo, _position, _homePos);
-                    }
                     string[] _cords = _homePos.Split(',');
                     int.TryParse(_cords[0], out int _x);
                     int.TryParse(_cords[1], out int _y);
                     int.TryParse(_cords[2], out int _z);
+                    if (!PersistentOperations.ClaimedByAllyOrSelf(_cInfo.playerId, new Vector3i(_x, _y, _z)))
+                    {
+                        Phrases.Dict.TryGetValue(735, out string _phrase735);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase735 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        return;
+                    }
+                    if (_friends)
+                    {
+                        FriendInvite(_cInfo, _position, _homePos);
+                    }
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                     PersistentContainer.Instance.Players[_cInfo.playerId].LastHome = DateTime.Now;
                     if (Wallet.IsEnabled && Command_Cost >= 1)

@@ -6,7 +6,7 @@ namespace ServerTools
 {
     public class ChatHook
     {
-        public static bool ChatFlood = false, Normal_Player_Color_Prefix = false, Message_Color_Enabled = false, Alter_Message_Color = false;
+        public static bool ChatFlood = false, Normal_Player_Color_Prefix = false, Message_Color_Enabled = false, Alter_Message_Color = false, Role_Play = false;
         public static string Normal_Player_Name_Color = "[00B3B3]", Normal_Player_Prefix = "NOOB", Friend_Chat_Color = "[33CC33]", Party_Chat_Color = "[FFCC00]",
             Command_Private = "/", Command_Public = "!", Message_Color = "[FFFFFF]", Normal_Player_Prefix_Color = "[FFFFFF]";
         public static int Admin_Level = 0, Mod_Level = 1, Max_Length = 250, Messages_Per_Min = 8, Wait_Time = 60;
@@ -18,7 +18,7 @@ namespace ServerTools
         {
             try
             {
-                if (!string.IsNullOrEmpty(_message) && _cInfo != null && _mainName != Config.Server_Response_Name)
+                if (!string.IsNullOrEmpty(_message) && _cInfo != null && _mainName != Config.Server_Response_Name && _senderId != -1)
                 {
                     if (Mute.IsEnabled && Mute.Mutes.Contains(_cInfo.playerId))
                     {
@@ -84,7 +84,7 @@ namespace ServerTools
                         {
                             _message.Substring(2);
                         }
-                        if (!_message.StartsWith("@") && _senderId != -1 && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public))
+                        if (!_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public))
                         {
                             if (ChatLog.IsEnabled)
                             {
@@ -240,12 +240,6 @@ namespace ServerTools
                                     Homes.DelHome(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.StartsWith(Homes.Command1 + " "))
-                                {
-                                    _message = _message.ToLower().Replace(Homes.Command1 + " ", "");
-                                    Homes.TeleDelay(_cInfo, _message, false);
-                                    return false;
-                                }
                                 else if (_message.ToLower() == Homes.Command5)
                                 {
                                     if (Homes.Invite.ContainsKey(_cInfo.entityId))
@@ -253,6 +247,18 @@ namespace ServerTools
                                         Homes.FriendHome(_cInfo);
                                         return false;
                                     }
+                                }
+                                else if (_message.ToLower().StartsWith(Homes.Command6 + " "))
+                                {
+                                    _message = _message.ToLower().Replace(Homes.Command6 + " ", "");
+                                    Homes.SaveClaimCheck(_cInfo, _message);
+                                    return false;
+                                }
+                                else if (_message.StartsWith(Homes.Command1 + " "))
+                                {
+                                    _message = _message.ToLower().Replace(Homes.Command1 + " ", "");
+                                    Homes.TeleDelay(_cInfo, _message, false);
+                                    return false;
                                 }
                             }
                             if (Hardcore.IsEnabled && _message.ToLower() == Hardcore.Command11)
@@ -1144,54 +1150,43 @@ namespace ServerTools
                             }
                             if (Waypoints.IsEnabled)
                             {
+                                if (_message.ToLower() == Waypoints.Command10)
+                                {
+                                    if (Waypoints.Invite.ContainsKey(_cInfo.entityId))
+                                    {
+                                        Waypoints.FriendWaypoint(_cInfo);
+                                        return false;
+                                    }
+                                }
                                 if (_message.ToLower() == Waypoints.Command106 || _message.ToLower() == Waypoints.Command107 || _message.ToLower() == Waypoints.Command108)
                                 {
                                     Waypoints.List(_cInfo);
                                     return false;
                                 }
-                                if (_message.ToLower().StartsWith(Waypoints.Command106 + " "))
-                                {
-                                    _message = _message.ToLower().Replace(Waypoints.Command106 + " ", "");
-                                    Waypoints.TeleDelay(_cInfo, _message, false);
-                                    return false;
-                                }
-                                else if (_message.ToLower().StartsWith(Waypoints.Command107 + " "))
-                                {
-                                    _message = _message.ToLower().Replace(Waypoints.Command107 + " ", "");
-                                    Waypoints.TeleDelay(_cInfo, _message, false);
-                                    return false;
-                                }
-                                else if (_message.ToLower().StartsWith(Waypoints.Command108 + " "))
-                                {
-                                    _message = _message.ToLower().Replace(Waypoints.Command108 + " ", "");
-                                    Waypoints.TeleDelay(_cInfo, _message, false);
-                                    return false;
-                                }
-                                string _waypointName = "";
                                 if (_message.StartsWith(Waypoints.Command109 + " "))
                                 {
-                                    _waypointName = _message.ToLower().Replace(Waypoints.Command109 + " ", "");
-                                    if (_waypointName != " " || _waypointName != "")
+                                    _message = _message.ToLower().Replace(Waypoints.Command109 + " ", "");
+                                    if (_message != " " || _message != "")
                                     {
-                                        Waypoints.TeleDelay(_cInfo, _waypointName, true);
+                                        Waypoints.TeleDelay(_cInfo, _message, true);
                                         return false;
                                     }
                                 }
                                 else if (_message.StartsWith(Waypoints.Command110 + " "))
                                 {
-                                    _waypointName = _message.ToLower().Replace(Waypoints.Command110 + " ", "");
-                                    if (_waypointName != " " || _waypointName != "")
+                                    _message = _message.ToLower().Replace(Waypoints.Command110 + " ", "");
+                                    if (_message != " " || _message != "")
                                     {
-                                        Waypoints.TeleDelay(_cInfo, _waypointName, true);
+                                        Waypoints.TeleDelay(_cInfo, _message, true);
                                         return false;
                                     }
                                 }
                                 else if (_message.StartsWith(Waypoints.Command111 + " "))
                                 {
-                                    _waypointName = _message.ToLower().Replace(Waypoints.Command111 + " ", "");
-                                    if (_waypointName != " " || _waypointName != "")
+                                    _message = _message.ToLower().Replace(Waypoints.Command111 + " ", "");
+                                    if (_message != " " || _message != "")
                                     {
-                                        Waypoints.TeleDelay(_cInfo, _waypointName, true);
+                                        Waypoints.TeleDelay(_cInfo, _message, true);
                                         return false;
                                     }
                                 }
@@ -1231,13 +1226,22 @@ namespace ServerTools
                                     Waypoints.DelPoint(_cInfo, _message);
                                     return false;
                                 }
-
-                            }
-                            if (Waypoints.IsEnabled && _message.ToLower() == Waypoints.Command10)
-                            {
-                                if (Waypoints.Invite.ContainsKey(_cInfo.entityId))
+                                if (_message.ToLower().StartsWith(Waypoints.Command106 + " "))
                                 {
-                                    Waypoints.FriendWaypoint(_cInfo);
+                                    _message = _message.ToLower().Replace(Waypoints.Command106 + " ", "");
+                                    Waypoints.TeleDelay(_cInfo, _message, false);
+                                    return false;
+                                }
+                                else if (_message.ToLower().StartsWith(Waypoints.Command107 + " "))
+                                {
+                                    _message = _message.ToLower().Replace(Waypoints.Command107 + " ", "");
+                                    Waypoints.TeleDelay(_cInfo, _message, false);
+                                    return false;
+                                }
+                                else if (_message.ToLower().StartsWith(Waypoints.Command108 + " "))
+                                {
+                                    _message = _message.ToLower().Replace(Waypoints.Command108 + " ", "");
+                                    Waypoints.TeleDelay(_cInfo, _message, false);
                                     return false;
                                 }
                             }

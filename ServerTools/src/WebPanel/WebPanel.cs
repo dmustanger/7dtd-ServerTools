@@ -23,12 +23,10 @@ namespace ServerTools.Website
         //5xx: Server Error - The server failed to fulfill an apparently valid request[1]:
 
 
-        public static bool IsEnabled = false;
-        public static bool IsRunning = false;
-        public static bool DirFound = false;
+        public static bool IsEnabled = false, IsRunning = false, DirFound = false;
         public static string SITE_DIR = "";
         public static string Password = "";
-        private static string Port = "";
+        public static int Port = 8084;
         private static string _File = string.Format("WebPanelLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string FilePath = string.Format("{0}/Logs/WebPanelLogs/{1}", API.ConfigPath, _File);
         private static HttpListener Listener = new HttpListener();
@@ -186,9 +184,27 @@ namespace ServerTools.Website
         {
             try
             {
-                int _hostPort = GamePrefs.GetInt(EnumUtils.Parse<EnumGamePrefs>("ControlPanelPort", false));
-                int _host4 = _hostPort + 4;
-                if (_host4 > 0 && _host4 < 65536)
+                int _controlPanelPort = GamePrefs.GetInt(EnumUtils.Parse<EnumGamePrefs>("ControlPanelPort", false));
+                int _telnetPanelPort = GamePrefs.GetInt(EnumUtils.Parse<EnumGamePrefs>("TelnetPanelPort", false));
+                if (Port == _controlPanelPort || Port == _telnetPanelPort)
+                {
+                    if (_controlPanelPort + 4 != _telnetPanelPort)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Web_Panel port was set identically to control panel or telnet port. It has been adjusted automatically to {0}", _controlPanelPort + 4));
+                        Port = _controlPanelPort + 4;
+                    }
+                    else if (_controlPanelPort + 5 != _telnetPanelPort)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Web_Panel port was set identically to control panel or telnet port. It has been adjusted automatically to {0}", _controlPanelPort + 5));
+                        Port = _controlPanelPort + 5;
+                    }
+                    else
+                    {
+                        Log.Out("[SERVERTOOLS] Web_Panel port was set identically to control panel or telnet port. Unable to verify an available port. Web panel was unable to start");
+                        return;
+                    }
+                }
+                if (Port > 0 && Port < 65536)
                 {
                     if (HttpListener.IsSupported)
                     {
@@ -202,12 +218,11 @@ namespace ServerTools.Website
                                 return;
                             }
                         }
-                        Port = _host4.ToString();
                         Listener.Prefixes.Add(string.Format("http://*:{0}/", Port));
                         Listener.Prefixes.Add(string.Format("http://*:{0}/st.html/", Port));
                         Listener.Start();
-                        string _localPage = "http://localhost:" + _host4.ToString() + "/st.html";
-                        Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel has opened on port {0}", _host4.ToString()));
+                        string _localPage = "http://localhost:" + Port.ToString() + "/st.html";
+                        Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel has opened on port {0}", Port.ToString()));
                         Log.Out(string.Format("[SERVERTOOLS] Use {0} or if accessing it remotely, replace localhost with your server IP of {1}", _localPage, _externalIp));
                         while (Listener.IsListening)
                         {
@@ -307,7 +322,7 @@ namespace ServerTools.Website
                 //    string[] command = Regex.Split(_uri, "/api/");
                 //    //Response(_uri, _response, true, command[1]);
                 //}
-                _uri = _uri.Remove(0, _uri.IndexOf(Port) + Port.Length + 1);
+                _uri = _uri.Remove(0, _uri.IndexOf(Port.ToString()) + Port.ToString().Length + 1);
                 if (_request.HttpMethod == "GET")
                 {
                     if (_uri == "st.html")

@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string version = "19.4.1";
+        public const string version = "19.4.2";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]", OldXmlDirectory = "";
         private const string configFile = "ServerToolsConfig.xml";
         public static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
@@ -3514,6 +3514,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_Panel entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Port"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_Panel entry because of missing 'Port' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Port"), out WebPanel.Port))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_Panel entry because of invalid (non-numeric) value for 'Port' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "World_Radius":
                                 if (!_line.HasAttribute("Enable"))
@@ -3730,7 +3740,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints =\"{1}\" Reserved_Max_Waypoints=\"{2}\" Command_Cost =\"{3}\" Delay_Between_Uses=\"{4}\" PvP_Check =\"{5}\" />", Waypoints.IsEnabled, Waypoints.Max_Waypoints, Waypoints.Reserved_Max_Waypoints, Waypoints.Command_Cost, Waypoints.Delay_Between_Uses, Waypoints.PvP_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Waypoints_extended\" Zombie_Check=\"{0}\" Vehicle=\"{1}\" />", Waypoints.Zombie_Check, Waypoints.Vehicle));
                 sw.WriteLine(string.Format("        <Tool Name=\"Weather_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", WeatherVote.IsEnabled, WeatherVote.Players_Online, WeatherVote.Votes_Needed));
-                sw.WriteLine(string.Format("        <Tool Name=\"Web_Panel\" Enable=\"{0}\" />", WebPanel.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Web_Panel\" Enable=\"{0}\" Port=\"{1}\" />", WebPanel.IsEnabled, WebPanel.Port));
                 sw.WriteLine(string.Format("        <Tool Name=\"World_Radius\" Enable=\"{0}\" Normal_Player=\"{1}\" Reserved=\"{2}\" Admin_Level=\"{3}\" />", WorldRadius.IsEnabled, WorldRadius.Normal_Player, WorldRadius.Reserved, WorldRadius.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Zones\" Enable=\"{0}\" Zone_Message=\"{1}\" Reminder_Notice_Delay=\"{2}\" Set_Home=\"{3}\"  />", Zones.IsEnabled, Zones.Zone_Message, Zones.Reminder_Delay, Zones.Set_Home));
                 sw.WriteLine("    </Tools>");

@@ -122,7 +122,7 @@ namespace ServerTools
                     sw.WriteLine("        <Trigger Number=\"3\" Default=\"home save\" Replacement=\"home save\" />");
                     sw.WriteLine("        <Trigger Number=\"4\" Default=\"home del\" Replacement=\"home del\" />");
                     sw.WriteLine("        <Trigger Number=\"5\" Default=\"go home\" Replacement=\"go home\" />");
-                    sw.WriteLine("        <Trigger Number=\"6\" Default=\"\" Replacement=\"\" />");
+                    sw.WriteLine("        <Trigger Number=\"6\" Default=\"sethome\" Replacement=\"sethome\" />");
                     sw.WriteLine("        <Trigger Number=\"7\" Default=\"\" Replacement=\"\" />");
                     sw.WriteLine("        <Trigger Number=\"8\" Default=\"\" Replacement=\"\" />");
                     sw.WriteLine("        <Trigger Number=\"9\" Default=\"\" Replacement=\"\" />");
@@ -305,7 +305,7 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 6)
                     {
-                        
+                        Homes.Command6 = kvp.Value[1];
                     }
                     else if (kvp.Key == 7)
                     {

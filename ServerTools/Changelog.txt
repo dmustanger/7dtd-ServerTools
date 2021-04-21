@@ -1,5 +1,22 @@
 ﻿CHANGELOG
 
+19.4.2
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added chat command sethome to Homes tool
+Added option to Web_Panel called Port. Controls the open port utilized by 
+the web panel. Do not use ports required by other mods or services. If you
+are renting your server, request an open port from your host
+Fixed New_Player option Block_During_Bloodmoon blocking everyone
+Fixed default example for custom commands
+Fixed Waypoints not triggering properly from chat commands
+Fixed Homes tool running a claim check incorrectly
+Fixed Waypoints tool running a claim check incorrectly
+Fixed first purchase of extra life in Hardcore being free
+Updated response to /commands
+Updated event trigger 6
+
 19.4.1
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

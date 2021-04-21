@@ -76,7 +76,18 @@ namespace ServerTools
                 }
                 if (NewPlayer.Block_During_Bloodmoon && PersistentOperations.BloodMoonSky())
                 {
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.playerId), null);
+                    PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_cInfo.playerId);
+                    if (_pdf != null)
+                    {
+                        if (_pdf.totalTimePlayed < 5)
+                        {
+                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.playerId), null);
+                        }
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.playerId), null);
+                    }
                 }
             }
             catch (Exception e)

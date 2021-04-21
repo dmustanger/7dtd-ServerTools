@@ -168,7 +168,7 @@ namespace ServerTools
                     sw.WriteLine("        <Command Trigger=\"rules\" Response=\"whisper Visit YourSiteHere to see the rules.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Trigger=\"website\" Response =\"whisper Visit YourSiteHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Trigger=\"teamspeak\" Response=\"whisper The Teamspeak3 info is YourInfoHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Trigger=\"spawnz\" Response=\"ser {EntityId} 40 @ 4 11 14 ^ whisper Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"spawnz\" Response=\"st-ser {EntityId} r.40 4 11 17 ^ whisper Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Trigger=\"discord\" Response=\"whisper The discord channel is ...\" DelayBetweenUses=\"20\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Trigger=\"cc8\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Trigger=\"cc9\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
@@ -255,9 +255,11 @@ namespace ServerTools
             if (Homes.IsEnabled)
             {
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Homes.Command1);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Homes.Command2);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Homes.Command3);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Homes.Command4);
+                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Homes.Command1);
+                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Homes.Command2);
+                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Homes.Command3);
+                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Homes.Command4);
+                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Homes.Command6);
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);

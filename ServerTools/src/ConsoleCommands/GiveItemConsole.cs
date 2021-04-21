@@ -15,14 +15,14 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. GiveItem <SteamId/EntityId> <Name> <Count> <Quality> <Durability>\n" +
-                "  2. GiveItem <SteamId/EntityId> <Name> <Count> <Quality>\n" +
-                "  3. GiveItem <SteamId/EntityId> <Name> <Count>\n" +
-                "  4. GiveItem <SteamId/EntityId> <Name>\n" +
-                "  5. GiveItem all <Name> <Count> <Quality> <Durability>\n " +
-                "  6. GiveItem all <Name> <Count> <Quality>\n " +
-                "  7. GiveItem all <Name> <Count>\n " +
-                "  8. GiveItem all <Name>\n " +
+                "  1. st-gi <SteamId/EntityId> <Name> <Count> <Quality> <Durability>\n" +
+                "  2. st-gi <SteamId/EntityId> <Name> <Count> <Quality>\n" +
+                "  3. st-gi <SteamId/EntityId> <Name> <Count>\n" +
+                "  4. st-gi <SteamId/EntityId> <Name>\n" +
+                "  5. st-gi all <Name> <Count> <Quality> <Durability>\n " +
+                "  6. st-gi all <Name> <Count> <Quality>\n " +
+                "  7. st-gi all <Name> <Count>\n " +
+                "  8. st-gi all <Name>\n " +
                 "1. Gives a player the item with specific count, quality and durability\n" +
                 "2. Gives a player the item with specific count, quality and 100 percent durability\n" +
                 "3. Gives a player the item with specific count, 1 quality and 100 percent durability\n" +
