@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string version = "19.4.2";
+        public const string version = "19.4.3";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]", OldXmlDirectory = "";
         private const string configFile = "ServerToolsConfig.xml";
         public static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);

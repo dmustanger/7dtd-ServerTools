@@ -1,5 +1,12 @@
 ﻿CHANGELOG
 
+19.4.3
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Removed malfunctioning claim check from Homes tool
+Removed malfunctioning claim check from Waypoints tool
+
 19.4.2
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

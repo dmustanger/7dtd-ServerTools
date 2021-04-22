@@ -116,73 +116,69 @@ namespace ServerTools
                     }
                     else
                     {
-                        ChunkManager.ChunkObserver _observer = GameManager.Instance.AddChunkObserver(_pos.ToVector3(), false, 1, -1);
+                        ChunkManager.ChunkObserver _observer = GameManager.Instance.AddChunkObserver(_pos.ToVector3(), false, 2, -1);
                         if (_observer != null)
                         {
                             Thread.Sleep(1000);
                             Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_pos.x, _pos.y, _pos.z);
                             if (_chunk != null)
                             {
-                                BlockValue _blockValue = Block.GetBlockValue("cntStorageChest");
-                                if (_blockValue.Block != null)
+                                EntityBackpack entityBackpack = new EntityBackpack();
+                                entityBackpack = EntityFactory.CreateEntity("Backpack".GetHashCode(), _pdf.ecd.pos + Vector3.up * 2f) as EntityBackpack;
+                                entityBackpack.RefPlayerId = _pdf.ecd.clientEntityId;
+                                entityBackpack.lootContainer = new TileEntityLootContainer(null);
+                                entityBackpack.lootContainer.SetUserAccessing(true);
+                                entityBackpack.lootContainer.SetEmpty();
+                                entityBackpack.lootContainer.lootListIndex = entityBackpack.GetLootList();
+                                entityBackpack.lootContainer.SetContainerSize(LootContainer.lootList[entityBackpack.GetLootList()].size, true);
+                                if (All || Bag)
                                 {
-                                    EntityBackpack entityBackpack = new EntityBackpack();
-                                    entityBackpack = EntityFactory.CreateEntity("Backpack".GetHashCode(), _pdf.ecd.pos + Vector3.up * 2f) as EntityBackpack;
-                                    entityBackpack.RefPlayerId = _pdf.ecd.clientEntityId;
-                                    entityBackpack.lootContainer = new TileEntityLootContainer(null);
-                                    entityBackpack.lootContainer.SetUserAccessing(true);
-                                    entityBackpack.lootContainer.SetEmpty();
-                                    entityBackpack.lootContainer.lootListIndex = entityBackpack.GetLootList();
-                                    entityBackpack.lootContainer.SetContainerSize(LootContainer.lootList[entityBackpack.GetLootList()].size, true);
-                                    if (All || Bag)
+                                    for (int i = 0; i < _pdf.bag.Length; i++)
                                     {
-                                        for (int i = 0; i < _pdf.bag.Length; i++)
+                                        if (!_pdf.bag[i].IsEmpty())
                                         {
-                                            if (!_pdf.bag[i].IsEmpty())
-                                            {
-                                                entityBackpack.lootContainer.AddItem(_pdf.bag[i]);
-                                                _pdf.bag[i] = ItemStack.Empty.Clone();
-                                            }
+                                            entityBackpack.lootContainer.AddItem(_pdf.bag[i]);
+                                            _pdf.bag[i] = ItemStack.Empty.Clone();
                                         }
                                     }
-                                    if (All || Belt)
-                                    {
-                                        for (int i = 0; i < _pdf.inventory.Length; i++)
-                                        {
-                                            if (!_pdf.inventory[i].IsEmpty())
-                                            {
-                                                entityBackpack.lootContainer.AddItem(_pdf.inventory[i]);
-                                                _pdf.inventory[i] = ItemStack.Empty.Clone();
-                                            }
-                                        }
-                                    }
-                                    if (All || Equipment)
-                                    {
-                                        ItemValue[] _equipmentValues = _pdf.equipment.GetItems();
-                                        for (int i = 0; i < _equipmentValues.Length; i++)
-                                        {
-                                            if (!_equipmentValues[i].IsEmpty())
-                                            {
-                                                ItemStack _itemStack = new ItemStack(_equipmentValues[i], 1);
-                                                entityBackpack.lootContainer.AddItem(_itemStack);
-                                                _equipmentValues[i].Clear();
-                                            }
-                                        }
-                                    }
-                                    _pdf.droppedBackpackPosition = new Vector3i(_pdf.ecd.pos);
-                                    entityBackpack.lootContainer.bPlayerBackpack = true;
-                                    entityBackpack.lootContainer.SetUserAccessing(false);
-                                    entityBackpack.lootContainer.SetModified();
-                                    entityBackpack.entityId = -1;
-                                    entityBackpack.RefPlayerId = _pdf.ecd.clientEntityId;
-                                    EntityCreationData entityCreationData = new EntityCreationData(entityBackpack);
-                                    entityCreationData.entityName = string.Format(Localization.Get("playersBackpack"), _pdf.ecd.entityName);
-                                    entityCreationData.id = -1;
-                                    entityCreationData.lootContainer = entityBackpack.lootContainer.Clone();
-                                    PersistentOperations.SavePlayerDataFile(_cInfo.playerId, _pdf);
-                                    GameManager.Instance.RequestToSpawnEntityServer(entityCreationData);
-                                    entityBackpack.OnEntityUnload();
                                 }
+                                if (All || Belt)
+                                {
+                                    for (int i = 0; i < _pdf.inventory.Length; i++)
+                                    {
+                                        if (!_pdf.inventory[i].IsEmpty())
+                                        {
+                                            entityBackpack.lootContainer.AddItem(_pdf.inventory[i]);
+                                            _pdf.inventory[i] = ItemStack.Empty.Clone();
+                                        }
+                                    }
+                                }
+                                if (All || Equipment)
+                                {
+                                    ItemValue[] _equipmentValues = _pdf.equipment.GetItems();
+                                    for (int i = 0; i < _equipmentValues.Length; i++)
+                                    {
+                                        if (!_equipmentValues[i].IsEmpty())
+                                        {
+                                            ItemStack _itemStack = new ItemStack(_equipmentValues[i], 1);
+                                            entityBackpack.lootContainer.AddItem(_itemStack);
+                                            _equipmentValues[i].Clear();
+                                        }
+                                    }
+                                }
+                                _pdf.droppedBackpackPosition = new Vector3i(_pdf.ecd.pos);
+                                entityBackpack.lootContainer.bPlayerBackpack = true;
+                                entityBackpack.lootContainer.SetUserAccessing(false);
+                                entityBackpack.lootContainer.SetModified();
+                                entityBackpack.entityId = -1;
+                                entityBackpack.RefPlayerId = _pdf.ecd.clientEntityId;
+                                EntityCreationData entityCreationData = new EntityCreationData(entityBackpack);
+                                entityCreationData.entityName = string.Format(Localization.Get("playersBackpack"), _pdf.ecd.entityName);
+                                entityCreationData.id = -1;
+                                entityCreationData.lootContainer = entityBackpack.lootContainer.Clone();
+                                PersistentOperations.SavePlayerDataFile(_cInfo.playerId, _pdf);
+                                GameManager.Instance.RequestToSpawnEntityServer(entityCreationData);
+                                entityBackpack.OnEntityUnload();
                             }
                             GameManager.Instance.RemoveChunkObserver(_observer);
                         }

@@ -207,12 +207,6 @@ namespace ServerTools
                 int.TryParse(_cords[0], out int _x);
                 int.TryParse(_cords[1], out int _y);
                 int.TryParse(_cords[2], out int _z);
-                if (PersistentOperations.ClaimedByNone(_cInfo.playerId, new Vector3i(_x, _y, _z)))
-                {
-                    Phrases.Dict.TryGetValue(272, out string _phrase272);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase272 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    return;
-                }
                 if (_friends)
                 {
                     FriendInvite(_cInfo, _position, _waypointPos);
