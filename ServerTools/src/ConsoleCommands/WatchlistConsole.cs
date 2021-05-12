@@ -13,11 +13,11 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. WatchList off\n" +
-                   "  2. WatchList on\n" +
-                   "  3. Watchlist add <steamID> <reason>\n" +
-                   "  4. watchlist remove <steamID>\n" +
-                   "  5. watchlist list\n" +
+                   "  1. st-wl off\n" +
+                   "  2. st-wl on\n" +
+                   "  3. st-wl add <steamID> <reason>\n" +
+                   "  4. st-wl remove <steamID>\n" +
+                   "  5. st-wl list\n" +
                    "1. Turn off watch list\n" +
                    "2. Turn on watch list\n" +
                    "3. Adds a steamID  and name to the Watchlist\n" +

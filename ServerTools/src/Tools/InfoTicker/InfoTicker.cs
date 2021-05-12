@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace ServerTools
@@ -9,12 +10,12 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, Random = false;
         public static string Command104 = "infoticker";
         public static int Delay = 60;
-        private const string File = "InfoTicker.xml";
-        private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, File);
+        private const string file = "InfoTicker.xml";
+        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();
         private static List<string> MsgList = new List<string>();
         public static List<string> ExemptionList = new List<string>();
-        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, File);
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -32,18 +33,18 @@ namespace ServerTools
 
         private static void LoadXml()
         {
-            if (!Utils.FileExists(FilePath))
+            if (!Utils.FileExists(filePath))
             {
                 UpdateXml();
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(FilePath);
+                xmlDoc.Load(filePath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", File, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
             XmlNode _XmlNode = xmlDoc.DocumentElement;
@@ -110,7 +111,7 @@ namespace ServerTools
         private static void UpdateXml()
         {
             FileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(FilePath))
+            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<InfoTicketer>");
@@ -150,7 +151,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!Utils.FileExists(filePath))
             {
                 UpdateXml();
             }

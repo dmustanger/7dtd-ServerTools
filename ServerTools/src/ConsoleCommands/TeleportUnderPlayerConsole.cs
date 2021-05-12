@@ -14,7 +14,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. TeleportUnderPlayer <EntityId/SteamId>\n" +
+                   "  1. st-tup <EntityId/SteamId>\n" +
                    "1. Teleports you under the target player\n";
         }
 

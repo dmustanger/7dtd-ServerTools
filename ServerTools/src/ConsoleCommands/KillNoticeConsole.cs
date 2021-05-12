@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. KillNotice off\n" +
-                   "  2. KillNotice on\n" +
+                   "  1. st-kn off\n" +
+                   "  2. st-kn on\n" +
                    "1. Turn off kill notice\n" +
                    "2. Turn on kill notice\n";
         }

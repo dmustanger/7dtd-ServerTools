@@ -13,11 +13,11 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. st-Wallet off\n" +
-                   "  2. st-Wallet on\n" +
-                   "  3. st-Wallet all <value>\n" +
-                   "  4. st-Wallet <steamId> <value>\n" +
-                   "  5. st-Wallet <steamId>\n" +
+                   "  1. st-wlt off\n" +
+                   "  2. st-wlt on\n" +
+                   "  3. st-wlt all <value>\n" +
+                   "  4. st-wlt <steamId> <value>\n" +
+                   "  5. st-wlt <steamId>\n" +
                    "1. Turn off wallet\n" +
                    "2. Turn on wallet\n" +
                    "3. Add to or reduce all online player's wallet value.\n" +

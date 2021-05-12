@@ -161,7 +161,6 @@ namespace ServerTools
                     Log.Out("[SERVERTOOLS] Failed to reset sleeper spawn points. Error = {0}", e.Message);
                 }
             }
-
             try
             {
                 Log.Out(string.Format("[SERVERTOOLS] Deleting old logs"));

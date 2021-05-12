@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. NormalPlayerColoring off\n" +
-                   "  2. NormalPlayerColoring on\n" +
+                   "  1. st-npc off\n" +
+                   "  2. st-npc on\n" +
                    "1. Turn off normal player coloring\n" +
                    "2. Turn on normal player coloring\n";
         }

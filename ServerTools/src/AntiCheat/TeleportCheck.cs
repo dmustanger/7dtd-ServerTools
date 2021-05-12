@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace ServerTools.AntiCheat
 {
@@ -43,7 +44,7 @@ namespace ServerTools.AntiCheat
             }
             string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
             string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
-            using (StreamWriter sw = new StreamWriter(_filepath, true))
+            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
             {
                 sw.WriteLine(string.Format("Detected {0} Steam Id {1}, teleporting without permission.", _cInfo.playerName, _cInfo.playerId, _cInfo.entityId));
                 sw.WriteLine();

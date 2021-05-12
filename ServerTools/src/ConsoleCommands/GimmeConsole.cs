@@ -12,10 +12,10 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Gimme off\n" +
-                   "  2. Gimme on\n" +
-                   "  3. Gimme reset all\n" +
-                   "  3. Gimme reset <steamId/entityId/playerName>\n" +
+                   "  1. st-gim off\n" +
+                   "  2. st-gim on\n" +
+                   "  3. st-gim reset all\n" +
+                   "  3. st-gim reset <steamId/entityId/playerName>\n" +
                    "1. Turn off gimme\n" +
                    "2. Turn on gimme\n" +
                    "3. Reset the delay of all players\n" +

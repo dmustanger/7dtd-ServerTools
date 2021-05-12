@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Hordes off\n" +
-                   "  2. Hordes on\n" +
+                   "  1. st-hrd off\n" +
+                   "  2. st-hrd on\n" +
                    "1. Turn off extra hordes\n" +
                    "2. Turn on extra hordes\n";
         }

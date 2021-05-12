@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace ServerTools
@@ -102,7 +103,7 @@ namespace ServerTools
                                                                             PersistentContainer.Instance.AuctionPrices = _auctionPrices;
                                                                         }
                                                                         _tile.SetModified();
-                                                                        using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                                        using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                                         {
                                                                             sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4}, {5} quality, {6} percent durability for {7} {8}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _item.count, _item.itemValue.ItemClass.GetItemName(), _item.itemValue.Quality, _item.itemValue.UseTimes / _item.itemValue.MaxUseTimes * 100, _price, Wallet.Coin_Name));
                                                                             sw.WriteLine();
@@ -126,7 +127,7 @@ namespace ServerTools
                                 else
                                 {
                                     Phrases.Dict.TryGetValue(622, out string _phrase622);
-                                    _phrase622 = _phrase622.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase622 = _phrase622.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase622 = _phrase622.Replace("{Command72}", Command72);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase622 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -235,7 +236,7 @@ namespace ServerTools
             else
             {
                 Phrases.Dict.TryGetValue(628, out string _phrase628);
-                _phrase628 = _phrase628.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase628 = _phrase628.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                 _phrase628 = _phrase628.Replace("{Command71}", Command71);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase628 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
@@ -275,7 +276,7 @@ namespace ServerTools
                         int _adjustedPrice = _price - (int)_fee;
                         Wallet.AddCoinsToWallet(_steamId, _adjustedPrice);
                         string _playerName = PersistentOperations.GetPlayerDataFileFromSteamId(_steamId).ecd.entityName;
-                        using (StreamWriter sw = new StreamWriter(filepath, true))
+                        using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                         {
                             sw.WriteLine(string.Format("{0}: {1} {2} has purchased auction entry {3}, profits went to steam id {4} {5}", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _purchase, _steamId, _playerName));
                             sw.WriteLine();
@@ -331,7 +332,7 @@ namespace ServerTools
                                 AuctionItems.Remove(_id);
                                 PersistentContainer.Instance.Players[_cInfo.playerId].Auction.Remove(_id);
                                 PersistentContainer.Instance.AuctionPrices.Remove(_id);
-                                using (StreamWriter sw = new StreamWriter(filepath, true))
+                                using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: {1} {2} has cancelled their auction entry # {3}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _cInfo.entityId));
                                     sw.WriteLine();

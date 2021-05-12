@@ -13,9 +13,9 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. familyshare add <steamId/entityId> <playerName>\n" +
-                   "  2. familyshare remove <steamId/entityId>\n" +
-                   "  3. familyshare list\n" +
+                   "  1. st-fs add <steamId/entityId> <playerName>\n" +
+                   "  2. st-fs remove <steamId/entityId>\n" +
+                   "  3. st-fs list\n" +
                    "1. Adds a steamID to the Family Share list\n" +
                    "2. Removes a steamID from the Family Share list\n" +
                    "3. Lists all steamIDs from the Family Share list";

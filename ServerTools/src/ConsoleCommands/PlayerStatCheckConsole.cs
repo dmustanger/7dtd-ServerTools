@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. PlayerStatCheck off\n" +
-                   "  2. PlayerStatCheck on\n" +
+                   "  1. st-psc off\n" +
+                   "  2. st-psc on\n" +
                    "1. Turn off player stat check\n" +
                    "2. Turn on player stat check\n";
         }

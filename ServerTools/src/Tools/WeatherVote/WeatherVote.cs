@@ -36,7 +36,7 @@ namespace ServerTools
                         Phrases.Dict.TryGetValue(871, out string _phrase871);
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase871 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         Phrases.Dict.TryGetValue(875, out string _phrase875);
-                        _phrase875 = _phrase875.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _phrase875 = _phrase875.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                         _phrase875 = _phrase875.Replace("{Command63}", Command63);
                         _phrase875 = _phrase875.Replace("{Command64}", Command64);
                         _phrase875 = _phrase875.Replace("{Command65}", Command65);

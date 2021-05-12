@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. PlayerLogs off\n" +
-                   "  2. PlayerLogs on\n" +
+                   "  1. st-plogs off\n" +
+                   "  2. st-plogs on\n" +
                    "1. Turn off player logs\n" +
                    "2. Turn on player logs\n";
         }

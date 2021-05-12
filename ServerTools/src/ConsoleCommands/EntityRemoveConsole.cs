@@ -13,7 +13,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Removes an entity from the game.\n" +
-                "Usage: EntityRemove <EntityId>\n" +
+                "Usage: st-er <EntityId>\n" +
                 "Usage: er <EntityId>";
         }
 

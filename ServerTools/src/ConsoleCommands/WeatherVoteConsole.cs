@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. WeatherVote off\n" +
-                   "  2. WeatherVote on\n" +
+                   "  1. st-wv off\n" +
+                   "  2. st-wv on\n" +
                    "1. Turn off weather vote\n" +
                    "2. Turn on weather vote\n";
         }

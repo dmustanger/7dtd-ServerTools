@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace ServerTools
 {
@@ -27,7 +28,7 @@ namespace ServerTools
                     _phrase562 = _phrase562.Replace("{Message}", _pollData[2]);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase562 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     Phrases.Dict.TryGetValue(563, out string _phrase563);
-                    _phrase563 = _phrase563.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase563 = _phrase563.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                     _phrase563 = _phrase563.Replace("{Command91}", Poll.Command91);
                     _phrase563 = _phrase563.Replace("{Command92}", Poll.Command92);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase563 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -42,7 +43,7 @@ namespace ServerTools
                 Dictionary<string, bool> _votes = PersistentContainer.Instance.PollVote;
                 _votes.Add(_cInfo.playerId, true);
                 PersistentContainer.Instance.PollVote = _votes;
-                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                 {
                     sw.WriteLine(string.Format("{0}: Player {1} {2} has voted yes in the poll.", DateTime.Now, _cInfo.playerName, _cInfo.playerId));
                     sw.WriteLine();
@@ -67,7 +68,7 @@ namespace ServerTools
                 Dictionary<string, bool> _votes = PersistentContainer.Instance.PollVote;
                 _votes.Add(_cInfo.playerId, false);
                 PersistentContainer.Instance.PollVote = _votes;
-                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                 {
                     sw.WriteLine(string.Format("{0}: Player {1} {2} has voted no in the poll.", DateTime.Now, _cInfo.playerName, _cInfo.playerId));
                     sw.WriteLine();
@@ -105,7 +106,7 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.PollData = null;
                         PersistentContainer.Instance.PollOpen = false;
-                        using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                        using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                         {
                             sw.WriteLine(string.Format("{0}: The poll has finished but no votes were cast.", DateTime.Now));
                             sw.WriteLine();
@@ -171,7 +172,7 @@ namespace ServerTools
                             PersistentContainer.Instance.PollOld = _oldPoll;
                         }
                     }
-                    using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                    using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                     {
                         sw.WriteLine(string.Format("{0}: The poll has completed and the players voted {1} yes / {2} no.", DateTime.Now, _yes, _no));
                         sw.WriteLine();

@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. NewSpawnTele off\n" +
-                   "  2. NewSpawnTele on\n" +
+                   "  1. st-nst off\n" +
+                   "  2. st-nst on\n" +
                    "1. Turn off new spawn tele\n" +
                    "2. Turn on new spawn tele\n";
         }

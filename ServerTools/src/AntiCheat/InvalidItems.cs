@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace ServerTools.AntiCheat
@@ -103,7 +104,7 @@ namespace ServerTools.AntiCheat
         private static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath))
+            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<InvalidItems>");
@@ -320,7 +321,7 @@ namespace ServerTools.AntiCheat
 
         private static void MaxStack(ClientInfo _cInfo, string _name, int _count, int _maxAllowed)
         {
-            using (StreamWriter sw = new StreamWriter(_filepath, true))
+            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
             {
                 sw.WriteLine(string.Format("Detected \"{0}\", Steam Id {1}, with invalid stack: {2} {3}. Warned the player.", _cInfo.playerName, _cInfo.playerId, _name, _count));
                 sw.WriteLine();
@@ -347,7 +348,7 @@ namespace ServerTools.AntiCheat
         private static void Flag1(ClientInfo _cInfo, string _name)
         {
             Flags.Add(_cInfo.entityId, 1);
-            using (StreamWriter sw = new StreamWriter(_filepath, true))
+            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
             {
                 sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
                 sw.WriteLine();
@@ -363,7 +364,7 @@ namespace ServerTools.AntiCheat
         private static void Flag2(ClientInfo _cInfo, string _name)
         {
             Flags[_cInfo.entityId] = 2;
-            using (StreamWriter sw = new StreamWriter(_filepath, true))
+            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
             {
                 sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Final warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
                 sw.WriteLine();
@@ -380,7 +381,7 @@ namespace ServerTools.AntiCheat
         {
             Phrases.Dict.TryGetValue(14, out string _phrase14);
             SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase14), null);
-            using (StreamWriter sw = new StreamWriter(_filepath, true))
+            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
             {
                 sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Kicked the player.", _cInfo.playerName, _cInfo.playerId, _name));
                 sw.WriteLine();
@@ -428,7 +429,7 @@ namespace ServerTools.AntiCheat
                                                 SecureLoot.UpdateSlot(slotNumber, itemStack.Clone());
                                                 _tile.SetModified();
                                                 Vector3i _chestPos = SecureLoot.localChunkPos;
-                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine("[SERVERTOOLS] Removed {0} {1}, from a secure loot located at {2} {3} {4}, owned by {5}", _item.count, _itemName, _chestPos.x, _chestPos.y, _chestPos.z, SecureLoot.GetOwner());
                                                     sw.WriteLine();

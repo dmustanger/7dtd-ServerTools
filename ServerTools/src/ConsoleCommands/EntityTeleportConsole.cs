@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Teleports a entity. Entity can not be a player.\n" +
-                "Usage: EntityTeleport <EntityId> <EntityId>\n" +
-                "Usage: EntityTeleport <EntityId> <X> <Y> <Z>\n";
+                "Usage: st-et <EntityId> <EntityId>\n" +
+                "Usage: st-et <EntityId> <X> <Y> <Z>\n";
         }
 
         public override string[] GetCommands()

@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. MuteVote off\n" +
-                   "  2. MuteVote on\n" +
+                   "  1. st-mv off\n" +
+                   "  2. st-mv on\n" +
                    "1. Turn off mute vote\n" +
                    "2. Turn on mute vote\n";
         }

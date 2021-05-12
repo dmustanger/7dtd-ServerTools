@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace ServerTools
 {
@@ -15,7 +16,7 @@ namespace ServerTools
             {
                 if (!string.IsNullOrEmpty(_cInfo.playerName))
                 {
-                    using (StreamWriter sw = new StreamWriter(filepath, true))
+                    using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                     {
                         sw.WriteLine(string.Format("{0}: {1} {2} {3}, executed command '{4}' in the console.", DateTime.Now, _cInfo.playerId, _cInfo.ip, _cInfo.playerName, _cmd));
                         sw.WriteLine();
@@ -25,7 +26,7 @@ namespace ServerTools
                 }
                 else if (!string.IsNullOrEmpty(_cInfo.ip))
                 {
-                    using (StreamWriter sw = new StreamWriter(filepath, true))
+                    using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                     {
                         sw.WriteLine(string.Format("{0}: {1} {2}, executed command '{3}' in the console.", DateTime.Now, _cInfo.playerId, _cInfo.ip, _cmd));
                         sw.WriteLine();
@@ -35,7 +36,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    using (StreamWriter sw = new StreamWriter(filepath, true))
+                    using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                     {
                         sw.WriteLine(string.Format("{0}: {1}, executed command '{2}' in the console.", DateTime.Now, _cInfo.playerId, _cmd));
                         sw.WriteLine();

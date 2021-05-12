@@ -7,7 +7,7 @@ namespace ServerTools
 {
     class Market
     {
-        public static bool IsEnabled = false, Return = false, Player_Check = false, Zombie_Check = false, Donor_Only = false, PvE = false;
+        public static bool IsEnabled = false, Return = false, Player_Check = false, Zombie_Check = false, Reserved_Only = false, PvE = false;
         public static int Delay_Between_Uses = 5, Market_Size = 25, Command_Cost = 0;
         public static string Market_Position = "0,0,0", Command51 = "marketback", Command52 = "mback", Command102 = "setmarket", Command103 = "market";
         public static List<int> MarketPlayers = new List<int>();
@@ -38,7 +38,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (Donor_Only && ReservedSlots.IsEnabled && !ReservedSlots.ReservedCheck(_cInfo.playerId))
+            if (Reserved_Only && ReservedSlots.IsEnabled && !ReservedSlots.ReservedCheck(_cInfo.playerId))
             {
                 Phrases.Dict.TryGetValue(258, out string _phrase258);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase258 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -98,7 +98,7 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(251, out string _phrase251);
                 _phrase251 = _phrase251.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase251 = _phrase251.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase251 = _phrase251.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase251 = _phrase251.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                 _phrase251 = _phrase251.Replace("{Command103}", Market.Command103);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase251 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
@@ -156,7 +156,7 @@ namespace ServerTools
                             MarketPlayers.Add(_cInfo.entityId);
                             PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = _mposition;
                             Phrases.Dict.TryGetValue(252, out string _phrase252);
-                            _phrase252 = _phrase252.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase252 = _phrase252.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                             _phrase252 = _phrase252.Replace("{Command51}", Command51);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase252 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
@@ -213,7 +213,7 @@ namespace ServerTools
                     else
                     {
                         Phrases.Dict.TryGetValue(255, out string _phrase255);
-                        _phrase255 = _phrase255.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _phrase255 = _phrase255.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                         _phrase255 = _phrase255.Replace("{Command51}", Command51);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase255 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -235,7 +235,7 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
                     Phrases.Dict.TryGetValue(255, out string _phrase255);
-                    _phrase255 = _phrase255.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase255 = _phrase255.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                     _phrase255 = _phrase255.Replace("{Command51}", Command51);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase255 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }

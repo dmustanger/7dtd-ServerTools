@@ -13,11 +13,11 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Shop off\n" +
-                   "  2. Shop on\n" +
-                   "  3. Shop add {itemName} {secondaryName} {count} {quality} {price} {category} \n" +
-                   "  4. Shop remove {number}\n" +
-                   "  5. Shop list\n" +
+                   "  1. st-shop off\n" +
+                   "  2. st-shop on\n" +
+                   "  3. st-shop add {itemName} {secondaryName} {count} {quality} {price} {category} \n" +
+                   "  4. st-shop remove {number}\n" +
+                   "  5. st-shop list\n" +
                    "1. Turn off shop\n" +
                    "2. Turn on shop\n" +
                    "3. Add item to Shop.xml\n" +
@@ -27,7 +27,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Shop", "shp", "st-shp" };
+            return new string[] { "st-Shop", "shop", "st-shop" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

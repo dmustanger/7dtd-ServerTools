@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. HighPingKicker off\n" +
-                   "  2. HighPingKicker on\n" +
+                   "  1. st-hpk off\n" +
+                   "  2. st-hpk on\n" +
                    "1. Turn off high ping kicker\n" +
                    "2. Turn on high ping kicker\n";
         }

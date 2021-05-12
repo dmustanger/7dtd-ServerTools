@@ -16,7 +16,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. tempban <steamId/entityId> <time>\n" +
+                   "  1. st-tb <steamId/entityId> <time>\n" +
                    "1. Temporarily ban a player by their Id for up to 60 minutes\n";
         }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ServerTools.AntiCheat;
 
 namespace ServerTools
 {
@@ -13,10 +12,10 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. WorldRadius off\n" +
-                   "  2. WorldRadius on\n" +
-                   "  3. WorldRadius normal <#>\n" +
-                   "  4. WorldRadius reserved <#>\n" +
+                   "  1. st-wr off\n" +
+                   "  2. st-wr on\n" +
+                   "  3. st-wr normal <#>\n" +
+                   "  4. st-wr reserved <#>\n" +
                    "1. Turn off world radius\n" +
                    "2. Turn on world radius\n" +
                    "3. Set the radius for normal players\n" +

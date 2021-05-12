@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. CustomCommands off\n" +
-                   "  2. CustomCommands on\n" +
+                   "  1. st-cc off\n" +
+                   "  2. st-cc on\n" +
                    "1. Turn off custom commands\n" +
                    "2. Turn on custom commands\n";
         }

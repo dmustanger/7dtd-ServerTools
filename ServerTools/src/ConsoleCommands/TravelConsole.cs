@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Travel off\n" +
-                   "  2. Travel on\n" +
+                   "  1. st-tvl off\n" +
+                   "  2. st-tvl on\n" +
                    "1. Turn off travel\n" +
                    "2. Turn on travel\n";
         }

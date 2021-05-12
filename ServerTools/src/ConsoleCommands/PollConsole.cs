@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace ServerTools
 {
@@ -15,12 +16,12 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. Poll new <hours> <message>\n" +
-                "  2. Poll cancel\n" +
-                "  3. Poll stop\n" +
-                "  4. Poll check\n" +
-                "  5. Poll list\n" +
-                "  6. Poll open <number> <hours>\n" +
+                "  1. st-poll new <hours> <message>\n" +
+                "  2. st-poll cancel\n" +
+                "  3. st-poll stop\n" +
+                "  4. st-poll check\n" +
+                "  5. st-poll list\n" +
+                "  6. st-poll open <number> <hours>\n" +
                 "1. Opens a new poll that lasts for this many hours. The poll message will display when a player joins the server.\n" +
                 "Players can vote once per poll. Results are logged to a file for review and stored to a list if you wish to open it again.\n" +
                 "2. Cancels the open poll and does not announce or store it.\n" +
@@ -32,7 +33,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Poll", "pll", "st-pll" };
+            return new string[] { "st-Poll", "poll", "st-poll" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -71,7 +72,7 @@ namespace ServerTools
                         PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                         PersistentContainer.Instance.PollOpen = true;
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] A new poll has opened for {0} hour. Poll message: {1}", _hours, _message));
-                        using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                        using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                         {
                             sw.WriteLine(string.Format("{0}: A new poll has opened for {1} hour. Message: {2}", DateTime.Now, _hours, _message));
                             sw.WriteLine();
@@ -94,7 +95,7 @@ namespace ServerTools
                         PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                         PersistentContainer.Instance.PollOpen = false;
                         SdtdConsole.Instance.Output("[SERVERTOOLS] The open poll has been cancelled");
-                        using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                        using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                         {
                             sw.WriteLine(string.Format("{0}: The poll has been cancelled", DateTime.Now));
                             sw.WriteLine();
@@ -124,7 +125,7 @@ namespace ServerTools
                             PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                             PersistentContainer.Instance.PollOpen = false;
                             SdtdConsole.Instance.Output("[SERVERTOOLS] The open poll has been stopped but no announcement made due to missing data");
-                            using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                            using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                             {
                                 sw.WriteLine(string.Format("{0}: The poll has been stopped. Data was missing so nothing was recorded", DateTime.Now));
                                 sw.WriteLine();
@@ -142,7 +143,7 @@ namespace ServerTools
                                 PersistentContainer.Instance.PollData = null;
                                 PersistentContainer.Instance.PollOpen = false;
                                 SdtdConsole.Instance.Output("[SERVERTOOLS] The open poll has been stopped but no announcement made due to no votes");
-                                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: The poll has been stopped. There was no votes recorded", DateTime.Now));
                                     sw.WriteLine();
@@ -178,7 +179,7 @@ namespace ServerTools
                                     PersistentContainer.Instance.PollOld = _oldPoll;
                                 }
                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. Yes votes have won {0} to {1}. Poll message: {2}", _yes, _no, _pollData[2]));
-                                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: The poll has been stopped. Yes votes have won {1} to {2}", DateTime.Now, _yes, _no));
                                     sw.WriteLine();
@@ -201,7 +202,7 @@ namespace ServerTools
                                     PersistentContainer.Instance.PollOld = _oldPoll;
                                 }
                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. No votes have won {0} to {1}. Poll message: {2}", _no, _yes, _pollData[2]));
-                                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: The poll has been stopped. No votes have won {1} to {2}", DateTime.Now, _no, _yes));
                                     sw.WriteLine();
@@ -224,7 +225,7 @@ namespace ServerTools
                                     PersistentContainer.Instance.PollOld = _oldPoll;
                                 }
                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. It was a tie at {0} votes each. Poll message: {1}", _yes, _pollData[2]));
-                                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: The poll has been stopped. It was a tie at {1} votes each", DateTime.Now, _yes));
                                     sw.WriteLine();
@@ -318,7 +319,7 @@ namespace ServerTools
                                         PersistentContainer.Instance.PollOld = _oldPoll;
                                     }
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. Yes votes have won {0} to {1}. Poll message: {2}", _yes, _no, _pollData[2]));
-                                    using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                    using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                     {
                                         sw.WriteLine(string.Format("{0}: The poll has been stopped. Yes votes have won {1} to {2}", DateTime.Now, _yes, _no));
                                         sw.WriteLine();
@@ -341,7 +342,7 @@ namespace ServerTools
                                         PersistentContainer.Instance.PollOld = _oldPoll;
                                     }
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. No votes have won {0} to {1}. Poll message: {2}", _no, _yes, _pollData[2]));
-                                    using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                    using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                     {
                                         sw.WriteLine(string.Format("{0}: The poll has been stopped. No votes have won {1} to {2}", DateTime.Now, _no, _yes));
                                         sw.WriteLine();
@@ -364,7 +365,7 @@ namespace ServerTools
                                         PersistentContainer.Instance.PollOld = _oldPoll;
                                     }
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. It was a tie at {0} votes each. Poll message: {1}", _yes, _pollData[2]));
-                                    using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                    using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                     {
                                         sw.WriteLine(string.Format("{0}: The poll has been stopped. It was a tie at {1} votes each", DateTime.Now, _yes));
                                         sw.WriteLine();
@@ -474,7 +475,7 @@ namespace ServerTools
                             PersistentContainer.Instance.PollOpen = true;
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Poll {0} has been opened for {1} hour", _number, _hours));
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Message: {0}", _poll.Key[2]));
-                            using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                            using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                             {
                                 sw.WriteLine(string.Format("{0}: A new poll has opened for {1} hour. Message: {2}", DateTime.Now, _hours, _poll.Key[2]));
                                 sw.WriteLine();

@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. StartingItems off\n" +
-                   "  2. StartingItems on\n" +
+                   "  1. st-sti off\n" +
+                   "  2. st-sti on\n" +
                    "1. Turn off starting items\n" +
                    "2. Turn on starting items\n";
         }

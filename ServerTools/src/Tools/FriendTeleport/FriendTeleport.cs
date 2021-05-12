@@ -6,7 +6,7 @@ namespace ServerTools
 {
     class FriendTeleport
     {
-        public static bool IsEnabled = false, PvP_Check = false, Zombie_Check = false;
+        public static bool IsEnabled = false, Player_Check = false, Zombie_Check = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
         public static string Command59 = "friend", Command60 = "accept";
         public static Dictionary<int, int> Dict = new Dictionary<int, int>();
@@ -43,7 +43,7 @@ namespace ServerTools
         public static void Exec(ClientInfo _cInfo, string _message)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (PvP_Check)
+            if (Player_Check)
             {
                 if (Teleportation.PCheck(_cInfo, _player))
                 {
@@ -158,7 +158,7 @@ namespace ServerTools
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase363 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             Phrases.Dict.TryGetValue(364, out string _phrase364);
             _phrase364 = _phrase364.Replace("{PlayerName}", _cInfo.playerName);
-            _phrase364 = _phrase364.Replace("{CommandPrivate}", ChatHook.Command_Private);
+            _phrase364 = _phrase364.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
             _phrase364 = _phrase364.Replace("{Command60}", Command60);
             ChatHook.ChatMessage(_friend, Config.Chat_Response_Color + _phrase364 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }

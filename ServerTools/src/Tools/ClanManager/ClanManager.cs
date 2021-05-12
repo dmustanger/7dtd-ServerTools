@@ -295,7 +295,7 @@ namespace ServerTools
                                 PersistentContainer.Instance.Players[_newMember.playerId].ClanInvite = _clanName;
                                 Phrases.Dict.TryGetValue(81, out string _phrase81);
                                 _phrase81 = _phrase81.Replace("{ClanName}", _clanName);
-                                _phrase81 = _phrase81.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                _phrase81 = _phrase81.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                 _phrase81 = _phrase81.Replace("{Command36}", Command36);
                                 _phrase81 = _phrase81.Replace("{Command37}", Command37);
                                 ChatHook.ChatMessage(_newMember, Config.Chat_Response_Color + _phrase81 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -455,7 +455,7 @@ namespace ServerTools
                             _request = _clanRequests.First();
                             Phrases.Dict.TryGetValue(108, out string _phrase108);
                             _phrase108 = _phrase108.Replace("{PlayerName}", _request.Value);
-                            _phrase108 = _phrase108.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase108 = _phrase108.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                             _phrase108 = _phrase108.Replace("{Command36}", Command36);
                             _phrase108 = _phrase108.Replace("{Command37}", Command37);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase108 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -734,7 +734,7 @@ namespace ServerTools
                                 {
                                     Phrases.Dict.TryGetValue(108, out string _phrase108);
                                     _phrase108 = _phrase108.Replace("{PlayerName}", _cInfo.playerName);
-                                    _phrase108 = _phrase108.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase108 = _phrase108.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase108 = _phrase108.Replace("{Command36}", Command36);
                                     _phrase108 = _phrase108.Replace("{Command37}", Command37);
                                     ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase108 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -781,34 +781,34 @@ namespace ServerTools
             string _commands = _phrase113;
             if (string.IsNullOrEmpty(_clanName))
             {
-                _commands = string.Format("{0} {1}{2} ClanName", _commands, ChatHook.Command_Private, ClanManager.Command33);
+                _commands = string.Format("{0} {1}{2} ClanName", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command33);
             }
             if (_clanOwner)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command39);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command40);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command34);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command44);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command39);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command40);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command34);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command44);
             }
             if (_clanOwner || _clanOfficer)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command35);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command38);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command35);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command38);
             }
             if (!string.IsNullOrEmpty(_clanInvite))
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command36);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command37);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command36);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command37);
             }
             if (!_clanOwner && !string.IsNullOrEmpty(_clanName))
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command41);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command41);
             }
             if (ClanMember.Contains(_cInfo.playerId))
             {
-                _commands = string.Format("{0} {1}{2} or {3}{4}", _commands, ChatHook.Command_Private, ClanManager.Command43, ChatHook.Command_Private, ClanManager.Command124);
+                _commands = string.Format("{0} {1}{2} or {3}{4}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command43, ChatHook.Chat_Command_Prefix1, ClanManager.Command124);
             }
-            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command125);
+            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command125);
             return _commands;
         }
 

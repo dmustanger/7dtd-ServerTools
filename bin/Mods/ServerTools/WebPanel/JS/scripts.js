@@ -1,884 +1,1038 @@
-var _playerClock;
-var _cl = "";
-var _clId = "";
-var _clSid = "";
-var _srvK = "";
-var _numSet = "4829017536";
-var _sidSet = "jJk9Kl3wWxXAbyYz0ZLmMn5NoO6dDe1EfFpPqQrRsStaBc2CgGhH7iITu4U8vV";
+var playerClock;
+var consoleClock;
+var clientId = "";
+var clientSessionId = "";
+var serverKeys = "";
+var numSet = "4829017536";
+var sessionSet = "jJk9Kl3wWxXAbyYz0ZLmMn5NoO6dDe1EfFpPqQrRsStaBc2CgGhH7iITu4U8vV";
+var lastCommand = "";
+var lineCount = 0;
 
 function FreshPage() {
-  document.getElementById('BackgroundContainer').style.visibility = "hidden";
-  document.getElementById('SignInContainer').style.visibility = "hidden";
-  document.getElementById('PasswordContainer').style.visibility = "hidden";
-  document.getElementById('SignOutContainer').style.visibility = "hidden";
-  document.getElementById('MenuContainer').style.visibility = "hidden";
-  document.getElementById('NewPassButton').style.visibility = "hidden";
-  document.getElementById('CancelButton').style.visibility = "hidden";
-  document.getElementById('DisclaimerContainer').style.visibility = "visible";
-  document.getElementById('AcceptBox').value = false;
-  SetClId();
-  SetSid();
-  Handshake();
-};
-
-function SetClId() {
-  _clId = "";
-  for (let i = 0; i < 8; i++)
-  {
-    _clId += _numSet.charAt(Math.floor(Math.random() * 10));
-  }
-};
-
-function SetSid() {
-  _clSid = "";
-  for (let i = 0; i < 20; i++)
-  {
-    _clSid += _sidSet.charAt(Math.floor(Math.random() * 62));
-  }
-};
-
-function Handshake() {
-  let _hS = _clId;
-  for (let i = 0; i < 3992; i++) {
-    _hS += _numSet.charAt(Math.floor(Math.random() * 10));
-  }
-  let _hR = "";
-  for (let j = 3999; j >= 0; j--) {
-    _hR += _hS[j];
-  }
-  let _uri = window.location.href;
-  let _post = new XMLHttpRequest();
-  _post.open('POST', window.location.href.replace('st.html', 'Handshake'), false);
-  _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-  _post.onload = function () {
-    if (_post.status === 200 && _post.responseText.length === 4000) {
-      let _r = "";
-      for (let k = 3999; k >= 0; k--) {
-        _r += _post.responseText[k];
-      }
-      _srvK = _r.substring(8);
-      let _s = Encrypt(_clSid);
-      let _post2 = new XMLHttpRequest();
-      _post2.open('POST', window.location.href.replace('st.html', 'Secure'), false);
-      _post2.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-      _post2.onload = function () {
-        if (_post2.status === 200 && _post2.responseText.length === 4000) {
-          let _r2 = "";
-          for (let j = 3999; j >= 0; j--) {
-            _r2 += _post2.responseText[j];
-          }
-          if (_r2.substring(0, 8) == _clId)
-          {
-            _srvK = _r2.substring(8);
-          }
-        }
-        else if (_post.status === 401) {
-          window.location.href = _uri;
-        }
-      };
-      _post2.send(_s);
-    }
-  };
-  _post.send(_hR);
-};
-
-function Accept() {
-	if (document.getElementById("AcceptBox").checked) {
-    document.getElementById("SignInContainer").style.visibility = "visible";
-    document.getElementById("DisclaimerContainer").style.visibility = "hidden";
-    document.getElementById("AcceptBox").checked = false;
-	}
-	else {
-    document.getElementById("SignInContainer").style.visibility = "hidden";
-    document.getElementById("DisclaimerContainer").style.visibility = "visible";
-	}
-};
-
-function SignIn() {
-  if (document.getElementById("Text1").value) {
-    let _text1 = document.getElementById("Text1").value;
-    if (_text1.length === 17) {
-      if (document.getElementById("Text2").value) {
-        let _text2 = document.getElementById("Text2").value;
-        if (_text2.length > 5 && _text2.length < 21) {
-          if (document.getElementById("NotBotBox1").checked) {
-            let _enc = Encrypt(_clSid + " " + _text1 + " " + _text2);
-            let _uri = window.location.href;
-            let _post = new XMLHttpRequest();
-            _post.open('POST', window.location.href.replace('st.html', 'SignIn'), false);
-            _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-            _post.onload = function () {
-              if (_post.status === 200 && _post.responseText.length === 4000) {
-                let _r = "";
-                for (let i = 3999; i >= 0; i--) {
-                  _r += _post.responseText[i];
-                }
-                if (_r.substring(0, 8) === _clId)
-                {
-                  _srvK = _r.substring(8);
-                  document.getElementById("SignInContainer").style.visibility = "hidden";
-                  document.getElementById("MenuContainer").style.visibility = "visible";
-                  document.getElementById("SignOutContainer").style.visibility = "visible";
-                  document.getElementById('NewPassButton').style.visibility = "visible";
-                  document.getElementById("ClientId").innerHTML = _text1;
-                  _cl = _text1;
-                  document.getElementById("NotBotBox1").checked = false;
-                  document.getElementById("Text1").value = "";
-                  document.getElementById("Text2").value = "";
-                }
-              }
-              else if (_post.status === 401 && _post.responseText.length === 4000) {
-                let _r = "";
-                for (let j = 3999; j >= 0; j--) {
-                  _r += _post.responseText[j];
-                }
-                if (_r.substring(0, 8) === _clId)
-                {
-                  _srvK = _r.substring(8);
-                  alert("Authorization failed");
-                }
-              }
-              else {
-                window.location.href = _uri;
-              }
-            };
-            _post.send(_enc);
-          }
-          else {
-            alert("Click the box before logging in");
-          }
-        }
-        else {
-          alert("Invalid Password");
-        }
-      }
-      else {
-        alert("Invalid Password");
-      }
-    }
-    else {
-      alert("Invalid Client");
-    }
-  }
-  else {
-    alert("Invalid Client");
-  }
-};
-
-function SignOut() {
-  if (document.getElementById("ConfirmSignout").checked) {
-    let _enc = Encrypt(_clSid);
-    let _uri = window.location.href;
-    let _post = new XMLHttpRequest();
-    _post.open('POST', window.location.href.replace('st.html', 'SignOut'), false);
-    _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-    _post.onload = function () {
-      if (_post.status === 200) {
-        document.getElementById("ConfirmSignout").checked = false;
-        window.location.href = _uri;
-      }
-    };
-    _post.send(_enc);
-  }
-  else {
-    alert ("Check the box before proceeding");
-  }
-};
-
-function NewPass() {
-  let _enc = Encrypt(_clSid + " " + _cl);
-  let _uri = window.location.href;
-  let _post = new XMLHttpRequest();
-  _post.open('POST', window.location.href.replace('st.html', 'NewPass'), false);
-  _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-  _post.onload = function () {
-    if (_post.status === 200 && _post.responseText.length === 4000) {
-      let _r = "";
-      for (let i = 3999; i >= 0; i--) {
-        _r += _post.responseText[i];
-      }
-      if (_r.substring(0, 8) === _clId)
-      {
-        _srvK = _r.substring(8);
-        document.getElementById("SignOutContainer").style.visibility = "hidden";
-        document.getElementById('NewPassButton').style.visibility = "hidden";
-        document.getElementById('CancelButton').style.visibility = "visible";
-        document.getElementById("PasswordContainer").style.visibility = "visible";
-      }
-    }
-    else if (_post.status === 401) {
-      window.location.href = _uri;
-    }
-  };
-  _post.send(_enc);
+	document.getElementById('BackgroundContainer').style.visibility = "hidden";
+	document.getElementById('LoginContainer').style.visibility = "hidden";
+	document.getElementById('PasswordContainer').style.visibility = "hidden";
+	document.getElementById('LogoutContainer').style.visibility = "hidden";
+	document.getElementById('SetPassButton').style.visibility = "hidden";
+	document.getElementById('MenuContainer').style.visibility = "hidden";
+	document.getElementById('NewPassButton').style.visibility = "hidden";
+	document.getElementById('CancelButton').style.visibility = "hidden";
+	document.getElementById('DisclaimerContainer').style.visibility = "visible";
+	SetClientId();
+	SetSessionId();
+	Handshake();
 };
 
 function Cancel() {
-  document.getElementById('CancelButton').style.visibility = "hidden";
-  document.getElementById("PasswordContainer").style.visibility = "hidden";
-  document.getElementById("SignOutContainer").style.visibility = "visible";
-  document.getElementById('NewPassButton').style.visibility = "visible";
-  document.getElementById("Text3").value = "";
-  document.getElementById("Text4").value = "";
-};
-
-function SetPass() {
-  if (document.getElementById("Text3").value) {
-    let _password = document.getElementById("Text3").value;
-    if (_password.length > 5 && _password.length < 21) {
-      if (document.getElementById("Text4").value) {
-        let _confirm = document.getElementById("Text4").value;
-        if (_confirm.length > 5 && _confirm.length < 21) {
-          if (_password === _confirm) {
-            if (document.getElementById("NotBotBox2").checked) {
-              let _enc = Encrypt(_clSid + " " + _cl + " " + _password);
-              let _uri = window.location.href;
-              let _post = new XMLHttpRequest();
-              _post.open('POST', window.location.href.replace('st.html', 'SetPass'), false);
-              _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-              _post.onload = function () {
-                if (_post.status === 200 && _post.responseText.length === 4000) {
-                  let _r = "";
-                  for (let i = 3999; i >= 0; i--) {
-                    _r += _post.responseText[i];
-                  }
-                  _srvK = _r.substring(8);
-                  document.getElementById('CancelButton').style.visibility = "hidden";
-                  document.getElementById("PasswordContainer").style.visibility = "hidden";
-                  document.getElementById("SignOutContainer").style.visibility = "visible";
-                  document.getElementById('NewPassButton').style.visibility = "visible";
-                  document.getElementById("ClientId").innerHTML = _cl;
-                  document.getElementById("NotBotBox2").checked = false;
-                  document.getElementById("Text3").value = "";
-                  document.getElementById("Text4").value = "";
-                }
-                else if (_post.status === 401) {
-                  window.location.href = _uri;
-                }
-              };
-              _post.send(_enc);
-            }
-            else {
-              alert("Click the box before setting the new password");
-            }
-          }
-          else {
-            alert("Passwords do not match");
-          }
-        }
-        else {
-          alert("Invalid password. Must be 6-20 characters with no spaces");
-        }
-      }
-      else {
-        alert("Invalid password confirmation");
-      }
-    }
-    else {
-      alert("Invalid password. Must be 6-20 characters with no spaces");
-    }
-  }
-  else {
-    alert("Invalid password");
-  }
-};
-
-function LogUpdate() {
-  document.getElementById("demo").innerHTML = xmlhttp.responseText;
-};
-
-function Command() {
-  if (document.getElementById('ConsoleCommand').value) {
-    let _command = document.getElementById('ConsoleCommand').value;
-    let _enc = Encrypt(_clSid + " " + _cl + " " + _command);
-    let _uri = window.location.href;
-    let _post = new XMLHttpRequest();
-    _post.open('POST', window.location.href.replace('st.html', 'Command'), false);
-    _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-    _post.onload = function () {
-      if (_post.status === 200 && _post.responseText.length === 4000) {
-        alert("Console command success");
-        let _r = "";
-        for (let i = 3999; i >= 0; i--) {
-          _r += _post.responseText[i];
-        }
-        if (_r.substring(0, 8) === _clId)
-        {
-          _srvK = _r.substring(8);
-        }
-
-        //request log update
-      }
-      else if (_post.status === 401) {
-        window.location.href = _uri;
-      }
-    };
-    _post.send(_enc);
-  }
+	document.getElementById('CancelButton').style.visibility = "hidden";
+	document.getElementById('SetPassButton').style.visibility = "hidden";
+	document.getElementById("PasswordContainer").style.visibility = "hidden";
+	document.getElementById("LogoutContainer").style.visibility = "visible";
+	document.getElementById('NewPassButton').style.visibility = "visible";
+	document.getElementById("Text3").value = "";
+	document.getElementById("Text4").value = "";
+	document.getElementById("NotBotBox2").checked = false;
 };
 
 function HomePage() {
-  StopPlayerClock();
-  document.getElementById('BackgroundContainer').style.visibility = "hidden";
-  document.getElementById("ConfigContainer").style.visibility = "hidden";
-  document.getElementById("ConsoleContainer").style.visibility = "hidden";
-  document.getElementById("ContactsContainer").style.visibility = "hidden";
-  document.getElementById("DevsContainer").style.visibility = "hidden";
-  document.getElementById("PlayersContainer").style.visibility = "hidden";
-};
-
-function ConsolePage() {
-  StopPlayerClock();
-  let _enc = Encrypt(_clSid + " " + _cl);
-  let _uri = window.location.href;
-  let _post = new XMLHttpRequest();
-  _post.open('POST', window.location.href.replace('st.html', 'Log'), false);
-  _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-  _post.onload = function () {
-    document.getElementById('BackgroundContainer').style.visibility = "hidden";
-    document.getElementById("ConfigContainer").style.visibility = "hidden";
-    document.getElementById("ContactsContainer").style.visibility = "hidden";
-    document.getElementById("DevsContainer").style.visibility = "hidden";
-    document.getElementById("PlayersContainer").style.visibility = "hidden";
-    document.getElementById("ConsoleContainer").style.visibility = "visible";
-    if (_post.status === 200 && _post.responseText.length === 4000) {
-      let _r = "";
-      for (let i = 3999; i >= 0; i--) {
-        _r += _post.responseText[i];
-      }
-      _srvK = _r.substring(8);
-
-    }
-    else if (_post.status === 401) {
-      window.location.href = _uri;
-    }
-    //request log update
-  };
-  _post.send(_enc);
+	StopPlayerClock();
+	StopConsoleClock();
+	document.getElementById('BackgroundContainer').style.visibility = "hidden";
+	document.getElementById("ConfigContainer").style.visibility = "hidden";
+	document.getElementById("ConsoleContainer").style.visibility = "hidden";
+	document.getElementById("ContactsContainer").style.visibility = "hidden";
+	document.getElementById("DevsContainer").style.visibility = "hidden";
+	document.getElementById("PlayersContainer").style.visibility = "hidden";
 };
 
 function PlayersPage() {
-  StopPlayerClock();
-  let _table = document.getElementById("PlayersBody");
-  _table.innerHTML = "";
-  document.getElementById("PlayerCount").value = _table.rows.length;
-  document.getElementById('BackgroundContainer').style.visibility = "hidden";
-  document.getElementById("ConfigContainer").style.visibility = "hidden";
-  document.getElementById("ConsoleContainer").style.visibility = "hidden";
-  document.getElementById("ContactsContainer").style.visibility = "hidden";
-  document.getElementById("DevsContainer").style.visibility = "hidden";
-  document.getElementById("PlayersContainer").style.visibility = "visible";
-  updatePlayers();
-  StartPlayerLoop();
+	StopPlayerClock();
+	StopConsoleClock();
+	let _table = document.getElementById("PlayersBody");
+	_table.innerHTML = "";
+	document.getElementById("PlayerCount").value = _table.rows.length;
+	document.getElementById('BackgroundContainer').style.visibility = "hidden";
+	document.getElementById("ConfigContainer").style.visibility = "hidden";
+	document.getElementById("ConsoleContainer").style.visibility = "hidden";
+	document.getElementById("ContactsContainer").style.visibility = "hidden";
+	document.getElementById("DevsContainer").style.visibility = "hidden";
+	document.getElementById("PlayersContainer").style.visibility = "visible";
+	UpdatePlayers();
+	StartPlayerClock();
 };
 
 function ConfigPage() {
-  StopPlayerClock();
-  document.getElementById('BackgroundContainer').style.visibility = "hidden";
-  document.getElementById("ConsoleContainer").style.visibility = "hidden";
-  document.getElementById("ContactsContainer").style.visibility = "hidden";
-  document.getElementById("DevsContainer").style.visibility = "hidden";
-  document.getElementById("PlayersContainer").style.visibility = "hidden";
-  document.getElementById("ConfigContainer").style.visibility = "visible";
-  SetConfigId();
-  Config();
+	StopPlayerClock();
+	StopConsoleClock();
+	document.getElementById('BackgroundContainer').style.visibility = "hidden";
+	document.getElementById("ConsoleContainer").style.visibility = "hidden";
+	document.getElementById("ContactsContainer").style.visibility = "hidden";
+	document.getElementById("DevsContainer").style.visibility = "hidden";
+	document.getElementById("PlayersContainer").style.visibility = "hidden";
+	document.getElementById("ConfigContainer").style.visibility = "visible";
+	document.getElementById("AcceptSave").checked = true;
+	Config();
 };
 
 function DevPage() {
-  StopPlayerClock();
-  document.getElementById("ConfigContainer").style.visibility = "hidden";
-  document.getElementById("ConsoleContainer").style.visibility = "hidden";
-  document.getElementById("ContactsContainer").style.visibility = "hidden";
-  document.getElementById("PlayersContainer").style.visibility = "hidden";
-  document.getElementById('BackgroundContainer').style.visibility = "visible";
-  document.getElementById("DevsContainer").style.visibility = "visible";
+	StopPlayerClock();
+	StopConsoleClock();
+	document.getElementById("ConfigContainer").style.visibility = "hidden";
+	document.getElementById("ConsoleContainer").style.visibility = "hidden";
+	document.getElementById("ContactsContainer").style.visibility = "hidden";
+	document.getElementById("PlayersContainer").style.visibility = "hidden";
+	document.getElementById('BackgroundContainer').style.visibility = "visible";
+	document.getElementById("DevsContainer").style.visibility = "visible";
 };
 
 function ContactsPage() {
-  StopPlayerClock();
-  document.getElementById("ConfigContainer").style.visibility = "hidden";
-  document.getElementById("ConsoleContainer").style.visibility = "hidden";
-  document.getElementById("PlayersContainer").style.visibility = "hidden";
-  document.getElementById("DevsContainer").style.visibility = "hidden";
-  document.getElementById('BackgroundContainer').style.visibility = "visible";
-  document.getElementById("ContactsContainer").style.visibility = "visible";
+	StopPlayerClock();
+	StopConsoleClock();
+	document.getElementById("ConfigContainer").style.visibility = "hidden";
+	document.getElementById("ConsoleContainer").style.visibility = "hidden";
+	document.getElementById("PlayersContainer").style.visibility = "hidden";
+	document.getElementById("DevsContainer").style.visibility = "hidden";
+	document.getElementById('BackgroundContainer').style.visibility = "visible";
+	document.getElementById("ContactsContainer").style.visibility = "visible";
 };
 
-function updatePlayers() {
-  let _enc = Encrypt(_clSid + " " + _cl);
-  let _uri = window.location.href;
-  let _post = new XMLHttpRequest();
-  _post.open('POST', window.location.href.replace('st.html', 'Players'), false);
-  _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-  _post.onload = function () {
-    if (_post.status === 200 && _post.responseText.length === 4000) {
-      let _r = "";
-      for (let i = 3999; i >= 0; i--) {
-        _r += _post.responseText[i];
-      }
-      _srvK = _r.substring(8);
-      let _req = _r.substring(0, 8);
-      for (let j = 0; j < 3992; j++) {
-        _req += _numSet.charAt(Math.floor(Math.random() * 10));
-      }
-      let _reqR = "";
-      for (let k = 3999; k >= 0; k--) {
-        _reqR += _req[k];
-      }
-      let _post2 = new XMLHttpRequest();
-      _post2.open('POST', window.location.href.replace('st.html', 'Players'), false);
-      _post2.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-      _post2.onload = function () {
-        if (_post2.status === 200) {
-          let _table = document.getElementById("PlayersBody");
-          _table.innerHTML = "";
-          if (_post2.status === 200) {
-            if (_post2.responseText != "") {
-              if (_post2.responseText.includes('☼')) {
-                let _resp = _post2.responseText.split('☼');
-                let _respLength = _resp.length;
-                for (let j = 0; j < _respLength; j++) {
-                  let _respSplit = _resp[j].split('§');
-                  let _row = _table.insertRow(-1);
-                  let _cell1 = _row.insertCell(0);
-                  let _cell2 = _row.insertCell(1);
-                  let _cell3 = _row.insertCell(2);
-                  let _cell4 = _row.insertCell(3);
-                  let _cell5 = _row.insertCell(4);
-                  let _cell6 = _row.insertCell(5);
-                  _cell1.innerHTML = _respSplit[0];
-                  _cell2.innerHTML = _respSplit[1];
-                  _cell3.innerHTML = _respSplit[2];
-                  _cell4.innerHTML = _respSplit[3];
-                  _cell5.innerHTML = _respSplit[4];
-                  _cell6.innerHTML = _respSplit[5];
-                }
-              }
-              else {
-                let _respSplit = _post2.responseText.split('§');
-                let _row = _table.insertRow(-1);
-                let _cell1 = _row.insertCell(0);
-                let _cell2 = _row.insertCell(1);
-                let _cell3 = _row.insertCell(2);
-                let _cell4 = _row.insertCell(3);
-                let _cell5 = _row.insertCell(4);
-                let _cell6 = _row.insertCell(5);
-                _cell1.innerHTML = _respSplit[0];
-                _cell2.innerHTML = _respSplit[1];
-                _cell3.innerHTML = _respSplit[2];
-                _cell4.innerHTML = _respSplit[3];
-                _cell5.innerHTML = _respSplit[4];
-                _cell6.innerHTML = _respSplit[5];
-              }
-            }
-            document.getElementById("PlayerCount").value = _table.rows.length;
-          }
-          else if (_post2.status === 401) {
-            window.location.href = _uri;
-          }
-        }
-      };
-      _post2.send(_reqR);
-    }
-    else if (_post.status === 401) {
-      window.location.href = _uri;
-    }
-  };
-  _post.send(_enc);
+function SetClientId() {
+	clientId = "";
+	for (i = 0; i < 8; i++)
+	{
+		clientId += numSet.charAt(Math.floor(Math.random() * 10));
+	}
+};
+
+function SetSessionId() {
+	clientSessionId = "";
+	for (i = 0; i < 20; i++)
+	{
+		clientSessionId += sessionSet.charAt(Math.floor(Math.random() * 62));
+	}
+};
+
+function Handshake() {
+	let _handShake = clientId;
+	let _uri = window.location.href;
+	let _request = new XMLHttpRequest();
+	_request.open('POST', window.location.href.replace('st.html', 'Handshake'), false);
+	_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+	_request.onerror = function() {
+		alert("Request failed. Server may be restarting");
+	};
+	_request.onload = function () {
+		if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+			let _serverResponse = _request.responseText;
+			if (_serverResponse.substring(0, 8) === clientId) {
+				serverKeys = _serverResponse.substring(8);
+				let _fistbump = Encrypt(clientSessionId);
+				let _request2 = new XMLHttpRequest();
+				_request2.open('POST', window.location.href.replace('st.html', 'Secure'), false);
+				_request2.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+				_request2.onerror = function() {
+					alert("Request failed. Server may be restarting");
+				};
+				_request2.onload = function () {
+					if (_request2.status === 200 && _request2.readyState === 4 && _request2.responseText.length === 2000) {
+						if (_request2.responseText.substring(0, 8) == clientId) {
+							serverKeys = _request2.responseText.substring(8);
+						}
+					}
+					else if (_request.status === 401) {
+						window.location.href = _uri;
+					}
+				};
+				_request2.send(_fistbump);
+			}
+			else {
+				window.location.href = _uri;
+			}
+		}
+		else if (_request.status === 401) {
+			window.location.href = _uri;
+		}
+	};
+	_request.send(_handShake);
+};
+
+function Accept() {
+	document.getElementById("DisclaimerContainer").style.visibility = "hidden";
+	document.getElementById('LoginContainer').style.visibility = "visible";
+};
+
+function SignIn() {
+	if (document.getElementById("Text1").value) {
+		let _text1 = document.getElementById("Text1").value;
+		if (_text1.length === 17) {
+			if (document.getElementById("Text2").value) {
+				let _text2 = document.getElementById("Text2").value;
+				if (document.getElementById("NotBotBox1").checked) {
+					let _encrypted = Encrypt(clientSessionId + "`" + _text1 + "`" + _text2);
+					let _uri = window.location.href;
+					let _request = new XMLHttpRequest();
+					_request.open('POST', window.location.href.replace('st.html', 'SignIn'), false);
+					_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+					_request.onerror = function() {
+						alert("Request failed. Server may be restarting");
+					};
+					_request.onload = function () {
+						if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+						let _serverResponse = _request.responseText;
+							if (_serverResponse.substring(0, 8) === clientId) {
+								serverKeys = _serverResponse.substring(8);
+								document.getElementById('LoginContainer').style.visibility = "hidden";
+								document.getElementById('LogoutContainer').style.visibility = "visible";
+								document.getElementById('NewPassButton').style.visibility = "visible";
+								document.getElementById("MenuContainer").style.visibility = "visible";
+								document.getElementById("ClientId").innerHTML = _text1;
+								document.getElementById("NotBotBox1").checked = false;
+								document.getElementById("Text1").value = "";
+								document.getElementById("Text2").value = "";
+							}
+						}
+						else if (_request.status === 401 && _request.readyState === 4 && _request.responseText.length === 2000) {
+							let _serverResponse = _request.responseText;
+							if (_serverResponse.substring(0, 8) === clientId) {
+								serverKeys = _serverResponse.substring(8);
+								alert("Authorization failed");
+							}
+						}
+					};
+					_request.send(_encrypted);
+				}
+				else {
+					alert("Are you a robot? Click the sign in checkbox first");
+				}
+			}
+			else {
+				alert("Invalid Password. Password can not be blank");
+			}
+		}
+		else {
+			alert("Invalid Client. Id must be 17 chars in length");
+		}
+	}
+	else {
+		alert("Invalid Client. Id can not be blank");
+	}
+};
+
+function SignOut() {
+	if (document.getElementById("ConfirmSignout").checked) {
+		let _encrypted = Encrypt(clientSessionId);
+		let _uri = window.location.href;
+		let _request = new XMLHttpRequest();
+		_request.open('POST', window.location.href.replace('st.html', 'SignOut'), false);
+		_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+		_request.onerror = function() {
+			alert("Request failed. Server may be restarting");
+		};
+		_request.onload = function () {
+			if ((_request.status === 200 || _request.status === 401) && _request.readyState === 4) {
+				window.location.href = _uri;
+			}
+		};
+		_request.send(_encrypted);
+	}
+	else {
+		alert ("Are you a robot? Click the sign out checkbox first");
+	}
+};
+
+function NewPass() {
+	let _encrypted = Encrypt(clientSessionId);
+	let _uri = window.location.href;
+	let _request = new XMLHttpRequest();
+	_request.open('POST', window.location.href.replace('st.html', 'NewPass'), false);
+	_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+	_request.onerror = function() {
+		alert("Request failed. Server may be restarting");
+	};
+	_request.onload = function () {
+		if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+			let _serverResponse = _request.responseText;
+			if (_serverResponse.substring(0, 8) === clientId) {
+				serverKeys = _serverResponse.substring(8);
+				document.getElementById("LogoutContainer").style.visibility = "hidden";
+				document.getElementById('NewPassButton').style.visibility = "hidden";
+				document.getElementById('CancelButton').style.visibility = "visible";
+				document.getElementById('SetPassButton').style.visibility = "visible";
+				document.getElementById("PasswordContainer").style.visibility = "visible";
+			}
+		}
+		else if (_request.status === 401) {
+			window.location.href = _uri;
+		}
+	};
+	_request.send(_encrypted);
+};
+
+function SetPass() {
+	if (document.getElementById("Text3").value) {
+		let _password = document.getElementById("Text3").value;
+		if (_password.length > 5 && _password.length < 21) {
+			if (document.getElementById("Text4").value) {
+				let _confirm = document.getElementById("Text4").value;
+				if (_password === _confirm) {
+					if (document.getElementById("NotBotBox2").checked) {
+						let _encrypted = Encrypt(clientSessionId + "`" + _password);
+						let _uri = window.location.href;
+						let _request = new XMLHttpRequest();
+						_request.open('POST', window.location.href.replace('st.html', 'SetPass'), false);
+						_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+						_request.onerror = function() {
+							alert("Request failed. Server may be restarting");
+						};
+						_request.onload = function () {
+							if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+								let _serverResponse = _request.responseText;
+								if (_serverResponse.substring(0, 8) === clientId) {
+									serverKeys = _serverResponse.substring(8);
+									document.getElementById('CancelButton').style.visibility = "hidden";
+									document.getElementById('SetPassButton').style.visibility = "hidden";
+									document.getElementById("PasswordContainer").style.visibility = "hidden";
+									document.getElementById("LogoutContainer").style.visibility = "visible";
+									document.getElementById('NewPassButton').style.visibility = "visible";
+									document.getElementById("NotBotBox2").checked = false;
+									document.getElementById("Text3").value = "";
+									document.getElementById("Text4").value = "";
+								}
+							}
+							else if (_request.status === 401) {
+								window.location.href = _uri;
+							}
+						};
+						_request.send(_encrypted);
+					}
+					else {
+						alert("Are you a robot? Click the new password checkbox first");
+					}
+				}
+				else {
+					alert("Passwords do not match");
+				}
+			}
+			else {
+				alert("Passwords do not match");
+			}
+		}
+		else {
+			alert("Invalid password. Must be 6-20 characters with no spaces");
+		}
+	}
+	else {
+		alert("Invalid password. Password can not be blank");
+	}
+};
+
+function ConsolePage() {
+	StopPlayerClock();
+	StopConsoleClock();
+	let _encrypted = Encrypt(clientSessionId);
+	let _uri = window.location.href;
+	let _request = new XMLHttpRequest();
+	_request.open('POST', window.location.href.replace('st.html', 'Console'), false);
+	_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+	_request.onerror = function() {
+		alert("Request failed. Server may be restarting");
+	};
+	_request.onload = function () {
+		if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+			document.getElementById('BackgroundContainer').style.visibility = "hidden";
+			document.getElementById("ConfigContainer").style.visibility = "hidden";
+			document.getElementById("ContactsContainer").style.visibility = "hidden";
+			document.getElementById("DevsContainer").style.visibility = "hidden";
+			document.getElementById("PlayersContainer").style.visibility = "hidden";
+			document.getElementById("ConsoleContainer").style.visibility = "visible";
+			let _serverResponse = _request.responseText;
+			if (_serverResponse.substring(0, 8) === clientId) {
+				serverKeys = _serverResponse.substring(8);
+			}
+			let _request2 = new XMLHttpRequest();
+			_request2.open('POST', window.location.href.replace('st.html', 'Console'), false);
+			_request2.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+			_request2.onerror = function() {
+				alert("Request failed. Server may be restarting");
+			};
+			_request2.onload = function () {
+				if (_request2.status === 200 && _request2.readyState === 4) {
+					if (_request2.responseText.length > 0) {
+						let _linesAndCount = _request2.responseText.split('☼');
+						lineCount = _linesAndCount[1];
+						let _log = document.getElementById('Console');
+						_log.textContent += _linesAndCount[0];
+						_log.scrollIntoView(false);
+					}
+					StartConsoleClock();
+				}
+				else if (_request2.status === 401) {
+					window.location.href = _uri;
+				}
+			};
+			_request2.send(clientId + lineCount);
+		}
+		else if (_request.status === 401) {
+			window.location.href = _uri;
+		}
+	};
+	_request.send(_encrypted);
+};
+
+function UpdateConsole() {
+	let _encrypted = Encrypt(clientSessionId);
+	let _uri = window.location.href;
+	let _request = new XMLHttpRequest();
+	_request.open('POST', window.location.href.replace('st.html', 'Console'), false);
+	_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+	_request.onerror = function() {
+		alert("Request failed. Server may be restarting");
+	};
+	_request.onload = function () {
+		if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+			let _serverResponse = _request.responseText;
+			if (_serverResponse.substring(0, 8) === clientId) {
+				serverKeys = _serverResponse.substring(8);
+			}
+			let _request2 = new XMLHttpRequest();
+			_request2.open('POST', window.location.href.replace('st.html', 'Console'), false);
+			_request2.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+			_request2.onerror = function() {
+				alert("Request failed. Server may be restarting");
+			};
+			_request2.onload = function () {
+				if (_request2.status === 200 && _request2.readyState === 4) {
+					if (_request2.responseText.length > 0) {
+						let _linesAndCount = _request2.responseText.split('☼');
+						lineCount = _linesAndCount[1];
+						let _log = document.getElementById('Console');
+						_log.textContent += _linesAndCount[0];
+						_log.scrollIntoView(false);
+					}
+				}
+				else if (_request2.status === 401) {
+					window.location.href = _uri;
+				}
+			};
+			_request2.send(clientId + lineCount);
+		}
+		else if (_request.status === 401) {
+			window.location.href = _uri;
+		}
+	};
+	_request.send(_encrypted);
+};
+
+function Command() {
+	if (document.getElementById('ConsoleCommand').value !== "") {
+		let _encrypted = Encrypt(clientSessionId);
+		let _uri = window.location.href;
+		let _request = new XMLHttpRequest();
+		_request.open('POST', window.location.href.replace('st.html', 'Command'), false);
+		_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+		_request.onerror = function() {
+			alert("Request failed. Server may be restarting");
+		};
+		_request.onload = function () {
+			if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId) {
+					serverKeys = _serverResponse.substring(8);
+				}
+				let _command = document.getElementById('ConsoleCommand');
+				if (_command.value === "/r") {
+					_command.value = lastCommand;
+				}
+				let _request2 = new XMLHttpRequest();
+				_request2.open('POST', window.location.href.replace('st.html', 'Command'), false);
+				_request2.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+				_request2.onerror = function() {
+					alert("Request failed. Server may be restarting");
+				};
+				_request2.onload = function () {
+					if (_request2.status === 200 && _request2.readyState === 4) {
+						StopConsoleClock();
+						let _linesAndCount = _request2.responseText.split('☼');
+						lineCount = _linesAndCount[1];
+						let _log = document.getElementById('Console');
+						_log.appendChild(document.createTextNode(_linesAndCount[0]));
+						_log.scrollIntoView(false);
+						StartConsoleClock();
+					}
+					else if (_request2.status === 400 && _request2.readyState === 4) {
+						alert(_request2.responseText);
+					}
+					else if (_request2.status === 406 && _request2.readyState === 4) {
+						alert(_request2.responseText);
+					}
+				};
+				_request2.send(clientId + "`" + lineCount + "`" + _command.value);
+				lastCommand = _command.value;
+				_command.value = "";
+			}
+			else if (_request.status === 401) {
+				window.location.href = _uri;
+			}
+		};
+		_request.send(_encrypted);
+	}
+};
+
+function UpdatePlayers() {
+	let _encrypted = Encrypt(clientSessionId);
+	let _uri = window.location.href;
+	let _request = new XMLHttpRequest();
+	_request.open('POST', window.location.href.replace('st.html', 'Players'), false);
+	_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+	_request.onerror = function() {
+		alert("Request failed. Server may be restarting");
+	};
+	_request.onload = function () {
+		if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+			let _serverResponse = _request.responseText;
+			if (_serverResponse.substring(0, 8) === clientId) {
+				serverKeys = _serverResponse.substring(8);
+			}
+			let _request2 = new XMLHttpRequest();
+			_request2.open('POST', window.location.href.replace('st.html', 'Players'), false);
+			_request2.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+			_request2.onerror = function() {
+				alert("Request failed. Server may be restarting");
+			};
+			_request2.onload = function () {
+				if (_request2.status === 200 && _request2.readyState === 4) {
+					let _table = document.getElementById("PlayersBody");
+					_table.innerHTML = "";
+					if (_request2.responseText != "") {
+						let _count = 0;
+						if (_request2.responseText.includes('☼')) {
+							let _serverResponseSplit1 = _request2.responseText.split('☼');
+							let _serverResponseSplit1Length = _serverResponseSplit1.length;
+							for (let j = 0; j < _serverResponseSplit1Length; j++) {
+								let _serverResponseSplit2 = _serverResponseSplit1[j].split('§');
+								let _rows = _table.insertRow(-1);
+								let _cell0 = _rows.insertCell(-1);
+								_cell0.onclick = function() {
+									let _idSplit = _cell0.innerHTML.split('/');
+									let _idField = document.getElementById('PlayersSteamId');
+									_idField.value = _idSplit[0];
+								};
+								let _cell1 = _rows.insertCell(-1);
+								let _cell2 = _rows.insertCell(-1);
+								let _cell3 = _rows.insertCell(-1);
+								let _cell4 = _rows.insertCell(-1);
+								let _cell5 = _rows.insertCell(-1);
+								_cell0.innerHTML = _serverResponseSplit2[0];
+								_cell1.innerHTML = _serverResponseSplit2[1];
+								_cell2.innerHTML = _serverResponseSplit2[2];
+								_cell3.innerHTML = _serverResponseSplit2[3];
+								_cell4.innerHTML = _serverResponseSplit2[4];
+								_cell5.innerHTML = _serverResponseSplit2[5];
+								_count++;
+							}
+						}
+						else {
+							let _serverResponseSplit1 = _request2.responseText.split('§');
+							let _rows = _table.insertRow(-1);
+							let _cell0 = _rows.insertCell(-1);
+							_cell0.onclick = function() {
+								let _idSplit = _cell0.innerHTML.split('/');
+								let _idField = document.getElementById('PlayersSteamId');
+								_idField.value = _idSplit[0];
+							};
+							let _cell1 = _rows.insertCell(-1);
+							let _cell2 = _rows.insertCell(-1);
+							let _cell3 = _rows.insertCell(-1);
+							let _cell4 = _rows.insertCell(-1);
+							let _cell5 = _rows.insertCell(-1);
+							_cell0.innerHTML = _serverResponseSplit1[0];
+							_cell1.innerHTML = _serverResponseSplit1[1];
+							_cell2.innerHTML = _serverResponseSplit1[2];
+							_cell3.innerHTML = _serverResponseSplit1[3];
+							_cell4.innerHTML = _serverResponseSplit1[4];
+							_cell5.innerHTML = _serverResponseSplit1[5];
+							_count++;
+							
+						}
+					}
+					document.getElementById("PlayerCount").value = _table.rows.length;
+				}
+				else if (_request2.status === 401) {
+					window.location.href = _uri;
+				}
+			};
+			_request2.send(clientId);
+		}
+		else if (_request.status === 401) {
+			window.location.href = _uri;
+		}
+	};
+	_request.send(_encrypted);
 };
 
 function Config() {
-  let _enc = Encrypt(_clSid + " " + _cl);
-  let _uri = window.location.href;
-  let _post = new XMLHttpRequest();
-  _post.open('POST', window.location.href.replace('st.html', 'Config'), false);
-  _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-  _post.onload = function () {
-    if (_post.status === 200 && _post.responseText.length === 4000) {
-      let _r = "";
-      for (let i = 3999; i >= 0; i--) {
-        _r += _post.responseText[i];
-      }
-      _srvK = _r.substring(8);
-      let _req = _r.substring(0, 8);
-      for (let j = 0; j < 3992; j++) {
-        _req += _numSet.charAt(Math.floor(Math.random() * 10));
-      }
-      let _reqR = "";
-      for (let k = 3999; k >= 0; k--) {
-        _reqR += _req[k];
-      }
-      let _post2 = new XMLHttpRequest();
-      _post2.open('POST', window.location.href.replace('st.html', 'Config'), false);
-      _post2.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-      _post2.onload = function () {
-        if (_post2.status === 200) {
-          let _resp = _post2.responseText.split('§');
-          let _respL = _resp.length;
-          for (let l = 0; l < _respL; l++) {
-            let _input = document.getElementById(l);
-            if (_input != null) {
-              if (_resp[l].toLowerCase() === "true") {
-                _input.checked = true;
-              }
-              else if (_resp[l].toLowerCase() === "false") {
-                _input.checked = false;
-              }
-              else {
-                _input.value = _resp[l];
-              }
-            }
-          }
-        }
-      };
-      _post2.send(_reqR);
-    }
-  };
-  _post.send(_enc);
-};
-
-function ClearConfig() {
-  let _count = 0;
-  let _table = document.getElementById("ConfigBody");
-  let _rowCount = _table.rows.length;
-  for (let i = 0; i < _rowCount; i++) {
-    let _cellCount = _table.rows[i].cells.length;
-    for (let j = 1; j < _cellCount; j++) {
-      let _input = document.getElementById(_count);
-      if (_input != null) {
-        if (_input.type === "checkbox") {
-          _input.checked = false;
-        }
-        else {
-          _input.value = "";
-        }
-        _count++;
-      }
-    }
-  }
+	if (document.getElementById("AcceptSave").checked) {
+		document.getElementById("AcceptSave").checked = false;
+		let _encrypted = Encrypt(clientSessionId);
+		let _uri = window.location.href;
+		let _request = new XMLHttpRequest();
+		_request.open('POST', window.location.href.replace('st.html', 'Config'), false);
+		_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+		_request.onerror = function() {
+			alert("Request failed. Server may be restarting");
+		};
+		_request.onload = function () {
+			if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId) {
+					serverKeys = _serverResponse.substring(8);
+				}
+				let _request2 = new XMLHttpRequest();
+				_request2.open('GET', window.location.href.replace('st.html', 'Config'), false);
+				_request2.setRequestHeader('Content-Type', 'text/xml; charset=utf-8');
+				_request2.onerror = function() {
+					alert("Request failed. Server may be restarting");
+				};
+				_request2.onload = function () {
+					if (_request2.status === 200 && _request2.readyState === 4) {
+						if (_request2.responseXML != null) {
+							_configXml = _request2.responseXML;
+							let _root = _configXml.documentElement;
+							if (_root != null) {
+								let _table = document.getElementById("ConfigBody");
+								if (_table != null) {
+									_table.innerHTML = "";
+									let _childNodes = _root.getElementsByTagName("Tool");
+									if (_childNodes != null && _childNodes.length > 0) {
+										let _count = 0;
+										for (i = 0; i < _childNodes.length; i++) {
+											let _attributes = _childNodes[i].attributes;
+											if (_attributes != null) {
+												let _newRow = _table.insertRow(-1);
+												for (j = 0; j < _attributes.length; j++) {
+													let _newCell = _newRow.insertCell(-1);
+													if (j === 0) {
+														_newCell.innerHTML = _attributes[j].value;
+														_newCell.setAttribute("name", "title");
+														_newCell.setAttribute("toolName", _attributes[j].value);
+														_newCell.setAttribute("style", "border: 2px solid #000;");
+													}
+													else if (_attributes[j].value.toLowerCase() === "true" || _attributes[j].value.toLowerCase() === "false") {
+														_newCell.innerHTML = _attributes[j].name + " ";
+														_newCell.setAttribute("name", "box");
+														_newCell.setAttribute("optionName", _attributes[j].name);
+														_newCell.setAttribute("value", _attributes[j].value);
+														let _checkBox = document.createElement("input");
+														_checkBox.setAttribute("type", "checkbox");
+														_checkBox.setAttribute("value", _attributes[j].value);
+														_checkBox.setAttribute("id", _count);
+														if (_attributes[j].value.toLowerCase() === "true") {
+															_checkBox.checked = true;
+														}
+														else {
+															_checkBox.checked = false;
+														}
+														_newCell.appendChild(_checkBox);
+													}
+													else {
+														_newCell.innerHTML = _attributes[j].name + " ";
+														_newCell.setAttribute("name", "text");
+														_newCell.setAttribute("optionName", _attributes[j].name);
+														_newCell.setAttribute("value", _attributes[j].value);
+														let _textBox = document.createElement("input");
+														_textBox.setAttribute("type", "text");
+														_textBox.setAttribute("value", _attributes[j].value);
+														_textBox.setAttribute("id", _count);
+														_newCell.appendChild(_textBox);
+													}
+													_count++;
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+					else if (_request2.status === 404) {
+						alert("Server failed to send the ServerToolsConfig.xml");
+					}
+				};
+				_request2.send(String.empty);
+			}
+			else if (_request.status === 401) {
+				window.location.href = _uri;
+			}
+		};
+		_request.send(_encrypted);
+	}
 };
 
 function SaveConfig() {
-  if (document.getElementById("AcceptSave").checked) {
-    document.getElementById("AcceptSave").checked = false;
-    let _enc = Encrypt(_clSid + " " + _cl);
-    let _uri = window.location.href;
-    let _post = new XMLHttpRequest();
-    _post.open('POST', window.location.href.replace('st.html', 'UpdateConfig'), false);
-    _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-    _post.onload = function () {
-      if (_post.status === 200 && _post.responseText.length === 4000) {
-        let _r = "";
-        for (let i = 3999; i >= 0; i--) {
-          _r += _post.responseText[i];
-        }
-        _srvK = _r.substring(8);
-        let _uid = _r.substring(0, 8);
-        let _newConfig = _uid;
-        let _count = 0;
-        let _table = document.getElementById("ConfigBody");
-        let _rowCount = _table.rows.length;
-        for (let j = 0; j < _rowCount; j++) {
-          let _cellCount = _table.rows[j].cells.length;
-          for (let k = 1; k < _cellCount; k++) {
-            let _input = document.getElementById(_count);
-            if (_input != null) {
-              if (_input.type === "checkbox") {
-                if (_input.checked) {
-                  _newConfig += "True§";
-                }
-                else {
-                  _newConfig += "False§";
-                }
-              }
-              else {
-                _newConfig += _input.value + "§";
-              }
-              _count++;
-            }
-          }
-        }
-        _newConfig = _newConfig.trimEnd();
-        _newConfig += "☼";
-        let _length = 4000 - _newConfig.length;
-        for (let l = 0; l < _length; l++) {
-          _newConfig += "0";
-        }
-        let _cPR = "";
-        for (let m = 3999; m >= 0; m--) {
-          _cPR += _newConfig[m];
-        }
-        let _post2 = new XMLHttpRequest();
-        _post2.open('POST', window.location.href.replace('st.html', 'UpdateConfig'), false);
-        _post2.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-        _post2.send(_cPR);
-      }
-    };
-    _post.send(_enc);
-  }
-  else {
-    alert("Click the box before saving");
-  }
+	if (document.getElementById("AcceptSave").checked) {
+		document.getElementById("AcceptSave").checked = false;
+		let _encrypted = Encrypt(clientSessionId);
+		let _uri = window.location.href;
+		let _request = new XMLHttpRequest();
+		_request.open('POST', window.location.href.replace('st.html', 'UpdateConfig'), false);
+		_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+		_request.onerror = function() {
+			alert("Request failed. Server may be restarting");
+		};
+		_request.onload = function () {
+			if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId) {
+					serverKeys = _serverResponse.substring(8);
+				}
+				if (_configXml.documentElement != null) {
+					let _tableRows = document.getElementById("ConfigBody").rows;
+					let _count = 0;
+					let _newconfig = ""
+					for (i = 0; i < _tableRows.length; i++) {
+						let _cells = _tableRows[i].cells;
+						for (j = 0; j < _cells.length; j++) {
+							if (j === 0) {
+								_newconfig += _cells[j].attributes[1].value + "§";
+							}
+							if (_cells[j].attributes[0].value !== "title") {
+								if (_cells[j].attributes[0].value === "box") {
+									var _checkBox = document.getElementById(_count);
+									if (_checkBox.checked) {
+										_newconfig += _cells[j].attributes[1].value + "σ";
+										if (j === _cells.length - 1) {
+											_newconfig += "True" + "☼";
+										}
+										else {
+											_newconfig += "True" + "╚";
+										}
+									}
+									else {
+										_newconfig += _cells[j].attributes[1].value + "σ";
+										if (j === _cells.length - 1) {
+											_newconfig += "False" + "☼";
+										}
+										else {
+											_newconfig += "False" + "╚";
+										}
+									}
+								}
+								else {
+									var _textBox = document.getElementById(_count);
+									_newconfig += _cells[j].attributes[1].value + "σ";
+									if (j === _cells.length - 1) {
+										_newconfig += _textBox.value + "☼";
+									}
+									else {
+										_newconfig += _textBox.value + "╚";
+									}
+								}
+							}
+							_count++;
+						}
+					}
+					let _request2 = new XMLHttpRequest();
+					_request2.open('POST', window.location.href.replace('st.html', 'UpdateConfig'), false);
+					_request2.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+					_request2.onerror = function() {
+						alert("Request failed. Server may be restarting");
+					};
+					_request2.onload = function () {
+						if (_request2.status === 200 && _request2.readyState === 4) {
+							alert("Received and saved");
+						}
+						else if (_request2.status === 406 && _request.readyState === 4) {
+							alert("Received but no changes were detected");
+						}
+						else if (_request2.status === 401) {
+							alert("Failed to save changes. Server may be restarting");
+						}
+						else if (_request.failed) {
+							alert("Request failed. Server may be restarting");
+						}
+					};
+					_request2.send(_newconfig);
+				}
+			}
+			else if (_request.status === 401) {
+				alert("Failed to save changes. Server may be restarting");
+			}
+			else if (_request.failed) {
+				alert("Request failed. Server may be restarting");
+			}
+		};
+		_request.send(_encrypted);
+	}
+	else {
+		alert("Are you a robot? Click the config checkbox first");
+	}
 };
 
 function Kick() {
-  let _steamId = document.getElementById("PlayersSteamId").value;
+	let _steamId = document.getElementById("PlayersSteamId").value;
 	if (_steamId != "" && _steamId.length === 17) {
-    let _enc = Encrypt(_clSid + " " + _cl + " " + _steamId);
-    let _uri = window.location.href;
-    let _post = new XMLHttpRequest();
-    _post.open('POST', window.location.href.replace('st.html', 'Kick'), false);
-    _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-    _post.onload = function () {
-      if (_post.status === 200 && _post.responseText.length === 4000) {
-        let _r = "";
-        for (let i = 3999; i >= 0; i--) {
-          _r += _post.responseText[i];
-        }
-        if (_r.substring(0, 8) === _clId)
-        {
-          _srvK = _r.substring(8);
-        }
-        alert(_steamId + " has been kicked");
-      }
-      else if (_post.status === 202) {
-        let _r = "";
-        for (let j = 3999; j >= 0; j--) {
-          _r += _post.responseText[j];
-        }
-        if (_r.substring(0, 8) === _clId)
-        {
-          _srvK = _r.substring(8);
-        }
-        alert(_steamId + " was not found online");
-      }
-      else if (_post.status === 401) {
-        window.location.href = _uri;
-      }
-    };
-    _post.send(_enc);
+		let _encrypted = Encrypt(clientSessionId + "`" + _steamId);
+		let _uri = window.location.href;
+		let _request = new XMLHttpRequest();
+		_request.open('POST', window.location.href.replace('st.html', 'Kick'), false);
+		_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+		_request.onerror = function() {
+			alert("Request failed. Server may be restarting");
+		};
+		_request.onload = function () {
+			if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId)
+				{
+					serverKeys = _serverResponse.substring(8);
+				}
+				alert(_steamId + " has been kicked");
+			}
+			else if (_request.status === 406 && _request.readyState === 4 && _request.responseText.length === 2000) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId)
+				{
+					serverKeys = _serverResponse.substring(8);
+				}
+				alert(_steamId + " was not found online. Unable to kick user");
+			}
+			else if (_request.status === 401) {
+				window.location.href = _uri;
+			}
+			else if (_request.failed) {
+				alert("Request failed. Server may be restarting");
+			}
+		};
+		_request.send(_encrypted);
 	}
-  else {
-    alert("Steam Id is empty or too short");
-  }
+	else {
+		alert("Steam id is the wrong length");
+	}
 };
 
 function Ban() {
-  let _steamId = document.getElementById("PlayersSteamId").value;
+	let _steamId = document.getElementById("PlayersSteamId").value;
 	if (_steamId != "" && _steamId.length === 17) {
-    let _enc = Encrypt(_clSid + " " + _cl + " " + _steamId);
-    let _uri = window.location.href;
-    let _post = new XMLHttpRequest();
-    _post.open('POST', window.location.href.replace('st.html', 'Ban'), false);
-    _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-    _post.onload = function () {
-      if (_post.status === 200 && _post.responseText.length === 4000) {
-        let _r = "";
-        for (let i = 3999; i >= 0; i--) {
-          _r += _post.responseText[i];
-        }
-        if (_r.substring(0, 8) === _clId)
-        {
-          _srvK = _r.substring(8);
-        }
-        alert(_steamId + " has been banned");
-      }
-      else if (_post.status === 202) {
-        let _r = "";
-        for (let j = 3999; j >= 0; j--) {
-          _r += _post.responseText[j];
-        }
-        if (_r.substring(0, 8) === _clId)
-        {
-          _srvK = _r.substring(8);
-        }
-        alert(_steamId + " was not found online");
-      }
-      else if (_post.status === 401) {
-        window.location.href = _uri;
-      }
-    };
-    _post.send(_enc);
+		let _encrypted = Encrypt(clientSessionId + "`" + _steamId);
+		let _uri = window.location.href;
+		let _request = new XMLHttpRequest();
+		_request.open('POST', window.location.href.replace('st.html', 'Ban'), false);
+		_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+		_request.onerror = function() {
+			alert("Request failed. Server may be restarting");
+		};
+		_request.onload = function () {
+			if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId)
+				{
+					serverKeys = _serverResponse.substring(8);
+				}
+				alert(_steamId + " has been banned");
+			}
+			else if (_request.status === 406 && _request.readyState === 4 && _request.responseText.length === 2000) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId)
+				{
+					serverKeys = _serverResponse.substring(8);
+				}
+				alert(_steamId + " was not found online but the id has been banned");
+			}
+			else if (_request.status === 401) {
+				window.location.href = _uri;
+			}
+			else if (_request.failed) {
+				alert("Request failed. Server may be restarting");
+			}
+		};
+		_request.send(_encrypted);
 	}
-  else {
-    alert("Steam Id is empty or too short");
-  }
+	else {
+		alert("Steam id is empty or too short");
+	}
 };
 
 function Mute() {
-  let _steamId = document.getElementById("PlayersSteamId").value;
+	let _steamId = document.getElementById("PlayersSteamId").value;
 	if (_steamId != "" && _steamId.length === 17) {
-    let _enc = Encrypt(_clSid + " " + _cl + " " + _steamId);
-    let _uri = window.location.href;
-    let _post = new XMLHttpRequest();
-    _post.open('POST', window.location.href.replace('st.html', 'Mute'), false);
-    _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-    _post.onload = function () {
-      if (_post.status === 200 && _post.responseText.length === 4000) {
-        let _r = "";
-        for (let i = 3999; i >= 0; i--) {
-          _r += _post.responseText[i];
-        }
-        if (_r.substring(0, 8) === _clId)
-        {
-          _srvK = _r.substring(8);
-        }
-        alert(_steamId + " has been muted/unmuted");
-      }
-      else if (_post.status === 202) {
-        let _r = "";
-        for (let j = 3999; j >= 0; j--) {
-          _r += _post.responseText[j];
-        }
-        if (_r.substring(0, 8) === _clId)
-        {
-          _srvK = _r.substring(8);
-        }
-        alert(_steamId + " was not found online");
-      }
-      else if (_post.status === 401) {
-        window.location.href = _uri;
-      }
-    };
-    _post.send(_enc);
+		let _encrypted = Encrypt(clientSessionId + "`" + _steamId);
+		let _uri = window.location.href;
+		let _request = new XMLHttpRequest();
+		_request.open('POST', window.location.href.replace('st.html', 'Mute'), false);
+		_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+		_request.onerror = function() {
+			alert("Request failed. Server may be restarting");
+		};
+		_request.onload = function () {
+			if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId)
+				{
+				serverKeys = _serverResponse.substring(8);
+				}
+				alert(_steamId + " has been muted");
+			}
+			else if (_request.status === 202 && _request.readyState === 4 && _request.responseText.length === 2000) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId)
+				{
+				serverKeys = _serverResponse.substring(8);
+				}
+				alert(_steamId + " has been unmuted");
+			}
+			else if (_request.status === 406 && _request.readyState === 4 && _request.responseText.length === 2000) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId)
+				{
+					serverKeys = _serverResponse.substring(8);
+				}
+				alert("Mute tool is disabled. Enable before using it");
+			}
+			else if (_request.status === 401) {
+				window.location.href = _uri;
+			}
+			else if (_request.failed) {
+				alert("Request failed. Server may be restarting");
+			}
+		};
+		_request.send(_encrypted);
 	}
-  else {
-    alert("Steam Id is empty or too short");
-  }
+	else {
+		alert("Steam id is empty or too short");
+	}
 };
 
 function Jail() {
-  let _steamId = document.getElementById("PlayersSteamId").value;
+	let _steamId = document.getElementById("PlayersSteamId").value;
 	if (_steamId != "" && _steamId.length === 17) {
-    let _enc = Encrypt(_clSid + " " + _cl + " " + _steamId);
-    let _uri = window.location.href;
-    let _post = new XMLHttpRequest();
-    _post.open('POST', window.location.href.replace('st.html', 'Jail'), false);
-    _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-    _post.onload = function () {
-      if (_post.status === 200 && _post.responseText.length === 4000) {
-        let _r = "";
-        for (let i = 3999; i >= 0; i--) {
-          _r += _post.responseText[i];
-        }
-        if (_r.substring(0, 8) === _clId)
-        {
-          _srvK = _r.substring(8);
-        }
-        alert(_steamId + " has been jailed/unjailed");
-      }
-      else if (_post.status === 202) {
-        let _r = "";
-        for (let j = 3999; j >= 0; j--) {
-          _r += _post.responseText[j];
-        }
-        if (_r.substring(0, 8) === _clId)
-        {
-          _srvK = _r.substring(8);
-        }
-        alert(_steamId + " was not found online");
-      }
-      else if (_post.status === 401) {
-        window.location.href = _uri;
-      }
-    };
-    _post.send(_enc);
+		let _encrypted = Encrypt(clientSessionId + "`" + _steamId);
+		let _uri = window.location.href;
+		let _request = new XMLHttpRequest();
+		_request.open('POST', window.location.href.replace('st.html', 'Jail'), false);
+		_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+		_request.onerror = function() {
+			alert("Request failed. Server may be restarting");
+		};
+		_request.onload = function () {
+			if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId) {
+					serverKeys = _serverResponse.substring(8);
+				}
+				alert(_steamId + " has been jailed/unjailed");
+			}
+			else if (_request.status === 406 && _request.readyState === 4) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId) {
+					serverKeys = _serverResponse.substring(8);
+				}
+				alert(_steamId + " was not found online but has been jailed/unjailed");
+			}
+			else if (_request.status === 500 && _request.readyState === 4) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId) {
+					serverKeys = _serverResponse.substring(8);
+				}
+				alert("Jail tool is not enabled. Enable before using it");
+			}
+			else if (_request.status === 409 && _request.readyState === 4) {
+				alert("Jail position has not been set. Unable to run command");
+			}
+			else if (_request.status === 401 && _request.readyState === 4) {
+				window.location.href = _uri;
+			}
+			else if (_request.failed) {
+				alert("Request failed. Server may be restarting");
+			}
+		};
+		_request.send(_encrypted);
 	}
-  else {
-    alert("Steam Id is empty or too short");
-  }
+	else {
+		alert("Steam id is empty or too short");
+	}
 };
 
 function Reward() {
-  let _steamId = document.getElementById("PlayersSteamId").value;
+	let _steamId = document.getElementById("PlayersSteamId").value;
 	if (_steamId != "" && _steamId.length === 17) {
-    let _enc = Encrypt(_clSid + " " + _cl + " " + _steamId);
-    let _uri = window.location.href;
-    let _post = new XMLHttpRequest();
-    _post.open('POST', window.location.href.replace('st.html', 'Reward'), false);
-    _post.setRequestHeader('Content-Type', 'text/plain; charset=utf-8');
-    _post.onload = function () {
-      if (_post.status === 200 && _post.responseText.length === 4000) {
-        let _r = "";
-        for (let i = 3999; i >= 0; i--) {
-          _r += _post.responseText[i];
-        }
-        if (_r.substring(0, 8) === _clId)
-        {
-          _srvK = _r.substring(8);
-        }
-        alert(_steamId + " has received a reward");
-      }
-      else if (_post.status === 202) {
-        let _r = "";
-        for (let j = 3999; j >= 0; j--) {
-          _r += _post.responseText[j];
-        }
-        if (_r.substring(0, 8) === _clId)
-        {
-          _srvK = _r.substring(8);
-        }
-        alert(_steamId + " was not found online");
-      }
-      else if (_post.status === 401) {
-        window.location.href = _uri;
-      }
-    };
-    _post.send(_enc);
+		let _encrypted = Encrypt(clientSessionId + "`" + _steamId);
+		let _uri = window.location.href;
+		let _request = new XMLHttpRequest();
+		_request.open('POST', window.location.href.replace('st.html', 'Reward'), false);
+		_request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+		_request.onerror = function() {
+			alert("Request failed. Server may be restarting");
+		};
+		_request.onload = function () {
+			if (_request.status === 200 && _request.readyState === 4 && _request.responseText.length === 2000) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId) {
+					serverKeys = _serverResponse.substring(8);
+				}
+				alert(_steamId + " has received a vote reward");
+			}
+			else if (_request.status === 406 && _request.readyState === 4) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId)
+				{
+					serverKeys = _serverResponse.substring(8);
+				}
+				alert(_steamId + " was not found online. Unable to give reward");
+			}
+			else if (_request.status === 500 && _request.readyState === 4) {
+				let _serverResponse = _request.responseText;
+				if (_serverResponse.substring(0, 8) === clientId) {
+					serverKeys = _serverResponse.substring(8);
+				}
+				alert("Vote reward is not enabled. Enable before using it");
+			}
+			else if (_request.status === 401) {
+				window.location.href = _uri;
+			}
+			
+			else if (_request.failed) {
+				alert("Request failed. Server may be restarting");
+			}
+		};
+		_request.send(_encrypted);
 	}
-  else {
-    alert("Steam Id is empty or too short");
-  }
+	else {
+		alert("Steam id is empty or too short");
+	}
 };
 
-function StartPlayerLoop() {
-  _playerClock = setInterval(updatePlayers, 15000);
+function StartPlayerClock() {
+	playerClock = setInterval(UpdatePlayers, 10000);
 };
 
 function StopPlayerClock() {
-  clearTimeout(_playerClock);
+	clearTimeout(playerClock);
+};
+
+function StartConsoleClock() {
+	consoleClock = setInterval(UpdateConsole, 10000);
+};
+
+function StopConsoleClock() {
+	clearTimeout(consoleClock);
 };
 
 function Encrypt(_input) {
-  let _output = _input;
-  let _outputLength = _output.length;
-  let _kys = _srvK.match(/.{1,8}/g);
-  let _pEnc = _clId;
-  for (let i = 0; i < _outputLength; i++) {
-    let _c = _output.charCodeAt(i);
-    if (_c > 31 && _c < 127) {
-      let _cBP = parseInt(_c.toString(2));
-      let _kP = parseInt(_kys[(_outputLength - 1) - i]);
-      let _bK = (_cBP + _kP).toString().padStart(8, '0');
-      _pEnc += _bK;
-    }
-    else {
-      alert("Invalid character used");
-      return;
-    }
-  }
-  let _f = 3992 - _pEnc.length;
-  for (let j = 0; j < _f; j++) {
-    _pEnc += _numSet.charAt(Math.floor(Math.random() * 10));
-  }
-   let _mK = _outputLength.toString().padStart(3, '0');
-   for (let k = 0; k < 5; k++) {
-     _mK += _numSet.charAt(Math.floor(Math.random() * 10));
-   }
-   _pEnc += _mK;
-  let _enc = "";
-  for (let l = 3999; l >= 0; l--) {
-    _enc += _pEnc.charAt(l);
-  }
-  return _enc;
-};
-
-function SetConfigId() {
-  let _count = 0;
-  let _inputs = document.getElementsByName("option");
-  let _length = _inputs.length;
-  for (let i = 0; i < _length; i++) {
-    _inputs[i].id = _count.toString();
-    _count++;
-  }
+	let _outputLength = _input.length;
+	let _keys = serverKeys.match(/.{1,8}/g);
+	let _encrypted = clientId;
+	for (let i = 0; i < _outputLength; i++) {
+		let _char = _input.charCodeAt(i);
+		if (_char > 31 && _char < 127) {
+			let _charParse = parseInt(_char.toString(2));
+			let _binaryParse = parseInt(_keys[i]);
+			let _binaryKey = (_charParse + _binaryParse).toString().padStart(8, '0');
+			_encrypted += _binaryKey;
+		}
+		else {
+			alert("Unable to complete encryption. Do not use special symbols");
+			return;
+		}
+	}
+	return _encrypted;
 };

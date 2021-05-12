@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 namespace ServerTools
 {
     public class Homes
     {
-        public static bool IsEnabled = false, PvP_Check = false, Zombie_Check = false, Vehicle_Check = false, Return = false;
+        public static bool IsEnabled = false, Player_Check = false, Zombie_Check = false, Vehicle_Check = false, Return = false;
         public static int Delay_Between_Uses = 0, Max_Homes = 2, Reserved_Max_Homes = 4, Command_Cost = 0;
         public static string Command1 = "home", Command2 = "fhome", Command3 = "home save", Command4 = "home del", Command5 = "go home",
             Command6 = "sethome";
@@ -154,7 +153,7 @@ namespace ServerTools
                 {
                     int _timeleft = _delay - _timepassed;
                     Phrases.Dict.TryGetValue(734, out string _phrase734);
-                    _phrase734 = _phrase734.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase734 = _phrase734.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                     _phrase734 = _phrase734.Replace("{DelayBetweenUses}", _delay.ToString());
                     _phrase734 = _phrase734.Replace("{Value}", _timeleft.ToString());
                     _phrase734 = _phrase734.Replace("{Command1}", Command1);
@@ -184,7 +183,7 @@ namespace ServerTools
                             return;
                         }
                     }
-                    if (PvP_Check)
+                    if (Player_Check)
                     {
                         if (Teleportation.PCheck(_cInfo, _player))
                         {
@@ -439,7 +438,7 @@ namespace ServerTools
                             {
                                 Phrases.Dict.TryGetValue(744, out string _phrase744);
                                 _phrase744 = _phrase744.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase744 = _phrase744.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                _phrase744 = _phrase744.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                 _phrase744 = _phrase744.Replace("{Command5}", Command5);
                                 ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase744 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 Phrases.Dict.TryGetValue(745, out string _phrase745);

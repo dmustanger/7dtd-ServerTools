@@ -40,7 +40,7 @@ namespace ServerTools
                         {
                             VoteOpen = true;
                             Phrases.Dict.TryGetValue(441, out string _phrase441);
-                            _phrase441 = _phrase441.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase441 = _phrase441.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                             _phrase441 = _phrase441.Replace("{Command70}", Command70);
                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase441 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         }

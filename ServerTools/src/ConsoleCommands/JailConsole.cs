@@ -14,11 +14,11 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. jail off\n" +
-                "  2. jail on\n" +
-                "  3. jail add <steamId/entityId> <time>\n" +
-                "  4. jail remove <steamId>" +
-                "  5. jail list\n" +
+                "  1. st-jl off\n" +
+                "  2. st-jl on\n" +
+                "  3. st-jl add <steamId/entityId> <time>\n" +
+                "  4. st-jl remove <steamId>" +
+                "  5. st-jl list\n" +
                 "1. Turn off jail\n" +
                 "2. Turn on jail\n" +
                 "3. Adds a steam Id to the jail list for a specific time in minutes\n" +

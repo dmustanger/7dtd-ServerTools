@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. DeathSpot off\n" +
-                   "  2. DeathSpot on\n" +
+                   "  1. st-ds off\n" +
+                   "  2. st-ds on\n" +
                    "1. Turn off death spot\n" +
                    "2. Turn on death spot\n";
         }

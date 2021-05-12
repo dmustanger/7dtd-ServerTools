@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. EntityCleanup off\n" +
-                   "  2. EntityCleanup on\n" +
+                   "  1. st-ec off\n" +
+                   "  2. st-ec on\n" +
                    "1. Turn off entity cleanup\n" +
                    "2. Turn on entity cleanup\n";
         }

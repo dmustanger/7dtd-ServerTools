@@ -65,7 +65,7 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(831, out string _phrase831);
                 _phrase831 = _phrase831.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase831 = _phrase831.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase831 = _phrase831.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase831 = _phrase831.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                 _phrase831 = _phrase831.Replace("{Command129}", Command129);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase831 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }

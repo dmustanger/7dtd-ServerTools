@@ -54,7 +54,7 @@ namespace ServerTools
                 if (Return)
                 {
                     Phrases.Dict.TryGetValue(213, out string _phrase213);
-                    _phrase213 = _phrase213.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase213 = _phrase213.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                     _phrase213 = _phrase213.Replace("{Command86}", Command86);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase213 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -93,7 +93,7 @@ namespace ServerTools
                 else
                 {
                     Phrases.Dict.TryGetValue(215, out string _phrase215);
-                    _phrase215 = _phrase215.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase215 = _phrase215.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                     _phrase215 = _phrase215.Replace("{Command86}", Command86);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase215 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }

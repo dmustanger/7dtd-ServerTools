@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace ServerTools
 {
@@ -11,7 +12,7 @@ namespace ServerTools
 
         public static void Exec(string _message, string _playerName)
         {
-            using (StreamWriter sw = new StreamWriter(filePath, true))
+            using (StreamWriter sw = new StreamWriter(filePath, true, Encoding.UTF8))
             {
                 sw.WriteLine(string.Format("{0} {1}: {2}", DateTime.Now, _playerName, _message));
                 sw.Flush();

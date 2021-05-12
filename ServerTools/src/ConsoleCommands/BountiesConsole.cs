@@ -12,11 +12,11 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. bounty off\n" +
-                   "  2. bounty on\n" +
-                   "  3. bounty edit {SteamId/EntityId/PlayerName} {Value}\n" +
-                   "  4. bounty remove {SteamId/EntityId/PlayerName}\n" +
-                   "  5. bounty list\n" +
+                   "  1. st-bty off\n" +
+                   "  2. st-bty on\n" +
+                   "  3. st-bty edit {SteamId/EntityId/PlayerName} {Value}\n" +
+                   "  4. st-bty remove {SteamId/EntityId/PlayerName}\n" +
+                   "  5. st-bty list\n" +
                    "1. Turn off bounties\n" +
                    "2. Turn on bounties\n" +
                    "3. Edit the bounty of a player\n" +

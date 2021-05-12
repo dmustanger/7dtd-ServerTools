@@ -13,11 +13,11 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Vote off\n" +
-                   "  2. Vote on\n" +
-                   "  3. Vote reset <steamId/entityId/playerName>\n" +
-                   "  4. Vote reset online\n" +
-                   "  5. Vote reset all\n" +
+                   "  1. st-vr off\n" +
+                   "  2. st-vr on\n" +
+                   "  3. st-vr reset <steamId/entityId/playerName>\n" +
+                   "  4. st-vr reset online\n" +
+                   "  5. st-vr reset all\n" +
                    "1. Turn off voting\n" +
                    "2. Turn on voting\n" +
                    "3. Reset the vote reward delay of a player Id\n" +

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 using UnityEngine;
 
@@ -172,7 +173,7 @@ namespace ServerTools
         public static void UpdateXml()
         {
             FileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath))
+            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Shop>");
@@ -328,7 +329,7 @@ namespace ServerTools
             }
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _categories + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             Phrases.Dict.TryGetValue(342, out string _phrase342);
-            _phrase342 = _phrase342.Replace("{CommandPrivate}", ChatHook.Command_Private);
+            _phrase342 = _phrase342.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
             _phrase342 = _phrase342.Replace("{Command57}", Command57);
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase342 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
@@ -378,7 +379,7 @@ namespace ServerTools
                 if (_count != 0)
                 {
                     Phrases.Dict.TryGetValue(353, out string _phrase353);
-                    _phrase353 = _phrase353.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase353 = _phrase353.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                     _phrase353 = _phrase353.Replace("{Command58}", Command58);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase353 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -386,7 +387,7 @@ namespace ServerTools
             else
             {
                 Phrases.Dict.TryGetValue(354, out string _phrase354);
-                _phrase354 = _phrase354.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase354 = _phrase354.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                 _phrase354 = _phrase354.Replace("{Command57}", Command57);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase354 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }

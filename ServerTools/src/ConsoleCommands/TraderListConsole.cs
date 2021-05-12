@@ -13,7 +13,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. traderlist" +
+                "  1. st-tl" +
                 "1. Shows a list of trader locations\n";
         }
 

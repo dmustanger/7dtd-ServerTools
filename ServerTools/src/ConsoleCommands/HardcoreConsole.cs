@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Hardcore off\n" +
-                   "  2. Hardcore on\n" +
+                   "  1. st-hc off\n" +
+                   "  2. st-hc on\n" +
                    "1. Turn off hardcore\n" +
                    "2. Turn on hardcore\n";
         }

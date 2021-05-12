@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace ServerTools.AntiCheat
 {
@@ -40,7 +41,7 @@ namespace ServerTools.AntiCheat
                                             var p_height = _player.height;
                                             if (p_Health > 250)
                                             {
-                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal health value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_Health));
                                                     sw.WriteLine();
@@ -67,7 +68,7 @@ namespace ServerTools.AntiCheat
                                             }
                                             if (p_Stamina > 250)
                                             {
-                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal stamina value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_Stamina));
                                                     sw.WriteLine();
@@ -94,7 +95,7 @@ namespace ServerTools.AntiCheat
                                             }
                                             if (p_jumpStrength >= 1.5)
                                             {
-                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal jump strength value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_jumpStrength));
                                                     sw.WriteLine();
@@ -121,7 +122,7 @@ namespace ServerTools.AntiCheat
                                             }
                                             if (p_height > 1.8 || p_height < 1.7)
                                             {
-                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal player height value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_height));
                                                     sw.WriteLine();
@@ -148,7 +149,7 @@ namespace ServerTools.AntiCheat
                                             }
                                             if (p_speedForward > Max_Speed)
                                             {
-                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal run speed value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_speedForward));
                                                     sw.WriteLine();

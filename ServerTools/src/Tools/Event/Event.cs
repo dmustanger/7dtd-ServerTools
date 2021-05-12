@@ -107,7 +107,7 @@ namespace ServerTools
                 {
                     Phrases.Dict.TryGetValue(777, out string _phrase777);
                     _phrase777 = _phrase777.Replace("{EventName}", TeamSetup.ToString());
-                    _phrase777 = _phrase777.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase777 = _phrase777.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                     _phrase777 = _phrase777.Replace("{Command100}", Command100);
                     ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase777 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                     Phrases.Dict.TryGetValue(778, out string _phrase778);

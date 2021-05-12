@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace ServerTools
@@ -99,7 +100,7 @@ namespace ServerTools
         private static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath))
+            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Prayer>");
@@ -204,7 +205,7 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(821, out string _phrase821);
                 _phrase821 = _phrase821.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase821 = _phrase821.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase821 = _phrase821.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase821 = _phrase821.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                 _phrase821 = _phrase821.Replace("{Command126}", Command126);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase821 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }

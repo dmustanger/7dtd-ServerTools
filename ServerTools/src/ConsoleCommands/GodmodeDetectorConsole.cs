@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. GodmodeDetector off\n" +
-                   "  2. GodmodeDetector on\n" +
+                   "  1. st-gd off\n" +
+                   "  2. st-gd on\n" +
                    "1. Turn off godmode detector\n" +
                    "2. Turn on godmode detector\n";
         }

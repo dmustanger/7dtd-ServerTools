@@ -7,7 +7,7 @@ namespace ServerTools
 {
     class Lobby
     {
-        public static bool IsEnabled = false, Return = false, Player_Check = false, Zombie_Check = false, Donor_Only = false, PvE = false;
+        public static bool IsEnabled = false, Return = false, Player_Check = false, Zombie_Check = false, Reserved_Only = false, PvE = false;
         public static int Delay_Between_Uses = 5, Lobby_Size = 25, Command_Cost = 0;
         public static string Lobby_Position = "0,0,0", Command53 = "lobbyback", Command54 = "lback", Command87 = "setlobby", Command88 = "lobby";
         public static List<int> LobbyPlayers = new List<int>();
@@ -41,7 +41,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (Donor_Only && ReservedSlots.IsEnabled && !ReservedSlots.ReservedCheck(_cInfo.playerId))
+            if (Reserved_Only && ReservedSlots.IsEnabled && !ReservedSlots.ReservedCheck(_cInfo.playerId))
             {
                 Phrases.Dict.TryGetValue(249, out string _phrase249);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase249 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -105,7 +105,7 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(241, out string _phrase241);
                 _phrase241 = _phrase241.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase241 = _phrase241.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase241 = _phrase241.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase241 = _phrase241.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                 _phrase241 = _phrase241.Replace("{Command88}", Command88);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase241 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
@@ -163,7 +163,7 @@ namespace ServerTools
                             LobbyPlayers.Add(_cInfo.entityId);
                             PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = _pposition;
                             Phrases.Dict.TryGetValue(243, out string _phrase243);
-                            _phrase243 = _phrase243.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase243 = _phrase243.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                             _phrase243 = _phrase243.Replace("{Command53}", Command53);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase243 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }

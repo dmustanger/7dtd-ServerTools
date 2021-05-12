@@ -13,7 +13,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. rza\n" +
+                "  1. st-rza\n" +
                 "1. Removes all current zombies and animals on the map\n";
         }
 

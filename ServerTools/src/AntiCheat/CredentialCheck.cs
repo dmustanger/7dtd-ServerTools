@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace ServerTools.AntiCheat
@@ -90,7 +91,7 @@ namespace ServerTools.AntiCheat
         public static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath))
+            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<FamilyShareAccount>");
@@ -141,7 +142,7 @@ namespace ServerTools.AntiCheat
                             if (_cInfo.ownerId != _cInfo.playerId)
                             {
                                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using a family share account. Purchase the game or contact an administrator for permission to join this server\"", _cInfo.playerId), (ClientInfo)null);
-                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with a family share account", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
                                     sw.WriteLine();
@@ -156,7 +157,7 @@ namespace ServerTools.AntiCheat
                             if (_cInfo.ownerId.Length != 17 || !_cInfo.ownerId.StartsWith("7656119") || _cInfo.playerId.Length != 17 || !_cInfo.playerId.StartsWith("7656119"))
                             {
                                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using an invalid Id\"", _cInfo.playerId), (ClientInfo)null);
-                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an invalid Id", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
                                     sw.WriteLine();
@@ -172,7 +173,7 @@ namespace ServerTools.AntiCheat
                             if (IP.StartsWith("192.168"))
                             {
                                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using an invalid IP\"", _cInfo.playerId), (ClientInfo)null);
-                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an invalid IP", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
                                     sw.WriteLine();

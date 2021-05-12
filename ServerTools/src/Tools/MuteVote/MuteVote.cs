@@ -35,7 +35,7 @@ namespace ServerTools
                             _phrase911 = _phrase911.Replace("{PlayerName}", _playerToMute.playerName);
                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase911 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                             Phrases.Dict.TryGetValue(912, out string _phrase912);
-                            _phrase912 = _phrase912.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase912 = _phrase912.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                             _phrase912 = _phrase912.Replace("{Command70}", RestartVote.Command70);
                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase912 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         }
@@ -88,7 +88,7 @@ namespace ServerTools
                     }
                 }
                 Phrases.Dict.TryGetValue(914, out string _phrase914);
-                _phrase914 = _phrase914.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase914 = _phrase914.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                 _phrase914 = _phrase914.Replace("{Command67}", Command67);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase914 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }

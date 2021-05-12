@@ -69,6 +69,7 @@ namespace ServerTools
             _phrase170 = _phrase170.Replace("{Value}", 1.ToString());
             Alert(_phrase170, 1);
             SdtdConsole.Instance.ExecuteSync("saveworld", null);
+            SdtdConsole.Instance.ExecuteSync("mem clean", null);
             if (VehicleManager.Instance != null)
             {
                 VehicleManager.Instance.Update();

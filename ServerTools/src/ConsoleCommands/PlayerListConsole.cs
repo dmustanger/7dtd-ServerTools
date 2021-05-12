@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. PlayerList off\n" +
-                   "  2. PlayerList on\n" +
+                   "  1. st-plist off\n" +
+                   "  2. st-plist on\n" +
                    "1. Turn off player list\n" +
                    "2. Turn on player list\n";
         }

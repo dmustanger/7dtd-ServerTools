@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml;
 using UnityEngine;
 
@@ -228,7 +229,7 @@ namespace ServerTools
         public static void UpdateXml()
         {
             FileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath))
+            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Zones>");
@@ -400,7 +401,7 @@ namespace ServerTools
                 Victim.Remove(_cInfo.entityId);
                 Phrases.Dict.TryGetValue(321, out string _phrase321);
                 _phrase321 = _phrase321.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase321 = _phrase321.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase321 = _phrase321.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                 _phrase321 = _phrase321.Replace("{Command50}", Zones.Command50);
                 _phrase321 = _phrase321.Replace("{Time}", _timeAllowed.ToString());
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase321 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

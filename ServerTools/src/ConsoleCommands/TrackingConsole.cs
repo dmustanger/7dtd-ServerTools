@@ -14,10 +14,10 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. track off\n" +
-                   "  2. track on\n" +
-                   "  3. track <Hours> <Block Range>\n" +
-                   "  4. track <Hours> <Block Range> <X> <Y> <Z>\n" +
+                   "  1. st-track off\n" +
+                   "  2. st-track on\n" +
+                   "  3. st-track <Hours> <Block Range>\n" +
+                   "  4. st-track <Hours> <Block Range> <X> <Y> <Z>\n" +
                    "1. Turn off the tracking tool\n" +
                    "2. Turn on the tracking tool\n" +
                    "3. List players tracked with in the specified hours and block range from your current location\n" +

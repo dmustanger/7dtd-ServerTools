@@ -26,7 +26,6 @@ namespace ServerTools
         private Dictionary<string, string[]> webPanelAuthorizedList;
         private Dictionary<string, DateTime> webPanelAuthorizedTimeList;
         private List<string> webPanelBanList;
-        private List<string> webPanelClientList;
         private Dictionary<string, DateTime> webPanelTimeoutList;
 
         public static PersistentContainer Instance
@@ -256,18 +255,6 @@ namespace ServerTools
             set
             {
                 webPanelBanList = value;
-            }
-        }
-
-        public List<string> WebPanelClientList
-        {
-            get
-            {
-                return webPanelClientList;
-            }
-            set
-            {
-                webPanelClientList = value;
             }
         }
 

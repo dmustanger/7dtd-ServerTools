@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Location off\n" +
-                   "  2. Location on\n" +
+                   "  1. st-loc off\n" +
+                   "  2. st-loc on\n" +
                    "1. Turn off chat command /loc\n" +
                    "2. Turn on chat command /loc\n";
         }

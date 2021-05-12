@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Market off\n" +
-                   "  2. Market on\n" +
+                   "  1. st-mkt off\n" +
+                   "  2. st-mkt on\n" +
                    "1. Turn off the market\n" +
                    "2. Turn on the market\n";
         }

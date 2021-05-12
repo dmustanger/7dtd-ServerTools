@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace ServerTools
 {
@@ -116,7 +117,7 @@ namespace ServerTools
                                                 Auction.AuctionItems.Remove(_id);
                                                 PersistentContainer.Instance.Players[_playerId].Auction.Remove(_id);
                                                 PersistentContainer.Instance.AuctionPrices.Remove(_id);
-                                                using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0}: {1} {2} had their auction entry # {3} cancelled via console by {4}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _id, _senderInfo.RemoteClientInfo.playerId));
                                                     sw.WriteLine();

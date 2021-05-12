@@ -13,7 +13,7 @@ namespace ServerTools
 
         public override string GetHelp()
         {
-            return "Usage: resetplayerprofile <steamId/entityId>";
+            return "Usage: st-rpp <steamId/entityId>";
         }
 
         public override string[] GetCommands()

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
+using System.Text;
 using System.Xml;
 using UnityEngine;
 
@@ -10,7 +10,7 @@ namespace ServerTools
     class BloodmoonWarrior
     {
         public static bool IsEnabled = false, IsRunning = false, BloodmoonStarted = false, Reduce_Death_Count = false;
-        public static int Zombie_Kills = 10, Chance = 50;
+        public static int Zombie_Kills = 10, Chance = 50, Reward_Count = 1;
         public static List<string> WarriorList = new List<string>();
         public static Dictionary<string, int> KilledZombies = new Dictionary<string, int>();
         private const string file = "BloodmoonWarrior.xml";
@@ -167,7 +167,7 @@ namespace ServerTools
         private static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath))
+            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<BloodmoonWarrior>");
@@ -285,7 +285,7 @@ namespace ServerTools
                                 ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_warrior);
                                 if (_cInfo != null)
                                 {
-                                    RandomItem(_cInfo);
+                                    Counter(_cInfo, Reward_Count);
                                     if (Reduce_Death_Count)
                                     {
                                         int _deathCount = _player.Died - 1;
@@ -314,6 +314,16 @@ namespace ServerTools
             KilledZombies.Clear();
         }
 
+        private static void Counter(ClientInfo _cInfo, int _counter)
+        {
+            RandomItem(_cInfo);
+            _counter--;
+            if (_counter != 0)
+            {
+                RandomItem(_cInfo);
+            }
+        }
+
         private static void RandomItem(ClientInfo _cInfo)
         {
             try
@@ -323,7 +333,7 @@ namespace ServerTools
                 int[] _itemData;
                 if (Dict.TryGetValue(_randomItem, out _itemData))
                 {
-                    int _count = 0;
+                    int _count = 1;
                     if (_itemData[0] > _itemData[1])
                     {
                         _count = random.Next(_itemData[1], _itemData[0] + 1);

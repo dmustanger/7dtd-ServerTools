@@ -13,7 +13,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Rotates an entity to face away from the command user. Entity being rotated can not be a player.\n" +
-                "Usage: EntityRotate <EntityId>\n";
+                "Usage: st-erot <EntityId>\n";
         }
 
         public override string[] GetCommands()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace ServerTools.AntiCheat
 {
@@ -37,7 +38,7 @@ namespace ServerTools.AntiCheat
                                             SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase962), null);
                                             string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                                             string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
-                                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                             {
                                                 sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, using spectator mode @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                 sw.WriteLine();
@@ -59,7 +60,7 @@ namespace ServerTools.AntiCheat
                                             SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase972), null);
                                             string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                                             string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
-                                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                             {
                                                 sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, using godmode @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                 sw.WriteLine();
@@ -112,7 +113,7 @@ namespace ServerTools.AntiCheat
                                                         SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase982), null);
                                                         string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                                                         string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
-                                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                        using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                         {
                                                             sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                             sw.WriteLine();

@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool ChatFlood = false, Normal_Player_Color_Prefix = false, Message_Color_Enabled = false, Alter_Message_Color = false, Role_Play = false;
         public static string Normal_Player_Name_Color = "[00B3B3]", Normal_Player_Prefix = "NOOB", Friend_Chat_Color = "[33CC33]", Party_Chat_Color = "[FFCC00]",
-            Command_Private = "/", Command_Public = "!", Message_Color = "[FFFFFF]", Normal_Player_Prefix_Color = "[FFFFFF]";
+            Chat_Command_Prefix1 = "/", Chat_Command_Prefix2 = "!", Message_Color = "[FFFFFF]", Normal_Player_Prefix_Color = "[FFFFFF]";
         public static int Admin_Level = 0, Mod_Level = 1, Max_Length = 250, Messages_Per_Min = 8, Wait_Time = 60;
         private static Dictionary<string, int> ChatFloodCount = new Dictionary<string, int>();
         private static Dictionary<string, DateTime> ChatFloodTime = new Dictionary<string, DateTime>();
@@ -22,7 +22,7 @@ namespace ServerTools
                 {
                     if (Mute.IsEnabled && Mute.Mutes.Contains(_cInfo.playerId))
                     {
-                        if (Mute.Block_Commands && (_message.StartsWith(Command_Private) || _message.StartsWith(Command_Public)))
+                        if (Mute.Block_Commands && (_message.StartsWith(Chat_Command_Prefix1) || _message.StartsWith(Chat_Command_Prefix2)))
                         {
                             Phrases.Dict.TryGetValue(760, out string _phrase760);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase760 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -84,7 +84,7 @@ namespace ServerTools
                         {
                             _message.Substring(2);
                         }
-                        if (!_message.StartsWith("@") && _senderId != -1 && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public))
+                        if (!_message.StartsWith("@") && _senderId != -1 && !_message.StartsWith(Chat_Command_Prefix1) && !_message.StartsWith(Chat_Command_Prefix2))
                         {
                             if (ChatLog.IsEnabled)
                             {
@@ -201,19 +201,19 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (_message.StartsWith(Command_Private) || _message.StartsWith(Command_Public))
+                        if ((_message.StartsWith(Chat_Command_Prefix1) || _message.StartsWith(Chat_Command_Prefix2)) && (!_message.StartsWith(Chat_Command_Prefix1 + "***") || !_message.StartsWith(Chat_Command_Prefix2 + "***")))
                         {
                             if (ChatCommandLog.IsEnabled)
                             {
                                 ChatCommandLog.Exec(_message, _cInfo);
                             }
-                            if (_message.StartsWith(Command_Public))
+                            if (_message.StartsWith(Chat_Command_Prefix1))
                             {
-                                _message = _message.Replace(Command_Public, "");
+                                _message = _message.Replace(Chat_Command_Prefix1, "");
                             }
-                            else if (_message.StartsWith(Command_Private))
+                            else if (_message.StartsWith(Chat_Command_Prefix2))
                             {
-                                _message = _message.Replace(Command_Private, "");
+                                _message = _message.Replace(Chat_Command_Prefix2, "");
                             }
                             if (Homes.IsEnabled)
                             {
@@ -386,7 +386,7 @@ namespace ServerTools
                                 if (_message.ToLower() == ClanManager.Command33)
                                 {
                                     Phrases.Dict.TryGetValue(114, out string _phrase114);
-                                    _phrase114 = _phrase114.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase114 = _phrase114.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase114 = _phrase114.Replace("{Command33}", ClanManager.Command33);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase114 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return false;
@@ -405,7 +405,7 @@ namespace ServerTools
                                 else if (_message.ToLower() == ClanManager.Command35)
                                 {
                                     Phrases.Dict.TryGetValue(115, out string _phrase115);
-                                    _phrase115 = _phrase115.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase115 = _phrase115.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase115 = _phrase115.Replace("{Command35}", ClanManager.Command35);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase115 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return false;
@@ -429,7 +429,7 @@ namespace ServerTools
                                 else if (_message.ToLower() == ClanManager.Command38)
                                 {
                                     Phrases.Dict.TryGetValue(116, out string _phrase116);
-                                    _phrase116 = _phrase116.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase116 = _phrase116.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase116 = _phrase116.Replace("{Command38}", ClanManager.Command38);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase116 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return false;
@@ -443,7 +443,7 @@ namespace ServerTools
                                 else if (_message.ToLower() == ClanManager.Command39)
                                 {
                                     Phrases.Dict.TryGetValue(117, out string _phrase117);
-                                    _phrase117 = _phrase117.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase117 = _phrase117.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase117 = _phrase117.Replace("{Command39}", ClanManager.Command39);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase117 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -456,7 +456,7 @@ namespace ServerTools
                                 else if (_message.ToLower() == ClanManager.Command40)
                                 {
                                     Phrases.Dict.TryGetValue(118, out string _phrase118);
-                                    _phrase118 = _phrase118.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase118 = _phrase118.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase118 = _phrase118.Replace("{Command40}", ClanManager.Command40);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase118 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return false;
@@ -481,7 +481,7 @@ namespace ServerTools
                                 else if (_message.ToLower() == ClanManager.Command43 || _message.ToLower() == ClanManager.Command124)
                                 {
                                     Phrases.Dict.TryGetValue(119, out string _phrase119);
-                                    _phrase119 = _phrase119.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase119 = _phrase119.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase119 = _phrase119.Replace("{Command43}", ClanManager.Command43);
                                     _phrase119 = _phrase119.Replace("{Command124}", ClanManager.Command124);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase119 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -503,7 +503,7 @@ namespace ServerTools
                                 else if (_message.ToLower() == ClanManager.Command44)
                                 {
                                     Phrases.Dict.TryGetValue(120, out string _phrase120);
-                                    _phrase120 = _phrase120.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase120 = _phrase120.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase120 = _phrase120.Replace("{Command44}", ClanManager.Command44);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase120 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -622,7 +622,7 @@ namespace ServerTools
                                     else
                                     {
                                         Phrases.Dict.TryGetValue(353, out string _phrase353);
-                                        _phrase353 = _phrase353.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                        _phrase353 = _phrase353.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                         _phrase353 = _phrase353.Replace("{Command58}", Shop.Command58);
                                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase353 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
@@ -743,7 +743,7 @@ namespace ServerTools
                                 else
                                 {
                                     Phrases.Dict.TryGetValue(889, out string _phrase889);
-                                    _phrase889 = _phrase889.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase889 = _phrase889.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase889 = _phrase889.Replace("{Command62}", WeatherVote.Command62);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase889 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -768,7 +768,7 @@ namespace ServerTools
                                 else
                                 {
                                     Phrases.Dict.TryGetValue(889, out string _phrase889);
-                                    _phrase889 = _phrase889.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase889 = _phrase889.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase889 = _phrase889.Replace("{Command62}", WeatherVote.Command62);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase889 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -793,7 +793,7 @@ namespace ServerTools
                                 else
                                 {
                                     Phrases.Dict.TryGetValue(889, out string _phrase889);
-                                    _phrase889 = _phrase889.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase889 = _phrase889.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase889 = _phrase889.Replace("{Command62}", WeatherVote.Command62);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase889 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -1290,7 +1290,7 @@ namespace ServerTools
                                             PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats = _harcorestats;
                                             PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled = true;
                                             Phrases.Dict.TryGetValue(601, out string _phrase601);
-                                            _phrase601 = _phrase601.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                            _phrase601 = _phrase601.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                             _phrase601 = _phrase601.Replace("{Command127}", Hardcore.Command127);
                                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase601 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
@@ -1298,7 +1298,7 @@ namespace ServerTools
                                     else
                                     {
                                         Phrases.Dict.TryGetValue(602, out string _phrase602);
-                                        _phrase602 = _phrase602.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                        _phrase602 = _phrase602.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                         _phrase602 = _phrase602.Replace("{Command127}", Hardcore.Command127);
                                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase602 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
@@ -1306,7 +1306,7 @@ namespace ServerTools
                                 else
                                 {
                                     Phrases.Dict.TryGetValue(602, out string _phrase602);
-                                    _phrase602 = _phrase602.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase602 = _phrase602.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase602 = _phrase602.Replace("{Command127}", Hardcore.Command127);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase602 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -1356,6 +1356,12 @@ namespace ServerTools
                                 }
                                 return false;
                             }
+                            //if (WindowedResponse.IsEnabled && _message.ToLower().StartsWith(WindowedResponse.Command999 + " "))
+                            //{
+                            //    _message = _message.ToLower().Replace(WindowedResponse.Command999 + " ", "");
+                            //    WindowedResponse.Test(_cInfo, _message);
+                            //    return false;
+                            //}
                         }
                         if (AdminChat.IsEnabled && _message.ToLower().StartsWith(AdminChat.Command118 + " "))
                         {

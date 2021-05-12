@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Credentials off\n" +
-                   "  2. Credentials on\n" +
+                   "  1. st-creds off\n" +
+                   "  2. st-creds on\n" +
                    "1. Turn off all credential check tools\n" +
                    "2. Turn on all credential check tools\n";
         }

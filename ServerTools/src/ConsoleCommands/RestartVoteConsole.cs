@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. RestartVote off\n" +
-                   "  2. RestartVote on\n" +
+                   "  1. st-rv off\n" +
+                   "  2. st-rv on\n" +
                    "1. Turn off restart vote\n" +
                    "2. Turn on restart vote\n";
         }

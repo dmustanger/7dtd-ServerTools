@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. NewPlayer off\n" +
-                   "  2. NewPlayer on\n" +
+                   "  1. st-np off\n" +
+                   "  2. st-np on\n" +
                    "1. Turn off new player\n" +
                    "2. Turn on new player\n";
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace ServerTools.AntiCheat
 {
@@ -39,7 +40,7 @@ namespace ServerTools.AntiCheat
                                             if (_itemValue != null)
                                             {
                                                 int _distance = (int)_player2.GetDistance(__instance);
-                                                using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0}: {1} \"{2}\" hit \"{3}\" with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}", DateTime.Now, _cInfo2.playerId, _cInfo2.playerName, __instance.EntityName, __instance.entityId, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _dmResponse.Strength, __instance.position, _distance));
                                                     sw.WriteLine();
@@ -50,7 +51,7 @@ namespace ServerTools.AntiCheat
                                                 {
                                                     Phrases.Dict.TryGetValue(952, out string _phrase952);
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1} {2}\"", _cInfo2.playerId, _phrase952, _dmResponse.Strength), null);
-                                                    using (StreamWriter sw = new StreamWriter(_detectionFilepath, true))
+                                                    using (StreamWriter sw = new StreamWriter(_detectionFilepath, true, Encoding.UTF8))
                                                     {
                                                         sw.WriteLine(string.Format("Detected \"{0}\" Steam Id {1}, exceeded damage limit @ {2}. Damage: {3}", _cInfo2.playerName, _cInfo2.playerId, __instance.position, _dmResponse.Strength));
                                                         sw.WriteLine();
@@ -169,7 +170,7 @@ namespace ServerTools.AntiCheat
                                             if (Damage_Detector)
                                             {
                                                 int _distance = (int)_player.GetDistance(__instance);
-                                                using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0}: {1} \"{2}\" hit \"{3}\" with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}", DateTime.Now, _cInfo.playerId, _cInfo.playerName, __instance.EntityName, __instance.entityId, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _dmResponse.Strength, __instance.position, _distance));
                                                     sw.WriteLine();
@@ -180,7 +181,7 @@ namespace ServerTools.AntiCheat
                                                 {
                                                     Phrases.Dict.TryGetValue(952, out string _phrase952);
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1} {2}\"", _cInfo.playerId, _phrase952, _dmResponse.Strength), null);
-                                                    using (StreamWriter sw = new StreamWriter(_detectionFilepath, true))
+                                                    using (StreamWriter sw = new StreamWriter(_detectionFilepath, true, Encoding.UTF8))
                                                     {
                                                         sw.WriteLine(string.Format("Detected \"{0}\" Steam Id {1}, exceeded damage limit @ {2}. Damage: {3}", _cInfo.playerName, _cInfo.playerId, __instance.position, _dmResponse.Strength));
                                                         sw.WriteLine();
@@ -381,7 +382,7 @@ namespace ServerTools.AntiCheat
                         {
                             Phrases.Dict.TryGetValue(952, out string _phrase952);
                             SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1} {2}\"", _cInfo.playerId, _phrase952, _total.ToString()), null);
-                            using (StreamWriter sw = new StreamWriter(_detectionFilepath, true))
+                            using (StreamWriter sw = new StreamWriter(_detectionFilepath, true, Encoding.UTF8))
                             {
                                 sw.WriteLine(string.Format("Detected \"{0}\" Steam id {1} exceeding the damage limit @ position {2}. Damage: {3}", _cInfo.playerName, _persistentPlayerId, _player.position, _total));
                                 sw.WriteLine();

@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Suicide off\n" +
-                   "  2. Suicide on\n" +
+                   "  1. st-scide off\n" +
+                   "  2. st-scide on\n" +
                    "1. Turn off suicide\n" +
                    "2. Turn on suicide\n";
         }

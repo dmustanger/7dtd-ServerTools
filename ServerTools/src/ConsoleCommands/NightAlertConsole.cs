@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. NightAlert off\n" +
-                   "  2. NightAlert on\n" +
+                   "  1. st-na off\n" +
+                   "  2. st-na on\n" +
                    "1. Turn off night alert\n" +
                    "2. Turn on night alert\n";
         }

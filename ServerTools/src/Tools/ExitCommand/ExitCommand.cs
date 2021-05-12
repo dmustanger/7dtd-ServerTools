@@ -251,7 +251,7 @@ namespace ServerTools
             try
             {
                 Phrases.Dict.TryGetValue(672, out string _phrase672);
-                _phrase672 = _phrase672.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase672 = _phrase672.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                 _phrase672 = _phrase672.Replace("{Command131}", Command131);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase672 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }

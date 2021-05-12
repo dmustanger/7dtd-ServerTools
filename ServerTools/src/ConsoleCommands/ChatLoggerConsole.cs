@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. ChatLog off\n" +
-                   "  2. ChatLog on\n" +
+                   "  1. st-cl off\n" +
+                   "  2. st-cl on\n" +
                    "1. Turn off chat log\n" +
                    "2. Turn on chat log\n";
         }

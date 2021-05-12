@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. LoginNotice off\n" +
-                   "  2. LoginNotice on\n" +
+                   "  1. st-ln off\n" +
+                   "  2. st-ln on\n" +
                    "1. Turn off login notice\n" +
                    "2. Turn on login notice\n";
         }

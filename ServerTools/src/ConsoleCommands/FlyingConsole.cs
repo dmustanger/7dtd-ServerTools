@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Flying off\n" +
-                   "  2. Flying on\n" +
+                   "  1. st-fly off\n" +
+                   "  2. st-fly on\n" +
                    "1. Turn off flight detection\n" +
                    "2. Turn on flight detection\n";
         }

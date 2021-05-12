@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Xml;
 using UnityEngine;
@@ -11,10 +12,10 @@ namespace ServerTools
     class StartingItems
     {
         public static bool IsEnabled = false, IsRunning = false;
-        private const string File = "StartingItems.xml";
-        private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, File);
+        private const string file = "StartingItems.xml";
+        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         public static Dictionary<string, int[]> ItemList = new Dictionary<string, int[]>();
-        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, File);
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool UpdateConfig = false;
 
         public static void Load()
@@ -34,18 +35,18 @@ namespace ServerTools
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(FilePath))
+            if (!Utils.FileExists(filePath))
             {
                 UpdateXml();
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(FilePath);
+                xmlDoc.Load(filePath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", File, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
             XmlNode _XmlNode = xmlDoc.DocumentElement;
@@ -126,7 +127,7 @@ namespace ServerTools
         private static void UpdateXml()
         {
             FileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(FilePath))
+            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<StartingItems>");
@@ -164,7 +165,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!Utils.FileExists(filePath))
             {
                 UpdateXml();
             }

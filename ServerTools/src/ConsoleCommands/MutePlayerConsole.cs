@@ -13,10 +13,10 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. st-Mute add <steamId/entityId>\n" +
-                "  2. st-Mute add <steamId/entityId> <time>\n" +
-                "  3. st-Mute remove <steamId>\n" +
-                "  4. st-Mute list\n" +
+                "  1. st-mt add <steamId/entityId>\n" +
+                "  2. st-mt add <steamId/entityId> <time>\n" +
+                "  3. st-mt remove <steamId>\n" +
+                "  4. st-mt list\n" +
                 "1. Adds a steam Id to the mute list for 60 minutes\n" +
                 "2. Adds a steam Id to the mute list for a specific time\n" +
                 "3. Removes a steam Id from the mute list\n" +

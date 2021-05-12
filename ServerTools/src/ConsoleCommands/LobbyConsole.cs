@@ -14,9 +14,9 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. Lobby off" +
-                "  2. Lobby on" +
-                "  3. Lobby set" +
+                "  1. st-lob off" +
+                "  2. st-lob on" +
+                "  3. st-lob set" +
                 "1. Turn off lobby\n" +
                 "2. Turn on lobby\n" +
                 "3. Sets the lobby position to your current location\n";

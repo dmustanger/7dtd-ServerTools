@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Xml;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace ServerTools
     class VoteReward
     {
         public static bool IsEnabled = false, IsRunning = false, RandomListRunning = false, Reward_Entity = false;
-        public static int Reward_Count = 1, Delay_Between_Uses = 24, Entity_Id = 73, _counter = 0, Weekly_Votes = 5;
+        public static int Reward_Count = 1, Delay_Between_Uses = 24, Entity_Id = 73, Weekly_Votes = 5;
         public static string Command46 = "reward";
         public static string Your_Voting_Site = ("https://7daystodie-servers.com/server/12345"), API_Key = ("xxxxxxxx");
         private const string file = "VoteReward.xml";
@@ -160,7 +161,7 @@ namespace ServerTools
         private static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath))
+            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<VoteRewards>");
@@ -237,7 +238,7 @@ namespace ServerTools
                     Phrases.Dict.TryGetValue(301, out string _phrase301);
                     _phrase301 = _phrase301.Replace("{DelayBetweenRewards}", Delay_Between_Uses.ToString());
                     _phrase301 = _phrase301.Replace("{TimeRemaining}", _timeleft.ToString());
-                    _phrase301 = _phrase301.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase301 = _phrase301.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                     _phrase301 = _phrase301.Replace("{Command46}", Command46);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase301 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -281,7 +282,7 @@ namespace ServerTools
                     {
                         Phrases.Dict.TryGetValue(303, out string _phrase303);
                         _phrase303 = _phrase303.Replace("{PlayerName}", _cInfo.playerName);
-                        _phrase303 = _phrase303.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _phrase303 = _phrase303.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                         _phrase303 = _phrase303.Replace("{Command46}", Command46);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase303 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -368,14 +369,16 @@ namespace ServerTools
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase307 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 Phrases.Dict.TryGetValue(308, out string _phrase308);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase308 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(311, out string _phrase311);
+                _phrase311 = _phrase311.Replace("{PlayerName}", _cInfo.playerName);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase311 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
         }
 
         private static void ItemOrBlockRandom(ClientInfo _cInfo)
         {
             string _item = list.RandomObject();
-            int[] _values;
-            if (dict.TryGetValue(_item, out _values))
+            if (dict.TryGetValue(_item, out int[] _values))
             {
                 int _count = 1;
                 if (_values[0] != _values[1] && _values[1] > _values[0])

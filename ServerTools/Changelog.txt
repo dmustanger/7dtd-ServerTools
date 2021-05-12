@@ -1,5 +1,38 @@
 ﻿CHANGELOG
 
+19.4.4
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added console command st-d7. Shows current player, zombie, animal, 
+vehicle, supply crate counts, server fps and days until horde night
+Added UTF8 encoding to the xml files
+Added Reward_Count option to Bloodmoon_Warrior tool
+Added chat response upon receiving a vote reward
+Added automatic memory clear on shutdown process
+Added abilty to disable chat commands through EventTriggers.xml. Set the
+alternative for a command to *** to disable it
+Changed Chat_Command_Private to Chat_Command_Prefix1
+Changed Chat_Command_Public to Chat_Command_Prefix2
+Changed console command st-Bikelist to st-Vehiclelist
+Changed Reward_Count option located under Voting to Voting_Extended
+Changed phrase 311-314 to 1041-1044
+Changed phrase 311 for Vote_Reward tool and extended it for future phrases
+Fixed console command st-sc response showing in chat instead of console
+Fixed console command st-ps not working properly
+Fixed Country_Ban immunity not functioning properly
+Fixed Web_Panel failure to initialize
+Fixed Web_Panel error on server shutdown while running
+Fixed phrase response for Jail tool
+Updated Web_Panel security
+Updated Web_Panel configuration page
+Updated Web_Panel to include a console for inputting commands
+Updated IP list for Country_Ban tool
+Updated HowToSetup.txt
+Updated multiple help responses to console commands
+Updated Harmony version from 2.0.2 to 2.0.4
+Updated console command help responses
+
 19.4.3
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

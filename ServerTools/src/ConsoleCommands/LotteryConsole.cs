@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Lottery off\n" +
-                   "  2. Lottery on\n" +
+                   "  1. st-lott off\n" +
+                   "  2. st-lott on\n" +
                    "1. Turn off lottery\n" +
                    "2. Turn on lottery\n";
         }

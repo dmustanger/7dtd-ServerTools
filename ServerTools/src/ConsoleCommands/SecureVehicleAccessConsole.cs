@@ -13,7 +13,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. SecureVehicleAccess\n" +
+                   "  1. st-sva\n" +
                    "1. Attempts to set access to all secure vehicle\n";
         }
 

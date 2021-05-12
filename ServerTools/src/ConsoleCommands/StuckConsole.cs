@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. st-Stuck off\n" +
-                   "  2. st-Stuck on\n" +
+                   "  1. st-stk off\n" +
+                   "  2. st-stk on\n" +
                    "1. Turn off stuck\n" +
                    "2. Turn on stuck\n";
         }

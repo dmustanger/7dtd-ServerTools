@@ -12,9 +12,9 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Home off\n" +
-                   "  2. Home on\n" +
-                   "  3. Home reset <steamId/entityId>\n" +
+                   "  1. st-hom off\n" +
+                   "  2. st-hom on\n" +
+                   "  3. st-hom reset <steamId/entityId>\n" +
                    "1. Turn off set home\n" +
                    "2. Turn on set home\n" +
                    "3. Reset the delay of the player's /home1 and /home2 command delays\n";

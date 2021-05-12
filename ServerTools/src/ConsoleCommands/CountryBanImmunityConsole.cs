@@ -13,9 +13,9 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. cbi add <steamId/entityId/playerName>\n" +
-                   "  2. cbi remove <steamId/entityId/playerName>\n" +
-                   "  3. cbi list\n" +
+                   "  1. st-cbi add <steamId/entityId/playerName>\n" +
+                   "  2. st-cbi remove <steamId/entityId/playerName>\n" +
+                   "  3. st-cbi list\n" +
                    "1. Adds a steam ID to the Country Ban Immunity list\n" +
                    "2. Removes a steam ID from the Country Ban Immunity list\n" +
                    "3. Lists all steam IDs that have Country Ban Immunity" +

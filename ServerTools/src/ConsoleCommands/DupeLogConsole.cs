@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. DupeLog off\n" +
-                   "  2. DupeLog on\n" +
+                   "  1. st-dl off\n" +
+                   "  2. st-dl on\n" +
                    "1. Turn off the dupe log\n" +
                    "2. Turn on the dupe log\n";
         }

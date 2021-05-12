@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. InfoTicker off\n" +
-                   "  2. InfoTicker on\n" +
+                   "  1. st-it off\n" +
+                   "  2. st-it on\n" +
                    "1. Turn off info ticker\n" +
                    "2. Turn on info ticker\n";
         }

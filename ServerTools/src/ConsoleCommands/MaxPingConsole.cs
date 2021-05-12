@@ -11,7 +11,7 @@ namespace ServerTools
         }
         public override string GetHelp()
         {
-            return "Usage: maxping <ping>";
+            return "Usage: st-mp <ping>";
         }
         public override string[] GetCommands()
         {

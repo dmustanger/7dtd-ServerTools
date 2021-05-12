@@ -17,15 +17,15 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. event new <name>\n" +
-                "  2. event check\n" +
-                "  3. event extend <time>\n" +
-                "  4. event stop\n" +
-                "  5. event list\n" +
-                "  6. event save\n" +
-                "  7. event load <number>\n" +
-                "  8. event delete <number>\n" +
-                "  9. event remove <steamId>\n" +
+                "  1. st-ev new <name>\n" +
+                "  2. st-ev check\n" +
+                "  3. st-ev extend <time>\n" +
+                "  4. st-ev stop\n" +
+                "  5. st-ev list\n" +
+                "  6. st-ev save\n" +
+                "  7. st-ev load <number>\n" +
+                "  8. st-ev delete <number>\n" +
+                "  9. st-ev remove <steamId>\n" +
                 "1. Starts a new event setup with this event name.\n" +
                 "2. Shows the settings and player list of the running event.\n" +
                 "3. Extends the current event by the time given in minutes.\n" +
@@ -126,7 +126,7 @@ namespace ServerTools
                             Event.Time = _time;
                             string _msg1 = "Event: {EventName}[-]";
                             string _msg2 = _setup[1] + "[-]";
-                            string _msg3 = "Type " + ChatHook.Command_Private + Event.Command100 + " if you want to join the event. You will return to where you first signed up when it completes.[-]";
+                            string _msg3 = "Type " + ChatHook.Chat_Command_Prefix1 + Event.Command100 + " if you want to join the event. You will return to where you first signed up when it completes.[-]";
                             _msg1 = _msg1.Replace("{EventName}", _setup[0]);
                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + _msg1, -1, Config.Server_Response_Name, EChatType.Global, null);
                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + _msg2, -1, Config.Server_Response_Name, EChatType.Global, null);

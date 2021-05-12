@@ -13,8 +13,9 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. deleteplayerdata\n" +
-                   "1. Deletes all saved player data from ServerTools such as home positions and wallets\n";
+                   "  1. st-dpd\n" +
+                   "1. Deletes all saved player data from ServerTools such as home positions, waypoints and wallets\n" +
+                   "2. *Note* Be very careful running this command. It can not be reloaded without a backup\n";
         }
 
         public override string[] GetCommands()

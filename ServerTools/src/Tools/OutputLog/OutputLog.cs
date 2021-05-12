@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -34,13 +33,6 @@ namespace ServerTools
             try
             {
                 Logger.Main.LogCallbacks -= LogAction;
-                //string[] _files = Directory.GetFiles(API.ConfigPath + "/Logs/OutputLogs/", "OutputLog.txt", SearchOption.AllDirectories);
-                //if (_files != null && _files.Length == 1)
-                //{
-                //    string _fileName = _files[0];
-                //    FileInfo _fInfo = new FileInfo(_fileName);
-                //    _fInfo.MoveTo(string.Format("{0}OutputLog_{1}", API.ConfigPath + "/Logs/OutputLogs/", Date.ToString()));
-                //}
             }
             catch (Exception e)
             {
@@ -53,15 +45,6 @@ namespace ServerTools
             try
             {
                 ActiveLog.Add(msg);
-                //if (IsEnabled)
-                //{
-                //    using (StreamWriter sw = new StreamWriter(Path, true))
-                //    {
-                //        sw.WriteLine(string.Format("{0}", msg));
-                //        sw.Flush();
-                //        sw.Close();
-                //    }
-                //}
             }
             catch (Exception e)
             {

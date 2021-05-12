@@ -13,9 +13,9 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. pingimmunity add <steamId/entityId/playerName>\n" +
-                   "  2. pingimmunity remove <steamId/entityId/playerName>\n" +
-                   "  3. pingimmunity list\n" +
+                   "  1. st-pi add <steamId/entityId/playerName>\n" +
+                   "  2. st-pi remove <steamId/entityId/playerName>\n" +
+                   "  3. st-pi list\n" +
                    "1. Adds a steam ID to the Ping Immunity list\n" +
                    "2. Removes a steam ID from the Ping Immunity list\n" +
                    "3. Lists all steam IDs that have Ping Immunity" +

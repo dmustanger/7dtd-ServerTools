@@ -62,6 +62,10 @@ namespace ServerTools
         {
             try
             {
+                if (PersistentContainer.Instance.Players.Players.ContainsKey(_cInfo.playerId) && PersistentContainer.Instance.Players[_cInfo.playerId].CountryBanImmune)
+                {
+                    return false;
+                }
                 if (BannedCountries != null && BannedCountries.Count > 0 && _cInfo != null && !string.IsNullOrEmpty(_cInfo.ip))
                 {
                     long _ipInteger = ConvertIPToLong(_cInfo.ip);

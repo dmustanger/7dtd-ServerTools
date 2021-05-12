@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace ServerTools.AntiCheat
@@ -95,7 +96,7 @@ namespace ServerTools.AntiCheat
         private static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath))
+            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<DuplicateItems>");
@@ -292,7 +293,7 @@ namespace ServerTools.AntiCheat
                                                         EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                         if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                         {
-                                                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                             {
                                                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their bag inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
@@ -302,7 +303,7 @@ namespace ServerTools.AntiCheat
                                                         }
                                                         else
                                                         {
-                                                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                             {
                                                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their bag, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
@@ -323,7 +324,7 @@ namespace ServerTools.AntiCheat
                                                         EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                         if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                         {
-                                                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                             {
                                                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
@@ -333,7 +334,7 @@ namespace ServerTools.AntiCheat
                                                         }
                                                         else
                                                         {
-                                                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                             {
                                                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
@@ -359,7 +360,7 @@ namespace ServerTools.AntiCheat
                                                             EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                             if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -369,7 +370,7 @@ namespace ServerTools.AntiCheat
                                                             }
                                                             else
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -390,7 +391,7 @@ namespace ServerTools.AntiCheat
                                                             EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                             if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -400,7 +401,7 @@ namespace ServerTools.AntiCheat
                                                             }
                                                             else
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -529,7 +530,7 @@ namespace ServerTools.AntiCheat
                                                             EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                             if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -539,7 +540,7 @@ namespace ServerTools.AntiCheat
                                                             }
                                                             else
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -560,7 +561,7 @@ namespace ServerTools.AntiCheat
                                                             EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                             if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -570,7 +571,7 @@ namespace ServerTools.AntiCheat
                                                             }
                                                             else
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -596,7 +597,7 @@ namespace ServerTools.AntiCheat
                                                                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                                 if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                                 {
-                                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                                    using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                     {
                                                                         sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                         sw.WriteLine();
@@ -606,7 +607,7 @@ namespace ServerTools.AntiCheat
                                                                 }
                                                                 else
                                                                 {
-                                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                                    using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                     {
                                                                         sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                         sw.WriteLine();
@@ -627,7 +628,7 @@ namespace ServerTools.AntiCheat
                                                                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                                 if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                                 {
-                                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                                    using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                     {
                                                                         sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                         sw.WriteLine();
@@ -637,7 +638,7 @@ namespace ServerTools.AntiCheat
                                                                 }
                                                                 else
                                                                 {
-                                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                                    using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                     {
                                                                         sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                         sw.WriteLine();

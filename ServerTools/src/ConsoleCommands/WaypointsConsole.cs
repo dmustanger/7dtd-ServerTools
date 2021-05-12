@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Waypoints off\n" +
-                   "  2. Waypoints on\n" +
+                   "  1. st-wp off\n" +
+                   "  2. st-wp on\n" +
                    "1. Turn off waypoints\n" +
                    "2. Turn on waypoints\n";
         }

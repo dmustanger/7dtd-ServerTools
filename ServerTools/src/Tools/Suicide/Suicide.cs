@@ -6,7 +6,7 @@ namespace ServerTools
 {
     public class Suicide
     {
-        public static bool IsEnabled = false, PvP_Check = false, Zombie_Check = false;
+        public static bool IsEnabled = false, Player_Check = false, Zombie_Check = false;
         public static int Delay_Between_Uses = 60;
         public static string Command20 = "killme", Command21 = "wrist", Command22 = "hang", Command23 = "suicide";
 
@@ -52,7 +52,7 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(31, out string _phrase31);
                 _phrase31 = _phrase31.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase31 = _phrase31.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase31 = _phrase31.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase31 = _phrase31.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                 _phrase31 = _phrase31.Replace("{Command20}", Command20);
                 _phrase31 = _phrase31.Replace("{Command21}", Command21);
                 _phrase31 = _phrase31.Replace("{Command22}", Command22);
@@ -65,7 +65,7 @@ namespace ServerTools
         private static void Kill(ClientInfo _cInfo)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (PvP_Check)
+            if (Player_Check)
             {
                 List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
                 for (int i = 0; i < ClientInfoList.Count; i++)

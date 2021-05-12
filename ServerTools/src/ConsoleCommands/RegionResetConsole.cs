@@ -13,13 +13,13 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. st-RegionReset\n" +
-                "  2. st-RegionReset <x> <z>\n" +
-                "  3. st-RegionReset add\n" +
-                "  4. st-RegionReset add <x> <z>\n" +
-                "  5. st-RegionReset add <region>\n" +
-                "  6. st-RegionReset cancel\n" +
-                "  7. st-RegionReset list\n" +
+                "  1. st-rr\n" +
+                "  2. st-rr <x> <z>\n" +
+                "  3. st-rr add\n" +
+                "  4. st-rr add <x> <z>\n" +
+                "  5. st-rr add <region>\n" +
+                "  6. st-rr cancel\n" +
+                "  7. st-rr list\n" +
                 "1. Shows the region you are standing in and the claims within it\n" +
                 "2. Shows the region at the location specified and the claims within it\n" +
                 "3. Sets the region you are standing in for reset\n" +

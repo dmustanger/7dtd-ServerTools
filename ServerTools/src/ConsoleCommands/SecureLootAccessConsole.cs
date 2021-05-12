@@ -13,7 +13,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. SecureLootAccess\n" +
+                   "  1. st-sla\n" +
                    "1. Attempts to set access to all secure loot\n";
         }
 

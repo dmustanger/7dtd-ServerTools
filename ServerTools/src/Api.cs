@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using ServerTools.AntiCheat;
-using ServerTools.Website;
 
 namespace ServerTools
 {
@@ -54,7 +52,6 @@ namespace ServerTools
             {
                 StateManager.Save();
                 OutputLog.Shutdown();
-                WebPanel.Unload();
                 RegionReset.Exec();
                 Timers.TimerStop();
                 Timers.ShutdownFailsafe();
@@ -69,24 +66,34 @@ namespace ServerTools
         {
             try
             {
-                Log.Out("[SERVERTOOLS] Player connected");
-                if (StopServer.NoEntry)
+                if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId))
                 {
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Server is shutting down. Rejoin when it restarts\"", _cInfo.playerId), null);
-                }
-                if (NewPlayer.Block_During_Bloodmoon && PersistentOperations.BloodMoonSky())
-                {
-                    PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_cInfo.playerId);
-                    if (_pdf != null)
+                    if (!string.IsNullOrEmpty(_cInfo.ip))
                     {
-                        if (_pdf.totalTimePlayed < 5)
-                        {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.playerId), null);
-                        }
+                        Log.Out(string.Format("[SERVERTOOLS] Player {0} connected from IP: {1}", _cInfo.playerId, _cInfo.ip));
                     }
                     else
                     {
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.playerId), null);
+                        Log.Out(string.Format("[SERVERTOOLS] Player {0} connected", _cInfo.playerId));
+                    }
+                    if (StopServer.NoEntry)
+                    {
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Server is shutting down. Rejoin when it restarts\"", _cInfo.playerId), null);
+                    }
+                    if (NewPlayer.Block_During_Bloodmoon && PersistentOperations.BloodMoonSky())
+                    {
+                        PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_cInfo.playerId);
+                        if (_pdf != null)
+                        {
+                            if (_pdf.totalTimePlayed < 5)
+                            {
+                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.playerId), null);
+                            }
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.playerId), null);
+                        }
                     }
                 }
             }
@@ -272,9 +279,9 @@ namespace ServerTools
             {
                 if (_cInfo != null)
                 {
-                    Log.Out("[SERVERTOOLS] Player disconnected");
                     if (!string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId != -1)
                     {
+                        Log.Out(string.Format("[SERVERTOOLS] Player {0} disconnected", _cInfo.playerId));
                         if (ExitCommand.IsEnabled && ExitCommand.Players.ContainsKey(_cInfo.entityId) && !_bShutdown)
                         {
                             Timers.ExitWithoutCommand(_cInfo, _cInfo.ip);
@@ -359,7 +366,19 @@ namespace ServerTools
                         {
                             Teleportation.Teleporting.Remove(_cInfo.entityId);
                         }
+                        if (WindowedResponse.Responses.ContainsKey(_cInfo.playerId))
+                        {
+                            WindowedResponse.Responses.Remove(_cInfo.playerId);
+                        }
                     }
+                    else
+                    {
+                        Log.Out("[SERVERTOOLS] Player disconnected");
+                    }
+                }
+                else
+                {
+                    Log.Out("[SERVERTOOLS] Amorphous blob with no client information disconnected");
                 }
             }
             catch (Exception e)
@@ -592,14 +611,14 @@ namespace ServerTools
             if (Zones.IsEnabled && Zones.Victim.ContainsKey(_cInfo.entityId))
             {
                 string _response = "Type {CommandPrivate}{Command50} to teleport back to your death position. There is a time limit.";
-                _response = _response.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _response = _response.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                 _response = _response.Replace("{Command50}", Zones.Command50);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _response + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 PersistentContainer.Instance.Players[_cInfo.playerId].ZoneDeathTime = DateTime.Now;
                 if (Zones.Forgive.ContainsKey(_cInfo.entityId))
                 {
                     string _response2 = "Type {CommandPrivate}{Command55} to release your killer from jail.";
-                    _response2 = _response2.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _response2 = _response2.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                     _response2 = _response2.Replace("{Command55}", Jail.Command55);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _response2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }

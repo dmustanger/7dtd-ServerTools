@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. PrivateMessage off\n" +
-                   "  2. PrivateMessage on\n" +
+                   "  1. st-pm off\n" +
+                   "  2. st-pm on\n" +
                    "1. Turn off private message\n" +
                    "2. Turn on private message\n";
         }

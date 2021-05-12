@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Report off\n" +
-                   "  2. Report on\n" +
+                   "  1. st-rpt off\n" +
+                   "  2. st-rpt on\n" +
                    "1. Turn off report\n" +
                    "2. Turn on report\n";
         }

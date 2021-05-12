@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ServerTools.Website;
+using System.Collections.Generic;
 
 namespace ServerTools
 {
@@ -58,6 +59,63 @@ namespace ServerTools
                     }
                 }
             }
+            if (WindowedResponse.IsEnabled && WebPanel.IsRunning && ConnectionManager.Instance.Clients.Contains(_cInfo))
+            {
+                string _response = "";
+                Phrases.Dict.TryGetValue(481, out string _phrase481);
+                _phrase481 = _phrase481.Replace("{Value}", _fps);
+                _response = _response + _phrase481 + "\n";
+                if (_daysRemaining == 0 && !SkyManager.BloodMoon())
+                {
+                    Phrases.Dict.TryGetValue(487, out string _phrase487);
+                    _response = _response + _phrase487 + "\n";
+                }
+                else if (SkyManager.BloodMoon())
+                {
+                    Phrases.Dict.TryGetValue(486, out string _phrase486);
+                    _response = _response + _phrase486 + "\n";
+                }
+                else
+                {
+                    Phrases.Dict.TryGetValue(482, out string _phrase482);
+                    _phrase482 = _phrase482.Replace("{Value}", _daysRemaining.ToString());
+                    _response = _response + _phrase482 + "\n";
+                }
+                Phrases.Dict.TryGetValue(483, out string _phrase483);
+                _phrase483 = _phrase483.Replace("{Players}", _playerCount.ToString());
+                _phrase483 = _phrase483.Replace("{Zombies}", _zombies.ToString());
+                _phrase483 = _phrase483.Replace("{Animals}", _animals.ToString());
+                Phrases.Dict.TryGetValue(484, out string _phrase484);
+                _phrase484 = _phrase484.Replace("{Bicycles}", _bicycles.ToString());
+                _phrase484 = _phrase484.Replace("{Minibikes}", _miniBikes.ToString());
+                _phrase484 = _phrase484.Replace("{Motorcycles}", _motorcycles.ToString());
+                _phrase484 = _phrase484.Replace("{4x4}", _4x4.ToString());
+                _phrase484 = _phrase484.Replace("{Gyros}", _gyros.ToString());
+                Phrases.Dict.TryGetValue(485, out string _phrase485);
+                _phrase485 = _phrase485.Replace("{Value}", _supplyCrates.ToString());
+                _response = _response + _phrase483 + "\n" + _phrase484 + "\n" + _phrase485;
+                if (WindowedResponse.HasResponse(_cInfo, _response))
+                {
+                    WindowedResponse.Exec(_cInfo, _response);
+                }
+                else if (!WindowedResponse.IsFull(_cInfo))
+                {
+                    WindowedResponse.Exec(_cInfo, _response);
+                }
+                else
+                {
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "You have run out of new window responses. Rejoin the server to reset them." + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Response(_cInfo, _fps, _daysRemaining, _playerCount, _zombies, _animals, _bicycles, _miniBikes, _motorcycles, _4x4, _gyros, _supplyCrates);
+                }
+            }
+            else
+            {
+                Response(_cInfo, _fps, _daysRemaining, _playerCount, _zombies, _animals, _bicycles, _miniBikes, _motorcycles, _4x4, _gyros, _supplyCrates);
+            }
+        }
+
+        public static void Response(ClientInfo _cInfo, string _fps, int _daysRemaining, int _playerCount, int _zombies, int _animals, int _bicycles, int _miniBikes, int _motorcycles, int _4x4, int _gyros, int _supplyCrates)
+        {
             Phrases.Dict.TryGetValue(481, out string _phrase481);
             _phrase481 = _phrase481.Replace("{Value}", _fps);
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase481 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Prayer off\n" +
-                   "  2. Prayer on\n" +
+                   "  1. st-pray off\n" +
+                   "  2. st-pray on\n" +
                    "1. Turn off prayer\n" +
                    "2. Turn on prayer\n";
         }

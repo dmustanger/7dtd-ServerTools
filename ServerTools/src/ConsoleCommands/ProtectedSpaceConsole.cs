@@ -29,7 +29,8 @@ namespace ServerTools
                    "6. Remove the entire protected space you are standing in, if one exists\n" +
                    "7. Remove a specific protected space from the list. The number is shown in the list\n" +
                    "8. Shows the protected spaces list\n" +
-                   "*Make sure the corners used are opposite each other. Example NW with SE or SW with NE*\n";
+                   "*Make sure the corners used are opposite each other. Example NW with SE or SW with NE*\n" +
+                   "*You can only add and remove protect areas that are loaded. Over 200 blocks is too far away from you*\n";
         }
     
         public override string[] GetCommands()
@@ -96,57 +97,42 @@ namespace ServerTools
                             int _x = (int)_player.position.x, _z = (int)_player.position.z;
                             if (!ProtectedSpaces.Vectors.ContainsKey(_player.entityId))
                             {
-                                int[] _vector1 = { _x, _z };
-                                ProtectedSpaces.Vectors.Add(_player.entityId, _vector1);
+                                int[] _vectors = new int[4];
+                                _vectors[0] = _x;
+                                _vectors[1] = _z;
+                                ProtectedSpaces.Vectors.Add(_player.entityId, _vectors);
                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The first position has been set to {0}x,{1}z", _x, _z));
                                 SdtdConsole.Instance.Output("[SERVERTOOLS] Stand in the opposite corner and use add again. Use cancel to clear the saved location and start again");
                                 return;
                             }
                             else
                             {
-                                ProtectedSpaces.Vectors.TryGetValue(_player.entityId, out int[] _vector1);
+                                ProtectedSpaces.Vectors.TryGetValue(_player.entityId, out int[] _vectors);
                                 ProtectedSpaces.Vectors.Remove(_player.entityId);
-                                int[] _vectors = new int[3];
-                                if (_vector1[0] > _x)
+                                if (_vectors[0] < _x)
                                 {
+                                    _vectors[2] = _x;
+                                }
+                                else
+                                {
+                                    _vectors[2] = _vectors[0];
                                     _vectors[0] = _x;
-                                    _vectors[1] = _vector1[0];
                                 }
-                                else
+                                if (_vectors[1] < _z)
                                 {
-                                    _vectors[0] = _vector1[0];
-                                    _vectors[1] = _x;
-                                }
-                                if (_vector1[2] > _z)
-                                {
-                                    _vectors[2] = _z;
-                                    _vectors[3] = _vector1[2];
-                                }
-                                else
-                                {
-                                    _vectors[2] = _vector1[2];
                                     _vectors[3] = _z;
                                 }
+                                else
+                                {
+                                    _vectors[3] = _vectors[1];
+                                    _vectors[1] = _z;
+                                }
+
                                 if (!ProtectedSpaces.Protected.Contains(_vectors))
                                 {
                                     ProtectedSpaces.Protected.Add(_vectors);
-                                    if (PersistentContainer.Instance.ProtectedSpace != null && PersistentContainer.Instance.ProtectedSpace.Count > 0)
-                                    {
-                                        if (!PersistentContainer.Instance.ProtectedSpace.Contains(_vectors))
-                                        {
-                                            PersistentContainer.Instance.ProtectedSpace.Add(_vectors);
-                                            ProtectedSpaces.AddProtection(_vectors);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        List<int[]> _protect = new List<int[]>();
-                                        _protect.Add(_vectors);
-                                        PersistentContainer.Instance.ProtectedSpace = _protect;
-                                        ProtectedSpaces.AddProtection(_vectors);
-                                    }
                                     ProtectedSpaces.UpdateXml();
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added protected space from {0},{1} to {2},{3}", _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added protected space from {0}x,{1}z to {2}x,{3}z", _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
                                     return;
                                 }
                                 else
@@ -179,45 +165,30 @@ namespace ServerTools
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer: {0}", _params[4]));
                             return;
                         }
-                        int[] _vectors = new int[3];
-                        if (_xMin > _xMax)
-                        {
-                            _vectors[0] = _xMax;
-                            _vectors[1] = _xMin;
-                        }
-                        else
+                        int[] _vectors = new int[4];
+                        if (_xMin < _xMax)
                         {
                             _vectors[0] = _xMin;
-                            _vectors[1] = _xMax;
-                        }
-                        if (_zMin > _zMax)
-                        {
-                            _vectors[2] = _zMax;
-                            _vectors[3] = _zMin;
+                            _vectors[2] = _xMax;
                         }
                         else
                         {
-                            _vectors[2] = _zMin;
+                            _vectors[0] = _xMax;
+                            _vectors[2] = _xMin;
+                        }
+                        if (_zMin < _zMax)
+                        {
+                            _vectors[1] = _zMin;
                             _vectors[3] = _zMax;
+                        }
+                        else
+                        {
+                            _vectors[1] = _zMax;
+                            _vectors[3] = _zMin;
                         }
                         if (!ProtectedSpaces.Protected.Contains(_vectors))
                         {
                             ProtectedSpaces.Protected.Add(_vectors);
-                            if (PersistentContainer.Instance.ProtectedSpace != null && PersistentContainer.Instance.ProtectedSpace.Count > 0)
-                            {
-                                if (!PersistentContainer.Instance.ProtectedSpace.Contains(_vectors))
-                                {
-                                    PersistentContainer.Instance.ProtectedSpace.Add(_vectors);
-                                    ProtectedSpaces.AddProtection(_vectors);
-                                }
-                            }
-                            else
-                            {
-                                List<int[]> _protect = new List<int[]>();
-                                _protect.Add(_vectors);
-                                PersistentContainer.Instance.ProtectedSpace = _protect;
-                                ProtectedSpaces.AddProtection(_vectors);
-                            }
                             ProtectedSpaces.UpdateXml();
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added protected space from {0},{1} to {2},{3}", _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
                             return;
@@ -233,7 +204,7 @@ namespace ServerTools
                 {
                     if (_senderInfo.RemoteClientInfo == null)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Not a client"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You are not in game. There is nothing to cancel"));
                         return;
                     }
                     if (ProtectedSpaces.Vectors.ContainsKey(_senderInfo.RemoteClientInfo.entityId))
@@ -256,17 +227,16 @@ namespace ServerTools
                         {
                             if (int.TryParse(_params[1], out int _listNum))
                             {
+                                if (_listNum == 0)
+                                {
+                                    _listNum = 1;
+                                }
                                 if (ProtectedSpaces.Protected.Count >= _listNum)
                                 {
                                     int[] _vectors = ProtectedSpaces.Protected[_listNum - 1];
                                     ProtectedSpaces.Protected.Remove(_vectors);
-                                    if (PersistentContainer.Instance.ProtectedSpace.Contains(_vectors))
-                                    {
-                                        PersistentContainer.Instance.ProtectedSpace.Remove(_vectors);
-                                        ProtectedSpaces.RemoveProtection(_vectors);
-                                    }
                                     ProtectedSpaces.UpdateXml();
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed protected space {0}: {1},{2} to {3},{4}", _listNum, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed protected space {0}: {1}x,{2}z to {3}x,{4}z", _listNum, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
                                     return;
                                 }
                                 else
@@ -301,7 +271,7 @@ namespace ServerTools
                         for (int i = 0; i < ProtectedSpaces.Protected.Count; i++)
                         {
                             int[] _vectors = ProtectedSpaces.Protected[i];
-                            SdtdConsole.Instance.Output(string.Format("#{0}: {1},{2} to {3},{4}", i + 1, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                            SdtdConsole.Instance.Output(string.Format("#{0}: {1}x,{2}z to {3}x,{4}z", i + 1, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
                         }
                         return;
                     }

@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Motd off\n" +
-                   "  2. Motd on\n" +
+                   "  1. st-md off\n" +
+                   "  2. st-md on\n" +
                    "1. Turn off the motd\n" +
                    "2. Turn on the motd\n";
         }

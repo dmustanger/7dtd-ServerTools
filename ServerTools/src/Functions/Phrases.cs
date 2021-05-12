@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace ServerTools
@@ -85,7 +86,7 @@ namespace ServerTools
         public static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath))
+            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ServerTools>");
@@ -1569,27 +1570,24 @@ namespace ServerTools
                     _phrase310 = "No spawn point was found near you. Please move locations and try again.";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"310\" Phrase=\"{0}\" />", _phrase310));
-                sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- ************************ Travel ************************ -->");
-                sw.WriteLine("        <!-- ******************************************************** -->");
                 if (!Dict.TryGetValue(311, out string _phrase311))
                 {
-                    _phrase311 = "You have traveled to {Destination}.";
+                    _phrase311 = "{PlayerName} received an amazing reward because they are also amazing and voted for the server. Yippy!";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"311\" Phrase=\"{0}\" />", _phrase311));
                 if (!Dict.TryGetValue(312, out string _phrase312))
                 {
-                    _phrase312 = "You are not in a travel location.";
+                    _phrase312 = "";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"312\" Phrase=\"{0}\" />", _phrase312));
                 if (!Dict.TryGetValue(313, out string _phrase313))
                 {
-                    _phrase313 = "You can only use {CommandPrivate}{Command49} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase313 = "";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"313\" Phrase=\"{0}\" />", _phrase313));
                 if (!Dict.TryGetValue(314, out string _phrase314))
                 {
-                    _phrase314 = "You do not have enough {CoinName} in your wallet to run this command.";
+                    _phrase314 = "";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"314\" Phrase=\"{0}\" />", _phrase314));
                 if (!Dict.TryGetValue(315, out string _phrase315))
@@ -2466,27 +2464,27 @@ namespace ServerTools
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 if (!Dict.TryGetValue(481, out string _phrase481))
                 {
-                    _phrase481 = "Server FPS:{Value}.";
+                    _phrase481 = "Server FPS:{Value}";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"481\" Phrase=\"{0}\" />", _phrase481));
                 if (!Dict.TryGetValue(482, out string _phrase482))
                 {
-                    _phrase482 = "Next horde night: {Value} days.";
+                    _phrase482 = "Next horde night: {Value} days";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"482\" Phrase=\"{0}\" />", _phrase482));
                 if (!Dict.TryGetValue(483, out string _phrase483))
                 {
-                    _phrase483 = "Total Players:{Players} Total Zombies:{Zombies} Total Animals:{Animals}.";
+                    _phrase483 = "Total Players:{Players} Total Zombies:{Zombies} Total Animals:{Animals}";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"483\" Phrase=\"{0}\" />", _phrase483));
                 if (!Dict.TryGetValue(484, out string _phrase484))
                 {
-                    _phrase484 = "Bicycles:{Bicycles} Minibikes:{Minibikes} Motorcycles:{Motorcycles} 4x4:{4x4} Gyros:{Gyros}.";
+                    _phrase484 = "Bicycles:{Bicycles} Minibikes:{Minibikes} Motorcycles:{Motorcycles} 4x4:{4x4} Gyros:{Gyros}";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"484\" Phrase=\"{0}\" />", _phrase484));
                 if (!Dict.TryGetValue(485, out string _phrase485))
                 {
-                    _phrase485 = "Supply Crates:{Value}.";
+                    _phrase485 = "Supply Crates:{Value}";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"485\" Phrase=\"{0}\" />", _phrase485));
                 if (!Dict.TryGetValue(486, out string _phrase486))
@@ -5387,6 +5385,62 @@ namespace ServerTools
                     _phrase1040 = "";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"1040\" Phrase=\"{0}\" />", _phrase1040));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ************************* Travel *********************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                if (!Dict.TryGetValue(1041, out string _phrase1041))
+                {
+                    _phrase1041 = "You have traveled to {Destination}.";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1041\" Phrase=\"{0}\" />", _phrase1041));
+                if (!Dict.TryGetValue(1042, out string _phrase1042))
+                {
+                    _phrase1042 = "You are not in a travel location.";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1042\" Phrase=\"{0}\" />", _phrase1042));
+                if (!Dict.TryGetValue(1043, out string _phrase1043))
+                {
+                    _phrase1043 = "You can only use {CommandPrivate}{Command49} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1043\" Phrase=\"{0}\" />", _phrase1043));
+                if (!Dict.TryGetValue(1044, out string _phrase1044))
+                {
+                    _phrase1044 = "You do not have enough {CoinName} in your wallet to run this command.";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1044\" Phrase=\"{0}\" />", _phrase1044));
+                if (!Dict.TryGetValue(1045, out string _phrase1045))
+                {
+                    _phrase1045 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1045\" Phrase=\"{0}\" />", _phrase1045));
+                if (!Dict.TryGetValue(1046, out string _phrase1046))
+                {
+                    _phrase1046 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1046\" Phrase=\"{0}\" />", _phrase1046));
+                if (!Dict.TryGetValue(1047, out string _phrase1047))
+                {
+                    _phrase1047 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1047\" Phrase=\"{0}\" />", _phrase1047));
+                if (!Dict.TryGetValue(1048, out string _phrase1048))
+                {
+                    _phrase1048 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1048\" Phrase=\"{0}\" />", _phrase1048));
+
+
+                if (!Dict.TryGetValue(1049, out string _phrase1049))
+                {
+                    _phrase1049 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1049\" Phrase=\"{0}\" />", _phrase1049));
+                if (!Dict.TryGetValue(1050, out string _phrase1050))
+                {
+                    _phrase1050 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1050\" Phrase=\"{0}\" />", _phrase1050));
+
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

@@ -223,18 +223,24 @@ namespace ServerTools
             {
                 Jail.JailList();
             }
-            //always load the website last
-            if (WebPanel.IsEnabled && !WebPanel.DirFound)
+            if (WebPanel.IsEnabled)
             {
-                WebPanel.CheckDir();
+                if (!WebPanel.DirFound)
+                {
+                    WebPanel.SetDirectory();
+                }
+                if (string.IsNullOrEmpty(WebPanel.ExternalIp))
+                {
+                    WebPanel.SetExternalIP();
+                }
+                if (!WebPanel.IsRunning && WebPanel.DirFound && !string.IsNullOrEmpty(WebPanel.ExternalIp))
+                {
+                    WebPanel.Load();
+                }
             }
-            if (WebPanel.IsRunning && !WebPanel.IsEnabled)
+            else if (WebPanel.IsRunning)
             {
                 WebPanel.Unload();
-            }
-            else if (!WebPanel.IsRunning && WebPanel.IsEnabled && WebPanel.DirFound)
-            {
-                WebPanel.Load();
             }
         }
     }

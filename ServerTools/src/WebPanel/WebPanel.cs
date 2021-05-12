@@ -20,15 +20,14 @@ namespace ServerTools.Website
 
         //4xx: Client Error - The request contains bad syntax or cannot be fulfilled
 
-        //5xx: Server Error - The server failed to fulfill an apparently valid request[1]:
+        //5xx: Server Error - The server failed to fulfill an apparently valid request:
 
 
         public static bool IsEnabled = false, IsRunning = false, DirFound = false;
-        public static string SITE_DIR = "";
-        public static string Password = "";
+        public static string SITE_DIR = "", ExternalIp = "", PostClient = "";
         public static int Port = 8084;
-        private static string _File = string.Format("WebPanelLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string FilePath = string.Format("{0}/Logs/WebPanelLogs/{1}", API.ConfigPath, _File);
+        private static string file = string.Format("WebPanelLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static string filePath = string.Format("{0}/Logs/WebPanelLogs/{1}", API.ConfigPath, file);
         private static HttpListener Listener = new HttpListener();
         private static readonly Version HttpVersion = new Version(1, 1);
         private static System.Random Rnd = new System.Random();
@@ -40,9 +39,9 @@ namespace ServerTools.Website
         public static Dictionary<string, int> PageHits = new Dictionary<string, int>();
         public static Dictionary<string, int> LoginAttempts = new Dictionary<string, int>();
         public static Dictionary<string, DateTime> TimeOut = new Dictionary<string, DateTime>();
-        public static List<string> Clients = new List<string>();
         public static List<string> BannedIP = new List<string>();
-        public static List<string> FollowUp = new List<string>();
+        public static List<string> GETPassThrough = new List<string>();
+        public static List<string> POSTFollowUp = new List<string>();
 
         public static void Load()
         {
@@ -54,7 +53,15 @@ namespace ServerTools.Website
         public static void Unload()
         {
             IsRunning = false;
-            Thread.Abort();
+            if (Listener.IsListening)
+            {
+                Listener.Stop();
+                Listener.Close();
+            }
+            if (Thread.IsAlive)
+            {
+                Thread.Abort();
+            }
         }
 
         private static void Start()
@@ -64,51 +71,55 @@ namespace ServerTools.Website
             Thread.Start();
         }
 
-        public static void CheckDir()
+        public static void SetDirectory()
         {
             try
             {
-                if (Directory.Exists(API.GamePath + "/Mods/"))
-                {
-                    string[] _directories = Directory.GetDirectories(API.GamePath + "/Mods/");
-                    if (_directories != null && _directories.Length > 0)
-                    {
-                        for (int i = 0; i < _directories.Length; i++)
-                        {
-                            string _directory = _directories[i];
-                            if (_directory.Contains("ServerTools"))
-                            {
-                                if (Directory.Exists(_directory + "/WebPanel/"))
-                                {
-                                    SITE_DIR = _directory + "/WebPanel/";
-                                    DirFound = true;
-                                }
-                            }
-                        }
-                    }
-                }
                 if (!DirFound)
                 {
-                    Unload();
+                    if (Directory.Exists(API.GamePath + "/Mods/ServerTools/WebPanel/"))
+                    {
+                        SITE_DIR = API.GamePath + "/Mods/ServerTools/WebPanel/";
+                        DirFound = true;
+                        return;
+                    }
                     Log.Out("[SERVERTOOLS] Unable to verify ServerTools directory. Web panel failed to start");
                 }
             }
             catch (Exception e)
             {
-                Unload();
-                Log.Out(string.Format("[SERVERTOOLS] Error in WebPanel.CheckDir: {0}" + e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in WebPanel.Directory: {0}" + e.Message));
             }
         }
+
+        public static void SetExternalIP()
+        {
+            try
+            {
+                ExternalIp = new WebClient().DownloadString("https://ipinfo.io/ip/");
+                if (string.IsNullOrEmpty(ExternalIp))
+                {
+                    ExternalIp = new WebClient().DownloadString("https://api.ipify.org/");
+                    if (string.IsNullOrEmpty(ExternalIp))
+                    {
+                        Log.Out("[SERVERTOOLS] Host IP could not be verified. Web panel has been disabled");
+                        return;
+                    }
+                }
+                ExternalIp = ExternalIp.RemoveLineBreaks();
+                ExternalIp = ExternalIp.Trim();
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in WebPanel.SetExternalIP: {0}" + e.Message));
+            }
+        }
+
 
         private static void BuildLists()
         {
             try
             {
-                List<string> _clientList = PersistentContainer.Instance.WebPanelClientList;
-                if (_clientList != null && _clientList.Count > 0)
-                {
-                    Clients = _clientList;
-                }
                 List<string> _banList = PersistentContainer.Instance.WebPanelBanList;
                 if (_banList != null && _banList.Count > 0)
                 {
@@ -158,72 +169,44 @@ namespace ServerTools.Website
 
         public static string SetPassword()
         {
-            string _characters = "jJk9Kl3wWxXAbyYz0ZLmMn5NoO6dDe1EfFpPqQrRsStaBc2CgGhH7iITu4U8vV";
             string _newPassword = "";
-            System.Random _rnd = new System.Random();
-            for (int i = 0; i < 8; i++)
+            try
             {
-                _newPassword += _characters.ElementAt(_rnd.Next(0, 62));
+                string _characters = "jJk9Kl3wWxXAbyYz0ZLmMn5NoO6dDe1EfFpPqQrRsStaBc2CgGhH7iITu4U8vV";
+                System.Random _rnd = new System.Random();
+                for (int i = 0; i < 8; i++)
+                {
+                    _newPassword += _characters.ElementAt(_rnd.Next(0, 62));
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in WebPanel.SetPassword: {0}" + e.Message));
             }
             return _newPassword;
-        }
-
-        public static string SetUID()
-        {
-            string _characters = "4829017536";
-            string _newUID = "";
-            System.Random _rnd = new System.Random();
-            for (int i = 0; i < 8; i++)
-            {
-                _newUID += _characters.ElementAt(_rnd.Next(0, 10));
-            }
-            return _newUID;
         }
 
         public static void Exec()
         {
             try
             {
-                int _controlPanelPort = GamePrefs.GetInt(EnumUtils.Parse<EnumGamePrefs>("ControlPanelPort", false));
-                int _telnetPanelPort = GamePrefs.GetInt(EnumUtils.Parse<EnumGamePrefs>("TelnetPanelPort", false));
+                int _controlPanelPort = GamePrefs.GetInt(EnumGamePrefs.ControlPanelPort);
+                int _telnetPanelPort = GamePrefs.GetInt(EnumGamePrefs.TelnetPort);
                 if (Port == _controlPanelPort || Port == _telnetPanelPort)
                 {
-                    if (_controlPanelPort + 4 != _telnetPanelPort)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Web_Panel port was set identically to control panel or telnet port. It has been adjusted automatically to {0}", _controlPanelPort + 4));
-                        Port = _controlPanelPort + 4;
-                    }
-                    else if (_controlPanelPort + 5 != _telnetPanelPort)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Web_Panel port was set identically to control panel or telnet port. It has been adjusted automatically to {0}", _controlPanelPort + 5));
-                        Port = _controlPanelPort + 5;
-                    }
-                    else
-                    {
-                        Log.Out("[SERVERTOOLS] Web_Panel port was set identically to control panel or telnet port. Unable to verify an available port. Web panel was unable to start");
-                        return;
-                    }
+                    Log.Out("[SERVERTOOLS] Web_Panel port was set identically to the server control panel or telnet port. You must use a unique and unused port that is open to transmission. Panel has been disabled");
+                    return;
                 }
-                if (Port > 0 && Port < 65536)
+                if (Port > 1000 && Port < 65536)
                 {
                     if (HttpListener.IsSupported)
                     {
-                        string _externalIp = new WebClient().DownloadString("https://ipinfo.io/ip/");
-                        if (string.IsNullOrEmpty(_externalIp))
-                        {
-                            _externalIp = new WebClient().DownloadString("https://api.ipify.org/");
-                            if (string.IsNullOrEmpty(_externalIp))
-                            {
-                                Log.Out("[SERVERTOOLS] This host can not support ServerTools web panel. It has been disabled");
-                                return;
-                            }
-                        }
                         Listener.Prefixes.Add(string.Format("http://*:{0}/", Port));
                         Listener.Prefixes.Add(string.Format("http://*:{0}/st.html/", Port));
                         Listener.Start();
-                        string _localPage = "http://localhost:" + Port.ToString() + "/st.html";
+                        string _page = "http://" + ExternalIp + ":" + Port.ToString() + "/st.html";
                         Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel has opened on port {0}", Port.ToString()));
-                        Log.Out(string.Format("[SERVERTOOLS] Use {0} or if accessing it remotely, replace localhost with your server IP of {1}", _localPage, _externalIp));
+                        Log.Out(string.Format("[SERVERTOOLS] Use {0} or if accessing it locally you can use localhost instead of your server IP", _page));
                         while (Listener.IsListening)
                         {
                             HttpListenerContext _context = Listener.GetContext();
@@ -231,130 +214,163 @@ namespace ServerTools.Website
                             {
                                 HttpListenerRequest _request = _context.Request;
                                 HttpListenerResponse _response = _context.Response;
-                                string _clientIp = _request.RemoteEndPoint.Address.ToString();
-                                Writer(string.Format("Web Panel request from IP: {0}", _clientIp));
-                                if (_request.Url.AbsoluteUri.Length < 101 && GameManager.Instance.World != null)
+                                string _ip = _request.RemoteEndPoint.Address.ToString();
+                                string _uri = _request.Url.AbsoluteUri;
+                                if (_uri.Length > 111)
                                 {
-                                    if (_request.Url.AbsoluteUri.Contains("<script>"))
+                                    Writer(string.Format("URI request was too long. Request denied for IP: {0}", _ip));
+                                    _response.StatusCode = 414;
+                                }
+                                else if (GameManager.Instance.World != null)
+                                {
+                                    if (_uri.Contains("<script>"))
                                     {
-                                        if (!BannedIP.Contains(_clientIp))
+                                        if (!BannedIP.Contains(_ip))
                                         {
                                             if (!_request.IsLocal)
                                             {
-                                                BannedIP.Add(_clientIp);
-                                                Writer(string.Format("Banned IP: {0} for attempting to run a script at address {1}", _clientIp, _request.Url.AbsoluteUri));
+                                                BannedIP.Add(_ip);
+                                                Writer(string.Format("Banned IP: {0} for attempting to run a script at address {1}", _ip, _uri));
+                                                _response.StatusCode = 403;
                                             }
                                             else
                                             {
-                                                Writer(string.Format("Detected local IP: {0}. Attempting to run a script at address {1}", _clientIp, _request.Url.AbsoluteUri));
+                                                Writer(string.Format("Detected local IP: {0}. Attempting to run a script at address {1}", _ip, _uri));
+                                                _response.StatusCode = 403;
                                             }
                                         }
                                         else
                                         {
-                                            Writer(string.Format("Detected banned IP: {0}. Attempting to run a script at address {1}", _clientIp, _request.Url.AbsoluteUri));
+                                            Writer(string.Format("Detected banned IP: {0}. Attempting to run a script at address {1}", _ip, _uri));
+                                            _response.StatusCode = 403;
                                         }
                                         return;
                                     }
-                                    if (!BannedIP.Contains(_clientIp))
+                                    if (!BannedIP.Contains(_ip))
                                     {
-                                        if (!TimeOut.ContainsKey(_clientIp))
+                                        if (!TimeOut.ContainsKey(_ip))
                                         {
-                                            IsAllowed(_request, _response, _clientIp);
+                                            IsAllowed(_request, _response, _ip, _uri);
                                         }
                                         else
                                         {
-                                            TimeOut.TryGetValue(_clientIp, out DateTime _timeout);
+                                            TimeOut.TryGetValue(_ip, out DateTime _timeout);
                                             TimeSpan varTime = DateTime.Now - _timeout;
                                             double fractionalMinutes = varTime.TotalMinutes;
                                             int _timepassed = (int)fractionalMinutes;
                                             if (_timepassed >= 10)
                                             {
-                                                TimeOut.Remove(_clientIp);
-                                                PersistentContainer.Instance.WebPanelTimeoutList = TimeOut;
-                                                IsAllowed(_request, _response, _clientIp);
+                                                TimeOut.Remove(_ip);
+                                                PersistentContainer.Instance.WebPanelTimeoutList.Remove(_ip);
+                                                IsAllowed(_request, _response, _ip, _uri);
                                             }
                                             else
                                             {
-                                                Writer(string.Format("Request denied for IP: {0} on timeout until: {1}", _clientIp, _timeout));
+                                                Writer(string.Format("Request denied for IP: {0} on timeout until: {1}", _ip, _timeout));
+                                                _response.StatusCode = 403;
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        Writer(string.Format("Request denied for banned IP: {0}", _clientIp));
+                                        Writer(string.Format("Request denied for banned IP: {0}", _ip));
+                                        _response.StatusCode = 403;
                                     }
+                                }
+                                else
+                                {
+                                    Writer(string.Format("World data has not loaded. Request denied for IP: {0}", _ip));
+                                    _response.StatusCode = 409;
                                 }
                                 _response.Close();
                                 _context.Response.Close();
                             }
                         }
-                        Listener.Stop();
-                        Listener.Close();
                     }
                     else
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] This host can not support ServerTools web panel. It has been disabled"));
+                        Log.Out(string.Format("[SERVERTOOLS] This host can not support the web panel. Panel has been disabled"));
                     }
                 }
                 else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Control panel port is set too high. It must be between 1-65531 for ServerTools web panel to function. Web panel has been disabled"));
+                    Log.Out(string.Format("[SERVERTOOLS] The port is set to an invalid number. It must be between 1001-65531 for ServerTools web panel to function. Web panel has been disabled"));
                 }
             }
             catch (Exception e)
             {
-                Writer(string.Format("Error in WebPanel.Exec: {0}", e.Message));
                 Log.Out(string.Format("[SERVERTOOLS] Error in WebPanel.Exec: {0}" + e.Message));
+            }
+            if (Listener.IsListening)
+            {
                 Listener.Stop();
                 Listener.Close();
-                Unload();
             }
+            if (Thread.IsAlive)
+            {
+                Thread.Abort();
+            }
+            Start();
         }
 
-        private static void IsAllowed(HttpListenerRequest _request, HttpListenerResponse _response, string _clientIp)
+        private static void IsAllowed(HttpListenerRequest _request, HttpListenerResponse _response, string _ip, string _uri)
         {
             try
             {
-                string _uri = _request.Url.AbsoluteUri;
-                //if (_uri.Contains("/api/"))
-                //{
-                //    Log.Out(string.Format("[SERVERTOOLS] API requested "));
-                //    string[] command = Regex.Split(_uri, "/api/");
-                //    //Response(_uri, _response, true, command[1]);
-                //}
                 _uri = _uri.Remove(0, _uri.IndexOf(Port.ToString()) + Port.ToString().Length + 1);
                 if (_request.HttpMethod == "GET")
                 {
-                    if (_uri == "st.html")
+                    if (_uri.Contains("st.html"))
                     {
-                        if (PageHits.ContainsKey(_clientIp))
+                        if (_uri.EndsWith("/"))
                         {
-                            PageHits.TryGetValue(_clientIp, out int _count);
-                            if (_count++ >= 5)
+                            _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                            _response.StatusCode = 308;
+                        }
+                        else if (PageHits.ContainsKey(_ip))
+                        {
+                            PageHits.TryGetValue(_ip, out int _count);
+                            if (_count++ >= 6)
                             {
-                                PageHits.Remove(_clientIp);
-                                TimeOut.Add(_clientIp, DateTime.Now);
-                                PersistentContainer.Instance.WebPanelTimeoutList = TimeOut;
-                                Writer(string.Format("Web panel request denied: {0} for IP {1}. Client in time out", SITE_DIR + _uri, _clientIp));
+                                PageHits.Remove(_ip);
+                                if (!_request.IsLocal)
+                                {
+                                    TimeOut.Add(_ip, DateTime.Now);
+                                    PersistentContainer.Instance.WebPanelTimeoutList.Add(_ip, DateTime.Now);
+                                    Writer(string.Format("Homepage request denied for IP {0}. Client is now in time out", _ip));
+                                    _response.StatusCode = 403;
+                                }
                             }
                             else
                             {
-                                PageHits[_clientIp] = _count + 1;
-                                Writer(string.Format("Web panel request granted: {0} for IP {1}", SITE_DIR + _uri, _clientIp));
-                                GET(_request, _response, _uri);
+                                PageHits[_ip] = _count + 1;
+                                if (!GETPassThrough.Contains(_ip))
+                                {
+                                    GETPassThrough.Add(_ip);
+                                }
+                                Writer(string.Format("Homepage request granted for IP {0}", _ip));
+                                GET(_response, _uri);
                             }
                         }
                         else
                         {
-                            PageHits.Add(_clientIp, 1);
-                            Writer(string.Format("Web panel request granted: {0} for IP {1}", SITE_DIR + _uri, _clientIp));
-                            GET(_request, _response, _uri);
+                            PageHits.Add(_ip, 1);
+                            if (!GETPassThrough.Contains(_ip))
+                            {
+                                GETPassThrough.Add(_ip);
+                            }
+                            Writer(string.Format("Homepage request granted for IP {0}", _ip));
+                            GET(_response, _uri);
                         }
+                    }
+                    else if (GETPassThrough.Contains(_ip))
+                    {
+                        GET(_response, _uri);
                     }
                     else
                     {
-                        Writer(string.Format("Web panel request granted: {0} for IP {1}", SITE_DIR + _uri, _clientIp));
-                        GET(_request, _response, _uri);
+                        Writer(string.Format("Request denied: {0} for IP {1}", SITE_DIR + _uri, _ip));
+                        _response.StatusCode = 403;
                     }
                 }
                 else if (_request.HttpMethod == "POST")
@@ -374,33 +390,54 @@ namespace ServerTools.Website
                         }
                         POST(_request, _response, _uri, _postMessage);
                     }
+                    else
+                    {
+                        Writer(string.Format("Received post request with missing body at IP {0}", _ip));
+                        _response.StatusCode = 406;
+                    }
                 }
                 else
                 {
-                    Writer(string.Format("Unaccepted method requested by IP {0}", _clientIp));
+                    Writer(string.Format("Unaccepted method requested at IP {0}", _ip));
+                    _response.StatusCode = 405;
                 }
             }
             catch (Exception e)
             {
-                Writer(string.Format("Error in WebPanel.IsAllowed: {0}", e.Message));
+                if (Listener.IsListening)
+                {
+                    Listener.Stop();
+                    Listener.Close();
+                }
+                if (Thread.IsAlive)
+                {
+                    Thread.Abort();
+                }
+                Start();
+                Log.Out(string.Format("[SERVERTOOLS] Error in WebPanel.IsAllowed: {0}" + e.Message));
             }
             _response.Close();
         }
 
-        private static void GET(HttpListenerRequest _request, HttpListenerResponse _response, string _uri)
+        private static void GET(HttpListenerResponse _response, string _uri)
         {
             try
             {
-                FileInfo _fileInfo = new FileInfo(SITE_DIR + _uri);
+                string _location = SITE_DIR + _uri;
+                if (_uri == "Config")
+                {
+                    _location = API.ConfigPath + "/ServerToolsConfig.xml";
+                }
+                FileInfo _fileInfo = new FileInfo(_location);
                 if (_fileInfo != null && _fileInfo.Exists)
                 {
-                    byte[] _c = File.ReadAllBytes(SITE_DIR + _uri);
+                    byte[] _c = File.ReadAllBytes(_location);
                     if (_c != null)
                     {
                         _response.StatusCode = 200;
                         _response.SendChunked = false;
                         _response.ProtocolVersion = HttpVersion;
-                        _response.KeepAlive = false;
+                        _response.KeepAlive = true;
                         _response.ContentType = MimeType.GetMimeType(Path.GetExtension(_fileInfo.Extension));
                         _response.ContentLength64 = (long)_c.Length;
                         _response.ContentEncoding = Encoding.UTF8;
@@ -408,18 +445,29 @@ namespace ServerTools.Website
                     }
                     else
                     {
+                        Writer(string.Format("Requested file was found but unable to form: {0}", _location));
                         _response.StatusCode = 404;
                     }
                 }
                 else
                 {
+                    Writer(string.Format("Requested file not found: {0}", _location));
                     _response.StatusCode = 404;
-                    Writer(string.Format("Requested web panel file not found at {0}", SITE_DIR + _uri));
                 }
             }
             catch (Exception e)
             {
-                Writer(string.Format("Error in WebPanel.GET: {0}", e.Message));
+                if (Listener.IsListening)
+                {
+                    Listener.Stop();
+                    Listener.Close();
+                }
+                if (Thread.IsAlive)
+                {
+                    Thread.Abort();
+                }
+                Start();
+                Log.Out(string.Format("[SERVERTOOLS] Error in WebPanel.GET: {0}" + e.Message));
             }
             _response.Close();
         }
@@ -428,119 +476,101 @@ namespace ServerTools.Website
         {
             try
             {
-                if (_postMessage.Length == 4000)
+                string _ip = _request.RemoteEndPoint.Address.ToString();
+                if (_postMessage.Length >= 8)
                 {
                     string _responseMessage = "";
                     if (_uri == "Handshake")
                     {
-                        string _pMR = Reverse(_postMessage);
-                        string _clId = _pMR.Substring(0, 8);
-                        if (!Authorized.ContainsKey(_clId) && !Visitor.ContainsKey(_clId))
+                        if (!Authorized.ContainsKey(_postMessage))
                         {
-                            string _nK = "";
-                            for (int i = 0; i < 499; i++)
+                            if (!Visitor.ContainsKey(_postMessage))
                             {
-                                _nK += Rnd.Next(12345678, 87654321).ToString();
+                                string _newKey = "";
+                                for (int i = 0; i < 249; i++)
+                                {
+                                    _newKey += Rnd.Next(12345678, 87654321).ToString();
+                                }
+                                string[] _clientHandle = { "", _newKey, "" };
+                                Visitor.Add(_postMessage, _clientHandle);
+                                _responseMessage = _newKey.Insert(0, _postMessage);
+                                _response.StatusCode = 200;
                             }
-                            string[] _clientHandle = { _nK, "" };
-                            Visitor.Add(_clId, _clientHandle);
-                            string _returnHandshake = _nK.Insert(0, _clId);
-                            for (int i = _returnHandshake.Length - 1; i >= 0; i--)
+                            else
                             {
-                                _responseMessage += _returnHandshake.ElementAt(i);
+                                _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                _response.StatusCode = 401;
                             }
-                            _response.StatusCode = 200;
                         }
                         else
                         {
+                            _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
                             _response.StatusCode = 401;
                         }
                     }
                     else if (_uri == "Secure")
                     {
-                        string _pMR = Reverse(_postMessage);
-                        string _id = _pMR.Substring(0, 8);
-                        if (ValidVisit(_id))
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (Visitor.ContainsKey(_clientId))
                         {
-                            Visitor.TryGetValue(_id, out string[] _clientHandle);
-                            string _k = _clientHandle[0];
-                            string _s = _pMR.Substring(8);
-                            string _decrypt = Decrypt(_k, _s);
-                            string _pEnc = "";
-                            for (int i = 0; i < 499; i++)
+                            Visitor.TryGetValue(_clientId, out string[] _clientHandle);
+                            string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                            string _newKey = "";
+                            for (int i = 0; i < 249; i++)
                             {
-                                _pEnc += Rnd.Next(12345678, 87654321).ToString();
+                                _newKey += Rnd.Next(12345678, 87654321).ToString();
                             }
-                            _clientHandle[0] = _pEnc;
-                            _clientHandle[1] = _decrypt;
-                            Visitor[_id] = _clientHandle;
-                            string _returnSecure = _pEnc.Insert(0, _id);
-                            for (int i = _returnSecure.Length - 1; i >= 0; i--)
-                            {
-                                _responseMessage += _returnSecure.ElementAt(i);
-                            }
+                            _clientHandle[0] = _decrypt;
+                            _clientHandle[1] = _newKey;
+                            Visitor[_clientId] = _clientHandle;
+                            _responseMessage = _newKey.Insert(0, _clientId);
                             _response.StatusCode = 200;
-                            Writer(string.Format("Secure handshake established with IP {0}", _request.RemoteEndPoint.Address.ToString()));
+                            Writer(string.Format("Secure handshake established at IP {0}", _ip));
                         }
                         else
                         {
                             _response.StatusCode = 401;
                         }
-
                     }
                     else if (_uri == "SignIn")
                     {
-                        string _pMR = Reverse(_postMessage);
-                        string _id = _pMR.Substring(0, 8);
-                        if (ValidVisit(_id))
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (Visitor.ContainsKey(_clientId))
                         {
-                            Visitor.TryGetValue(_id, out string[] _clientHandle);
-                            string _k = _clientHandle[0];
-                            string _s = _pMR.Substring(8);
-                            string _decrypt = Decrypt(_k, _s);
-                            if (_decrypt.Contains(" "))
+                            Visitor.TryGetValue(_clientId, out string[] _clientHandle);
+                            string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                            if (_decrypt.Contains("`"))
                             {
-                                string[] _decryptSplit = _decrypt.Split(' ');
-                                if (_decryptSplit[0] == _clientHandle[1])
+                                string[] _decryptSplit = _decrypt.Split('`');
+                                if (_decryptSplit[0] == _clientHandle[0])
                                 {
-                                    if (!string.IsNullOrEmpty(_decryptSplit[1]) && Clients.Contains(_decryptSplit[1]))
+                                    if (!string.IsNullOrEmpty(_decryptSplit[1]) && !string.IsNullOrEmpty(_decryptSplit[2]))
                                     {
-                                        string _ip = _request.RemoteEndPoint.Address.ToString();
-                                        if (!string.IsNullOrEmpty(_decryptSplit[2]) && !string.IsNullOrEmpty(PersistentContainer.Instance.Players[_decryptSplit[1]].WP) && _decryptSplit[2] == PersistentContainer.Instance.Players[_decryptSplit[1]].WP)
+                                        if (_decryptSplit[2] == PersistentContainer.Instance.Players[_decryptSplit[1]].WP)
                                         {
                                             if (LoginAttempts.ContainsKey(_ip))
                                             {
                                                 LoginAttempts.Remove(_ip);
                                             }
-                                            string _pEnc = "";
-                                            for (int i = 0; i < 499; i++)
-                                            {
-                                                _pEnc += Rnd.Next(12345678, 87654321).ToString();
-                                            }
-                                            _clientHandle[0] = _pEnc;
-                                            Visitor.Remove(_id);
-                                            Authorized.Add(_id, _clientHandle);
-                                            AuthorizedTime.Add(_id, DateTime.Now);
+                                            Visitor.Remove(_clientId);
                                             PageHits.Remove(_ip);
-                                            string _returnSecure = _pEnc.Insert(0, _id);
-                                            for (int i = _returnSecure.Length - 1; i >= 0; i--)
-                                            {
-                                                _responseMessage += _returnSecure.ElementAt(i);
-                                            }
+                                            _clientHandle[2] = _decryptSplit[1];
+                                            Authorized.Add(_clientId, _clientHandle);
+                                            AuthorizedTime.Add(_clientId, DateTime.Now);
+                                            _responseMessage += SetKey(_clientId, _clientHandle);
                                             _response.StatusCode = 200;
-                                            Writer(string.Format("Web panel client {0} has signed in from IP {1}", _decryptSplit[1], _request.RemoteEndPoint.Address.ToString()));
+                                            Writer(string.Format("Client {0} at IP {1} has signed in", _clientHandle[2], _ip));
                                         }
                                         else
                                         {
                                             if (LoginAttempts.ContainsKey(_ip))
                                             {
                                                 LoginAttempts.TryGetValue(_ip, out int _count);
-                                                if (_count + 1 == 6)
+                                                if (_count + 1 == 3)
                                                 {
                                                     LoginAttempts.Remove(_ip);
                                                     TimeOut.Add(_ip, DateTime.Now);
                                                     PersistentContainer.Instance.WebPanelTimeoutList = TimeOut;
-                                                    return;
                                                 }
                                                 else
                                                 {
@@ -551,43 +581,64 @@ namespace ServerTools.Website
                                             {
                                                 LoginAttempts.Add(_ip, 1);
                                             }
-                                            string _pEnc = "";
-                                            for (int j = 0; j < 499; j++)
+                                            string _newKey = "";
+                                            for (int i = 0; i < 249; i++)
                                             {
-                                                _pEnc += Rnd.Next(12345678, 87654321).ToString();
+                                                _newKey += Rnd.Next(12345678, 87654321).ToString();
                                             }
-                                            _clientHandle[0] = _pEnc;
-                                            Visitor[_id] = _clientHandle;
-                                            string _returnSecure = _pEnc.Insert(0, _id);
-                                            for (int k = _returnSecure.Length - 1; k >= 0; k--)
-                                            {
-                                                _responseMessage += _returnSecure.ElementAt(k);
-                                            }
+                                            _clientHandle[1] = _newKey;
+                                            Visitor[_clientId] = _clientHandle;
+                                            _responseMessage = _newKey.Insert(0, _clientId);
                                             _response.StatusCode = 401;
-                                            Writer(string.Format("Web panel sign in failure by IP {0}", _request.RemoteEndPoint.Address.ToString()));
+                                            Writer(string.Format("Sign in failure at IP {0} for client ID {1}", _ip, _decryptSplit[1]));
                                         }
                                     }
                                     else
                                     {
-                                        string _pEnc = "";
-                                        for (int i = 0; i < 499; i++)
+                                        Visitor.Remove(_ip);
+                                        GETPassThrough.Remove(_ip);
+                                        if (LoginAttempts.ContainsKey(_ip))
                                         {
-                                            _pEnc += Rnd.Next(12345678, 87654321).ToString();
+                                            LoginAttempts.Remove(_ip);
                                         }
-                                        _clientHandle[0] = _pEnc;
-                                        Visitor[_id] = _clientHandle;
-                                        string _returnSecure = _pEnc.Insert(0, _id);
-                                        for (int i = _returnSecure.Length - 1; i >= 0; i--)
+                                        if (!_request.IsLocal)
                                         {
-                                            _responseMessage += _returnSecure.ElementAt(i);
+                                            BannedIP.Add(_ip);
+                                            Writer(string.Format("Client at IP {0} has been banned", _ip));
                                         }
-                                        _response.StatusCode = 401;
+                                        _response.StatusCode = 403;
                                     }
                                 }
                                 else
                                 {
-                                    _response.StatusCode = 401;
+                                    Visitor.Remove(_ip);
+                                    GETPassThrough.Remove(_ip);
+                                    if (LoginAttempts.ContainsKey(_ip))
+                                    {
+                                        LoginAttempts.Remove(_ip);
+                                    }
+                                    if (!_request.IsLocal)
+                                    {
+                                        BannedIP.Add(_ip);
+                                        Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                    }
+                                    _response.StatusCode = 403;
                                 }
+                            }
+                            else
+                            {
+                                Visitor.Remove(_ip);
+                                GETPassThrough.Remove(_ip);
+                                if (LoginAttempts.ContainsKey(_ip))
+                                {
+                                    LoginAttempts.Remove(_ip);
+                                }
+                                if (!_request.IsLocal)
+                                {
+                                    BannedIP.Add(_ip);
+                                    Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                }
+                                _response.StatusCode = 403;
                             }
                         }
                         else
@@ -595,34 +646,88 @@ namespace ServerTools.Website
                             _response.StatusCode = 401;
                         }
                     }
-                    else if (_uri == "NewPass")
+                    else if (_uri == "SignOut")
                     {
-                        string _pMR = Reverse(_postMessage);
-                        string _id = _pMR.Substring(0, 8);
-                        if (ValidAuth(_id))
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (Authorized.ContainsKey(_clientId))
                         {
-                            Authorized.TryGetValue(_id, out string[] _clientHandle);
-                            string _k = _clientHandle[0];
-                            string _s = _pMR.Substring(8);
-                            string _decrypt = Decrypt(_k, _s);
-                            if (_decrypt.Contains(' '))
+                            AuthorizedTime.TryGetValue(_clientId, out DateTime _expires);
+                            if (Expired(_expires))
                             {
-                                string[] _decryptSplit = _decrypt.Split(' ');
-                                if (_decryptSplit[0] == _clientHandle[1])
+                                Authorized.Remove(_clientId);
+                                AuthorizedTime.Remove(_clientId);
+                                GETPassThrough.Remove(_ip);
+                                _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                _response.StatusCode = 401;
+                            }
+                            else
+                            {
+                                Authorized.TryGetValue(_clientId, out string[] _clientHandle);
+                                string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                                if (_decrypt == _clientHandle[0])
                                 {
-                                    if (!string.IsNullOrEmpty(_decryptSplit[1]) && Clients.Contains(_decryptSplit[1]))
-                                    {
-                                        _responseMessage += SetKey(_id, _clientHandle);
-                                        _response.StatusCode = 200;
-                                    }
-                                    else
-                                    {
-                                        _response.StatusCode = 401;
-                                    }
+                                    AuthorizedTime.Remove(_clientId);
+                                    Authorized.Remove(_clientId);
+                                    GETPassThrough.Remove(_ip);
+                                    _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                    _response.StatusCode = 200;
+                                    Writer(string.Format("Client {0} at IP {1} has signed out", _clientHandle[2], _ip));
                                 }
                                 else
                                 {
-                                    _response.StatusCode = 401;
+                                    AuthorizedTime.Remove(_clientId);
+                                    Authorized.Remove(_clientId);
+                                    GETPassThrough.Remove(_ip);
+                                    if (!_request.IsLocal)
+                                    {
+                                        BannedIP.Add(_ip);
+                                        Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                    }
+                                    _response.StatusCode = 403;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                            _response.StatusCode = 401;
+                        }
+                    }
+                    else if (_uri == "NewPass")
+                    {
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (Authorized.ContainsKey(_clientId))
+                        {
+                            AuthorizedTime.TryGetValue(_clientId, out DateTime _expires);
+                            if (Expired(_expires))
+                            {
+                                Authorized.Remove(_clientId);
+                                AuthorizedTime.Remove(_clientId);
+                                GETPassThrough.Remove(_ip);
+                                _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                _response.StatusCode = 401;
+                            }
+                            else
+                            {
+                                AuthorizedTime[_clientId] = DateTime.Now;
+                                Authorized.TryGetValue(_clientId, out string[] _clientHandle);
+                                string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                                if (_decrypt == _clientHandle[0])
+                                {
+                                    _responseMessage += SetKey(_clientId, _clientHandle);
+                                    _response.StatusCode = 200;
+                                }
+                                else
+                                {
+                                    AuthorizedTime.Remove(_clientId);
+                                    Authorized.Remove(_clientId);
+                                    GETPassThrough.Remove(_ip);
+                                    if (!_request.IsLocal)
+                                    {
+                                        BannedIP.Add(_ip);
+                                        Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                    }
+                                    _response.StatusCode = 403;
                                 }
                             }
                         }
@@ -633,163 +738,118 @@ namespace ServerTools.Website
                     }
                     else if (_uri == "SetPass")
                     {
-                        string _pMR = Reverse(_postMessage);
-                        string _id = _pMR.Substring(0, 8);
-                        if (ValidAuth(_id))
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (Authorized.ContainsKey(_clientId))
                         {
-                            Authorized.TryGetValue(_id, out string[] _clientHandle);
-                            string _k = _clientHandle[0];
-                            string _s = _pMR.Substring(8);
-                            string _decrypt = Decrypt(_k, _s);
-                            if (_decrypt.Contains(' '))
+                            AuthorizedTime.TryGetValue(_clientId, out DateTime _expires);
+                            if (Expired(_expires))
                             {
-                                string[] _decryptSplit = _decrypt.Split(' ');
-                                if (_decryptSplit[0] == _clientHandle[1])
-                                {
-                                    if (!string.IsNullOrEmpty(_decryptSplit[1]) && Clients.Contains(_decryptSplit[1]))
-                                    {
-                                        PersistentContainer.Instance.Players[_decryptSplit[1]].WP = _decryptSplit[2];
-                                        _responseMessage += SetKey(_id, _clientHandle);
-                                        _response.StatusCode = 200;
-                                        Writer(string.Format("Web panel client {0} has set a new pass from IP {1}", _decryptSplit[1], _request.RemoteEndPoint.Address.ToString()));
-                                    }
-                                }
+                                Authorized.Remove(_clientId);
+                                AuthorizedTime.Remove(_clientId);
+                                GETPassThrough.Remove(_ip);
+                                _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                _response.StatusCode = 401;
                             }
-                        }
-                        else
-                        {
-                            _response.StatusCode = 401;
-                        }
-                    }
-                    else if (_uri == "SignOut")
-                    {
-                        string _pMR = Reverse(_postMessage);
-                        string _id = _pMR.Substring(0, 8);
-                        if (ValidAuth(_id))
-                        {
-                            Authorized.TryGetValue(_id, out string[] _clientHandle);
-                            string _k = _clientHandle[0];
-                            string _s = _pMR.Substring(8);
-                            string _decrypt = Decrypt(_k, _s);
-                            if (_decrypt.Contains(' '))
+                            else
                             {
-                                string[] _decryptSplit = _decrypt.Split(' ');
-                                if (_decryptSplit[0] == _clientHandle[1])
+                                AuthorizedTime[_clientId] = DateTime.Now;
+                                Authorized.TryGetValue(_clientId, out string[] _clientHandle);
+                                string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                                if (_decrypt.Contains('`'))
                                 {
-                                    AuthorizedTime.Remove(_id);
-                                    Authorized.Remove(_id);
-                                    _response.StatusCode = 200;
-                                    Writer(string.Format("Web panel client has signed out from IP {0}", _request.RemoteEndPoint.Address.ToString()));
-                                }
-                                else
-                                {
-                                    _response.StatusCode = 401;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            _response.StatusCode = 401;
-                        }
-                    }
-                    //else if (_uri == "Command")
-                    //{
-                    //    Log.Out(string.Format("Command Detected"));
-                    //    string _pMR = Reverse(_postMessage);
-                    //    string _id = _pMR.Substring(0, 8);
-                    //    if (ValidAuth(_id))
-                    //    {
-                    //        Authorized.TryGetValue(_id, out string[] _clientHandle);
-                    //        string _k = _clientHandle[0];
-                    //        string _s = _pMR.Substring(8);
-                    //        string _decrypt = Decrypt(_k, _s);
-                    //        if (_decrypt.Contains(' '))
-                    //        {
-                    //            string[] _decryptSplit = _decrypt.Split(' ');
-                    //            if (_decryptSplit[0] == _clientHandle[1])
-                    //            {
-                    //                if (!string.IsNullOrEmpty(_decryptSplit[1]) && Clients.Contains(_decryptSplit[1]))
-                    //                {
-                    //                    if (!string.IsNullOrEmpty(_decryptSplit[2]))
-                    //                    {
-                    //                        Log.Out(string.Format("[SERVERTOOLS] Attempting to run command"));
-                    //
-                    //                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Web panel console command: {0}. Run by client {1} with IP {2}", _decryptSplit[2], _decryptSplit[1], _request.RemoteEndPoint.Address.ToString()));
-                    //                        _responseMessage += SetKey(_id, _clientHandle);
-                    //                        _response.StatusCode = 200;
-                    //                    }
-                    //                }
-                    //                else
-                    //                {
-                    //                    _response.StatusCode = 401;
-                    //                }
-                    //            }
-                    //            else
-                    //            {
-                    //                _response.StatusCode = 401;
-                    //            }
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-                    //        _response.StatusCode = 401;
-                    //    }
-                    //}
-                    else if (_uri == "Players")
-                    {
-                        string _pMR = Reverse(_postMessage);
-                        string _id = _pMR.Substring(0, 8);
-                        if (!FollowUp.Contains(_id))
-                        {
-                            if (Authorized.ContainsKey(_id))
-                            {
-                                AuthorizedTime.TryGetValue(_id, out DateTime _expires);
-                                if (Expired(_expires))
-                                {
-                                    Authorized.Remove(_id);
-                                    AuthorizedTime.Remove(_id);
-                                    _response.StatusCode = 401;
-                                }
-                                else
-                                {
-                                    Authorized.TryGetValue(_id, out string[] _clientHandle);
-                                    string _k = _clientHandle[0];
-                                    string _s = _pMR.Substring(8);
-                                    string _decrypt = Decrypt(_k, _s);
-                                    if (_decrypt.Contains(' '))
+                                    string[] _decryptSplit = _decrypt.Split('`');
+                                    if (_decryptSplit[0] == _clientHandle[0])
                                     {
-                                        string[] _decryptSplit = _decrypt.Split(' ');
-                                        if (_decryptSplit[0] == _clientHandle[1])
+                                        if (!string.IsNullOrEmpty(_decryptSplit[1]))
                                         {
-                                            if (!string.IsNullOrEmpty(_decryptSplit[1]) && Clients.Contains(_decryptSplit[1]))
-                                            {
-                                                string _uid = SetUID();
-                                                FollowUp.Add(_uid);
-                                                string _pEnc = "";
-                                                for (int j = 0; j < 499; j++)
-                                                {
-                                                    _pEnc += Rnd.Next(12345678, 87654321).ToString();
-                                                }
-                                                _clientHandle[0] = _pEnc;
-                                                Authorized[_id] = _clientHandle;
-                                                AuthorizedTime[_id] = DateTime.Now;
-                                                string _returnSecure = _pEnc.Insert(0, _uid);
-                                                for (int k = _returnSecure.Length - 1; k >= 0; k--)
-                                                {
-                                                    _responseMessage += _returnSecure.ElementAt(k);
-                                                }
-                                                _response.StatusCode = 200;
-                                                Writer(string.Format("Updated players list for client {0} at IP {1}", _decryptSplit[1], _request.RemoteEndPoint.Address.ToString()));
-                                            }
-                                            else
-                                            {
-                                                _response.StatusCode = 401;
-                                            }
+                                            PersistentContainer.Instance.Players[_clientHandle[2]].WP = _decryptSplit[1];
+                                            _responseMessage += SetKey(_clientId, _clientHandle);
+                                            _response.StatusCode = 200;
+                                            Writer(string.Format("Client {0} at IP {1} has set a new password", _clientHandle[2], _ip));
                                         }
                                         else
                                         {
-                                            _response.StatusCode = 401;
+                                            AuthorizedTime.Remove(_clientId);
+                                            Authorized.Remove(_clientId);
+                                            GETPassThrough.Remove(_ip);
+                                            if (!_request.IsLocal)
+                                            {
+                                                BannedIP.Add(_ip);
+                                                Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                            }
+                                            _response.StatusCode = 403;
                                         }
+                                    }
+                                    else
+                                    {
+                                        AuthorizedTime.Remove(_clientId);
+                                        Authorized.Remove(_clientId);
+                                        GETPassThrough.Remove(_ip);
+                                        if (!_request.IsLocal)
+                                        {
+                                            BannedIP.Add(_ip);
+                                            Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                        }
+                                        _response.StatusCode = 403;
+                                    }
+                                }
+                                else
+                                {
+                                    AuthorizedTime.Remove(_clientId);
+                                    Authorized.Remove(_clientId);
+                                    GETPassThrough.Remove(_ip);
+                                    if (!_request.IsLocal)
+                                    {
+                                        BannedIP.Add(_ip);
+                                        Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                    }
+                                    _response.StatusCode = 403;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            _response.StatusCode = 401;
+                        }
+                    }
+                    else if (_uri == "Console")
+                    {
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (!POSTFollowUp.Contains(_ip))
+                        {
+                            if (Authorized.ContainsKey(_clientId))
+                            {
+                                AuthorizedTime.TryGetValue(_clientId, out DateTime _expires);
+                                if (Expired(_expires))
+                                {
+                                    Authorized.Remove(_clientId);
+                                    AuthorizedTime.Remove(_clientId);
+                                    GETPassThrough.Remove(_ip);
+                                    _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                    _response.StatusCode = 401;
+                                }
+                                else
+                                {
+                                    AuthorizedTime[_clientId] = DateTime.Now;
+                                    Authorized.TryGetValue(_clientId, out string[] _clientHandle);
+                                    string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                                    if (_decrypt == _clientHandle[0])
+                                    {
+                                        POSTFollowUp.Add(_ip);
+                                        _responseMessage += SetKey(_clientId, _clientHandle);
+                                        _response.StatusCode = 200;
+                                    }
+                                    else
+                                    {
+                                        AuthorizedTime.Remove(_clientId);
+                                        Authorized.Remove(_clientId);
+                                        GETPassThrough.Remove(_ip);
+                                        if (!_request.IsLocal)
+                                        {
+                                            BannedIP.Add(_ip);
+                                            Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                        }
+                                        _response.StatusCode = 403;
                                     }
                                 }
                             }
@@ -800,7 +860,158 @@ namespace ServerTools.Website
                         }
                         else
                         {
-                            FollowUp.Remove(_id);
+                            POSTFollowUp.Remove(_ip);
+                            int.TryParse(_postMessage.Substring(8), out int _lineNumber);
+                            int _logCount = OutputLog.ActiveLog.Count;
+                            if (_logCount >= _lineNumber + 1)
+                            {
+                                for (int i = _lineNumber; i < _logCount; i++)
+                                {
+                                    _responseMessage += OutputLog.ActiveLog[i] + "\n";
+                                }
+                                _responseMessage += "☼" + _logCount;
+                            }
+                            _response.StatusCode = 200;
+                        }
+                    }
+                    else if (_uri == "Command")
+                    {
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (!POSTFollowUp.Contains(_ip))
+                        {
+                            if (Authorized.ContainsKey(_clientId))
+                            {
+                                AuthorizedTime.TryGetValue(_clientId, out DateTime _expires);
+                                if (Expired(_expires))
+                                {
+                                    Authorized.Remove(_clientId);
+                                    AuthorizedTime.Remove(_clientId);
+                                    _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                    _response.StatusCode = 401;
+                                }
+                                else
+                                {
+                                    Authorized.TryGetValue(_clientId, out string[] _clientHandle);
+                                    string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                                    if (_decrypt == _clientHandle[0])
+                                    {
+                                        POSTFollowUp.Add(_ip);
+                                        _responseMessage += SetKey(_clientId, _clientHandle);
+                                        _response.StatusCode = 200;
+                                    }
+                                    else
+                                    {
+                                        AuthorizedTime.Remove(_clientId);
+                                        Authorized.Remove(_clientId);
+                                        GETPassThrough.Remove(_ip);
+                                        if (!_request.IsLocal)
+                                        {
+                                            BannedIP.Add(_ip);
+                                            Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                        }
+                                        _response.StatusCode = 403;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                _response.StatusCode = 401;
+                            }
+                        }
+                        else
+                        {
+                            POSTFollowUp.Remove(_ip);
+                            string[] idLineCountandCommand = _postMessage.Split(new[] { '`' }, 3);
+                            Authorized.TryGetValue(idLineCountandCommand[0], out string[] _clientHandle);
+                            string _command = idLineCountandCommand[2];
+                            if (_command.Length > 300)
+                            {
+                                _responseMessage += "300 characters is the command limit. You tried to execute a command with " + _command.Length + " characters.";
+                                _response.StatusCode = 400;
+                            }
+                            else
+                            {
+                                IConsoleCommand _commandValid = SingletonMonoBehaviour<SdtdConsole>.Instance.GetCommand(_command, false);
+                                if (_commandValid == null)
+                                {
+                                    _responseMessage += "Unknown command";
+                                    _response.StatusCode = 406;
+                                }
+                                else
+                                {
+                                    ClientInfo _cInfo = new ClientInfo();
+                                    _cInfo.playerId = "-Web_Panel-" + _clientHandle[2];
+                                    _cInfo.entityId = -1;
+                                    List<string> _cmdReponse = SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, _cInfo);
+                                    int _logCount = OutputLog.ActiveLog.Count;
+                                    int.TryParse(idLineCountandCommand[1], out int _lineNumber);
+                                    if (_logCount >= _lineNumber + 1)
+                                    {
+                                        for (int i = _lineNumber; i < _logCount; i++)
+                                        {
+                                            _responseMessage += OutputLog.ActiveLog[i] + "\n";
+                                        }
+                                    }
+                                    for (int i = 0; i < _cmdReponse.Count; i++)
+                                    {
+                                        _responseMessage += _cmdReponse[i] + "\n";
+                                    }
+                                    _responseMessage += "☼" + OutputLog.ActiveLog.Count;
+                                    Writer(string.Format("Executed console command '{0}' from Client: {1} IP: {2}", _command, _clientHandle[2], _ip));
+                                    _response.StatusCode = 200;
+                                }
+                            }
+                        }
+                    }
+                    else if (_uri == "Players")
+                    {
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (!POSTFollowUp.Contains(_ip))
+                        {
+                            if (Authorized.ContainsKey(_clientId))
+                            {
+                                AuthorizedTime.TryGetValue(_clientId, out DateTime _expires);
+                                if (Expired(_expires))
+                                {
+                                    Authorized.Remove(_clientId);
+                                    AuthorizedTime.Remove(_clientId);
+                                    GETPassThrough.Remove(_ip);
+                                    _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                    _response.StatusCode = 401;
+                                }
+                                else
+                                {
+                                    AuthorizedTime[_clientId] = DateTime.Now;
+                                    Authorized.TryGetValue(_clientId, out string[] _clientHandle);
+                                    string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                                    if (_decrypt == _clientHandle[0])
+                                    {
+                                        POSTFollowUp.Add(_ip);
+                                        _responseMessage += SetKey(_clientId, _clientHandle);
+                                        _response.StatusCode = 200;
+                                    }
+                                    else
+                                    {
+                                        AuthorizedTime.Remove(_clientId);
+                                        Authorized.Remove(_clientId);
+                                        GETPassThrough.Remove(_ip);
+                                        if (!_request.IsLocal)
+                                        {
+                                            BannedIP.Add(_ip);
+                                            Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                        }
+                                        _response.StatusCode = 403;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                _response.StatusCode = 401;
+                            }
+                        }
+                        else
+                        {
+                            POSTFollowUp.Remove(_ip);
                             List<ClientInfo> _clientList = PersistentOperations.ClientList();
                             if (_clientList != null && _clientList.Count > 0)
                             {
@@ -845,6 +1056,7 @@ namespace ServerTools.Website
                                 }
                                 _responseMessage = _responseMessage.TrimEnd('☼');
                                 _response.StatusCode = 200;
+
                             }
                             else
                             {
@@ -854,243 +1066,228 @@ namespace ServerTools.Website
                     }
                     else if (_uri == "Config")
                     {
-                        string _pMR = Reverse(_postMessage);
-                        string _id = _pMR.Substring(0, 8);
-                        if (!FollowUp.Contains(_id))
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (Authorized.ContainsKey(_clientId))
                         {
-                            if (ValidAuth(_id))
+                            AuthorizedTime.TryGetValue(_clientId, out DateTime _expires);
+                            if (Expired(_expires))
                             {
-                                Authorized.TryGetValue(_id, out string[] _clientHandle);
-                                string _k = _clientHandle[0];
-                                string _s = _pMR.Substring(8);
-                                string _decrypt = Decrypt(_k, _s);
-                                if (_decrypt.Contains(' '))
-                                {
-                                    string[] _decryptSplit = _decrypt.Split(' ');
-                                    if (_decryptSplit[0] == _clientHandle[1])
-                                    {
-                                        if (!string.IsNullOrEmpty(_decryptSplit[1]) && Clients.Contains(_decryptSplit[1]))
-                                        {
-                                            string _uid = SetUID();
-                                            FollowUp.Add(_uid);
-                                            string _pEnc = "";
-                                            for (int i = 0; i < 499; i++)
-                                            {
-                                                _pEnc += Rnd.Next(12345678, 87654321).ToString();
-                                            }
-                                            _clientHandle[0] = _pEnc;
-                                            Authorized[_id] = _clientHandle;
-                                            AuthorizedTime[_id] = DateTime.Now;
-                                            string _returnSecure = _pEnc.Insert(0, _uid);
-                                            for (int j = _returnSecure.Length - 1; j >= 0; j--)
-                                            {
-                                                _responseMessage += _returnSecure.ElementAt(j);
-                                            }
-                                            _response.StatusCode = 200;
-                                            Writer(string.Format("Loaded config for client {0} at IP {1}", _decryptSplit[1], _request.RemoteEndPoint.Address.ToString()));
-                                        }
-                                        else
-                                        {
-                                            _response.StatusCode = 401;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        _response.StatusCode = 401;
-                                    }
-                                }
+                                Authorized.Remove(_clientId);
+                                AuthorizedTime.Remove(_clientId);
+                                GETPassThrough.Remove(_ip);
+                                _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                _response.StatusCode = 401;
                             }
                             else
                             {
-                                _response.StatusCode = 401;
+                                AuthorizedTime[_clientId] = DateTime.Now;
+                                Authorized.TryGetValue(_clientId, out string[] _clientHandle);
+                                string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                                if (_decrypt == _clientHandle[0])
+                                {
+                                    _responseMessage += SetKey(_clientId, _clientHandle);
+                                    _response.StatusCode = 200;
+                                }
+                                else
+                                {
+                                    AuthorizedTime.Remove(_clientId);
+                                    Authorized.Remove(_clientId);
+                                    GETPassThrough.Remove(_ip);
+                                    if (!_request.IsLocal)
+                                    {
+                                        BannedIP.Add(_ip);
+                                        Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                    }
+                                    _response.StatusCode = 403;
+                                }
                             }
                         }
                         else
                         {
-                            FollowUp.Remove(_id);
-                            if (Utils.FileExists(Config.configFilePath))
-                            {
-                                XmlDocument xmlDoc = new XmlDocument();
-                                try
-                                {
-                                    xmlDoc.Load(Config.configFilePath);
-                                }
-                                catch (XmlException e)
-                                {
-                                    Log.Out(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", Config.configFilePath, e.Message));
-                                    return;
-                                }
-                                XmlNode _XmlNode = xmlDoc.DocumentElement;
-                                XmlNodeList _XmlNodeList = _XmlNode.ChildNodes;
-                                for (int i = 0; i < _XmlNodeList.Count; i++)
-                                {
-                                    XmlNode _childNode = _XmlNodeList[i];
-                                    if (_childNode.Name == "Tools")
-                                    {
-                                        for (int j = 0; j < _childNode.ChildNodes.Count; j++)
-                                        {
-                                            XmlNode _SubChild = _childNode.ChildNodes[j];
-                                            if (_SubChild.Name == "Tool")
-                                            {
-                                                XmlElement _element = (XmlElement)_SubChild;
-                                                XmlAttributeCollection _attributes = _element.Attributes;
-                                                for (int k = 1; k < _attributes.Count; k++)
-                                                {
-                                                    _responseMessage += _attributes[k].Value + "§";
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                _responseMessage = _responseMessage.TrimEnd('§');
-                                _response.StatusCode = 200;
-                            }
+                            _response.StatusCode = 401;
                         }
                     }
                     else if (_uri == "UpdateConfig")
                     {
-                        string _pMR = Reverse(_postMessage);
-                        string _id = _pMR.Substring(0, 8);
-                        if (!FollowUp.Contains(_id))
+                        if (!POSTFollowUp.Contains(_ip))
                         {
-                            if (ValidAuth(_id))
+                            string _clientId = _postMessage.Substring(0, 8);
+                            if (Authorized.ContainsKey(_clientId))
                             {
-                                Authorized.TryGetValue(_id, out string[] _clientHandle);
-                                string _k = _clientHandle[0];
-                                string _s = _pMR.Substring(8);
-                                string _decrypt = Decrypt(_k, _s);
-                                if (_decrypt.Contains(' '))
+                                AuthorizedTime.TryGetValue(_clientId, out DateTime _expires);
+                                if (Expired(_expires))
                                 {
-                                    string[] _decryptSplit = _decrypt.Split(' ');
-                                    if (_decryptSplit[0] == _clientHandle[1])
+                                    Authorized.Remove(_clientId);
+                                    AuthorizedTime.Remove(_clientId);
+                                    _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                    _response.StatusCode = 401;
+                                }
+                                else
+                                {
+                                    AuthorizedTime[_clientId] = DateTime.Now;
+                                    Authorized.TryGetValue(_clientId, out string[] _clientHandle);
+                                    string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                                    if (_decrypt == _clientHandle[0])
                                     {
-                                        if (!string.IsNullOrEmpty(_decryptSplit[1]) && Clients.Contains(_decryptSplit[1]))
-                                        {
-                                            string _uid = SetUID();
-                                            FollowUp.Add(_uid);
-                                            string _pEnc = "";
-                                            for (int i = 0; i < 499; i++)
-                                            {
-                                                _pEnc += Rnd.Next(12345678, 87654321).ToString();
-                                            }
-                                            _clientHandle[0] = _pEnc;
-                                            Authorized[_id] = _clientHandle;
-                                            AuthorizedTime[_id] = DateTime.Now;
-                                            string _returnSecure = _pEnc.Insert(0, _uid);
-                                            for (int j = _returnSecure.Length - 1; j >= 0; j--)
-                                            {
-                                                _responseMessage += _returnSecure.ElementAt(j);
-                                            }
-                                            _response.StatusCode = 200;
-                                            Writer(string.Format("Client {0} at IP {1} has updated the config", _decryptSplit[1], _request.RemoteEndPoint.Address.ToString()));
-                                        }
-                                        else
-                                        {
-                                            _response.StatusCode = 401;
-                                        }
+                                        PostClient = _clientHandle[2];
+                                        POSTFollowUp.Add(_ip);
+                                        _responseMessage += SetKey(_clientId, _clientHandle);
+                                        _response.StatusCode = 200;
                                     }
                                     else
                                     {
-                                        _response.StatusCode = 401;
+                                        AuthorizedTime.Remove(_clientId);
+                                        Authorized.Remove(_clientId);
+                                        GETPassThrough.Remove(_ip);
+                                        if (!_request.IsLocal)
+                                        {
+                                            BannedIP.Add(_ip);
+                                            Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                        }
+                                        _response.StatusCode = 403;
                                     }
                                 }
                             }
                             else
                             {
-                                _response.StatusCode = 401;
+                                _response.StatusCode = 403;
                             }
                         }
                         else
                         {
-                            FollowUp.Remove(_id);
-                            string _newConfig = _pMR.Substring(8);
-                            if (_newConfig.Contains("☼") && _newConfig.Contains("§") && Utils.FileExists(Config.configFilePath))
+                            POSTFollowUp.Remove(_ip);
+                            XmlDocument _xmlDoc = new XmlDocument();
+                            try
                             {
-                                int _count = 0;
-                                string[] _dropExtra = _newConfig.Split('☼');
-                                string[] _configValues = _dropExtra[0].Split('§');
-                                XmlDocument _xmlDoc = new XmlDocument();
-                                try
+                                _xmlDoc.Load(Config.configFilePath);
+                            }
+                            catch (XmlException e)
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", Config.configFilePath, e.Message));
+                            }
+                            if (_xmlDoc != null)
+                            {
+                                bool _changed = false;
+                                XmlNodeList _nodes = _xmlDoc.GetElementsByTagName("Tool");
+                                _postMessage = _postMessage.TrimEnd('☼');
+                                string[] _tools = _postMessage.Split('☼');
+                                for (int i = 0; i < _tools.Length; i++)
                                 {
-                                    _xmlDoc.Load(Config.configFilePath);
-                                }
-                                catch (XmlException e)
-                                {
-                                    Log.Out(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", Config.configFilePath, e.Message));
-                                    return;
-                                }
-                                XmlNode _XmlNode = _xmlDoc.DocumentElement;
-                                XmlNodeList _XmlNodeList = _XmlNode.ChildNodes;
-                                for (int i = 0; i < _XmlNodeList.Count; i++)
-                                {
-                                    XmlNode _childNode = _XmlNodeList[i];
-                                    if (_childNode.Name == "Tools")
+                                    XmlNode _node = _nodes[i];
+                                    string[] _nameAndOptions = _tools[i].Split('§');
+                                    if (_nameAndOptions[1].Contains("╚"))
                                     {
-                                        for (int j = 0; j < _childNode.ChildNodes.Count; j++)
+                                        string[] _options = _nameAndOptions[1].Split('╚');
+                                        for (int j = 0; j < _options.Length; j++)
                                         {
-                                            XmlNode _SubChild = _childNode.ChildNodes[j];
-                                            if (_SubChild.Name == "Tool")
+                                            string[] _optionNameAndValue = _options[j].Split('σ');
+                                            int _nodePosition = j + 1;
+                                            if (_nameAndOptions[0] == _node.Attributes[0].Value && _optionNameAndValue[0] == _node.Attributes[_nodePosition].Name && _optionNameAndValue[1] != _node.Attributes[_nodePosition].Value)
                                             {
-                                                XmlElement _element = (XmlElement)_SubChild;
-                                                XmlAttributeCollection _attributes = _element.Attributes;
-                                                for (int k = 1; k < _attributes.Count; k++)
-                                                {
-                                                    _attributes[k].Value = _configValues[_count];
-                                                    _count++;
-                                                }
+                                                _changed = true;
+                                                _node.Attributes[_nodePosition].Value = _optionNameAndValue[1];
                                             }
                                         }
                                     }
+                                    else
+                                    {
+                                        string[] _optionNameAndValue = _nameAndOptions[1].Split('σ');
+                                        if (_nameAndOptions[0] == _node.Attributes[0].Value && _optionNameAndValue[0] == _node.Attributes[1].Name && _optionNameAndValue[1] != _node.Attributes[1].Value)
+                                        {
+                                            _changed = true;
+                                            _node.Attributes[1].Value = _optionNameAndValue[1];
+                                        }
+                                    }
                                 }
-                                _xmlDoc.Save(Config.configFilePath);
+                                if (_changed)
+                                {
+                                    _xmlDoc.Save(Config.configFilePath);
+                                    Writer(string.Format("Client {0} at IP {1} has updated the Config ", PostClient, _ip));
+                                    _response.StatusCode = 200;
+                                }
+                                else
+                                {
+                                    _response.StatusCode = 406;
+                                }
                             }
                         }
                     }
                     else if (_uri == "Kick")
                     {
-                        string _pMR = Reverse(_postMessage);
-                        string _id = _pMR.Substring(0, 8);
-                        if (ValidAuth(_id))
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (Authorized.ContainsKey(_clientId))
                         {
-                            Authorized.TryGetValue(_id, out string[] _clientHandle);
-                            string _k = _clientHandle[0];
-                            string _s = _pMR.Substring(8);
-                            string _decrypt = Decrypt(_k, _s);
-                            if (_decrypt.Contains(' '))
+                            AuthorizedTime.TryGetValue(_clientId, out DateTime _expires);
+                            if (Expired(_expires))
                             {
-                                string[] _decryptSplit = _decrypt.Split(' ');
-                                if (_decryptSplit[0] == _clientHandle[1])
+                                Authorized.Remove(_clientId);
+                                AuthorizedTime.Remove(_clientId);
+                                GETPassThrough.Remove(_ip);
+                                _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                _response.StatusCode = 401;
+                            }
+                            else
+                            {
+                                AuthorizedTime[_clientId] = DateTime.Now;
+                                Authorized.TryGetValue(_clientId, out string[] _clientHandle);
+                                string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                                if (_decrypt.Contains('`'))
                                 {
-                                    if (!string.IsNullOrEmpty(_decryptSplit[1]) && Clients.Contains(_decryptSplit[1]))
+                                    string[] _decryptSplit = _decrypt.Split('`');
+                                    if (_decryptSplit[0] == _clientHandle[0])
                                     {
-                                        if (!string.IsNullOrEmpty(_decryptSplit[2]))
+                                        if (!string.IsNullOrEmpty(_decryptSplit[1]))
                                         {
-                                            _responseMessage += SetKey(_id, _clientHandle);
-                                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_decryptSplit[2]);
+                                            _responseMessage += SetKey(_clientId, _clientHandle);
+                                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_decryptSplit[1]);
                                             if (_cInfo != null)
                                             {
+                                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0}", _cInfo.playerId), null);
+                                                Writer(string.Format("Client {0} at IP {1} has kicked {2}", _clientHandle[2], _ip, _cInfo.playerId));
                                                 _response.StatusCode = 200;
-                                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0}", _decryptSplit[2]), null);
-                                                Writer(string.Format("Web panel client {0} has kicked steam id {1} entity {2} with IP {2}", _decryptSplit[1], _cInfo.playerId, _cInfo.entityId, _request.RemoteEndPoint.Address.ToString()));
                                             }
                                             else
                                             {
-                                                _response.StatusCode = 202;
+                                                _response.StatusCode = 406;
                                             }
                                         }
                                         else
                                         {
-                                            _response.StatusCode = 401;
+                                            AuthorizedTime.Remove(_clientId);
+                                            Authorized.Remove(_clientId);
+                                            GETPassThrough.Remove(_ip);
+                                            if (!_request.IsLocal)
+                                            {
+                                                BannedIP.Add(_ip);
+                                                Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                            }
+                                            _response.StatusCode = 403;
                                         }
                                     }
                                     else
                                     {
-                                        _response.StatusCode = 401;
+                                        AuthorizedTime.Remove(_clientId);
+                                        Authorized.Remove(_clientId);
+                                        GETPassThrough.Remove(_ip);
+                                        if (!_request.IsLocal)
+                                        {
+                                            BannedIP.Add(_ip);
+                                            Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                        }
+                                        _response.StatusCode = 403;
                                     }
                                 }
                                 else
                                 {
-                                    _response.StatusCode = 401;
+                                    AuthorizedTime.Remove(_clientId);
+                                    Authorized.Remove(_clientId);
+                                    GETPassThrough.Remove(_ip);
+                                    if (!_request.IsLocal)
+                                    {
+                                        BannedIP.Add(_ip);
+                                        Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                    }
+                                    _response.StatusCode = 403;
                                 }
                             }
                         }
@@ -1101,49 +1298,92 @@ namespace ServerTools.Website
                     }
                     else if (_uri == "Ban")
                     {
-                        string _pMR = Reverse(_postMessage);
-                        string _id = _pMR.Substring(0, 8);
-                        if (ValidAuth(_id))
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (Authorized.ContainsKey(_clientId))
                         {
-                            Authorized.TryGetValue(_id, out string[] _clientHandle);
-                            string _k = _clientHandle[0];
-                            string _s = _pMR.Substring(8);
-                            string _decrypt = Decrypt(_k, _s);
-                            if (_decrypt.Contains(' '))
+                            AuthorizedTime.TryGetValue(_clientId, out DateTime _expires);
+                            if (Expired(_expires))
                             {
-                                string[] _decryptSplit = _decrypt.Split(' ');
-                                if (_decryptSplit[0] == _clientHandle[1])
+                                Authorized.Remove(_clientId);
+                                AuthorizedTime.Remove(_clientId);
+                                GETPassThrough.Remove(_ip);
+                                _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                _response.StatusCode = 401;
+                            }
+                            else
+                            {
+                                AuthorizedTime[_clientId] = DateTime.Now;
+                                Authorized.TryGetValue(_clientId, out string[] _clientHandle);
+                                string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                                if (_decrypt.Contains('`'))
                                 {
-                                    if (!string.IsNullOrEmpty(_decryptSplit[1]) && Clients.Contains(_decryptSplit[1]))
+                                    string[] _decryptSplit = _decrypt.Split('`');
+                                    if (_decryptSplit[0] == _clientHandle[0])
                                     {
-                                        if (!string.IsNullOrEmpty(_decryptSplit[2]))
+                                        if (!string.IsNullOrEmpty(_decryptSplit[1]))
                                         {
-                                            _responseMessage += SetKey(_id, _clientHandle);
-                                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_decryptSplit[2]);
+                                            _responseMessage += SetKey(_clientId, _clientHandle);
+                                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_decryptSplit[1]);
                                             if (_cInfo != null)
                                             {
+                                                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 year", _cInfo.playerId), null);
+                                                Writer(string.Format("Client {0} at IP {1} has banned id {2} named {3}", _clientHandle[2], _ip, _cInfo.playerId, _cInfo.playerName));
                                                 _response.StatusCode = 200;
-                                                SdtdConsole.Instance.ExecuteSync(string.Format("ban {0} 1 year", _decryptSplit[2]), null);
-                                                Writer(string.Format("Web panel client {0} has banned {1} from IP {2}", _decryptSplit[1], _decryptSplit[2], _request.RemoteEndPoint.Address.ToString()));
                                             }
                                             else
                                             {
-                                                _response.StatusCode = 202;
+                                                PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_decryptSplit[1]);
+                                                if (_pdf != null)
+                                                {
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 year", _decryptSplit[1]), null);
+                                                    Writer(string.Format("Client {0} at IP {1} has banned id {2} named {3}", _clientHandle[2], _ip, _decryptSplit[1], _pdf.ecd.entityName));
+                                                    _response.StatusCode = 406;
+                                                }
+                                                else
+                                                {
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 year", _decryptSplit[1]), null);
+                                                    Writer(string.Format("Client {0} at IP {1} has banned id {2}", _clientHandle[2], _ip, _decryptSplit[1]));
+                                                    _response.StatusCode = 406;
+                                                }
                                             }
                                         }
                                         else
                                         {
-                                            _response.StatusCode = 401;
+                                            AuthorizedTime.Remove(_clientId);
+                                            Authorized.Remove(_clientId);
+                                            GETPassThrough.Remove(_ip);
+                                            if (!_request.IsLocal)
+                                            {
+                                                BannedIP.Add(_ip);
+                                                Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                            }
+                                            _response.StatusCode = 403;
                                         }
                                     }
                                     else
                                     {
-                                        _response.StatusCode = 401;
+                                        AuthorizedTime.Remove(_clientId);
+                                        Authorized.Remove(_clientId);
+                                        GETPassThrough.Remove(_ip);
+                                        if (!_request.IsLocal)
+                                        {
+                                            BannedIP.Add(_ip);
+                                            Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                        }
+                                        _response.StatusCode = 403;
                                     }
                                 }
                                 else
                                 {
-                                    _response.StatusCode = 401;
+                                    AuthorizedTime.Remove(_clientId);
+                                    Authorized.Remove(_clientId);
+                                    GETPassThrough.Remove(_ip);
+                                    if (!_request.IsLocal)
+                                    {
+                                        BannedIP.Add(_ip);
+                                        Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                    }
+                                    _response.StatusCode = 403;
                                 }
                             }
                         }
@@ -1154,62 +1394,115 @@ namespace ServerTools.Website
                     }
                     else if (_uri == "Mute")
                     {
-                        string _pMR = Reverse(_postMessage);
-                        string _id = _pMR.Substring(0, 8);
-                        if (ValidAuth(_id))
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (Authorized.ContainsKey(_clientId))
                         {
-                            Authorized.TryGetValue(_id, out string[] _clientHandle);
-                            string _k = _clientHandle[0];
-                            string _s = _pMR.Substring(8);
-                            string _decrypt = Decrypt(_k, _s);
-                            if (_decrypt.Contains(' '))
+                            AuthorizedTime.TryGetValue(_clientId, out DateTime _expires);
+                            if (Expired(_expires))
                             {
-                                string[] _decryptSplit = _decrypt.Split(' ');
-                                if (_decryptSplit[0] == _clientHandle[1])
+                                Authorized.Remove(_clientId);
+                                AuthorizedTime.Remove(_clientId);
+                                GETPassThrough.Remove(_ip);
+                                _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                _response.StatusCode = 401;
+                            }
+                            else
+                            {
+                                AuthorizedTime[_clientId] = DateTime.Now;
+                                Authorized.TryGetValue(_clientId, out string[] _clientHandle);
+                                string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                                if (_decrypt.Contains('`'))
                                 {
-                                    if (!string.IsNullOrEmpty(_decryptSplit[1]) && Clients.Contains(_decryptSplit[1]))
+                                    string[] _decryptSplit = _decrypt.Split('`');
+                                    if (_decryptSplit[0] == _clientHandle[0])
                                     {
-                                        if (!string.IsNullOrEmpty(_decryptSplit[2]))
+                                        if (!string.IsNullOrEmpty(_decryptSplit[1]))
                                         {
-                                            _responseMessage += SetKey(_id, _clientHandle);
-                                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_decryptSplit[2]);
-                                            if (_cInfo != null)
+                                            _responseMessage += SetKey(_clientId, _clientHandle);
+                                            if (Mute.IsEnabled)
                                             {
-                                                _response.StatusCode = 200;
-                                                if (Mute.Mutes.Contains(_cInfo.playerId))
+                                                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_decryptSplit[1]);
+                                                if (_cInfo != null)
                                                 {
-                                                    Mute.Mutes.Remove(_cInfo.playerId);
-                                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = 0;
-                                                    Writer(string.Format("Web panel client {0} has unmuted {1} from IP {2}", _decryptSplit[1], _decryptSplit[2], _request.RemoteEndPoint.Address.ToString()));
+                                                    if (Mute.Mutes.Contains(_cInfo.playerId))
+                                                    {
+                                                        Mute.Mutes.Remove(_cInfo.playerId);
+                                                        PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = 0;
+                                                        Writer(string.Format("Client {0} at IP {1} has unmuted id {2} named {3}", _clientHandle[2], _ip, _cInfo.playerId, _cInfo.playerName));
+                                                        _response.StatusCode = 202;
+                                                    }
+                                                    else
+                                                    {
+                                                        Mute.Mutes.Add(_cInfo.playerId);
+                                                        PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = -1;
+                                                        PersistentContainer.Instance.Players[_cInfo.playerId].MuteName = _cInfo.playerName;
+                                                        PersistentContainer.Instance.Players[_cInfo.playerId].MuteDate = DateTime.Now;
+                                                        Writer(string.Format("Client {0} at IP {1} has muted id {2} named {3}", _clientHandle[2], _ip, _cInfo.playerId, _cInfo.playerName));
+                                                        _response.StatusCode = 200;
+                                                    }
                                                 }
                                                 else
                                                 {
-                                                    Mute.Mutes.Add(_cInfo.playerId);
-                                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = -1;
-                                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteName = _cInfo.playerName;
-                                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteDate = DateTime.Now;
-                                                    Writer(string.Format("Web panel client {0} has muted {1} from IP {2}", _decryptSplit[1], _decryptSplit[2], _request.RemoteEndPoint.Address.ToString()));
+                                                    if (Mute.Mutes.Contains(_decryptSplit[1]))
+                                                    {
+                                                        Mute.Mutes.Remove(_decryptSplit[1]);
+                                                        PersistentContainer.Instance.Players[_decryptSplit[1]].MuteTime = 0;
+                                                        Writer(string.Format("Client {0} at IP {1} has unmuted id {2}", _clientHandle[2], _ip, _decryptSplit[1]));
+                                                        _response.StatusCode = 202;
+                                                    }
+                                                    else
+                                                    {
+                                                        Mute.Mutes.Add(_decryptSplit[1]);
+                                                        PersistentContainer.Instance.Players[_decryptSplit[1]].MuteTime = -1;
+                                                        PersistentContainer.Instance.Players[_decryptSplit[1]].MuteName = "-Unknown-";
+                                                        PersistentContainer.Instance.Players[_decryptSplit[1]].MuteDate = DateTime.Now;
+                                                        Writer(string.Format("Client {0} at IP {1} has muted id {2}", _clientHandle[2], _ip, _decryptSplit[1]));
+                                                        _response.StatusCode = 200;
+                                                    }
                                                 }
-
                                             }
                                             else
                                             {
-                                                _response.StatusCode = 202;
+                                                _response.StatusCode = 406;
                                             }
                                         }
                                         else
                                         {
-                                            _response.StatusCode = 401;
+                                            AuthorizedTime.Remove(_clientId);
+                                            Authorized.Remove(_clientId);
+                                            GETPassThrough.Remove(_ip);
+                                            if (!_request.IsLocal)
+                                            {
+                                                BannedIP.Add(_ip);
+                                                Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                            }
+                                            _response.StatusCode = 403;
                                         }
                                     }
                                     else
                                     {
-                                        _response.StatusCode = 401;
+                                        AuthorizedTime.Remove(_clientId);
+                                        Authorized.Remove(_clientId);
+                                        GETPassThrough.Remove(_ip);
+                                        if (!_request.IsLocal)
+                                        {
+                                            BannedIP.Add(_ip);
+                                            Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                        }
+                                        _response.StatusCode = 403;
                                     }
                                 }
                                 else
                                 {
-                                    _response.StatusCode = 401;
+                                    AuthorizedTime.Remove(_clientId);
+                                    Authorized.Remove(_clientId);
+                                    GETPassThrough.Remove(_ip);
+                                    if (!_request.IsLocal)
+                                    {
+                                        BannedIP.Add(_ip);
+                                        Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                    }
+                                    _response.StatusCode = 403;
                                 }
                             }
                         }
@@ -1220,87 +1513,144 @@ namespace ServerTools.Website
                     }
                     else if (_uri == "Jail")
                     {
-                        string _pMR = Reverse(_postMessage);
-                        string _id = _pMR.Substring(0, 8);
-                        if (ValidAuth(_id))
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (Authorized.ContainsKey(_clientId))
                         {
-                            Authorized.TryGetValue(_id, out string[] _clientHandle);
-                            string _k = _clientHandle[0];
-                            string _s = _pMR.Substring(8);
-                            string _decrypt = Decrypt(_k, _s);
-                            if (_decrypt.Contains(' '))
+                            AuthorizedTime.TryGetValue(_clientId, out DateTime _expires);
+                            if (Expired(_expires))
                             {
-                                string[] _decryptSplit = _decrypt.Split(' ');
-                                if (_decryptSplit[0] == _clientHandle[1])
+                                Authorized.Remove(_clientId);
+                                AuthorizedTime.Remove(_clientId);
+                                GETPassThrough.Remove(_ip);
+                                _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                _response.StatusCode = 401;
+                            }
+                            else
+                            {
+                                AuthorizedTime[_clientId] = DateTime.Now;
+                                Authorized.TryGetValue(_clientId, out string[] _clientHandle);
+                                string _decrypt = Decrypt(_clientHandle[1], _postMessage.Substring(8));
+                                if (_decrypt.Contains('`'))
                                 {
-                                    if (!string.IsNullOrEmpty(_decryptSplit[1]) && Clients.Contains(_decryptSplit[1]))
+                                    string[] _decryptSplit = _decrypt.Split('`');
+                                    if (_decryptSplit[0] == _clientHandle[0])
                                     {
-                                        if (!string.IsNullOrEmpty(_decryptSplit[2]))
+                                        if (!string.IsNullOrEmpty(_decryptSplit[1]))
                                         {
-                                            _responseMessage += SetKey(_id, _clientHandle);
-                                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_decryptSplit[2]);
-                                            if (_cInfo != null)
+                                            _responseMessage += SetKey(_clientId, _clientHandle);
+                                            if (Jail.IsEnabled)
                                             {
-                                                _response.StatusCode = 200;
-                                                if (Jail.Jailed.Contains(_cInfo.playerId))
+                                                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_decryptSplit[1]);
+                                                if (_cInfo != null)
                                                 {
-                                                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                                    if (_player != null)
+                                                    if (Jail.Jailed.Contains(_cInfo.playerId))
                                                     {
-                                                        EntityBedrollPositionList _position = _player.SpawnPoints;
-                                                        Jail.Jailed.Remove(_cInfo.playerId);
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = 0;
-                                                        if (_position != null && _position.Count > 0)
+                                                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                                        if (_player != null)
                                                         {
-                                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_position[0].x, -1, _position[0].z), null, false));
+                                                            EntityBedrollPositionList _position = _player.SpawnPoints;
+                                                            Jail.Jailed.Remove(_cInfo.playerId);
+                                                            PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = 0;
+                                                            if (_position != null && _position.Count > 0)
+                                                            {
+                                                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_position[0].x, -1, _position[0].z), null, false));
+                                                            }
+                                                            else
+                                                            {
+                                                                Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
+                                                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, -1, _pos[0].z), null, false));
+                                                            }
+                                                            Writer(string.Format("Client {0} at IP {1} has unjailed {2} named {3}", _clientHandle[2], _ip, _cInfo.playerId, _cInfo.playerName));
+                                                            _response.StatusCode = 200;
                                                         }
-                                                        else
+                                                    }
+                                                    else if (Jail.Jail_Position != "")
+                                                    {
+                                                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                                        if (_player != null && _player.IsSpawned())
                                                         {
-                                                            Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, -1, _pos[0].z), null, false));
+                                                            if (Jail.Jail_Position.Contains(","))
+                                                            {
+                                                                string[] _cords = Jail.Jail_Position.Split(',');
+                                                                int.TryParse(_cords[0], out int _x);
+                                                                int.TryParse(_cords[1], out int _y);
+                                                                int.TryParse(_cords[2], out int _z);
+                                                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                                                            }
                                                         }
-                                                        Writer(string.Format("Web panel client {0} has unjailed {1} from IP {2}", _decryptSplit[1], _decryptSplit[2], _request.RemoteEndPoint.Address.ToString()));
+                                                        Jail.Jailed.Add(_cInfo.playerId);
+                                                        PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = -1;
+                                                        PersistentContainer.Instance.Players[_cInfo.playerId].JailName = _cInfo.playerName;
+                                                        PersistentContainer.Instance.Players[_cInfo.playerId].JailDate = DateTime.Now;
+                                                        Writer(string.Format("Client {0} at IP {1} has jailed {2} named {3}", _clientHandle[2], _ip, _cInfo.playerId, _cInfo.playerName));
+                                                        _response.StatusCode = 200;
+                                                    }
+                                                    else
+                                                    {
+                                                        _response.StatusCode = 409;
                                                     }
                                                 }
-                                                else if (Jail.Jail_Position != "")
+                                                else
                                                 {
-                                                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                                    if (_player != null && _player.IsSpawned())
+                                                    if (Jail.Jailed.Contains(_decryptSplit[1]))
                                                     {
-                                                        if (Jail.Jail_Position.Contains(","))
-                                                        {
-                                                            string[] _cords = Jail.Jail_Position.Split(',');
-                                                            int.TryParse(_cords[0], out int _x);
-                                                            int.TryParse(_cords[1], out int _y);
-                                                            int.TryParse(_cords[2], out int _z);
-                                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
-                                                        }
+                                                        Jail.Jailed.Remove(_decryptSplit[1]);
+                                                        PersistentContainer.Instance.Players[_decryptSplit[1]].JailTime = 0;
+                                                        Writer(string.Format("Client {0} at IP {1} has unjailed {2}", _clientHandle[2], _ip, _decryptSplit[1]));
                                                     }
-                                                    Jail.Jailed.Add(_cInfo.playerId);
-                                                    PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = -1;
-                                                    PersistentContainer.Instance.Players[_cInfo.playerId].JailName = _cInfo.playerName;
-                                                    PersistentContainer.Instance.Players[_cInfo.playerId].JailDate = DateTime.Now;
-                                                    Writer(string.Format("Web panel client {0} has jailed {1} from IP {2}", _decryptSplit[1], _decryptSplit[2], _request.RemoteEndPoint.Address.ToString()));
+                                                    else if (Jail.Jail_Position != "")
+                                                    {
+                                                        Jail.Jailed.Add(_decryptSplit[1]);
+                                                        PersistentContainer.Instance.Players[_decryptSplit[1]].JailTime = -1;
+                                                        PersistentContainer.Instance.Players[_decryptSplit[1]].JailName = "-Unknown-";
+                                                        PersistentContainer.Instance.Players[_decryptSplit[1]].JailDate = DateTime.Now;
+                                                        Writer(string.Format("Client {0} at IP {1} has jailed {2}", _clientHandle[2], _ip, _decryptSplit[1]));
+                                                    }
+                                                    _response.StatusCode = 406;
                                                 }
                                             }
                                             else
                                             {
-                                                _response.StatusCode = 202;
+                                                _response.StatusCode = 500;
                                             }
                                         }
                                         else
                                         {
-                                            _response.StatusCode = 401;
+                                            AuthorizedTime.Remove(_clientId);
+                                            Authorized.Remove(_clientId);
+                                            GETPassThrough.Remove(_ip);
+                                            if (!_request.IsLocal)
+                                            {
+                                                BannedIP.Add(_ip);
+                                                Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                            }
+                                            _response.StatusCode = 403;
                                         }
                                     }
                                     else
                                     {
-                                        _response.StatusCode = 401;
+                                        AuthorizedTime.Remove(_clientId);
+                                        Authorized.Remove(_clientId);
+                                        GETPassThrough.Remove(_ip);
+                                        if (!_request.IsLocal)
+                                        {
+                                            BannedIP.Add(_ip);
+                                            Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                        }
+                                        _response.StatusCode = 403;
                                     }
                                 }
                                 else
                                 {
-                                    _response.StatusCode = 401;
+                                    AuthorizedTime.Remove(_clientId);
+                                    Authorized.Remove(_clientId);
+                                    GETPassThrough.Remove(_ip);
+                                    if (!_request.IsLocal)
+                                    {
+                                        BannedIP.Add(_ip);
+                                        Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                    }
+                                    _response.StatusCode = 403;
                                 }
                             }
                         }
@@ -1311,49 +1661,88 @@ namespace ServerTools.Website
                     }
                     else if (_uri == "Reward")
                     {
-                        string _pMR = Reverse(_postMessage);
-                        string _id = _pMR.Substring(0, 8);
-                        if (ValidAuth(_id))
+                        string _clientId = _postMessage.Substring(0, 8);
+                        if (Authorized.ContainsKey(_clientId))
                         {
-                            Authorized.TryGetValue(_id, out string[] _clientHandle);
-                            string _k = _clientHandle[0];
-                            string _s = _pMR.Substring(8);
-                            string _decrypt = Decrypt(_k, _s);
-                            if (_decrypt.Contains(' '))
+                            AuthorizedTime.TryGetValue(_clientId, out DateTime _expires);
+                            if (Expired(_expires))
                             {
-                                string[] _decryptSplit = _decrypt.Split(' ');
-                                if (_decryptSplit[0] == _clientHandle[1])
+                                Authorized.Remove(_clientId);
+                                AuthorizedTime.Remove(_clientId);
+                                GETPassThrough.Remove(_ip);
+                                _response.Redirect("http://" + ExternalIp + ":" + Port + "/st.html");
+                                _response.StatusCode = 401;
+                            }
+                            else
+                            {
+                                AuthorizedTime[_clientId] = DateTime.Now;
+                                Authorized.TryGetValue(_clientId, out string[] _clientHandle);
+                                string _key = _clientHandle[1];
+                                string _encrypted = _postMessage.Substring(8);
+                                string _decrypt = Decrypt(_key, _encrypted);
+                                if (_decrypt.Contains('`'))
                                 {
-                                    if (!string.IsNullOrEmpty(_decryptSplit[1]) && Clients.Contains(_decryptSplit[1]))
+                                    string[] _decryptSplit = _decrypt.Split('`');
+                                    if (_decryptSplit[0] == _clientHandle[0])
                                     {
-                                        if (!string.IsNullOrEmpty(_decryptSplit[2]))
+                                        if (!string.IsNullOrEmpty(_decryptSplit[1]))
                                         {
-                                            _responseMessage += SetKey(_id, _clientHandle);
-                                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_decryptSplit[2]);
-                                            if (_cInfo != null)
+                                            if (VoteReward.IsEnabled)
                                             {
-                                                _response.StatusCode = 200;
-                                                VoteReward.ItemOrBlockCounter(_cInfo, VoteReward.Reward_Count);
-                                                Writer(string.Format("Web panel client {0} has rewarded {1} from IP {2}", _decryptSplit[1], _decryptSplit[2], _request.RemoteEndPoint.Address.ToString()));
+                                                _responseMessage += SetKey(_clientId, _clientHandle);
+                                                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_decryptSplit[1]);
+                                                if (_cInfo != null)
+                                                {
+                                                    VoteReward.ItemOrBlockCounter(_cInfo, VoteReward.Reward_Count);
+                                                    Writer(string.Format("Client {0} at IP {1} has rewarded {2} named {3}", _clientHandle[2], _ip, _cInfo.playerId, _cInfo.playerName));
+                                                }
+                                                else
+                                                {
+                                                    _response.StatusCode = 406;
+                                                }
                                             }
                                             else
                                             {
-                                                _response.StatusCode = 202;
+                                                _response.StatusCode = 500;
                                             }
                                         }
                                         else
                                         {
-                                            _response.StatusCode = 401;
+                                            AuthorizedTime.Remove(_clientId);
+                                            Authorized.Remove(_clientId);
+                                            GETPassThrough.Remove(_ip);
+                                            if (!_request.IsLocal)
+                                            {
+                                                BannedIP.Add(_ip);
+                                                Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                            }
+                                            _response.StatusCode = 403;
                                         }
                                     }
                                     else
                                     {
-                                        _response.StatusCode = 401;
+                                        AuthorizedTime.Remove(_clientId);
+                                        Authorized.Remove(_clientId);
+                                        GETPassThrough.Remove(_ip);
+                                        if (!_request.IsLocal)
+                                        {
+                                            BannedIP.Add(_ip);
+                                            Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                        }
+                                        _response.StatusCode = 403;
                                     }
                                 }
                                 else
                                 {
-                                    _response.StatusCode = 401;
+                                    AuthorizedTime.Remove(_clientId);
+                                    Authorized.Remove(_clientId);
+                                    GETPassThrough.Remove(_ip);
+                                    if (!_request.IsLocal)
+                                    {
+                                        BannedIP.Add(_ip);
+                                        Writer(string.Format("Client at IP {0} has been banned", _ip));
+                                    }
+                                    _response.StatusCode = 403;
                                 }
                             }
                         }
@@ -1370,7 +1759,7 @@ namespace ServerTools.Website
                         _response.KeepAlive = false;
                         _response.ContentLength64 = (long)_c.Length;
                         _response.ContentEncoding = Encoding.UTF8;
-                        _response.ContentType = "text/plain; charset=utf-8";
+                        _response.ContentType = "text/html; charset=utf-8";
                         using (Stream output = _response.OutputStream)
                         {
                             output.Write(_c, 0, _c.Length);
@@ -1379,25 +1768,47 @@ namespace ServerTools.Website
                 }
                 else
                 {
-                    BannedIP.Add(_request.RemoteEndPoint.Address.ToString());
-                    Writer("Client with IP {0} has been banned from the web panel. Detected improper message format sent to server");
+                    GETPassThrough.Remove(_ip);
+                    if (!_request.IsLocal)
+                    {
+                        BannedIP.Add(_ip);
+                        Writer(string.Format("Client at IP {0} has been banned", _ip));
+                    }
+                    _response.StatusCode = 403;
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("Error in WebsiteServer.POST: {0}" + e.Message));
+                if (Listener.IsListening)
+                {
+                    Listener.Stop();
+                    Listener.Close();
+                }
+                if (Thread.IsAlive)
+                {
+                    Thread.Abort();
+                }
+                Start();
+                Log.Out(string.Format("[SERVERTOOLS] Error in WebPanel.POST: {0}" + e.Message));
             }
             _response.Close();
         }
 
         private static bool Expired(DateTime _expires)
         {
-            TimeSpan varTime = DateTime.Now - _expires;
-            double fractionalMinutes = varTime.TotalMinutes;
-            int _timepassed = (int)fractionalMinutes;
-            if (_timepassed >= 30)
+            try
             {
-                return true;
+                TimeSpan varTime = DateTime.Now - _expires;
+                double fractionalMinutes = varTime.TotalMinutes;
+                int _timepassed = (int)fractionalMinutes;
+                if (_timepassed >= 30)
+                {
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in WebPanel.Expired: {0}" + e.Message));
             }
             return false;
         }
@@ -1422,98 +1833,91 @@ namespace ServerTools.Website
         //    return _enc;
         //}
 
-        private static string Decrypt(string _k, string _s)
+        private static string Decrypt(string _key, string _string)
         {
-            for (int j = 3984; j > 0; j -= 8)
+            try
             {
-                _k = _k.Insert(j, " ");
-                _s = _s.Insert(j, " ");
+                for (int i = _string.Length - 8; i > 0; i -= 8)
+                {
+                    _string = _string.Insert(i, " ");
+                }
+                for (int i = _key.Length - 8; i > 0; i -= 8)
+                {
+                    _key = _key.Insert(i, " ");
+                }
+                string[] _keySplit = _key.Split(' ');
+                string[] _stringSplit = _string.Split(' ');
+                string _decrypted = string.Empty;
+                int _length = _stringSplit.Length;
+                for (int j = 0; j < _length; j++)
+                {
+                    char _char = (char)BinaryToDecimal((int.Parse(_stringSplit[j]) - int.Parse(_keySplit[j])).ToString().PadLeft(8, '0'));
+                    _decrypted += _char;
+                }
+                return _decrypted;
             }
-            string[] _kA = _k.Split(' ');
-            string[] _sA = _s.Split(' ');
-            string _dec = "";
-            int _cT = int.Parse(_sA[498].Substring(0, 3));
-            for (int k = 0; k < _cT; k++)
+            catch (Exception e)
             {
-                char _ch = (char)BToD((int.Parse(_sA[k]) - int.Parse(_kA[_cT - 1 - k])).ToString().PadLeft(8, '0'));
-                _dec += _ch;
+                Log.Out(string.Format("Error in WebPanel.Decrypt: {0}" + e.Message));
             }
-            return _dec;
+            return string.Empty;
         }
 
-        private static int BToD(string _binary)
+        private static int BinaryToDecimal(string _binary)
         {
-            int _binaryLength = _binary.Length;
             double _decimal = 0;
-            for (int i = 0; i < _binaryLength; ++i)
+            try
             {
-                _decimal += ((byte)_binary[i] - 48) * Math.Pow(2, ((_binaryLength - i) - 1));
+                int _binaryLength = _binary.Length;
+                for (int i = 0; i < _binaryLength; ++i)
+                {
+                    _decimal += ((byte)_binary[i] - 48) * Math.Pow(2, ((_binaryLength - i) - 1));
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("Error in WebPanel.BinaryToDecimal: {0}" + e.Message));
             }
             return (int)_decimal;
         }
 
-        private static string Reverse(string _input)
-        {
-            string _output = "";
-            for (int i = _input.Length - 1; i >= 0; i--)
-            {
-                _output += _input.ElementAt(i);
-            }
-            return _output;
-        }
-
-        private static bool ValidAuth(string _id)
-        {
-            if (Authorized.ContainsKey(_id))
-            {
-                AuthorizedTime.TryGetValue(_id, out DateTime _expires);
-                if (Expired(_expires))
-                {
-                    Authorized.Remove(_id);
-                    AuthorizedTime.Remove(_id);
-                    return false;
-                }
-                return true;
-            }
-            return false;
-        }
-
-        private static bool ValidVisit(string _id)
-        {
-            if (Visitor.ContainsKey(_id))
-            {
-                return true;
-            }
-            return false;
-        }
-
         private static string SetKey(string _id, string[] _clientHandle)
         {
-            string _newKey = "";
-            for (int i = 0; i < 499; i++)
+            try
             {
-                _newKey += Rnd.Next(12345678, 87654321).ToString();
+                string _newKey = "";
+                for (int i = 0; i < 249; i++)
+                {
+                    _newKey += Rnd.Next(12345678, 87654321).ToString();
+                }
+                _clientHandle[1] = _newKey;
+                Authorized[_id] = _clientHandle;
+                AuthorizedTime[_id] = DateTime.Now;
+                string _output = _newKey.Insert(0, _id);
+                return _output;
             }
-            _clientHandle[0] = _newKey;
-            Authorized[_id] = _clientHandle;
-            AuthorizedTime[_id] = DateTime.Now;
-            string _output = _newKey.Insert(0, _id);
-            string _outputReversed = "";
-            for (int j = _output.Length - 1; j >= 0; j--)
+            catch (Exception e)
             {
-                _outputReversed += _output.ElementAt(j);
+                Log.Out(string.Format("Error in WebPanel.SetKey: {0}" + e.Message));
             }
-            return _outputReversed;
+            return string.Empty;
         }
 
         private static void Writer(string _input)
         {
-            using (StreamWriter sw = new StreamWriter(FilePath, true))
+            try
             {
-                sw.WriteLine(string.Format("{0}: {1}", DateTime.Now, _input));
-                sw.WriteLine();
-                sw.Flush();
-                sw.Close();
+                using (StreamWriter sw = new StreamWriter(filePath, true, Encoding.UTF8))
+                {
+                    sw.WriteLine(string.Format("{0}: {1}", DateTime.Now, _input));
+                    sw.WriteLine();
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("Error in WebPanel.Writer: {0}" + e.Message));
             }
         }
     }

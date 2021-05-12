@@ -135,7 +135,7 @@ namespace ServerTools
         public static void ShutdownFailsafe()
         {
             System.Timers.Timer _shutdownFailsafe = new System.Timers.Timer(60000);
-            _shutdownFailsafe.AutoReset = false;
+            _shutdownFailsafe.AutoReset = true;
             _shutdownFailsafe.Start();
             _shutdownFailsafe.Elapsed += (sender, e) =>
             {
@@ -508,6 +508,10 @@ namespace ServerTools
             if (WebPanel.IsEnabled)
             {
                 Log.Out("Web panel enabled");
+            }
+            if (WindowedResponse.IsEnabled)
+            {
+                Log.Out("Windowed response enabled");
             }
             if (Zones.IsEnabled)
             {

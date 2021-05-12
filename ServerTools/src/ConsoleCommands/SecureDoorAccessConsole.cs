@@ -13,7 +13,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. SecureDoorAccess\n" +
+                   "  1. st-sda\n" +
                    "1. Attempts to set access to all secure door\n";
         }
 

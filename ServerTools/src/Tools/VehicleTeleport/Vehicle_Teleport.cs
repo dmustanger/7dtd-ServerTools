@@ -6,7 +6,7 @@ namespace ServerTools
 {
     class VehicleTeleport
     {
-        public static bool IsEnabled = false, Bike = false, Mini_Bike = false, Motor_Bike = false, Jeep = false, Gyro = false, Inside_Claim = true;
+        public static bool IsEnabled = false, Bike = false, Mini_Bike = false, Motor_Bike = false, Jeep = false, Gyro = false, Inside_Claim = false;
         public static int Delay_Between_Uses = 120, Distance = 50, Command_Cost = 0;
         public static string Command77 = "bike", Command78 = "minibike", Command79 = "motorbike", Command80 = "jeep", Command81 = "gyro";
 

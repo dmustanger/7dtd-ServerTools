@@ -6,7 +6,7 @@ namespace ServerTools
 {
     class Waypoints
     {
-        public static bool IsEnabled = false, PvP_Check = false, Zombie_Check = false, Vehicle = false;
+        public static bool IsEnabled = false, Player_Check = false, Zombie_Check = false, Vehicle = false;
         public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Reserved_Max_Waypoints = 4, Command_Cost = 0;
         public static string Command10 = "go way", Command106 = "waypoint", Command107 = "way", Command108 = "wp", Command109 = "fwaypoint", Command110 = "fway", Command111 = "fwp", 
             Command112 = "waypoint save", Command113 = "way save", Command114 = "ws", Command115 = "waypoint del", Command116 = "way del", Command117 = "wd";
@@ -130,7 +130,7 @@ namespace ServerTools
             {
                 int _timeleft = _delay - _timepassed;
                 Phrases.Dict.TryGetValue(271, out string _phrase271);
-                _phrase271 = _phrase271.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase271 = _phrase271.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                 _phrase271 = _phrase271.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase271 = _phrase271.Replace("{Value}", _timeleft.ToString());
                 _phrase271 = _phrase271.Replace("{Command106}", Command106);
@@ -153,7 +153,7 @@ namespace ServerTools
                         return;
                     }
                 }
-                if (PvP_Check)
+                if (Player_Check)
                 {
                     if (Teleportation.PCheck(_cInfo, _player))
                     {
@@ -363,7 +363,7 @@ namespace ServerTools
                         {
                             Phrases.Dict.TryGetValue(286, out string _phrase286);
                             _phrase286 = _phrase286.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase286 = _phrase286.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase286 = _phrase286.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                             _phrase286 = _phrase286.Replace("{Command10}", Command10);
                             ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase286 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             Phrases.Dict.TryGetValue(287, out string _phrase287);

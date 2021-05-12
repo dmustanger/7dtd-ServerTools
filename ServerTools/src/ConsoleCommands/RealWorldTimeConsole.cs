@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. RealWorldTime off\n" +
-                   "  2. RealWorldTime on\n" +
+                   "  1. st-rwt off\n" +
+                   "  2. st-rwt on\n" +
                    "1. Turn off real world time\n" +
                    "2. Turn on real world time\n";
         }

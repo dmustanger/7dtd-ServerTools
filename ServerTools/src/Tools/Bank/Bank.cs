@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace ServerTools
@@ -251,7 +252,7 @@ namespace ServerTools
                                             float _fee = _currencyRemoved * ((float)Deposit_Fee_Percent / 100);
                                             int _adjustedDeposit = _currencyRemoved - (int)_fee;
                                             AddCoinsToBank(_cInfo.playerId, _adjustedDeposit);
-                                            using (StreamWriter sw = new StreamWriter(filepath, true))
+                                            using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                             {
                                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} to their bank account from a secure loot.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _adjustedDeposit));
                                                 sw.WriteLine();
@@ -267,7 +268,7 @@ namespace ServerTools
                                         else
                                         {
                                             AddCoinsToBank(_cInfo.playerId, _currencyRemoved);
-                                            using (StreamWriter sw = new StreamWriter(filepath, true))
+                                            using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                             {
                                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} to their bank account from a secure loot.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _currencyRemoved));
                                                 sw.WriteLine();
@@ -290,7 +291,7 @@ namespace ServerTools
                                 else
                                 {
                                     Phrases.Dict.TryGetValue(646, out string _phrase646);
-                                    _phrase646 = _phrase646.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase646 = _phrase646.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                     _phrase646 = _phrase646.Replace("{Command95}", Command95);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase646 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -298,7 +299,7 @@ namespace ServerTools
                             else
                             {
                                 Phrases.Dict.TryGetValue(646, out string _phrase646);
-                                _phrase646 = _phrase646.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                _phrase646 = _phrase646.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                 _phrase646 = _phrase646.Replace("{Command95}", Command95);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase646 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
@@ -343,7 +344,7 @@ namespace ServerTools
                                         if (itemStack != null)
                                         {
                                             SubtractCoinsFromBank(_cInfo.playerId, _value);
-                                            using (StreamWriter sw = new StreamWriter(filepath, true))
+                                            using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                             {
                                                 sw.WriteLine(string.Format("{0}: {1} has removed {2} from their bank account as {3}.", DateTime.Now, _cInfo.playerName, _value, Ingame_Coin));
                                                 sw.WriteLine();
@@ -394,7 +395,7 @@ namespace ServerTools
                             else
                             {
                                 Phrases.Dict.TryGetValue(652, out string _phrase652);
-                                _phrase652 = _phrase652.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                _phrase652 = _phrase652.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                 _phrase652 = _phrase652.Replace("{Command96}", Command96);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase652 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
@@ -430,7 +431,7 @@ namespace ServerTools
                             float _fee = _value * ((float)Deposit_Fee_Percent / 100);
                             int _adjustedDeposit = _value - (int)_fee;
                             AddCoinsToBank(_cInfo.playerId, _adjustedDeposit);
-                            using (StreamWriter sw = new StreamWriter(filepath, true))
+                            using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                             {
                                 sw.WriteLine(string.Format("{0}: {1} has added {2} to their bank account from their wallet.", DateTime.Now, _cInfo.playerName, _adjustedDeposit));
                                 sw.WriteLine();
@@ -446,7 +447,7 @@ namespace ServerTools
                         else
                         {
                             AddCoinsToBank(_cInfo.playerId, _value);
-                            using (StreamWriter sw = new StreamWriter(filepath, true))
+                            using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                             {
                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} to their bank account from their wallet.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _value));
                                 sw.WriteLine();
@@ -468,7 +469,7 @@ namespace ServerTools
                 else
                 {
                     Phrases.Dict.TryGetValue(656, out string _phrase656);
-                    _phrase656 = _phrase656.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase656 = _phrase656.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                     _phrase656 = _phrase656.Replace("{Command97}", Command97);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase656 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -491,7 +492,7 @@ namespace ServerTools
                     {
                         Wallet.AddCoinsToWallet(_cInfo.playerId, _value);
                         SubtractCoinsFromBank(_cInfo.playerId, _value);
-                        using (StreamWriter sw = new StreamWriter(filepath, true))
+                        using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                         {
                             sw.WriteLine(string.Format("{0}: {1} has removed {2} from their bank account and it has been placed into their wallet.", DateTime.Now, _cInfo.playerName, _value));
                             sw.WriteLine();
@@ -511,7 +512,7 @@ namespace ServerTools
                 else
                 {
                     Phrases.Dict.TryGetValue(659, out string _phrase659);
-                    _phrase659 = _phrase659.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase659 = _phrase659.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                     _phrase659 = _phrase659.Replace("{Command98}", Command98);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase659 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -549,7 +550,7 @@ namespace ServerTools
                                                 TransferId.Remove(_cInfo2.playerId);
                                                 SubtractCoinsFromBank(_cInfo.playerId, _transferValue);
                                                 AddCoinsToBank(_cInfo2.playerId, _transferValue);
-                                                using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0}: {1} {2} has made a bank transfer of {3} to {4} {5}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _transferValue, _cInfo2.playerId, _cInfo2.playerName));
                                                     sw.WriteLine();
@@ -590,7 +591,7 @@ namespace ServerTools
                         else
                         {
                             Phrases.Dict.TryGetValue(664, out string _phrase664);
-                            _phrase664 = _phrase664.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase664 = _phrase664.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                             _phrase664 = _phrase664.Replace("{Command99}", Command99);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase664 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }

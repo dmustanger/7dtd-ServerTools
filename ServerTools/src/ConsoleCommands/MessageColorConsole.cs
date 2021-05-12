@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. MessageColor off\n" +
-                   "  2. MessageColor on\n" +
+                   "  1. st-mc off\n" +
+                   "  2. st-mc on\n" +
                    "1. Turn off message color\n" +
                    "2. Turn on message color\n";
         }

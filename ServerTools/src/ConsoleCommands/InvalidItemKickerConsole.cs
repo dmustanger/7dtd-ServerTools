@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. InvalidItemKicker off\n" +
-                   "  2. InvalidItemKicker on\n" +
+                   "  1. st-iik off\n" +
+                   "  2. st-iik on\n" +
                    "1. Turn off invalid item kicker\n" +
                    "2. Turn on invalid item kicker\n";
         }

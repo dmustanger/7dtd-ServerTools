@@ -12,9 +12,9 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. FirstClaimBlock off\n" +
-                   "  2. FirstClaimBlock on\n" +
-                   "  3. Firstclaimblock reset <steamId/entityId>\n" +
+                   "  1. st-fcb off\n" +
+                   "  2. st-fcb on\n" +
+                   "  3. st-fcb reset <steamId/entityId>\n" +
                    "1. Turn off first claim block\n" +
                    "2. Turn on first claim block\n" +
                    "3. Reset the status of a player's first claim block\n";

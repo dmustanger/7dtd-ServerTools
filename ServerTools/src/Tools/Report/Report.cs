@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
 
 namespace ServerTools
@@ -60,7 +61,7 @@ namespace ServerTools
                     }
                 }
             }
-            using (StreamWriter sw = new StreamWriter(_filepath, true))
+            using (StreamWriter sw = new StreamWriter(_filepath, false, Encoding.UTF8))
             {
                 sw.WriteLine(string.Format("{0}: Location: {1} {2} {3}. Player {4} {5} reports: {6}.", DateTime.Now, (int)_pos.x, (int)_pos.y, (int)_pos.z, _cInfo.playerName, _cInfo.playerId, _message));
                 sw.WriteLine();

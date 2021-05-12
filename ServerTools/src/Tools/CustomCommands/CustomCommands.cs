@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml;
 
 namespace ServerTools
@@ -144,7 +145,7 @@ namespace ServerTools
         private static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath))
+            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<CustomCommands>");
@@ -163,7 +164,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("        <Command Trigger=\"help\" Response=\"global Type " + ChatHook.Command_Private + Command15 + " for a list of chat commands.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Trigger=\"help\" Response=\"global Type " + ChatHook.Chat_Command_Prefix1 + Command15 + " for a list of chat commands.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Trigger=\"info\" Response=\"global Server Info: \" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Trigger=\"rules\" Response=\"whisper Visit YourSiteHere to see the rules.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Trigger=\"website\" Response =\"whisper Visit YourSiteHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
@@ -215,9 +216,15 @@ namespace ServerTools
             string _commands = "";
             if (FriendTeleport.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, FriendTeleport.Command59);
-                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, FriendTeleport.Command59);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, FriendTeleport.Command60);
+                if (FriendTeleport.Command59 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, FriendTeleport.Command59);
+                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Chat_Command_Prefix1, FriendTeleport.Command59);
+                }
+                if (FriendTeleport.Command60 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, FriendTeleport.Command60);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -226,7 +233,10 @@ namespace ServerTools
             }
             if (Wallet.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Wallet.Command56);
+                if (Wallet.Command56 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Wallet.Command56);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -235,8 +245,14 @@ namespace ServerTools
             }
             if (Shop.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Shop.Command57);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Shop.Command58);
+                if (Shop.Command57 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Shop.Command57);
+                }
+                if (Shop.Command58 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Shop.Command58);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -245,7 +261,10 @@ namespace ServerTools
             }
             if (Gimme.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Gimme.Command24);
+                if (Gimme.Command24 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Gimme.Command24);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -254,12 +273,30 @@ namespace ServerTools
             }
             if (Homes.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Homes.Command1);
-                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Homes.Command1);
-                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Homes.Command2);
-                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Homes.Command3);
-                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Homes.Command4);
-                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Homes.Command6);
+                if (Homes.Command1 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Homes.Command1);
+                }
+                if (Homes.Command2 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Chat_Command_Prefix1, Homes.Command1);
+                }
+                if (Homes.Command3 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Chat_Command_Prefix1, Homes.Command2);
+                }
+                if (Homes.Command4 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Chat_Command_Prefix1, Homes.Command4);
+                }
+                if (Homes.Command5 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Chat_Command_Prefix1, Homes.Command5);
+                }
+                if (Homes.Command6 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Chat_Command_Prefix1, Homes.Command6);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -268,7 +305,10 @@ namespace ServerTools
             }
             if (ClanManager.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command42);
+                if (ClanManager.Command42 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command42);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -277,7 +317,11 @@ namespace ServerTools
             }
             if (ClanManager.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command125);
+                if (ClanManager.Command125 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command125);
+                }
+
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -286,7 +330,10 @@ namespace ServerTools
             }
             if (ClanManager.IsEnabled && !ClanManager.ClanMember.Contains(_cInfo.playerId))
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command45);
+                if (ClanManager.Command45 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command45);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -295,7 +342,10 @@ namespace ServerTools
             }
             if (FirstClaimBlock.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, FirstClaimBlock.Command32);
+                if (FirstClaimBlock.Command32 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, FirstClaimBlock.Command32);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -304,7 +354,10 @@ namespace ServerTools
             }
             if (RestartVote.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, RestartVote.Command66);
+                if (RestartVote.Command66 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, RestartVote.Command66);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -313,8 +366,14 @@ namespace ServerTools
             }
             if (Animals.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Animals.Command30);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Animals.Command31);
+                if (Animals.Command30 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Animals.Command30);
+                }
+                if (Animals.Command31 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Animals.Command31);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -323,7 +382,10 @@ namespace ServerTools
             }
             if (VoteReward.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, VoteReward.Command46);
+                if (VoteReward.Command46 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, VoteReward.Command46);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -332,7 +394,10 @@ namespace ServerTools
             }
             if (Shutdown.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Shutdown.Command47);
+                if (Shutdown.Command47 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Shutdown.Command47);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -341,7 +406,10 @@ namespace ServerTools
             }
             if (AdminList.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, AdminList.Command48);
+                if (AdminList.Command48 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, AdminList.Command48);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -350,7 +418,10 @@ namespace ServerTools
             }
             if (Travel.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Travel.Command49);
+                if (Travel.Command49 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Travel.Command49);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -359,12 +430,24 @@ namespace ServerTools
             }
             if (WeatherVote.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, WeatherVote.Command62);
+                if (WeatherVote.Command62 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, WeatherVote.Command62);
+                }
                 if (WeatherVote.VoteOpen)
                 {
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, WeatherVote.Command63);
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, WeatherVote.Command64);
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, WeatherVote.Command65);
+                    if (WeatherVote.Command63 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, WeatherVote.Command63);
+                    }
+                    if (WeatherVote.Command64 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, WeatherVote.Command64);
+                    }
+                    if (WeatherVote.Command65 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, WeatherVote.Command65);
+                    }
                 }
                 if (_commands.Length >= 100)
                 {
@@ -374,10 +457,22 @@ namespace ServerTools
             }
             if (Auction.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Auction.Command71);
-                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Auction.Command72);
-                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Auction.Command73);
-                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Auction.Command74);
+                if (Auction.Command71 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Auction.Command71);
+                }
+                if (Auction.Command72 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Chat_Command_Prefix1, Auction.Command72);
+                }
+                if (Auction.Command73 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Chat_Command_Prefix1, Auction.Command73);
+                }
+                if (Auction.Command74 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Chat_Command_Prefix1, Auction.Command74);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -386,7 +481,10 @@ namespace ServerTools
             }
             if (DeathSpot.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, DeathSpot.Command61);
+                if (DeathSpot.Command61 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, DeathSpot.Command61);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -395,7 +493,10 @@ namespace ServerTools
             }
             if (Fps.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Fps.Command75);
+                if (Fps.Command75 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Fps.Command75);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -404,7 +505,10 @@ namespace ServerTools
             }
             if (Loc.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Loc.Command76);
+                if (Loc.Command76 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Loc.Command76);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -413,7 +517,10 @@ namespace ServerTools
             }
             if (MuteVote.IsEnabled && Mute.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, MuteVote.Command67);
+                if (MuteVote.Command67 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, MuteVote.Command67);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -422,7 +529,10 @@ namespace ServerTools
             }
             if (KickVote.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, KickVote.Command68);
+                if (KickVote.Command68 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, KickVote.Command68);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -431,8 +541,14 @@ namespace ServerTools
             }
             if (Suicide.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Suicide.Command20);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Suicide.Command23);
+                if (Suicide.Command20 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Suicide.Command20);
+                }
+                if (Suicide.Command23 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Suicide.Command23);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -441,10 +557,16 @@ namespace ServerTools
             }
             if (Lobby.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Lobby.Command88);
+                if (Lobby.Command88 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Lobby.Command88);
+                }
                 if (Lobby.Return && Lobby.LobbyPlayers.Contains(_cInfo.entityId))
                 {
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Lobby.Command53);
+                    if (Lobby.Command53 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Lobby.Command53);
+                    }
                 }
                 if (_commands.Length >= 100)
                 {
@@ -454,8 +576,14 @@ namespace ServerTools
             }
             if (Bounties.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Bounties.Command83);
-                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Bounties.Command83);
+                if (Bounties.Command83 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Bounties.Command83);
+                }
+                if (Bounties.Command83 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Chat_Command_Prefix1, Bounties.Command83);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -464,9 +592,18 @@ namespace ServerTools
             }
             if (Lottery.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Lottery.Command84);
-                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Lottery.Command84);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Lottery.Command85);
+                if (Lottery.Command84 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Lottery.Command84);
+                }
+                if (Lottery.Command84 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Chat_Command_Prefix1, Lottery.Command84);
+                }
+                if (Lottery.Command85 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Lottery.Command85);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -475,7 +612,10 @@ namespace ServerTools
             }
             if (Report.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Report.Command82);
+                if (Report.Command82 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Report.Command82);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -484,7 +624,10 @@ namespace ServerTools
             }
             if (Stuck.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Stuck.Command90);
+                if (Stuck.Command90 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Stuck.Command90);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -493,17 +636,35 @@ namespace ServerTools
             }
             if (Bank.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Bank.Command94);
-                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Bank.Command95);
-                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Bank.Command96);
+                if (Bank.Command94 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Bank.Command94);
+                }
+                if (Bank.Command95 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Chat_Command_Prefix1, Bank.Command95);
+                }
+                if (Bank.Command96 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Chat_Command_Prefix1, Bank.Command96);
+                }
                 if (Wallet.IsEnabled)
                 {
-                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Bank.Command97);
-                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Bank.Command98);
+                    if (Bank.Command97 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Chat_Command_Prefix1, Bank.Command97);
+                    }
+                    if (Bank.Command98 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Chat_Command_Prefix1, Bank.Command98);
+                    }
                 }
                 if (Bank.Player_Transfers)
                 {
-                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Bank.Command99);
+                    if (Bank.Command99 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Chat_Command_Prefix1, Bank.Command99);
+                    }
                 }
                 if (_commands.Length >= 100)
                 {
@@ -513,10 +674,16 @@ namespace ServerTools
             }
             if (Market.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Market.Command103);
+                if (Market.Command103 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Market.Command103);
+                }
                 if (Market.Return && Market.MarketPlayers.Contains(_cInfo.entityId))
                 {
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Market.Command51);
+                    if (Market.Command51 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Market.Command51);
+                    }
                 }
                 if (_commands.Length >= 100)
                 {
@@ -526,7 +693,10 @@ namespace ServerTools
             }
             if (InfoTicker.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, InfoTicker.Command104);
+                if (InfoTicker.Command104 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, InfoTicker.Command104);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -535,11 +705,26 @@ namespace ServerTools
             }
             if (Waypoints.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Waypoints.Command106);
-                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Waypoints.Command106);
-                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Waypoints.Command112);
-                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Waypoints.Command115);
-                _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Command_Private, Waypoints.Command109);
+                if (Waypoints.Command106 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command106);
+                }
+                if (Waypoints.Command106 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command106);
+                }
+                if (Waypoints.Command112 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command112);
+                }
+                if (Waypoints.Command115 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command115);
+                }
+                if (Waypoints.Command109 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command109);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -550,23 +735,38 @@ namespace ServerTools
             {
                 if (VehicleTeleport.Bike)
                 {
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, VehicleTeleport.Command77);
+                    if (VehicleTeleport.Command77 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, VehicleTeleport.Command77);
+                    }
                 }
                 if (VehicleTeleport.Mini_Bike)
                 {
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, VehicleTeleport.Command78);
+                    if (VehicleTeleport.Command78 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, VehicleTeleport.Command78);
+                    }
                 }
                 if (VehicleTeleport.Motor_Bike)
                 {
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, VehicleTeleport.Command79);
+                    if (VehicleTeleport.Command79 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, VehicleTeleport.Command79);
+                    }
                 }
                 if (VehicleTeleport.Jeep)
                 {
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, VehicleTeleport.Command80);
+                    if (VehicleTeleport.Command80 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, VehicleTeleport.Command80);
+                    }
                 }
                 if (VehicleTeleport.Gyro)
                 {
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, VehicleTeleport.Command81);
+                    if (VehicleTeleport.Command81 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, VehicleTeleport.Command81);
+                    }
                 }
                 if (_commands.Length >= 100)
                 {
@@ -576,7 +776,10 @@ namespace ServerTools
             }
             if (PlayerList.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, PlayerList.Command89);
+                if (PlayerList.Command89 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, PlayerList.Command89);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -585,7 +788,10 @@ namespace ServerTools
             }
             if (Bloodmoon.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Bloodmoon.Command18);
+                if (Bloodmoon.Command18 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Bloodmoon.Command18);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -594,7 +800,10 @@ namespace ServerTools
             }
             if (Whisper.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2} {3}{4}", _commands, ChatHook.Command_Private, Whisper.Command120, ChatHook.Command_Private, Whisper.Command122);
+                if (Whisper.Command122 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2} {3}{4}", _commands, ChatHook.Chat_Command_Prefix1, Whisper.Command120, ChatHook.Chat_Command_Prefix1, Whisper.Command122);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -605,29 +814,62 @@ namespace ServerTools
             {
                 if (!Hardcore.Optional)
                 {
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command11);
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command12);
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command127);
+                    if (Hardcore.Command11 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command11);
+                    }
+                    if (Hardcore.Command12 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command12);
+                    }
+                    if (Hardcore.Command127 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command127);
+                    }
                     if (Hardcore.Max_Extra_Lives > 0)
                     {
-                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command101);
+                        if (Hardcore.Command101 != "***")
+                        {
+                            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command101);
+                        }
                     }
                 }
                 else if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
                 {
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command11);
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command12);
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command127);
+                    if (Hardcore.Command11 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command11);
+                    }
+                    if (Hardcore.Command12 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command12);
+                    }
+                    if (Hardcore.Command127 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command127);
+                    }
                     if (Hardcore.Max_Extra_Lives > 0)
                     {
-                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command101);
+                        if (Hardcore.Command101 != "***")
+                        {
+                            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command101);
+                        }
                     }
                 }
                 else
                 {
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command11);
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command12);
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command128);
+                    if (Hardcore.Command11 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command11);
+                    }
+                    if (Hardcore.Command12 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command12);
+                    }
+                    if (Hardcore.Command128 != "***")
+                    {
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command128);
+                    }
                 }
                 if (_commands.Length >= 100)
                 {
@@ -637,7 +879,10 @@ namespace ServerTools
             }
             if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ReservedSlots.Command69);
+                if (ReservedSlots.Command69 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ReservedSlots.Command69);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -646,7 +891,10 @@ namespace ServerTools
             }
             if (Day7.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Day7.Command16);
+                if (Day7.Command16 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Day7.Command16);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -655,9 +903,18 @@ namespace ServerTools
             }
             if (Mute.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Mute.Command13);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Mute.Command14);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Mute.Command119);
+                if (Mute.Command13 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Mute.Command13);
+                }
+                if (Mute.Command14 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Mute.Command14);
+                }
+                if (Mute.Command119 != "***")
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Mute.Command119);
+                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -684,7 +941,7 @@ namespace ServerTools
                         if (!_result)
                         {
                             string _c = kvp.Key;
-                            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, _c);
+                            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, _c);
                             if (_commands.Length >= 100)
                             {
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -709,7 +966,7 @@ namespace ServerTools
             }
             if (Jail.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Jail.Command27);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Jail.Command27);
             }
             if (_commands.Length >= 0)
             {
@@ -821,7 +1078,7 @@ namespace ServerTools
             try
             {
                 Phrases.Dict.TryGetValue(331, out string _phrase331);
-                _phrase331 = _phrase331.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase331 = _phrase331.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                 _phrase331 = _phrase331.Replace("{CommandCustom}", _message);
                 _phrase331 = _phrase331.Replace("{DelayBetweenUses}", _newDelay.ToString());
                 _phrase331 = _phrase331.Replace("{TimeRemaining}", _timeLeft.ToString());

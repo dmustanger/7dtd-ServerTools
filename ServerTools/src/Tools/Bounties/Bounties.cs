@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace ServerTools
 {
@@ -36,7 +37,7 @@ namespace ServerTools
                 }
             }
             Phrases.Dict.TryGetValue(537, out string _phrase537);
-            _phrase537 = _phrase537.Replace("{CommandPrivate}", ChatHook.Command_Private);
+            _phrase537 = _phrase537.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
             _phrase537 = _phrase537.Replace("{Command83}", Command83);
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase537 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
@@ -65,7 +66,7 @@ namespace ServerTools
                                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _bounty);
                                     int _currentbounty = PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty;
                                     PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _currentbounty + _bounty;
-                                    using (StreamWriter sw = new StreamWriter(filepath, true))
+                                    using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                     {
                                         sw.WriteLine(string.Format("{0}: {1} {2} added {3} bounty to {4} {5}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bounty, _cInfo2.playerId, _cInfo2.playerName));
                                         sw.WriteLine();
@@ -105,7 +106,7 @@ namespace ServerTools
                                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Minimum_Bounty);
                                 int _currentbounty = PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty;
                                 PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _currentbounty + Minimum_Bounty;
-                                using (StreamWriter sw = new StreamWriter(filepath, true))
+                                using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: {1} {2} added {3} bounty to {4} {5}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, Minimum_Bounty, _cInfo2.playerId, _cInfo2.playerName));
                                     sw.WriteLine();
@@ -179,7 +180,7 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBounty + Bonus;
                             PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter = _newKillerBountyHunter;
                             PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _killerBounty + Bonus;
-                            using (StreamWriter sw = new StreamWriter(filepath, true))
+                            using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                             {
                                 sw.WriteLine(string.Format("{0}: {1} {2} has collected the bounty on {3} {4}.", DateTime.Now, _cInfo2.playerId, _cInfo2.playerName, _cInfo2.playerId, _cInfo2.playerName));
                                 sw.WriteLine();
@@ -209,7 +210,7 @@ namespace ServerTools
                     else
                     {
                         PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBounty;
-                        using (StreamWriter sw = new StreamWriter(filepath, true))
+                        using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                         {
                             sw.WriteLine(string.Format("{0}: {1} {2} has collected the bounty on {3} {4}.", DateTime.Now, _cInfo2.playerId, _cInfo2.playerName, _cInfo2.playerId, _cInfo2.playerName));
                             sw.WriteLine();

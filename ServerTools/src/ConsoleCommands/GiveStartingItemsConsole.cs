@@ -15,7 +15,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. st-GiveStartingItems <steamId/entityId>\n" +
+                "  1. st-st-gsi <steamId/entityId>\n" +
                 "1. Gives a player the item(s) from the StatingItems.xml to their inventory unless full. Drops to the ground when full.\n";
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace ServerTools
 {
     class Travel
     {
-        public static bool IsEnabled = false, IsRunning = false, PvP_Check = false, Zombie_Check = false;
+        public static bool IsEnabled = false, IsRunning = false, Player_Check = false, Zombie_Check = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
         public static string Command49 = "travel";
         private const string file = "TravelLocations.xml";
@@ -109,7 +110,7 @@ namespace ServerTools
         private static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath))
+            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<TravelLocations>");
@@ -205,12 +206,12 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                Phrases.Dict.TryGetValue(313, out string _phrase313);
-                _phrase313 = _phrase313.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase313 = _phrase313.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase313 = _phrase313.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _phrase313 = _phrase313.Replace("{Command49}", Command49);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase313 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(1043, out string _phrase1043);
+                _phrase1043 = _phrase1043.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase1043 = _phrase1043.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase1043 = _phrase1043.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
+                _phrase1043 = _phrase1043.Replace("{Command49}", Command49);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1043 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -222,9 +223,9 @@ namespace ServerTools
             }
             else
             {
-                Phrases.Dict.TryGetValue(314, out string _phrase314);
-                _phrase314 = _phrase314.Replace("{CoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase314 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(1044, out string _phrase1044);
+                _phrase1044 = _phrase1044.Replace("{CoinName}", Wallet.Coin_Name);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1044 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -621,7 +622,7 @@ namespace ServerTools
                             }
                             if (_xMinCheck == 1 & _yMinCheck == 1 & _zMinCheck == 1 & _xMaxCheck == 1 & _yMaxCheck == 1 & _zMaxCheck == 1)
                             {
-                                if (PvP_Check)
+                                if (Player_Check)
                                 {
                                     if (Teleportation.PCheck(_cInfo, _player))
                                     {
@@ -641,14 +642,14 @@ namespace ServerTools
                                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                                 }
                                 PersistentContainer.Instance.Players[_cInfo.playerId].LastTravel = DateTime.Now;
-                                Phrases.Dict.TryGetValue(311, out string _phrase311);
-                                _phrase311 = _phrase311.Replace("{Destination}", kvpCorners.Key);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase311 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue(1041, out string _phrase1041);
+                                _phrase1041 = _phrase1041.Replace("{Destination}", kvpCorners.Key);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1041 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 return;
                             }
                         }
-                        Phrases.Dict.TryGetValue(312, out string _phrase312);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase312 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue(1042, out string _phrase1042);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1042 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         return;
                     }
                 }

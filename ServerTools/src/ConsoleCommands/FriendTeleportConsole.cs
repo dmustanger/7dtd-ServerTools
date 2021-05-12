@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. FriendTeleport off\n" +
-                   "  2. FriendTeleport on\n" +
+                   "  1. st-ft off\n" +
+                   "  2. st-ft on\n" +
                    "1. Turn off friend teleport\n" +
                    "2. Turn on friend teleport\n";
         }

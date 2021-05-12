@@ -1,747 +1,145 @@
 ﻿<!DOCTYPE html>
 
 <html lang="en">
-<head>
-    <link href="CSS/styles.css" rel="stylesheet" type="text/css" />
-    <meta charset="utf-8" />
-    <script src="JS/scripts.js"></script>
-    <title>ServerTools</title>
-</head>
-<body onload="FreshPage()" oncontextmenu="return false" id="GeneralBody">
-	<header id="Head">
-		<div id="SubheaderLeft">
-      <div id="ClientContainer">
-        <div id="SignInContainer">
-          <h2><img src="Img/Lock.png" id="Icon"/>LOGIN</h2>
-          <input type="textbox" placeholder="Client" id="Text1"><br>
-          <input type="password" placeholder="Password" id="Text2"><br>
-          <input type="checkbox" id="NotBotBox1">
-          <input type="button" value="Sign In" onclick="SignIn()" id="SignInButton">
-        </div>
-        <div id="PasswordContainer">
-            <h2><img src="Img/Lock.png" id="Icon"/>PASSWORD</h2>
-            <input type="password" placeholder="New" id="Text3"><br>
-            <input type="password" placeholder="Confirm" id="Text4"><br>
-            <input type="checkbox" id="NotBotBox2">
-            <input type="button" value="Set Password" onclick="SetPass()" id="SetPassButton">
-        </div>
-        <div id="SignOutContainer">
-    			<h2><img src="Img/UserIcon.png" id="Icon"/>CLIENT</h2>
-    			<h3 id="ClientId">...</h3>
-          <input type="checkbox" id="ConfirmSignout">
-          <input type="button" value="Sign Out" onclick="SignOut()" id="SignOutButton">
-        </div>
-      </div>
-		</div>
-		<div id="SubheaderRight">
-      <div id="LogoContainer">
-        <h3 id="Version">V. 0.0.2</h3>
-        <input type="button" value="New Password" onclick="NewPass()" id="NewPassButton">
-        <input type="button" value="Cancel" onclick="Cancel()" id="CancelButton">
-      </div>
-		</div>
-	</header>
-  <div id="ContentContainer">
-    <div id="MenuContainer">
-      <a onclick="HomePage()" id="MenuText">HOME</a>
-      <a onclick="ConsolePage()" id="MenuText">CONSOLE</a>
-      <a onclick="PlayersPage()" id="MenuText">PLAYERS</a>
-      <a onclick="ConfigPage()" id="MenuText">CONFIG</a>
-      <a onclick="DevPage()" id="MenuText">DEVS</a>
-      <a onclick="ContactsPage()" id="MenuText">CONTACTS</a>
-    </div>
-
-	  <div id="DisclaimerContainer">
-	    <h2 id="Disclaimer">Disclaimer</h2>
-		  <h3 id="DisclaimerInfo">Access and further use of this website will log all client actions</h3>
-		  <h3 id="DisclaimerInfo">Misuse of this site will result in the banning of your IP address</h3>
-      <h3 id="DisclaimerInfo">Get your client and password from an admin to login the first time</h3>
-      <h3 id="DisclaimerInfo">DO NOT set your password to anything used for other secure logins. This includes but is not limited to email, steam and other websites</h3>
-      <h3 id="DisclaimerInfo">Your password must be 6-20 characters long</h3>
-      <h3 id="DisclaimerInfo">Lost password can not be recovered. Contact an administrator for reset</h3>
-      <h3 id="DisclaimerInfo">Do not share your password with other clients or friends</h3>
-      <h3 id="DisclaimerInfo">Reloading the site will reset your security credentials, requiring you to sign in again</h3>
-      <h3 id="DisclaimerInfo">Reloading the site too often without logging in will put you in timeout for 10 minutes</h3>
-      <br>
-			<input type="checkbox" onchange="Accept()" id="AcceptBox">
-			<h3 id="AcceptText">I ACCEPT THE DISCLAIMER</h3>
-	  </div>
-      <div id="ConfigContainer">
-        <input type="checkbox" id="AcceptSave">
-        <input type="button" value="Save" onclick="SaveConfig()" id="SaveButton">
-        <input type="button" value="Get Current" onclick="Config()" id="CurrentButton">
-        <input type="button" value="Blank" onclick="ClearConfig()" id="ClearButton">
-        <table id="ConfigTable">
-          <thead>
-            <th id="ConfigToolName">Tool Name</th>
-            <th id="ConfigToolOption">Options</th>
-          </thead>
-          <tbody id="ConfigBody">
-            <tr>
-              <td style="border: 2px solid #000;">Admin_Chat_Commands </td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Admin_List </td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="100" placeholder="0" size="40" id=""></td>
-              <td>Moderator_Level <input type="number" name="option" min="1" max="100" placeholder="1" size="40" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Animal_Tracking </td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="120" id=""></td>
-              <td>Minimum_Spawn_Radius <input type="number" name="option" min="1" max="199" placeholder="40" id=""></td>
-              <td>Maximum_Spawn_Radius <input type="number" name="option" min="2" max="200" placeholder="60" id=""></td>
-              <td>Entity_Id <input type="textbox" name="option" placeholder="82,83,84,85" id=""></td>
-              <td>Command_Cost <input type="number" name="option" min="0" max="10000" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Announce_Invalid_Item_Stack </td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Auction </td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="60" id=""></td>
-              <td>Cancel_Time <input type="number" name="option" min="0" max="240" placeholder="15" id=""></td>
-              <td>No_Admins <input type="checkbox" name="option" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="100" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Auto_Backup </td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Saves <input type="number" name="option" min="0" max="1440" placeholder="240" id=""></td>
-              <td>Destination <input type="textbox" name="option" placeholder="" id=""></td>
-              <td>Compression_Level <input type="number" name="option" min="0" max="2" placeholder="0" id=""></td>
-              <td>Backup_Count <input type="number" name="option" min="0" max="20" placeholder="5" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Auto_Save_World </td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Saves <input type="number" name="option" min="0" max="1440" placeholder="60" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Auto_Shutdown</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Countdown_Timer <input type="number" name="option" min="0" max="30" placeholder="2" id=""></td>
-              <td>Time_Before_Shutdown <input type="number" name="option" min="0" max="1440" placeholder="120" id=""></td>
-              <td>Alert_On_Login <input type="checkbox" name="option" id=""></td>
-              <td>Kick_During_Countdown <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Bad_Word_Filter </td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Invalid_Name <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Bank</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Inside_Claim <input type="checkbox" name="option" id=""></td>
-              <td>Ingame_Coin <input type="textbox" name="option" placeholder="casinoCoin" id=""></td>
-              <td>Deposit_Fee_Percent <input type="number" name="option" min="0" max="100" placeholder="5" id=""></td>
-              <td>Player_Transfers <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Battle_Loggers</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>All <input type="checkbox" name="option" id=""></td>
-              <td>Belt <input type="checkbox" name="option" id=""></td>
-              <td>Bag <input type="checkbox" name="option" id=""></td>
-              <td>Equipment <input type="checkbox" name="option" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="100" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Block_Logger</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Bloodmoon</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Show_On_Respawn <input type="checkbox" name="option" id=""></td>
-              <td>Auto_Show <input type="checkbox" name="option" id=""></td>
-              <td>Delay <input type="number" name="option" min="0" max="1440" placeholder="60" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Bloodmoon_Warrior</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Zombie_Kills <input type="number" name="option" min="0" max="100" placeholder="10" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Bounties</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Minimum_Bounty <input type="number" name="option" min="0" max="10000" placeholder="5" id=""></td>
-              <td>Kill_Streak <input type="number" name="option" min="0" max="100" placeholder="0" id=""></td>
-              <td>Bonus <input type="number" name="option" min="0" max="10000" placeholder="25" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Break_Reminder</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Break_Time <input type="number" name="option" min="0" max="1440" placeholder="60" id=""></td>
-              <td>Break_Message <input type="textbox" name="option" placeholder="It has been {Time} minutes since the last break reminder. Stretch and get some water." id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Chat_Color_Prefix</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Chat_Command_Response</td>
-              <td>Server_Response_Name <input type="textbox" name="option" placeholder="[FFCC00]ServerTools" id=""></td>
-              <td>Main_Color <input type="textbox" name="option" placeholder="[00FF00]" id=""></td>
-              <td>Chat_Command_Private <input type="textbox" name="option" placeholder="/" id=""></td>
-              <td>Chat_Command_Public <input type="textbox" name="option" placeholder="!" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Chat_Command_Response_Extended</td>
-              <td>Friend_Chat_Color <input type="textbox" name="option" placeholder="[33CC33]" id=""></td>
-              <td>Party_Chat_Color <input type="textbox" name="option" placeholder="[FFCC00]" id=""></td>
-              <td>Player_Name_Color <input type="textbox" name="option" placeholder="[00FF00]" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Chat_Flood_Protection</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Max_Length <input type="number" name="option" min="50" max="350" placeholder="250" id=""></td>
-              <td>Messages_Per_Min <input type="number" name="option" min="1" max="50" placeholder="8" id=""></td>
-              <td>Wait_Time <input type="number" name="option" min="0" max="600" placeholder="60" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Chat_Logger</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Clan_Manager</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Private_Chat_Color <input type="textbox" name="option" placeholder="[00FF00]" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Command_Log</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Country_Ban</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Countries_Not_Allowed <input type="textbox" name="option" placeholder="CN,IL" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Credentials</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>No_Family_Share <input type="checkbox" name="option" id=""></td>
-              <td>No_Bad_Id <input type="checkbox" name="option" id=""></td>
-              <td>No_Internal <input type="checkbox" name="option" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="100" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Custom_Commands</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Damage_Detector</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Entity_Damage_Limit <input type="number" name="option" min="0" max="1000" placeholder="500" id=""></td>
-              <td>Block_Damage_Limit <input type="number" name="option" min="0" max="10000" placeholder="3000" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="100" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Day7</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Death_Spot</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="120" id=""></td>
-              <td>Command_Cost <input type="number" name="option" min="0" max="10000" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Dupe_Log</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Entity_Cleanup</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Falling_Blocks <input type="checkbox" name="option" id=""></td>
-              <td>Falling_Tree <input type="checkbox" name="option" id=""></td>
-              <td>Entity_Underground <input type="checkbox" name="option" id=""></td>
-              <td>Delete_Bicycles <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Entity_Cleanup_Extended</td>
-              <td>Delete_MiniBikes <input type="checkbox" name="option" id=""></td>
-              <td>Delete_MotorBikes <input type="checkbox" name="option" id=""></td>
-              <td>Delete_Jeeps <input type="checkbox" name="option" id=""></td>
-              <td>Delete_Gyros <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">First_Claim_Block</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Flying_Detector</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="100" placeholder="0" id=""></td>
-              <td>Flags <input type="number" name="option" min="0" max="10" placeholder="4" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">FPS</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="200" placeholder="30" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Friend_Teleport</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="60" id=""></td>
-              <td>Command_Cost <input type="number" name="option" min="0" max="10000" placeholder="0" id=""></td>
-              <td>PvP_Check <input type="checkbox" name="option" id=""></td>
-              <td>Zombie_Check <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Gimme</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="60" id=""></td>
-              <td>Zombies <input type="checkbox" name="option" id=""></td>
-              <td>Command_Cost <input type="number" name="option" min="0" max="10000" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Godmode_Detector</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="100" placeholder="60" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Hardcore</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Optional <input type="checkbox" name="option" id=""></td>
-              <td>Max_Deaths <input type="number" name="option" min="0" max="50" placeholder="9" id=""></td>
-              <td>Max_Extra_Lives <input type="number" name="option" min="0" max="50" placeholder="3" id=""></td>
-              <td>Life_Price <input type="number" name="option" min="0" max="10000" placeholder="2000" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">High_Ping_Kicker</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Max_Ping <input type="number" name="option" min="0" max="500" placeholder="250" id=""></td>
-              <td>Flags <input type="number" name="option" min="0" max="10" placeholder="4" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Hordes</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Info_Ticker</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Messages <input type="number" name="option" min="0" max="60" placeholder="60" id=""></td>
-              <td>Random <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Invalid_Item_Kicker</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Ban <input type="checkbox" name="option" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="60" placeholder="60" id=""></td>
-              <td>Check_Storage <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Jail</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Jail_Size <input type="number" name="option" min="0" max="50" placeholder="8" id=""></td>
-              <td>Jail_Position <input type="textbox" name="option" placeholder="0,0,0" id=""></td>
-              <td>Jail_Shock <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Kick_Vote</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Players_Online <input type="number" name="option" min="0" max="100" placeholder="5" id=""></td>
-              <td>Votes_Needed <input type="number" name="option" min="0" max="100" placeholder="3" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Kill_Notice</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Lobby</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Return <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="5" id=""></td>
-              <td>Lobby_Size <input type="number" name="option" min="0" max="50" placeholder="25" id=""></td>
-              <td>Lobby_Position <input type="textbox" name="option" placeholder="0,0,0" id=""></td>
-              <td>Donor_Only <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Lobby_Extended</td>
-              <td>Command_Cost <input type="number" name="option" min="0" max="10000" placeholder="0" id=""></td>
-              <td>Player_Check <input type="checkbox" name="option" id=""></td>
-              <td>Zombie_Check <input type="checkbox" name="option" id=""></td>
-              <td>PvE <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Location</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Login_Notice</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Logs</td>
-              <td>Enable <input type="number" name="option" min="0" max="14" placeholder="5" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Lottery</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Bonus <input type="number" name="option" min="0" max="1000" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Market</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Return <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="5" id=""></td>
-              <td>Lobby_Size <input type="number" name="option" min="0" max="50" placeholder="25" id=""></td>
-              <td>Lobby_Position <input type="textbox" name="option" placeholder="0,0,0" id=""></td>
-              <td>Donor_Only <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Market_Extended</td>
-              <td>Command_Cost <input type="number" name="option" min="0" max="10000" placeholder="0" id=""></td>
-              <td>Player_Check <input type="checkbox" name="option" id=""></td>
-              <td>Zombie_Check <input type="checkbox" name="option" id=""></td>
-              <td>PvE <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Message_Color</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Color <input type="textbox" name="option" placeholder="[FFFFFF]" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Motd</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Show_On_Respawn <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Mute</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Block_Commands <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Mute_Vote</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Players_Online <input type="number" name="option" min="0" max="100" placeholder="5" id=""></td>
-              <td>Votes_Needed <input type="number" name="option" min="0" max="100" placeholder="3" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">New_Player</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Entry_Message <input type="textbox" name="option" placeholder="*The stench of young flesh bares itself upon the world*...{PlayerName} has entered the world for the first time." id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">New_Spawn_Tele</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>New_Spawn_Tele_Position <input type="textbox" name="option" placeholder="0,0,0" id=""></td>
-              <td>Return <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Night_Alert</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay <input type="number" name="option" min="0" max="1440" placeholder="60" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Normal_Player_Color_Prefix</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Prefix <input type="textbox" name="option" placeholder="NOOB" id=""></td>
-              <td>Color <input type="textbox" name="option" placeholder="[00B3B3]" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Player_List</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Player_Logs</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Interval <input type="number" name="option" min="0" max="1800" placeholder="60" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Player_Stat_Check</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="100" placeholder="0" id=""></td>
-              <td>Max_Speed <input type="number" name="option" min="0" max="100" placeholder="0" id=""></td>
-              <td>Kick_Enabled <input type="checkbox" name="option" id=""></td>
-              <td>Ban_Enabled <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Poll</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Prayer</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="30" id=""></td>
-              <td>Command_Cost <input type="number" name="option" min="0" max="10000" placeholder="10" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Private_Message</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Protected_Spaces</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Real_World_Time</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay <input type="number" name="option" min="0" max="1440" placeholder="60" id=""></td>
-              <td>Time_Zone <input type="textbox" name="option" placeholder="UTC" id=""></td>
-              <td>Adjustment <input type="number" name="option" min="0" max="26" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Report</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="60" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="100" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Reserved_Slots</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Session_Time <input type="number" name="option" min="0" max="1440" placeholder="30" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="100" placeholder="0" id=""></td>
-              <td>Reduced_Delay <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Restart_Vote</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Players_Online <input type="number" name="option" min="0" max="100" placeholder="5" id=""></td>
-              <td>Votes_Needed <input type="number" name="option" min="0" max="100" placeholder="3" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="100" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Scout_Player</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Set_Home</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Set_Home2_Enabled <input type="checkbox" name="option" id=""></td>
-              <td>Set_Home2_Reserved_Only <input type="checkbox" name="option" id=""></td>
-              <td>Home2_Delay <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="60" id=""></td>
-              <td>Command_Cost <input type="number" name="option" min="0" max="10000" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Set_Home_Extended</td>
-              <td>Player_Check <input type="checkbox" name="option" id=""></td>
-              <td>Zombie_Check <input type="checkbox" name="option" id=""></td>
-              <td>Vehicle_Check <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Shop</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Inside_Market <input type="checkbox" name="option" id=""></td>
-              <td>Inside_Traders <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Starting_Items</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Stopserver</td>
-              <td>Ten_Second_Countdown <input type="checkbox" name="option" id=""></td>
-              <td>Kick_30_Seconds <input type="checkbox" name="option" id=""></td>
-              <td>Alert_Count <input type="number" name="option" min="0" max="10000" placeholder="2" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Stuck</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="60" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Suicide</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="60" id=""></td>
-              <td>PvP_Check <input type="checkbox" name="option" id=""></td>
-              <td>Zombie_Check <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Tracking</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Rate <input type="number" name="option" min="0" max="600" placeholder="30" id=""></td>
-              <td>Days_Before_Log_Delete <input type="number" name="option" min="0" max="14" placeholder="3" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Travel</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="60" id=""></td>
-              <td>Command_Cost <input type="number" name="option" min="0" max="10000" placeholder="0" id=""></td>
-              <td>PvP_Check <input type="checkbox" name="option" id=""></td>
-              <td>Zombie_Check <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Under_Water</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Vehicle_Teleport</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Bike <input type="checkbox" name="option" id=""></td>
-              <td>Mini_Bike <input type="checkbox" name="option" id=""></td>
-              <td>Motor_Bike <input type="checkbox" name="option" id=""></td>
-              <td>Jeep <input type="checkbox" name="option" id=""></td>
-              <td>Gyro <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Vehicle_Teleport_Extended</td>
-              <td>Inside_Claim <input type="checkbox" name="option" id=""></td>
-              <td>Distance <input type="number" name="option" min="0" max="200" placeholder="50" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="120" id=""></td>
-              <td>Command_Cost <input type="number" name="option" min="0" max="10000" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Voting</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Your_Voting_Site <input type="textbox" name="option" placeholder="https://7daystodie-servers.com/server/12345" id=""></td>
-              <td>API_Key <input type="textbox" name="option" placeholder="xxxxxxxx" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="168" placeholder="24" id=""></td>
-              <td>Reward_Count <input type="number" name="option" min="0" max="100" placeholder="3" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Voting_Extended</td>
-              <td>Reward_Entity <input type="checkbox" name="option" id=""></td>
-              <td>Entity_Id <input type="number" name="option" min="0" max="300" placeholder="73" id=""></td>
-              <td>Weekly_Votes <input type="number" name="option" min="0" max="28" placeholder="5" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Wallet</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Coin_Name <input type="textbox" name="option" placeholder="coin" id=""></td>
-              <td>PVP <input type="checkbox" name="option" id="C240"></td>
-              <td>Zombie_Kill_Value <input type="number" name="option" min="0" max="1000" placeholder="10" id=""></td>
-              <td>Player_Kill_Value <input type="number" name="option" min="0" max="1000" placeholder="25" id=""></td>
-              <td>Death_Penalty_Value <input type="number" name="option" min="0" max="1000" placeholder="25" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Wallet_Extended</td>
-              <td>Lose_On_Death <input type="checkbox" name="option" id=""></td>
-              <td>Bank_Transfers <input type="checkbox" name="option" id=""></td>
-              <td>Session_Bonus <input type="number" name="option" min="0" max="1000" placeholder="5" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Watchlist</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="100" placeholder="0" id=""></td>
-              <td>Alert_Delay <input type="number" name="option" min="0" max="60" placeholder="5" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Waypoints</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Max_Waypoints <input type="number" name="option" min="0" max="50" placeholder="2" id=""></td>
-              <td>Donator_Max_Waypoints <input type="number" name="option" min="0" max="100" placeholder="4" id=""></td>
-              <td>Delay_Between_Uses <input type="number" name="option" min="0" max="1440" placeholder="0" id=""></td>
-              <td>Command_Cost <input type="number" name="option" min="0" max="1000" placeholder="0" id=""></td>
-              <td>PvP_Check <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Waypoints_Extended</td>
-              <td>Zombie_Check <input type="checkbox" name="option" id=""></td>
-              <td>Vehicle <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Weather_Vote</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Players_Online <input type="number" name="option" min="0" max="100" placeholder="5" id=""></td>
-              <td>Votes_Needed <input type="number" name="option" min="0" max="100" placeholder="3" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Website</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">World_Radius</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Normal_Player <input type="number" name="option" min="0" max="10000" placeholder="4000" id=""></td>
-              <td>Reserved <input type="number" name="option" min="0" max="10000" placeholder="8000" id=""></td>
-              <td>Admin_Level <input type="number" name="option" min="0" max="100" placeholder="0" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Zones</td>
-              <td>Enable <input type="checkbox" name="option" id=""></td>
-              <td>Kill_Enabled <input type="checkbox" name="option" id=""></td>
-              <td>Jail_Enabled <input type="checkbox" name="option" id=""></td>
-              <td>Kick_Enabled <input type="checkbox" name="option" id=""></td>
-              <td>Ban_Enabled <input type="checkbox" name="option" id=""></td>
-              <td>Zone_Message <input type="checkbox" name="option" id=""></td>
-            </tr>
-            <tr>
-              <td style="border: 2px solid #000;">Zones_Extended</td>
-              <td>Reminder_Notice_Delay <input type="number" name="option" min="0" max="1440" placeholder="20" id=""></td>
-              <td>Set_Home <input type="checkbox" name="option" id=""></td>
-            </tr>
-          </tbody>
-        </table>
-        <br>
-        <br>
-      </div>
-      <div id="ConsoleContainer">
-        <div id="LogContainer">
-          <div id="LogText">
-            <h2 id="LogTitle">LOG:</h2>
-            <pre id="Log">...</pre>
-            <h3>Section Under Development</h3>
-          </div>
-        </div>
-        <div id="ConsoleCommandContainer">
-          <input type="textbox" placeholder="Section Under Development" id="ConsoleCommand">
-        </div>
-        <div id="SendButtonContainer">
-          <input type="button" value="Send" onclick="" id="SendButton">
-        </div>
-      </div>
-      <div id="ContactsContainer">
-        <div id="Contacts">
-		       <h1 id="ContactsHeader">Having problems? Need support? Found a bug? Need a hug?</h1>
-		       <br>
-		       <h2>Reach out to us on discord, steam or github.</h2>
-           <br>
-		       <h2>Discord: <a href="https://discord.gg/6G8VZQg" target="_blank">https://discord.gg/6G8VZQg</a></h2>
-		       <br>
-		       <h2>Steam: Add O.C with friend code 7818741</h2>
-		       <br>
-		       <h2>Github: <a href="https://github.com/dmustanger/7dtd-ServerTools/issues" target="_blank">https://github.com/dmustanger/7dtd-ServerTools/issues</a></h2>
-		       <br>
-        </div>
-      </div>
-      <div id="DevsContainer">
-        <div id="About">
-          <br>
-		      <br>
-		      <h1 id="Developer">Dmustanger</h1>
-		      <h2>Structure design and development. Logistics analysis and adaptation. Report handling.</h2>
-		      <h1 id="Developer">Obsessive Compulsive</h1>
-		      <h2>Creative, logistic and modular design. Webapi. Report handling. Debug and play tester</h2>
-		      <h1 id="Developer">Hector</h1>
-		      <h2>Creative design. Desktop GUI development and Discord Bot development</h2>
-		      <h1 id="Developer">Android_Data</h1>
-		      <h2>Website art and layout</h2>
-		      <br>
-        </div>
-      </div>
-      <div id="PlayersContainer">
-        <input type="textbox" placeholder="Steam Id" id="PlayersSteamId">
-        <input type="button" value="KICK" onclick="Kick()" id="PlayersEdit">
-        <input type="button" value="BAN" onclick="Ban()" id="PlayersEdit">
-        <input type="button" value="MUTE" onclick="Mute()" id="PlayersEdit">
-        <input type="button" value="JAIL" onclick="Jail()" id="PlayersEdit">
-        <input type="button" value="REWARD" onclick="Reward()" id="PlayersEdit">
-        <input type="button" value="0" id="PlayerCount">Players
-        <table id="PlayersTable">
-          <thead id="PlayersHeader">
-            <th>Steam Id/Entity Id</th>
-            <th>Player Name</th>
-            <th>Health/Stamina</th>
-            <th>Level</th>
-            <th>Position</th>
-            <th>Muted/Jailed</th>
-          </thead>
-          <tbody id="PlayersBody">
-
-          </tbody>
-        </table>
-      </div>
-      <div id="BackgroundContainer">
-        <img src="Img/ZombieDevs.png" id="ZombieBackground"/>
-      </div>
-  </div>
-</body>
+	<head>
+		<link href="CSS/styles.css" rel="stylesheet" type="text/css" />
+		<meta charset="utf-8" />
+		<script src="JS/scripts.js"></script>
+		<title>ServerTools</title>
+	</head>
+	<body onload="FreshPage()" id="GeneralBody">
+		<header id="Head">
+			<div id="SubheaderLeft">
+				<div id="ClientContainer">
+					<div id="LoginContainer">
+						<h2><img src="Img/Lock.png" id="Icon"/>LOGIN</h2>
+						<input type="textbox" placeholder="Client" id="Text1" ><br>
+						<input type="password" placeholder="Password" id="Text2"><br>
+						<input type="checkbox" id="NotBotBox1">
+						<input type="button" value="Sign In" onclick="SignIn()" id="SignInButton">
+					</div>
+					<div id="PasswordContainer">
+						<input type="button" value="Cancel" onclick="Cancel()" id="CancelButton">
+						<h2><img src="Img/Lock.png" id="Icon"/>PASSWORD</h2>
+						<input type="password" placeholder="New" id="Text3"><br>
+						<input type="password" placeholder="Confirm" id="Text4"><br>
+						<input type="checkbox" id="NotBotBox2">
+						<input type="button" value="Set Password" onclick="SetPass()" id="SetPassButton">
+					</div>
+					<div id="LogoutContainer">
+						<input type="button" value="New Password" onclick="NewPass()" id="NewPassButton">
+						<h2><img src="Img/UserIcon.png" id="Icon"/>CLIENT</h2>
+						<h3 id="ClientId">...</h3>
+						<input type="checkbox" id="ConfirmSignout">
+						<input type="button" value="Sign Out" onclick="SignOut()" id="SignOutButton">
+					</div>
+				</div>
+			</div>
+			<div id="SubheaderRight" oncontextmenu="return false">
+				<div id="LogoContainer">
+					<h3 id="Version">V. 0.0.2</h3>
+				</div>
+			</div>
+		</header>
+		<nav id="MenuContainer" oncontextmenu="return false">
+			<a onclick="HomePage()" id="MenuText">HOME</a>
+			<a onclick="ConsolePage()" id="MenuText">CONSOLE</a>
+			<a onclick="PlayersPage()" id="MenuText">PLAYERS</a>
+			<a onclick="ConfigPage()" id="MenuText">CONFIG</a>
+			<a onclick="DevPage()" id="MenuText">DEVS</a>
+			<a onclick="ContactsPage()" id="MenuText">CONTACTS</a>
+		</nav>
+		<section id="ContentContainer">
+			<div id="DisclaimerContainer" oncontextmenu="return false" onclick="Accept()">
+				<h2 id="Disclaimer">Disclaimer</h2>
+				<h3 id="DisclaimerInfo">Access and further use of this panel will log all client actions</h3>
+				<h3 id="DisclaimerInfo">Misuse of this management tool will result in the banning of your IP address</h3>
+				<h3 id="DisclaimerInfo">Get your client id and password from a admin to login the first time</h3>
+				<h3 id="DisclaimerInfo">DO NOT set your password to anything used for other secure logins. This includes but is not limited to email, steam and other websites</h3>
+				<h3 id="DisclaimerInfo">Your password must be 6-20 characters long</h3>
+				<h3 id="DisclaimerInfo">Lost password can not be recovered. Contact an administrator for reset</h3>
+				<h3 id="DisclaimerInfo">Do not share your password with other clients or friends</h3>
+				<h3 id="DisclaimerInfo">Reloading the panel will reset your security credentials, requiring you to sign in again</h3>
+				<h3 id="DisclaimerInfo">Reloading too often without logging in will put you in timeout for 10 minutes</h3>
+				<h3 id="DisclaimerInfo">Encryption is automatic and built in to the panel</h3>
+			</div>
+			<div id="ConfigContainer">
+				<input type="checkbox" id="AcceptSave">
+				<input type="button" value="Save" onclick="SaveConfig()" id="SaveButton">
+				<input type="button" value="Get Current" onclick="Config()" id="CurrentButton">
+				<table id="ConfigTable">
+					<thead>
+						<th id="ConfigToolName">Tool Name</th>
+						<th id="ConfigToolOption">Options</th>
+					</thead>
+					<tbody id="ConfigBody">
+				
+					</tbody>
+				</table>
+				<br>
+				<br>
+			</div>
+			<div id="ConsoleContainer">
+				<div id="LogContainer">
+					<pre id="Console"></pre>
+				</div>
+				<div id="ConsoleCommandContainer">
+					<input type="textbox" placeholder="/r repeats last command" id="ConsoleCommand">
+					<input type="button" value="Send" onclick="Command()" id="SendButton">
+				</div>
+			</div>
+			<div id="ContactsContainer">
+				<div id="Contacts">
+					<h1 id="ContactsHeader">Having problems? Need support? Found a bug? Need a hug?</h1>
+					<br>
+					<h2>Reach out to us on discord or github.</h2>
+					<br>
+					<h2>Discord: <a href="https://discord.gg/6G8VZQg" target="_blank">https://discord.gg/6G8VZQg</a></h2>
+					<br>
+					<h2>Github: <a href="https://github.com/dmustanger/7dtd-ServerTools/issues" target="_blank">https://github.com/dmustanger/7dtd-ServerTools/issues</a></h2>
+					<br>
+				</div>
+			</div>
+			<div id="DevsContainer">
+				<div id="About">
+					<br>
+					<br>
+					<h1 id="Developer">Dmustanger</h1>
+					<h2>Structure design and development. Logistics analysis and adaptation. Report handling.</h2>
+					<h1 id="Developer">Obsessive Compulsive</h1>
+					<h2>Creative, logistic and modular design. Webapi. Report handling. Debug and play tester</h2>
+					<h1 id="Developer">Hector</h1>
+					<h2>Creative design. Desktop GUI development and Discord Bot development</h2>
+					<h1 id="Developer">Android_Data</h1>
+					<h2>Website art and layout</h2>
+					<br>
+				</div>
+			</div>
+			<div id="PlayersContainer">
+				<input type="textbox" placeholder="Steam Id" id="PlayersSteamId">
+				<input type="button" value="KICK" onclick="Kick()" id="PlayersEdit">
+				<input type="button" value="BAN" onclick="Ban()" id="PlayersEdit">
+				<input type="button" value="MUTE" onclick="Mute()" id="PlayersEdit">
+				<input type="button" value="JAIL" onclick="Jail()" id="PlayersEdit">
+				<input type="button" value="REWARD" onclick="Reward()" id="PlayersEdit">
+				<input type="button" value="0" id="PlayerCount">Players
+				<table id="PlayersTable">
+					<thead id="PlayersHeader">
+						<th>Steam Id/Entity Id</th>
+						<th>Player Name</th>
+						<th>Health/Stamina</th>
+						<th>Level</th>
+						<th>Position</th>
+						<th>Muted/Jailed</th>
+					</thead>
+					<tbody id="PlayersBody">
+		
+					</tbody>
+				</table>
+			</div>
+			<div id="BackgroundContainer">
+				<img src="Img/ZombieDevs.png" id="ZombieBackground"/>
+			</div>
+		</section>	
+	</body>
 </html>
