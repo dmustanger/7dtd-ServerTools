@@ -1,5 +1,5 @@
 # 7dtd-ServerTools
-Server tools for 7 days to die dedicated servers<br>
+Server Tools. A manager for 7 days to Die dedicated servers<br>
 <br>
 # Installation
 <br>
