@@ -933,6 +933,7 @@ namespace ServerTools
                 sw.WriteLine("Protected spaces do not allow for any damage to the blocks nor for anyone to build inside of it including admins.");
                 sw.WriteLine("You can list the protected spaces in console.");
                 sw.WriteLine("Do not add or remove protection through the xml nor from outside of the game. You must be loaded in game and in the area for it to function.");
+                sw.WriteLine("You can disable the protection of a space while keeping it on the list to make it easy to reactivate.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

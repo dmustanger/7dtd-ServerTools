@@ -78,6 +78,7 @@ namespace ServerTools
                     if (p != null)
                     {
                         PersistentContainer.Instance.Players[_params[1]].LastHome = DateTime.Now.AddYears(-1);
+                        PersistentContainer.DataChange = true;
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes delay reset for {0}.", _params[1]));
                     }
                     else

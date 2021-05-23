@@ -33,6 +33,7 @@ namespace ServerTools
                                 {
                                     Dictionary<int, ItemDataSerializable> _auctionItems = new Dictionary<int, ItemDataSerializable>();
                                     PersistentContainer.Instance.Players[_cInfo.playerId].Auction = _auctionItems;
+                                    PersistentContainer.DataChange = true;
                                 }
                                 else if (PersistentContainer.Instance.Players[_cInfo.playerId].Auction.Count < Total_Items)
                                 {
@@ -103,6 +104,7 @@ namespace ServerTools
                                                                             PersistentContainer.Instance.AuctionPrices = _auctionPrices;
                                                                         }
                                                                         _tile.SetModified();
+                                                                        PersistentContainer.DataChange = true;
                                                                         using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                                         {
                                                                             sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4}, {5} quality, {6} percent durability for {7} {8}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _item.count, _item.itemValue.ItemClass.GetItemName(), _item.itemValue.Quality, _item.itemValue.UseTimes / _item.itemValue.MaxUseTimes * 100, _price, Wallet.Coin_Name));
@@ -271,6 +273,7 @@ namespace ServerTools
                         AuctionItems.Remove(_purchase);
                         PersistentContainer.Instance.Players[_steamId].Auction.Remove(_purchase);
                         PersistentContainer.Instance.AuctionPrices.Remove(_purchase);
+                        PersistentContainer.DataChange = true;
                         Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
                         float _fee = _price * ((float)Tax / 100);
                         int _adjustedPrice = _price - (int)_fee;
@@ -332,6 +335,7 @@ namespace ServerTools
                                 AuctionItems.Remove(_id);
                                 PersistentContainer.Instance.Players[_cInfo.playerId].Auction.Remove(_id);
                                 PersistentContainer.Instance.AuctionPrices.Remove(_id);
+                                PersistentContainer.DataChange = true;
                                 using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: {1} {2} has cancelled their auction entry # {3}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _cInfo.entityId));

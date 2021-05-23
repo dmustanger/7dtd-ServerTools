@@ -252,6 +252,7 @@ namespace ServerTools
                         }
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastHome = DateTime.Now;
+                        PersistentContainer.DataChange = true;
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
                             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
@@ -349,6 +350,7 @@ namespace ServerTools
                             if (!PersistentContainer.Instance.Players[_cInfo.playerId].Homes.ContainsKey(_homeName))
                             {
                                 PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Add(_homeName, _wposition);
+                                PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue(739, out string _phrase739);
                                 _phrase739 = _phrase739.Replace("{Name}", _homeName);
                                 _phrase739 = _phrase739.Replace("{Position}", _wposition);
@@ -368,7 +370,7 @@ namespace ServerTools
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase741 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
-                else
+                else if (_homeTotal > 0)
                 {
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                     if (_player != null)
@@ -381,11 +383,18 @@ namespace ServerTools
                         string _wposition = _x + "," + _y + "," + _z;
                         _homes.Add(_homeName, _wposition);
                         PersistentContainer.Instance.Players[_cInfo.playerId].Homes = _homes;
+                        PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue(742, out string _phrase742);
                         _phrase742 = _phrase742.Replace("{Name}", _homeName);
                         _phrase742 = _phrase742.Replace("{Position}", _wposition);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase742 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
+                }
+                else
+                {
+                    Phrases.Dict.TryGetValue(741, out string _phrase741);
+                    _phrase741 = _phrase741.Replace("{Value}", _homeTotal.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase741 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -401,6 +410,7 @@ namespace ServerTools
                 if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes != null && PersistentContainer.Instance.Players[_cInfo.playerId].Homes.ContainsKey(_homeName))
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Remove(_homeName);
+                    PersistentContainer.DataChange = true;
                     Phrases.Dict.TryGetValue(743, out string _phrase743);
                     _phrase743 = _phrase743.Replace("{Name}", _homeName);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase743 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

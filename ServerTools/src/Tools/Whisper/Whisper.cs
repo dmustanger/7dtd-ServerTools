@@ -42,6 +42,7 @@ namespace ServerTools
             else
             {
                 PersistentContainer.Instance.Players[_recipientInfo.playerId].LastWhisper = _cInfo.playerId;
+                PersistentContainer.DataChange = true;
                 ChatHook.ChatMessage(_recipientInfo, Config.Chat_Response_Color + "(Whisper) " + _message + "[-]", -1, _cInfo.playerName, EChatType.Whisper, null);
             }
         }
@@ -73,6 +74,7 @@ namespace ServerTools
                 else
                 {
                     PersistentContainer.Instance.Players[_cInfo2.playerId].LastWhisper = _cInfo.playerId;
+                    PersistentContainer.DataChange = true;
                     ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + "(Whisper) " + _message + "[-]", -1, _cInfo.playerName, EChatType.Whisper, null);
                 }
             }

@@ -10,7 +10,7 @@ namespace ServerTools
             {
                 if (PersistentContainer.Instance.Load())
                 {
-                    Log.Out("[SERVERTOOLS] Player data loaded");
+                    Log.Out("[SERVERTOOLS] Data loaded");
                 }
             }
             catch (Exception e)

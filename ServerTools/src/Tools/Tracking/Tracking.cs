@@ -52,6 +52,7 @@ namespace ServerTools
                     }
                 }
                 PersistentContainer.Instance.Track = _track;
+                PersistentContainer.DataChange = true;
             }
         }
 
@@ -73,6 +74,7 @@ namespace ServerTools
                         }
                     }
                     PersistentContainer.Instance.Track = _trackLog;
+                    PersistentContainer.DataChange = true;
                 }
                 Log.Out("[SERVERTOOLS] Tracking log clean up completed");
             }

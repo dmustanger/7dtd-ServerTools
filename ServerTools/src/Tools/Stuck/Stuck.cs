@@ -119,6 +119,7 @@ namespace ServerTools
         {
             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player.position.x, -1, (int)_player.position.z), null, false));
             PersistentContainer.Instance.Players[_cInfo.playerId].LastStuck = DateTime.Now;
+            PersistentContainer.DataChange = true;
             Phrases.Dict.TryGetValue(553, out string _phrase553);
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase553 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }

@@ -100,18 +100,18 @@ public static class Injections
         }
     }
 
-    public static void AddFallingBlock_Postfix(Vector3i _block)
+    public static void AddFallingBlocks_Postfix(IList<Vector3i> _list)
     {
         try
         {
             if (FallingBlocks.IsEnabled)
             {
-                FallingBlocks.Exec(_block);
+                FallingBlocks.Exec(_list);
             }
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.AddFallingBlock_Postfix: {0}", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.AddFallingBlocks_Postfix: {0}", e.Message));
         }
     }
 }

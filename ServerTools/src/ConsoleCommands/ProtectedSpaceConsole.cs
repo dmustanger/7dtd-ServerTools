@@ -21,16 +21,17 @@ namespace ServerTools
                    "  6. st-ps remove\n" +
                    "  7. st-ps remove <#>\n" +
                    "  8. st-ps list\n" +
+                   "  9. st-ps active <#>\n" +
                    "1. Turn off ProtectedSpaces\n" +
                    "2. Turn on ProtectedSpaces\n" +
                    "3. Add a protected space. Stand in the south west corner, use add, stand in the north east corner and use add again\n" +
                    "4. Add a protected space. Set the south west corner and north east corner using specific coordinates\n" +
                    "5. Cancels the saved corner positions\n" +
-                   "6. Remove the entire protected space you are standing in, if one exists\n" +
+                   "6. Remove the protection to the chunk you are standing in\n" +
                    "7. Remove a specific protected space from the list. The number is shown in the list\n" +
                    "8. Shows the protected spaces list\n" +
-                   "*Make sure the corners used are opposite each other. Example NW with SE or SW with NE*\n" +
-                   "*You can only add and remove protect areas that are loaded. Over 200 blocks is too far away from you*\n";
+                   "9. Activates and deactivates the protection from the entry in the list\n" +
+                   "*Make sure the corners used are opposite each other. Example NW with SE or SW with NE*\n";
         }
     
         public override string[] GetCommands()
@@ -97,7 +98,7 @@ namespace ServerTools
                             int _x = (int)_player.position.x, _z = (int)_player.position.z;
                             if (!ProtectedSpaces.Vectors.ContainsKey(_player.entityId))
                             {
-                                int[] _vectors = new int[4];
+                                int[] _vectors = new int[5];
                                 _vectors[0] = _x;
                                 _vectors[1] = _z;
                                 ProtectedSpaces.Vectors.Add(_player.entityId, _vectors);
@@ -127,12 +128,12 @@ namespace ServerTools
                                     _vectors[3] = _vectors[1];
                                     _vectors[1] = _z;
                                 }
-
+                                _vectors[4] = 1;
                                 if (!ProtectedSpaces.Protected.Contains(_vectors))
                                 {
                                     ProtectedSpaces.Protected.Add(_vectors);
                                     ProtectedSpaces.UpdateXml();
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added protected space from {0}x,{1}z to {2}x,{3}z", _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added protected space from {0}x,{1}z to {2}x,{3}z", _vectors[0], _vectors[1], _vectors[2], _vectors[3], _vectors[4]));
                                     return;
                                 }
                                 else
@@ -165,7 +166,7 @@ namespace ServerTools
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer: {0}", _params[4]));
                             return;
                         }
-                        int[] _vectors = new int[4];
+                        int[] _vectors = new int[5];
                         if (_xMin < _xMax)
                         {
                             _vectors[0] = _xMin;
@@ -186,11 +187,12 @@ namespace ServerTools
                             _vectors[1] = _zMax;
                             _vectors[3] = _zMin;
                         }
+                        _vectors[4] = 1;
                         if (!ProtectedSpaces.Protected.Contains(_vectors))
                         {
                             ProtectedSpaces.Protected.Add(_vectors);
                             ProtectedSpaces.UpdateXml();
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added protected space from {0},{1} to {2},{3}", _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added protected space from {0}x,{1}z to {2}x,{3}z", _vectors[0], _vectors[1], _vectors[2], _vectors[3], _vectors[4]));
                             return;
                         }
                         else
@@ -227,10 +229,6 @@ namespace ServerTools
                         {
                             if (int.TryParse(_params[1], out int _listNum))
                             {
-                                if (_listNum == 0)
-                                {
-                                    _listNum = 1;
-                                }
                                 if (ProtectedSpaces.Protected.Count >= _listNum)
                                 {
                                     int[] _vectors = ProtectedSpaces.Protected[_listNum - 1];
@@ -271,13 +269,51 @@ namespace ServerTools
                         for (int i = 0; i < ProtectedSpaces.Protected.Count; i++)
                         {
                             int[] _vectors = ProtectedSpaces.Protected[i];
-                            SdtdConsole.Instance.Output(string.Format("#{0}: {1}x,{2}z to {3}x,{4}z", i + 1, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                            if (_vectors[4] == 1)
+                            {
+                                SdtdConsole.Instance.Output(string.Format("#{0}: {1}x,{2}z to {3}x,{4}z is active", i + 1, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                            }
+                            else
+                            {
+                                SdtdConsole.Instance.Output(string.Format("#{0}: {1}x,{2}z to {3}x,{4}z is deactivated", i + 1, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                            }
                         }
                         return;
                     }
                     else
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] There are no protected spaces"));
+                        return;
+                    }
+                }
+                else if (_params[0].ToLower().Equals("active"))
+                {
+                    if (_params.Count != 2)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        return;
+                    }
+                    int.TryParse(_params[1], out int _listEntry);
+                    if (ProtectedSpaces.Protected.Count >= _listEntry)
+                    {
+                        int[] _protectedSpace = ProtectedSpaces.Protected[_listEntry - 1];
+                        if (_protectedSpace[4] == 1)
+                        {
+                            _protectedSpace[4] = 0;
+                            ProtectedSpaces.UpdateXml();
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Deactivated protected space #{0}", _listEntry));
+                        }
+                        else
+                        {
+                            _protectedSpace[4] = 1;
+                            ProtectedSpaces.UpdateXml();
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Activated protected space #{0}", _listEntry));
+                        }
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] This number does not exist on the protected spaces list. Unable to active or deactivate"));
                         return;
                     }
                 }

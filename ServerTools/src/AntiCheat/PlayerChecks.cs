@@ -16,7 +16,7 @@ namespace ServerTools.AntiCheat
         {
             try
             {
-                if (GameManager.Instance.World.Players.dict.Count > 0)
+                if (GameManager.Instance.World != null && GameManager.Instance.World.Players.Count > 0 && GameManager.Instance.World.Players.dict.Count > 0)
                 {
                     List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
                     if (_cInfoList != null && _cInfoList.Count > 0)

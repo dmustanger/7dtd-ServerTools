@@ -13,6 +13,10 @@ namespace ServerTools
             {
                 RunTimePatch.PatchAll();
             }
+            if (!DiscordBot.Loaded)
+            {
+                DiscordBot.BuildToken();
+            }
             if (!Timers.IsRunning)
             {
                 Timers.TimerStart();

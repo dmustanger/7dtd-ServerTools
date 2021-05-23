@@ -30,6 +30,7 @@ namespace ServerTools
             IsRunning = false;
             Core.Stop();
             Core.Close();
+            Core.Dispose();
         }
 
         private static void Tick(object sender, ElapsedEventArgs e)
@@ -56,7 +57,9 @@ namespace ServerTools
             _singleUseTimer.Elapsed += (sender, e) =>
             {
                 Init1(sender, e, _playerId, _commands);
+                _singleUseTimer.Stop();
                 _singleUseTimer.Close();
+                _singleUseTimer.Dispose();
             };
         }
 
@@ -68,7 +71,9 @@ namespace ServerTools
             _newPlayerExecTimer.Elapsed += (sender, e) =>
             {
                 Init2(sender, e, _cInfo);
+                _newPlayerExecTimer.Stop();
                 _newPlayerExecTimer.Close();
+                _newPlayerExecTimer.Dispose();
             };
         }
 
@@ -80,7 +85,9 @@ namespace ServerTools
             _newPlayerStartingItemsTimer.Elapsed += (sender, e) =>
             {
                 Init3(sender, e, _cInfo);
+                _newPlayerStartingItemsTimer.Stop();
                 _newPlayerStartingItemsTimer.Close();
+                _newPlayerStartingItemsTimer.Dispose();
             };
         }
 
@@ -92,7 +99,9 @@ namespace ServerTools
             _hardcoreTimer.Elapsed += (sender, e) =>
             {
                 Init4(sender, e, _cInfo);
+                _hardcoreTimer.Stop();
                 _hardcoreTimer.Close();
+                _hardcoreTimer.Dispose();
             };
         }
 
@@ -104,7 +113,9 @@ namespace ServerTools
             _exitCommand.Elapsed += (sender, e) =>
             {
                 Init5(sender, e, _id);
+                _exitCommand.Stop();
                 _exitCommand.Close();
+                _exitCommand.Dispose();
             };
         }
 
@@ -116,19 +127,20 @@ namespace ServerTools
             _exitDelay.Elapsed += (sender, e) =>
             {
                 Init6(sender, e, _cInfo, _ip);
+                _exitDelay.Stop();
                 _exitDelay.Close();
+                _exitDelay.Dispose();
             };
         }
 
-        public static void SaveDelay()
+        public static void PersistentDataSave()
         {
-            System.Timers.Timer _saveDelay = new System.Timers.Timer(1000);
-            _saveDelay.AutoReset = false;
+            System.Timers.Timer _saveDelay = new System.Timers.Timer(15000);
+            _saveDelay.AutoReset = true;
             _saveDelay.Start();
             _saveDelay.Elapsed += (sender, e) =>
             {
                 PersistentContainer.Instance.Save();
-                _saveDelay.Close();
             };
         }
 
@@ -140,7 +152,6 @@ namespace ServerTools
             _shutdownFailsafe.Elapsed += (sender, e) =>
             {
                 StopServer.FailSafe(sender, e);
-                _shutdownFailsafe.Close();
             };
         }
 
@@ -193,10 +204,6 @@ namespace ServerTools
             {
                 Log.Out("Spectator detector enabled");
             }
-            //if (TeleportCheck.IsEnabled)
-            //{
-            //    Log.Out("Teleport enabled");
-            //}
             if (Watchlist.IsEnabled)
             {
                 Log.Out("Watch list enabled");
@@ -340,6 +347,10 @@ namespace ServerTools
             if (DeathSpot.IsEnabled)
             {
                 Log.Out("Death spot enabled");
+            }
+            if (DiscordBot.IsEnabled)
+            {
+                Log.Out("Discord bot enabled");
             }
             if (EntityCleanup.IsEnabled)
             {

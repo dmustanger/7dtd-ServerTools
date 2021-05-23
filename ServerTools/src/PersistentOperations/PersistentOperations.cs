@@ -12,6 +12,7 @@ namespace ServerTools
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static Dictionary<int, int> PvEViolations = new Dictionary<int, int>();
         public static Dictionary<int, int> EntityId = new Dictionary<int, int>();
+        public static string AlphaNumSet = "jJkqQr9Kl3wXAbyYz0ZLmFpPRsMn5NoO6dDe1EfStaBc2CgGhH7iITu4U8vWxV";
 
         public static void PlayerCheck()
         {
@@ -632,6 +633,24 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase901 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
+        }
+
+        public static string CreatePassword(int _length)
+        {
+            string _pass = "";
+            try
+            {
+                System.Random _rnd = new System.Random();
+                for (int i = 0; i < _length; i++)
+                {
+                    _pass += AlphaNumSet.ElementAt(_rnd.Next(0, 62));
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in WebPanel.SetPassword: {0}", e.Message));
+            }
+            return _pass;
         }
     }
 }

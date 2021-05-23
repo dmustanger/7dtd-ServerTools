@@ -70,12 +70,12 @@ namespace ServerTools
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("Name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring weapons entry because of missing Name attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring weapons entry in KillNotice.xml because of missing Name attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("NewName"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring weapons entry because of missing NewName attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring weapons entry in KillNotice.xml because of missing NewName attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         string _name = _line.GetAttribute("Name");

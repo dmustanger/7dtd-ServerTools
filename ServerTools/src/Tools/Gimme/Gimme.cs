@@ -393,6 +393,7 @@ namespace ServerTools
                         Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                     }
                     PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                    PersistentContainer.DataChange = true;
                     Phrases.Dict.TryGetValue(22, out string _phrase22);
                     _phrase22 = _phrase22.Replace("{ItemCount}", _count.ToString());
                     Dict1.TryGetValue(_randomItem, out string _name);
@@ -431,6 +432,7 @@ namespace ServerTools
                             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                         }
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                        PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue(24, out string _phrase24);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase24 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -450,6 +452,7 @@ namespace ServerTools
                             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                         }
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                        PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue(24, out string _phrase24);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase24 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }

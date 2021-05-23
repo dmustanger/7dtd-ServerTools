@@ -162,6 +162,7 @@ namespace ServerTools
                             string _pposition = x + "," + y + "," + z;
                             LobbyPlayers.Add(_cInfo.entityId);
                             PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = _pposition;
+                            PersistentContainer.DataChange = true;
                             Phrases.Dict.TryGetValue(243, out string _phrase243);
                             _phrase243 = _phrase243.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                             _phrase243 = _phrase243.Replace("{Command53}", Command53);
@@ -180,6 +181,7 @@ namespace ServerTools
                                         Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                                     }
                                     PersistentContainer.Instance.Players[_cInfo.playerId].LastLobby = DateTime.Now;
+                                    PersistentContainer.DataChange = true;
                                 }
                             }
                         }
@@ -216,6 +218,7 @@ namespace ServerTools
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                         LobbyPlayers.Remove(_cInfo.entityId);
                         PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
+                        PersistentContainer.DataChange = true;
                     }
                     else
                     {
@@ -238,6 +241,7 @@ namespace ServerTools
             {
                 Lobby.LobbyPlayers.Remove(_cInfo.entityId);
                 PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
+                PersistentContainer.DataChange = true;
                 Phrases.Dict.TryGetValue(247, out string _phrase247);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase247 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }

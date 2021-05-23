@@ -10,9 +10,10 @@ namespace ServerTools
     {
         private static string filepath = string.Format("{0}/ServerTools.bin", API.ConfigPath);
         private static PersistentContainer instance;
-        private PersistentPlayers players;
-        private bool Saving = false;
+        private static bool Saving = false;
+        public static bool DataChange = false;
 
+        private PersistentPlayers players;
         private Dictionary<int, int> auctionPrices;
         private Dictionary<int, List<int>> clientMuteList;
         private DateTime lastWeather;
@@ -20,13 +21,13 @@ namespace ServerTools
         private Dictionary<string[], string> pollOld;
         private bool pollOpen;
         private Dictionary<string, bool> pollVote;
-        private List<int[]> protectedSpace;
         private List<string> regionReset;
         private List<string[]> track;
-        private Dictionary<string, string[]> webPanelAuthorizedList;
+        private Dictionary<string, string[]> webPanelAuthorizedIVKeyList;
         private Dictionary<string, DateTime> webPanelAuthorizedTimeList;
         private List<string> webPanelBanList;
         private Dictionary<string, DateTime> webPanelTimeoutList;
+        
 
         public static PersistentContainer Instance
         {
@@ -60,31 +61,39 @@ namespace ServerTools
         {
             try
             {
-                if (!Saving)
+                if (DataChange)
                 {
-                    Saving = true;
-                    Stream stream = File.Open(filepath, FileMode.Create, FileAccess.ReadWrite);
-                    BinaryFormatter bFormatter = new BinaryFormatter();
-                    bFormatter.Serialize(stream, this);
-                    stream.Close();
-                }
-                else
-                {
-                    Timers.SaveDelay();
+                    if (!Saving)
+                    {
+                        if (!StopServer.NoEntry)
+                        {
+                            Saving = true;
+                            Stream stream = File.Open(filepath, FileMode.Create, FileAccess.ReadWrite);
+                            BinaryFormatter bFormatter = new BinaryFormatter();
+                            bFormatter.Serialize(stream, this);
+                            stream.Close();
+                            Saving = false;
+                        }
+                        else
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Unable to run data save so close to shutdown."));
+                        }
+                    }
+                    DataChange = false;
                 }
             }
             catch (Exception e)
             {
+                Saving = false;
                 Log.Out(string.Format("[SERVERTOOLS] Exception in PersistentContainer.Save: {0}", e.Message));
             }
-            Saving = false;
         }
 
         public bool Load()
         {
-            if (File.Exists(filepath))
+            try
             {
-                try
+                if (File.Exists(filepath))
                 {
                     PersistentContainer obj;
                     Stream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
@@ -94,10 +103,18 @@ namespace ServerTools
                     instance = obj;
                     return true;
                 }
-                catch (Exception e)
+                else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Exception in PersistentContainer.Load: {0}", e.Message));
+                    Stream stream = File.Open(filepath, FileMode.Create, FileAccess.ReadWrite);
+                    BinaryFormatter bFormatter = new BinaryFormatter();
+                    bFormatter.Serialize(stream, this);
+                    stream.Close();
+                    return true;
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Exception in PersistentContainer.Load: {0}", e.Message));
             }
             return false;
         }
@@ -186,18 +203,6 @@ namespace ServerTools
             }
         }
 
-        public List<int[]> ProtectedSpace
-        {
-            get
-            {
-                return protectedSpace;
-            }
-            set
-            {
-                protectedSpace = value;
-            }
-        }
-
         public List<string> RegionReset
         {
             get
@@ -222,19 +227,19 @@ namespace ServerTools
             }
         }
 
-        public Dictionary<string, string[]> WebsiteAuthorizedList
+        public Dictionary<string, string[]> WebPanelAuthorizedIVKeyList
         {
             get
             {
-                return webPanelAuthorizedList;
+                return webPanelAuthorizedIVKeyList;
             }
             set
             {
-                webPanelAuthorizedList = value;
+                webPanelAuthorizedIVKeyList = value;
             }
         }
 
-        public Dictionary<string, DateTime> WebsiteAuthorizedTimeList
+        public Dictionary<string, DateTime> WebPanelAuthorizedTimeList
         {
             get
             {

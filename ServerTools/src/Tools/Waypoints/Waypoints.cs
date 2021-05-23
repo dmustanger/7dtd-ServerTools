@@ -213,6 +213,7 @@ namespace ServerTools
                 }
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                 PersistentContainer.Instance.Players[_cInfo.playerId].LastWaypoint = DateTime.Now;
+                PersistentContainer.DataChange = true;
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
@@ -286,6 +287,7 @@ namespace ServerTools
                         {
                             _waypoints.Add(_waypoint, _wposition);
                             PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints = _waypoints;
+                            PersistentContainer.DataChange = true;
                             Phrases.Dict.TryGetValue(278, out string _phrase278);
                             _phrase278 = _phrase278.Replace("{Name}", _waypoint);
                             _phrase278 = _phrase278.Replace("{Position}", _wposition);
@@ -318,6 +320,7 @@ namespace ServerTools
                     string _wposition = _x + "," + _y + "," + _z;
                     _waypoints.Add(_waypoint, _wposition);
                     PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints = _waypoints;
+                    PersistentContainer.DataChange = true;
                     Phrases.Dict.TryGetValue(278, out string _phrase278);
                     _phrase278 = _phrase278.Replace("{Name}", _waypoint);
                     _phrase278 = _phrase278.Replace("{Position}", _wposition);
@@ -333,6 +336,7 @@ namespace ServerTools
                 Dictionary<string, string> _waypoints = PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints;
                 _waypoints.Remove(_waypoint);
                 PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints = _waypoints;
+                PersistentContainer.DataChange = true;
                 Phrases.Dict.TryGetValue(277, out string _phrase277);
                 _phrase277 = _phrase277.Replace("{Name}", _waypoint);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase277 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

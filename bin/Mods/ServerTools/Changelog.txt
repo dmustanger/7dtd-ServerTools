@@ -1,5 +1,33 @@
 ﻿CHANGELOG
 
+19.4.5
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added back end for a Discord_Bot tool. Enabling will allow the Discord bot
+to communicate with ServerTools while the server is live. You must use 
+Discordian if you want to utilize this tool. Discordian is a separate
+download and runs as a console application
+Added AES 256 encryption methods to the Web_Panel and Discord_Bot
+Added option Max_Blocks to Falling_Block_Remover tool. Controls how many
+blocks must be detected falling before it gets logged. All falling blocks
+are still removed. Nearest player is now logged if located
+Added Active option to Protected_Spaces.xml. Allows you to set true or
+false to the protection of that space. Use this to temp disable an area
+before enabling again or to deactive protection before deleting it
+Fixed Homes tool to allow zero homes to be set as an option
+Fixed Zones tool causing a error on load
+Fixed potential memory leak in timer systems
+Fixed restart of internal handler for Web_Panel on exception errors
+Fixed vulnerability in web panel security handle
+Fixed the added space showing in chat when a prefix was left empty
+Changed Falling_Block_Remover to only log when the falling blocks go 
+over the Max_Blocks amount. It will log the closest player id and name
+Updated Web_Panel to allow clients with id from 6 to 30 chars
+Updated data save system to avoid loss
+Removed Web_Panel auto ban. It is not useful against rotating IP attacks
+and risks your legit users being banned from IP spoofs
+
 19.4.4
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions
@@ -10,7 +38,7 @@ Added UTF8 encoding to the xml files
 Added Reward_Count option to Bloodmoon_Warrior tool
 Added chat response upon receiving a vote reward
 Added automatic memory clear on shutdown process
-Added abilty to disable chat commands through EventTriggers.xml. Set the
+Added ability to disable chat commands through EventTriggers.xml. Set the
 alternative for a command to *** to disable it
 Changed Chat_Command_Private to Chat_Command_Prefix1
 Changed Chat_Command_Public to Chat_Command_Prefix2

@@ -193,8 +193,9 @@ namespace ServerTools
                     p.TotalTimePlayed = 0;
                     p.VoteWeekCount = 0;
                     p.Waypoints = new Dictionary<string, string>();
-                    p.WP = "";
+                    p.WebPass = "";
                     p.ZoneDeathTime = new DateTime();
+                    PersistentContainer.DataChange = true;
                 }
                 string _phrase401;
                 if (!Phrases.Dict.TryGetValue(401, out _phrase401))

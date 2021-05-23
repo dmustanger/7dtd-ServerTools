@@ -104,7 +104,7 @@ namespace ServerTools
                             Add("Zones", DateTime.Now.AddMinutes(Zones.Reminder_Delay));
                             Zones.ReminderExec();
                         }
-                        else if (_event.Key == "Shutdown") //combines stop server tool to apply a countdown timer before shutdown
+                        else if (_event.Key == "Shutdown")
                         {
                             StopServer.PrepareShutdown(); 
                         }

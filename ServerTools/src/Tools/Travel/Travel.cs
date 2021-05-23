@@ -642,6 +642,7 @@ namespace ServerTools
                                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                                 }
                                 PersistentContainer.Instance.Players[_cInfo.playerId].LastTravel = DateTime.Now;
+                                PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue(1041, out string _phrase1041);
                                 _phrase1041 = _phrase1041.Replace("{Destination}", kvpCorners.Key);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1041 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

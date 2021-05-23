@@ -80,7 +80,7 @@ namespace ServerTools
                             _p.StartingItems = false;
                             _p.TotalTimePlayed = 0;
                             _p.VoteWeekCount = 0;
-                            _p.WP = "";
+                            _p.WebPass = "";
                             _p.ZoneDeathTime = new DateTime();
                         }
                     }
@@ -92,6 +92,7 @@ namespace ServerTools
                     PersistentContainer.Instance.PollOpen = false;
                     PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                     PersistentContainer.Instance.Track = new List<string[]>();
+                    PersistentContainer.DataChange = true;
                     Log.Out(string.Format("[SERVERTOOLS] Detected a new or unplayed map and old save data. Old data has been cleared from ServerTools"));
                 }
             }

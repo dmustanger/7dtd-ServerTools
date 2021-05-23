@@ -66,8 +66,6 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            List<string[]> _addProtection = new List<string[]>();
-            List<string[]> _removeProtection = new List<string[]>();
             XmlNode _XmlNode = xmlDoc.DocumentElement;
             foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
@@ -154,8 +152,7 @@ namespace ServerTools
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for PvE attribute: {0}.", subChild.OuterXml));
                                 continue;
                             }
-                            string _noZ = _line.GetAttribute("NoZombie");
-                            if (!bool.TryParse(_noZ, out bool _result3))
+                            if (!bool.TryParse(_line.GetAttribute("NoZombie"), out bool _result3))
                             {
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for NoZombie attribute: {0}.", subChild.OuterXml));
                                 continue;
@@ -164,60 +161,29 @@ namespace ServerTools
                             _line.GetAttribute("Response"), _line.GetAttribute("ReminderNotice") };
                             if (box1[5] == "")
                             {
-                                box1[5] = "**";
+                                box1[5] = "***";
                             }
                             bool[] box2 = { _result1, _result2, _result3 };
                             if (!Box1.Contains(box1))
                             {
                                 Box1.Add(box1);
                                 Box2.Add(box2);
-                                if (box2[3])
+                                string[] _vectors = new string[4];
+                                if (box2[0]) //is a circle
                                 {
-                                    string[] _vectors = new string[4];
-                                    if (box2[0])
-                                    {
-                                        string[] _corner1 = box1[0].Split(',');
-                                        _vectors[0] = _corner1[0];
-                                        _vectors[1] = _corner1[2];
-                                        _vectors[2] = box1[1];
-                                    }
-                                    else
-                                    {
-                                        string[] _corner1 = box1[0].Split(',');
-                                        string[] _corner2 = box1[1].Split(',');
-                                        _vectors[0] = _corner1[0];
-                                        _vectors[1] = _corner1[2];
-                                        _vectors[2] = _corner2[0];
-                                        _vectors[3] = _corner2[2];
-                                    }
-                                    if (!_addProtection.Contains(_vectors))
-                                    {
-                                        _addProtection.Add(_vectors);
-                                    }
+                                    string[] _corner1 = box1[0].Split(',');
+                                    _vectors[0] = _corner1[0];
+                                    _vectors[1] = _corner1[2];
+                                    _vectors[2] = box1[1];
                                 }
-                                else
+                                else //is a square or rectangle
                                 {
-                                    string[] _vectors = new string[4];
-                                    if (box2[0])
-                                    {
-                                        string[] _corner1 = box1[0].Split(',');
-                                        _vectors[0] = _corner1[0];
-                                        _vectors[1] = _corner1[2];
-                                        _vectors[2] = box1[1];
-                                    }
-                                    else
-                                    {
-                                        string[] _corner1 = box1[0].Split(',');
-                                        string[] _corner2 = box1[1].Split(',');
-                                        _vectors[0] = _corner1[0];
-                                        _vectors[1] = _corner1[2];
-                                        _vectors[2] = _corner2[0];
-                                        _vectors[3] = _corner2[2];
-                                    }
-                                    if (!_removeProtection.Contains(_vectors))
-                                    {
-                                        _removeProtection.Add(_vectors);
-                                    }
+                                    string[] _corner1 = box1[0].Split(',');
+                                    string[] _corner2 = box1[1].Split(',');
+                                    _vectors[0] = _corner1[0];
+                                    _vectors[1] = _corner1[2];
+                                    _vectors[2] = _corner2[0];
+                                    _vectors[3] = _corner2[2];
                                 }
                             }
                         }
@@ -295,7 +261,7 @@ namespace ServerTools
                                 {
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _box1[3] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
-                                if (_box1[5] != "**" && _box1[5] != "")
+                                if (_box1[5] != "***" && _box1[5] != "")
                                 {
                                     Response(_cInfo, _box1[5]);
                                 }
@@ -323,7 +289,7 @@ namespace ServerTools
                             {
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _box1[3] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
-                            if (_box1[5] != "**" && _box1[5] != "")
+                            if (_box1[5] != "***" && _box1[5] != "")
                             {
                                 Response(_cInfo, _box1[5]);
                             }

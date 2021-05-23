@@ -73,6 +73,7 @@ namespace ServerTools
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = -1;
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteName = _cInfo.playerName;
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteDate = DateTime.Now;
+                                    PersistentContainer.DataChange = true;
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Steam Id {0}, player name {1} has been muted indefinitely.", _cInfo.playerId, _cInfo.playerName));
                                     return;
                                 }
@@ -82,6 +83,7 @@ namespace ServerTools
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = _muteTime;
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteName = _cInfo.playerName;
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteDate = DateTime.Now;
+
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Steam Id {0}, player name {1} has been muted for {2} minutes.", _cInfo.playerId, _cInfo.playerName, _muteTime));
                                     return;
                                 }
@@ -115,6 +117,7 @@ namespace ServerTools
                             }
                             Mute.Mutes.Remove(_id);
                             PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = 0;
+                            PersistentContainer.DataChange = true;
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Steam Id {0} has been unmuted.", _id));
                             return;
                         }

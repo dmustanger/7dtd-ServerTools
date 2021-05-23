@@ -1141,6 +1141,7 @@ namespace ServerTools
                     _delays.Add(_message, DateTime.Now);
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays = _delays;
                 }
+                PersistentContainer.DataChange = true;
                 string[] _r;
                 if (Dict.TryGetValue(_message, out _r))
                 {

@@ -9,7 +9,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string version = "19.4.4";
+        public const string version = "19.4.5";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]", OldXmlDirectory = "";
         private const string configFile = "ServerToolsConfig.xml";
         public static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
@@ -1012,6 +1012,18 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "Discord_Bot":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Discord_Bot entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out DiscordBot.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Discord_Bot entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "Dupe_Log":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -1211,6 +1223,16 @@ namespace ServerTools
                                 if (!bool.TryParse(_line.GetAttribute("Log"), out FallingBlocks.OutputLog))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Falling_Blocks_Remover entry because of invalid (True/False) value for 'Log' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Max_Blocks"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Falling_Blocks_Remover entry because of missing 'Max_Blocks' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Max_Blocks"), out FallingBlocks.Max_Blocks))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Falling_Blocks_Remover entry because of invalid (non-numeric) value for 'Max_Blocks' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -3667,12 +3689,13 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Damage_Detector\" Enable=\"{0}\" Entity_Damage_Limit=\"{1}\" Block_Damage_Limit=\"{2}\" Player_Damage_Limit=\"{3}\" Admin_Level=\"{4}\" />", ProcessDamage.Damage_Detector, ProcessDamage.Entity_Damage_Limit, ProcessDamage.Block_Damage_Limit, ProcessDamage.Player_Damage_Limit, ProcessDamage.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Day7\" Enable=\"{0}\" />", Day7.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Death_Spot\" Enable=\"{0}\" Time=\"{1}\" Delay_Between_Uses=\"{2}\" Command_Cost=\"{3}\" />", DeathSpot.IsEnabled, DeathSpot.Time, DeathSpot.Delay_Between_Uses, DeathSpot.Command_Cost));
+                sw.WriteLine(string.Format("        <Tool Name=\"Discord_Bot\" Enable=\"{0}\" />", DiscordBot.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Dupe_Log\" Enable=\"{0}\" />", DupeLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Entity_Cleanup\" Enable=\"{0}\" Falling_Blocks=\"{1}\" Falling_Tree=\"{2}\" Entity_Underground=\"{3}\" Delete_Bicycles=\"{4}\" />", EntityCleanup.IsEnabled, EntityCleanup.BlockIsEnabled, EntityCleanup.FallingTreeEnabled, EntityCleanup.Underground, EntityCleanup.Bicycles));
                 sw.WriteLine(string.Format("        <Tool Name=\"Entity_Cleanup_Extended\" Delete_MiniBikes=\"{0}\" Delete_MotorBikes=\"{1}\" Delete_Jeeps=\"{2}\" Delete_Gyros=\"{3}\" />", EntityCleanup.MiniBikes, EntityCleanup.MotorBikes, EntityCleanup.Jeeps, EntityCleanup.Gyros));
                 sw.WriteLine(string.Format("        <Tool Name=\"Exit_Command\" Enable=\"{0}\" All=\"{1}\" Belt=\"{2}\" Bag=\"{3}\" Equipment=\"{4}\" />", ExitCommand.IsEnabled, ExitCommand.All, ExitCommand.Belt, ExitCommand.Bag, ExitCommand.Equipment));
                 sw.WriteLine(string.Format("        <Tool Name=\"Exit_Command_Extended\" Admin_Level=\"{0}\" Exit_Time=\"{1}\" />", ExitCommand.Admin_Level, ExitCommand.Exit_Time));
-                sw.WriteLine(string.Format("        <Tool Name=\"Falling_Blocks_Remover\" Enable=\"{0}\" Log=\"{1}\" />", FallingBlocks.IsEnabled, FallingBlocks.OutputLog));
+                sw.WriteLine(string.Format("        <Tool Name=\"Falling_Blocks_Remover\" Enable=\"{0}\" Log=\"{1}\" Max_Blocks=\"{2}\" />", FallingBlocks.IsEnabled, FallingBlocks.OutputLog, FallingBlocks.Max_Blocks));
                 sw.WriteLine(string.Format("        <Tool Name=\"First_Claim_Block\" Enable=\"{0}\" />", FirstClaimBlock.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Flying_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", PlayerChecks.FlyEnabled, PlayerChecks.Flying_Admin_Level, PlayerChecks.Flying_Flags));
                 sw.WriteLine(string.Format("        <Tool Name=\"FPS\" Enable=\"{0}\" Set_Target=\"{1}\" />", Fps.IsEnabled, Fps.Set_Target));

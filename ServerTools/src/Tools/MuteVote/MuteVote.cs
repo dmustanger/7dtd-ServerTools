@@ -62,6 +62,7 @@ namespace ServerTools
                 PersistentContainer.Instance.Players[_playerMute.playerId].MuteTime = 60;
                 PersistentContainer.Instance.Players[_playerMute.playerId].MuteName = _playerMute.playerName;
                 PersistentContainer.Instance.Players[_playerMute.playerId].MuteDate = DateTime.Now;
+                PersistentContainer.DataChange = true;
                 Phrases.Dict.TryGetValue(913, out string _phrase913);
                 _phrase913 = _phrase913.Replace("{PlayerName}", _playerMute.playerName);
                 ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase913 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);

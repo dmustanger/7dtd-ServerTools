@@ -184,20 +184,35 @@ namespace ServerTools
                                 if (!string.IsNullOrEmpty(PersistentContainer.Instance.Players[_cInfo.playerId].ClanName))
                                 {
                                     string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
-                                    if (Normal_Player_Color_Prefix && (Normal_Player_Name_Color != "" || Normal_Player_Prefix_Color != ""))
+                                    string _npnc = Normal_Player_Name_Color, _nppc = Normal_Player_Prefix_Color;
+                                    if (Normal_Player_Name_Color == "")
                                     {
-                                        PrepMessage(_cInfo, _message, _senderId, _mainName, _clanName, Normal_Player_Name_Color, Normal_Player_Prefix_Color, _type, _recipientEntityIds);
+                                        _npnc = string.Empty;
                                     }
-                                    else
+                                    if (Normal_Player_Prefix_Color == "")
                                     {
-                                        PrepMessage(_cInfo, _message, _senderId, _mainName, _clanName, "", "", _type, _recipientEntityIds);
+                                        _nppc = string.Empty;
                                     }
+                                    PrepMessage(_cInfo, _message, _senderId, _mainName, _clanName, _npnc, _nppc, _type, _recipientEntityIds);
                                     return false;
                                 }
                             }
-                            if (Normal_Player_Color_Prefix && (Normal_Player_Name_Color != "" || Normal_Player_Prefix_Color != ""))
+                            if (Normal_Player_Color_Prefix)
                             {
-                                PrepMessage(_cInfo, _message, _senderId, _mainName, Normal_Player_Prefix, Normal_Player_Name_Color, Normal_Player_Prefix_Color, _type, _recipientEntityIds);
+                                string _npp = Normal_Player_Prefix, _npnc = Normal_Player_Name_Color, _nppc = Normal_Player_Prefix_Color;
+                                if (Normal_Player_Prefix == "")
+                                {
+                                    _npp = string.Empty;
+                                }
+                                if (Normal_Player_Name_Color == "")
+                                {
+                                    _npnc = string.Empty;
+                                }
+                                if (Normal_Player_Prefix_Color == "")
+                                {
+                                    _nppc = string.Empty;
+                                }
+                                PrepMessage(_cInfo, _message, _senderId, _mainName, _npp, _npnc, _nppc, _type, _recipientEntityIds);
                                 return false;
                             }
                         }
@@ -1289,6 +1304,7 @@ namespace ServerTools
                                             string[] _harcorestats = { _cInfo.playerName, _player.Score.ToString(), _lifeTime.ToString(), _deaths.ToString(), "0" };
                                             PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats = _harcorestats;
                                             PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled = true;
+                                            PersistentContainer.DataChange = true;
                                             Phrases.Dict.TryGetValue(601, out string _phrase601);
                                             _phrase601 = _phrase601.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
                                             _phrase601 = _phrase601.Replace("{Command127}", Hardcore.Command127);

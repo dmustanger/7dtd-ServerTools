@@ -361,7 +361,8 @@ namespace ServerTools
             CountryBan.FileCheck();
 
             Timers.LogAlert();
-            Timers.LoadAlert(); 
+            Timers.LoadAlert();
+            Timers.PersistentDataSave();
         }
     }
 }

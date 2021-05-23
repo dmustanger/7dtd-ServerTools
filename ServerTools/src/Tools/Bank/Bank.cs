@@ -23,6 +23,7 @@ namespace ServerTools
             if (_bankValue < 0)
             {
                 PersistentContainer.Instance.Players[_steamid].Bank = 0;
+                PersistentContainer.DataChange = true;
                 _bankValue = 0;
             }
             return _bankValue;
@@ -32,6 +33,7 @@ namespace ServerTools
         {
             int _bankValue = PersistentContainer.Instance.Players[_steamid].Bank;
             PersistentContainer.Instance.Players[_steamid].Bank = _bankValue + _amount;
+            PersistentContainer.DataChange = true;
         }
 
         public static void SubtractCoinsFromBank(string _steamid, int _amount)
@@ -42,11 +44,13 @@ namespace ServerTools
                 _newValue = 0;
             }
             PersistentContainer.Instance.Players[_steamid].Bank = _newValue;
+            PersistentContainer.DataChange = true;
         }
 
         public static void ClearBank(ClientInfo _cInfo)
         {
             PersistentContainer.Instance.Players[_cInfo.playerId].Bank = 0;
+            PersistentContainer.DataChange = true;
         }
 
         public static void CurrentBankAndId(ClientInfo _cInfo)

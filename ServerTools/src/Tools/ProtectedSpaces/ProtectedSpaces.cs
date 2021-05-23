@@ -58,6 +58,7 @@ namespace ServerTools
                     if (childNode.Name == "Spaces")
                     {
                         Protected.Clear();
+                        Vectors.Clear();
                         foreach (XmlNode subChild in childNode.ChildNodes)
                         {
                             if (subChild.NodeType == XmlNodeType.Comment)
@@ -92,13 +93,23 @@ namespace ServerTools
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of invalid form missing comma attribute: {0}", subChild.OuterXml));
                                 continue;
                             }
+                            if (!_line.HasAttribute("Active"))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of missing Active attribute: {0}", subChild.OuterXml));
+                                continue;
+                            }
+                            if (!bool.TryParse(_line.GetAttribute("Active"), out bool _isActive))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because improper True/False for Active attribute: {0}.", subChild.OuterXml));
+                                continue;
+                            }
                             string[] _corner1Split = corner1.Split(',');
                             string[] _corner2Split = corner2.Split(',');
                             int.TryParse(_corner1Split[0], out int _corner1_x);
                             int.TryParse(_corner1Split[1], out int _corner1_z);
                             int.TryParse(_corner2Split[0], out int _corner2_x);
                             int.TryParse(_corner2Split[1], out int _corner2_z);
-                            int[] _vectors = new int[4];
+                            int[] _vectors = new int[5];
                             if (_corner1_x < _corner2_x)
                             {
                                 _vectors[0] = _corner1_x;
@@ -119,22 +130,34 @@ namespace ServerTools
                                 _vectors[1] = _corner2_z;
                                 _vectors[3] = _corner1_z;
                             }
+                            if (_isActive)
+                            {
+                                _vectors[4] = 1;
+                            }
+                            else
+                            {
+                                _vectors[4] = 0;
+                            }
                             if (!Protected.Contains(_vectors))
                             {
                                 Protected.Add(_vectors);
+                                if (_vectors[4] == 1)
+                                {
+                                    AddProtection(_vectors);
+                                }
+                                else
+                                {
+                                    RemoveProtection(_vectors);
+                                }
+                            }
+                            else if (_vectors[4] == 1)
+                            {
                                 AddProtection(_vectors);
                             }
-                        }
-                    }
-                }
-                if (PersistentContainer.Instance.ProtectedSpace != null && PersistentContainer.Instance.ProtectedSpace.Count > 0)
-                {
-                    List<int[]> _protected = PersistentContainer.Instance.ProtectedSpace;
-                    for (int i = 0; i < _protected.Count; i++)
-                    {
-                        if (!Protected.Contains(_protected[i]))
-                        {
-                            RemoveProtection(_protected[i]);
+                            else
+                            {
+                                RemoveProtection(_vectors);
+                            }
                         }
                     }
                 }
@@ -157,15 +180,21 @@ namespace ServerTools
                 {
                     for (int i = 0; i < Protected.Count; i++)
                     {
-                        int[] _vectors = Protected[i];
-                        sw.WriteLine(string.Format("        <Protected Corner1=\"{0},{1}\" Corner2=\"{2},{3}\" />", _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                        if (Protected[i][4] == 1)
+                        {
+                            sw.WriteLine(string.Format("        <Protected Corner1=\"{0},{1}\" Corner2=\"{2},{3}\" Active=\"True\" />", Protected[i][0], Protected[i][1], Protected[i][2], Protected[i][3]));
+                        }
+                        else
+                        {
+                            sw.WriteLine(string.Format("        <Protected Corner1=\"{0},{1}\" Corner2=\"{2},{3}\" Active=\"False\" />", Protected[i][0], Protected[i][1], Protected[i][2], Protected[i][3]));
+                        }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <!-- <Protected Corner1=\"-30,-20\" Corner2=\"10,50\" /> -->");
-                    sw.WriteLine("        <!-- <Protected Corner1=\"-800,75\" Corner2=\"-300,100\" /> -->");
-                    sw.WriteLine("        <!-- <Protected Corner1=\"-50,-600\" Corner2=\"-5,-550\" /> -->");
+                    sw.WriteLine("        <!-- <Protected Corner1=\"-30,-20\" Corner2=\"10,50\" Active=\"True\" /> -->");
+                    sw.WriteLine("        <!-- <Protected Corner1=\"-800,75\" Corner2=\"-300,100\" Active=\"True\" /> -->");
+                    sw.WriteLine("        <!-- <Protected Corner1=\"-50,-600\" Corner2=\"-5,-550\" Active=\"True\" /> -->");
                 }
                 sw.WriteLine("    </Spaces>");
                 sw.WriteLine("</Protected>");
@@ -193,14 +222,14 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static bool AddProtection(int[] _vectors)
+        public static void AddProtection(int[] _vectors)
         {
             try
             {
-                if (_vectors != null && _vectors.Length == 4)
+                if (_vectors != null && _vectors.Length == 5)
                 {
-                    List<Chunk> _chunkList = new List<Chunk>();
                     List<int[]> _loadedLocations = new List<int[]>();
+                    List<int[]> _unloadedLocations = new List<int[]>();
                     for (int i = _vectors[0]; i <= _vectors[2]; i++)
                     {
                         for (int j = _vectors[1]; j <= _vectors[3]; j++)
@@ -209,12 +238,12 @@ namespace ServerTools
                             {
                                 if (GameManager.Instance.World.IsChunkAreaLoaded(i, 1, j))
                                 {
+
                                     _loadedLocations.Add(new int[] { i, j });
                                 }
                                 else
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Unable to add protected space at {0}x,{1}z to {2}x,{3}z. The world is not accessable here. Stand in the area first", _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
-                                    return false;
+                                    _unloadedLocations.Add(new int[] { i, j });
                                 }
                             }
                             else
@@ -225,9 +254,10 @@ namespace ServerTools
                     }
                     if (_loadedLocations.Count > 0)
                     {
+                        List<Chunk> _chunkList = new List<Chunk>();
                         for (int i = 0; i < _loadedLocations.Count; i++)
                         {
-                            Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_loadedLocations[i][0], 1, _loadedLocations[i][1]);
+                            Chunk _chunk = GameManager.Instance.World.GetChunkFromWorldPos(_loadedLocations[i][0], 1, _loadedLocations[i][1]) as Chunk;
                             if (!_chunkList.Contains(_chunk))
                             {
                                 _chunkList.Add(_chunk);
@@ -235,41 +265,39 @@ namespace ServerTools
                             Bounds bounds = _chunk.GetAABB();
                             int _x = _loadedLocations[i][0] - (int)bounds.min.x, _z = _loadedLocations[i][1] - (int)bounds.min.z;
                             _chunk.SetTraderArea(_x, _z, true);
-                            if (PersistentContainer.Instance.ProtectedSpace != null && PersistentContainer.Instance.ProtectedSpace.Count > 0)
-                            {
-                                if (!PersistentContainer.Instance.ProtectedSpace.Contains(_vectors))
-                                {
-                                    PersistentContainer.Instance.ProtectedSpace.Add(_vectors);
-                                }
-                            }
-                            else
-                            {
-                                List<int[]> _protectedSpaces = new List<int[]>();
-                                _protectedSpaces.Add(_vectors);
-                                PersistentContainer.Instance.ProtectedSpace = _protectedSpaces;
-                                AddProtection(_vectors);
-                            }
                         }
-                    }
-                    if (_chunkList.Count > 0)
-                    {
-                        for (int i = 0; i < _chunkList.Count; i++)
+                        if (_chunkList.Count > 0)
                         {
-                            Chunk _chunk = _chunkList[i];
-                            List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                            if (_clientList != null && _clientList.Count > 0)
+                            for (int i = 0; i < _chunkList.Count; i++)
                             {
-                                for (int j = 0; j < _clientList.Count; j++)
+                                Chunk _chunk = _chunkList[i];
+                                List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                                if (_clientList != null && _clientList.Count > 0)
                                 {
-                                    ClientInfo _cInfo = _clientList[j];
-                                    if (_cInfo != null)
+                                    for (int j = 0; j < _clientList.Count; j++)
                                     {
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+                                        ClientInfo _cInfo = _clientList[j];
+                                        if (_cInfo != null)
+                                        {
+                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+                                        }
                                     }
                                 }
                             }
                         }
-                        return true;
+                    }
+                    if (_unloadedLocations.Count > 0)
+                    {
+                        for (int i = 0; i < _unloadedLocations.Count; i++)
+                        {
+                            if (GameManager.Instance.World.GetChunkSync(_unloadedLocations[i][0], _unloadedLocations[i][1]) is Chunk)
+                            {
+                                Chunk _chunk = GameManager.Instance.World.GetChunkSync(_unloadedLocations[i][0], 1, _unloadedLocations[i][1]) as Chunk;
+                                Bounds bounds = _chunk.GetAABB();
+                                int _x = _unloadedLocations[i][0] - (int)bounds.min.x, _z = _unloadedLocations[i][1] - (int)bounds.min.z;
+                                _chunk.SetTraderArea(_x, _z, true);
+                            }
+                        }
                     }
                 }
             }
@@ -277,17 +305,16 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedSpaces.AddProtection: {0}", e.Message));
             }
-            return false;
         }
 
-        public static bool RemoveProtection(int[] _vectors)
+        public static void RemoveProtection(int[] _vectors)
         {
             try
             {
-                if (_vectors != null && _vectors.Length == 4)
+                if (_vectors != null && _vectors.Length == 5)
                 {
-                    List<Chunk> _chunkList = new List<Chunk>();
                     List<int[]> _loadedLocations = new List<int[]>();
+                    List<int[]> _unloadedLocations = new List<int[]>();
                     for (int i = _vectors[0]; i <= _vectors[2]; i++)
                     {
                         for (int j = _vectors[1]; j <= _vectors[3]; j++)
@@ -298,13 +325,13 @@ namespace ServerTools
                             }
                             else
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Unable to remove protected space at {0}x,{1}z to {2}x,{3}z. The world is not accessable here. Stand in the area first", _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
-                                return false;
+                                _unloadedLocations.Add(new int[] { i, j });
                             }
                         }
                     }
                     if (_loadedLocations.Count > 0)
                     {
+                        List<Chunk> _chunkList = new List<Chunk>();
                         for (int i = 0; i < _loadedLocations.Count; i++)
                         {
                             Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_loadedLocations[i][0], 1, _loadedLocations[i][1]);
@@ -315,34 +342,39 @@ namespace ServerTools
                             Bounds bounds = _chunk.GetAABB();
                             int _x = _loadedLocations[i][0] - (int)bounds.min.x, _z = _loadedLocations[i][1] - (int)bounds.min.z;
                             _chunk.SetTraderArea(_x, _z, false);
-                            if (PersistentContainer.Instance.ProtectedSpace != null && PersistentContainer.Instance.ProtectedSpace.Count > 0)
-                            {
-                                if (PersistentContainer.Instance.ProtectedSpace.Contains(_vectors))
-                                {
-                                    PersistentContainer.Instance.ProtectedSpace.Remove(_vectors);
-                                }
-                            }
                         }
-                    }
-                    if (_chunkList.Count > 0)
-                    {
-                        for (int i = 0; i < _chunkList.Count; i++)
+                        if (_chunkList.Count > 0)
                         {
-                            Chunk _chunk = _chunkList[i];
-                            List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                            if (_clientList != null && _clientList.Count > 0)
+                            for (int i = 0; i < _chunkList.Count; i++)
                             {
-                                for (int j = 0; j < _clientList.Count; j++)
+                                Chunk _chunk = _chunkList[i];
+                                List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                                if (_clientList != null && _clientList.Count > 0)
                                 {
-                                    ClientInfo _cInfo = _clientList[j];
-                                    if (_cInfo != null)
+                                    for (int j = 0; j < _clientList.Count; j++)
                                     {
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+                                        ClientInfo _cInfo = _clientList[j];
+                                        if (_cInfo != null)
+                                        {
+                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+                                        }
                                     }
                                 }
                             }
                         }
-                        return true;
+                    }
+                    if (_unloadedLocations.Count > 0)
+                    {
+                        for (int i = 0; i < _unloadedLocations.Count; i++)
+                        {
+                            if (GameManager.Instance.World.GetChunkSync(_unloadedLocations[i][0], _unloadedLocations[i][1]) is Chunk)
+                            {
+                                Chunk _chunk = GameManager.Instance.World.GetChunkSync(_unloadedLocations[i][0], 1, _unloadedLocations[i][1]) as Chunk;
+                                Bounds bounds = _chunk.GetAABB();
+                                int _x = _unloadedLocations[i][0] - (int)bounds.min.x, _z = _unloadedLocations[i][1] - (int)bounds.min.z;
+                                _chunk.SetTraderArea(_x, _z, false);
+                            }
+                        }
                     }
                 }
             }
@@ -350,7 +382,6 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedSpaces.RemoveProtection: {0}", e.Message));
             }
-            return false;
         }
     }
 }

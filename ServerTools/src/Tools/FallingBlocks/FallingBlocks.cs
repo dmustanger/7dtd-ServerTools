@@ -1,29 +1,44 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ServerTools
 {
     class FallingBlocks
     {
         public static bool IsEnabled = false, OutputLog = false;
+        public static int Max_Blocks = 10;
 
-        public static void Exec(Vector3i _blockPosition)
+        public static void Exec(IList<Vector3i> _blocks)
         {
             try
             {
-                if (_blockPosition != null)
+                if (_blocks != null && _blocks.Count > 0)
                 {
-                    BlockValue _blockValue = GameManager.Instance.World.GetBlock(_blockPosition);
-                    Block _block = _blockValue.Block;
-                    if (_block is BlockSleepingBag || _block.IsDecoration || _block.IsPlant() || _block.isMultiBlock || _blockValue.Equals(BlockValue.Air))
+                    int _count = 0;
+                    for (int i = 0; i < _blocks.Count; i++)
                     {
-                        return;
-                    }
-                    else
-                    {
-                        GameManager.Instance.World.SetBlockRPC(_blockPosition, BlockValue.Air);
-                        if (OutputLog)
+                        BlockValue _blockValue = GameManager.Instance.World.GetBlock(_blocks[i]);
+                        Block _block = _blockValue.Block;
+                        if (_block is BlockSleepingBag || _block.IsDecoration || _block.IsPlant() || _block.isMultiBlock || _blockValue.Equals(BlockValue.Air))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Falling block removed at position {0}", _blockPosition));
+                            continue;
+                        }
+                        else
+                        {
+                            GameManager.Instance.World.SetBlockRPC(_blocks[i], BlockValue.Air);
+                            _count++;
+                        }
+                    }
+                    if (OutputLog && _count >= Max_Blocks)
+                    {
+                        EntityPlayer _closestPlayer = GameManager.Instance.World.GetClosestPlayer(_blocks[0].x, _blocks[0].y, _blocks[0].z, -1, 75);
+                        if (_closestPlayer != null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Removed {0} falling blocks at {1}. The closest player entity id was {2} named {3} @ {4}", _count, _blocks[0], _closestPlayer.entityId, _closestPlayer.EntityName, _closestPlayer.position));
+                        }
+                        else
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Removed {0} falling blocks at {1}. No players were located near by", _count, _blocks[0]));
                         }
                     }
                 }

@@ -73,6 +73,7 @@ namespace ServerTools
                             PersistentPlayer p = PersistentContainer.Instance.Players[_id];
                             {
                                 PersistentContainer.Instance.Players[_id].LastAnimal = DateTime.Now.AddYears(-1);
+                                PersistentContainer.DataChange = true;
                             }
                         }
                         SdtdConsole.Instance.Output("[SERVERTOOLS] Animal tracking delay reset for all players.");
@@ -83,6 +84,7 @@ namespace ServerTools
                         if (_cInfo != null)
                         {
                             PersistentContainer.Instance.Players[_params[1]].LastAnimal = DateTime.Now.AddYears(-1);
+                            PersistentContainer.DataChange = true;
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking delay reset for {0}.", _cInfo.playerName));
                         }
                         else
@@ -93,6 +95,7 @@ namespace ServerTools
                                 return;
                             }
                             PersistentContainer.Instance.Players[_params[1]].LastAnimal = DateTime.Now.AddYears(-1);
+                            PersistentContainer.DataChange = true;
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking delay reset for {0}.", _params[1]));
                         }
                     }

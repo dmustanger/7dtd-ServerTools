@@ -14,26 +14,27 @@ namespace ServerTools
 
         public static void ListFriends(ClientInfo _cInfo)
         {
-            bool _found = false;
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             List<EntityPlayer> _playerList = GameManager.Instance.World.Players.list;
-            for (int i = 0; i < _playerList.Count; i++)
+            if (_playerList.Count > 0)
             {
-                EntityPlayer _player2 = _playerList[i];
-                if (_player2 != null)
+                for (int i = 0; i < _playerList.Count; i++)
                 {
-                    if (_player != _player2 && _player.IsFriendsWith(_player2))
+                    EntityPlayer _player2 = _playerList[i];
+                    if (_player2 != null)
                     {
-                        _found = true;
-                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_player2.entityId);
-                        Phrases.Dict.TryGetValue(361, out string _phrase361);
-                        _phrase361 = _phrase361.Replace("{FriendName}", _cInfo2.playerName);
-                        _phrase361 = _phrase361.Replace("{EntityId}", _cInfo2.entityId.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase361 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        if (_player != _player2 && _player.IsFriendsWith(_player2))
+                        {
+                            ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_player2.entityId);
+                            Phrases.Dict.TryGetValue(361, out string _phrase361);
+                            _phrase361 = _phrase361.Replace("{FriendName}", _cInfo2.playerName);
+                            _phrase361 = _phrase361.Replace("{EntityId}", _cInfo2.entityId.ToString());
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase361 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
                     }
                 }
             }
-            if (!_found)
+            else
             {
                 Phrases.Dict.TryGetValue(368, out string _phrase368);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase368 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -189,6 +190,7 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase367 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player.position.x, (int)_player.position.y, (int)_player.position.z), null, false));
                     PersistentContainer.Instance.Players[_cInfo2.playerId].LastFriendTele = DateTime.Now;
+                    PersistentContainer.DataChange = true;
                 }
             }
             else
