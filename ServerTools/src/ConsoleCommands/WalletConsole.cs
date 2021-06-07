@@ -72,8 +72,7 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("all"))
                 {
-                    int _adjustCoins;
-                    if (!int.TryParse(_params[1], out _adjustCoins))
+                    if (!int.TryParse(_params[1], out int _adjustCoins))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not adjust wallet. Value {0} is invalid", _params[1]));
                     }
@@ -111,8 +110,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not adjust wallet. Value {0} is invalid", _params[1]));
                         return;
                     }
-                    int _adjustCoins;
-                    if (!int.TryParse(_params[1], out _adjustCoins))
+                    if (!int.TryParse(_params[1], out int _adjustCoins))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not adjust wallet. Value {0} is invalid", _params[1]));
                     }

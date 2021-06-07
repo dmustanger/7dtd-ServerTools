@@ -15,8 +15,8 @@ namespace ServerTools
         public static Dictionary<string, int[]> Dict1 = new Dictionary<string, int[]>();
         public static List<int> TeleportCheckProtection = new List<int>();
         private const string file = "CustomChatCommands.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -155,8 +155,7 @@ namespace ServerTools
                 {
                     foreach (KeyValuePair<string, string[]> kvp in Dict)
                     {
-                        int[] _value;
-                        if (Dict1.TryGetValue(kvp.Key, out _value))
+                        if (Dict1.TryGetValue(kvp.Key, out int[] _value))
                         {
                             sw.WriteLine(string.Format("        <Command Trigger=\"{0}\" Response=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Permission=\"{4}\" Cost=\"{5}\" />", kvp.Key, kvp.Value[0], _value[0], kvp.Value[1], kvp.Value[2], _value[1]));
                         }
@@ -479,11 +478,11 @@ namespace ServerTools
                     _commands = "";
                 }
             }
-            if (DeathSpot.IsEnabled)
+            if (Died.IsEnabled)
             {
-                if (DeathSpot.Command61 != "***")
+                if (Died.Command61 != "***")
                 {
-                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, DeathSpot.Command61);
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Died.Command61);
                 }
                 if (_commands.Length >= 100)
                 {
@@ -935,8 +934,7 @@ namespace ServerTools
                 foreach (KeyValuePair<string, string[]> kvp in Dict)
                 {
                     string _h = kvp.Value[1];
-                    bool _result;
-                    if (bool.TryParse(_h, out _result))
+                    if (bool.TryParse(_h, out bool _result))
                     {
                         if (!_result)
                         {
@@ -1047,8 +1045,7 @@ namespace ServerTools
             {
                 if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                 {
-                    DateTime _dt;
-                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                     if (DateTime.Now < _dt)
                     {
                         int _newDelay = _c1[0] / 2;
@@ -1120,32 +1117,33 @@ namespace ServerTools
             }
         }
 
-        private static void CommandDelay(ClientInfo _cInfo, string _message)
+        private static void CommandDelay(ClientInfo _cInfo, string _trigger)
         {
             try
             {
                 if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.Count > 0)
                 {
-                    if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_message))
+                    if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_trigger))
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_message] = DateTime.Now;
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_trigger] = DateTime.Now;
                     }
                     else
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.Add(_message, DateTime.Now);
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.Add(_trigger, DateTime.Now);
                     }
                 }
                 else
                 {
-                    Dictionary<string, DateTime> _delays = new Dictionary<string, DateTime>();
-                    _delays.Add(_message, DateTime.Now);
+                    Dictionary<string, DateTime> _delays = new Dictionary<string, DateTime>
+                    {
+                        { _trigger, DateTime.Now }
+                    };
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays = _delays;
                 }
                 PersistentContainer.DataChange = true;
-                string[] _r;
-                if (Dict.TryGetValue(_message, out _r))
+                if (Dict.TryGetValue(_trigger, out string[] _commandResponse))
                 {
-                    string[] _commandsSplit = _r[0].Split('^');
+                    string[] _commandsSplit = _commandResponse[0].Split('^');
                     for (int i = 0; i < _commandsSplit.Length; i++)
                     {
                         string _commandTrimmed = _commandsSplit[i].Trim();
@@ -1167,8 +1165,7 @@ namespace ServerTools
                                     }
                                 }
                                 string _timeString = _commandTrimmed.Split(' ').Skip(1).First();
-                                int _time = 5;
-                                int.TryParse(_timeString, out _time);
+                                int.TryParse(_timeString, out int _time);
                                 Timers.SingleUseTimer(_time, _cInfo.playerId, _commandsRebuilt);
                             }
                             return;
@@ -1215,8 +1212,7 @@ namespace ServerTools
                                     }
                                 }
                                 string _timeString = _commandTrimmed.Split(' ').Skip(1).First();
-                                int _time = 5;
-                                int.TryParse(_timeString, out _time);
+                                int.TryParse(_timeString, out int _time);
                                 Timers.SingleUseTimer(_time, _cInfo.playerId, _commandsRebuilt);
                             }
                             return;

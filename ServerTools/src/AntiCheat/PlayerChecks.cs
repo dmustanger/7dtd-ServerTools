@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ServerTools.AntiCheat
+namespace ServerTools
 {
     class PlayerChecks
     {
         public static bool GodEnabled = false, FlyEnabled = false, SpectatorEnabled = false, WaterEnabled = false;
         public static int Flying_Admin_Level = 0, Godmode_Admin_Level, Spectator_Admin_Level, Flying_Flags = 4;
         public static Dictionary<int, int> Flag = new Dictionary<int, int>();
-        private static Dictionary<int, float> OldY = new Dictionary<int, float>();
+        public static Dictionary<int, Vector3i> Movement = new Dictionary<int, Vector3i>();
 
         public static void Exec()
         {
@@ -76,13 +76,33 @@ namespace ServerTools.AntiCheat
                                     }
                                     if (FlyEnabled && _userPermissionLevel > Flying_Admin_Level)
                                     {
-                                        if (!Teleportation.Teleporting.Contains(_cInfo.entityId) && _player.IsSpawned() && _player.IsAlive() &&!_player.IsStuck && !_player.isSwimming && _player.AttachedToEntity == null)
+                                        if (_player.IsSpawned() && _player.IsAlive())
                                         {
-                                            if (OldY.ContainsKey(_cInfo.entityId))
+                                            if (_player.isSwimming)
                                             {
-                                                OldY.TryGetValue(_cInfo.entityId, out float lastY);
-                                                OldY[_cInfo.entityId] = _player.position.y;
-                                                if (lastY - _player.position.y >= 4)
+                                                BlockValue _block = GameManager.Instance.World.GetBlock(new Vector3i(_player.position));
+                                                if (_block.Block.blockMaterial.IsLiquid)
+                                                {
+                                                    continue;
+                                                }
+                                            }
+                                            if (_player.AttachedToEntity != null)
+                                            {
+                                                Entity _entity = GameManager.Instance.World.GetEntity(_player.AttachedToEntity.entityId);
+                                                if (_entity != null)
+                                                {
+                                                    float _distance = _player.GetDistance(_player.AttachedToEntity);
+                                                    if (_distance <= 5)
+                                                    {
+                                                        continue;
+                                                    }
+                                                }
+                                            }
+                                            if (Movement.ContainsKey(_cInfo.entityId))
+                                            {
+                                                Movement.TryGetValue(_cInfo.entityId, out Vector3i position);
+                                                Movement[_cInfo.entityId] = new Vector3i(_player.position);
+                                                if (position.y - _player.position.y >= 4)
                                                 {
                                                     if (Flag.ContainsKey(_cInfo.entityId))
                                                     {
@@ -93,14 +113,21 @@ namespace ServerTools.AntiCheat
                                             }
                                             else
                                             {
-                                                OldY.Add(_cInfo.entityId, _player.position.y);
+                                                Movement.Add(_cInfo.entityId, new Vector3i(_player.position));
                                             }
                                             if (AirCheck(_player.position.x, _player.position.y, _player.position.z) || GroundCheck(_player.position.x, _player.position.y, _player.position.z))
                                             {
-                                                EntityPlayer _nearbyPlayer = GameManager.Instance.World.GetClosestPlayer(_player, 1f, false);
-                                                if (_nearbyPlayer != null)
+                                                List<EntityPlayer> _playerList = PersistentOperations.PlayerList();
+                                                for (int j = 0; j < _playerList.Count; j++)
                                                 {
-                                                    continue;
+                                                    if (_playerList[j].entityId != _player.entityId)
+                                                    {
+                                                        float _distance = _player.GetDistance(_playerList[j]);
+                                                        if (_distance <= 2)
+                                                        {
+                                                            continue;
+                                                        }
+                                                    }
                                                 }
                                                 if (Flag.ContainsKey(_cInfo.entityId))
                                                 {
@@ -143,11 +170,47 @@ namespace ServerTools.AntiCheat
                                         }
                                         else
                                         {
-                                            if (OldY.ContainsKey(_cInfo.entityId))
+                                            if (Movement.ContainsKey(_cInfo.entityId))
                                             {
-                                                OldY.Remove(_cInfo.entityId);
+                                                Movement.TryGetValue(_cInfo.entityId, out Vector3i position);
+                                                if (position != new Vector3i(_player.position))
+                                                {
+                                                    if (Flag.ContainsKey(_cInfo.entityId))
+                                                    {
+                                                        Flag.TryGetValue(_cInfo.entityId, out int _flags);
+                                                        _flags++;
+                                                        if (_flags >= Flying_Flags)
+                                                        {
+                                                            Flag.Remove(_cInfo.entityId);
+                                                            Phrases.Dict.TryGetValue(982, out string _phrase982);
+                                                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase982), null);
+                                                            string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+                                                            string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
+                                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                            {
+                                                                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                sw.WriteLine();
+                                                                sw.Flush();
+                                                                sw.Close();
+                                                            }
+                                                            Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying @ {2} {3} {4}. Steam Id has been banned", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
+                                                            Phrases.Dict.TryGetValue(981, out string _phrase981);
+                                                            _phrase981 = _phrase981.Replace("{PlayerName}", _cInfo.playerName);
+                                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase981 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                                            continue;
+                                                        }
+                                                        else
+                                                        {
+                                                            Flag[_cInfo.entityId] = _flags;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Flag.Add(_cInfo.entityId, 1);
+                                                    }
+                                                }
                                             }
-                                            if (Flag.ContainsKey(_cInfo.entityId))
+                                            else if (Flag.ContainsKey(_cInfo.entityId))
                                             {
                                                 Flag.Remove(_cInfo.entityId);
                                             }

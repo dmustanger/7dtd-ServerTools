@@ -13,8 +13,9 @@ namespace ServerTools
         public static int Admin_Level = 0, Total_Items = 1, Tax;
         public static string Command71 = "auction", Command72 = "auction cancel", Command73 = "auction buy", Command74 = "auction sell";
         public static Dictionary<int, string> AuctionItems = new Dictionary<int, string>();
-        private static string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy")), filepath = string.Format("{0}/Logs/AuctionLogs/{1}", API.ConfigPath, file);
-        private static System.Random random = new System.Random();
+        private static readonly string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static readonly string filepath = string.Format("{0}/Logs/AuctionLogs/{1}", API.ConfigPath, file);
+        private static readonly System.Random Random = new System.Random();
 
         public static void CheckBox(ClientInfo _cInfo, string _price)
         {
@@ -89,8 +90,10 @@ namespace ServerTools
                                                                                 _serializedItemStack.useTimes = _item.itemValue.UseTimes;
                                                                                 _serializedItemStack.quality = _item.itemValue.Quality;
                                                                             }
-                                                                            Dictionary<int, ItemDataSerializable> _auctionItems = new Dictionary<int, ItemDataSerializable>();
-                                                                            _auctionItems.Add(_id, _serializedItemStack);
+                                                                            Dictionary<int, ItemDataSerializable> _auctionItems = new Dictionary<int, ItemDataSerializable>
+                                                                            {
+                                                                                { _id, _serializedItemStack }
+                                                                            };
                                                                             PersistentContainer.Instance.Players[_cInfo.playerId].Auction = _auctionItems;
                                                                         }
                                                                         if (PersistentContainer.Instance.AuctionPrices != null && PersistentContainer.Instance.AuctionPrices.Count > 0)
@@ -99,8 +102,10 @@ namespace ServerTools
                                                                         }
                                                                         else
                                                                         {
-                                                                            Dictionary<int, int> _auctionPrices = new Dictionary<int, int>();
-                                                                            _auctionPrices.Add(_id, _auctionPrice);
+                                                                            Dictionary<int, int> _auctionPrices = new Dictionary<int, int>
+                                                                            {
+                                                                                { _id, _auctionPrice }
+                                                                            };
                                                                             PersistentContainer.Instance.AuctionPrices = _auctionPrices;
                                                                         }
                                                                         _tile.SetModified();
@@ -379,16 +384,16 @@ namespace ServerTools
 
         private static int GenerateAuctionId()
         {
-            int _id = random.Next(1000, 5001);
+            int _id = Random.Next(1000, 5001);
             if (AuctionItems.ContainsKey(_id))
             {
-                _id = random.Next(1000, 5001);
+                _id = Random.Next(1000, 5001);
                 if (AuctionItems.ContainsKey(_id))
                 {
-                    _id = random.Next(1000, 5001);
+                    _id = Random.Next(1000, 5001);
                     if (AuctionItems.ContainsKey(_id))
                     {
-                        _id = random.Next(1000, 5001);
+                        _id = Random.Next(1000, 5001);
                         return 0;
                     }
                     else

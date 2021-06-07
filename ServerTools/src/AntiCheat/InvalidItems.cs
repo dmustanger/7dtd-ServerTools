@@ -4,19 +4,19 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-namespace ServerTools.AntiCheat
+namespace ServerTools
 {
     public class InvalidItems
     {
         public static bool IsEnabled = false, IsRunning = false, Invalid_Stack = false, Ban_Player = false, Check_Storage = false;
         public static int Admin_Level = 0, Days_Before_Log_Delete = 5;
-        private static string file = "InvalidItems.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static List<string> dict = new List<string>();
-        private static Dictionary<int, int> Flags = new Dictionary<int, int>();
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
+        private static readonly string file = "InvalidItems.xml";
+        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly List<string> dict = new List<string>();
+        private static readonly Dictionary<int, int> Flags = new Dictionary<int, int>();
+        private static readonly FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static readonly string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static readonly string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
 
         public static void Load()
         {
@@ -76,8 +76,7 @@ namespace ServerTools.AntiCheat
                         string _item = _line.GetAttribute("Name");
                         ItemClass _class;
                         Block _block;
-                        int _id;
-                        if (int.TryParse(_item, out _id))
+                        if (int.TryParse(_item, out int _id))
                         {
                             _class = ItemClass.GetForId(_id);
                             _block = Block.GetBlockByName(_item, true);
@@ -195,8 +194,7 @@ namespace ServerTools.AntiCheat
                                     {
                                         if (Flags.ContainsKey(_cInfo.entityId))
                                         {
-                                            int _value;
-                                            if (Flags.TryGetValue(_cInfo.entityId, out _value))
+                                            if (Flags.TryGetValue(_cInfo.entityId, out int _value))
                                             {
                                                 if (_value == 2)
                                                 {
@@ -243,8 +241,7 @@ namespace ServerTools.AntiCheat
                                     {
                                         if (Flags.ContainsKey(_cInfo.entityId))
                                         {
-                                            int _value;
-                                            if (Flags.TryGetValue(_cInfo.entityId, out _value))
+                                            if (Flags.TryGetValue(_cInfo.entityId, out int _value))
                                             {
                                                 if (_value == 2)
                                                 {
@@ -283,8 +280,7 @@ namespace ServerTools.AntiCheat
                                         {
                                             if (Flags.ContainsKey(_cInfo.entityId))
                                             {
-                                                int _value;
-                                                if (Flags.TryGetValue(_cInfo.entityId, out _value))
+                                                if (Flags.TryGetValue(_cInfo.entityId, out int _value))
                                                 {
                                                     if (_value == 2)
                                                     {

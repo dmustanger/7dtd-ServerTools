@@ -10,11 +10,11 @@ namespace ServerTools
         public static string Normal_Player_Name_Color = "[00B3B3]", Normal_Player_Prefix = "NOOB", Friend_Chat_Color = "[33CC33]", Party_Chat_Color = "[FFCC00]",
             Chat_Command_Prefix1 = "/", Chat_Command_Prefix2 = "!", Message_Color = "[FFFFFF]", Normal_Player_Prefix_Color = "[FFFFFF]";
         public static int Admin_Level = 0, Mod_Level = 1, Max_Length = 250, Messages_Per_Min = 8, Wait_Time = 60;
-        private static Dictionary<string, int> ChatFloodCount = new Dictionary<string, int>();
-        private static Dictionary<string, DateTime> ChatFloodTime = new Dictionary<string, DateTime>();
-        private static Dictionary<string, DateTime> ChatFloodLock = new Dictionary<string, DateTime>();
+        private static readonly Dictionary<string, int> ChatFloodCount = new Dictionary<string, int>();
+        private static readonly Dictionary<string, DateTime> ChatFloodTime = new Dictionary<string, DateTime>();
+        private static readonly Dictionary<string, DateTime> ChatFloodLock = new Dictionary<string, DateTime>();
 
-        public static bool Hook(ClientInfo _cInfo, EChatType _type, int _senderId, string _message, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
+        public static bool Hook(ClientInfo _cInfo, EChatType _type, int _senderId, string _message, string _mainName, List<int> _recipientEntityIds)
         {
             try
             {
@@ -102,8 +102,7 @@ namespace ServerTools
                                 {
                                     if (ChatFloodLock.ContainsKey(_cInfo.playerId))
                                     {
-                                        DateTime _lockTime;
-                                        ChatFloodLock.TryGetValue(_cInfo.playerId, out _lockTime);
+                                        ChatFloodLock.TryGetValue(_cInfo.playerId, out DateTime _lockTime);
                                         TimeSpan varTime = DateTime.Now - _lockTime;
                                         double fractionalSeconds = varTime.TotalSeconds;
                                         if ((int)fractionalSeconds >= Wait_Time)
@@ -269,7 +268,7 @@ namespace ServerTools
                                     Homes.SaveClaimCheck(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.StartsWith(Homes.Command1 + " "))
+                                else if (_message.ToLower().StartsWith(Homes.Command1 + " "))
                                 {
                                     _message = _message.ToLower().Replace(Homes.Command1 + " ", "");
                                     Homes.TeleDelay(_cInfo, _message, false);
@@ -698,8 +697,7 @@ namespace ServerTools
                                 int _timepassed = (int)fractionalSeconds;
                                 if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                                     if (DateTime.Now < _dt)
                                     {
                                         int _newTime = _timepassed / 2;
@@ -721,9 +719,9 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            if (DeathSpot.IsEnabled && _message.ToLower() == DeathSpot.Command61)
+                            if (Died.IsEnabled && _message.ToLower() == Died.Command61)
                             {
-                                DeathSpot.Exec(_cInfo);
+                                Died.Exec(_cInfo);
                                 return false;
                             }
                             if (WeatherVote.IsEnabled && _message.ToLower() == WeatherVote.Command62)
@@ -929,8 +927,7 @@ namespace ServerTools
                                     }
                                     _message = _message.ToLower().Replace(Auction.Command73 + " ", "");
                                     {
-                                        int _purchase;
-                                        if (int.TryParse(_message, out _purchase))
+                                        if (int.TryParse(_message, out int _purchase))
                                         {
                                             if (Auction.AuctionItems.ContainsKey(_purchase))
                                             {
@@ -1372,10 +1369,9 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            //if (WindowedResponse.IsEnabled && _message.ToLower().StartsWith(WindowedResponse.Command999 + " "))
+                            //if (_message.ToLower().StartsWith(Test.Command999))
                             //{
-                            //    _message = _message.ToLower().Replace(WindowedResponse.Command999 + " ", "");
-                            //    WindowedResponse.Test(_cInfo, _message);
+                            //    Test.Exec(_cInfo);
                             //    return false;
                             //}
                         }

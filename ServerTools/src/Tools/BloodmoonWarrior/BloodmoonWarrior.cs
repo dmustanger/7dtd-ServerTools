@@ -14,14 +14,14 @@ namespace ServerTools
         public static List<string> WarriorList = new List<string>();
         public static Dictionary<string, int> KilledZombies = new Dictionary<string, int>();
         private const string file = "BloodmoonWarrior.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
-        private static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static System.Random random = new System.Random();
+        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
+        private static readonly Dictionary<string, string> Dict1 = new Dictionary<string, string>();
+        private static readonly FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static readonly System.Random random = new System.Random();
         private static bool updateConfig = false;
 
-        private static List<string> list
+        private static List<string> List
         {
             get { return new List<string>(Dict.Keys); }
         }
@@ -176,8 +176,7 @@ namespace ServerTools
                 {
                     foreach (KeyValuePair<string, int[]> kvp in Dict)
                     {
-                        string _name;
-                        if (Dict1.TryGetValue(kvp.Key, out _name))
+                        if (Dict1.TryGetValue(kvp.Key, out string _name))
                         {
                             sw.WriteLine(string.Format("        <Item Name=\"{0}\" SecondaryName=\"{1}\" MinCount=\"{2}\" MaxCount=\"{3}\" MinQuality=\"{4}\" MaxQuality=\"{5}\" />", kvp.Key, _name, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
                         }
@@ -328,10 +327,9 @@ namespace ServerTools
         {
             try
             {
-                string _randomItem = list.RandomObject();
+                string _randomItem = List.RandomObject();
                 ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_randomItem, false).type, false);
-                int[] _itemData;
-                if (Dict.TryGetValue(_randomItem, out _itemData))
+                if (Dict.TryGetValue(_randomItem, out int[]  _itemData))
                 {
                     int _count = 1;
                     if (_itemData[0] > _itemData[1])

@@ -1,5 +1,4 @@
-﻿using ServerTools.Website;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ServerTools
 {
@@ -24,94 +23,42 @@ namespace ServerTools
                 string _tags = _e.EntityClass.Tags.ToString();
                 if (_tags.Contains("zombie") && _e.IsAlive())
                 {
-                    _zombies = _zombies + 1;
+                    _zombies++;
                 }
                 else if (_tags.Contains("animal") && _e.IsAlive())
                 {
-                    _animals = _animals + 1;
+                    _animals++;
                 }
                 else
                 {
                     string _name = EntityClass.list[_e.entityClass].entityClassName;
                     if (_name == "vehicleBicycle")
                     {
-                        _bicycles = _bicycles + 1;
+                        _bicycles++;
                     }
                     else if (_name == "vehicleMinibike")
                     {
-                        _miniBikes = _miniBikes + 1;
+                        _miniBikes++;
                     }
                     else if (_name == "vehicleMotorcycle")
                     {
-                        _motorcycles = _motorcycles + 1;
+                        _motorcycles++;
                     }
                     else if (_name == "vehicle4x4Truck")
                     {
-                        _4x4 = _4x4 + 1;
+                        _4x4++;
                     }
                     else if (_name == "vehicleGyrocopter")
                     {
-                        _gyros = _gyros + 1;
+                        _gyros++;
                     }
                     else if (_name == "sc_General")
                     {
-                        _supplyCrates = _supplyCrates + 1;
+                        _supplyCrates++;
                     }
                 }
             }
-            if (WindowedResponse.IsEnabled && WebPanel.IsRunning && ConnectionManager.Instance.Clients.Contains(_cInfo))
-            {
-                string _response = "";
-                Phrases.Dict.TryGetValue(481, out string _phrase481);
-                _phrase481 = _phrase481.Replace("{Value}", _fps);
-                _response = _response + _phrase481 + "\n";
-                if (_daysRemaining == 0 && !SkyManager.BloodMoon())
-                {
-                    Phrases.Dict.TryGetValue(487, out string _phrase487);
-                    _response = _response + _phrase487 + "\n";
-                }
-                else if (SkyManager.BloodMoon())
-                {
-                    Phrases.Dict.TryGetValue(486, out string _phrase486);
-                    _response = _response + _phrase486 + "\n";
-                }
-                else
-                {
-                    Phrases.Dict.TryGetValue(482, out string _phrase482);
-                    _phrase482 = _phrase482.Replace("{Value}", _daysRemaining.ToString());
-                    _response = _response + _phrase482 + "\n";
-                }
-                Phrases.Dict.TryGetValue(483, out string _phrase483);
-                _phrase483 = _phrase483.Replace("{Players}", _playerCount.ToString());
-                _phrase483 = _phrase483.Replace("{Zombies}", _zombies.ToString());
-                _phrase483 = _phrase483.Replace("{Animals}", _animals.ToString());
-                Phrases.Dict.TryGetValue(484, out string _phrase484);
-                _phrase484 = _phrase484.Replace("{Bicycles}", _bicycles.ToString());
-                _phrase484 = _phrase484.Replace("{Minibikes}", _miniBikes.ToString());
-                _phrase484 = _phrase484.Replace("{Motorcycles}", _motorcycles.ToString());
-                _phrase484 = _phrase484.Replace("{4x4}", _4x4.ToString());
-                _phrase484 = _phrase484.Replace("{Gyros}", _gyros.ToString());
-                Phrases.Dict.TryGetValue(485, out string _phrase485);
-                _phrase485 = _phrase485.Replace("{Value}", _supplyCrates.ToString());
-                _response = _response + _phrase483 + "\n" + _phrase484 + "\n" + _phrase485;
-                if (WindowedResponse.HasResponse(_cInfo, _response))
-                {
-                    WindowedResponse.Exec(_cInfo, _response);
-                }
-                else if (!WindowedResponse.IsFull(_cInfo))
-                {
-                    WindowedResponse.Exec(_cInfo, _response);
-                }
-                else
-                {
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "You have run out of new window responses. Rejoin the server to reset them." + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    Response(_cInfo, _fps, _daysRemaining, _playerCount, _zombies, _animals, _bicycles, _miniBikes, _motorcycles, _4x4, _gyros, _supplyCrates);
-                }
-            }
-            else
-            {
-                Response(_cInfo, _fps, _daysRemaining, _playerCount, _zombies, _animals, _bicycles, _miniBikes, _motorcycles, _4x4, _gyros, _supplyCrates);
-            }
+            Response(_cInfo, _fps, _daysRemaining, _playerCount, _zombies, _animals, _bicycles, _miniBikes, _motorcycles, _4x4, _gyros, _supplyCrates);
         }
 
         public static void Response(ClientInfo _cInfo, string _fps, int _daysRemaining, int _playerCount, int _zombies, int _animals, int _bicycles, int _miniBikes, int _motorcycles, int _4x4, int _gyros, int _supplyCrates)

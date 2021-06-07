@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using ServerTools.AntiCheat;
 
 namespace ServerTools
 {
@@ -10,6 +9,7 @@ namespace ServerTools
     {
         public static string GamePath = Directory.GetCurrentDirectory();
         public static string ConfigPath = string.Format("{0}/ServerTools", GamePath);
+        public static string InstallPath = "";
         public static List<string> Verified = new List<string>();
 
         public void InitMod()
@@ -183,7 +183,7 @@ namespace ServerTools
 
         private static bool ChatMessage(ClientInfo _cInfo, EChatType _type, int _senderId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
         {
-            return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _localizeMain, _recipientEntityIds);
+            return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _recipientEntityIds);
         }
 
         private static bool GameMessage(ClientInfo _cInfo, EnumGameMessages _type, string _msg, string _mainName, bool _localizeMain, string _secondaryName, bool _localizeSecondary)
@@ -195,44 +195,78 @@ namespace ServerTools
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                     if (_player != null)
                     {
-                        if (DeathSpot.IsEnabled)
+                        if (PlayerChecks.FlyEnabled && PlayerChecks.Movement.ContainsKey(_cInfo.entityId))
                         {
-                            DeathSpot.PlayerKilled(_player);
+                            PlayerChecks.Movement.Remove(_cInfo.entityId);
                         }
-                        if (!string.IsNullOrEmpty(_secondaryName) && !string.IsNullOrEmpty(_mainName) && _mainName != _secondaryName)
+                        if (Died.IsEnabled)
                         {
-                            ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_secondaryName);
-                            if (_cInfo2 != null && GameManager.Instance.World.Players.dict.ContainsKey(_cInfo2.entityId))
+                            Died.PlayerKilled(_player);
+                        }
+                        if (KillNotice.IsEnabled)
+                        {
+                            if (KillNotice.Zombie_Kills && string.IsNullOrEmpty(_secondaryName))
                             {
-                                EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                                if (_player2 != null)
+                                List<Entity> Entities = GameManager.Instance.World.Entities.list;
+                                for (int i = 0; i < Entities.Count; i++)
                                 {
-                                    if (Bounties.IsEnabled)
+                                    EntityAlive _entityAlive = Entities[i] as EntityAlive;
+                                    if (_entityAlive != null && _entityAlive.GetAttackTarget() == _player && _entityAlive.entityId != _player.entityId)
                                     {
-                                        Bounties.PlayerKilled(_player, _player2, _cInfo, _cInfo2);
-                                    }
-                                    if (Wallet.IsEnabled)
-                                    {
-                                        if (Wallet.PVP && Wallet.Player_Kills > 0)
+                                        if (KillNotice.Show_Level)
                                         {
-                                            Wallet.AddCoinsToWallet(_cInfo2.playerId, Wallet.Player_Kills);
+                                            Phrases.Dict.TryGetValue(545, out string _phrase545);
+                                            _phrase545 = _phrase545.Replace("{PlayerName}", _cInfo.playerName);
+                                            _phrase545 = _phrase545.Replace("{Level}", _player.Progression.Level.ToString());
+                                            _phrase545 = _phrase545.Replace("{ZombieName}", _entityAlive.EntityName);
+                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase545 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                         }
-                                        else if (Wallet.Player_Kills > 0)
+                                        else
                                         {
-                                            Wallet.SubtractCoinsFromWallet(_cInfo2.playerId, Wallet.Player_Kills);
+                                            Phrases.Dict.TryGetValue(546, out string _phrase546);
+                                            _phrase546 = _phrase546.Replace("{PlayerName}", _cInfo.playerName);
+                                            _phrase546 = _phrase546.Replace("{ZombieName}", _entityAlive.EntityName);
+                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase546 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                         }
+
                                     }
-                                    if (KillNotice.IsEnabled && _player2.IsAlive())
+                                }
+                            }
+                            else if (KillNotice.PvP && !string.IsNullOrEmpty(_secondaryName) && _mainName != _secondaryName)
+                            {
+                                ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_secondaryName);
+                                if (_cInfo2 != null && GameManager.Instance.World.Players.dict.ContainsKey(_cInfo2.entityId))
+                                {
+                                    EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
+                                    if (_player2 != null)
                                     {
-                                        string _holdingItem = _player2.inventory.holdingItem.GetItemName();
-                                        if (!string.IsNullOrEmpty(_holdingItem))
+                                        if (KillNotice.IsEnabled && _player2.IsAlive())
                                         {
-                                            ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
-                                            if (_itemValue.type != ItemValue.None.type)
+                                            string _holdingItem = _player2.inventory.holdingItem.GetItemName();
+                                            if (!string.IsNullOrEmpty(_holdingItem))
                                             {
-                                                KillNotice.Exec(_cInfo, _player, _cInfo2, _player2, _holdingItem);
-                                                return false;
+                                                ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
+                                                if (_itemValue.type != ItemValue.None.type)
+                                                {
+                                                    KillNotice.Exec(_cInfo, _player, _cInfo2, _player2, _holdingItem);
+                                                    return false;
+                                                }
                                             }
+                                        }
+                                        if (Wallet.IsEnabled)
+                                        {
+                                            if (Wallet.PVP && Wallet.Player_Kills > 0)
+                                            {
+                                                Wallet.AddCoinsToWallet(_cInfo2.playerId, Wallet.Player_Kills);
+                                            }
+                                            else if (Wallet.Player_Kills > 0)
+                                            {
+                                                Wallet.SubtractCoinsFromWallet(_cInfo2.playerId, Wallet.Player_Kills);
+                                            }
+                                        }
+                                        if (Bounties.IsEnabled)
+                                        {
+                                            Bounties.PlayerKilled(_player, _player2, _cInfo, _cInfo2);
                                         }
                                     }
                                 }
@@ -368,9 +402,9 @@ namespace ServerTools
                         {
                             Teleportation.Teleporting.Remove(_cInfo.entityId);
                         }
-                        if (WindowedResponse.Responses.ContainsKey(_cInfo.playerId))
+                        if (PlayerChecks.Movement.ContainsKey(_cInfo.entityId))
                         {
-                            WindowedResponse.Responses.Remove(_cInfo.playerId);
+                            PlayerChecks.Movement.Remove(_cInfo.entityId);
                         }
                     }
                     else

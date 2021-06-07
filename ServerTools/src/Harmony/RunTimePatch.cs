@@ -97,6 +97,21 @@ namespace ServerTools
                         }
                         harmony.Patch(original, null, new HarmonyMethod(postfix));
                     }
+                    original = typeof(GameManager).GetMethod("ChatMessageServer");
+                    if (original == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ChatMessageServer method was not found"));
+                    }
+                    else
+                    {
+                        MethodInfo postfix = typeof(Injections).GetMethod("ChatMessageServer_Postfix");
+                        if (postfix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChatMessageServer.postfix"));
+                            return;
+                        }
+                        harmony.Patch(original, null, new HarmonyMethod(postfix));
+                    }
                     Applied = true;
                     Log.Out("[SERVERTOOLS] Runtime patching complete");
                 }

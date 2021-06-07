@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using UnityEngine;
 
 namespace ServerTools
@@ -12,7 +14,50 @@ namespace ServerTools
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static Dictionary<int, int> PvEViolations = new Dictionary<int, int>();
         public static Dictionary<int, int> EntityId = new Dictionary<int, int>();
-        public static string AlphaNumSet = "jJkqQr9Kl3wXAbyYz0ZLmFpPRsMn5NoO6dDe1EfStaBc2CgGhH7iITu4U8vWxV";
+        public static readonly string AlphaNumSet = "jJkqQr9Kl3wXAbyYz0ZLmFpPRsMn5NoO6dDe1EfStaBc2CgGhH7iITu4U8vWxV";
+        public static readonly char[] InvalidPrefix = new char[] { '!', '@', '#', '$', '%', '&' };
+
+        public static void SetInstallFolder()
+        {
+            string _mainDir = Directory.GetCurrentDirectory();
+            string[] _directories = Directory.GetDirectories(_mainDir);
+            if (_directories.Length > 0)
+            {
+                for (int i = 0; i < _directories.Length; i++)
+                {
+                    if (_directories[i].Contains("Mods"))
+                    {
+                        string[] _childDirectories = Directory.GetDirectories(_directories[i]);
+                        if (_childDirectories.Length > 0)
+                        {
+                            for (int j = 0; j < _childDirectories.Length; j++)
+                            {
+                                if (_childDirectories[j].Contains("ServerTools"))
+                                {
+                                    API.InstallPath = _childDirectories[j];
+                                    if (File.Exists(_childDirectories[j] + "/IP2Location.txt"))
+                                    {
+                                        CountryBan.FileLocation = _childDirectories[j] + "/IP2Location.txt";
+                                    }
+                                    string[] _subChildDirectories = Directory.GetDirectories(_childDirectories[j]);
+                                    if (_subChildDirectories.Length > 0)
+                                    {
+                                        for (int k = 0; k < _subChildDirectories.Length; k++)
+                                        {
+                                            if (_subChildDirectories[k].Contains("WebPanel"))
+                                            {
+                                                WebAPI.Directory = _subChildDirectories[k] + "\\";
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         public static void PlayerCheck()
         {
@@ -284,8 +329,7 @@ namespace ServerTools
                 PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_cInfo.playerId);
                 if (_persistentPlayerData != null && _persistentPlayerData.LPBlocks != null && _persistentPlayerData.LPBlocks.Count > 0)
                 {
-                    int _x, _y, _z;
-                    if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f, 50f, 50f), true, false))
+                    if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out int _x, out int _y, out int _z, new UnityEngine.Vector3(50f, 50f, 50f), true, false))
                     {
                         _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
                     }
@@ -308,7 +352,6 @@ namespace ServerTools
                 List<Vector3i> landProtectionBlocks = _persistentPlayerData.LPBlocks;
                 if (landProtectionBlocks != null)
                 {
-                    PersistentPlayerList _persistentPlayerList = GetPersistentPlayerList();
                     for (int i = 0; i < landProtectionBlocks.Count; i++)
                     {
                         Vector3i _position = landProtectionBlocks[i];
@@ -651,6 +694,27 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in WebPanel.SetPassword: {0}", e.Message));
             }
             return _pass;
+        }
+
+        public static long ConvertIPToLong(string ipAddress)
+        {
+            try
+            {
+                if (IPAddress.TryParse(ipAddress, out IPAddress _ip))
+                {
+                    byte[] _bytes = _ip.MapToIPv4().GetAddressBytes();
+                    return 16777216L * _bytes[0] +
+                        65536 * _bytes[1] +
+                        256 * _bytes[2] +
+                        _bytes[3]
+                        ;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in CountryBan.ConvertIPToLong: {0}", e.Message));
+            }
+            return 0;
         }
     }
 }

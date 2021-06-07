@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace ServerTools.AntiCheat
+namespace ServerTools
 {
     class TeleportCheck
     {

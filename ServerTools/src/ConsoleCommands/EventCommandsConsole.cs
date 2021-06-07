@@ -89,11 +89,13 @@ namespace ServerTools
                         Setup.Remove(_steamId);
                     }
                     Stage.Add(_steamId, 1);
-                    List<string> _setup = new List<string>();
-                    _setup.Add(_name);
+                    List<string> _setup = new List<string>
+                    {
+                        _name
+                    };
                     Setup.Add(_steamId, _setup);
                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have started to setup a new event. The name has been set to {0}", _name));
-                    SdtdConsole.Instance.Output("[SERVERTOOLS] What would you like players to receive for an invitation to the event? Type event <invitation>");
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] What would you like players to receive for an invitation to the event? Type st-ev <invitation>");
                     return;
                 }
                 else if (_params[0].ToLower() == "start")
@@ -227,11 +229,10 @@ namespace ServerTools
                                     if (_player != null && _player.IsSpawned())
                                     {
                                         string _returnPos = PersistentContainer.Instance.Players[_cInfo.playerId].EventReturnPosition;
-                                        int _x, _y, _z;
                                         string[] _cords = _returnPos.Split(',');
-                                        int.TryParse(_cords[0], out _x);
-                                        int.TryParse(_cords[1], out _y);
-                                        int.TryParse(_cords[2], out _z);
+                                        int.TryParse(_cords[0], out int _x);
+                                        int.TryParse(_cords[1], out int _y);
+                                        int.TryParse(_cords[2], out int _z);
                                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                                         Event.Teams.Remove(_cInfo.playerId);
                                         ChatHook.ChatMessage(null, "The event has ended. Thank you for playing.[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -339,8 +340,10 @@ namespace ServerTools
                             }
                             else
                             {
-                                List<List<string>> _events = new List<List<string>>();
-                                _events.Add(_eventData);
+                                List<List<string>> _events = new List<List<string>>
+                                {
+                                    _eventData
+                                };
                                 PersistentContainer.Instance.Players[_steamId].Events = _events;
                                 PersistentContainer.DataChange = true;
                             }
@@ -471,11 +474,10 @@ namespace ServerTools
                                     {
                                         Event.Teams.Remove(_params[1]);
                                         string _returnPos = PersistentContainer.Instance.Players[_cInfo.playerId].EventReturnPosition;
-                                        int _x, _y, _z;
                                         string[] _cords = _returnPos.Split(',');
-                                        int.TryParse(_cords[0], out _x);
-                                        int.TryParse(_cords[1], out _y);
-                                        int.TryParse(_cords[2], out _z);
+                                        int.TryParse(_cords[0], out int _x);
+                                        int.TryParse(_cords[1], out int _y);
+                                        int.TryParse(_cords[2], out int _z);
                                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                                         PersistentContainer.Instance.Players[_cInfo.playerId].EventReturnPosition = "";
                                         PersistentContainer.DataChange = true;
@@ -531,7 +533,7 @@ namespace ServerTools
                             Setup[_steamId] = _setup;
                             Stage[_steamId] = 2;
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The invitation has been set to {0}", _invitation));
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] How many teams and players in total? Type event <teams> <players>");
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] How many teams and players in total? Type st-ev <teams> <players>");
                             return;
                         }
                         else if (_stage == 2)//Invite set. Setting team and player count
@@ -558,7 +560,7 @@ namespace ServerTools
                             Setup[_steamId] = _setup;
                             Stage[_steamId] = 3;
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The team count has been set to {0}, player count to {1}, event time to {2} minutes", _params[0], _params[1], _params[2]));
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] Where would you like team 1 to spawn? Stand where you want it and type event");
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] Where would you like team 1 to spawn? Stand where you want it and type st-ev");
                             return;
                         }
                         else if (_stage == 3)//Team count and player count set. Setting spawn points
@@ -578,14 +580,14 @@ namespace ServerTools
                                 if (_setup.Count - 4 != _teamCount)
                                 {
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The spawn position for team {0} has been set to {1} {2} {3}", _setup.Count - 4, _x, _y, _z));
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Where would you like team {0} to spawn? Stand where you want it and type event", _setup.Count - 4 + 1));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Where would you like team {0} to spawn? Stand where you want it and type st-ev", _setup.Count - 4 + 1));
                                     return;
                                 }
                                 else
                                 {
                                     Stage[_steamId] = 4;
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The spawn position for team {0} has been set to {1} {2} {3}", _setup.Count - 4, _x, _y, _z));
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Where would you like team {0} to respawn? Stand where you want it and type event", _setup.Count - 4 - _teamCount + 1));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Where would you like team {0} to respawn? Stand where you want it and type st-ev", _setup.Count - 4 - _teamCount + 1));
                                     return;
                                 }
                             }
@@ -605,13 +607,13 @@ namespace ServerTools
                                 if (_setup.Count - 4 - _teamCount != _teamCount)
                                 {
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The respawn position for team {0} has been set to {1} {2} {3}", _setup.Count - 4 - _teamCount, _x, _y, _z));
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Where would you like team {0} to respawn? Stand where you want it and type event", _setup.Count - 4 - _teamCount + 1));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Where would you like team {0} to respawn? Stand where you want it and type st-ev", _setup.Count - 4 - _teamCount + 1));
                                     return;
                                 }
                                 else
                                 {
                                     Stage[_steamId] = 5;
-                                    SdtdConsole.Instance.Output("[SERVERTOOLS] Setup is complete. You can start the event with command event start or event save to record it to the list. You can save it while it is running.");
+                                    SdtdConsole.Instance.Output("[SERVERTOOLS] Setup is complete. You can start the event with command st-ev start or st-ev save to record it to the list. You can save it while it is running.");
                                     SdtdConsole.Instance.Output("[SERVERTOOLS] This will allow you to replay the event or start it at a later date");
                                     return;
                                 }

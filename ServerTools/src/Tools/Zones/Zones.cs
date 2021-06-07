@@ -21,8 +21,8 @@ namespace ServerTools
         public static List<string[]> Box1 = new List<string[]>();
         public static List<bool[]> Box2 = new List<bool[]>();
         private const string file = "Zones.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static Dictionary<int, string[]> zoneSetup1 = new Dictionary<int, string[]>();
         public static Dictionary<int, bool[]> zoneSetup2 = new Dictionary<int, bool[]>();
@@ -45,7 +45,7 @@ namespace ServerTools
                 Reminder.Clear();
                 ZoneInfo.Clear();
                 ZonePvE.Clear();
-                FileWatcher.Dispose();
+                fileWatcher.Dispose();
                 IsRunning = false;
             }
         }
@@ -194,7 +194,7 @@ namespace ServerTools
 
         public static void UpdateXml()
         {
-            FileWatcher.EnableRaisingEvents = false;
+            fileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -220,16 +220,17 @@ namespace ServerTools
                 sw.WriteLine("</Zones>");
                 sw.Flush();
                 sw.Close();
+                sw.Dispose();
             }
-            FileWatcher.EnableRaisingEvents = true;
+            fileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            FileWatcher.EnableRaisingEvents = true;
+            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
@@ -353,11 +354,10 @@ namespace ServerTools
             {
                 if (Victim.TryGetValue(_cInfo.entityId, out string _deathPos))
                 {
-                    int x, y, z;
                     string[] _cords = _deathPos.Split(',');
-                    int.TryParse(_cords[0], out x);
-                    int.TryParse(_cords[1], out y);
-                    int.TryParse(_cords[2], out z);
+                    int.TryParse(_cords[0], out int x);
+                    int.TryParse(_cords[1], out int y);
+                    int.TryParse(_cords[2], out int z);
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                     Victim.Remove(_cInfo.entityId);
                 }

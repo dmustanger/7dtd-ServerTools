@@ -72,6 +72,7 @@ namespace ServerTools
                             BinaryFormatter bFormatter = new BinaryFormatter();
                             bFormatter.Serialize(stream, this);
                             stream.Close();
+                            stream.Dispose();
                             Saving = false;
                         }
                         else
@@ -100,6 +101,7 @@ namespace ServerTools
                     BinaryFormatter bFormatter = new BinaryFormatter();
                     obj = (PersistentContainer)bFormatter.Deserialize(stream);
                     stream.Close();
+                    stream.Dispose();
                     instance = obj;
                     return true;
                 }
@@ -109,6 +111,7 @@ namespace ServerTools
                     BinaryFormatter bFormatter = new BinaryFormatter();
                     bFormatter.Serialize(stream, this);
                     stream.Close();
+                    stream.Dispose();
                     return true;
                 }
             }

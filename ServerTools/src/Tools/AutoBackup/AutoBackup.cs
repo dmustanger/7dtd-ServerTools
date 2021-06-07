@@ -22,9 +22,11 @@ namespace ServerTools
                 {
                     Log.Out("[SERVERTOOLS] Starting auto backup process");
                     IsRunning = true;
-                    th = new Thread(new ThreadStart(Process));
-                    th.IsBackground = true;
-                    th.Priority = ThreadPriority.BelowNormal;
+                    th = new Thread(new ThreadStart(Process))
+                    {
+                        IsBackground = true,
+                        Priority = ThreadPriority.BelowNormal
+                    };
                     th.Start();
                 }
                 catch (Exception e)
@@ -82,7 +84,7 @@ namespace ServerTools
                     if (_files != null && _files.Length > Backup_Count)//files are not null or empty
                     {
                         DeleteFiles(_files);//exec file delete
-                        Log.Out("[SERVERTOOLS] Auto backup clean up complete of old files");
+                        Log.Out("[SERVERTOOLS] Clean up complete of old backup files");
                     }
                     DirectoryInfo _destDirInfo = new DirectoryInfo(Destination);//destination dir
                     if (_destDirInfo != null)

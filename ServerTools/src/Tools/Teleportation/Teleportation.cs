@@ -18,9 +18,9 @@ namespace ServerTools
                     if (_tags.Contains("zombie") || _tags.Contains("hostile"))
                     {
                         EntityAlive _entityAlive = GameManager.Instance.World.Entities.dict[_entity.entityId] as EntityAlive;
-                        if (_entityAlive != null && _player == _entityAlive.GetAttackTarget())
+                        if (_entityAlive != null)
                         {
-                            if (((_player.position.x - _entity.position.x) * (_player.position.x - _entity.position.x) + (_player.position.z - _entity.position.z) * (_player.position.z - _entity.position.z)) < 50f * 50f)
+                            if (((_player.position.x - _entity.position.x) * (_player.position.x - _entity.position.x) + (_player.position.z - _entity.position.z) * (_player.position.z - _entity.position.z)) < 75f * 75f)
                             {
                                 Phrases.Dict.TryGetValue(851, out string _phrase851);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase851 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -41,7 +41,7 @@ namespace ServerTools
                 EntityPlayer _player2 = _playerList[i];
                 if (_player2 != null && _player != _player2 && _player2.IsSpawned() && !_player.IsFriendsWith(_player2))
                 {
-                    if (((_player.position.x - _player2.position.x) * (_player.position.x - _player2.position.x) + (_player.position.z - _player2.position.z) * (_player.position.z - _player2.position.z)) < 100f * 100f)
+                    if (((_player.position.x - _player2.position.x) * (_player.position.x - _player2.position.x) + (_player.position.z - _player2.position.z) * (_player.position.z - _player2.position.z)) < 125f * 125f)
                     {
                         Phrases.Dict.TryGetValue(852, out string _phrase852);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase852 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

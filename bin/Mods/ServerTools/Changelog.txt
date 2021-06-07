@@ -1,5 +1,27 @@
 ﻿CHANGELOG
 
+19.5.0
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added two options to Kill_Notice. PvP and Zombie_Kills. PvP will enable
+player vs player kill notices and Zombie_Kills enables a kill notice when
+a player dies to a zombie
+Added embedding to compilation process
+Added phrases 545,546
+Added to Discord_Bot. Chat bridge is now active and can be
+used with Discordian. This allows Discord chat from a specified
+channel to show in game
+Added to Discord_Bot. Outbound Webhook is implemented. Allows in game
+chat to be sent to a Discord channel despite using the bot
+Added ability to change the ServerTools folder name inside of the Mods
+folder for load order processing. You must retain ServerTools in the name
+but you can add to it. Example: 0ServerTools or 1ServerTools
+Fixed description of console command st-RegionReset
+Fixed home command not adjusting for capitalization
+Changed tool named Death_Spot to Died
+Updated assets to 19.5 stable
+
 19.4.5
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

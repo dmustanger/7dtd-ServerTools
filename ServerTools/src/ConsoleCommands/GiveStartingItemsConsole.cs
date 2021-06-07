@@ -78,8 +78,7 @@ namespace ServerTools
                             for (int i = 0; i < _itemList.Count; i++)
                             {
                                 string _item = _itemList[i];
-                                int[] _itemData;
-                                StartingItems.ItemList.TryGetValue(_item, out _itemData);
+                                StartingItems.ItemList.TryGetValue(_item, out int[]  _itemData);
                                 ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
                                 if (_itemValue.HasQuality && _itemData[1] > 0)
                                 {
