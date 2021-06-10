@@ -1,5 +1,13 @@
 ﻿CHANGELOG
 
+19.5.1
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added console commands to edit players on the chat color prefix list
+Fixed Web_Panel not functioning as intended
+Updated Falling_Blocks tool to improve block clean up
+
 19.5.0
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

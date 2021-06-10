@@ -44,7 +44,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="src\AntiCheat\DupeLog.cs" />
-    <Compile Include="src\AntiCheat\ProcessDamage.cs" />
+    <Compile Include="src\AntiCheat\BlockChange.cs" />
+    <Compile Include="src\AntiCheat\EntityDamage.cs" />
     <Compile Include="src\AntiCheat\PlayerChecks.cs" />
     <Compile Include="src\ConsoleCommands\DeletePlayerDataConsole.cs" />
     <Compile Include="src\ConsoleCommands\FlyingConsole.cs" />

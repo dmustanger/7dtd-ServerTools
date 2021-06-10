@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string version = "19.5.0";
+        public const string version = "19.5.1";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]", OldXmlDirectory = "";
         private const string configFile = "ServerToolsConfig.xml";
         public static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
@@ -910,17 +910,18 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ProcessDamage.Damage_Detector))
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out EntityDamage.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                BlockChange.IsEnabled = EntityDamage.IsEnabled;
                                 if (!_line.HasAttribute("Entity_Damage_Limit"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Entity_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Entity_Damage_Limit"), out ProcessDamage.Entity_Damage_Limit))
+                                if (!int.TryParse(_line.GetAttribute("Entity_Damage_Limit"), out EntityDamage.Entity_Damage_Limit))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Entity_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -930,7 +931,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Player_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Player_Damage_Limit"), out ProcessDamage.Player_Damage_Limit))
+                                if (!int.TryParse(_line.GetAttribute("Player_Damage_Limit"), out EntityDamage.Player_Damage_Limit))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Player_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -940,7 +941,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Block_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Block_Damage_Limit"), out ProcessDamage.Block_Damage_Limit))
+                                if (!int.TryParse(_line.GetAttribute("Block_Damage_Limit"), out BlockChange.Block_Damage_Limit))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Block_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -950,11 +951,12 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out ProcessDamage.Admin_Level))
+                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out EntityDamage.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                BlockChange.Admin_Level = EntityDamage.Admin_Level;
                                 break;
                             case "Day7":
                                 if (!_line.HasAttribute("Enable"))
@@ -3613,6 +3615,18 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "Web_Panel":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_Panel entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out WebPanel.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_Panel entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "World_Radius":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -3751,7 +3765,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Country_Ban\" Enable=\"{0}\" Countries_Not_Allowed=\"CN,IL\" />", CountryBan.IsEnabled, CountryBan.Countries_Not_Allowed));
                 sw.WriteLine(string.Format("        <Tool Name=\"Credentials\" Enable=\"{0}\" No_Family_Share=\"{1}\" No_Bad_Id=\"{2}\" No_Internal=\"{3}\" Admin_Level=\"{4}\" />", CredentialCheck.IsEnabled, CredentialCheck.Family_Share, CredentialCheck.Bad_Id, CredentialCheck.No_Internal, CredentialCheck.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Custom_Commands\" Enable=\"{0}\" />", CustomCommands.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Damage_Detector\" Enable=\"{0}\" Entity_Damage_Limit=\"{1}\" Block_Damage_Limit=\"{2}\" Player_Damage_Limit=\"{3}\" Admin_Level=\"{4}\" />", ProcessDamage.Damage_Detector, ProcessDamage.Entity_Damage_Limit, ProcessDamage.Block_Damage_Limit, ProcessDamage.Player_Damage_Limit, ProcessDamage.Admin_Level));
+                sw.WriteLine(string.Format("        <Tool Name=\"Damage_Detector\" Enable=\"{0}\" Entity_Damage_Limit=\"{1}\" Block_Damage_Limit=\"{2}\" Player_Damage_Limit=\"{3}\" Admin_Level=\"{4}\" />", EntityDamage.IsEnabled, EntityDamage.Entity_Damage_Limit, BlockChange.Block_Damage_Limit, EntityDamage.Player_Damage_Limit, EntityDamage.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Day7\" Enable=\"{0}\" />", Day7.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Died\" Enable=\"{0}\" Time=\"{1}\" Delay_Between_Uses=\"{2}\" Command_Cost=\"{3}\" />", Died.IsEnabled, Died.Time, Died.Delay_Between_Uses, Died.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Discord_Bot\" Enable=\"{0}\" Webhook=\"{1}\" />", DiscordBot.IsEnabled, DiscordBot.Webhook));

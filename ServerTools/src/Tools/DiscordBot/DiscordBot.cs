@@ -16,7 +16,7 @@ namespace ServerTools
         public static List<string> Queue = new List<string>();
 
         private const string file = "DiscordToken.txt";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
 
         public static void BuildToken()
         {

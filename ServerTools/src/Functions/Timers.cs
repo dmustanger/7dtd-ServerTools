@@ -178,7 +178,7 @@ namespace ServerTools
             {
                 Log.Out("Credential enabled");
             }
-            if (ProcessDamage.Damage_Detector)
+            if (EntityDamage.IsEnabled)
             {
                 Log.Out("Damage detector enabled");
             }

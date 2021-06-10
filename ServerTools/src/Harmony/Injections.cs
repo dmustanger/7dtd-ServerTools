@@ -10,9 +10,9 @@ public static class Injections
     {
         try
         {
-            if (ProcessDamage.Damage_Detector || Zones.IsEnabled || Lobby.IsEnabled || Market.IsEnabled)
+            if (EntityDamage.IsEnabled || Zones.IsEnabled || Lobby.IsEnabled || Market.IsEnabled)
             {
-                return ProcessDamage.ProcessPlayerDamage(__instance, _dmResponse);
+                return EntityDamage.ProcessEntityDamage(__instance, _dmResponse);
             }
         }
         catch (Exception e)
@@ -80,7 +80,10 @@ public static class Injections
     {
         try
         {
-            return ProcessDamage.ProcessBlockChange(__instance, persistentPlayerId, _blocksToChange);
+            if (POIProtection.IsEnabled || BlockChange.IsEnabled)
+            {
+                return BlockChange.ProcessBlockChange(__instance, persistentPlayerId, _blocksToChange);
+            }
         }
         catch (Exception e)
         {
@@ -101,13 +104,28 @@ public static class Injections
         }
     }
 
+    public static void AddFallingBlock_Postfix(Vector3i _block)
+    {
+        try
+        {
+            if (FallingBlocks.IsEnabled)
+            {
+                FallingBlocks.Single(_block);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.AddFallingBlock_Postfix: {0}", e.Message));
+        }
+    }
+
     public static void AddFallingBlocks_Postfix(IList<Vector3i> _list)
     {
         try
         {
             if (FallingBlocks.IsEnabled)
             {
-                FallingBlocks.Exec(_list);
+                FallingBlocks.Multiple(_list);
             }
         }
         catch (Exception e)

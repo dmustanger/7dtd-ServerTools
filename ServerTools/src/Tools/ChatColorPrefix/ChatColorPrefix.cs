@@ -10,10 +10,10 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false;
         private const string file = "ChatColorPrefix.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        public static Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
-        public static Dictionary<string, DateTime> Dict1 = new Dictionary<string, DateTime>();
-        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        public static Dictionary<string, string[]> Players = new Dictionary<string, string[]>();
+        public static Dictionary<string, DateTime> ExpireDate = new Dictionary<string, DateTime>();
+        private static readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -28,8 +28,8 @@ namespace ServerTools
         {
             if (!IsEnabled && IsRunning)
             {
-                Dict.Clear();
-                Dict1.Clear();
+                Players.Clear();
+                ExpireDate.Clear();
                 FileWatcher.Dispose();
                 IsRunning = false;
             }
@@ -56,8 +56,8 @@ namespace ServerTools
             {
                 if (childNode.Name == "ColorPrefix")
                 {
-                    Dict.Clear();
-                    Dict1.Clear();
+                    Players.Clear();
+                    ExpireDate.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -138,11 +138,11 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColorPrefix entry because of missing [] for Prefix Color attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!Dict.ContainsKey(_steamId))
+                        if (!Players.ContainsKey(_steamId))
                         {
                             string[] _c = new string[] { _name, _group, _prefix, _nameColor, _prefixColor };
-                            Dict.Add(_steamId, _c);
-                            Dict1.Add(_steamId, _dt);
+                            Players.Add(_steamId, _c);
+                            ExpireDate.Add(_steamId, _dt);
                         }
                     }
                 }
@@ -157,13 +157,12 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ColorPrefixes>");
                 sw.WriteLine("    <ColorPrefix>");
-                if (Dict.Count > 0)
+                if (Players.Count > 0)
                 {
-                    foreach (KeyValuePair<string, string[]> kvp in Dict)
+                    foreach (KeyValuePair<string, string[]> kvp in Players)
                     {
-                        DateTime _dt;
-                        Dict1.TryGetValue(kvp.Key, out _dt);
-                        sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" Name=\"{1}\" Group=\"{2}\" Prefix=\"{3}\" NameColor=\"{4}\" PrefixColor=\"{5}\" Expires=\"{6}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3], kvp.Value[4], _dt));
+                        ExpireDate.TryGetValue(kvp.Key, out DateTime _expiry);
+                        sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" Name=\"{1}\" Group=\"{2}\" Prefix=\"{3}\" NameColor=\"{4}\" PrefixColor=\"{5}\" Expires=\"{6}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3], kvp.Value[4], _expiry));
                     }
                 }
                 else
