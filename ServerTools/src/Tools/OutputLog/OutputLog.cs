@@ -9,9 +9,6 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static List<string> ActiveLog = new List<string>();
-        //private static string Path = string.Format("{0}/Logs/OutputLogs/{1}", API.ConfigPath, LogFile);
-        //private const string LogFile = "OutputLog.txt";
-        //private static DateTime Date = new DateTime();
 
         //private static string Debug = string.Format("{0}/{1}", API.ConfigPath, DebugFile);
         //private const string DebugFile = "Debug.txt";
@@ -45,6 +42,14 @@ namespace ServerTools
             try
             {
                 ActiveLog.Add(msg);
+                //using (StreamWriter sw = new StreamWriter(Debug, true, Encoding.UTF8))
+                //{
+                //    sw.WriteLine(string.Format("msg: {0} / trace {1} / type {2}", msg, trace, type));
+                //    sw.WriteLine();
+                //    sw.Flush();
+                //    sw.Close();
+                //    sw.Dispose();
+                //}
             }
             catch (Exception e)
             {

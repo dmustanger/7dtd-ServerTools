@@ -83,6 +83,7 @@ namespace ServerTools
                             if (_cInfo2 != null)
                             {
                                 PersistentContainer.Instance.Players[_cInfo2.playerId].LastVote = DateTime.Now.AddYears(-1);
+                                PersistentContainer.DataChange = true;
                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vote reward delay reset for {0}", _cInfo2.playerName));
                             }
                         }
@@ -90,16 +91,16 @@ namespace ServerTools
                     }
                     if (_params[1].ToLower().Equals("all"))
                     {
-                        for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+                        if (PersistentContainer.Instance.Players.SteamIDs.Count > 0)
                         {
-                            string _id = PersistentContainer.Instance.Players.SteamIDs[i];
-                            PersistentPlayer p = PersistentContainer.Instance.Players[_id];
+                            for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
                             {
-                                PersistentContainer.Instance.Players[_id].LastVote = DateTime.Now.AddYears(-1);
+                                PersistentContainer.Instance.Players[PersistentContainer.Instance.Players.SteamIDs[i]].LastVote = DateTime.Now.AddYears(-1);
+                                PersistentContainer.DataChange = true;
                             }
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] Vote reward delay reset for all players");
+                            return;
                         }
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] Vote reward delay reset for all players");
-                        return;
                     }
                     else
                     {
@@ -107,6 +108,7 @@ namespace ServerTools
                         if (_cInfo != null)
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].LastVote = DateTime.Now.AddYears(-1);
+                            PersistentContainer.DataChange = true;
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vote reward delay reset for {0}", _cInfo.playerName));
                         }
                         else
@@ -120,6 +122,7 @@ namespace ServerTools
                             if (p != null)
                             {
                                 PersistentContainer.Instance.Players[_params[1]].LastVote = DateTime.Now.AddYears(-1);
+                                PersistentContainer.DataChange = true;
                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vote reward delay reset for {0}", _params[1]));
                             }
                             else

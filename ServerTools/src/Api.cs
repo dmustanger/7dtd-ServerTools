@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using ServerTools.AntiCheat;
 
 namespace ServerTools
 {
@@ -10,6 +9,7 @@ namespace ServerTools
     {
         public static string GamePath = Directory.GetCurrentDirectory();
         public static string ConfigPath = string.Format("{0}/ServerTools", GamePath);
+        public static string InstallPath = "";
         public static List<string> Verified = new List<string>();
 
         public void InitMod()
@@ -50,7 +50,6 @@ namespace ServerTools
         {
             try
             {
-                StateManager.Save();
                 OutputLog.Shutdown();
                 RegionReset.Exec();
                 Timers.TimerStop();
@@ -106,7 +105,7 @@ namespace ServerTools
 
         private static void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)//Setting player view and profile
         {
-            
+
         }
 
         private static void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)//Spawning player
@@ -126,12 +125,14 @@ namespace ServerTools
                         return;
                     }
                     PersistentContainer.Instance.Players[_cInfo.playerId].LastJoined = DateTime.Now;
+                    PersistentContainer.DataChange = true;
                     if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
                     {
                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                         if (_player != null)
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].PlayerName = _cInfo.playerName;
+                            PersistentContainer.DataChange = true;
                             PersistentOperations.SessionTime(_cInfo);
                             if (_respawnReason == RespawnType.EnterMultiplayer)//New player spawning. Game bug can trigger this incorrectly
                             {
@@ -182,7 +183,7 @@ namespace ServerTools
 
         private static bool ChatMessage(ClientInfo _cInfo, EChatType _type, int _senderId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
         {
-            return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _localizeMain, _recipientEntityIds);
+            return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _recipientEntityIds);
         }
 
         private static bool GameMessage(ClientInfo _cInfo, EnumGameMessages _type, string _msg, string _mainName, bool _localizeMain, string _secondaryName, bool _localizeSecondary)
@@ -194,44 +195,78 @@ namespace ServerTools
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                     if (_player != null)
                     {
-                        if (DeathSpot.IsEnabled)
+                        if (PlayerChecks.FlyEnabled && PlayerChecks.Movement.ContainsKey(_cInfo.entityId))
                         {
-                            DeathSpot.PlayerKilled(_player);
+                            PlayerChecks.Movement.Remove(_cInfo.entityId);
                         }
-                        if (!string.IsNullOrEmpty(_secondaryName) && !string.IsNullOrEmpty(_mainName) && _mainName != _secondaryName)
+                        if (Died.IsEnabled)
                         {
-                            ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_secondaryName);
-                            if (_cInfo2 != null && GameManager.Instance.World.Players.dict.ContainsKey(_cInfo2.entityId))
+                            Died.PlayerKilled(_player);
+                        }
+                        if (KillNotice.IsEnabled)
+                        {
+                            if (KillNotice.Zombie_Kills && string.IsNullOrEmpty(_secondaryName))
                             {
-                                EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                                if (_player2 != null)
+                                List<Entity> Entities = GameManager.Instance.World.Entities.list;
+                                for (int i = 0; i < Entities.Count; i++)
                                 {
-                                    if (Bounties.IsEnabled)
+                                    EntityAlive _entityAlive = Entities[i] as EntityAlive;
+                                    if (_entityAlive != null && _entityAlive.GetAttackTarget() == _player && _entityAlive.entityId != _player.entityId)
                                     {
-                                        Bounties.PlayerKilled(_player, _player2, _cInfo, _cInfo2);
-                                    }
-                                    if (Wallet.IsEnabled)
-                                    {
-                                        if (Wallet.PVP && Wallet.Player_Kills > 0)
+                                        if (KillNotice.Show_Level)
                                         {
-                                            Wallet.AddCoinsToWallet(_cInfo2.playerId, Wallet.Player_Kills);
+                                            Phrases.Dict.TryGetValue(545, out string _phrase545);
+                                            _phrase545 = _phrase545.Replace("{PlayerName}", _cInfo.playerName);
+                                            _phrase545 = _phrase545.Replace("{Level}", _player.Progression.Level.ToString());
+                                            _phrase545 = _phrase545.Replace("{ZombieName}", _entityAlive.EntityName);
+                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase545 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                         }
-                                        else if (Wallet.Player_Kills > 0)
+                                        else
                                         {
-                                            Wallet.SubtractCoinsFromWallet(_cInfo2.playerId, Wallet.Player_Kills);
+                                            Phrases.Dict.TryGetValue(546, out string _phrase546);
+                                            _phrase546 = _phrase546.Replace("{PlayerName}", _cInfo.playerName);
+                                            _phrase546 = _phrase546.Replace("{ZombieName}", _entityAlive.EntityName);
+                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase546 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                         }
+
                                     }
-                                    if (KillNotice.IsEnabled && _player2.IsAlive())
+                                }
+                            }
+                            else if (KillNotice.PvP && !string.IsNullOrEmpty(_secondaryName) && _mainName != _secondaryName)
+                            {
+                                ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_secondaryName);
+                                if (_cInfo2 != null && GameManager.Instance.World.Players.dict.ContainsKey(_cInfo2.entityId))
+                                {
+                                    EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
+                                    if (_player2 != null)
                                     {
-                                        string _holdingItem = _player2.inventory.holdingItem.GetItemName();
-                                        if (!string.IsNullOrEmpty(_holdingItem))
+                                        if (KillNotice.IsEnabled && _player2.IsAlive())
                                         {
-                                            ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
-                                            if (_itemValue.type != ItemValue.None.type)
+                                            string _holdingItem = _player2.inventory.holdingItem.GetItemName();
+                                            if (!string.IsNullOrEmpty(_holdingItem))
                                             {
-                                                KillNotice.Exec(_cInfo, _player, _cInfo2, _player2, _holdingItem);
-                                                return false;
+                                                ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
+                                                if (_itemValue.type != ItemValue.None.type)
+                                                {
+                                                    KillNotice.Exec(_cInfo, _player, _cInfo2, _player2, _holdingItem);
+                                                    return false;
+                                                }
                                             }
+                                        }
+                                        if (Wallet.IsEnabled)
+                                        {
+                                            if (Wallet.PVP && Wallet.Player_Kills > 0)
+                                            {
+                                                Wallet.AddCoinsToWallet(_cInfo2.playerId, Wallet.Player_Kills);
+                                            }
+                                            else if (Wallet.Player_Kills > 0)
+                                            {
+                                                Wallet.SubtractCoinsFromWallet(_cInfo2.playerId, Wallet.Player_Kills);
+                                            }
+                                        }
+                                        if (Bounties.IsEnabled)
+                                        {
+                                            Bounties.PlayerKilled(_player, _player2, _cInfo, _cInfo2);
                                         }
                                     }
                                 }
@@ -316,6 +351,7 @@ namespace ServerTools
                                 }
                                 int _timePlayed = PersistentContainer.Instance.Players[_cInfo.playerId].TotalTimePlayed;
                                 PersistentContainer.Instance.Players[_cInfo.playerId].TotalTimePlayed = _timePlayed + _timepassed;
+                                PersistentContainer.DataChange = true;
                             }
                         }
                         if (PersistentOperations.Session.ContainsKey(_cInfo.playerId))
@@ -366,9 +402,9 @@ namespace ServerTools
                         {
                             Teleportation.Teleporting.Remove(_cInfo.entityId);
                         }
-                        if (WindowedResponse.Responses.ContainsKey(_cInfo.playerId))
+                        if (PlayerChecks.Movement.ContainsKey(_cInfo.entityId))
                         {
-                            WindowedResponse.Responses.Remove(_cInfo.playerId);
+                            PlayerChecks.Movement.Remove(_cInfo.entityId);
                         }
                     }
                     else
@@ -500,6 +536,7 @@ namespace ServerTools
                     }
                 }
                 PersistentContainer.Instance.Players[_cInfo.playerId].OldPlayer = true;
+                PersistentContainer.DataChange = true;
             }
             catch (Exception e)
             {
@@ -509,71 +546,80 @@ namespace ServerTools
 
         public static void OldPlayerJoined(ClientInfo _cInfo, EntityPlayer _player)
         {
-            if (Hardcore.IsEnabled)
+            try
             {
-                if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
+                if (Hardcore.IsEnabled)
                 {
-                    if (Hardcore.Optional)
+                    if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
                     {
-                        if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
+                        if (Hardcore.Optional)
                         {
+                            if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
+                            {
+                                Hardcore.Check(_cInfo, _player);
+                            }
+                        }
+                        else if (!PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
+                        {
+                            string[] _hardcoreStats = { _cInfo.playerName, XUiM_Player.GetDeaths(_player).ToString(), "0" };
+                            PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats = _hardcoreStats;
+                            PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled = true;
+                            PersistentContainer.DataChange = true;
                             Hardcore.Check(_cInfo, _player);
                         }
                     }
-                    else if (!PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
-                    {
-                        string[] _hardcoreStats = { _cInfo.playerName, XUiM_Player.GetDeaths(_player).ToString(), "0" };
-                        PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats = _hardcoreStats;
-                        PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled = true;
-                        Hardcore.Check(_cInfo, _player);
-                    }
                 }
-            }
-            if (LoginNotice.IsEnabled && LoginNotice.dict.ContainsKey(_cInfo.playerId))
-            {
-                LoginNotice.PlayerNotice(_cInfo);
-            }
-            if (Motd.IsEnabled)
-            {
-                Motd.Send(_cInfo);
-            }
-            if (Bloodmoon.IsEnabled)
-            {
-                Bloodmoon.Exec(_cInfo);
-            }
-            if (Shutdown.IsEnabled && Shutdown.Alert_On_Login)
-            {
-                Shutdown.NextShutdown(_cInfo);
-            }
-            if (ExitCommand.IsEnabled)
-            {
-                ExitCommand.AlertPlayer(_cInfo);
-            }
-            if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && !PersistentContainer.Instance.PollVote.ContainsKey(_cInfo.playerId))
-            {
-                Poll.Message(_cInfo);
-            }
-            if (ClanManager.IsEnabled)
-            {
-                Dictionary<string, string> _clanRequests = PersistentContainer.Instance.Players[_cInfo.playerId].ClanRequestToJoin;
-                if (_clanRequests != null && _clanRequests.Count > 0)
+                if (LoginNotice.IsEnabled && LoginNotice.dict.ContainsKey(_cInfo.playerId))
                 {
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "New clan requests from:[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    foreach (var _request in _clanRequests)
+                    LoginNotice.PlayerNotice(_cInfo);
+                }
+                if (Motd.IsEnabled)
+                {
+                    Motd.Send(_cInfo);
+                }
+                if (Bloodmoon.IsEnabled)
+                {
+                    Bloodmoon.Exec(_cInfo);
+                }
+                if (Shutdown.IsEnabled && Shutdown.Alert_On_Login)
+                {
+                    Shutdown.NextShutdown(_cInfo);
+                }
+                if (ExitCommand.IsEnabled)
+                {
+                    ExitCommand.AlertPlayer(_cInfo);
+                }
+                if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && !PersistentContainer.Instance.PollVote.ContainsKey(_cInfo.playerId))
+                {
+                    Poll.Message(_cInfo);
+                }
+                if (ClanManager.IsEnabled)
+                {
+                    Dictionary<string, string> _clanRequests = PersistentContainer.Instance.Players[_cInfo.playerId].ClanRequestToJoin;
+                    if (_clanRequests != null && _clanRequests.Count > 0)
                     {
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _request.Value + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "New clan requests from:[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        foreach (var _request in _clanRequests)
+                        {
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _request.Value + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
                     }
                 }
                 //If they are in a clan, check if we should get them into a party
                 ClanManager.checkClanParty(_cInfo, _player);
+                if (Event.Open && Event.Teams.ContainsKey(_cInfo.playerId) && PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn)
+                {
+                    Event.Spawn(_cInfo);
+                }
+                else if (PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn = false;
+                    PersistentContainer.DataChange = true;
+                }
             }
-            if (Event.Open && Event.Teams.ContainsKey(_cInfo.playerId) && PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn)
+            catch (Exception e)
             {
-                Event.Spawn(_cInfo);
-            }
-            else if (PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn)
-            {
-                PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn = false;
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.OldPlayerJoined: {0}", e.Message));
             }
         }
 
@@ -617,6 +663,7 @@ namespace ServerTools
                 _response = _response.Replace("{Command50}", Zones.Command50);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _response + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 PersistentContainer.Instance.Players[_cInfo.playerId].ZoneDeathTime = DateTime.Now;
+                PersistentContainer.DataChange = true;
                 if (Zones.Forgive.ContainsKey(_cInfo.entityId))
                 {
                     string _response2 = "Type {CommandPrivate}{Command55} to release your killer from jail.";

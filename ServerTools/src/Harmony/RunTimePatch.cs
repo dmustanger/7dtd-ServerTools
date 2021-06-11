@@ -82,17 +82,32 @@ namespace ServerTools
                         }
                         harmony.Patch(original, new HarmonyMethod(prefix), null);
                     }
-                    original = typeof(World).GetMethod("AddFallingBlock");
+                    original = typeof(World).GetMethod("AddFallingBlocks");
                     if (original == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.AddFallingBlock method was not found"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.AddFallingBlocks method was not found"));
                     }
                     else
                     {
-                        MethodInfo postfix = typeof(Injections).GetMethod("AddFallingBlock_Postfix");
+                        MethodInfo postfix = typeof(Injections).GetMethod("AddFallingBlocks_Postfix");
                         if (postfix == null)
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: AddFallingBlock.postfix"));
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: AddFallingBlocks.postfix"));
+                            return;
+                        }
+                        harmony.Patch(original, null, new HarmonyMethod(postfix));
+                    }
+                    original = typeof(GameManager).GetMethod("ChatMessageServer");
+                    if (original == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ChatMessageServer method was not found"));
+                    }
+                    else
+                    {
+                        MethodInfo postfix = typeof(Injections).GetMethod("ChatMessageServer_Postfix");
+                        if (postfix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChatMessageServer.postfix"));
                             return;
                         }
                         harmony.Patch(original, null, new HarmonyMethod(postfix));

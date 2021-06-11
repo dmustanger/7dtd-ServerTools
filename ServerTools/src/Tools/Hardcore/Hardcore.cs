@@ -115,8 +115,9 @@ namespace ServerTools
                 _p.StartingItems = false;
                 _p.TotalTimePlayed = 0;
                 _p.VoteWeekCount = 0;
-                _p.WP = "";
+                _p.WebPass = "";
                 _p.ZoneDeathTime = new DateTime();
+                PersistentContainer.DataChange = true;
                 Hardcore.Disconnect(_cInfo, _newStats);
             }
         }
@@ -266,6 +267,7 @@ namespace ServerTools
                                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _cost);
                                     _stats[2] = (_extraLives + 1).ToString();
                                     PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats = _stats;
+                                    PersistentContainer.DataChange = true;
                                     Phrases.Dict.TryGetValue(597, out string _phrase597);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase597 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -400,7 +402,7 @@ namespace ServerTools
                     p.TotalTimePlayed = 0;
                     p.VoteWeekCount = 0;
                     p.Waypoints = new Dictionary<string, string>();
-                    p.WP = "";
+                    p.WebPass = "";
                     p.ZoneDeathTime = new DateTime();
                 }
             }
@@ -447,7 +449,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.DisconnectHardcorePlayer: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.KickPlayer: {0}", e.Message));
             }
         }
     }

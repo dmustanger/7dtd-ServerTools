@@ -73,12 +73,12 @@ namespace ServerTools
                         if (_player != null && _player.IsSpawned() && !_player.IsDead())
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems = true;
+                            PersistentContainer.DataChange = true;
                             List<string> _itemList = StartingItems.ItemList.Keys.ToList();
                             for (int i = 0; i < _itemList.Count; i++)
                             {
                                 string _item = _itemList[i];
-                                int[] _itemData;
-                                StartingItems.ItemList.TryGetValue(_item, out _itemData);
+                                StartingItems.ItemList.TryGetValue(_item, out int[]  _itemData);
                                 ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
                                 if (_itemValue.HasQuality && _itemData[1] > 0)
                                 {

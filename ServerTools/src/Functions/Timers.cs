@@ -1,6 +1,4 @@
 ﻿using System.Timers;
-using ServerTools.AntiCheat;
-using ServerTools.Website;
 
 namespace ServerTools
 {
@@ -10,7 +8,7 @@ namespace ServerTools
         public static int StopServerMinutes, _eventTime;
         private static int CoreCount = 0, _twoSecondTick, _fiveSecondTick, _tenSecondTick, _twentySecondTick, _oneMinTick, _fiveMinTick, _stopServerSeconds, _eventInvitation,
             _eventOpen, _horde, _kickVote, _lottery, _muteVote, _restartVoteCycle, _restartVote, _weatherVote;
-        private static System.Timers.Timer Core = new System.Timers.Timer();
+        private static readonly System.Timers.Timer Core = new System.Timers.Timer();
 
         public static void TimerStart()
         {
@@ -30,6 +28,7 @@ namespace ServerTools
             IsRunning = false;
             Core.Stop();
             Core.Close();
+            Core.Dispose();
         }
 
         private static void Tick(object sender, ElapsedEventArgs e)
@@ -50,97 +49,123 @@ namespace ServerTools
                 _delay = 120;
             }
             int _delayAdjusted = _delay * 1000;
-            System.Timers.Timer _singleUseTimer = new System.Timers.Timer(_delayAdjusted);
-            _singleUseTimer.AutoReset = false;
+            System.Timers.Timer _singleUseTimer = new System.Timers.Timer(_delayAdjusted)
+            {
+                AutoReset = false
+            };
             _singleUseTimer.Start();
             _singleUseTimer.Elapsed += (sender, e) =>
             {
-                Init1(sender, e, _playerId, _commands);
+                Init1(_playerId, _commands);
+                _singleUseTimer.Stop();
                 _singleUseTimer.Close();
+                _singleUseTimer.Dispose();
             };
         }
 
         public static void NewPlayerTimer(ClientInfo _cInfo)
         {
-            System.Timers.Timer _newPlayerExecTimer = new System.Timers.Timer(5000);
-            _newPlayerExecTimer.AutoReset = false;
+            System.Timers.Timer _newPlayerExecTimer = new System.Timers.Timer(5000)
+            {
+                AutoReset = false
+            };
             _newPlayerExecTimer.Start();
             _newPlayerExecTimer.Elapsed += (sender, e) =>
             {
-                Init2(sender, e, _cInfo);
+                Init2(_cInfo);
+                _newPlayerExecTimer.Stop();
                 _newPlayerExecTimer.Close();
+                _newPlayerExecTimer.Dispose();
             };
         }
 
         public static void StartingItemsTimer(ClientInfo _cInfo)
         {
-            System.Timers.Timer _newPlayerStartingItemsTimer = new System.Timers.Timer(3000);
-            _newPlayerStartingItemsTimer.AutoReset = false;
+            System.Timers.Timer _newPlayerStartingItemsTimer = new System.Timers.Timer(3000)
+            {
+                AutoReset = false
+            };
             _newPlayerStartingItemsTimer.Start();
             _newPlayerStartingItemsTimer.Elapsed += (sender, e) =>
             {
-                Init3(sender, e, _cInfo);
+                Init3(_cInfo);
+                _newPlayerStartingItemsTimer.Stop();
                 _newPlayerStartingItemsTimer.Close();
+                _newPlayerStartingItemsTimer.Dispose();
             };
         }
 
         public static void DisconnectHardcorePlayer(ClientInfo _cInfo)
         {
-            System.Timers.Timer _hardcoreTimer = new System.Timers.Timer(20000);
-            _hardcoreTimer.AutoReset = false;
+            System.Timers.Timer _hardcoreTimer = new System.Timers.Timer(20000)
+            {
+                AutoReset = false
+            };
             _hardcoreTimer.Start();
             _hardcoreTimer.Elapsed += (sender, e) =>
             {
-                Init4(sender, e, _cInfo);
+                Init4(_cInfo);
+                _hardcoreTimer.Stop();
                 _hardcoreTimer.Close();
+                _hardcoreTimer.Dispose();
             };
         }
 
         public static void ExitWithCommand(int _id, int _time)
         {
-            System.Timers.Timer _exitCommand = new System.Timers.Timer(_time * 1000);
-            _exitCommand.AutoReset = false;
+            System.Timers.Timer _exitCommand = new System.Timers.Timer(_time * 1000)
+            {
+                AutoReset = false
+            };
             _exitCommand.Start();
             _exitCommand.Elapsed += (sender, e) =>
             {
-                Init5(sender, e, _id);
+                Init5(_id);
+                _exitCommand.Stop();
                 _exitCommand.Close();
+                _exitCommand.Dispose();
             };
         }
 
         public static void ExitWithoutCommand(ClientInfo _cInfo, string _ip)
         {
-            System.Timers.Timer _exitDelay = new System.Timers.Timer(1500);
-            _exitDelay.AutoReset = false;
+            System.Timers.Timer _exitDelay = new System.Timers.Timer(1500)
+            {
+                AutoReset = false
+            };
             _exitDelay.Start();
             _exitDelay.Elapsed += (sender, e) =>
             {
-                Init6(sender, e, _cInfo, _ip);
+                Init6(_cInfo, _ip);
+                _exitDelay.Stop();
                 _exitDelay.Close();
+                _exitDelay.Dispose();
             };
         }
 
-        public static void SaveDelay()
+        public static void PersistentDataSave()
         {
-            System.Timers.Timer _saveDelay = new System.Timers.Timer(1000);
-            _saveDelay.AutoReset = false;
+            System.Timers.Timer _saveDelay = new System.Timers.Timer(15000)
+            {
+                AutoReset = true
+            };
             _saveDelay.Start();
             _saveDelay.Elapsed += (sender, e) =>
             {
                 PersistentContainer.Instance.Save();
-                _saveDelay.Close();
             };
         }
 
         public static void ShutdownFailsafe()
         {
-            System.Timers.Timer _shutdownFailsafe = new System.Timers.Timer(60000);
-            _shutdownFailsafe.AutoReset = true;
+            System.Timers.Timer _shutdownFailsafe = new System.Timers.Timer(60000)
+            {
+                AutoReset = true
+            };
             _shutdownFailsafe.Start();
             _shutdownFailsafe.Elapsed += (sender, e) =>
             {
                 StopServer.FailSafe(sender, e);
-                _shutdownFailsafe.Close();
             };
         }
 
@@ -153,7 +178,7 @@ namespace ServerTools
             {
                 Log.Out("Credential enabled");
             }
-            if (ProcessDamage.Damage_Detector)
+            if (EntityDamage.IsEnabled)
             {
                 Log.Out("Damage detector enabled");
             }
@@ -193,10 +218,6 @@ namespace ServerTools
             {
                 Log.Out("Spectator detector enabled");
             }
-            //if (TeleportCheck.IsEnabled)
-            //{
-            //    Log.Out("Teleport enabled");
-            //}
             if (Watchlist.IsEnabled)
             {
                 Log.Out("Watch list enabled");
@@ -337,9 +358,13 @@ namespace ServerTools
             {
                 Log.Out("Day 7 enabled");
             }
-            if (DeathSpot.IsEnabled)
+            if (Died.IsEnabled)
             {
-                Log.Out("Death spot enabled");
+                Log.Out("Died enabled");
+            }
+            if (DiscordBot.IsEnabled)
+            {
+                Log.Out("Discord bot enabled");
             }
             if (EntityCleanup.IsEnabled)
             {
@@ -505,13 +530,13 @@ namespace ServerTools
             {
                 Log.Out("Waypoints enabled");
             }
+            if (WebAPI.IsEnabled)
+            {
+                Log.Out("Web API enabled");
+            }
             if (WebPanel.IsEnabled)
             {
                 Log.Out("Web panel enabled");
-            }
-            if (WindowedResponse.IsEnabled)
-            {
-                Log.Out("Windowed response enabled");
             }
             if (Zones.IsEnabled)
             {
@@ -532,6 +557,10 @@ namespace ServerTools
             if (Jail.IsEnabled)
             {
                 Jail.StatusCheck();
+            }
+            if (DiscordBot.IsEnabled && DiscordBot.Queue.Count > 0)
+            {
+                DiscordBot.WebHook();
             }
             if (_twoSecondTick >= 2)
             {
@@ -740,32 +769,32 @@ namespace ServerTools
             }
         }
 
-        private static void Init1(object sender, ElapsedEventArgs e, string _playerId, string _commands)
+        private static void Init1(string _playerId, string _commands)
         {
             CustomCommands.DelayedCommand(_playerId, _commands);
         }
 
-        private static void Init2(object sender, ElapsedEventArgs e, ClientInfo _cInfo)
+        private static void Init2(ClientInfo _cInfo)
         {
             API.NewPlayerExec(_cInfo);
         }
 
-        private static void Init3(object sender, ElapsedEventArgs e, ClientInfo _cInfo)
+        private static void Init3(ClientInfo _cInfo)
         {
             StartingItems.Exec(_cInfo);
         }
 
-        private static void Init4(object sender, ElapsedEventArgs e, ClientInfo _cInfo)
+        private static void Init4(ClientInfo _cInfo)
         {
             Hardcore.KickPlayer(_cInfo);
         }
 
-        private static void Init5(object sender, ElapsedEventArgs e, int _id)
+        private static void Init5(int _id)
         {
             ExitCommand.ExitWithCommand(_id);
         }
 
-        private static void Init6(object sender, ElapsedEventArgs e, ClientInfo _cInfo, string _ip)
+        private static void Init6(ClientInfo _cInfo, string _ip)
         {
             ExitCommand.ExitWithoutCommand(_cInfo, _ip);
         }

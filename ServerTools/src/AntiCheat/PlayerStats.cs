@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ServerTools.AntiCheat
+namespace ServerTools
 {
     class PlayerStats
     {
         public static bool IsEnabled = false, Kick_Enabled = false, Ban_Enabled = false;
         public static int Admin_Level = 0, Days_Before_Log_Delete = 5, Max_Speed = 28, Health = 255, Stamina = 255;
         public static double Jump_Strength = 1.5, Height = 1.8;
-        private static string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
+        private static readonly string file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static readonly string filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, file);
 
         public static void Exec()
         {
             try
             {
-                if (GameManager.Instance.World.Players.dict.Count > 0)
+                if (GameManager.Instance.World != null && GameManager.Instance.World.Players.Count > 0 && GameManager.Instance.World.Players.dict.Count > 0)
                 {
                     List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
                     if (ClientInfoList != null && ClientInfoList.Count > 0)
@@ -41,7 +41,7 @@ namespace ServerTools.AntiCheat
                                             var p_height = _player.height;
                                             if (p_Health > 250)
                                             {
-                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal health value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_Health));
                                                     sw.WriteLine();
@@ -68,7 +68,7 @@ namespace ServerTools.AntiCheat
                                             }
                                             if (p_Stamina > 250)
                                             {
-                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal stamina value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_Stamina));
                                                     sw.WriteLine();
@@ -95,7 +95,7 @@ namespace ServerTools.AntiCheat
                                             }
                                             if (p_jumpStrength >= 1.5)
                                             {
-                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal jump strength value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_jumpStrength));
                                                     sw.WriteLine();
@@ -122,7 +122,7 @@ namespace ServerTools.AntiCheat
                                             }
                                             if (p_height > 1.8 || p_height < 1.7)
                                             {
-                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal player height value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_height));
                                                     sw.WriteLine();
@@ -149,7 +149,7 @@ namespace ServerTools.AntiCheat
                                             }
                                             if (p_speedForward > Max_Speed)
                                             {
-                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal run speed value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_speedForward));
                                                     sw.WriteLine();

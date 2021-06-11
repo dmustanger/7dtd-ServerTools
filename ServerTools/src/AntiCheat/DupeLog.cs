@@ -4,20 +4,20 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-namespace ServerTools.AntiCheat
+namespace ServerTools
 {
     class DupeLog
     {
         public static bool IsEnabled = false, IsRunning = false;
-        private static Dictionary<int, ItemStack[]> Bag = new Dictionary<int, ItemStack[]>();
-        private static Dictionary<int, ItemStack[]> Inventory = new Dictionary<int, ItemStack[]>();
-        private static Dictionary<int, int> Crafted = new Dictionary<int, int>();
-        private static string _file = string.Format("DupeLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string _filepath = string.Format("{0}/Logs/DupeLogs/{1}", API.ConfigPath, _file);
+        private static readonly Dictionary<int, ItemStack[]> Bag = new Dictionary<int, ItemStack[]>();
+        private static readonly Dictionary<int, ItemStack[]> Inventory = new Dictionary<int, ItemStack[]>();
+        private static readonly Dictionary<int, int> Crafted = new Dictionary<int, int>();
+        private static readonly string _file = string.Format("DupeLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static readonly string _filepath = string.Format("{0}/Logs/DupeLogs/{1}", API.ConfigPath, _file);
         private const string file = "DuplicateItems.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         public static List<string> dict = new List<string>();
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static readonly FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
 
         public static void Load()
@@ -305,7 +305,7 @@ namespace ServerTools.AntiCheat
                                                         {
                                                             using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                             {
-                                                                sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their bag, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their bag at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
                                                                 sw.Flush();
                                                                 sw.Close();
@@ -336,7 +336,7 @@ namespace ServerTools.AntiCheat
                                                         {
                                                             using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                             {
-                                                                sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
                                                                 sw.Flush();
                                                                 sw.Close();
@@ -372,7 +372,7 @@ namespace ServerTools.AntiCheat
                                                             {
                                                                 using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                 {
-                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
                                                                     sw.Flush();
                                                                     sw.Close();
@@ -403,7 +403,7 @@ namespace ServerTools.AntiCheat
                                                             {
                                                                 using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                                                                 {
-                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
                                                                     sw.Flush();
                                                                     sw.Close();

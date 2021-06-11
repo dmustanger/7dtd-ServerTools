@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props" Condition="Exists('..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ServerTools</RootNamespace>
     <AssemblyName>ServerTools</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -43,9 +44,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="src\AntiCheat\DupeLog.cs" />
-    <Compile Include="src\AntiCheat\ProcessDamage.cs" />
+    <Compile Include="src\AntiCheat\BlockChange.cs" />
+    <Compile Include="src\AntiCheat\EntityDamage.cs" />
     <Compile Include="src\AntiCheat\PlayerChecks.cs" />
-    <Compile Include="src\Chat\Windowed_Response\WindowedResponse.cs" />
     <Compile Include="src\ConsoleCommands\DeletePlayerDataConsole.cs" />
     <Compile Include="src\ConsoleCommands\FlyingConsole.cs" />
     <Compile Include="src\ConsoleCommands\GodmodeDetectorConsole.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="src\Tools\BloodmoonWarrior\BloodmoonWarrior.cs" />
     <Compile Include="src\Tools\BreakTime\BreakTime.cs" />
     <Compile Include="src\Tools\ConsoleCommandLog\Console_Command_Log.cs" />
+    <Compile Include="src\Tools\DiscordBot\DiscordBot.cs" />
     <Compile Include="src\Tools\FallingBlocks\FallingBlocks.cs" />
     <Compile Include="src\Tools\Market\Market.cs" />
     <Compile Include="src\Tools\OutputLog\OutputLog.cs" />
@@ -133,7 +135,7 @@
     <Compile Include="src\ConsoleCommands\FirstClaimBlockConsole.cs" />
     <Compile Include="src\ConsoleCommands\EntityCleanupConsole.cs" />
     <Compile Include="src\ConsoleCommands\DupeLogConsole.cs" />
-    <Compile Include="src\ConsoleCommands\DeathSpotConsole.cs" />
+    <Compile Include="src\ConsoleCommands\DiedConsole.cs" />
     <Compile Include="src\ConsoleCommands\Day7Console.cs" />
     <Compile Include="src\ConsoleCommands\CustomCommandsConsole.cs" />
     <Compile Include="src\ConsoleCommands\CredentialsConsole.cs" />
@@ -169,6 +171,7 @@
     <Compile Include="src\AntiCheat\CredentialCheck.cs" />
     <Compile Include="src\AntiCheat\TeleportCheck.cs" />
     <Compile Include="src\Tools\SleeperRespawn\SleeperRespawn.cs" />
+    <Compile Include="src\Tools\WebPanel\WebPanel.cs" />
     <Compile Include="src\Tools\WorldRadius\WorldRadius.cs" />
     <Compile Include="src\AntiCheat\PlayerStats.cs" />
     <Compile Include="src\AntiCheat\PlayerLogs.cs" />
@@ -186,7 +189,7 @@
     <Compile Include="src\Tools\Mute\Mute.cs" />
     <Compile Include="src\Tools\BadWordFilter\BadWordFilter.cs" />
     <Compile Include="src\Tools\AdminList\AdminList.cs" />
-    <Compile Include="src\Tools\DeathSpot\DeathSpot.cs" />
+    <Compile Include="src\Tools\Died\Died.cs" />
     <Compile Include="src\Tools\Bloodmoon\Bloodmoon.cs" />
     <Compile Include="src\Tools\AnimalTracking\Animals.cs" />
     <Compile Include="src\Tools\Day7\Day7.cs" />
@@ -256,8 +259,8 @@
     <Compile Include="src\Tools\VoteReward\VoteReward.cs" />
     <Compile Include="src\Tools\Watchlist\Watchlist.cs" />
     <Compile Include="src\Tools\Waypoints\Waypoints.cs" />
-    <Compile Include="src\WebPanel\MimeType.cs" />
-    <Compile Include="src\WebPanel\WebPanel.cs" />
+    <Compile Include="src\WebAPI\MimeType.cs" />
+    <Compile Include="src\WebAPI\WebAPI.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ModInfo.xml">
@@ -270,7 +273,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="0Harmony, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lib.Harmony.2.0.4\lib\net45\0Harmony.dll</HintPath>
+      <HintPath>..\packages\Lib.Harmony.2.0.4\lib\net472\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\7dtd-binaries\Assembly-CSharp.dll</HintPath>
@@ -279,6 +282,10 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\7dtd-binaries\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="LogLibrary">
       <HintPath>..\7dtd-binaries\LogLibrary.dll</HintPath>
@@ -291,10 +298,22 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="System.Net.Http" />
+    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.Security.Cryptography.Algorithms" />
+    <Reference Include="System.Security.Cryptography.Encoding" />
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Web" />
-    <Reference Include="System.XML, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
       <HintPath>..\7dtd-binaries\UnityEngine.dll</HintPath>
@@ -321,6 +340,14 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Fody.6.0.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.0.0\build\Fody.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Fody.6.0.0\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.6.0.0\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

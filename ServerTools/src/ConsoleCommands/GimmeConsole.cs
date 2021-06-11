@@ -68,28 +68,40 @@ namespace ServerTools
                 {
                     if (_params[1].ToLower().Equals("all"))
                     {
-                        for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+                        if (PersistentContainer.Instance.Players.SteamIDs.Count > 0)
                         {
-                            string _id = PersistentContainer.Instance.Players.SteamIDs[i];
-                            PersistentPlayer p = PersistentContainer.Instance.Players[_id];
+                            for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
                             {
-                                PersistentContainer.Instance.Players[_id].LastGimme = DateTime.Now.AddYears(-1);
+                                string _id = PersistentContainer.Instance.Players.SteamIDs[i];
+                                PersistentPlayer p = PersistentContainer.Instance.Players[_id];
+                                {
+                                    PersistentContainer.Instance.Players[_id].LastGimme = DateTime.Now.AddYears(-1);
+                                }
                             }
-                        }
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] Gimme delay reset for all players.");
-                    }
-                    else
-                    {
-                        PersistentPlayer p = PersistentContainer.Instance.Players[_params[1]];
-                        if (p != null)
-                        {
-                            PersistentContainer.Instance.Players[_params[1]].LastGimme = DateTime.Now.AddYears(-1);
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gimme delay reset for {0}.", _params[1]));
+                            PersistentContainer.DataChange = true;
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] Gimme delay reset for all players.");
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not reset player. Invalid Id {0}.", _params[1]));
-                            return;
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] No players to reset.");
+                        }
+                    }
+                    else
+                    {
+                        if (PersistentContainer.Instance != null)
+                        {
+                            PersistentPlayer p = PersistentContainer.Instance.Players[_params[1]];
+                            if (p != null)
+                            {
+                                PersistentContainer.Instance.Players[_params[1]].LastGimme = DateTime.Now.AddYears(-1);
+                                PersistentContainer.DataChange = true;
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gimme delay reset for {0}.", _params[1]));
+                            }
+                            else
+                            {
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not reset player. Invalid Id {0}.", _params[1]));
+                                return;
+                            }
                         }
                     }
                 }

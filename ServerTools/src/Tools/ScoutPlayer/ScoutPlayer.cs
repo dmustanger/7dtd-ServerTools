@@ -105,6 +105,7 @@ namespace ServerTools
                     if (distanceSq <= 200f * 200f)
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastScout = DateTime.Now;
+                        PersistentContainer.DataChange = true;
                         int _distance = (int)distanceSq;
                         Phrases.Dict.TryGetValue(833, out string _phrase833);
                         _phrase833 = _phrase833.Replace("{Value}", _distance.ToString());
@@ -114,6 +115,7 @@ namespace ServerTools
                 }
             }
             PersistentContainer.Instance.Players[_cInfo.playerId].LastScout = DateTime.Now;
+            PersistentContainer.DataChange = true;
             Phrases.Dict.TryGetValue(834, out string _phrase834);
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase834 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }

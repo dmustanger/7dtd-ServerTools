@@ -75,10 +75,9 @@ namespace ServerTools
         private int sessionTime;
         private bool startingItems;
         private int totalTimePlayed;
-        private List<ItemValue> vault;
         private int voteWeekCount;
         private Dictionary<string, string> waypoints;
-        private string wP;
+        private string webPass;
         private DateTime zoneDeathTime;
 
         public Dictionary<int, ItemDataSerializable> Auction
@@ -861,18 +860,6 @@ namespace ServerTools
             }
         }
 
-        public List<ItemValue> Vault
-        {
-            get
-            {
-                return vault;
-            }
-            set
-            {
-                vault = value;
-            }
-        }
-
         public int VoteWeekCount
         {
             get
@@ -921,15 +908,15 @@ namespace ServerTools
             }
         }
 
-        public string WP
+        public string WebPass
         {
             get
             {
-                return wP;
+                return webPass;
             }
             set
             {
-                wP = value;
+                webPass = value;
             }
         }
 

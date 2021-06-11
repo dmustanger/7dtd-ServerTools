@@ -13,36 +13,30 @@ namespace ServerTools
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
         public static string Command24 = "gimme", Command25 = "gimmie", Zombie_Id = "4,9,11";
         private const string file = "Gimme.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
-        private static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static System.Random random = new System.Random();
+        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
+        private static readonly Dictionary<string, string> Dict1 = new Dictionary<string, string>();
+        private static readonly FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static readonly System.Random Random = new System.Random();
         private static bool updateConfig = false;
 
-        private static List<string> list
+        private static List<string> List
         {
             get { return new List<string>(Dict.Keys); }
         }
 
         public static void Load()
         {
-            if (IsEnabled && !IsRunning)
-            {
-                LoadXml();
-                InitFileWatcher();
-            }
+            LoadXml();
+            InitFileWatcher();
         }
 
         public static void Unload()
         {
-            if (!IsEnabled && IsRunning)
-            {
-                Dict.Clear();
-                Dict1.Clear();
-                fileWatcher.Dispose();
-                IsRunning = false;
-            }
+            Dict.Clear();
+            Dict1.Clear();
+            fileWatcher.Dispose();
+            IsRunning = false;
         }
 
         public static void LoadXml()
@@ -181,8 +175,7 @@ namespace ServerTools
                 {
                     foreach (KeyValuePair<string, int[]> kvp in Dict)
                     {
-                        string _name;
-                        if (Dict1.TryGetValue(kvp.Key, out _name))
+                        if (Dict1.TryGetValue(kvp.Key, out string _name))
                         {
                             sw.WriteLine(string.Format("        <Item Name=\"{0}\" SecondaryName=\"{1}\" MinCount=\"{2}\" MaxCount=\"{3}\" MinQuality=\"{4}\" MaxQuality=\"{5}\" />", kvp.Key, _name, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
                         }
@@ -273,8 +266,7 @@ namespace ServerTools
                 {
                     if (ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                     {
-                        DateTime _dt;
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                         if (DateTime.Now < _dt)
                         {
                             int _delay = Delay_Between_Uses / 2;
@@ -337,7 +329,7 @@ namespace ServerTools
         {
             if (Zombies)
             {
-                int itemOrEntity = random.Next(1, 9);
+                int itemOrEntity = Random.Next(1, 9);
                 if (itemOrEntity != 4)
                 {
                     RandomItem(_cInfo);
@@ -357,25 +349,24 @@ namespace ServerTools
         {
             try
             {
-                string _randomItem = list.RandomObject();
+                string _randomItem = List.RandomObject();
                 ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_randomItem, false).type, false);
-                int[] _itemData;
-                if (Dict.TryGetValue(_randomItem, out _itemData))
+                if (Dict.TryGetValue(_randomItem, out int[] _itemData))
                 {
                     int _count = 0;
                     if (_itemData[0] > _itemData[1])
                     {
-                        _count = random.Next(_itemData[1], _itemData[0] + 1);
+                        _count = Random.Next(_itemData[1], _itemData[0] + 1);
                     }
                     else
                     {
-                        _count = random.Next(_itemData[0], _itemData[1] + 1);
+                        _count = Random.Next(_itemData[0], _itemData[1] + 1);
                     }
                     if (_itemValue.HasQuality && _itemData[2] > 0 && _itemData[3] >= _itemData[2])
                     {
-                        _itemValue.Quality = random.Next(_itemData[2], _itemData[3] + 1);
+                        _itemValue.Quality = Random.Next(_itemData[2], _itemData[3] + 1);
                     }
-                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                    EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                     {
                         entityClass = EntityClass.FromString("item"),
                         id = EntityFactory.nextEntityID++,
@@ -393,6 +384,7 @@ namespace ServerTools
                         Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                     }
                     PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                    PersistentContainer.DataChange = true;
                     Phrases.Dict.TryGetValue(22, out string _phrase22);
                     _phrase22 = _phrase22.Replace("{ItemCount}", _count.ToString());
                     Dict1.TryGetValue(_randomItem, out string _name);
@@ -420,7 +412,7 @@ namespace ServerTools
                 if (Zombie_Id.Contains(","))
                 {
                     string[] _zombieIds = Zombie_Id.Split(',');
-                    int _count = random.Next(1, _zombieIds.Length + 1);
+                    int _count = Random.Next(1, _zombieIds.Length + 1);
                     string _zId = _zombieIds[_count];
                     if (int.TryParse(_zId, out int _zombieId))
                     {
@@ -431,6 +423,7 @@ namespace ServerTools
                             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                         }
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                        PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue(24, out string _phrase24);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase24 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -450,6 +443,7 @@ namespace ServerTools
                             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                         }
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                        PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue(24, out string _phrase24);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase24 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }

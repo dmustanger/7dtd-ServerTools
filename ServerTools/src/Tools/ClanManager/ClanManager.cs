@@ -70,6 +70,7 @@ namespace ServerTools
                                     Clans.Add(_id, p.ClanName);
                                 }
                                 ClanMember.Add(_id);
+                                PersistentContainer.DataChange = true;
                             }
                         }
                     }
@@ -125,6 +126,7 @@ namespace ServerTools
                                 PersistentContainer.Instance.Players[_cInfo.playerId].ClanName = _clanName;
                                 PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner = true;
                                 PersistentContainer.Instance.Players[_cInfo.playerId].ClanOfficer = true;
+                                PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue(74, out string _phrase74);
                                 _phrase74 = _phrase74.Replace("{ClanName}", _clan.ToString());
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase74 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -180,6 +182,7 @@ namespace ServerTools
                             }
                         }
                     }
+                    PersistentContainer.DataChange = true;
                     ClanMember.Remove(_cInfo.playerId);
                     Clans.Remove(_cInfo.playerId);
                     Phrases.Dict.TryGetValue(76, out string _phrase76);
@@ -226,6 +229,7 @@ namespace ServerTools
                                     }
                                 }
                             }
+                            PersistentContainer.DataChange = true;
                             Clans[_cInfo.playerId] = _clanName;
                             Phrases.Dict.TryGetValue(100, out string _phrase100);
                             _phrase100 = _phrase100.Replace("{ClanName}", _clanName);
@@ -294,6 +298,7 @@ namespace ServerTools
                             {
                                 string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
                                 PersistentContainer.Instance.Players[_newMember.playerId].ClanInvite = _clanName;
+                                PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue(81, out string _phrase81);
                                 _phrase81 = _phrase81.Replace("{ClanName}", _clanName);
                                 _phrase81 = _phrase81.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
@@ -333,6 +338,7 @@ namespace ServerTools
                         ClanMember.Add(_cInfo.playerId);
                         PersistentContainer.Instance.Players[_cInfo.playerId].ClanInvite = "";
                         PersistentContainer.Instance.Players[_cInfo.playerId].ClanName = _clanInvite;
+                        PersistentContainer.DataChange = true;
                         for (int i = 0; i < ClanMember.Count; i++)
                         {
                             string _clanMember = ClanMember[i];
@@ -373,6 +379,7 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[_request.Key].ClanInvite = "";
                         PersistentContainer.Instance.Players[_request.Key].ClanName = _clanName;
                         PersistentContainer.Instance.Players[_cInfo.playerId].ClanRequestToJoin = _clanRequests;
+                        PersistentContainer.DataChange = true;
                         for (int i = 0; i < ClanMember.Count; i++)
                         {
                             string _clanMember = ClanMember[i];
@@ -425,6 +432,7 @@ namespace ServerTools
                     else
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].ClanInvite = "";
+                        PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue(86, out string _phrase86);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase86 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         for (int i = 0; i < ClanMember.Count; i++)
@@ -452,6 +460,7 @@ namespace ServerTools
                         KeyValuePair<string, string> _request = _clanRequests.First();
                         _clanRequests.Remove(_request.Key);
                         PersistentContainer.Instance.Players[_cInfo.playerId].ClanRequestToJoin = _clanRequests;
+                        PersistentContainer.DataChange = true;
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "Removed the request to join the group by player " + _request.Value + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         if (_clanRequests.Count > 0)
                         {
@@ -521,6 +530,7 @@ namespace ServerTools
                                 ClanMember.Remove(_PlayertoRemove.playerId);
                                 PersistentContainer.Instance.Players[_PlayertoRemove.playerId].ClanName = "";
                                 PersistentContainer.Instance.Players[_PlayertoRemove.playerId].ClanOfficer = false;
+                                PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue(90, out string _phrase90);
                                 _phrase90 = _phrase90.Replace("{PlayerName}", _PlayertoRemove.playerName);
                                 _phrase90 = _phrase90.Replace("{ClanName}", _clanName);
@@ -594,6 +604,7 @@ namespace ServerTools
                             else
                             {
                                 PersistentContainer.Instance.Players[_playertoPromote.playerId].ClanOfficer = true;
+                                PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue(93, out string _phrase93);
                                 _phrase93 = _phrase93.Replace("{PlayerName}", _playerName);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase93 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -649,6 +660,7 @@ namespace ServerTools
                             else
                             {
                                 PersistentContainer.Instance.Players[_membertoDemote.playerId].ClanOfficer = false;
+                                PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue(95, out string _phrase95);
                                 _phrase95 = _phrase95.Replace("{PlayerName}", _playerName);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase95 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -685,6 +697,7 @@ namespace ServerTools
                     {
                         ClanMember.Remove(_cInfo.playerId);
                         PersistentContainer.Instance.Players[_cInfo.playerId].ClanName = "";
+                        PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue(91, out string _phrase91);
                         _phrase91 = _phrase91.Replace("{ClanName}", _clanName);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase91 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -730,6 +743,7 @@ namespace ServerTools
                             {
                                 _clanRequests.Add(_cInfo.playerId, _cInfo.playerName);
                                 PersistentContainer.Instance.Players[_clan.Key].ClanRequestToJoin = _clanRequests;
+                                PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue(110, out string _phrase110);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase110 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clan.Key);

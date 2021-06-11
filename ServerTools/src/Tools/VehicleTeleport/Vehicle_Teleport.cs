@@ -182,6 +182,7 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].GyroId = _vehicleId;
                 }
+                PersistentContainer.DataChange = true;
                 Phrases.Dict.TryGetValue(492, out string _phrase492);
                 _phrase492 = _phrase492.Replace("{Vehicle}", _vehicleName);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase492 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -256,6 +257,7 @@ namespace ServerTools
                                     {
                                         PersistentContainer.Instance.Players[_cInfo.playerId].LastGyro = DateTime.Now;
                                     }
+                                    PersistentContainer.DataChange = true;
                                     Phrases.Dict.TryGetValue(493, out string _phrase493);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase493 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return;

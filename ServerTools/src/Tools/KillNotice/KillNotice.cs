@@ -7,7 +7,7 @@ namespace ServerTools
 {
     class KillNotice
     {
-        public static bool IsEnabled = false, IsRunning = false, Show_Level = false, Show_Damage = false;
+        public static bool IsEnabled = false, IsRunning = false, PvP = false, Zombie_Kills = false, Show_Level = false, Show_Damage = false;
         private const string file = "KillNotice.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();
@@ -70,12 +70,12 @@ namespace ServerTools
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("Name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring weapons entry because of missing Name attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring weapons entry in KillNotice.xml because of missing Name attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("NewName"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring weapons entry because of missing NewName attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring weapons entry in KillNotice.xml because of missing NewName attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         string _name = _line.GetAttribute("Name");

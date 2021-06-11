@@ -4,19 +4,25 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-namespace ServerTools.AntiCheat
+namespace ServerTools
 {
-    class CredentialCheck
+    //10.0.0.0 to 10.255.255.255
 
+    //172.16.0.0 to 172.31.255.255
+
+    //192.168.0.0 to 192.168.255.255
+
+
+    class CredentialCheck
     {
         public static bool IsEnabled = false, IsRunning = false, Family_Share = false, Bad_Id = false, No_Internal = false;
         public static int Admin_Level = 0;
         private const string file = "FamilyShareAccount.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
+        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static readonly string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
         public static SortedDictionary<string, string> OmittedPlayers = new SortedDictionary<string, string>();
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static readonly FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -133,62 +139,64 @@ namespace ServerTools.AntiCheat
         {
             if (_cInfo != null)
             {
-                if (!OmittedPlayers.ContainsKey(_cInfo.playerId))
+                if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level)
                 {
-                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level)
+                    if (Family_Share && !OmittedPlayers.ContainsKey(_cInfo.playerId))
                     {
-                        if (Family_Share)
+                        if (_cInfo.ownerId != _cInfo.playerId)
                         {
-                            if (_cInfo.ownerId != _cInfo.playerId)
+                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using a family share account. Purchase the game or contact an administrator for permission to join this server\"", _cInfo.playerId), null);
+                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                             {
-                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using a family share account. Purchase the game or contact an administrator for permission to join this server\"", _cInfo.playerId), (ClientInfo)null);
-                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
-                                {
-                                    sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with a family share account", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
-                                    sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
-                                }
-                                return false;
+                                sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with a family share account", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
+                                sw.WriteLine();
+                                sw.Flush();
+                                sw.Close();
                             }
+                            return false;
                         }
-                        if (Bad_Id)
+                    }
+                    if (Bad_Id)
+                    {
+                        if (_cInfo.ownerId.Length != 17 || !_cInfo.ownerId.StartsWith("7656119") || _cInfo.playerId.Length != 17 || !_cInfo.playerId.StartsWith("7656119"))
                         {
-                            if (_cInfo.ownerId.Length != 17 || !_cInfo.ownerId.StartsWith("7656119") || _cInfo.playerId.Length != 17 || !_cInfo.playerId.StartsWith("7656119"))
+                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using an invalid Id\"", _cInfo.playerId), null);
+                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                             {
-                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using an invalid Id\"", _cInfo.playerId), (ClientInfo)null);
-                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
-                                {
-                                    sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an invalid Id", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
-                                    sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
-                                }
-                                return false;
+                                sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an invalid Id", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
+                                sw.WriteLine();
+                                sw.Flush();
+                                sw.Close();
                             }
+                            return false;
                         }
-                        if (No_Internal)
+                    }
+                    if (No_Internal)
+                    {
+                        long _ipInteger = PersistentOperations.ConvertIPToLong(_cInfo.ip);
+                        long.TryParse("10.0.0.0", out long _rangeStart1);
+                        long.TryParse("10.255.255.255", out long _rangeEnd1);
+                        long.TryParse("172.16.0.0", out long _rangeStart2);
+                        long.TryParse("172.31.255.255", out long _rangeEnd2);
+                        long.TryParse("192.168.0.0", out long _rangeStart3);
+                        long.TryParse("192.168.255.255", out long _rangeEnd3);
+                        if ((_ipInteger >= _rangeStart1 && _ipInteger <= _rangeEnd1) || (_ipInteger >= _rangeStart2 && _ipInteger <= _rangeEnd2) || (_ipInteger >= _rangeStart3 && _ipInteger <= _rangeEnd3))
                         {
-                            string IP = _cInfo.ip;
-                            if (IP.StartsWith("192.168"))
+                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using an internal IP address\"", _cInfo.playerId), null);
+                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
                             {
-                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using an invalid IP\"", _cInfo.playerId), (ClientInfo)null);
-                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
-                                {
-                                    sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an invalid IP", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
-                                    sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
-                                }
-                                return false;
+                                sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an internal IP address", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
+                                sw.WriteLine();
+                                sw.Flush();
+                                sw.Close();
+                                sw.Dispose();
                             }
+                            return false;
                         }
                     }
                 }
             }
             return true;
         }
-
-
     }
 }

@@ -53,6 +53,7 @@ namespace ServerTools
                     int z = (int)_position.z;
                     string _sposition = x + "," + y + "," + z;
                     PersistentContainer.Instance.Players[_cInfo.playerId].EventReturnPosition = _sposition;
+                    PersistentContainer.DataChange = true;
                     Phrases.Dict.TryGetValue(774, out string _phrase774);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase774 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -89,11 +90,13 @@ namespace ServerTools
                             else
                             {
                                 PersistentContainer.Instance.Players[_eventClientInfo.playerId].EventSpawn = true;
+                                PersistentContainer.DataChange = true;
                             }
                         }
                         else
                         {
                             PersistentContainer.Instance.Players[_eventClientInfo.playerId].EventSpawn = true;
+                            PersistentContainer.DataChange = true;
                         }
                     }
                     int _eventTime = Time * 60;

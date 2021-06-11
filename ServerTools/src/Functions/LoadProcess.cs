@@ -81,7 +81,7 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in creation of directory {0}. Error = {1}", API.ConfigPath, e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in creation of directory @ {0}. Error = {1}", API.ConfigPath, e.Message));
             }
 
             try
@@ -163,188 +163,21 @@ namespace ServerTools
             }
             try
             {
-                Log.Out(string.Format("[SERVERTOOLS] Deleting old logs"));
-                int _daysBeforeDeleted = Days_Before_Log_Delete * -1;
-                string[] files = Directory.GetFiles(API.ConfigPath + "/Logs/DetectionLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/BountyLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/AuctionLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/BankLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/DupeLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/PlayerLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/PlayerReports");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/PollLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/ChatLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/ChatCommandLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/DamageLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/BlockLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/ConsoleCommandLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/WebPanelLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
-                files = Directory.GetFiles(API.ConfigPath + "/Logs/OutputLogs");
-                if (files != null && files.Length > 0)
-                {
-                    foreach (string file in files)
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                        {
-                            fi.Delete();
-                        }
-                    }
-                }
+                DeleteFiles("DetectionLogs");
+                DeleteFiles("BountyLogs");
+                DeleteFiles("AuctionLogs");
+                DeleteFiles("BankLogs");
+                DeleteFiles("DupeLogs");
+                DeleteFiles("PlayerLogs");
+                DeleteFiles("PlayerReports");
+                DeleteFiles("PollLogs");
+                DeleteFiles("ChatLogs");
+                DeleteFiles("ChatCommandLogs");
+                DeleteFiles("DamageLogs");
+                DeleteFiles("BlockLogs");
+                DeleteFiles("ConsoleCommandLogs");
+                DeleteFiles("WebPanelLogs");
+                DeleteFiles("OutputLogs");
                 Log.Out(string.Format("[SERVERTOOLS] Log clean up completed"));
             }
             catch (XmlException e)
@@ -353,15 +186,31 @@ namespace ServerTools
             }
 
             PersistentOperations.EntityIdList();
+            CountryBan.BuildList();
 
             RestartVote.Cycle = true;
 
             Track.Cleanup();
 
-            CountryBan.FileCheck();
-
             Timers.LogAlert();
-            Timers.LoadAlert(); 
+            Timers.LoadAlert();
+            Timers.PersistentDataSave();
+        }
+
+        private static void DeleteFiles(string name)
+        {
+            string[] files = Directory.GetFiles(API.ConfigPath + "/Logs/" + name);
+            if (files != null && files.Length > 0)
+            {
+                foreach (string file in files)
+                {
+                    FileInfo fi = new FileInfo(file);
+                    if (fi.CreationTime < DateTime.Now.AddDays(Days_Before_Log_Delete * -1))
+                    {
+                        fi.Delete();
+                    }
+                }
+            }
         }
     }
 }

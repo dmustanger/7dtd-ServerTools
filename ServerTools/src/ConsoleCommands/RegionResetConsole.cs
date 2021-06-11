@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools] - Sends a message to all online admins.";
+            return "[ServerTools] - Resets a region on server shutdown";
         }
 
         public override string GetHelp()

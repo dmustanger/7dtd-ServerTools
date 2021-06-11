@@ -13,8 +13,9 @@ namespace ServerTools
         public static int Admin_Level = 0, Total_Items = 1, Tax;
         public static string Command71 = "auction", Command72 = "auction cancel", Command73 = "auction buy", Command74 = "auction sell";
         public static Dictionary<int, string> AuctionItems = new Dictionary<int, string>();
-        private static string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy")), filepath = string.Format("{0}/Logs/AuctionLogs/{1}", API.ConfigPath, file);
-        private static System.Random random = new System.Random();
+        private static readonly string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static readonly string filepath = string.Format("{0}/Logs/AuctionLogs/{1}", API.ConfigPath, file);
+        private static readonly System.Random Random = new System.Random();
 
         public static void CheckBox(ClientInfo _cInfo, string _price)
         {
@@ -33,6 +34,7 @@ namespace ServerTools
                                 {
                                     Dictionary<int, ItemDataSerializable> _auctionItems = new Dictionary<int, ItemDataSerializable>();
                                     PersistentContainer.Instance.Players[_cInfo.playerId].Auction = _auctionItems;
+                                    PersistentContainer.DataChange = true;
                                 }
                                 else if (PersistentContainer.Instance.Players[_cInfo.playerId].Auction.Count < Total_Items)
                                 {
@@ -88,8 +90,10 @@ namespace ServerTools
                                                                                 _serializedItemStack.useTimes = _item.itemValue.UseTimes;
                                                                                 _serializedItemStack.quality = _item.itemValue.Quality;
                                                                             }
-                                                                            Dictionary<int, ItemDataSerializable> _auctionItems = new Dictionary<int, ItemDataSerializable>();
-                                                                            _auctionItems.Add(_id, _serializedItemStack);
+                                                                            Dictionary<int, ItemDataSerializable> _auctionItems = new Dictionary<int, ItemDataSerializable>
+                                                                            {
+                                                                                { _id, _serializedItemStack }
+                                                                            };
                                                                             PersistentContainer.Instance.Players[_cInfo.playerId].Auction = _auctionItems;
                                                                         }
                                                                         if (PersistentContainer.Instance.AuctionPrices != null && PersistentContainer.Instance.AuctionPrices.Count > 0)
@@ -98,11 +102,14 @@ namespace ServerTools
                                                                         }
                                                                         else
                                                                         {
-                                                                            Dictionary<int, int> _auctionPrices = new Dictionary<int, int>();
-                                                                            _auctionPrices.Add(_id, _auctionPrice);
+                                                                            Dictionary<int, int> _auctionPrices = new Dictionary<int, int>
+                                                                            {
+                                                                                { _id, _auctionPrice }
+                                                                            };
                                                                             PersistentContainer.Instance.AuctionPrices = _auctionPrices;
                                                                         }
                                                                         _tile.SetModified();
+                                                                        PersistentContainer.DataChange = true;
                                                                         using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                                         {
                                                                             sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4}, {5} quality, {6} percent durability for {7} {8}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _item.count, _item.itemValue.ItemClass.GetItemName(), _item.itemValue.Quality, _item.itemValue.UseTimes / _item.itemValue.MaxUseTimes * 100, _price, Wallet.Coin_Name));
@@ -271,6 +278,7 @@ namespace ServerTools
                         AuctionItems.Remove(_purchase);
                         PersistentContainer.Instance.Players[_steamId].Auction.Remove(_purchase);
                         PersistentContainer.Instance.AuctionPrices.Remove(_purchase);
+                        PersistentContainer.DataChange = true;
                         Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
                         float _fee = _price * ((float)Tax / 100);
                         int _adjustedPrice = _price - (int)_fee;
@@ -332,6 +340,7 @@ namespace ServerTools
                                 AuctionItems.Remove(_id);
                                 PersistentContainer.Instance.Players[_cInfo.playerId].Auction.Remove(_id);
                                 PersistentContainer.Instance.AuctionPrices.Remove(_id);
+                                PersistentContainer.DataChange = true;
                                 using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: {1} {2} has cancelled their auction entry # {3}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _cInfo.entityId));
@@ -375,16 +384,16 @@ namespace ServerTools
 
         private static int GenerateAuctionId()
         {
-            int _id = random.Next(1000, 5001);
+            int _id = Random.Next(1000, 5001);
             if (AuctionItems.ContainsKey(_id))
             {
-                _id = random.Next(1000, 5001);
+                _id = Random.Next(1000, 5001);
                 if (AuctionItems.ContainsKey(_id))
                 {
-                    _id = random.Next(1000, 5001);
+                    _id = Random.Next(1000, 5001);
                     if (AuctionItems.ContainsKey(_id))
                     {
-                        _id = random.Next(1000, 5001);
+                        _id = Random.Next(1000, 5001);
                         return 0;
                     }
                     else

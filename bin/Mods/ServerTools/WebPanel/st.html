@@ -4,7 +4,17 @@
 	<head>
 		<link href="CSS/styles.css" rel="stylesheet" type="text/css" />
 		<meta charset="utf-8" />
-		<script src="JS/scripts.js"></script>
+		<script type="text/javascript" src="JS/scripts.js"></script>
+		<script type="text/javascript" src="JS/core.js"></script>
+		<script type="text/javascript" src="JS/cipher-core.js"></script>
+		<script type="text/javascript" src="JS/crypto-js.js"></script>
+		<script type="text/javascript" src="JS/evpkdf.js"></script>
+		<script type="text/javascript" src="JS/aes.js"></script>
+		<script type="text/javascript" src="JS/enc-base64.js"></script>
+		<script type="text/javascript" src="JS/lib-typedarrays.js"></script>
+		<script type="text/javascript" src="JS/enc-utf16.js"></script>
+		<script type="text/javascript" src="JS/md5.js"></script>
+		<script type="text/javascript" src="JS/pad-pkcs7.js"></script>
 		<title>ServerTools</title>
 	</head>
 	<body onload="FreshPage()" id="GeneralBody">
@@ -52,16 +62,14 @@
 		<section id="ContentContainer">
 			<div id="DisclaimerContainer" oncontextmenu="return false" onclick="Accept()">
 				<h2 id="Disclaimer">Disclaimer</h2>
-				<h3 id="DisclaimerInfo">Access and further use of this panel will log all client actions</h3>
-				<h3 id="DisclaimerInfo">Misuse of this management tool will result in the banning of your IP address</h3>
+				<h3 id="DisclaimerInfo">Access and further use of this panel will log client actions</h3>
 				<h3 id="DisclaimerInfo">Get your client id and password from a admin to login the first time</h3>
 				<h3 id="DisclaimerInfo">DO NOT set your password to anything used for other secure logins. This includes but is not limited to email, steam and other websites</h3>
-				<h3 id="DisclaimerInfo">Your password must be 6-20 characters long</h3>
 				<h3 id="DisclaimerInfo">Lost password can not be recovered. Contact an administrator for reset</h3>
 				<h3 id="DisclaimerInfo">Do not share your password with other clients or friends</h3>
 				<h3 id="DisclaimerInfo">Reloading the panel will reset your security credentials, requiring you to sign in again</h3>
 				<h3 id="DisclaimerInfo">Reloading too often without logging in will put you in timeout for 10 minutes</h3>
-				<h3 id="DisclaimerInfo">Encryption is automatic and built in to the panel</h3>
+				<h3 id="DisclaimerInfo">AES encryption protocols are active</h3>
 			</div>
 			<div id="ConfigContainer">
 				<input type="checkbox" id="AcceptSave">

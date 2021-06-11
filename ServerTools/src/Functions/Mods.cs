@@ -1,6 +1,4 @@
-﻿using ServerTools.AntiCheat;
-using ServerTools.Website;
-
+﻿
 namespace ServerTools
 {
     public class Mods
@@ -9,6 +7,11 @@ namespace ServerTools
 
         public static void Load()
         {
+            PersistentOperations.SetInstallFolder();
+            if (!DiscordBot.TokenLoaded)
+            {
+                DiscordBot.BuildToken();
+            }
             if (!RunTimePatch.Applied)
             {
                 RunTimePatch.PatchAll();
@@ -223,24 +226,13 @@ namespace ServerTools
             {
                 Jail.JailList();
             }
-            if (WebPanel.IsEnabled)
+            if (WebAPI.IsEnabled && !WebAPI.IsRunning)
             {
-                if (!WebPanel.DirFound)
-                {
-                    WebPanel.SetDirectory();
-                }
-                if (string.IsNullOrEmpty(WebPanel.ExternalIp))
-                {
-                    WebPanel.SetExternalIP();
-                }
-                if (!WebPanel.IsRunning && WebPanel.DirFound && !string.IsNullOrEmpty(WebPanel.ExternalIp))
-                {
-                    WebPanel.Load();
-                }
+                WebAPI.Load();
             }
-            else if (WebPanel.IsRunning)
+            else if (WebAPI.IsRunning && !WebAPI.IsEnabled)
             {
-                WebPanel.Unload();
+                WebAPI.Unload();
             }
         }
     }

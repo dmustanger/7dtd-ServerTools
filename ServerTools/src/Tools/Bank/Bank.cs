@@ -13,9 +13,9 @@ namespace ServerTools
         public static string Ingame_Coin = "casinoCoin", Command94 = "bank", Command95 = "deposit", Command96 = "withdraw", Command97 = "wallet deposit", Command98 = "wallet withdraw", Command99 = "transfer";
         public static int Deposit_Fee_Percent = 5;
         public static Dictionary<string, int> TransferId = new Dictionary<string, int>();
-        private static string file = string.Format("Bank_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string filepath = string.Format("{0}/Logs/BankLogs/{1}", API.ConfigPath, file);
-        private static System.Random random = new System.Random();
+        private static readonly string file = string.Format("Bank_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static readonly string filepath = string.Format("{0}/Logs/BankLogs/{1}", API.ConfigPath, file);
+        private static readonly System.Random random = new System.Random();
 
         public static int GetCurrentBank(string _steamid)
         {
@@ -23,6 +23,7 @@ namespace ServerTools
             if (_bankValue < 0)
             {
                 PersistentContainer.Instance.Players[_steamid].Bank = 0;
+                PersistentContainer.DataChange = true;
                 _bankValue = 0;
             }
             return _bankValue;
@@ -32,6 +33,7 @@ namespace ServerTools
         {
             int _bankValue = PersistentContainer.Instance.Players[_steamid].Bank;
             PersistentContainer.Instance.Players[_steamid].Bank = _bankValue + _amount;
+            PersistentContainer.DataChange = true;
         }
 
         public static void SubtractCoinsFromBank(string _steamid, int _amount)
@@ -42,11 +44,13 @@ namespace ServerTools
                 _newValue = 0;
             }
             PersistentContainer.Instance.Players[_steamid].Bank = _newValue;
+            PersistentContainer.DataChange = true;
         }
 
         public static void ClearBank(ClientInfo _cInfo)
         {
             PersistentContainer.Instance.Players[_cInfo.playerId].Bank = 0;
+            PersistentContainer.DataChange = true;
         }
 
         public static void CurrentBankAndId(ClientInfo _cInfo)
@@ -56,8 +60,7 @@ namespace ServerTools
                 int _bank = GetCurrentBank(_cInfo.playerId);
                 if (TransferId.ContainsKey(_cInfo.playerId))
                 {
-                    int _id;
-                    TransferId.TryGetValue(_cInfo.playerId, out _id);
+                    TransferId.TryGetValue(_cInfo.playerId, out int _id);
                     Phrases.Dict.TryGetValue(641, out string _phrase641);
                     _phrase641 = _phrase641.Replace("{Value}", _bank.ToString());
                     _phrase641 = _phrase641.Replace("{Id}", _id.ToString());
@@ -331,8 +334,7 @@ namespace ServerTools
                         ItemValue _itemValue = ItemClass.GetItem(Ingame_Coin, false);
                         if (_itemValue != null)
                         {
-                            int _value;
-                            if (int.TryParse(_amount, out _value))
+                            if (int.TryParse(_amount, out int _value))
                             {
                                 int _bank = GetCurrentBank(_cInfo.playerId);
                                 if (_bank >= _value)
@@ -419,8 +421,7 @@ namespace ServerTools
         {
             try
             {
-                int _value;
-                if (int.TryParse(_amount, out _value))
+                if (int.TryParse(_amount, out int _value))
                 {
                     int _walletTotal = Wallet.GetCurrentCoins(_cInfo.playerId);
                     if (_walletTotal >= _value)
@@ -484,8 +485,7 @@ namespace ServerTools
         {
             try
             {
-                int _value;
-                if (int.TryParse(_amount, out _value))
+                if (int.TryParse(_amount, out int _value))
                 {
                     int _bank = GetCurrentBank(_cInfo.playerId);
                     if (_bank >= _value)

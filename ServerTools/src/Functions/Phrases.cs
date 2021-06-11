@@ -9,8 +9,8 @@ namespace ServerTools
     {
         public static SortedDictionary<int, string> Dict = new SortedDictionary<int, string>();
         private const string file = "Phrases.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -63,8 +63,7 @@ namespace ServerTools
                             continue;
                         }
                         string _phrase = _line.GetAttribute("Phrase");
-                        int _id;
-                        if (!int.TryParse(_line.GetAttribute("Id"), out _id))
+                        if (!int.TryParse(_line.GetAttribute("Id"), out int _id))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Phrases entry because of invalid (non-numeric) value for 'Id' attribute: {0}", subChild.OuterXml));
                             continue;
@@ -774,8 +773,7 @@ namespace ServerTools
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- *********************** Watchlist ********************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                string _phrase140;
-                if (!Dict.TryGetValue(140, out _phrase140))
+                if (!Dict.TryGetValue(140, out string _phrase140))
                 {
                     _phrase140 = "{PlayerName} is on the watchlist for {Reason}.";
                 }
@@ -2799,12 +2797,12 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Phrase Id=\"544\" Phrase=\"{0}\" />", _phrase544));
                 if (!Dict.TryGetValue(545, out string _phrase545))
                 {
-                    _phrase545 = "";
+                    _phrase545 = "{PlayerName}{Level} has been ate by {ZombieName}. Nom nom nom";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"545\" Phrase=\"{0}\" />", _phrase545));
                 if (!Dict.TryGetValue(546, out string _phrase546))
                 {
-                    _phrase546 = "";
+                    _phrase546 = "{PlayerName} has been ate by {ZombieName}. Nom nom nom";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"546\" Phrase=\"{0}\" />", _phrase546));
                 if (!Dict.TryGetValue(547, out string _phrase547))

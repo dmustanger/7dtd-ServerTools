@@ -526,7 +526,7 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 61)
                     {
-                        DeathSpot.Command61 = kvp.Value[1];
+                        Died.Command61 = kvp.Value[1];
                     }
                     else if (kvp.Key == 62)
                     {
