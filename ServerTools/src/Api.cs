@@ -564,6 +564,8 @@ namespace ServerTools
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _request.Value + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
+                //If they are in a clan, check if we should get them into a party
+                ClanManager.checkClanParty(_cInfo, _player);
             }
             if (Event.Open && Event.Teams.ContainsKey(_cInfo.playerId) && PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn)
             {
