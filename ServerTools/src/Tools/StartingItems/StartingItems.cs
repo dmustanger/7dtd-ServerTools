@@ -12,10 +12,10 @@ namespace ServerTools
     class StartingItems
     {
         public static bool IsEnabled = false, IsRunning = false;
-        private const string file = "StartingItems.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         public static Dictionary<string, int[]> ItemList = new Dictionary<string, int[]>();
-        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private const string file = "StartingItems.xml";
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool UpdateConfig = false;
 
         public static void Load()
@@ -35,14 +35,14 @@ namespace ServerTools
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(filePath);
+                xmlDoc.Load(FilePath);
             }
             catch (XmlException e)
             {
@@ -92,25 +92,52 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry because of invalid (non-numeric) value for 'Quality' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
+                        
+                        string _item = _line.GetAttribute("Name");
+                        if (_item == "WalletCoin")
+                        {
+                            if (Wallet.IsEnabled)
+                            {
+                                if (_count < 1)
+                                {
+                                    _count = 1;
+                                }
+                            }
+                            else
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry skipped because the Wallet tool is not enabled: {0}", subChild.OuterXml));
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            ItemValue _itemValue = ItemClass.GetItem(_item, false);
+                            if (_itemValue.type == ItemValue.None.type)
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry skipped. Item not found: {0}", _item));
+                                continue;
+                            }
+                            if (_count > _itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                _count = _itemValue.ItemClass.Stacknumber.Value;
+                                Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} was set above the max stack value. It has been reduced to the maximum of {1}", _item, _count));
+                            }
+                            if (ItemList.ContainsKey(_item))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} has a duplicate entry", _item));
+                            }
+                            if (_count > _itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                _count = _itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (_count < 1)
+                            {
+                                _count = 1;
+                            }
+                        }
                         if (_quality < 1)
                         {
                             _quality = 1;
-                        }
-                        string _item = _line.GetAttribute("Name");
-                        ItemValue _itemValue = ItemClass.GetItem(_item, false);
-                        if (_itemValue.type == ItemValue.None.type)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry skipped. Item not found: {0}", _item));
-                            continue;
-                        }
-                        if (_count > _itemValue.ItemClass.Stacknumber.Value)
-                        {
-                            _count = _itemValue.ItemClass.Stacknumber.Value;
-                            Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} was set above the max stack value. It has been reduced to the maximum of {1}", _item, _count));
-                        }
-                        if (ItemList.ContainsKey(_item))
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} has a duplicate entry", _item));
                         }
                         int[] _c = new int[] { _count, _quality };
                         ItemList.Add(_item, _c);
@@ -127,7 +154,7 @@ namespace ServerTools
         private static void UpdateXml()
         {
             FileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
+            using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<StartingItems>");
@@ -165,7 +192,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
@@ -198,37 +225,51 @@ namespace ServerTools
                 if (ItemList.Count > 0)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems = true;
-                    PersistentContainer.DataChange = true;
                     World world = GameManager.Instance.World;
                     List<string> _itemList = ItemList.Keys.ToList();
                     for (int i = 0; i < _itemList.Count; i++)
                     {
                         string _item = _itemList[i];
-                        int[] _itemData;
-                        if (ItemList.TryGetValue(_item, out _itemData))
+                        if (ItemList.TryGetValue(_item, out int[] _itemData))
                         {
-                            ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
-                            if (_itemValue.HasQuality && _itemData[1] > 0)
+                            if (_item == "WalletCoin")
                             {
-                                _itemValue.Quality = _itemData[1];
+                                if (Wallet.IsEnabled)
+                                {
+                                    Wallet.AddCoinsToWallet(_cInfo.playerId, _itemData[0]);
+                                }
+                                else
+                                {
+                                    Phrases.Dict.TryGetValue(312, out string _phrase312);
+                                    Log.Out(string.Format("[SERVERTOOLS] {0}", _phrase312));
+                                }
                             }
-                            EntityItem entityItem = new EntityItem();
-                            entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                            else
                             {
-                                entityClass = EntityClass.FromString("item"),
-                                id = EntityFactory.nextEntityID++,
-                                itemStack = new ItemStack(_itemValue, _itemData[0]),
-                                pos = world.Players.dict[_cInfo.entityId].position,
-                                rot = new Vector3(20f, 0f, 20f),
-                                lifetime = 60f,
-                                belongsPlayerId = _cInfo.entityId
-                            });
-                            world.SpawnEntityInWorld(entityItem);
-                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                            world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                            Thread.Sleep(TimeSpan.FromSeconds(1));
+                                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
+                                if (_itemValue.HasQuality)
+                                {
+                                    _itemValue.Quality = _itemData[1];
+                                }
+                                EntityItem entityItem = new EntityItem();
+                                entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                                {
+                                    entityClass = EntityClass.FromString("item"),
+                                    id = EntityFactory.nextEntityID++,
+                                    itemStack = new ItemStack(_itemValue, _itemData[0]),
+                                    pos = world.Players.dict[_cInfo.entityId].position,
+                                    rot = new Vector3(20f, 0f, 20f),
+                                    lifetime = 60f,
+                                    belongsPlayerId = _cInfo.entityId
+                                });
+                                world.SpawnEntityInWorld(entityItem);
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                Thread.Sleep(TimeSpan.FromSeconds(1));
+                            }
                         }
                     }
+                    PersistentContainer.DataChange = true;
                     Log.Out(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
                     Phrases.Dict.TryGetValue(841, out string _phrase841);

@@ -12,15 +12,14 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, RandomListRunning = false, Reward_Entity = false;
         public static int Reward_Count = 1, Delay_Between_Uses = 24, Entity_Id = 73, Weekly_Votes = 5;
-        public static string Command46 = "reward";
-        public static string Your_Voting_Site = ("https://7daystodie-servers.com/server/12345"), API_Key = ("xxxxxxxx");
+        public static string Your_Voting_Site = "https://7daystodie-servers.com/server/12345", API_Key = "xxxxxxxx", Command46 = "reward";
         private const string file = "VoteReward.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static Dictionary<string, int[]> dict = new Dictionary<string, int[]>();
-        private static List<string> list = new List<string>();
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static bool updateConfig = false, posFound = false;
-        private static System.Random rnd = new System.Random();
+        private static bool UpdateConfig = false, PosFound = false;
+        private static Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
+        private static List<string> Items = new List<string>();
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static readonly System.Random Rnd = new System.Random();
 
         public static void Load()
         {
@@ -33,20 +32,20 @@ namespace ServerTools
 
         public static void Unload()
         {
-            fileWatcher.Dispose();
+            FileWatcher.Dispose();
             IsRunning = false;
         }
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(filePath);
+                xmlDoc.Load(FilePath);
             }
             catch (XmlException e)
             {
@@ -58,8 +57,8 @@ namespace ServerTools
             {
                 if (childNode.Name == "Rewards")
                 {
-                    dict.Clear();
-                    list.Clear();
+                    Dict.Clear();
+                    Items.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -97,78 +96,104 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing QualityMax attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("CountMin"), out int _countMin))
+                        if (!int.TryParse(_line.GetAttribute("CountMin"), out int _minCount))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'CountMin' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("CountMax"), out int _countMax))
+                        if (!int.TryParse(_line.GetAttribute("CountMax"), out int _maxCount))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'CountMax' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("QualityMin"), out int _qualityMin))
+                        if (!int.TryParse(_line.GetAttribute("QualityMin"), out int _minQuality))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'QualityMin' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("QualityMax"), out int _qualityMax))
+                        if (!int.TryParse(_line.GetAttribute("QualityMax"), out int _maxQuality))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'QualityMax' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (_qualityMax > 6)
-                        {
-                            _qualityMax = 6;
-                        }
                         string _item = _line.GetAttribute("ItemOrBlock");
-                        ItemClass _class;
-                        Block _block;
-                        if (int.TryParse(_item, out int _id))
+                        if (_item == "WalletCoin")
                         {
-                            _class = ItemClass.GetForId(_id);
-                            _block = Block.GetBlockByName(_item, true);
-                        }
-                        else
-                        {
-                            _class = ItemClass.GetItemClass(_item, true);
-                            _block = Block.GetBlockByName(_item, true);
-                        }
-                        if (_class == null && _block == null)
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Unable to find item or block {0}", _item));
-                            continue;
-                        }
-                        else
-                        {
-                            if (!dict.ContainsKey(_item))
+                            if (Wallet.IsEnabled)
                             {
-                                int[] _c = new int[] { _countMin, _countMax, _qualityMin, _qualityMax };
-                                dict.Add(_item, _c);
+                                if (_minCount < 1)
+                                {
+                                    _minCount = 1;
+                                }
                             }
+                            else
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] VoteReward.xml entry skipped because the Wallet tool is not enabled: {0}", subChild.OuterXml));
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            ItemValue _itemValue = ItemClass.GetItem(_item, false);
+                            if (_itemValue.type == ItemValue.None.type)
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Vote Reward entry skipped. Item not found: {0}", _item));
+                                continue;
+                            }
+                            if (_minCount > _itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                _minCount = _itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (_minCount < 1)
+                            {
+                                _minCount = 1;
+                            }
+                            if (_maxCount > _itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                _maxCount = _itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (_maxCount < 1)
+                            {
+                                _maxCount = 1;
+                            }
+                        }
+                        if (_minQuality < 1)
+                        {
+                            _minQuality = 1;
+                        }
+                        if (_maxQuality < 1)
+                        {
+                            _maxQuality = 1;
+                        }
+                        if (!Dict.ContainsKey(_item))
+                        {
+                            int[] _c = new int[] { _minCount, _maxCount, _minQuality, _maxQuality };
+                            Dict.Add(_item, _c);
                         }
                     }
                 }
             }
-            list = new List<string>(dict.Keys);
-            if (updateConfig)
+            Items = new List<string>(Dict.Keys);
+            if (UpdateConfig)
             {
-                updateConfig = false;
+                UpdateConfig = false;
                 UpdateXml();
             }
         }
 
         private static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
+            FileWatcher.EnableRaisingEvents = false;
+            using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                sw.WriteLine("<!--  Items that do not require a quality should be set to 0 or 1 for min and max  -->");
+                sw.WriteLine("<!--  WalletCoin can be used as the item name  -->");
                 sw.WriteLine("<VoteRewards>");
                 sw.WriteLine("    <Rewards>");
-                if (dict.Count > 0)
+                if (Dict.Count > 0)
                 {
-                    foreach (KeyValuePair<string, int[]> kvp in dict)
+                    foreach (KeyValuePair<string, int[]> kvp in Dict)
                     {
                         sw.WriteLine(string.Format("        <Reward ItemOrBlock=\"{0}\" CountMin=\"{1}\" CountMax=\"{2}\" QualityMin=\"{3}\" QualityMax=\"{4}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
                     }
@@ -188,21 +213,21 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
@@ -211,7 +236,7 @@ namespace ServerTools
 
         public static void Check(ClientInfo _cInfo)
         {
-            if (!Reward_Entity && dict.Count == 0)
+            if (!Reward_Entity && Dict.Count == 0)
             {
                 Log.Out(string.Format("[SERVERTOOLS] No items available for reward. Check for an error in the VoteReward.xml file."));
                 Phrases.Dict.TryGetValue(302, out string _phrase302);
@@ -251,7 +276,6 @@ namespace ServerTools
             {
                 ServicePointManager.ServerCertificateValidationCallback += (send, certificate, chain, sslPolicyErrors) => { return true; };
                 var VoteUrl = string.Format("https://7daystodie-servers.com/api/?object=votes&element=claim&key={0}&steamid={1}", Uri.EscapeUriString(API_Key), Uri.EscapeUriString(_cInfo.playerId));
-                //var VoteUrl = string.Format("https://7daystodie-servers.com/api/?object=votes&element=claim&key={0}&username={1}", Uri.EscapeUriString(API_Key), Uri.EscapeUriString(_cInfo.playerName));
                 using (var NewVote = new WebClient())
                 {
                     string VoteResult = NewVote.DownloadString(VoteUrl);
@@ -334,7 +358,6 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
                             PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                            PersistentContainer.DataChange = true;
                             ItemOrBlockRandom(_cInfo);
                             Phrases.Dict.TryGetValue(305, out string _phrase305);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase305 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -342,7 +365,6 @@ namespace ServerTools
                         else
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = _voteWeekCount + 1;
-                            PersistentContainer.DataChange = true;
                             int _remainingVotes = Weekly_Votes - _voteWeekCount + 1;
                             DateTime _date2 = _lastVoteWeek.AddDays(7);
                             Phrases.Dict.TryGetValue(306, out string _phrase306);
@@ -357,7 +379,6 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                        PersistentContainer.DataChange = true;
                         int _remainingVotes = Weekly_Votes - 1;
                         DateTime _date2 = DateTime.Now.AddDays(7);
                         Phrases.Dict.TryGetValue(306, out string _phrase306);
@@ -367,6 +388,7 @@ namespace ServerTools
                         _phrase306 = _phrase306.Replace("{Date2}", _date2.ToString());
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase306 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
+                    PersistentContainer.DataChange = true;
                 }
                 Phrases.Dict.TryGetValue(307, out string _phrase307);
                 _phrase307 = _phrase307.Replace("{Value}", Delay_Between_Uses.ToString());
@@ -381,25 +403,28 @@ namespace ServerTools
 
         private static void ItemOrBlockRandom(ClientInfo _cInfo)
         {
-            string _item = list.RandomObject();
-            if (dict.TryGetValue(_item, out int[] _values))
+            string _randomItem = Items.RandomObject();
+            if (Dict.TryGetValue(_randomItem, out int[] _itemData))
             {
-                int _count = 1;
-                if (_values[0] != _values[1] && _values[1] > _values[0])
+                int _count = Rnd.Next(_itemData[0], _itemData[1] + 1);
+                if (_randomItem == "WalletCoin")
                 {
-                    _count = rnd.Next(_values[0], _values[1] + 1);
+                    if (Wallet.IsEnabled)
+                    {
+                        Wallet.AddCoinsToWallet(_cInfo.playerId, _count);
+                    }
+                    else
+                    {
+                        Phrases.Dict.TryGetValue(312, out string _phrase312);
+                        Log.Out(string.Format("[SERVERTOOLS] {0}", _phrase312));
+                    }
                 }
-                else if (_values[0] > 0)
+                else
                 {
-                    _count = _values[0];
+                    int _quality = Rnd.Next(_itemData[2], _itemData[3] + 1);
+                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_randomItem).type, _quality, _quality, false, null, 1);
+                    Give(_cInfo, _itemValue, _count);
                 }
-                int quality = rnd.Next(_values[2], _values[3] + 1);
-                if (quality < 1)
-                {
-                    quality = 1;
-                }
-                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item).type, quality, quality, false, null, 1);
-                Give(_cInfo, _itemValue, _count);
             }
         }
 
@@ -441,7 +466,6 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                        PersistentContainer.DataChange = true;
                         Entityspawn(_cInfo);
                         Phrases.Dict.TryGetValue(305, out string _phrase305);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase305 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -449,7 +473,6 @@ namespace ServerTools
                     else
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = _voteWeekCount + 1;
-                        PersistentContainer.DataChange = true;
                         int _remainingVotes = Weekly_Votes - _voteWeekCount + 1;
                         DateTime _date2 = _lastVoteWeek.AddDays(7);
                         Phrases.Dict.TryGetValue(306, out string _phrase306);
@@ -464,7 +487,6 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
                     PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                    PersistentContainer.DataChange = true;
                     int _remainingVotes = Weekly_Votes - 1;
                     DateTime _date2 = DateTime.Now.AddDays(7);
                     Phrases.Dict.TryGetValue(306, out string _phrase306);
@@ -474,6 +496,7 @@ namespace ServerTools
                     _phrase306 = _phrase306.Replace("{Date2}", _date2.ToString());
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase306 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
+                PersistentContainer.DataChange = true;
             }
             Phrases.Dict.TryGetValue(307, out string _phrase307);
             _phrase307 = _phrase307.Replace("{Value}", Delay_Between_Uses.ToString());
@@ -489,14 +512,13 @@ namespace ServerTools
                 float x = pos.x;
                 float y = pos.y;
                 float z = pos.z;
-                int _x, _y, _z;
-                posFound = true;
-                posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(new Vector3((float)x, (float)y, (float)z), 15, out _x, out _y, out _z, new Vector3((float)5, (float)5, (float)5), true);
-                if (!posFound)
+                PosFound = true;
+                PosFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(new Vector3((float)x, (float)y, (float)z), 15, out int _x, out int _y, out int _z, new Vector3((float)5, (float)5, (float)5), true);
+                if (!PosFound)
                 {
-                    posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(new Vector3((float)x, (float)y, (float)z), 15, out _x, out _y, out _z, new Vector3((float)5 + 5, (float)5 + 10, (float)5 + 5), true);
+                    PosFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(new Vector3((float)x, (float)y, (float)z), 15, out _x, out _y, out _z, new Vector3((float)5 + 5, (float)5 + 10, (float)5 + 5), true);
                 }
-                if (posFound)
+                if (PosFound)
                 {
                     int counter = 1;
                     Dictionary<int, EntityClass>.KeyCollection entityTypesCollection = EntityClass.list.Dict.Keys;

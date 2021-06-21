@@ -1,5 +1,18 @@
 ﻿CHANGELOG
 
+19.5.2
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added variable option to reward players with Wallet currency using
+WalletCoin as the item name. Works for Gimme, Vote_Reward and
+Starting_Items. Wallet must be enabled
+Added phrase 25,312,841
+Added two missing symbols to the Discord_Bot webhook that prevents
+in game chat commands from showing in discord chat
+Fixed file tree for Linux users that was preventing them from using the 
+Web_Panel and Country_Ban tools
+
 19.5.1
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

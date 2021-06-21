@@ -14,11 +14,11 @@ namespace ServerTools
         public static string Command24 = "gimme", Command25 = "gimmie", Zombie_Id = "4,9,11";
         private const string file = "Gimme.xml";
         private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static readonly Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
-        private static readonly Dictionary<string, string> Dict1 = new Dictionary<string, string>();
-        private static readonly FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static readonly System.Random Random = new System.Random();
-        private static bool updateConfig = false;
+        private static Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
+        private static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
+        private static readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static readonly System.Random Rnd = new System.Random();
+        private static bool UpdateConfig = false;
 
         private static List<string> List
         {
@@ -35,7 +35,7 @@ namespace ServerTools
         {
             Dict.Clear();
             Dict1.Clear();
-            fileWatcher.Dispose();
+            FileWatcher.Dispose();
             IsRunning = false;
         }
 
@@ -81,7 +81,7 @@ namespace ServerTools
                         }
                         if (!_line.HasAttribute("SecondaryName"))
                         {
-                            updateConfig = true;
+                            UpdateConfig = true;
                         }
                         if (!_line.HasAttribute("MinCount"))
                         {
@@ -124,11 +124,45 @@ namespace ServerTools
                             continue;
                         }
                         string _item = _line.GetAttribute("Name");
-                        ItemValue _itemValue = ItemClass.GetItem(_item, false);
-                        if (_itemValue.type == ItemValue.None.type)
+                        if (_item == "WalletCoin")
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Gimme entry skipped. Item not found: {0}", _item));
-                            continue;
+                            if (Wallet.IsEnabled)
+                            {
+                                if (_minCount < 1)
+                                {
+                                    _minCount = 1;
+                                }
+                            }
+                            else
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Gimme.xml entry skipped because the Wallet tool is not enabled: {0}", subChild.OuterXml));
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            ItemValue _itemValue = ItemClass.GetItem(_item, false);
+                            if (_itemValue.type == ItemValue.None.type)
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Gimme entry skipped. Item not found: {0}", _item));
+                                continue;
+                            }
+                            if (_minCount > _itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                _minCount = _itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (_minCount < 1)
+                            {
+                                _minCount = 1;
+                            }
+                            if (_maxCount > _itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                _maxCount = _itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (_maxCount < 1)
+                            {
+                                _maxCount = 1;
+                            }
                         }
                         string _secondaryname;
                         if (_line.HasAttribute("SecondaryName"))
@@ -139,13 +173,13 @@ namespace ServerTools
                         {
                             _secondaryname = _item;
                         }
-                        if (_minCount > _itemValue.ItemClass.Stacknumber.Value)
+                        if (_minQuality == 0)
                         {
-                            _minCount = _itemValue.ItemClass.Stacknumber.Value;
+                            _minQuality = 1;
                         }
-                        if (_maxCount > _itemValue.ItemClass.Stacknumber.Value)
+                        if (_maxQuality < 1)
                         {
-                            _maxCount = _itemValue.ItemClass.Stacknumber.Value;
+                            _maxQuality = 1;
                         }
                         if (!Dict.ContainsKey(_item))
                         {
@@ -156,19 +190,22 @@ namespace ServerTools
                     }
                 }
             }
-            if (updateConfig)
+            if (UpdateConfig)
             {
-                updateConfig = false;
+                UpdateConfig = false;
                 UpdateXml();
             }
         }
 
         private static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
+            FileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                sw.WriteLine("<!--  Secondary name is what will show in chat instead of the item name  -->");
+                sw.WriteLine("<!--  Items that do not require a quality should be set to 0 or 1 for min and max  -->");
+                sw.WriteLine("<!--  WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option  -->");
                 sw.WriteLine("<Gimme>");
                 sw.WriteLine("    <Items>");
                 if (Dict.Count > 0)
@@ -214,15 +251,15 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
@@ -329,7 +366,7 @@ namespace ServerTools
         {
             if (Zombies)
             {
-                int itemOrEntity = Random.Next(1, 9);
+                int itemOrEntity = Rnd.Next(1, 9);
                 if (itemOrEntity != 4)
                 {
                     RandomItem(_cInfo);
@@ -350,53 +387,95 @@ namespace ServerTools
             try
             {
                 string _randomItem = List.RandomObject();
-                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_randomItem, false).type, false);
                 if (Dict.TryGetValue(_randomItem, out int[] _itemData))
                 {
-                    int _count = 0;
-                    if (_itemData[0] > _itemData[1])
+                    if (_randomItem == "WalletCoin")
                     {
-                        _count = Random.Next(_itemData[1], _itemData[0] + 1);
+                        if (Wallet.IsEnabled)
+                        {
+                            int _count = 1;
+                            if (_itemData[0] > _itemData[1])
+                            {
+                                _count = Rnd.Next(_itemData[1], _itemData[0] + 1);
+                            }
+                            else
+                            {
+                                _count = Rnd.Next(_itemData[0], _itemData[1] + 1);
+                            }
+                            if (Command_Cost >= 1)
+                            {
+                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                            }
+                            Wallet.AddCoinsToWallet(_cInfo.playerId, _count);
+                            PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                            PersistentContainer.DataChange = true;
+                            Phrases.Dict.TryGetValue(22, out string _phrase22);
+                            _phrase22 = _phrase22.Replace("{ItemCount}", _count.ToString());
+                            Dict1.TryGetValue(_randomItem, out string _name);
+                            if (_name != "")
+                            {
+                                _phrase22 = _phrase22.Replace("{ItemName}", _name);
+                            }
+                            else
+                            {
+                                _phrase22 = _phrase22.Replace("{ItemName}", Wallet.Coin_Name);
+                            }
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase22 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
+                        else
+                        {
+                            Phrases.Dict.TryGetValue(25, out string _phrase25);
+                            Log.Out(string.Format("[SERVERTOOLS] {0}", _phrase25));
+                        }
                     }
                     else
                     {
-                        _count = Random.Next(_itemData[0], _itemData[1] + 1);
+                        ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_randomItem, false).type, false);
+                        int _count = 0;
+                        if (_itemData[0] > _itemData[1])
+                        {
+                            _count = Rnd.Next(_itemData[1], _itemData[0] + 1);
+                        }
+                        else
+                        {
+                            _count = Rnd.Next(_itemData[0], _itemData[1] + 1);
+                        }
+                        if (_itemValue.HasQuality && _itemData[2] > 0 && _itemData[3] >= _itemData[2])
+                        {
+                            _itemValue.Quality = Rnd.Next(_itemData[2], _itemData[3] + 1);
+                        }
+                        EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                        {
+                            entityClass = EntityClass.FromString("item"),
+                            id = EntityFactory.nextEntityID++,
+                            itemStack = new ItemStack(_itemValue, _count),
+                            pos = GameManager.Instance.World.Players.dict[_cInfo.entityId].position,
+                            rot = new Vector3(20f, 0f, 20f),
+                            lifetime = 60f,
+                            belongsPlayerId = _cInfo.entityId
+                        });
+                        GameManager.Instance.World.SpawnEntityInWorld(entityItem);
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                        GameManager.Instance.World.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                        if (Wallet.IsEnabled && Command_Cost >= 1)
+                        {
+                            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                        }
+                        PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                        PersistentContainer.DataChange = true;
+                        Phrases.Dict.TryGetValue(22, out string _phrase22);
+                        _phrase22 = _phrase22.Replace("{ItemCount}", _count.ToString());
+                        Dict1.TryGetValue(_randomItem, out string _name);
+                        if (_name != "")
+                        {
+                            _phrase22 = _phrase22.Replace("{ItemName}", _name);
+                        }
+                        else
+                        {
+                            _phrase22 = _phrase22.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                        }
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase22 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    if (_itemValue.HasQuality && _itemData[2] > 0 && _itemData[3] >= _itemData[2])
-                    {
-                        _itemValue.Quality = Random.Next(_itemData[2], _itemData[3] + 1);
-                    }
-                    EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                    {
-                        entityClass = EntityClass.FromString("item"),
-                        id = EntityFactory.nextEntityID++,
-                        itemStack = new ItemStack(_itemValue, _count),
-                        pos = GameManager.Instance.World.Players.dict[_cInfo.entityId].position,
-                        rot = new Vector3(20f, 0f, 20f),
-                        lifetime = 60f,
-                        belongsPlayerId = _cInfo.entityId
-                    });
-                    GameManager.Instance.World.SpawnEntityInWorld(entityItem);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                    GameManager.Instance.World.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                    {
-                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
-                    }
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
-                    PersistentContainer.DataChange = true;
-                    Phrases.Dict.TryGetValue(22, out string _phrase22);
-                    _phrase22 = _phrase22.Replace("{ItemCount}", _count.ToString());
-                    Dict1.TryGetValue(_randomItem, out string _name);
-                    if (_name != "")
-                    {
-                        _phrase22 = _phrase22.Replace("{ItemName}", _name);
-                    }
-                    else
-                    {
-                        _phrase22 = _phrase22.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                    }
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase22 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -412,7 +491,7 @@ namespace ServerTools
                 if (Zombie_Id.Contains(","))
                 {
                     string[] _zombieIds = Zombie_Id.Split(',');
-                    int _count = Random.Next(1, _zombieIds.Length + 1);
+                    int _count = Rnd.Next(1, _zombieIds.Length + 1);
                     string _zId = _zombieIds[_count];
                     if (int.TryParse(_zId, out int _zombieId))
                     {

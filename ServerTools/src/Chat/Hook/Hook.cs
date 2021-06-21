@@ -178,7 +178,7 @@ namespace ServerTools
                                     return false;
                                 }
                             }
-                            if (ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.playerId))
+                            else if (ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.playerId))
                             {
                                 if (!string.IsNullOrEmpty(PersistentContainer.Instance.Players[_cInfo.playerId].ClanName))
                                 {
@@ -196,7 +196,7 @@ namespace ServerTools
                                     return false;
                                 }
                             }
-                            if (Normal_Player_Color_Prefix)
+                            else if (Normal_Player_Color_Prefix)
                             {
                                 string _npp = Normal_Player_Prefix, _npnc = Normal_Player_Name_Color, _nppc = Normal_Player_Prefix_Color;
                                 if (Normal_Player_Prefix == "")

@@ -227,7 +227,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Phrase Id=\"24\" Phrase=\"{0}\" />", _phrase24));
                 if (!Dict.TryGetValue(25, out string _phrase25))
                 {
-                    _phrase25 = "";
+                    _phrase25 = "Unable to give WalletCoin for Gimme reward because Wallet is not enabled.";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"25\" Phrase=\"{0}\" />", _phrase25));
                 if (!Dict.TryGetValue(26, out string _phrase26))
@@ -1575,7 +1575,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Phrase Id=\"311\" Phrase=\"{0}\" />", _phrase311));
                 if (!Dict.TryGetValue(312, out string _phrase312))
                 {
-                    _phrase312 = "";
+                    _phrase312 = "Unable to give WalletCoin for Vote reward because Wallet is not enabled.";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"312\" Phrase=\"{0}\" />", _phrase312));
                 if (!Dict.TryGetValue(313, out string _phrase313))
@@ -4348,7 +4348,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Phrase Id=\"841\" Phrase=\"{0}\" />", _phrase841));
                 if (!Dict.TryGetValue(842, out string _phrase842))
                 {
-                    _phrase842 = "";
+                    _phrase842 = "Unable to give WalletCoin for Starting items because Wallet is not enabled.";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"842\" Phrase=\"{0}\" />", _phrase842));
                 if (!Dict.TryGetValue(843, out string _phrase843))

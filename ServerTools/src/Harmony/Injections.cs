@@ -139,37 +139,39 @@ public static class Injections
         try
         {
             if (DiscordBot.IsEnabled && DiscordBot.Webhook != "" && DiscordBot.Webhook.StartsWith("https://discord.com/api/webhooks") &&
-                _chatType == EChatType.Global && !string.IsNullOrWhiteSpace(_mainName) && !_mainName.Contains(DiscordBot.Prefix) &&
-                !PersistentOperations.InvalidPrefix.Contains(_msg[0]))
+                _chatType == EChatType.Global && !string.IsNullOrWhiteSpace(_mainName) && !_mainName.Contains(DiscordBot.Prefix))
             {
                 if (_msg.Contains("[") && _msg.Contains("]"))
                 {
                     _msg = Regex.Replace(_msg, @"\[.*?\]", "");
                 }
-                if (_mainName.Contains("[") && _mainName.Contains("]"))
+                if (!PersistentOperations.InvalidPrefix.Contains(_msg[0]))
                 {
-                    _mainName = Regex.Replace(_mainName, @"\[.*?\]", "");
-                }
-                if (_cInfo != null)
-                {
-                    if (DiscordBot.LastEntry != _msg)
+                    if (_mainName.Contains("[") && _mainName.Contains("]"))
                     {
-                        DiscordBot.LastPlayer = _cInfo.playerId;
+                        _mainName = Regex.Replace(_mainName, @"\[.*?\]", "");
+                    }
+                    if (_cInfo != null)
+                    {
+                        if (DiscordBot.LastEntry != _msg)
+                        {
+                            DiscordBot.LastPlayer = _cInfo.playerId;
+                            DiscordBot.LastEntry = _msg;
+                            DiscordBot.Queue.Add("[Game] **" + _mainName + "**  " + DiscordBot.LastEntry);
+                        }
+                        else if (DiscordBot.LastPlayer != _cInfo.playerId)
+                        {
+                            DiscordBot.LastPlayer = _cInfo.playerId;
+                            DiscordBot.LastEntry = _msg;
+                            DiscordBot.Queue.Add("[Game] **" + _mainName + "**  " + DiscordBot.LastEntry);
+                        }
+                    }
+                    else if (DiscordBot.LastEntry != _msg)
+                    {
+                        DiscordBot.LastPlayer = "-1";
                         DiscordBot.LastEntry = _msg;
                         DiscordBot.Queue.Add("[Game] **" + _mainName + "**  " + DiscordBot.LastEntry);
                     }
-                    else if (DiscordBot.LastPlayer != _cInfo.playerId)
-                    {
-                        DiscordBot.LastPlayer = _cInfo.playerId;
-                        DiscordBot.LastEntry = _msg;
-                        DiscordBot.Queue.Add("[Game] **" + _mainName + "**  " + DiscordBot.LastEntry);
-                    }
-                }
-                else if (DiscordBot.LastEntry != _msg)
-                {
-                    DiscordBot.LastPlayer = "-1";
-                    DiscordBot.LastEntry = _msg;
-                    DiscordBot.Queue.Add("[Game] **" + _mainName + "**  " + DiscordBot.LastEntry);
                 }
             }
         }

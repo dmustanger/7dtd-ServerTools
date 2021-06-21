@@ -15,7 +15,7 @@ namespace ServerTools
         public static Dictionary<int, int> PvEViolations = new Dictionary<int, int>();
         public static Dictionary<int, int> EntityId = new Dictionary<int, int>();
         public static readonly string AlphaNumSet = "jJkqQr9Kl3wXAbyYz0ZLmFpPRsMn5NoO6dDe1EfStaBc2CgGhH7iITu4U8vWxV";
-        public static readonly char[] InvalidPrefix = new char[] { '!', '@', '#', '$', '%', '&' };
+        public static readonly char[] InvalidPrefix = new char[] { '!', '@', '#', '$', '%', '&', '/', '\\' };
 
         public static void SetInstallFolder()
         {
@@ -46,7 +46,7 @@ namespace ServerTools
                                         {
                                             if (_subChildDirectories[k].Contains("WebPanel"))
                                             {
-                                                WebAPI.Directory = _subChildDirectories[k] + "\\";
+                                                WebAPI.Directory = _subChildDirectories[k] + "/";
                                                 return;
                                             }
                                         }
