@@ -105,7 +105,7 @@ namespace ServerTools
 
         private static void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)//Setting player view and profile
         {
-            
+
         }
 
         private static void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)//Spawning player
@@ -605,6 +605,8 @@ namespace ServerTools
                         }
                     }
                 }
+                //If they are in a clan, check if we should get them into a party
+                ClanManager.checkClanParty(_cInfo, _player);
                 if (Event.Open && Event.Teams.ContainsKey(_cInfo.playerId) && PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn)
                 {
                     Event.Spawn(_cInfo);

@@ -13,6 +13,7 @@ namespace ServerTools
         public static string Private_Chat_Color = "[00FF00]";
         public static List<string> ClanMember = new List<string>();
         public static Dictionary<string, string> Clans = new Dictionary<string, string>();
+        public static Dictionary<string, Party> ClanParties = new Dictionary<string, Party>();
 
         public static string GetClanList()
         {
@@ -353,6 +354,8 @@ namespace ServerTools
                                 }
                             }
                         }
+                        //Check if they need to be added to the party
+                        checkClanParty(_cInfo, GameManager.Instance.World.Players.dict[_cInfo.entityId]);
                     }
                 }
                 else
@@ -783,6 +786,116 @@ namespace ServerTools
         public static void DeclineClanRequest(ClientInfo _cInfo)
         {
 
+        }
+
+        public static void checkClanParty(ClientInfo _cInfo, EntityPlayer _player)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] ClanManager.checkClanParties for player: {0}", _player.GetDebugName()));
+            //First, check if there is a party for this clan already
+            string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
+            if (string.IsNullOrEmpty(_clanName))
+                //Clan-less, can't do anything for this player
+                return;
+
+            Party clanParty = null;
+            if(!ClanParties.TryGetValue(_clanName, out clanParty))
+            {
+                //No party. Check to see if at least one other clan member is online, and if they're more priveleged
+                List<int> otherPlayerIDs = new List<int>();
+                for (int i = 0; i < ClanMember.Count; i++)
+                {
+                    string _clanMember = ClanMember[i];
+                    string _clanNameOther = PersistentContainer.Instance.Players[_clanMember].ClanName;
+                    if (!string.IsNullOrEmpty(_clanNameOther) && _clanName == _clanNameOther)
+                    {
+                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clanMember);
+                        if (_cInfo2 != null)
+                        {
+                            //They're a member and online, add to the list!
+                            otherPlayerIDs.Add(_cInfo2.entityId);                            
+                        }
+                    }
+                }
+                //Did we find enough online from the clan?
+                if(otherPlayerIDs.Count > 1)
+                {
+                    //Enough to make a party!
+                    try
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] ClanManager.checkClanParties creating new party for {0} players.", otherPlayerIDs.Count));
+                        PartyManager.Current.CreateParty().AddPlayer(_player);
+                        clanParty = _player.Party;
+                        clanParty.PartyMemberRemoved += ClanParty_PartyMemberRemoved;
+                        //Invite everyone to the party
+                        foreach (int entityId in otherPlayerIDs)
+                        {
+                            EntityPlayer foundPlayer = GameManager.Instance.World.Players.dict[entityId];
+
+                            if (foundPlayer != null)
+                            {
+                                if (clanParty.AddPlayer(foundPlayer))
+                                {
+                                    Party.ServerHandleAcceptInvite(_player, foundPlayer);
+                                    Log.Out(string.Format("[SERVERTOOLS] ClanManager.checkClanParties Added player {0} to new party: {1}", foundPlayer.entityId, clanParty.PartyID));
+                                }
+                                else
+                                {
+                                    foundPlayer.HandleOnPartyJoined();
+                                    Log.Out(string.Format("[SERVERTOOLS] ClanManager.checkClanParties Did not add player to party? {0}", foundPlayer.entityId));
+                                }
+                            }
+                            else
+                                Log.Out(string.Format("[SERVERTOOLS] ClanManager.checkClanParties could not find player for entityId: {0}", entityId));
+                        }
+                    }
+                    catch (Exception e)
+                    {
+
+                        Log.Out(string.Format("[SERVERTOOLS] Error in ClanManager.checkClanParties creating new party: {0}", e.Message));
+                    }
+                    if (clanParty != null)
+                        ClanParties.Add(_clanName, clanParty);
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] ClanManager.checkClanParties Not enough clan online."));
+                    return;
+                }
+
+            }
+            if (clanParty != null)
+            {
+
+                Log.Out(string.Format("[SERVERTOOLS] ClanManager.checkClanParties party used: {0}", clanParty.PartyID));
+                //Check if they're already in the party
+                if (!clanParty.ContainsMember(_player) && clanParty.MemberList.Count < 8)
+                {
+                    clanParty.AddPlayer(_player);
+                    Party.ServerHandleAcceptInvite(clanParty.Leader, _player);
+                    Log.Out(string.Format("[SERVERTOOLS] ClanManager.checkClanParties Adding member to party: {0}", clanParty.PartyID));
+                } else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] ClanManager.checkClanParties Party full or already has player: {0}", clanParty.PartyID));
+                }
+            }
+            else
+            {
+
+                Log.Out(string.Format("[SERVERTOOLS] ClanManager.checkClanParties no new party or not enough clan online?"));
+            }
+
+        }
+
+        private static void ClanParty_PartyMemberRemoved(EntityPlayer player)
+        {
+
+            Log.Out(string.Format("[SERVERTOOLS] ClanManager.ClanParty_PartyMemberRemoved party {0} lost a member: {1} and there are {2} left.", player.Party?.PartyID ?? 0, player.entityId, player.Party.MemberList.Count));
+            if(player.Party?.MemberList.Count < 2)
+            {
+                //Party must be disbanding, remove it from our list
+                Log.Out(string.Format("[SERVERTOOLS] ClanManager.ClanParty_PartyMemberRemoved closing party {0}", player.Party.PartyID));
+                ClanParties.RemoveAll(x => x == player.Party);
+            }
         }
 
         public static string GetChatCommands(ClientInfo _cInfo)
