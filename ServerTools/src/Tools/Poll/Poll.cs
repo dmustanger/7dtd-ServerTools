@@ -8,7 +8,7 @@ namespace ServerTools
     class Poll
     {
         public static bool IsEnabled = false;
-        public static string Command91 = "poll yes", Command92 = "poll no", Command93 = "poll";
+        public static string Command_poll_yes = "poll yes", Command_poll_no = "poll no", Command_poll = "poll";
         public static string File = string.Format("PollLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         public static string Filepath = string.Format("{0}/Logs/PollLogs/{1}", API.ConfigPath, File);
 
@@ -28,9 +28,9 @@ namespace ServerTools
                     _phrase562 = _phrase562.Replace("{Message}", _pollData[2]);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase562 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     Phrases.Dict.TryGetValue(563, out string _phrase563);
-                    _phrase563 = _phrase563.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                    _phrase563 = _phrase563.Replace("{Command91}", Poll.Command91);
-                    _phrase563 = _phrase563.Replace("{Command92}", Poll.Command92);
+                    _phrase563 = _phrase563.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase563 = _phrase563.Replace("{Command_poll_yes}", Command_poll_yes);
+                    _phrase563 = _phrase563.Replace("{Command_poll_no}", Command_poll_no);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase563 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }

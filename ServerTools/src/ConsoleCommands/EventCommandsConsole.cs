@@ -128,7 +128,7 @@ namespace ServerTools
                             Event.Time = _time;
                             string _msg1 = "Event: {EventName}[-]";
                             string _msg2 = _setup[1] + "[-]";
-                            string _msg3 = "Type " + ChatHook.Chat_Command_Prefix1 + Event.Command100 + " if you want to join the event. You will return to where you first signed up when it completes.[-]";
+                            string _msg3 = "Type " + ChatHook.Chat_Command_Prefix1 + Event.Command_join + " if you want to join the event. You will return to where you first signed up when it completes.[-]";
                             _msg1 = _msg1.Replace("{EventName}", _setup[0]);
                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + _msg1, -1, Config.Server_Response_Name, EChatType.Global, null);
                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + _msg2, -1, Config.Server_Response_Name, EChatType.Global, null);

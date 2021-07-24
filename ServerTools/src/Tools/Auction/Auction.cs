@@ -11,7 +11,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, No_Admins = false;
         public static int Admin_Level = 0, Total_Items = 1, Tax;
-        public static string Command71 = "auction", Command72 = "auction cancel", Command73 = "auction buy", Command74 = "auction sell";
+        public static string Command_auction = "auction", Command_auction_cancel = "auction cancel", Command_auction_buy = "auction buy", Command_auction_sell = "auction sell";
         public static Dictionary<int, string> AuctionItems = new Dictionary<int, string>();
         private static readonly string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static readonly string filepath = string.Format("{0}/Logs/AuctionLogs/{1}", API.ConfigPath, file);
@@ -134,8 +134,8 @@ namespace ServerTools
                                 else
                                 {
                                     Phrases.Dict.TryGetValue(622, out string _phrase622);
-                                    _phrase622 = _phrase622.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                                    _phrase622 = _phrase622.Replace("{Command72}", Command72);
+                                    _phrase622 = _phrase622.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                    _phrase622 = _phrase622.Replace("{Command_auction_cancel}", Command_auction_cancel);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase622 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
@@ -243,8 +243,8 @@ namespace ServerTools
             else
             {
                 Phrases.Dict.TryGetValue(628, out string _phrase628);
-                _phrase628 = _phrase628.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase628 = _phrase628.Replace("{Command71}", Command71);
+                _phrase628 = _phrase628.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase628 = _phrase628.Replace("{Command_auction}", Command_auction);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase628 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }

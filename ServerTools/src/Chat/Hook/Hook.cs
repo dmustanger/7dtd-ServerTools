@@ -229,32 +229,33 @@ namespace ServerTools
                             {
                                 _message = _message.Replace(Chat_Command_Prefix2, "");
                             }
+                            string messageLowerCase = _message.ToLower();
                             if (Homes.IsEnabled)
                             {
-                                if (_message.ToLower() == Homes.Command1)
+                                if (messageLowerCase == Homes.Command_home)
                                 {
                                     Homes.List(_cInfo);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(Homes.Command2 + " "))
+                                else if (messageLowerCase.StartsWith(Homes.Command_fhome + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Homes.Command2 + " ", "");
+                                    _message = messageLowerCase.Replace(Homes.Command_fhome + " ", "");
                                     Homes.TeleDelay(_cInfo, _message, true);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(Homes.Command3 + " "))
+                                else if (messageLowerCase.StartsWith(Homes.Command_save + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Homes.Command3 + " ", "");
+                                    _message = messageLowerCase.Replace(Homes.Command_save + " ", "");
                                     Homes.SaveClaimCheck(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(Homes.Command4 + " "))
+                                else if (messageLowerCase.StartsWith(Homes.Command_delete + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Homes.Command4 + " ", "");
+                                    _message = messageLowerCase.Replace(Homes.Command_delete + " ", "");
                                     Homes.DelHome(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower() == Homes.Command5)
+                                else if (messageLowerCase == Homes.Command_go)
                                 {
                                     if (Homes.Invite.ContainsKey(_cInfo.entityId))
                                     {
@@ -262,45 +263,45 @@ namespace ServerTools
                                         return false;
                                     }
                                 }
-                                else if (_message.ToLower().StartsWith(Homes.Command6 + " "))
+                                else if (messageLowerCase.StartsWith(Homes.Command_set + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Homes.Command6 + " ", "");
+                                    _message = messageLowerCase.Replace(Homes.Command_set + " ", "");
                                     Homes.SaveClaimCheck(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(Homes.Command1 + " "))
+                                else if (messageLowerCase.StartsWith(Homes.Command_home + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Homes.Command1 + " ", "");
+                                    _message = messageLowerCase.Replace(Homes.Command_home + " ", "");
                                     Homes.TeleDelay(_cInfo, _message, false);
                                     return false;
                                 }
                             }
-                            if (Hardcore.IsEnabled && _message.ToLower() == Hardcore.Command11)
+                            if (Hardcore.IsEnabled && messageLowerCase == Hardcore.Command_top3)
                             {
                                 Hardcore.TopThree(_cInfo);
                                 return false;
                             }
-                            if (Hardcore.IsEnabled && _message.ToLower() == Hardcore.Command12)
+                            if (Hardcore.IsEnabled && messageLowerCase == Hardcore.Command_score)
                             {
                                 Hardcore.Score(_cInfo);
                                 return false;
                             }
-                            if (Hardcore.IsEnabled && Hardcore.Max_Extra_Lives > 0 && Wallet.IsEnabled && _message.ToLower() == Hardcore.Command101)
+                            if (Hardcore.IsEnabled && Hardcore.Max_Extra_Lives > 0 && Wallet.IsEnabled && messageLowerCase == Hardcore.Command_buy_life)
                             {
                                 Hardcore.BuyLife(_cInfo);
                                 return false;
                             }
-                            if (MuteVote.IsEnabled && Mute.IsEnabled && _message.ToLower().StartsWith(MuteVote.Command67))
+                            if (MuteVote.IsEnabled && Mute.IsEnabled && messageLowerCase.StartsWith(MuteVote.Command_mutevote))
                             {
                                 if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen)
                                 {
-                                    if (_message.ToLower() == MuteVote.Command67)
+                                    if (messageLowerCase == MuteVote.Command_mutevote)
                                     {
                                         MuteVote.List(_cInfo);
                                     }
                                     else
                                     {
-                                        _message = _message.ToLower().Replace(MuteVote.Command67 + " ", "");
+                                        _message = messageLowerCase.Replace(MuteVote.Command_mutevote + " ", "");
                                         {
                                             MuteVote.Vote(_cInfo, _message);
                                         }
@@ -313,22 +314,22 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            if (Mute.IsEnabled && _message.ToLower() == Mute.Command119)
+                            if (Mute.IsEnabled && messageLowerCase == Mute.Command_mutelist)
                             {
                                 Mute.List(_cInfo);
                                 return false;
                             }
-                            if (Mute.IsEnabled && _message.ToLower().StartsWith(Mute.Command13 + " "))
+                            if (Mute.IsEnabled && messageLowerCase.StartsWith(Mute.Command_mute + " "))
                             {
                                 Mute.Add(_cInfo, _message);
                                 return false;
                             }
-                            if (Mute.IsEnabled && _message.ToLower().StartsWith(Mute.Command14 + " "))
+                            if (Mute.IsEnabled && messageLowerCase.StartsWith(Mute.Command_unmute + " "))
                             {
                                 Mute.Remove(_cInfo, _message);
                                 return false;
                             }
-                            if (_message.ToLower() == CustomCommands.Command15)
+                            if (messageLowerCase == CustomCommands.Command_commands)
                             {
                                 CustomCommands.CommandList(_cInfo);
                                 if (CustomCommands.IsEnabled)
@@ -341,234 +342,226 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            if (Day7.IsEnabled && (_message.ToLower() == Day7.Command16 || _message.ToLower() == Day7.Command17))
+                            if (Day7.IsEnabled && (messageLowerCase == Day7.Command_day7 || messageLowerCase == Day7.Command_day))
                             {
                                 Day7.GetInfo(_cInfo);
                                 return false;
                             }
-                            if (Bloodmoon.IsEnabled && (_message.ToLower() == Bloodmoon.Command18 || _message.ToLower() == Bloodmoon.Command19))
+                            if (Bloodmoon.IsEnabled && (messageLowerCase == Bloodmoon.Command_bloodmoon || messageLowerCase == Bloodmoon.Command_bm))
                             {
                                 Bloodmoon.Exec(_cInfo);
                                 return false;
                             }
-                            if (Suicide.IsEnabled && (_message.ToLower() == Suicide.Command20 || _message.ToLower() == Suicide.Command21 || _message.ToLower() == Suicide.Command22 || _message.ToLower() == Suicide.Command23))
+                            if (Suicide.IsEnabled && (messageLowerCase == Suicide.Command_killme || messageLowerCase == Suicide.Command_wrist || messageLowerCase == Suicide.Command_hang || messageLowerCase == Suicide.Command_suicide))
                             {
                                 Suicide.Exec(_cInfo);
                                 return false;
                             }
-                            if (Gimme.IsEnabled && (_message.ToLower() == Gimme.Command24 || _message.ToLower() == Gimme.Command25))
+                            if (Gimme.IsEnabled && (messageLowerCase == Gimme.Command_gimme || messageLowerCase == Gimme.Command_gimmie))
                             {
                                 Gimme.Exec(_cInfo);
                                 return false;
                             }
-                            if (Jail.IsEnabled && (_message.ToLower() == Jail.Command26 || _message.ToLower().StartsWith(Jail.Command27) || _message.ToLower().StartsWith(Jail.Command28)))
+                            if (Jail.IsEnabled && (messageLowerCase == Jail.Command_set_jail || messageLowerCase.StartsWith(Jail.Command_jail) || messageLowerCase.StartsWith(Jail.Command_unjail)))
                             {
-                                if (_message.ToLower() == Jail.Command26)
+                                if (messageLowerCase == Jail.Command_set_jail)
                                 {
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _message, -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     Jail.SetJail(_cInfo);
                                 }
-                                else if (_message.ToLower().StartsWith(Jail.Command27))
+                                else if (messageLowerCase.StartsWith(Jail.Command_jail))
                                 {
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _message, -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     Jail.PutInJail(_cInfo, _message);
                                 }
-                                else if (_message.ToLower().StartsWith(Jail.Command28))
+                                else if (messageLowerCase.StartsWith(Jail.Command_unjail))
                                 {
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _message, -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     Jail.RemoveFromJail(_cInfo, _message);
                                 }
                                 return false;
                             }
-                            if (NewSpawnTele.IsEnabled && _message.ToLower() == NewSpawnTele.Command29)
+                            if (NewSpawnTele.IsEnabled && messageLowerCase == NewSpawnTele.Command_setspawn)
                             {
                                 NewSpawnTele.SetNewSpawnTele(_cInfo);
                                 return false;
                             }
-                            if (Animals.IsEnabled && (_message.ToLower() == Animals.Command30 || _message.ToLower() == Animals.Command31))
+                            if (Animals.IsEnabled && (messageLowerCase == Animals.Command_trackanimal || messageLowerCase == Animals.Command_track))
                             {
                                 Animals.Exec(_cInfo);
                                 return false;
                             }
-                            if (FirstClaimBlock.IsEnabled && _message.ToLower() == FirstClaimBlock.Command32)
+                            if (FirstClaimBlock.IsEnabled && messageLowerCase == FirstClaimBlock.Command_claim)
                             {
                                 FirstClaimBlock.FirstClaim(_cInfo);
                                 return false;
                             }
                             if (ClanManager.IsEnabled)
                             {
-                                if (_message.ToLower() == ClanManager.Command33)
+                                if (messageLowerCase == ClanManager.Command_add)
                                 {
                                     Phrases.Dict.TryGetValue(114, out string _phrase114);
-                                    _phrase114 = _phrase114.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                    _phrase114 = _phrase114.Replace("{Command33}", ClanManager.Command33);
+                                    _phrase114 = _phrase114.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                    _phrase114 = _phrase114.Replace("{Command_add}", ClanManager.Command_add);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase114 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(ClanManager.Command33))
+                                else if (messageLowerCase.StartsWith(ClanManager.Command_add))
                                 {
-                                    _message = _message.Replace(ClanManager.Command33 + " ", "");
+                                    _message = _message.Replace(ClanManager.Command_add + " ", "");
                                     ClanManager.AddClan(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower() == ClanManager.Command34)
+                                else if (messageLowerCase == ClanManager.Command_delete)
                                 {
                                     ClanManager.RemoveClan(_cInfo);
                                     return false;
                                 }
-                                else if (_message.ToLower() == ClanManager.Command35)
+                                else if (messageLowerCase == ClanManager.Command_invite)
                                 {
                                     Phrases.Dict.TryGetValue(115, out string _phrase115);
-                                    _phrase115 = _phrase115.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                    _phrase115 = _phrase115.Replace("{Command35}", ClanManager.Command35);
+                                    _phrase115 = _phrase115.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                    _phrase115 = _phrase115.Replace("{Command_invite}", ClanManager.Command_invite);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase115 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(ClanManager.Command35))
+                                else if (messageLowerCase.StartsWith(ClanManager.Command_invite))
                                 {
-                                    _message = _message.Replace(ClanManager.Command35 + " ", "");
+                                    _message = _message.Replace(ClanManager.Command_invite + " ", "");
                                     ClanManager.InviteMember(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower() == ClanManager.Command36)
+                                else if (messageLowerCase == ClanManager.Command_accept)
                                 {
                                     ClanManager.InviteAccept(_cInfo);
                                     return false;
                                 }
-                                else if (_message.ToLower() == ClanManager.Command37)
+                                else if (messageLowerCase == ClanManager.Command_decline)
                                 {
                                     ClanManager.InviteDecline(_cInfo);
                                     return false;
                                 }
-                                else if (_message.ToLower() == ClanManager.Command38)
+                                else if (messageLowerCase == ClanManager.Command_remove)
                                 {
                                     Phrases.Dict.TryGetValue(116, out string _phrase116);
-                                    _phrase116 = _phrase116.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                    _phrase116 = _phrase116.Replace("{Command38}", ClanManager.Command38);
+                                    _phrase116 = _phrase116.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                    _phrase116 = _phrase116.Replace("{Command_remove}", ClanManager.Command_remove);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase116 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(ClanManager.Command38))
+                                else if (messageLowerCase.StartsWith(ClanManager.Command_remove))
                                 {
-                                    _message = _message.Replace(ClanManager.Command38 + " ", "");
+                                    _message = _message.Replace(ClanManager.Command_remove + " ", "");
                                     ClanManager.RemoveMember(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower() == ClanManager.Command39)
+                                else if (messageLowerCase == ClanManager.Command_promote)
                                 {
                                     Phrases.Dict.TryGetValue(117, out string _phrase117);
-                                    _phrase117 = _phrase117.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                    _phrase117 = _phrase117.Replace("{Command39}", ClanManager.Command39);
+                                    _phrase117 = _phrase117.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                    _phrase117 = _phrase117.Replace("{Command_promote}", ClanManager.Command_promote);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase117 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
-                                else if (_message.ToLower().StartsWith(ClanManager.Command39))
+                                else if (messageLowerCase.StartsWith(ClanManager.Command_promote))
                                 {
-                                    _message = _message.Replace(ClanManager.Command39 + " ", "");
+                                    _message = _message.Replace(ClanManager.Command_promote + " ", "");
                                     ClanManager.PromoteMember(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower() == ClanManager.Command40)
+                                else if (messageLowerCase == ClanManager.Command_demote)
                                 {
                                     Phrases.Dict.TryGetValue(118, out string _phrase118);
-                                    _phrase118 = _phrase118.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                    _phrase118 = _phrase118.Replace("{Command40}", ClanManager.Command40);
+                                    _phrase118 = _phrase118.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                    _phrase118 = _phrase118.Replace("{Command_demote}", ClanManager.Command_demote);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase118 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(ClanManager.Command40))
+                                else if (messageLowerCase.StartsWith(ClanManager.Command_demote))
                                 {
-                                    _message = _message.Replace(ClanManager.Command40 + " ", "");
+                                    _message = _message.Replace(ClanManager.Command_demote + " ", "");
                                     ClanManager.DemoteMember(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower() == ClanManager.Command41)
+                                else if (messageLowerCase == ClanManager.Command_leave)
                                 {
                                     ClanManager.LeaveClan(_cInfo);
                                     return false;
                                 }
-                                else if (_message.ToLower() == ClanManager.Command42)
+                                else if (messageLowerCase == ClanManager.Command_commands)
                                 {
                                     string _clanCommands = ClanManager.GetChatCommands(_cInfo);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _clanCommands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return false;
                                 }
-                                else if (_message.ToLower() == ClanManager.Command43 || _message.ToLower() == ClanManager.Command124)
+                                else if (messageLowerCase == ClanManager.Command_chat || messageLowerCase == ClanManager.Command_cc)
                                 {
                                     Phrases.Dict.TryGetValue(119, out string _phrase119);
-                                    _phrase119 = _phrase119.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                    _phrase119 = _phrase119.Replace("{Command43}", ClanManager.Command43);
-                                    _phrase119 = _phrase119.Replace("{Command124}", ClanManager.Command124);
+                                    _phrase119 = _phrase119.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                    _phrase119 = _phrase119.Replace("{Command_chat}", ClanManager.Command_chat);
+                                    _phrase119 = _phrase119.Replace("{Command_cc}", ClanManager.Command_cc);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase119 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
-                                else if (_message.ToLower() == ClanManager.Command43 || _message.ToLower() == ClanManager.Command124 && ClanManager.ClanMember.Contains(_cInfo.playerId))
+                                else if (messageLowerCase == ClanManager.Command_chat || messageLowerCase == ClanManager.Command_cc && ClanManager.ClanMember.Contains(_cInfo.playerId))
                                 {
-                                    if (_message.ToLower().StartsWith(ClanManager.Command43))
+                                    if (messageLowerCase.StartsWith(ClanManager.Command_chat))
                                     {
-                                        _message = _message.ToLower().Replace(ClanManager.Command43 + " ", "");
+                                        _message = messageLowerCase.Replace(ClanManager.Command_chat + " ", "");
                                         ClanManager.Clan(_cInfo, _message);
                                     }
                                     else
                                     {
-                                        _message = _message.ToLower().Replace(ClanManager.Command124 + " ", "");
+                                        _message = messageLowerCase.Replace(ClanManager.Command_cc + " ", "");
                                         ClanManager.Clan(_cInfo, _message);
                                     }
                                     return false;
                                 }
-                                else if (_message.ToLower() == ClanManager.Command44)
+                                else if (messageLowerCase == ClanManager.Command_rename)
                                 {
                                     Phrases.Dict.TryGetValue(120, out string _phrase120);
-                                    _phrase120 = _phrase120.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                    _phrase120 = _phrase120.Replace("{Command44}", ClanManager.Command44);
+                                    _phrase120 = _phrase120.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                    _phrase120 = _phrase120.Replace("{Command_rename}", ClanManager.Command_rename);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase120 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
-                                else if (_message.ToLower().StartsWith(ClanManager.Command44))
+                                else if (messageLowerCase.StartsWith(ClanManager.Command_rename))
                                 {
-                                    _message = _message.Replace(ClanManager.Command44 + " ", "");
+                                    _message = _message.Replace(ClanManager.Command_rename + " ", "");
                                     ClanManager.ClanRename(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(ClanManager.Command45))
+                                else if (messageLowerCase.StartsWith(ClanManager.Command_request))
                                 {
-                                    _message = _message.Replace(ClanManager.Command45 + " ", "");
+                                    _message = _message.Replace(ClanManager.Command_request + " ", "");
                                     ClanManager.RequestToJoinClan(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower() == ClanManager.Command125)
+                                else if (messageLowerCase == ClanManager.Command_clan_list)
                                 {
                                     string _clanlist = ClanManager.GetClanList();
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _clanlist, -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return false;
                                 }
                             }
-                            if (VoteReward.IsEnabled && _message.ToLower() == VoteReward.Command46)
+                            if (VoteReward.IsEnabled && messageLowerCase == VoteReward.Command_reward)
                             {
                                 VoteReward.Check(_cInfo);
                                 return false;
                             }
-                            if (Shutdown.IsEnabled && _message.ToLower() == Shutdown.Command47)
+                            if (Shutdown.IsEnabled && messageLowerCase == Shutdown.Command_shutdown)
                             {
                                 Shutdown.NextShutdown(_cInfo);
                                 return false;
                             }
-                            if (AdminList.IsEnabled && _message.ToLower() == AdminList.Command48)
+                            if (AdminList.IsEnabled && messageLowerCase == AdminList.Command_adminlist)
                             {
                                 AdminList.List(_cInfo);
                                 return false;
                             }
-                            if (Travel.IsEnabled && _message.ToLower() == Travel.Command49)
+                            if (Travel.IsEnabled && messageLowerCase == Travel.Command_travel)
                             {
                                 Travel.Exec(_cInfo);
                                 return false;
                             }
-                            if (Zones.IsEnabled && _message.ToLower() == Zones.Command50)
-                            {
-                                if (Zones.Victim.ContainsKey(_cInfo.entityId))
-                                {
-                                    Zones.ReturnToPosition(_cInfo);
-                                    return false;
-                                }
-                            }
-                            if (Market.IsEnabled && (_message.ToLower() == Market.Command51 || _message.ToLower() == Market.Command52))
+                            if (Market.IsEnabled && (messageLowerCase == Market.Command_marketback || messageLowerCase == Market.Command_mback))
                             {
                                 if (Market.MarketPlayers.Contains(_cInfo.entityId))
                                 {
@@ -576,17 +569,17 @@ namespace ServerTools
                                     return false;
                                 }
                             }
-                            if (Market.IsEnabled && _message.ToLower() == Market.Command102)
+                            if (Market.IsEnabled && messageLowerCase == Market.Command_set)
                             {
                                 Market.Set(_cInfo);
                                 return false;
                             }
-                            if (Market.IsEnabled && _message.ToLower() == Market.Command103)
+                            if (Market.IsEnabled && messageLowerCase == Market.Command_market)
                             {
                                 Market.Exec(_cInfo);
                                 return false;
                             }
-                            if (Lobby.IsEnabled && (_message.ToLower() == Lobby.Command53 || _message.ToLower() == Lobby.Command54))
+                            if (Lobby.IsEnabled && (messageLowerCase == Lobby.Command_lobbyback || messageLowerCase == Lobby.Command_lback))
                             {
                                 if (Lobby.LobbyPlayers.Contains(_cInfo.entityId))
                                 {
@@ -594,32 +587,24 @@ namespace ServerTools
                                     return false;
                                 }
                             }
-                            if (Lobby.IsEnabled && _message.ToLower() == Lobby.Command87)
+                            if (Lobby.IsEnabled && messageLowerCase == Lobby.Command_set)
                             {
                                 Lobby.Set(_cInfo);
                                 return false;
                             }
-                            if (Lobby.IsEnabled && _message.ToLower() == Lobby.Command88)
+                            if (Lobby.IsEnabled && messageLowerCase == Lobby.Command_lobby)
                             {
                                 Lobby.Exec(_cInfo);
                                 return false;
                             }
-                            if (Zones.IsEnabled && Jail.IsEnabled && _message.ToLower() == Jail.Command55)
-                            {
-                                if (Zones.Forgive.ContainsKey(_cInfo.entityId))
-                                {
-                                    Jail.Forgive(_cInfo);
-                                    return false;
-                                }
-                            }
-                            if (Wallet.IsEnabled && _message.ToLower() == Wallet.Command56)
+                            if (Wallet.IsEnabled && messageLowerCase == Wallet.Command_wallet)
                             {
                                 Wallet.CurrentValue(_cInfo);
                                 return false;
                             }
-                            if (Shop.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(Shop.Command58 + " "))
+                            if (Shop.IsEnabled && Wallet.IsEnabled && messageLowerCase.StartsWith(Shop.Command_shop_buy + " "))
                             {
-                                _message = _message.Replace(Shop.Command58 + " ", "");
+                                _message = _message.Replace(Shop.Command_shop_buy + " ", "");
                                 if (_message.Length == 1)
                                 {
                                     Shop.PosCheck(_cInfo, _message, 3, 1);
@@ -636,16 +621,16 @@ namespace ServerTools
                                     else
                                     {
                                         Phrases.Dict.TryGetValue(353, out string _phrase353);
-                                        _phrase353 = _phrase353.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                        _phrase353 = _phrase353.Replace("{Command58}", Shop.Command58);
+                                        _phrase353 = _phrase353.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                        _phrase353 = _phrase353.Replace("{Command58}", Shop.Command_shop_buy);
                                         ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase353 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                                 return false;
                             }
-                            if (Shop.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(Shop.Command57 + " "))//show specific category
+                            if (Shop.IsEnabled && Wallet.IsEnabled && messageLowerCase.StartsWith(Shop.Command_shop + " "))//show specific category
                             {
-                                string _category = _message.ToLower().Replace(Shop.Command57 + " ", "");
+                                string _category = messageLowerCase.Replace(Shop.Command_shop + " ", "");
                                 if (Shop.Categories.Contains(_category))
                                 {
                                     Shop.PosCheck(_cInfo, _category, 2, 0);
@@ -657,17 +642,17 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            if (Shop.IsEnabled && Wallet.IsEnabled && _message.ToLower() == Shop.Command57)//show all categories
+                            if (Shop.IsEnabled && Wallet.IsEnabled && messageLowerCase == Shop.Command_shop)//show all categories
                             {
                                 Shop.PosCheck(_cInfo, _message, 1, 0);
                                 return false;
                             }
-                            if (FriendTeleport.IsEnabled && _message.ToLower() == FriendTeleport.Command59)
+                            if (FriendTeleport.IsEnabled && messageLowerCase == FriendTeleport.Command_friend)
                             {
                                 FriendTeleport.ListFriends(_cInfo);
                                 return false;
                             }
-                            if (FriendTeleport.IsEnabled && _message.ToLower().StartsWith(FriendTeleport.Command59 + " "))
+                            if (FriendTeleport.IsEnabled && messageLowerCase.StartsWith(FriendTeleport.Command_friend + " "))
                             {
                                 DateTime _date = DateTime.Now;
                                 if (PersistentContainer.Instance.Players[_cInfo.playerId].LastFriendTele != null)
@@ -679,7 +664,7 @@ namespace ServerTools
                                 int _timepassed = (int)fractionalMinutes;
                                 if (_timepassed >= FriendTeleport.Delay_Between_Uses)
                                 {
-                                    _message = _message.ToLower().Replace(FriendTeleport.Command59 + " ", "");
+                                    _message = messageLowerCase.Replace(FriendTeleport.Command_friend + " ", "");
                                     FriendTeleport.Exec(_cInfo, _message);
                                 }
                                 else
@@ -688,7 +673,7 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            if (FriendTeleport.IsEnabled && _message.ToLower() == FriendTeleport.Command60 && FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
+                            if (FriendTeleport.IsEnabled && messageLowerCase == FriendTeleport.Command_accept && FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
                             {
                                 FriendTeleport.Dict.TryGetValue(_cInfo.entityId, out int _dictValue);
                                 FriendTeleport.Dict1.TryGetValue(_cInfo.entityId, out DateTime _dict1Value);
@@ -719,12 +704,12 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            if (Died.IsEnabled && _message.ToLower() == Died.Command61)
+                            if (Died.IsEnabled && messageLowerCase == Died.Command_died)
                             {
                                 Died.Exec(_cInfo);
                                 return false;
                             }
-                            if (WeatherVote.IsEnabled && _message.ToLower() == WeatherVote.Command62)
+                            if (WeatherVote.IsEnabled && messageLowerCase == WeatherVote.Command_weathervote)
                             {
                                 if (!WeatherVote.VoteOpen)
                                 {
@@ -737,7 +722,7 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            if (WeatherVote.IsEnabled && _message.ToLower() == WeatherVote.Command63)
+                            if (WeatherVote.IsEnabled && messageLowerCase == WeatherVote.Command_sun)
                             {
                                 if (WeatherVote.VoteOpen)
                                 {
@@ -756,13 +741,13 @@ namespace ServerTools
                                 else
                                 {
                                     Phrases.Dict.TryGetValue(889, out string _phrase889);
-                                    _phrase889 = _phrase889.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                    _phrase889 = _phrase889.Replace("{Command62}", WeatherVote.Command62);
+                                    _phrase889 = _phrase889.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                    _phrase889 = _phrase889.Replace("{Command62}", WeatherVote.Command_weathervote);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase889 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 return false;
                             }
-                            if (WeatherVote.IsEnabled && _message.ToLower() == WeatherVote.Command64)
+                            if (WeatherVote.IsEnabled && messageLowerCase == WeatherVote.Command_rain)
                             {
                                 if (WeatherVote.VoteOpen)
                                 {
@@ -781,13 +766,13 @@ namespace ServerTools
                                 else
                                 {
                                     Phrases.Dict.TryGetValue(889, out string _phrase889);
-                                    _phrase889 = _phrase889.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                    _phrase889 = _phrase889.Replace("{Command62}", WeatherVote.Command62);
+                                    _phrase889 = _phrase889.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                    _phrase889 = _phrase889.Replace("{Command62}", WeatherVote.Command_weathervote);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase889 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 return false;
                             }
-                            if (WeatherVote.IsEnabled && _message.ToLower() == WeatherVote.Command65)
+                            if (WeatherVote.IsEnabled && messageLowerCase == WeatherVote.Command_snow)
                             {
                                 if (WeatherVote.VoteOpen)
                                 {
@@ -806,13 +791,13 @@ namespace ServerTools
                                 else
                                 {
                                     Phrases.Dict.TryGetValue(889, out string _phrase889);
-                                    _phrase889 = _phrase889.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                    _phrase889 = _phrase889.Replace("{Command62}", WeatherVote.Command62);
+                                    _phrase889 = _phrase889.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                    _phrase889 = _phrase889.Replace("{Command62}", WeatherVote.Command_weathervote);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase889 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 return false;
                             }
-                            if (RestartVote.IsEnabled && _message.ToLower() == RestartVote.Command66)
+                            if (RestartVote.IsEnabled && messageLowerCase == RestartVote.Command_restartvote)
                             {
                                 if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen)
                                 {
@@ -825,17 +810,17 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            if (KickVote.IsEnabled && _message.ToLower().StartsWith(KickVote.Command68))
+                            if (KickVote.IsEnabled && messageLowerCase.StartsWith(KickVote.Command_kickvote))
                             {
                                 if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen)
                                 {
-                                    if (_message.ToLower() == KickVote.Command68)
+                                    if (messageLowerCase == KickVote.Command_kickvote)
                                     {
                                         KickVote.List(_cInfo);
                                     }
                                     else
                                     {
-                                        _message = _message.ToLower().Replace(KickVote.Command68 + " ", "");
+                                        _message = messageLowerCase.Replace(KickVote.Command_kickvote + " ", "");
                                         {
                                             KickVote.Vote(_cInfo, _message);
                                         }
@@ -848,7 +833,7 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            if ((KickVote.IsEnabled || RestartVote.IsEnabled || MuteVote.IsEnabled) && _message.ToLower() == RestartVote.Command70)
+                            if ((KickVote.IsEnabled || RestartVote.IsEnabled || MuteVote.IsEnabled) && messageLowerCase == RestartVote.Command_yes)
                             {
                                 if (KickVote.VoteOpen)
                                 {
@@ -902,18 +887,18 @@ namespace ServerTools
                                     return false;
                                 }
                             }
-                            if (Auction.IsEnabled && _message.ToLower() == Auction.Command71)
+                            if (Auction.IsEnabled && messageLowerCase == Auction.Command_auction)
                             {
                                 Auction.AuctionList(_cInfo);
                                 return false;
                             }
-                            if (Auction.IsEnabled && _message.ToLower().StartsWith(Auction.Command72 + " "))
+                            if (Auction.IsEnabled && messageLowerCase.StartsWith(Auction.Command_auction_cancel + " "))
                             {
-                                _message = _message.ToLower().Replace(Auction.Command72 + " ", "");
+                                _message = messageLowerCase.Replace(Auction.Command_auction_cancel + " ", "");
                                 Auction.CancelAuction(_cInfo, _message);
                                 return false;
                             }
-                            if (Auction.IsEnabled && _message.ToLower().StartsWith(Auction.Command73 + " "))
+                            if (Auction.IsEnabled && messageLowerCase.StartsWith(Auction.Command_auction_buy + " "))
                             {
                                 if (Wallet.IsEnabled)
                                 {
@@ -925,7 +910,7 @@ namespace ServerTools
                                             ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase633 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
-                                    _message = _message.ToLower().Replace(Auction.Command73 + " ", "");
+                                    _message = messageLowerCase.Replace(Auction.Command_auction_buy + " ", "");
                                     {
                                         if (int.TryParse(_message, out int _purchase))
                                         {
@@ -948,7 +933,7 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            if (Auction.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(Auction.Command74 + " "))
+                            if (Auction.IsEnabled && Wallet.IsEnabled && messageLowerCase.StartsWith(Auction.Command_auction_sell + " "))
                             {
                                 if (Wallet.IsEnabled)
                                 {
@@ -956,7 +941,7 @@ namespace ServerTools
                                     {
                                         if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level)
                                         {
-                                            _message = _message.ToLower().Replace(Auction.Command74 + " ", "");
+                                            _message = messageLowerCase.Replace(Auction.Command_auction_sell + " ", "");
                                             Auction.CheckBox(_cInfo, _message);
                                         }
                                         else
@@ -967,7 +952,7 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        _message = _message.ToLower().Replace(Auction.Command74 + " ", "");
+                                        _message = messageLowerCase.Replace(Auction.Command_auction_sell + " ", "");
                                         Auction.CheckBox(_cInfo, _message);
                                     }
                                 }
@@ -978,103 +963,103 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            if (Fps.IsEnabled && _message.ToLower() == Fps.Command75)
+                            if (Fps.IsEnabled && messageLowerCase == Fps.Command_fps)
                             {
                                 Fps.FPS(_cInfo);
                                 return false;
                             }
-                            if (Loc.IsEnabled && _message.ToLower() == Loc.Command76)
+                            if (Loc.IsEnabled && messageLowerCase == Loc.Command_loc)
                             {
                                 Loc.Exec(_cInfo);
                                 return false;
                             }
                             if (VehicleTeleport.IsEnabled)
                             {
-                                if (VehicleTeleport.Bike && _message.ToLower() == VehicleTeleport.Command77)
+                                if (VehicleTeleport.Bike && messageLowerCase == VehicleTeleport.Command_bike)
                                 {
                                     VehicleTeleport.Exec(_cInfo, 1);
                                     return false;
                                 }
-                                else if (VehicleTeleport.Mini_Bike && _message.ToLower() == VehicleTeleport.Command78)
+                                else if (VehicleTeleport.Mini_Bike && messageLowerCase == VehicleTeleport.Command_minibike)
                                 {
                                     VehicleTeleport.Exec(_cInfo, 2);
                                     return false;
                                 }
-                                else if (VehicleTeleport.Motor_Bike && _message.ToLower() == VehicleTeleport.Command79)
+                                else if (VehicleTeleport.Motor_Bike && messageLowerCase == VehicleTeleport.Command_motorbike)
                                 {
                                     VehicleTeleport.Exec(_cInfo, 3);
                                     return false;
                                 }
-                                else if (VehicleTeleport.Jeep && _message.ToLower() == VehicleTeleport.Command80)
+                                else if (VehicleTeleport.Jeep && messageLowerCase == VehicleTeleport.Command_jeep)
                                 {
                                     VehicleTeleport.Exec(_cInfo, 4);
                                     return false;
                                 }
-                                else if (VehicleTeleport.Gyro && _message.ToLower() == VehicleTeleport.Command81)
+                                else if (VehicleTeleport.Gyro && messageLowerCase == VehicleTeleport.Command_gyro)
                                 {
                                     VehicleTeleport.Exec(_cInfo, 5);
                                     return false;
                                 }
                             }
-                            if (Report.IsEnabled && _message.ToLower().StartsWith(Report.Command82 + " "))
+                            if (Report.IsEnabled && messageLowerCase.StartsWith(Report.Command_report + " "))
                             {
-                                _message = _message.ToLower().Replace(Report.Command82 + " ", "");
+                                _message = messageLowerCase.Replace(Report.Command_report + " ", "");
                                 Report.Check(_cInfo, _message);
                                 return false;
                             }
-                            if (Bounties.IsEnabled && _message.ToLower() == Bounties.Command83)
+                            if (Bounties.IsEnabled && messageLowerCase == Bounties.Command_bounty)
                             {
                                 Bounties.BountyList(_cInfo);
                                 return false;
                             }
-                            if (Bounties.IsEnabled && _message.ToLower().StartsWith(Bounties.Command83 + " "))
+                            if (Bounties.IsEnabled && messageLowerCase.StartsWith(Bounties.Command_bounty + " "))
                             {
-                                _message = _message.ToLower().Replace(Bounties.Command83 + " ", "");
+                                _message = messageLowerCase.Replace(Bounties.Command_bounty + " ", "");
                                 Bounties.NewBounty(_cInfo, _message);
                                 return false;
                             }
-                            if (Lottery.IsEnabled && _message.ToLower() == Lottery.Command84)
+                            if (Lottery.IsEnabled && messageLowerCase == Lottery.Command_lottery)
                             {
                                 Lottery.Response(_cInfo);
                                 return false;
                             }
-                            if (Lottery.IsEnabled && _message.ToLower() == Lottery.Command85)
+                            if (Lottery.IsEnabled && messageLowerCase == Lottery.Command_lottery_enter)
                             {
                                 Lottery.EnterLotto(_cInfo);
                                 return false;
                             }
-                            if (Lottery.IsEnabled && _message.ToLower().StartsWith(Lottery.Command84 + " "))
+                            if (Lottery.IsEnabled && messageLowerCase.StartsWith(Lottery.Command_lottery + " "))
                             {
-                                _message = _message.Replace(Lottery.Command84 + " ", "");
-                                Lottery.NewLotto(_cInfo, _message, _mainName);
+                                _message = _message.Replace(Lottery.Command_lottery + " ", "");
+                                Lottery.NewLotto(_cInfo, _message);
                                 return false;
                             }
-                            if (NewSpawnTele.IsEnabled && NewSpawnTele.Return && _message.ToLower() == NewSpawnTele.Command86)
+                            if (NewSpawnTele.IsEnabled && NewSpawnTele.Return && messageLowerCase == NewSpawnTele.Command_ready)
                             {
                                 NewSpawnTele.ReturnPlayer(_cInfo);
                                 return false;
                             }
-                            if (PlayerList.IsEnabled && _message.ToLower() == PlayerList.Command89)
+                            if (PlayerList.IsEnabled && messageLowerCase == PlayerList.Command_playerlist)
                             {
                                 PlayerList.Exec(_cInfo);
                                 return false;
                             }
-                            if (Stuck.IsEnabled && _message.ToLower() == Stuck.Command90)
+                            if (Stuck.IsEnabled && messageLowerCase == Stuck.Command_stuck)
                             {
                                 Stuck.Exec(_cInfo);
                                 return false;
                             }
-                            if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && _message.ToLower() == Poll.Command91)
+                            if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && messageLowerCase == Poll.Command_poll_yes)
                             {
                                 Poll.Yes(_cInfo);
                                 return false;
                             }
-                            if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && _message.ToLower() == Poll.Command92)
+                            if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && messageLowerCase == Poll.Command_poll_no)
                             {
                                 Poll.No(_cInfo);
                                 return false;
                             }
-                            if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && _message.ToLower() == Poll.Command93)
+                            if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && messageLowerCase == Poll.Command_poll)
                             {
                                 string[] _pollData = PersistentContainer.Instance.PollData;
                                 Phrases.Dict.TryGetValue(562, out string _phrase562);
@@ -1099,47 +1084,47 @@ namespace ServerTools
                                 ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase561 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 return false;
                             }
-                            if (Bank.IsEnabled && _message.ToLower() == Bank.Command94)
+                            if (Bank.IsEnabled && messageLowerCase == Bank.Command_bank)
                             {
                                 Bank.CurrentBankAndId(_cInfo);
                                 return false;
                             }
-                            if (Bank.IsEnabled && _message.ToLower().StartsWith(Bank.Command95 + " "))
+                            if (Bank.IsEnabled && messageLowerCase.StartsWith(Bank.Command_deposit + " "))
                             {
-                                _message = _message.ToLower().Replace(Bank.Command95 + " ", "");
+                                _message = messageLowerCase.Replace(Bank.Command_deposit + " ", "");
                                 Bank.CheckLocation(_cInfo, _message, 1);
                                 return false;
                             }
-                            if (Bank.IsEnabled && _message.ToLower().StartsWith(Bank.Command96 + " "))
+                            if (Bank.IsEnabled && messageLowerCase.StartsWith(Bank.Command_withdraw + " "))
                             {
-                                _message = _message.ToLower().Replace(Bank.Command96 + " ", "");
+                                _message = messageLowerCase.Replace(Bank.Command_withdraw + " ", "");
                                 Bank.CheckLocation(_cInfo, _message, 2);
                                 return false;
                             }
-                            if (Bank.IsEnabled && Wallet.IsEnabled && Wallet.Bank_Transfers && _message.ToLower().StartsWith(Bank.Command97 + " "))
+                            if (Bank.IsEnabled && Wallet.IsEnabled && Wallet.Bank_Transfers && messageLowerCase.StartsWith(Bank.Command_wallet_deposit + " "))
                             {
-                                _message = _message.ToLower().Replace(Bank.Command97 + " ", "");
+                                _message = messageLowerCase.Replace(Bank.Command_wallet_deposit + " ", "");
                                 Bank.CheckLocation(_cInfo, _message, 3);
                                 return false;
                             }
-                            if (Bank.IsEnabled && Wallet.IsEnabled && Wallet.Bank_Transfers && _message.ToLower().StartsWith(Bank.Command98 + " "))
+                            if (Bank.IsEnabled && Wallet.IsEnabled && Wallet.Bank_Transfers && messageLowerCase.StartsWith(Bank.Command_wallet_withdraw + " "))
                             {
-                                _message = _message.ToLower().Replace(Bank.Command98 + " ", "");
+                                _message = messageLowerCase.Replace(Bank.Command_wallet_withdraw + " ", "");
                                 Bank.CheckLocation(_cInfo, _message, 4);
                                 return false;
                             }
-                            if (Bank.IsEnabled && Bank.Player_Transfers && _message.ToLower().StartsWith(Bank.Command99 + " "))
+                            if (Bank.IsEnabled && Bank.Player_Transfers && messageLowerCase.StartsWith(Bank.Command_transfer + " "))
                             {
-                                _message = _message.ToLower().Replace(Bank.Command99 + " ", "");
+                                _message = messageLowerCase.Replace(Bank.Command_transfer + " ", "");
                                 Bank.Transfer(_cInfo, _message);
                                 return false;
                             }
-                            if (Event.Invited && _message.ToLower() == Event.Command100)
+                            if (Event.Invited && messageLowerCase == Event.Command_join)
                             {
                                 Event.AddPlayer(_cInfo);
                                 return false;
                             }
-                            if (InfoTicker.IsEnabled && _message.ToLower() == InfoTicker.Command104)
+                            if (InfoTicker.IsEnabled && messageLowerCase == InfoTicker.Command_infoticker)
                             {
                                 if (!InfoTicker.ExemptionList.Contains(_cInfo.playerId))
                                 {
@@ -1155,14 +1140,14 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            if (Session.IsEnabled && _message.ToLower() == Session.Command105)
+                            if (Session.IsEnabled && messageLowerCase == Session.Command_session)
                             {
                                 Session.Exec(_cInfo);
                                 return false;
                             }
                             if (Waypoints.IsEnabled)
                             {
-                                if (_message.ToLower() == Waypoints.Command10)
+                                if (messageLowerCase == Waypoints.Command_go_way)
                                 {
                                     if (Waypoints.Invite.ContainsKey(_cInfo.entityId))
                                     {
@@ -1170,124 +1155,124 @@ namespace ServerTools
                                         return false;
                                     }
                                 }
-                                if (_message.ToLower() == Waypoints.Command106 || _message.ToLower() == Waypoints.Command107 || _message.ToLower() == Waypoints.Command108)
+                                if (messageLowerCase == Waypoints.Command_waypoint || messageLowerCase == Waypoints.Command_way || messageLowerCase == Waypoints.Command_wp)
                                 {
                                     Waypoints.List(_cInfo);
                                     return false;
                                 }
-                                if (_message.StartsWith(Waypoints.Command109 + " "))
+                                if (_message.StartsWith(Waypoints.Command_fwaypoint + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Waypoints.Command109 + " ", "");
+                                    _message = messageLowerCase.Replace(Waypoints.Command_fwaypoint + " ", "");
                                     if (_message != " " || _message != "")
                                     {
                                         Waypoints.TeleDelay(_cInfo, _message, true);
                                         return false;
                                     }
                                 }
-                                else if (_message.StartsWith(Waypoints.Command110 + " "))
+                                else if (_message.StartsWith(Waypoints.Command_fway + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Waypoints.Command110 + " ", "");
+                                    _message = messageLowerCase.Replace(Waypoints.Command_fway + " ", "");
                                     if (_message != " " || _message != "")
                                     {
                                         Waypoints.TeleDelay(_cInfo, _message, true);
                                         return false;
                                     }
                                 }
-                                else if (_message.StartsWith(Waypoints.Command111 + " "))
+                                else if (_message.StartsWith(Waypoints.Command_fwp + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Waypoints.Command111 + " ", "");
+                                    _message = messageLowerCase.Replace(Waypoints.Command_fwp + " ", "");
                                     if (_message != " " || _message != "")
                                     {
                                         Waypoints.TeleDelay(_cInfo, _message, true);
                                         return false;
                                     }
                                 }
-                                if (_message.ToLower().StartsWith(Waypoints.Command112 + " "))
+                                if (messageLowerCase.StartsWith(Waypoints.Command_waypoint_save + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Waypoints.Command112 + " ", "");
+                                    _message = messageLowerCase.Replace(Waypoints.Command_waypoint_save + " ", "");
                                     Waypoints.SaveClaimCheck(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(Waypoints.Command113 + " "))
+                                else if (messageLowerCase.StartsWith(Waypoints.Command_way_save + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Waypoints.Command113 + " ", "");
+                                    _message = messageLowerCase.Replace(Waypoints.Command_way_save + " ", "");
                                     Waypoints.SaveClaimCheck(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(Waypoints.Command114 + " "))
+                                else if (messageLowerCase.StartsWith(Waypoints.Command_ws + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Waypoints.Command114 + " ", "");
+                                    _message = messageLowerCase.Replace(Waypoints.Command_ws + " ", "");
                                     Waypoints.SaveClaimCheck(_cInfo, _message);
                                     return false;
                                 }
-                                if (_message.ToLower().StartsWith(Waypoints.Command115 + " "))
+                                if (messageLowerCase.StartsWith(Waypoints.Command_waypoint_del + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Waypoints.Command115 + " ", "");
+                                    _message = messageLowerCase.Replace(Waypoints.Command_waypoint_del + " ", "");
                                     Waypoints.DelPoint(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(Waypoints.Command116 + " "))
+                                else if (messageLowerCase.StartsWith(Waypoints.Command_way_del + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Waypoints.Command116 + " ", "");
+                                    _message = messageLowerCase.Replace(Waypoints.Command_way_del + " ", "");
                                     Waypoints.DelPoint(_cInfo, _message);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(Waypoints.Command117 + " "))
+                                else if (messageLowerCase.StartsWith(Waypoints.Command_wd + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Waypoints.Command117 + " ", "");
+                                    _message = messageLowerCase.Replace(Waypoints.Command_wd + " ", "");
                                     Waypoints.DelPoint(_cInfo, _message);
                                     return false;
                                 }
-                                if (_message.ToLower().StartsWith(Waypoints.Command106 + " "))
+                                if (messageLowerCase.StartsWith(Waypoints.Command_waypoint + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Waypoints.Command106 + " ", "");
+                                    _message = messageLowerCase.Replace(Waypoints.Command_waypoint + " ", "");
                                     Waypoints.TeleDelay(_cInfo, _message, false);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(Waypoints.Command107 + " "))
+                                else if (messageLowerCase.StartsWith(Waypoints.Command_way + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Waypoints.Command107 + " ", "");
+                                    _message = messageLowerCase.Replace(Waypoints.Command_way + " ", "");
                                     Waypoints.TeleDelay(_cInfo, _message, false);
                                     return false;
                                 }
-                                else if (_message.ToLower().StartsWith(Waypoints.Command108 + " "))
+                                else if (messageLowerCase.StartsWith(Waypoints.Command_wp + " "))
                                 {
-                                    _message = _message.ToLower().Replace(Waypoints.Command108 + " ", "");
+                                    _message = messageLowerCase.Replace(Waypoints.Command_wp + " ", "");
                                     Waypoints.TeleDelay(_cInfo, _message, false);
                                     return false;
                                 }
                             }
-                            if (Whisper.IsEnabled && (_message.ToLower().StartsWith(Whisper.Command120) || _message.ToLower().StartsWith(Whisper.Command121)))
+                            if (Whisper.IsEnabled && (messageLowerCase.StartsWith(Whisper.Command_pmessage) || messageLowerCase.StartsWith(Whisper.Command_pm)))
                             {
                                 Whisper.Send(_cInfo, _message);
                                 return false;
                             }
-                            if (Whisper.IsEnabled && (_message.ToLower().StartsWith(Whisper.Command122) || _message.ToLower().StartsWith(Whisper.Command123)))
+                            if (Whisper.IsEnabled && (messageLowerCase.StartsWith(Whisper.Command_rmessage) || messageLowerCase.StartsWith(Whisper.Command_rm)))
                             {
                                 Whisper.Reply(_cInfo, _message);
                                 return false;
                             }
-                            if (CustomCommands.IsEnabled && CustomCommands.Dict.ContainsKey(_message = _message.ToLower()))
+                            if (CustomCommands.IsEnabled && CustomCommands.Dict.ContainsKey(_message = messageLowerCase))
                             {
-                                CustomCommands.Exec(_cInfo, _message.ToLower());
+                                CustomCommands.Exec(_cInfo, messageLowerCase);
                                 return false;
                             }
-                            if (ReservedSlots.IsEnabled && _message.ToLower() == ReservedSlots.Command69)
+                            if (ReservedSlots.IsEnabled && messageLowerCase == ReservedSlots.Command_reserved)
                             {
                                 ReservedSlots.ReservedStatus(_cInfo);
                                 return false;
                             }
-                            if (Prayer.IsEnabled && _message.ToLower() == Prayer.Command126)
+                            if (Prayer.IsEnabled && messageLowerCase == Prayer.Command_pray)
                             {
                                 Prayer.Exec(_cInfo);
                                 return false;
                             }
-                            if (ScoutPlayer.IsEnabled && (_message.ToLower() == ScoutPlayer.Command129 || _message.ToLower() == ScoutPlayer.Command130))
+                            if (ScoutPlayer.IsEnabled && (messageLowerCase == ScoutPlayer.Command_scoutplayer || messageLowerCase == ScoutPlayer.Command_scout))
                             {
                                 ScoutPlayer.Exec(_cInfo);
                                 return false;
                             }
-                            if (Hardcore.IsEnabled && _message.ToLower() == Hardcore.Command128)
+                            if (Hardcore.IsEnabled && messageLowerCase == Hardcore.Command_hardcore_on)
                             {
                                 if (Hardcore.Optional)
                                 {
@@ -1303,29 +1288,29 @@ namespace ServerTools
                                             PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled = true;
                                             PersistentContainer.DataChange = true;
                                             Phrases.Dict.TryGetValue(601, out string _phrase601);
-                                            _phrase601 = _phrase601.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                            _phrase601 = _phrase601.Replace("{Command127}", Hardcore.Command127);
+                                            _phrase601 = _phrase601.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                            _phrase601 = _phrase601.Replace("{Command_hardcore}", Hardcore.Command_hardcore);
                                             ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase601 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
                                     else
                                     {
                                         Phrases.Dict.TryGetValue(602, out string _phrase602);
-                                        _phrase602 = _phrase602.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                        _phrase602 = _phrase602.Replace("{Command127}", Hardcore.Command127);
+                                        _phrase602 = _phrase602.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                        _phrase602 = _phrase602.Replace("{Command_hardcore}", Hardcore.Command_hardcore);
                                         ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase602 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                                 else
                                 {
                                     Phrases.Dict.TryGetValue(602, out string _phrase602);
-                                    _phrase602 = _phrase602.Replace("{CommandPrivate}", Chat_Command_Prefix1);
-                                    _phrase602 = _phrase602.Replace("{Command127}", Hardcore.Command127);
+                                    _phrase602 = _phrase602.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                    _phrase602 = _phrase602.Replace("{Command_hardcore}", Hardcore.Command_hardcore);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase602 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 return false;
                             }
-                            if (Hardcore.IsEnabled && _message.ToLower() == Hardcore.Command127)
+                            if (Hardcore.IsEnabled && messageLowerCase == Hardcore.Command_hardcore)
                             {
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                                 if (_player != null)
@@ -1349,7 +1334,7 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            if (ExitCommand.IsEnabled && (_message.ToLower() == ExitCommand.Command131 || _message.ToLower() == ExitCommand.Command132))
+                            if (ExitCommand.IsEnabled && (messageLowerCase == ExitCommand.Command_exit || messageLowerCase == ExitCommand.Command_quit))
                             {
                                 if (ExitCommand.Players.ContainsKey(_cInfo.entityId))
                                 {
@@ -1369,15 +1354,40 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                            //if (_message.ToLower().StartsWith(Test.Command999))
-                            //{
-                            //    Test.Exec(_cInfo);
-                            //    return false;
-                            //}
+                            if (ChatColorPrefix.IsEnabled)
+                            {
+                                if (messageLowerCase == ChatColorPrefix.Command_ccp && ChatColorPrefix.Players.ContainsKey(_cInfo.playerId))
+                                {
+                                    ChatColorPrefix.ShowColorAndExpiry(_cInfo);
+                                    return false;
+                                }
+                                else if (ChatColorPrefix.Custom_Color && messageLowerCase.StartsWith(ChatColorPrefix.Command_ccpr + " ") == ChatColorPrefix.Players.ContainsKey(_cInfo.playerId))
+                                {
+                                    _message = messageLowerCase.Replace(Waypoints.Command_wp + " ", "");
+                                    ChatColorPrefix.SetPrefixColor(_cInfo, messageLowerCase);
+                                    return false;
+                                }
+                                else if (ChatColorPrefix.Rotate && messageLowerCase == ChatColorPrefix.Command_ccpr)
+                                {
+                                    ChatColorPrefix.RotatePrefixColor(_cInfo);
+                                    return false;
+                                }
+                                else if (ChatColorPrefix.Custom_Color && messageLowerCase.StartsWith(ChatColorPrefix.Command_ccnr + " ") == ChatColorPrefix.Players.ContainsKey(_cInfo.playerId))
+                                {
+
+                                    ChatColorPrefix.SetNameColor(_cInfo, messageLowerCase);
+                                    return false;
+                                }
+                                else if (ChatColorPrefix.Rotate && messageLowerCase == ChatColorPrefix.Command_ccnr && ChatColorPrefix.Players.ContainsKey(_cInfo.playerId))
+                                {
+                                    ChatColorPrefix.RotateNameColor(_cInfo);
+                                    return false;
+                                }
+                            }
                         }
-                        if (AdminChat.IsEnabled && _message.ToLower().StartsWith(AdminChat.Command118 + " "))
+                        if (AdminChat.IsEnabled && _message.ToLower().StartsWith(AdminChat.Command_admin + " "))
                         {
-                            _message = _message.ToLower().Replace(AdminChat.Command118 + " ", "");
+                            _message = _message.ToLower().Replace(AdminChat.Command_admin + " ", "");
                             AdminChat.SendAdmins(_cInfo, _message);
                             return false;
                         }

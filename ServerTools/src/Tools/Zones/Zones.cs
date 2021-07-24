@@ -12,20 +12,17 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Zone_Message = false, Set_Home = false;
         public static int Reminder_Delay = 20;
-        public static string Command50 = "return";
-        public static Dictionary<int, DateTime> Reminder = new Dictionary<int, DateTime>();
-        public static Dictionary<int, string> Victim = new Dictionary<int, string>();
-        public static Dictionary<int, int> Forgive = new Dictionary<int, int>();
-        public static Dictionary<int, string[]> ZoneInfo = new Dictionary<int, string[]>();
-        public static List<int> ZonePvE = new List<int>();
-        public static List<string[]> Box1 = new List<string[]>();
-        public static List<bool[]> Box2 = new List<bool[]>();
-        private const string file = "Zones.xml";
-        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static readonly FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-        public static Dictionary<int, string[]> zoneSetup1 = new Dictionary<int, string[]>();
-        public static Dictionary<int, bool[]> zoneSetup2 = new Dictionary<int, bool[]>();
+        public static Dictionary<int, DateTime> Reminder = new Dictionary<int, DateTime>();
+        public static Dictionary<int, string[]> ZonePlayer = new Dictionary<int, string[]>();
+        public static List<string[]> ZoneList = new List<string[]>();
+
+        private const string file = "Zones.xml";
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        
+        public static Dictionary<int, string[]> ZoneSetup = new Dictionary<int, string[]>();
+
 
         public static void Load()
         {
@@ -40,26 +37,24 @@ namespace ServerTools
         {
             if (!IsEnabled && IsRunning)
             {
-                Box1.Clear();
-                Box2.Clear();
+                ZoneList.Clear();
                 Reminder.Clear();
-                ZoneInfo.Clear();
-                ZonePvE.Clear();
-                fileWatcher.Dispose();
+                ZonePlayer.Clear();
+                FileWatcher.Dispose();
                 IsRunning = false;
             }
         }
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(filePath);
+                xmlDoc.Load(FilePath);
             }
             catch (XmlException e)
             {
@@ -71,11 +66,9 @@ namespace ServerTools
             {
                 if (childNode.Name == "Zone")
                 {
-                    Box1.Clear();
-                    Box2.Clear();
+                    ZoneList.Clear();
                     Reminder.Clear();
-                    ZoneInfo.Clear();
-                    ZonePvE.Clear();
+                    ZonePlayer.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -88,6 +81,11 @@ namespace ServerTools
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
+                        if (!_line.HasAttribute("Name"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Name attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
                         if (!_line.HasAttribute("Corner1"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Corner1 attribute: {0}", subChild.OuterXml));
@@ -103,11 +101,6 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Circle attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("Name"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Name attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
                         if (!_line.HasAttribute("EntryMessage"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing EntryMessage attribute: {0}", subChild.OuterXml));
@@ -118,9 +111,14 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing ExitMessage attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("Response"))
+                        if (!_line.HasAttribute("EntryCommand"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Response attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing EntryCommand attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        if (!_line.HasAttribute("ExitCommand"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing ExitCommand attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("ReminderNotice"))
@@ -128,9 +126,9 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing ReminderNotice attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("PvE"))
+                        if (!_line.HasAttribute("PvPvE"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing PvE attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing PvPvE attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("NoZombie"))
@@ -140,51 +138,65 @@ namespace ServerTools
                         }
                         else
                         {
-                            string _circle = _line.GetAttribute("Circle");
-                            if (!bool.TryParse(_circle, out bool _result1))
+                            string[] _zone = { _line.GetAttribute("Name"), _line.GetAttribute("Corner1"), _line.GetAttribute("Corner2"), _line.GetAttribute("Circle"),
+                                _line.GetAttribute("EntryMessage"), _line.GetAttribute("ExitMessage"), _line.GetAttribute("EntryCommand"),_line.GetAttribute("ExitCommand"),
+                                _line.GetAttribute("ReminderNotice"), _line.GetAttribute("PvPvE"), _line.GetAttribute("NoZombie") };
+                            if (_zone[6] == "")
                             {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for Circle attribute: {0}.", subChild.OuterXml));
-                                continue;
+                                _zone[6] = "***";
                             }
-                            string _pve = _line.GetAttribute("PvE");
-                            if (!bool.TryParse(_pve, out bool _result2))
+                            if (_zone[7] == "")
                             {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for PvE attribute: {0}.", subChild.OuterXml));
-                                continue;
+                                _zone[7] = "***";
                             }
-                            if (!bool.TryParse(_line.GetAttribute("NoZombie"), out bool _result3))
+                            if (_zone[3].ToLower() == "false")
                             {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for NoZombie attribute: {0}.", subChild.OuterXml));
-                                continue;
-                            }
-                            string[] box1 = { _line.GetAttribute("Corner1"), _line.GetAttribute("Corner2"), _line.GetAttribute("Name"), _line.GetAttribute("EntryMessage"), _line.GetAttribute("ExitMessage"),
-                            _line.GetAttribute("Response"), _line.GetAttribute("ReminderNotice") };
-                            if (box1[5] == "")
-                            {
-                                box1[5] = "***";
-                            }
-                            bool[] box2 = { _result1, _result2, _result3 };
-                            if (!Box1.Contains(box1))
-                            {
-                                Box1.Add(box1);
-                                Box2.Add(box2);
-                                string[] _vectors = new string[4];
-                                if (box2[0]) //is a circle
+                                if (_zone[1].Contains(",") && _zone[2].Contains(","))
                                 {
-                                    string[] _corner1 = box1[0].Split(',');
-                                    _vectors[0] = _corner1[0];
-                                    _vectors[1] = _corner1[2];
-                                    _vectors[2] = box1[1];
+                                    string[] _corner1 = _zone[1].Split(',');
+                                    string[] _corner2 = _zone[2].Split(',');
+                                    int.TryParse(_corner1[0], out int x1);
+                                    int.TryParse(_corner1[1], out int y1);
+                                    int.TryParse(_corner1[2], out int z1);
+                                    int.TryParse(_corner2[0], out int x2);
+                                    int.TryParse(_corner2[1], out int y2);
+                                    int.TryParse(_corner2[2], out int z2);
+                                    int _switch;
+                                    if (x1 > x2)
+                                    {
+                                        _switch = x2;
+                                        x2 = x1;
+                                        x1 = _switch;
+                                    }
+                                    if (y1 > y2)
+                                    {
+                                        _switch = y2;
+                                        y2 = y1;
+                                        y1 = _switch;
+                                    }
+                                    else if (y1 == y2)
+                                    {
+                                        y2++;
+                                    }
+                                    if (z1 > z2)
+                                    {
+                                        _switch = z2;
+                                        z2 = z1;
+                                        z1 = _switch;
+                                    }
+                                    _zone[1] = x1 + "," + y1 + "," + z1;
+                                    _zone[2] = x2 + "," + y2 + "," + z2;
                                 }
-                                else //is a square or rectangle
+                                else
                                 {
-                                    string[] _corner1 = box1[0].Split(',');
-                                    string[] _corner2 = box1[1].Split(',');
-                                    _vectors[0] = _corner1[0];
-                                    _vectors[1] = _corner1[2];
-                                    _vectors[2] = _corner2[0];
-                                    _vectors[3] = _corner2[2];
+                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring Zones entry because of improper format in corner1 or corner2 attribute: {0}", subChild.OuterXml));
+                                    continue;
                                 }
+                            }
+
+                            if (!ZoneList.Contains(_zone))
+                            {
+                                ZoneList.Add(_zone);
                             }
                         }
                     }
@@ -194,49 +206,51 @@ namespace ServerTools
 
         public static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
+            FileWatcher.EnableRaisingEvents = false;
+            using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Zones>");
-                sw.WriteLine("    <Zone>");
-                if (Box1.Count > 0)
+                sw.WriteLine("  <Zone>");
+                sw.WriteLine("     <!-- Do not use decimals in the corner positions -->");
+                sw.WriteLine("     <!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
+
+                if (ZoneList.Count > 0)
                 {
-                    for (int i = 0; i < Box1.Count; i++)
+                    for (int i = 0; i < ZoneList.Count; i++)
                     {
-                        string[] _box1 = Box1[i];
-                        bool[] _box2 = Box2[i];
-                        sw.WriteLine(string.Format("        <Zone Corner1=\"{0}\" Corner2=\"{1}\" Circle=\"{2}\" Name=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" Response=\"{6}\" ReminderNotice=\"{7}\" PvE=\"{8}\" NoZombie=\"{9}\" />", _box1[0], _box1[1], _box2[0], _box1[2], _box1[3], _box1[4], _box1[5], _box1[6], _box2[1], _box2[2]));
+                        string[] _zone = ZoneList[i];
+                        sw.WriteLine(string.Format("     <Zone Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Circle=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" EntryCommand=\"{6}\" ExitCommand=\"{7}\" ReminderNotice=\"{8}\" PvPvE=\"{9}\" NoZombie=\"{10}\" />", _zone[0], _zone[1], _zone[2], _zone[3], _zone[4], _zone[5], _zone[6], _zone[7], _zone[8], _zone[9], _zone[10]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <!-- <Zone Corner1=\"-8000,0,8000\" Corner2=\"8000,200,0\" Circle=\"false\" Name=\"North\" EntryMessage=\"You are entering the Northern side\" ExitMessage=\"You have exited the Northern Side\" Response=\"\" ReminderNotice=\"You are still in the North\" PvE=\"false\" NoZombie=\"false\" /> -->");
-                    sw.WriteLine("        <!-- <Zone Corner1=\"-8000,0,-1\" Corner2=\"8000,200,-8000\" Circle=\"false\" Name=\"South\" EntryMessage=\"You are entering the Southern side\" ExitMessage=\"You have exited the Southern Side\" Response=\"whisper {PlayerName} you have entered the south side ^ ser {EntityId} 40 @ 4\" ReminderNotice=\"You are still in the South\" PvE=\"false\" NoZombie=\"false\" /> -->");
-                    sw.WriteLine("        <!-- <Zone Corner1=\"-100,0,-90\" Corner2=\"40\" Circle=\"true\" Name=\"Market\" EntryMessage=\"You have entered the Market\" ExitMessage=\"You have exited the Market\" Response=\"whisper {PlayerName} you have entered the market\" ReminderNotice=\"\" PvE=\"true\" NoZombie=\"true\" /> -->");
-                    sw.WriteLine("        <!-- <Zone Corner1=\"0,0,0\" Corner2=\"25,105,25\" Circle=\"false\" Name=\"Lobby\" EntryMessage=\"You have entered the Lobby\" ExitMessage=\"You have exited the Lobby\" Response=\"**\" ReminderNotice=\"You have been in the lobby for a long time...\" PvE=\"true\" NoZombie=\"true\" /> -->");
+                    sw.WriteLine("     <!-- <Zone Name=\"North\" Corner1=\"-8000,0,8000\" Corner2=\"8000,200,0\" Circle=\"false\" EntryMessage=\"You are entering the Northern side\" ExitMessage=\"You have exited the Northern Side\" EntryCommand=\"\" ExitCommand=\"\" ReminderNotice=\"You are still in the North\" PvPvE=\"0\" NoZombie=\"false\" /> -->");
+                    sw.WriteLine("     <!-- <Zone Name=\"South\" Corner1=\"-8000,0,-1\" Corner2=\"8000,200,-8000\" Circle=\"false\" EntryMessage=\"You are entering the Southern side\" ExitMessage=\"You have exited the Southern Side\" EntryCommand=\"whisper {PlayerName} you have entered the south side ^ ser {EntityId} 40 @ 4\" ExitCommand=\"\" ReminderNotice=\"You are still in the South\" PvPvE=\"3\" NoZombie=\"false\" /> -->");
+                    sw.WriteLine("     <!-- <Zone Name=\"Arena\" Corner1=\"-100,0,-90\" Corner2=\"40\" Circle=\"true\" EntryMessage=\"You have entered the arena\" ExitMessage=\"You have exited the arena\" EntryCommand=\"whisper {PlayerName} you have entered the arena\" ExitCommand=\"whisper {PlayerName} you have exited the arena\" ReminderNotice=\"\" PvPvE=\"2\" NoZombie=\"true\" /> -->");
+                    sw.WriteLine("     <!-- <Zone Name=\"TradeSpace\" Corner1=\"0,0,0\" Corner2=\"25,105,25\" Circle=\"false\" EntryMessage=\"You have entered the trade space\" ExitMessage=\"You have exited the trade space\" EntryCommand=\"***\" ExitCommand=\"***\" ReminderNotice=\"You have been in the trade space for a long time...\" PvPvE=\"1\" NoZombie=\"true\" /> -->");
                 }
-                sw.WriteLine("    </Zone>");
+                sw.WriteLine("  </Zone>");
                 sw.WriteLine("</Zones>");
                 sw.Flush();
                 sw.Close();
                 sw.Dispose();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
@@ -245,42 +259,43 @@ namespace ServerTools
 
         public static void ZoneCheck(ClientInfo _cInfo, EntityAlive _player)
         {
-            if (Box1.Count > 0)
+            if (ZoneList.Count > 0)
             {
-                for (int i = 0; i < Box1.Count; i++)
+                for (int i = 0; i < ZoneList.Count; i++)
                 {
-                    string[] _box1 = Box1[i];
-                    bool[] _box2 = Box2[i];
-                    if (BoxCheck(_box1, _player.position.x, _player.position.y, _player.position.z, _box2))
+                    string[] _zone = ZoneList[i];
+                    if (InsideZone(_zone, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z))
                     {
-                        if (ZoneInfo.ContainsKey(_player.entityId))
+                        if (ZonePlayer.ContainsKey(_player.entityId))
                         {
-                            ZoneInfo.TryGetValue(_player.entityId, out string[] _info);
-                            if (_info[1] != _box1[4])
+                            ZonePlayer.TryGetValue(_player.entityId, out string[] _info);
+                            if (_info != _zone)
                             {
                                 if (Zone_Message)
                                 {
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _box1[3] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
-                                if (_box1[5] != "***" && _box1[5] != "")
+                                if (_zone[6] != "***")
                                 {
-                                    Response(_cInfo, _box1[5]);
+                                    EntryCommand(_cInfo, _zone[6]);
                                 }
-                                _info[0] = _box1[2];
-                                _info[1] = _box1[4];
-                                _info[2] = _box1[6];
-                                ZoneInfo[_player.entityId] = _info;
+                                ZonePlayer[_player.entityId] = _zone;
                                 Reminder[_player.entityId] = DateTime.Now;
-                                if (_box2[1])
+                                if (_zone[9] == "0")
                                 {
-                                    if (!ZonePvE.Contains(_player.entityId))
-                                    {
-                                        ZonePvE.Add(_player.entityId);
-                                    }
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
                                 }
-                                else if (ZonePvE.Contains(_player.entityId))
+                                else if (_zone[9] == "1")
                                 {
-                                    ZonePvE.Remove(_player.entityId);
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
+                                }
+                                else if (_zone[9] == "2")
+                                {
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
                                 }
                             }
                         }
@@ -288,101 +303,56 @@ namespace ServerTools
                         {
                             if (Zone_Message)
                             {
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _box1[3] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
-                            if (_box1[5] != "***" && _box1[5] != "")
+                            if (_zone[6] != "***")
                             {
-                                Response(_cInfo, _box1[5]);
+                                EntryCommand(_cInfo, _zone[6]);
                             }
-                            string[] _zoneInfo = { _box1[2], _box1[4], _box1[6] };
-                            ZoneInfo.Add(_player.entityId, _zoneInfo);
+                            ZonePlayer.Add(_player.entityId, _zone);
                             Reminder.Add(_player.entityId, DateTime.Now);
-                            if (_box2[1])
+                            if (_zone[9] == "0")
                             {
-                                ZonePvE.Add(_player.entityId);
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
+                            }
+                            else if (_zone[9] == "1")
+                            {
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
+                            }
+                            else if (_zone[9] == "2")
+                            {
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
                             }
                         }
                         return;
                     }
                 }
-                if (ZoneInfo.ContainsKey(_player.entityId))
+            }
+            if (ZonePlayer.ContainsKey(_player.entityId))
+            {
+                ZonePlayer.TryGetValue(_player.entityId, out string[] _zone);
+                if (Zone_Message && _zone[5] != "")
                 {
-                    if (Zone_Message)
-                    {
-                        if (ZoneInfo.TryGetValue(_player.entityId, out string[] _msg))
-                        {
-                            if (_msg[1] != "")
-                            {
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _msg[1] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            }
-                        }
-                    }
-                    ZoneInfo.Remove(_player.entityId);
-                    Reminder.Remove(_player.entityId);
-                    if (ZonePvE.Contains(_player.entityId))
-                    {
-                        ZonePvE.Remove(_player.entityId);
-                    }
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _zone[5] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
+                if (_zone[9] != PersistentOperations.Player_Killing_Mode.ToString())
+                {
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup(string.Format("sgs PlayerKillingMode {0}", PersistentOperations.Player_Killing_Mode), true));
+                }
+                ZonePlayer.Remove(_player.entityId);
+                Reminder.Remove(_player.entityId);
             }
         }
 
-        public static void ReturnToPosition(ClientInfo _cInfo)
+        public static void EntryCommand(ClientInfo _cInfo, string _command)
         {
-            DateTime _respawnTime = PersistentContainer.Instance.Players[_cInfo.playerId].ZoneDeathTime;
-            TimeSpan varTime = DateTime.Now - _respawnTime;
-            double fractionalMinutes = varTime.TotalMinutes;
-            int _timepassed = (int)fractionalMinutes;
-            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+            if (_command.Contains("^"))
             {
-                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                {
-                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                    if (DateTime.Now < _dt)
-                    {
-                        Time(_cInfo, _timepassed, 6);
-                        return;
-                    }
-                }
-            }
-            Time(_cInfo, _timepassed, 3);
-        }
-
-        public static void Time(ClientInfo _cInfo, int _timePassed, int _timeAllowed)
-        {
-            if (_timePassed <= _timeAllowed)
-            {
-                if (Victim.TryGetValue(_cInfo.entityId, out string _deathPos))
-                {
-                    string[] _cords = _deathPos.Split(',');
-                    int.TryParse(_cords[0], out int x);
-                    int.TryParse(_cords[1], out int y);
-                    int.TryParse(_cords[2], out int z);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                    Victim.Remove(_cInfo.entityId);
-                }
-            }
-            else
-            {
-                Victim.Remove(_cInfo.entityId);
-                Phrases.Dict.TryGetValue(321, out string _phrase321);
-                _phrase321 = _phrase321.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase321 = _phrase321.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase321 = _phrase321.Replace("{Command50}", Zones.Command50);
-                _phrase321 = _phrase321.Replace("{Time}", _timeAllowed.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase321 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-            }
-        }
-
-        public static void Response(ClientInfo _cInfo, string _response)
-        {
-            if (_response == "**" || _response == "")
-            {
-                return;
-            }
-            else if (_response.Contains("^"))
-            {
-                string[] _responseSplit = _response.Split('^');
+                string[] _responseSplit = _command.Split('^');
                 for (int i = 0; i < _responseSplit.Length; i++)
                 {
                     string _responseAdj = _responseSplit[i].Trim();
@@ -409,37 +379,37 @@ namespace ServerTools
             }
             else
             {
-                _response = _response.Replace("{EntityId}", _cInfo.entityId.ToString());
-                _response = _response.Replace("{SteamId}", _cInfo.playerId);
-                _response = _response.Replace("{PlayerName}", _cInfo.playerName);
-                if (_response.ToLower().StartsWith("global "))
+                _command = _command.Replace("{EntityId}", _cInfo.entityId.ToString());
+                _command = _command.Replace("{SteamId}", _cInfo.playerId);
+                _command = _command.Replace("{PlayerName}", _cInfo.playerName);
+                if (_command.ToLower().StartsWith("global "))
                 {
-                    _response = _response.Replace("Global ", "");
-                    _response = _response.Replace("global ", "");
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _response + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    _command = _command.Replace("Global ", "");
+                    _command = _command.Replace("global ", "");
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
-                else if (_response.ToLower().StartsWith("whisper "))
+                else if (_command.ToLower().StartsWith("whisper "))
                 {
-                    _response = _response.Replace("Whisper ", "");
-                    _response = _response.Replace("whisper ", "");
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _response + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    _command = _command.Replace("Whisper ", "");
+                    _command = _command.Replace("whisper ", "");
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    SdtdConsole.Instance.ExecuteSync(_response, null);
+                    SdtdConsole.Instance.ExecuteSync(_command, null);
                 }
             }
         }
 
-        public static bool BoxCheck(string[] _box, float _X, float _Y, float _Z, bool[] _box2)
+        public static bool InsideZone(string[] _zone, float _X, float _Y, float _Z)
         {
-            string[] _corner1 = _box[0].Split(',');
+            string[] _corner1 = _zone[1].Split(',');
             float.TryParse(_corner1[0], out float xMin);
             float.TryParse(_corner1[1], out float yMin);
             float.TryParse(_corner1[2], out float zMin);
-            if (_box2[0])
+            if (_zone[3].ToLower() == "true")
             {
-                if (int.TryParse(_box[1], out int _radius))
+                if (int.TryParse(_zone[2], out int _radius))
                 {
                     if (VectorCircle(xMin, zMin, _X, _Z, _radius))
                     {
@@ -449,7 +419,7 @@ namespace ServerTools
             }
             else
             {
-                string[] _corner2 = _box[1].Split(',');
+                string[] _corner2 = _zone[2].Split(',');
                 float.TryParse(_corner2[0], out float xMax);
                 float.TryParse(_corner2[1], out float yMax);
                 float.TryParse(_corner2[2], out float zMax);
@@ -472,164 +442,23 @@ namespace ServerTools
 
         public static bool VectorBox(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax, float _X, float _Y, float _Z)
         {
-            if (xMin >= 0 && xMax >= 0)
+            if (_X >= xMin && _X <= xMax && _Y >= yMin && _Y <= yMax && _Z >= zMin && _Z <= zMax)
             {
-                if (xMin < xMax)
-                {
-                    if (_X < xMin || _X > xMax)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (_X > xMin || _X < xMax)
-                    {
-                        return false;
-                    }
-                }
+                return true;
             }
-            else if (xMin <= 0 && xMax <= 0)
-            {
-                if (xMin < xMax)
-                {
-                    if (_X < xMin || _X > xMax)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (_X > xMin || _X < xMax)
-                    {
-                        return false;
-                    }
-                }
-            }
-            else if (xMin <= 0 && xMax >= 0)
-            {
-                if (_X < xMin || _X > xMax)
-                {
-                    return false;
-                }
-            }
-            else if (xMin >= 0 && xMax <= 0)
-            {
-                if (_X > xMin || _X < xMax)
-                {
-                    return false;
-                }
-            }
-            if (yMin >= 0 && yMax >= 0)
-            {
-                if (yMin < yMax)
-                {
-                    if (_Y < yMin || _Y > yMax)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (_Y > yMin || _Y < yMax)
-                    {
-                        return false;
-                    }
-                }
-            }
-            else if (yMin <= 0 && yMax <= 0)
-            {
-                if (yMin < yMax)
-                {
-                    if (_Y < yMin || _Y > yMax)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (_Y > yMin || _Y < yMax)
-                    {
-                        return false;
-                    }
-                }
-            }
-            else if (yMin <= 0 && yMax >= 0)
-            {
-                if (_Y < yMin || _Y > yMax)
-                {
-                    return false;
-                }
-            }
-            else if (yMin >= 0 && yMax <= 0)
-            {
-                if (_Y > yMin || _Y < yMax)
-                {
-                    return false;
-                }
-            }
-            if (zMin >= 0 && zMax >= 0)
-            {
-                if (zMin < zMax)
-                {
-                    if (_Z < zMin || _Z > zMax)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (_Z > zMin || _Z < zMax)
-                    {
-                        return false;
-                    }
-                }
-            }
-            else if (zMin <= 0 && zMax <= 0)
-            {
-                if (zMin < zMax)
-                {
-                    if (_Z < zMin || _Z > zMax)
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (_Z > zMin || _Z < zMax)
-                    {
-                        return false;
-                    }
-                }
-            }
-            else if (zMin <= 0 && zMax >= 0)
-            {
-                if (_Z < zMin || _Z > zMax)
-                {
-                    return false;
-                }
-            }
-            else if (zMin >= 0 && zMax <= 0)
-            {
-                if (_Z > zMin || _Z < zMax)
-                {
-                    return false;
-                }
-            }
-            return true;
+            return false;
         }
 
         public static void HostileCheck()
         {
             try
             {
-                if (Box1.Count > 0)
+                if (ZoneList.Count > 0)
                 {
-                    for (int i = 0; i < Box1.Count; i++)
+                    for (int i = 0; i < ZoneList.Count; i++)
                     {
-                        string[] _box1 = Box1[i];
-                        bool[] _box2 = Box2[i];
-                        if (_box2[2])
+                        string[] _zone = ZoneList[i];
+                        if (_zone[10].ToLower() == "true")
                         {
                             List<Entity> Entities = GameManager.Instance.World.Entities.list;
                             for (int j = 0; j < Entities.Count; j++)
@@ -644,33 +473,33 @@ namespace ServerTools
                                         int _X = (int)_entity.position.x;
                                         int _Y = (int)_entity.position.y;
                                         int _Z = (int)_entity.position.z;
-                                        string[] _corner1 = _box1[0].Split(',');
+                                        string[] _corner1 = _zone[1].Split(',');
                                         int.TryParse(_corner1[0], out int _xMin);
                                         int.TryParse(_corner1[1], out int _yMin);
                                         int.TryParse(_corner1[2], out int _zMin);
-                                        if (_box2[0])
+                                        if (_zone[3].ToLower() == "true")
                                         {
-                                            if (int.TryParse(_box1[1], out int _radius))
+                                            if (int.TryParse(_zone[2], out int _radius))
                                             {
                                                 if (VectorCircle(_xMin, _zMin, _X, _Z, _radius))
                                                 {
-                                                    string _name = EntityClass.list[_entity.entityClass].entityClassName;
                                                     GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed {0} from zone {1} @ {2} {3} {4}", _name, _box1[2], _X, _Y, _Z));
+                                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed {0} from zone {1} @ {2} {3} {4}",
+                                                        EntityClass.list[_entity.entityClass].entityClassName, _zone[0], _X, _Y, _Z));
                                                 }
                                             }
                                         }
                                         else
                                         {
-                                            string[] _corner2 = _box1[1].Split(',');
+                                            string[] _corner2 = _zone[2].Split(',');
                                             int.TryParse(_corner2[0], out int _xMax);
                                             int.TryParse(_corner2[1], out int _yMax);
                                             int.TryParse(_corner2[2], out int _zMax);
                                             if (VectorBox(_xMin, _yMin, _zMin, _xMax, _yMax, _zMax, _X, _Y, _Z))
                                             {
-                                                string _name = EntityClass.list[_entity.entityClass].entityClassName;
                                                 GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                                Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed {0} from zone {1} @ {2} {3} {4}", _name, _box1[2], _X, _Y, _Z));
+                                                Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed {0} from zone {1} @ {2} {3} {4}",
+                                                    EntityClass.list[_entity.entityClass].entityClassName, _zone[0], _X, _Y, _Z));
                                             }
                                         }
                                     }
@@ -692,7 +521,7 @@ namespace ServerTools
             {
                 foreach (KeyValuePair<int, DateTime> time in Reminder.ToArray())
                 {
-                    ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(time.Key);
+                    ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(time.Key);
                     if (_cInfo != null)
                     {
                         DateTime _dt = time.Value;
@@ -701,10 +530,10 @@ namespace ServerTools
                         int _timepassed = (int)fractionalMinutes;
                         if (_timepassed >= Reminder_Delay)
                         {
-                            ZoneInfo.TryGetValue(_cInfo.entityId, out string[] _info);
-                            if (_info != null && _info[2] != "")
+                            ZonePlayer.TryGetValue(_cInfo.entityId, out string[] _zone);
+                            if (_zone != null && _zone[8] != "")
                             {
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _info[2] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _zone[8] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 Reminder[_cInfo.entityId] = DateTime.Now;
                             }
                         }
@@ -716,5 +545,50 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in Zones.ReminderExec: {0}", e.Message));
             }
         }
+
+        public static bool IsValid(EntityPlayer _player1, ClientInfo _cInfo2, EntityPlayer _player2)
+        {
+            try
+            {
+                if (ZonePlayer.ContainsKey(_player1.entityId) && ZonePlayer.ContainsKey(_player2.entityId))
+                {
+                    ZonePlayer.TryGetValue(_player1.entityId, out string[] _zone1);
+                    ZonePlayer.TryGetValue(_player2.entityId, out string[] _zone2);
+                    if (_zone1[9] != _zone2[9])
+                    {
+                        Phrases.Dict.TryGetValue(323, out string _phrase323);
+                        ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase323 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        return false;
+                    }
+                }
+                else if (ZonePlayer.ContainsKey(_player1.entityId) && !ZonePlayer.ContainsKey(_player2.entityId))
+                {
+                    ZonePlayer.TryGetValue(_player1.entityId, out string[] _zone);
+                    if (_zone[9] != PersistentOperations.Player_Killing_Mode.ToString())
+                    {
+                        Phrases.Dict.TryGetValue(323, out string _phrase323);
+                        ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase323 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        return false;
+                    }
+                }
+                else if (!ZonePlayer.ContainsKey(_player1.entityId) && ZonePlayer.ContainsKey(_player2.entityId))
+                {
+                    ZonePlayer.TryGetValue(_player2.entityId, out string[] _zone);
+                    if (_zone[9] != PersistentOperations.Player_Killing_Mode.ToString())
+                    {
+                        Phrases.Dict.TryGetValue(323, out string _phrase323);
+                        ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase323 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        return false;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.IsValid: {0}", e.Message));
+            }
+            return true;
+        }
+
+        
     }
 }

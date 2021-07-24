@@ -10,7 +10,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Operating = false, Reduced_Delay = false, Admin_Slot = false;
         public static int Session_Time = 30, Admin_Level = 0;
-        public static string Command69 = "reserved";
+        public static string Command_reserved = "reserved";
         public static Dictionary<string, DateTime> Dict = new Dictionary<string, DateTime>();
         public static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> Kicked = new Dictionary<string, DateTime>();
@@ -84,8 +84,7 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of missing 'Expires' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        DateTime _dt;
-                        if (!DateTime.TryParse(_line.GetAttribute("Expires"), out _dt))
+                        if (!DateTime.TryParse(_line.GetAttribute("Expires"), out DateTime _dt))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of invalid (date) value for 'Expires' attribute: {0}", subChild.OuterXml));
                             continue;
@@ -153,8 +152,7 @@ namespace ServerTools
         {
             if (Dict.ContainsKey(_id))
             {
-                DateTime _dt;
-                Dict.TryGetValue(_id, out _dt);
+                Dict.TryGetValue(_id, out DateTime _dt);
                 if (DateTime.Now < _dt)
                 {
                     return true;

@@ -45,11 +45,12 @@
     </Compile>
     <Compile Include="src\AntiCheat\DupeLog.cs" />
     <Compile Include="src\AntiCheat\BlockChange.cs" />
-    <Compile Include="src\AntiCheat\EntityDamage.cs" />
+    <Compile Include="src\AntiCheat\DamageDetector.cs" />
     <Compile Include="src\AntiCheat\PlayerChecks.cs" />
     <Compile Include="src\ConsoleCommands\DeletePlayerDataConsole.cs" />
     <Compile Include="src\ConsoleCommands\FlyingConsole.cs" />
     <Compile Include="src\ConsoleCommands\GodmodeDetectorConsole.cs" />
+    <Compile Include="src\ConsoleCommands\LogConsole.cs" />
     <Compile Include="src\ConsoleCommands\MazeConsole.cs" />
     <Compile Include="src\ConsoleCommands\MessageColorConsole.cs" />
     <Compile Include="src\ConsoleCommands\PrivateMessageConsole.cs" />
@@ -66,12 +67,14 @@
     <Compile Include="src\Functions\EventSchedule.cs" />
     <Compile Include="src\Harmony\RunTimePatch.cs" />
     <Compile Include="src\Harmony\Injections.cs" />
+    <Compile Include="src\PersistentOperations\ProcessDamage.cs" />
     <Compile Include="src\Serialize\ItemStackSerializable.cs" />
     <Compile Include="src\Tools\AutoBackup\AutoBackup.cs" />
     <Compile Include="src\Tools\Bank\Bank.cs" />
     <Compile Include="src\Tools\BlockLogger\BlockLogger.cs" />
     <Compile Include="src\Tools\BloodmoonWarrior\BloodmoonWarrior.cs" />
     <Compile Include="src\Tools\BreakTime\BreakTime.cs" />
+    <Compile Include="src\Tools\ChatColorPrefix\ColorList.cs" />
     <Compile Include="src\Tools\ConsoleCommandLog\Console_Command_Log.cs" />
     <Compile Include="src\Tools\DiscordBot\DiscordBot.cs" />
     <Compile Include="src\Tools\FallingBlocks\FallingBlocks.cs" />
@@ -160,7 +163,7 @@
     <Compile Include="src\Tools\CustomCommands\CustomCommands.cs" />
     <Compile Include="src\Tools\Event\Event.cs" />
     <Compile Include="src\Functions\LoadProcess.cs" />
-    <Compile Include="src\Functions\Triggers.cs" />
+    <Compile Include="src\Functions\CommandList.cs" />
     <Compile Include="src\PersistentOperations\PersistentOperations.cs" />
     <Compile Include="src\PersistentData\PersistentContainer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayer.cs" />
@@ -291,6 +294,8 @@
       <HintPath>..\7dtd-binaries\LogLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Pathfinding.Ionic.Zip.Reduced, Version=1.9.1.9000, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\7dtd-ServerTools-master-18.0.3\7dtd-binaries\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
@@ -298,6 +303,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
       <Private>True</Private>

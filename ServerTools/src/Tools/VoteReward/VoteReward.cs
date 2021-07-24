@@ -12,7 +12,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, RandomListRunning = false, Reward_Entity = false;
         public static int Reward_Count = 1, Delay_Between_Uses = 24, Entity_Id = 73, Weekly_Votes = 5;
-        public static string Your_Voting_Site = "https://7daystodie-servers.com/server/12345", API_Key = "xxxxxxxx", Command46 = "reward";
+        public static string Your_Voting_Site = "https://7daystodie-servers.com/server/12345", API_Key = "xxxxxxxx", Command_reward = "reward";
         private const string file = "VoteReward.xml";
         private static bool UpdateConfig = false, PosFound = false;
         private static Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
@@ -187,10 +187,10 @@ namespace ServerTools
             using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                sw.WriteLine("<!--  Items that do not require a quality should be set to 0 or 1 for min and max  -->");
-                sw.WriteLine("<!--  WalletCoin can be used as the item name  -->");
                 sw.WriteLine("<VoteRewards>");
                 sw.WriteLine("    <Rewards>");
+                sw.WriteLine("          <!--  Items that do not require a quality should be set to 0 or 1 for min and max  -->");
+                sw.WriteLine("          <!--  WalletCoin can be used as the item name  -->");
                 if (Dict.Count > 0)
                 {
                     foreach (KeyValuePair<string, int[]> kvp in Dict)
@@ -263,8 +263,8 @@ namespace ServerTools
                     Phrases.Dict.TryGetValue(301, out string _phrase301);
                     _phrase301 = _phrase301.Replace("{DelayBetweenRewards}", Delay_Between_Uses.ToString());
                     _phrase301 = _phrase301.Replace("{TimeRemaining}", _timeleft.ToString());
-                    _phrase301 = _phrase301.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                    _phrase301 = _phrase301.Replace("{Command46}", Command46);
+                    _phrase301 = _phrase301.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase301 = _phrase301.Replace("{Command_reward}", Command_reward);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase301 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
@@ -307,8 +307,8 @@ namespace ServerTools
                     {
                         Phrases.Dict.TryGetValue(303, out string _phrase303);
                         _phrase303 = _phrase303.Replace("{PlayerName}", _cInfo.playerName);
-                        _phrase303 = _phrase303.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                        _phrase303 = _phrase303.Replace("{Command46}", Command46);
+                        _phrase303 = _phrase303.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                        _phrase303 = _phrase303.Replace("{Command_reward}", Command_reward);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase303 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }

@@ -8,8 +8,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Player_Check = false, Zombie_Check = false, Vehicle_Check = false, Return = false;
         public static int Delay_Between_Uses = 0, Max_Homes = 2, Reserved_Max_Homes = 4, Command_Cost = 0;
-        public static string Command1 = "home", Command2 = "fhome", Command3 = "home save", Command4 = "home del", Command5 = "go home",
-            Command6 = "sethome";
+        public static string Command_home = "home", Command_fhome = "fhome", Command_save = "home save", Command_delete = "home del", Command_go = "go home",
+            Command_set = "sethome";
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> FriendPosition = new Dictionary<int, string>();
 
@@ -21,8 +21,7 @@ namespace ServerTools
                 {
                     if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                     {
-                        DateTime _dt;
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                         if (DateTime.Now < _dt)
                         {
                             ListResult(_cInfo, Reserved_Max_Homes);
@@ -103,8 +102,7 @@ namespace ServerTools
                             {
                                 if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                                     if (DateTime.Now < _dt)
                                     {
                                         int _delay = Delay_Between_Uses / 2;
@@ -153,10 +151,10 @@ namespace ServerTools
                 {
                     int _timeleft = _delay - _timepassed;
                     Phrases.Dict.TryGetValue(734, out string _phrase734);
-                    _phrase734 = _phrase734.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
+                    _phrase734 = _phrase734.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
                     _phrase734 = _phrase734.Replace("{DelayBetweenUses}", _delay.ToString());
                     _phrase734 = _phrase734.Replace("{Value}", _timeleft.ToString());
-                    _phrase734 = _phrase734.Replace("{Command1}", Command1);
+                    _phrase734 = _phrase734.Replace("{Command_home}", Command_home);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase734 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
@@ -448,8 +446,8 @@ namespace ServerTools
                             {
                                 Phrases.Dict.TryGetValue(744, out string _phrase744);
                                 _phrase744 = _phrase744.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase744 = _phrase744.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                                _phrase744 = _phrase744.Replace("{Command5}", Command5);
+                                _phrase744 = _phrase744.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                _phrase744 = _phrase744.Replace("{Command_go}", Command_go);
                                 ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase744 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 Phrases.Dict.TryGetValue(745, out string _phrase745);
                                 _phrase745 = _phrase745.Replace("{PlayerName}", _cInfo2.playerName);

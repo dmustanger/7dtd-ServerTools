@@ -9,6 +9,7 @@ namespace ServerTools
         {
             return "[ServerTools] - Enable or disable animal tracking.";
         }
+
         public override string GetHelp()
         {
             return "Usage:\n" +
@@ -20,10 +21,12 @@ namespace ServerTools
                    "3. Reset the delay status of a player for the animal tracking command\n";
 
         }
+
         public override string[] GetCommands()
         {
             return new string[] { "st-AnimalTracking", "at", "st-at" };
         }
+
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try

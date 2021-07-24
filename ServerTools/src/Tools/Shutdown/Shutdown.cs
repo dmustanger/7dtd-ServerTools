@@ -6,27 +6,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Alert_On_Login = false;
         public static int Countdown_Timer = 2, Delay = 120, Alert_Count = 2;
-        public static string Command47 = "shutdown";
-
-        public static bool Bloodmoon()
-        {
-            try
-            {
-                if (PersistentOperations.BloodMoonSky() || PersistentOperations.BloodMoonDuskSky())
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Shutdown.Bloodmoon: {0}", e.Message));
-            }
-            return false;
-        }
+        public static string Command_shutdown = "shutdown";
 
         public static void Stop()
         {

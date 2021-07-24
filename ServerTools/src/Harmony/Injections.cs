@@ -1,23 +1,25 @@
 ﻿using ServerTools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 public static class Injections
 {
-    public static bool DamageResponse_Prefix(EntityAlive __instance, DamageResponse _dmResponse)
+
+    public static bool DamageEntity_Prefix(EntityAlive __instance, DamageSource _damageSource, int _strength)
     {
         try
         {
-            if (EntityDamage.IsEnabled || Zones.IsEnabled || Lobby.IsEnabled || Market.IsEnabled)
+            if (__instance.entityId != _damageSource.getEntityId())
             {
-                return EntityDamage.ProcessEntityDamage(__instance, _dmResponse);
+                return ProcessDamage.Exec(__instance, _damageSource, _strength);
             }
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.DamageResponse_Prefix: {0}", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageDamageEntity_Prefix: {0}", e.Message));
         }
         return true;
     }
@@ -80,10 +82,7 @@ public static class Injections
     {
         try
         {
-            if (POIProtection.IsEnabled || BlockChange.IsEnabled)
-            {
-                return BlockChange.ProcessBlockChange(__instance, persistentPlayerId, _blocksToChange);
-            }
+            return BlockChange.ProcessBlockChange(__instance, persistentPlayerId, _blocksToChange);
         }
         catch (Exception e)
         {
@@ -104,13 +103,13 @@ public static class Injections
         }
     }
 
-    public static void AddFallingBlock_Postfix(Vector3i _block)
+    public static void AddFallingBlock_Postfix(World __instance, Vector3i _block)
     {
         try
         {
             if (FallingBlocks.IsEnabled)
             {
-                FallingBlocks.Single(_block);
+                FallingBlocks.Single(__instance, _block);
             }
         }
         catch (Exception e)
@@ -119,13 +118,13 @@ public static class Injections
         }
     }
 
-    public static void AddFallingBlocks_Postfix(IList<Vector3i> _list)
+    public static void AddFallingBlocks_Postfix(World __instance, IList<Vector3i> _list)
     {
         try
         {
             if (FallingBlocks.IsEnabled)
             {
-                FallingBlocks.Multiple(_list);
+                FallingBlocks.Multiple(__instance, _list);
             }
         }
         catch (Exception e)
@@ -157,20 +156,20 @@ public static class Injections
                         {
                             DiscordBot.LastPlayer = _cInfo.playerId;
                             DiscordBot.LastEntry = _msg;
-                            DiscordBot.Queue.Add("[Game] **" + _mainName + "**  " + DiscordBot.LastEntry);
+                            DiscordBot.Queue.Add("[Game] **" + _mainName + "** : " + DiscordBot.LastEntry);
                         }
                         else if (DiscordBot.LastPlayer != _cInfo.playerId)
                         {
                             DiscordBot.LastPlayer = _cInfo.playerId;
                             DiscordBot.LastEntry = _msg;
-                            DiscordBot.Queue.Add("[Game] **" + _mainName + "**  " + DiscordBot.LastEntry);
+                            DiscordBot.Queue.Add("[Game] **" + _mainName + "** : " + DiscordBot.LastEntry);
                         }
                     }
                     else if (DiscordBot.LastEntry != _msg)
                     {
                         DiscordBot.LastPlayer = "-1";
                         DiscordBot.LastEntry = _msg;
-                        DiscordBot.Queue.Add("[Game] **" + _mainName + "**  " + DiscordBot.LastEntry);
+                        DiscordBot.Queue.Add("[Game] **" + _mainName + "** : " + DiscordBot.LastEntry);
                     }
                 }
             }
@@ -178,6 +177,23 @@ public static class Injections
         catch (Exception e)
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ChatMessageServer_Postfix: {0}", e.Message));
+        }
+    }
+
+    public static void Cleanup_Postfix()
+    {
+        try
+        {
+            Log.Out("[SERVERTOOLS] SHUTDOWN");
+            Process process = Process.GetCurrentProcess();
+            if (process != null)
+            {
+                process.Kill();
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.Cleanup_Postfix: {0}", e.Message));
         }
     }
 }

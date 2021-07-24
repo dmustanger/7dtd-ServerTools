@@ -8,14 +8,16 @@ namespace ServerTools
     public class InfoTicker
     {
         public static bool IsEnabled = false, IsRunning = false, Random = false;
-        public static string Command104 = "infoticker";
+        public static string Command_infoticker = "infoticker";
         public static int Delay = 60;
-        private const string file = "InfoTicker.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        public static List<string> ExemptionList = new List<string>();
+
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();
         private static List<string> MsgList = new List<string>();
-        public static List<string> ExemptionList = new List<string>();
-        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        
+        private const string file = "InfoTicker.xml";
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -33,14 +35,14 @@ namespace ServerTools
 
         private static void LoadXml()
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(filePath);
+                xmlDoc.Load(FilePath);
             }
             catch (XmlException e)
             {
@@ -111,7 +113,7 @@ namespace ServerTools
         private static void UpdateXml()
         {
             FileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
+            using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<InfoTicketer>");
@@ -151,7 +153,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }

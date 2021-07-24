@@ -5,17 +5,17 @@ namespace ServerTools
     public class Whisper
     {
         public static bool IsEnabled = false;
-        public static string Command120 = "pmessage", Command121 = "pm", Command122 = "rmessage", Command123 = "rm";
+        public static string Command_pmessage = "pmessage", Command_pm = "pm", Command_rmessage = "rmessage", Command_rm = "rm";
 
         public static void Send(ClientInfo _cInfo, string _message)
         {
-            if (_message.StartsWith(Command120 + " "))
+            if (_message.StartsWith(Command_pmessage + " "))
             {
-                _message = _message.Replace(Command120 + " ", "");
+                _message = _message.Replace(Command_pmessage + " ", "");
             }
-            if (_message.StartsWith(Command121 + " "))
+            if (_message.StartsWith(Command_pm + " "))
             {
-                _message = _message.Replace(Command121 + " ", "");
+                _message = _message.Replace(Command_pm + " ", "");
             }
             string _nameId = _message.Split(' ').First();
             _message = _message.Replace(_nameId, "");
@@ -49,13 +49,13 @@ namespace ServerTools
 
         public static void Reply(ClientInfo _cInfo, string _message)
         {
-            if (_message.StartsWith(Command122 + " "))
+            if (_message.StartsWith(Command_rmessage + " "))
             {
-                _message = _message.Replace(Command122 + " ", "");
+                _message = _message.Replace(Command_rmessage + " ", "");
             }
-            if (_message.StartsWith(Command123 + " "))
+            if (_message.StartsWith(Command_rm + " "))
             {
-                _message = _message.Replace(Command123 + " ", "");
+                _message = _message.Replace(Command_rm + " ", "");
             }
             string _lastwhisper = PersistentContainer.Instance.Players[_cInfo.playerId].LastWhisper;
             if (string.IsNullOrEmpty(_lastwhisper))

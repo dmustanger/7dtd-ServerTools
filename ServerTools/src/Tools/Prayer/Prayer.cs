@@ -9,12 +9,12 @@ namespace ServerTools
     class Prayer
     {
         public static bool IsEnabled = false, IsRunning = false;
-        public static string Command126 = "pray";
+        public static string Command_pray = "pray";
         public static int Delay_Between_Uses = 30, Command_Cost = 10;
         private const string file = "Prayer.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static Random random = new Random();
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static readonly Random Random = new Random();
         public static Dictionary<string, string> Dict = new Dictionary<string, string>();
 
         public static void Load()
@@ -31,21 +31,21 @@ namespace ServerTools
             if (!IsEnabled && IsRunning)
             {
                 Dict.Clear();
-                fileWatcher.Dispose();
+                FileWatcher.Dispose();
                 IsRunning = false;
             }
         }
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(filePath);
+                xmlDoc.Load(FilePath);
             }
             catch (XmlException e)
             {
@@ -99,8 +99,8 @@ namespace ServerTools
 
         private static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
+            FileWatcher.EnableRaisingEvents = false;
+            using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Prayer>");
@@ -124,21 +124,21 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
@@ -172,8 +172,7 @@ namespace ServerTools
                 {
                     if (ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                     {
-                        DateTime _dt;
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                         if (DateTime.Now < _dt)
                         {
                             int _delay = Delay_Between_Uses / 2;
@@ -205,8 +204,8 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(821, out string _phrase821);
                 _phrase821 = _phrase821.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase821 = _phrase821.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase821 = _phrase821.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase821 = _phrase821.Replace("{Command126}", Command126);
+                _phrase821 = _phrase821.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase821 = _phrase821.Replace("{Command_pray}", Command_pray);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase821 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
@@ -237,7 +236,7 @@ namespace ServerTools
             if (Dict.Count > 0)
             {
                 List<string> Keys = new List<string>(Dict.Keys);
-                string randomKey = Keys[random.Next(Dict.Count)];
+                string randomKey = Keys[Random.Next(Dict.Count)];
                 string _message = Dict[randomKey];
                 SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.playerId, randomKey), null);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Time = 2, Delay_Between_Uses = 120, Command_Cost = 0;
-        public static string Command61 = "died";
+        public static string Command_died = "died";
         public static Dictionary<int, DateTime> DeathTime = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> LastDeathPos = new Dictionary<int, string>();
 
@@ -71,8 +71,8 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(431, out string _phrase431);
                 _phrase431 = _phrase431.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase431 = _phrase431.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase431 = _phrase431.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase431 = _phrase431.Replace("{Command61}", Command61);
+                _phrase431 = _phrase431.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase431 = _phrase431.Replace("{Command_died}", Command_died);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase431 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }

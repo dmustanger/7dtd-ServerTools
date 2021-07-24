@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Optional = false;
         public static int Max_Deaths = 9, Max_Extra_Lives = 3, Life_Price = 2000;
-        public static string Command11 = "top3", Command12 = "score", Command101 = "buy life", Command127 = "hardcore", Command128 = "hardcore on";
+        public static string Command_top3 = "top3", Command_score = "score", Command_buy_life = "buy life", Command_hardcore = "hardcore", Command_hardcore_on = "hardcore on";
 
         public static void Check(ClientInfo _cInfo, EntityPlayer _player)
         {

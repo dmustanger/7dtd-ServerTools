@@ -10,10 +10,10 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Minimum_Bounty = 5, Kill_Streak = 0, Bonus = 25;
-        public static string Command83 = "bounty";
+        public static string Command_bounty = "bounty";
         public static Dictionary<int, int> KillStreak = new Dictionary<int, int>();
-        private static string file = string.Format("Bounty_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string filepath = string.Format("{0}/Logs/BountyLogs/{1}", API.ConfigPath, file);
+        private static readonly string file = string.Format("Bounty_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static readonly string filepath = string.Format("{0}/Logs/BountyLogs/{1}", API.ConfigPath, file);
 
         public static void BountyList(ClientInfo _cInfo)
         {
@@ -37,8 +37,8 @@ namespace ServerTools
                 }
             }
             Phrases.Dict.TryGetValue(537, out string _phrase537);
-            _phrase537 = _phrase537.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-            _phrase537 = _phrase537.Replace("{Command83}", Command83);
+            _phrase537 = _phrase537.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+            _phrase537 = _phrase537.Replace("{Command_bounty}", Command_bounty);
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase537 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 

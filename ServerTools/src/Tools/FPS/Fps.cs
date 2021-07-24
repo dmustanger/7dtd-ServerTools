@@ -5,7 +5,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Set_Target = 60;
-        public static string Command75 = "fps";
+        public static string Command_fps = "fps";
 
         public static void FPS(ClientInfo _cInfo)
         {

@@ -8,13 +8,13 @@ namespace ServerTools
     class Lobby
     {
         public static bool IsEnabled = false, Return = false, Player_Check = false, Zombie_Check = false, Reserved_Only = false, PvE = false;
-        public static int Delay_Between_Uses = 5, Lobby_Size = 25, Command_Cost = 0;
-        public static string Lobby_Position = "0,0,0", Command53 = "lobbyback", Command54 = "lback", Command87 = "setlobby", Command88 = "lobby";
+        public static int Delay_Between_Uses = 5, Lobby_Size = 25, Command_Cost = 0, Player_Killing_Mode = 0;
+        public static string Lobby_Position = "0,0,0", Command_lobbyback = "lobbyback", Command_lback = "lback", Command_set = "setlobby", Command_lobby = "lobby";
         public static List<int> LobbyPlayers = new List<int>();
 
         public static void Set(ClientInfo _cInfo)
         {
-            string[] _command = { Command87 };
+            string[] _command = { Command_set };
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo))
             {
                 Phrases.Dict.TryGetValue(248, out string _phrase248);
@@ -72,8 +72,7 @@ namespace ServerTools
                 {
                     if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                     {
-                        DateTime _dt;
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                         if (DateTime.Now < _dt)
                         {
                             int _delay = Delay_Between_Uses / 2;
@@ -105,8 +104,8 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(241, out string _phrase241);
                 _phrase241 = _phrase241.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase241 = _phrase241.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase241 = _phrase241.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase241 = _phrase241.Replace("{Command88}", Command88);
+                _phrase241 = _phrase241.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase241 = _phrase241.Replace("{Command_lobby}", Command_lobby);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase241 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
@@ -127,12 +126,12 @@ namespace ServerTools
 
         private static void LobbyTele(ClientInfo _cInfo)
         {
-            if (Lobby.Lobby_Position != "0,0,0" && Lobby.Lobby_Position != "0 0 0" && Lobby.Lobby_Position != "")
+            if (Lobby_Position != "0,0,0" && Lobby_Position != "0 0 0" && Lobby_Position != "")
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 if (_player != null)
                 {
-                    if (!Lobby.LobbyPlayers.Contains(_cInfo.entityId))
+                    if (!LobbyPlayers.Contains(_cInfo.entityId))
                     {
                         if (Player_Check)
                         {
@@ -164,11 +163,11 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = _pposition;
                             PersistentContainer.DataChange = true;
                             Phrases.Dict.TryGetValue(243, out string _phrase243);
-                            _phrase243 = _phrase243.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                            _phrase243 = _phrase243.Replace("{Command53}", Command53);
+                            _phrase243 = _phrase243.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                            _phrase243 = _phrase243.Replace("{Command_lobbyback}", Command_lobbyback);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase243 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
-                        string[] _cords = Lobby.Lobby_Position.Split(',').ToArray();
+                        string[] _cords = Lobby_Position.Split(',').ToArray();
                         if (int.TryParse(_cords[0], out int _x))
                         {
                             if (int.TryParse(_cords[1], out int _y))
@@ -210,11 +209,10 @@ namespace ServerTools
                     string _lastPos = PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos;
                     if (_lastPos != "")
                     {
-                        int x, y, z;
                         string[] _returnCoords = _lastPos.Split(',');
-                        int.TryParse(_returnCoords[0], out x);
-                        int.TryParse(_returnCoords[1], out y);
-                        int.TryParse(_returnCoords[2], out z);
+                        int.TryParse(_returnCoords[0], out int x);
+                        int.TryParse(_returnCoords[1], out int y);
+                        int.TryParse(_returnCoords[2], out int z);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                         LobbyPlayers.Remove(_cInfo.entityId);
                         PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
@@ -237,9 +235,9 @@ namespace ServerTools
 
         public static void LobbyCheck(ClientInfo _cInfo, EntityAlive _player)
         {
-            if (!Lobby.InsideLobby(_player.position.x, _player.position.z))
+            if (!InsideLobby(_player.position.x, _player.position.z))
             {
-                Lobby.LobbyPlayers.Remove(_cInfo.entityId);
+                LobbyPlayers.Remove(_cInfo.entityId);
                 PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
                 PersistentContainer.DataChange = true;
                 Phrases.Dict.TryGetValue(247, out string _phrase247);
@@ -249,15 +247,55 @@ namespace ServerTools
 
         public static bool InsideLobby(float _x, float _z)
         {
-            int x, z;
-            string[] _cords = Lobby.Lobby_Position.Split(',').ToArray();
-            int.TryParse(_cords[0], out x);
-            int.TryParse(_cords[2], out z);
+            string[] _cords = Lobby_Position.Split(',').ToArray();
+            int.TryParse(_cords[0], out int x);
+            int.TryParse(_cords[2], out int z);
             if ((x - _x) * (x - _x) + (z - _z) * (z - _z) <= Lobby_Size * Lobby_Size)
             {
                 return true;
             }
             return false;
+        }
+
+        public static bool PvEViolation(ClientInfo _cInfo2)
+        {
+            try
+            {
+                Phrases.Dict.TryGetValue(260, out string _phrase260);
+                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase260 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                if (PersistentOperations.PvEViolations.ContainsKey(_cInfo2.entityId))
+                {
+                    PersistentOperations.PvEViolations.TryGetValue(_cInfo2.entityId, out int _violations);
+                    _violations++;
+                    PersistentOperations.PvEViolations[_cInfo2.entityId] = _violations;
+                    if (PersistentOperations.Jail_Violation > 0 && _violations == PersistentOperations.Jail_Violation)
+                    {
+                        PersistentOperations.Jail(_cInfo2);
+                    }
+                    if (PersistentOperations.Kill_Violation > 0 && _violations == PersistentOperations.Kill_Violation)
+                    {
+                        PersistentOperations.Kill(_cInfo2);
+                    }
+                    if (PersistentOperations.Kick_Violation > 0 && _violations == PersistentOperations.Kick_Violation)
+                    {
+                        PersistentOperations.Kick(_cInfo2);
+                    }
+                    else if (PersistentOperations.Ban_Violation > 0 && _violations == PersistentOperations.Ban_Violation)
+                    {
+                        PersistentOperations.Ban(_cInfo2);
+                    }
+                }
+                else
+                {
+                    PersistentOperations.PvEViolations.Add(_cInfo2.entityId, 1);
+                }
+                return false;
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Lobby.PvEViolation: {0}", e.Message));
+            }
+            return true;
         }
     }
 }

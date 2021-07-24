@@ -8,8 +8,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Player_Check = false, Zombie_Check = false, Vehicle = false;
         public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Reserved_Max_Waypoints = 4, Command_Cost = 0;
-        public static string Command10 = "go way", Command106 = "waypoint", Command107 = "way", Command108 = "wp", Command109 = "fwaypoint", Command110 = "fway", Command111 = "fwp", 
-            Command112 = "waypoint save", Command113 = "way save", Command114 = "ws", Command115 = "waypoint del", Command116 = "way del", Command117 = "wd";
+        public static string Command_go_way = "go way", Command_waypoint = "waypoint", Command_way = "way", Command_wp = "wp", Command_fwaypoint = "fwaypoint", Command_fway = "fway", Command_fwp = "fwp", 
+            Command_waypoint_save = "waypoint save", Command_way_save = "way save", Command_ws = "ws", Command_waypoint_del = "waypoint del", Command_way_del = "way del", Command_wd = "wd";
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> FriendPosition = new Dictionary<int, string>();
 
@@ -130,10 +130,10 @@ namespace ServerTools
             {
                 int _timeleft = _delay - _timepassed;
                 Phrases.Dict.TryGetValue(271, out string _phrase271);
-                _phrase271 = _phrase271.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
+                _phrase271 = _phrase271.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
                 _phrase271 = _phrase271.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase271 = _phrase271.Replace("{Value}", _timeleft.ToString());
-                _phrase271 = _phrase271.Replace("{Command106}", Command106);
+                _phrase271 = _phrase271.Replace("{Command_waypoint}", Command_waypoint);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase271 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
@@ -367,8 +367,8 @@ namespace ServerTools
                         {
                             Phrases.Dict.TryGetValue(286, out string _phrase286);
                             _phrase286 = _phrase286.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase286 = _phrase286.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                            _phrase286 = _phrase286.Replace("{Command10}", Command10);
+                            _phrase286 = _phrase286.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                            _phrase286 = _phrase286.Replace("{Command_go_way}", Command_go_way);
                             ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase286 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             Phrases.Dict.TryGetValue(287, out string _phrase287);
                             _phrase287 = _phrase287.Replace("{PlayerName}", _cInfo2.playerName);

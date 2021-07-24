@@ -156,19 +156,6 @@ namespace ServerTools
             };
         }
 
-        public static void ShutdownFailsafe()
-        {
-            System.Timers.Timer _shutdownFailsafe = new System.Timers.Timer(60000)
-            {
-                AutoReset = true
-            };
-            _shutdownFailsafe.Start();
-            _shutdownFailsafe.Elapsed += (sender, e) =>
-            {
-                StopServer.FailSafe(sender, e);
-            };
-        }
-
         public static void LogAlert()
         {
             Log.Out("-------------------------------");
@@ -178,7 +165,7 @@ namespace ServerTools
             {
                 Log.Out("Credential enabled");
             }
-            if (EntityDamage.IsEnabled)
+            if (DamageDetector.IsEnabled)
             {
                 Log.Out("Damage detector enabled");
             }

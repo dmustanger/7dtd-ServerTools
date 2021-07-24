@@ -159,20 +159,19 @@ namespace ServerTools
         {
             try
             {
-                int _x2, _y2, _z2;
                 if (int.TryParse(_id, out int _entity))
                 {
                     PersistentOperations.EntityId.TryGetValue(_entity, out int _entityId);
-                    bool posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_pos, 15, out _x2, out _y2, out _z2, new Vector3(_radius, _radius, _radius), true);
+                    bool posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_pos, 15, out int _x, out int _y, out int _z, new Vector3(_radius, _radius, _radius), true);
                     if (!posFound)
                     {
-                        posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_pos, 15, out _x2, out _y2, out _z2, new Vector3(_radius + 5, _radius + 50, _radius + 5), true);
+                        posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_pos, 15, out _x, out _y, out _z, new Vector3(_radius + 5, _radius + 50, _radius + 5), true);
                     }
                     if (posFound)
                     {
-                        Entity entity = EntityFactory.CreateEntity(_entityId, new Vector3(_x2, _y2, _z2));
+                        Entity entity = EntityFactory.CreateEntity(_entityId, new Vector3(_x, _y, _z));
                         GameManager.Instance.World.SpawnEntityInWorld(entity);
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Spawned a {0} at {1} x, {2} y, {3} z", entity.EntityClass.entityClassName, _x2, _y2, _z2));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Spawned a {0} at {1} x, {2} y, {3} z", entity.EntityClass.entityClassName, _x, _y, _z));
                     }
                     else
                     {

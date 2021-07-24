@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, VoteOpen = false;
         public static int Players_Online = 5, Votes_Needed = 3;
-        public static string Command67 = "mutevote";
+        public static string Command_mutevote = "mutevote";
         public static List<int> Votes = new List<int>();
         private static ClientInfo _playerMute;
 
@@ -17,8 +17,7 @@ namespace ServerTools
             {
                 if (ConnectionManager.Instance.ClientCount() >= Players_Online)
                 {
-                    int _entityId;
-                    if (int.TryParse(_player, out _entityId))
+                    if (int.TryParse(_player, out int _entityId))
                     {
                         ClientInfo _playerToMute = ConnectionManager.Instance.Clients.ForEntityId(_entityId);
                         if (_playerToMute != null)
@@ -35,8 +34,8 @@ namespace ServerTools
                             _phrase911 = _phrase911.Replace("{PlayerName}", _playerToMute.playerName);
                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase911 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                             Phrases.Dict.TryGetValue(912, out string _phrase912);
-                            _phrase912 = _phrase912.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                            _phrase912 = _phrase912.Replace("{Command70}", RestartVote.Command70);
+                            _phrase912 = _phrase912.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                            _phrase912 = _phrase912.Replace("{Command_yes}", RestartVote.Command_yes);
                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase912 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         }
                         else
@@ -89,8 +88,8 @@ namespace ServerTools
                     }
                 }
                 Phrases.Dict.TryGetValue(914, out string _phrase914);
-                _phrase914 = _phrase914.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase914 = _phrase914.Replace("{Command67}", Command67);
+                _phrase914 = _phrase914.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase914 = _phrase914.Replace("{Command_mutevote}", Command_mutevote);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase914 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else

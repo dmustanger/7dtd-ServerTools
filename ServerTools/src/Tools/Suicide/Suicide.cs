@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Player_Check = false, Zombie_Check = false;
         public static int Delay_Between_Uses = 60;
-        public static string Command20 = "killme", Command21 = "wrist", Command22 = "hang", Command23 = "suicide";
+        public static string Command_killme = "killme", Command_wrist = "wrist", Command_hang = "hang", Command_suicide = "suicide";
 
         public static void Exec(ClientInfo _cInfo)
         {
@@ -52,11 +52,11 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(31, out string _phrase31);
                 _phrase31 = _phrase31.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase31 = _phrase31.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase31 = _phrase31.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase31 = _phrase31.Replace("{Command20}", Command20);
-                _phrase31 = _phrase31.Replace("{Command21}", Command21);
-                _phrase31 = _phrase31.Replace("{Command22}", Command22);
-                _phrase31 = _phrase31.Replace("{Command23}", Command23);
+                _phrase31 = _phrase31.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase31 = _phrase31.Replace("{Command_killme}", Command_killme);
+                _phrase31 = _phrase31.Replace("{Command_wrist}", Command_wrist);
+                _phrase31 = _phrase31.Replace("{Command_hang}", Command_hang);
+                _phrase31 = _phrase31.Replace("{Command_suicide}", Command_suicide);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase31 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }

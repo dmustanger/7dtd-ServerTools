@@ -10,7 +10,8 @@ namespace ServerTools
     class Bank
     {
         public static bool IsEnabled = false, Inside_Claim = false, Player_Transfers = false;
-        public static string Ingame_Coin = "casinoCoin", Command94 = "bank", Command95 = "deposit", Command96 = "withdraw", Command97 = "wallet deposit", Command98 = "wallet withdraw", Command99 = "transfer";
+        public static string Ingame_Coin = "casinoCoin", Command_bank = "bank", Command_deposit = "deposit", Command_withdraw = "withdraw",
+            Command_wallet_deposit = "wallet deposit", Command_wallet_withdraw = "wallet withdraw", Command_transfer = "transfer";
         public static int Deposit_Fee_Percent = 5;
         public static Dictionary<string, int> TransferId = new Dictionary<string, int>();
         private static readonly string file = string.Format("Bank_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
@@ -294,16 +295,16 @@ namespace ServerTools
                                 else
                                 {
                                     Phrases.Dict.TryGetValue(646, out string _phrase646);
-                                    _phrase646 = _phrase646.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                                    _phrase646 = _phrase646.Replace("{Command95}", Command95);
+                                    _phrase646 = _phrase646.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                    _phrase646 = _phrase646.Replace("{Command_deposit}", Command_deposit);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase646 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else
                             {
                                 Phrases.Dict.TryGetValue(646, out string _phrase646);
-                                _phrase646 = _phrase646.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                                _phrase646 = _phrase646.Replace("{Command95}", Command95);
+                                _phrase646 = _phrase646.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                _phrase646 = _phrase646.Replace("{Command_deposit}", Command_deposit);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase646 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
@@ -397,8 +398,8 @@ namespace ServerTools
                             else
                             {
                                 Phrases.Dict.TryGetValue(652, out string _phrase652);
-                                _phrase652 = _phrase652.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                                _phrase652 = _phrase652.Replace("{Command96}", Command96);
+                                _phrase652 = _phrase652.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                _phrase652 = _phrase652.Replace("{Command_withdraw}", Command_withdraw);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase652 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
@@ -470,8 +471,8 @@ namespace ServerTools
                 else
                 {
                     Phrases.Dict.TryGetValue(656, out string _phrase656);
-                    _phrase656 = _phrase656.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                    _phrase656 = _phrase656.Replace("{Command97}", Command97);
+                    _phrase656 = _phrase656.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase656 = _phrase656.Replace("{Command_wallet_deposit}", Command_wallet_deposit);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase656 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
@@ -512,8 +513,8 @@ namespace ServerTools
                 else
                 {
                     Phrases.Dict.TryGetValue(659, out string _phrase659);
-                    _phrase659 = _phrase659.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                    _phrase659 = _phrase659.Replace("{Command98}", Command98);
+                    _phrase659 = _phrase659.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase659 = _phrase659.Replace("{Command_wallet_withdraw}", Command_wallet_withdraw);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase659 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
@@ -591,8 +592,8 @@ namespace ServerTools
                         else
                         {
                             Phrases.Dict.TryGetValue(664, out string _phrase664);
-                            _phrase664 = _phrase664.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                            _phrase664 = _phrase664.Replace("{Command99}", Command99);
+                            _phrase664 = _phrase664.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                            _phrase664 = _phrase664.Replace("{Command_transfer}", Command_transfer);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase664 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }

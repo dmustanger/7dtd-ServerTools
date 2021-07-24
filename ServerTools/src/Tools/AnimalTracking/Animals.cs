@@ -7,10 +7,10 @@ namespace ServerTools
     public class Animals
     {
         public static bool IsEnabled = false;
-        public static string Command30 = "trackanimal", Command31 = "track";
+        public static string Command_trackanimal = "trackanimal", Command_track = "track";
         public static int Delay_Between_Uses = 60, Minimum_Spawn_Radius = 40, Maximum_Spawn_Radius = 60, Command_Cost = 0;
         public static string Animal_List = "82,83,84,85";
-        private static Random rnd = new Random();
+        private static readonly Random rnd = new Random();
 
         public static void Exec(ClientInfo _cInfo)
         {
@@ -39,8 +39,7 @@ namespace ServerTools
                 {
                     if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                     {
-                        DateTime _dt;
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                         if (DateTime.Now < _dt)
                         {
                             int _delay = Delay_Between_Uses / 2;
@@ -125,8 +124,7 @@ namespace ServerTools
                     _animalId.Add(i);
                 }
                 int _r = rnd.Next(_animalId.Count);
-                int _newId;
-                int.TryParse(_animalId[_r], out _newId);
+                int.TryParse(_animalId[_r], out int _newId);
                 int _nextRadius = rnd.Next(minRad, maxRad + 1);
                 Dictionary<int, EntityClass>.KeyCollection entityTypesCollection = EntityClass.list.Dict.Keys;
                 int counter = 1;

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Timers;
 
 namespace ServerTools
 {
@@ -11,7 +9,7 @@ namespace ServerTools
 
         public static void PrepareShutdown()
         {
-            if (Shutdown.Bloodmoon() || Event.Open)
+            if (PersistentOperations.IsBloodmoon() || Event.Open)
             {
                 EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(10));
                 if (Event.Open && !Event.OperatorWarned)
@@ -78,7 +76,7 @@ namespace ServerTools
 
         public static void Stop()
         {
-            Log.Out("[SERVERTOOLS] Running shutdown.");
+            Log.Out("[SERVERTOOLS] Running shutdown");
             SdtdConsole.Instance.ExecuteSync("shutdown", null);
         }
 
@@ -95,16 +93,6 @@ namespace ServerTools
             if (_count > 1)
             {
                 Alert(_message, _count - 1);
-            }
-        }
-
-        public static void FailSafe(object sender, ElapsedEventArgs e)
-        {
-            Log.Out("[SERVERTOOLS] Failsafe activated. Server detected operating past shutdown. Forcing process kill.");
-            Process process = Process.GetCurrentProcess();
-            if (process != null)
-            {
-                process.Kill();
             }
         }
     }

@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, VoteOpen = false;
         public static int Players_Online = 5, Votes_Needed = 3;
-        public static string Command68 = "kickvote";
+        public static string Command_kickvote = "kickvote";
         public static List<int> Kick = new List<int>();
         private static ClientInfo _playerKick;
 
@@ -20,8 +20,7 @@ namespace ServerTools
                     int _playerCount = ConnectionManager.Instance.ClientCount();
                     if (_playerCount >= Players_Online)
                     {
-                        int _entityId;
-                        if (int.TryParse(_player, out _entityId))
+                        if (int.TryParse(_player, out int _entityId))
                         {
                             ClientInfo _playerInfo = ConnectionManager.Instance.Clients.ForEntityId(_entityId);
                             if (_playerInfo != null)
@@ -34,8 +33,8 @@ namespace ServerTools
                                     _phrase711 = _phrase711.Replace("{PlayerName}", _playerInfo.playerName);
                                     ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase711 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                     Phrases.Dict.TryGetValue(715, out string _phrase715);
-                                    _phrase715 = _phrase715.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                                    _phrase715 = _phrase715.Replace("{Command70}", RestartVote.Command70);
+                                    _phrase715 = _phrase715.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                    _phrase715 = _phrase715.Replace("{Command_yes}", RestartVote.Command_yes);
                                     ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase715 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                 }
                                 else
@@ -114,8 +113,8 @@ namespace ServerTools
                         }
                     }
                     Phrases.Dict.TryGetValue(719, out string _phrase719);
-                    _phrase719 = _phrase719.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                    _phrase719 = _phrase719.Replace("{Command68}", Command68);
+                    _phrase719 = _phrase719.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase719 = _phrase719.Replace("{Command_kickvote}", Command_kickvote);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase719 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else

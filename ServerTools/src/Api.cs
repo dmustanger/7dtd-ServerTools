@@ -50,10 +50,14 @@ namespace ServerTools
         {
             try
             {
+                PersistentOperations.Shutdown_Initiated = true;
+                if (WebAPI.IsEnabled && WebAPI.IsRunning)
+                {
+                    WebAPI.Unload();
+                }
                 OutputLog.Shutdown();
                 RegionReset.Exec();
                 Timers.TimerStop();
-                Timers.ShutdownFailsafe();
             }
             catch (Exception e)
             {
@@ -79,7 +83,7 @@ namespace ServerTools
                     {
                         SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Server is shutting down. Rejoin when it restarts\"", _cInfo.playerId), null);
                     }
-                    if (NewPlayer.Block_During_Bloodmoon && PersistentOperations.BloodMoonSky())
+                    if (NewPlayer.Block_During_Bloodmoon && PersistentOperations.IsBloodmoon())
                     {
                         PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_cInfo.playerId);
                         if (_pdf != null)
@@ -358,33 +362,17 @@ namespace ServerTools
                         {
                             PersistentOperations.Session.Remove(_cInfo.playerId);
                         }
-                        if (PersistentOperations.PvEViolations.ContainsKey(_cInfo.entityId))
-                        {
-                            PersistentOperations.PvEViolations.Remove(_cInfo.entityId);
-                        }
                         if (Bank.TransferId.ContainsKey(_cInfo.playerId))
                         {
                             Bank.TransferId.Remove(_cInfo.playerId);
                         }
-                        if (Zones.ZoneInfo.ContainsKey(_cInfo.entityId))
+                        if (Zones.ZonePlayer.ContainsKey(_cInfo.entityId))
                         {
-                            Zones.ZoneInfo.Remove(_cInfo.entityId);
-                        }
-                        if (Zones.Forgive.ContainsKey(_cInfo.entityId))
-                        {
-                            Zones.Forgive.Remove(_cInfo.entityId);
-                        }
-                        if (Zones.Victim.ContainsKey(_cInfo.entityId))
-                        {
-                            Zones.Victim.Remove(_cInfo.entityId);
+                            Zones.ZonePlayer.Remove(_cInfo.entityId);
                         }
                         if (Zones.Reminder.ContainsKey(_cInfo.entityId))
                         {
                             Zones.Reminder.Remove(_cInfo.entityId);
-                        }
-                        if (Zones.ZonePvE.Contains(_cInfo.entityId))
-                        {
-                            Zones.ZonePvE.Remove(_cInfo.entityId);
                         }
                         if (BloodmoonWarrior.WarriorList.Contains(_cInfo.playerId))
                         {
@@ -654,21 +642,9 @@ namespace ServerTools
                     Hardcore.Check(_cInfo, _player);
                 }
             }
-            if (Zones.IsEnabled && Zones.Victim.ContainsKey(_cInfo.entityId))
+            if (Zones.ZonePlayer.ContainsKey(_cInfo.entityId))
             {
-                string _response = "Type {CommandPrivate}{Command50} to teleport back to your death position. There is a time limit.";
-                _response = _response.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _response = _response.Replace("{Command50}", Zones.Command50);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _response + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                PersistentContainer.Instance.Players[_cInfo.playerId].ZoneDeathTime = DateTime.Now;
-                PersistentContainer.DataChange = true;
-                if (Zones.Forgive.ContainsKey(_cInfo.entityId))
-                {
-                    string _response2 = "Type {CommandPrivate}{Command55} to release your killer from jail.";
-                    _response2 = _response2.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                    _response2 = _response2.Replace("{Command55}", Jail.Command55);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _response2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                }
+                Zones.ZonePlayer.Remove(_cInfo.entityId);
             }
         }
     }

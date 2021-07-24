@@ -5,12 +5,11 @@ namespace ServerTools
     class Session
     {
         public static bool IsEnabled = false;
-        public static string Command105 = "session";
+        public static string Command_session = "session";
 
         public static void Exec(ClientInfo _cInfo)
         {
-            DateTime _time;
-            if (PersistentOperations.Session.TryGetValue(_cInfo.playerId, out _time))
+            if (PersistentOperations.Session.TryGetValue(_cInfo.playerId, out DateTime _time))
             {
                 TimeSpan varTime = DateTime.Now - _time;
                 double fractionalMinutes = varTime.TotalMinutes;

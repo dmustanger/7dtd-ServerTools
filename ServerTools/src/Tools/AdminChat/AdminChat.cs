@@ -5,7 +5,7 @@ namespace ServerTools
     public class AdminChat
     {
         public static bool IsEnabled = false;
-        public static string Command118 = "@admin";
+        public static string Command_admin = "@admin";
 
         public static void SendAdmins(ClientInfo _sender, string _message)
         {

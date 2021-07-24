@@ -11,7 +11,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Player_Check = false, Zombie_Check = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
-        public static string Command49 = "travel";
+        public static string Command_travel = "travel";
         private const string file = "TravelLocations.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, string[]> Box = new SortedDictionary<string, string[]>();
@@ -209,8 +209,8 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(1043, out string _phrase1043);
                 _phrase1043 = _phrase1043.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase1043 = _phrase1043.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase1043 = _phrase1043.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase1043 = _phrase1043.Replace("{Command49}", Command49);
+                _phrase1043 = _phrase1043.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase1043 = _phrase1043.Replace("{Command_travel}", Command_travel);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1043 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }

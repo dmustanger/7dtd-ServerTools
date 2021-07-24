@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, VoteOpen = false;
         public static int Players_Online = 5, Votes_Needed = 3;
-        public static string Command62 = "weathervote", Command63 = "sun", Command64 = "rain", Command65 = "snow";
+        public static string Command_weathervote = "weathervote", Command_sun = "sun", Command_rain = "rain", Command_snow = "snow";
         private static string _weather = "";
         public static List<int> Sun = new List<int>();
         public static List<int> Rain = new List<int>();
@@ -36,10 +36,10 @@ namespace ServerTools
                         Phrases.Dict.TryGetValue(871, out string _phrase871);
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase871 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         Phrases.Dict.TryGetValue(875, out string _phrase875);
-                        _phrase875 = _phrase875.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                        _phrase875 = _phrase875.Replace("{Command63}", Command63);
-                        _phrase875 = _phrase875.Replace("{Command64}", Command64);
-                        _phrase875 = _phrase875.Replace("{Command65}", Command65);
+                        _phrase875 = _phrase875.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                        _phrase875 = _phrase875.Replace("{Command_sun}", Command_sun);
+                        _phrase875 = _phrase875.Replace("{Command_rain}", Command_rain);
+                        _phrase875 = _phrase875.Replace("{Command_snow}", Command_snow);
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase875 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                     }
                     else

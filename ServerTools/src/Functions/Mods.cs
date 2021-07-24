@@ -20,9 +20,9 @@ namespace ServerTools
             {
                 Timers.TimerStart();
             }
-            if (!Triggers.IsRunning)
+            if (!CommandList.IsRunning)
             {
-                Triggers.Load();
+                CommandList.Load();
             }
             if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen)
             {
@@ -171,10 +171,12 @@ namespace ServerTools
             }
             if (ChatColorPrefix.IsRunning && !ChatColorPrefix.IsEnabled)
             {
+                ColorList.Unload();
                 ChatColorPrefix.Unload();
             }
             if (!ChatColorPrefix.IsRunning && ChatColorPrefix.IsEnabled)
             {
+                ColorList.Load();
                 ChatColorPrefix.Load();
             }
             if (KillNotice.IsRunning && !KillNotice.IsEnabled)

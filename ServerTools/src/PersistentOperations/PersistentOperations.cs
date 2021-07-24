@@ -9,11 +9,14 @@ namespace ServerTools
 {
     class PersistentOperations
     {
-        private static bool IsRunning = false;
-        public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10;
+        public static bool IsRunning = false, Shutdown_Initiated = false;
+        public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0;
+
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
-        public static Dictionary<int, int> PvEViolations = new Dictionary<int, int>();
         public static Dictionary<int, int> EntityId = new Dictionary<int, int>();
+
+        public static Dictionary<int, int> PvEViolations = new Dictionary<int, int>();
+
         public static readonly string AlphaNumSet = "jJkqQr9Kl3wXAbyYz0ZLmFpPRsMn5NoO6dDe1EfStaBc2CgGhH7iITu4U8vWxV";
         public static readonly char[] InvalidPrefix = new char[] { '!', '@', '#', '$', '%', '&', '/', '\\' };
 
@@ -66,7 +69,7 @@ namespace ServerTools
                 if (!IsRunning)
                 {
                     IsRunning = true;
-                    List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
+                    List<ClientInfo> _cInfoList = ClientList();
                     if (_cInfoList != null && _cInfoList.Count > 0)
                     {
                         for (int i = 0; i < _cInfoList.Count; i++)
@@ -74,7 +77,7 @@ namespace ServerTools
                             ClientInfo _cInfo = _cInfoList[i];
                             if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId > 0)
                             {
-                                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                                EntityPlayer _player = GetEntityPlayer(_cInfo.playerId);
                                 if (_player != null)
                                 {
                                     if (!_player.IsDead())
@@ -121,37 +124,19 @@ namespace ServerTools
             }
         }
 
-        public static bool BloodMoonSky()
+        public static bool IsBloodmoon()
         {
             try
             {
-                if (SkyManager.BloodMoon())
+                World _world = GameManager.Instance.World;
+                if (GameUtils.IsBloodMoonTime(_world.GetWorldTime(), (_world.DuskHour, _world.DawnHour), GameStats.GetInt(EnumGameStats.BloodMoonDay)))
                 {
                     return true;
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.BloodMoonSky: {0}", e.Message));
-            }
-            return false;
-        }
-
-        public static bool BloodMoonDuskSky()
-        {
-            try
-            {
-                int _daysRemaining = Day7.DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
-                float _duskTime = SkyManager.GetDuskTime();
-                float _timeInMinutes = SkyManager.GetTimeOfDayAsMinutes();
-                if (_daysRemaining == 0 && !SkyManager.BloodMoon() && _timeInMinutes > _duskTime && !GameManager.Instance.World.IsDark())
-                {
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.BloodMoonDuskSky: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.IsBLoodmoon: {0}", e.Message));
             }
             return false;
         }
@@ -715,6 +700,40 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in CountryBan.ConvertIPToLong: {0}", e.Message));
             }
             return 0;
+        }
+
+        public static void Jail(ClientInfo _cInfoKiller)
+        {
+            SdtdConsole.Instance.ExecuteSync(string.Format("st-Jail add {0} 120", _cInfoKiller.playerId), null);
+            Phrases.Dict.TryGetValue(204, out string _phrase204);
+            _phrase204 = _phrase204.Replace("{PlayerName}", _cInfoKiller.playerName);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase204 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+        }
+
+        public static void Kill(ClientInfo _cInfo)
+        {
+            SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), null);
+            Phrases.Dict.TryGetValue(324, out string _phrase324);
+            _phrase324 = _phrase324.Replace("{PlayerName}", _cInfo.playerName);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase324 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+        }
+
+        public static void Kick(ClientInfo _cInfo)
+        {
+            Phrases.Dict.TryGetValue(326, out string _phrase326);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase326), null);
+            Phrases.Dict.TryGetValue(325, out string _phrase325);
+            _phrase325 = _phrase325.Replace("{PlayerName}", _cInfo.playerName);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase325 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+        }
+
+        public static void Ban(ClientInfo _cInfo)
+        {
+            Phrases.Dict.TryGetValue(328, out string _phrase328);
+            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase328), null);
+            Phrases.Dict.TryGetValue(327, out string _phrase327);
+            _phrase327 = _phrase327.Replace("{PlayerName}", _cInfo.playerName);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase327 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
     }
 }

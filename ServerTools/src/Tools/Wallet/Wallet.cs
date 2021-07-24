@@ -4,7 +4,7 @@ namespace ServerTools
     class Wallet
     {
         public static bool IsEnabled = false, Lose_On_Death = false, Bank_Transfers = false, PVP = false;
-        public static string Coin_Name = "coin", Command56 = "wallet";
+        public static string Coin_Name = "coin", Command_wallet = "wallet";
         public static int Zombie_Kills = 10, Player_Kills = 25, Deaths = 25, Session_Bonus = 5;
 
         public static void CurrentValue(ClientInfo _cInfo)

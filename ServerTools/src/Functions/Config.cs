@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string version = "19.5.2";
+        public const string version = "19.5.3";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]", OldXmlDirectory = "";
         private const string configFile = "ServerToolsConfig.xml";
         public static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
@@ -661,6 +661,26 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Rotate"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry in ServerToolsConfig.xml because of missing 'Rotate' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Rotate"), out ChatColorPrefix.Rotate))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Rotate' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Custom_Color"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry in ServerToolsConfig.xml because of missing 'Custom_Color' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Custom_Color"), out ChatColorPrefix.Custom_Color))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Custom_Color' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "Chat_Command_Log":
                                 if (!_line.HasAttribute("Enable"))
@@ -910,30 +930,19 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out EntityDamage.IsEnabled))
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out DamageDetector.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                BlockChange.IsEnabled = EntityDamage.IsEnabled;
                                 if (!_line.HasAttribute("Entity_Damage_Limit"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Entity_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Entity_Damage_Limit"), out EntityDamage.Entity_Damage_Limit))
+                                if (!int.TryParse(_line.GetAttribute("Entity_Damage_Limit"), out DamageDetector.Entity_Damage_Limit))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Entity_Damage_Limit' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Player_Damage_Limit"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Player_Damage_Limit' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Player_Damage_Limit"), out EntityDamage.Player_Damage_Limit))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Player_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Block_Damage_Limit"))
@@ -941,9 +950,19 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Block_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Block_Damage_Limit"), out BlockChange.Block_Damage_Limit))
+                                if (!int.TryParse(_line.GetAttribute("Block_Damage_Limit"), out DamageDetector.Block_Damage_Limit))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Block_Damage_Limit' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Player_Damage_Limit"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Player_Damage_Limit' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Player_Damage_Limit"), out DamageDetector.Player_Damage_Limit))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Player_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Admin_Level"))
@@ -951,12 +970,11 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out EntityDamage.Admin_Level))
+                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out DamageDetector.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                BlockChange.Admin_Level = EntityDamage.Admin_Level;
                                 break;
                             case "Day7":
                                 if (!_line.HasAttribute("Enable"))
@@ -3754,7 +3772,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon_Warrior\" Enable=\"{0}\" Zombie_Kills=\"{1}\" Chance=\"{2}\" Reduce_Death_Count=\"{3}\" Reward_Count=\"{4}\" />", BloodmoonWarrior.IsEnabled, BloodmoonWarrior.Zombie_Kills, BloodmoonWarrior.Chance, BloodmoonWarrior.Reduce_Death_Count, BloodmoonWarrior.Reward_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bounties\" Enable=\"{0}\" Minimum_Bounty=\"{1}\" Kill_Streak=\"{2}\" Bonus=\"{3}\" />", Bounties.IsEnabled, Bounties.Minimum_Bounty, Bounties.Kill_Streak, Bounties.Bonus));
                 sw.WriteLine(string.Format("        <Tool Name=\"Break_Reminder\" Enable=\"{0}\" Break_Time=\"{1}\" Break_Message=\"{2}\" />", BreakTime.IsEnabled, BreakTime.Delay, BreakTime.Break_Message));
-                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Color_Prefix\" Enable=\"{0}\" />", ChatColorPrefix.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Color_Prefix\" Enable=\"{0}\" Rotate=\"{1}\" Custom_Color=\"{2}\" />", ChatColorPrefix.IsEnabled, ChatColorPrefix.Rotate, ChatColorPrefix.Custom_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Log\" Enable=\"{0}\" />", ChatCommandLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response\" Server_Response_Name=\"{0}\" Main_Color=\"{1}\" Chat_Command_Prefix1=\"{2}\" Chat_Command_Prefix2=\"{3}\" />", Server_Response_Name, Chat_Response_Color, ChatHook.Chat_Command_Prefix1, ChatHook.Chat_Command_Prefix2));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response_Extended\" Friend_Chat_Color=\"{0}\" Party_Chat_Color=\"{1}\" />", ChatHook.Friend_Chat_Color, ChatHook.Party_Chat_Color));
@@ -3765,7 +3783,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Country_Ban\" Enable=\"{0}\" Countries_Not_Allowed=\"CN,IL\" />", CountryBan.IsEnabled, CountryBan.Countries_Not_Allowed));
                 sw.WriteLine(string.Format("        <Tool Name=\"Credentials\" Enable=\"{0}\" No_Family_Share=\"{1}\" No_Bad_Id=\"{2}\" No_Internal=\"{3}\" Admin_Level=\"{4}\" />", CredentialCheck.IsEnabled, CredentialCheck.Family_Share, CredentialCheck.Bad_Id, CredentialCheck.No_Internal, CredentialCheck.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Custom_Commands\" Enable=\"{0}\" />", CustomCommands.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Damage_Detector\" Enable=\"{0}\" Entity_Damage_Limit=\"{1}\" Block_Damage_Limit=\"{2}\" Player_Damage_Limit=\"{3}\" Admin_Level=\"{4}\" />", EntityDamage.IsEnabled, EntityDamage.Entity_Damage_Limit, BlockChange.Block_Damage_Limit, EntityDamage.Player_Damage_Limit, EntityDamage.Admin_Level));
+                sw.WriteLine(string.Format("        <Tool Name=\"Damage_Detector\" Enable=\"{0}\" Entity_Damage_Limit=\"{1}\" Block_Damage_Limit=\"{2}\" Player_Damage_Limit=\"{3}\" Admin_Level=\"{4}\" />", DamageDetector.IsEnabled, DamageDetector.Entity_Damage_Limit, DamageDetector.Block_Damage_Limit, DamageDetector.Player_Damage_Limit, DamageDetector.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Day7\" Enable=\"{0}\" />", Day7.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Died\" Enable=\"{0}\" Time=\"{1}\" Delay_Between_Uses=\"{2}\" Command_Cost=\"{3}\" />", Died.IsEnabled, Died.Time, Died.Delay_Between_Uses, Died.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Discord_Bot\" Enable=\"{0}\" Webhook=\"{1}\" />", DiscordBot.IsEnabled, DiscordBot.Webhook));

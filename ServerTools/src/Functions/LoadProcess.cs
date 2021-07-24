@@ -113,7 +113,7 @@ namespace ServerTools
 
             try
             {
-                Triggers.LoadXml();
+                CommandList.LoadXml();
             }
             catch (XmlException e)
             {
@@ -186,6 +186,8 @@ namespace ServerTools
             }
 
             PersistentOperations.EntityIdList();
+            PersistentOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
+
             CountryBan.BuildList();
 
             RestartVote.Cycle = true;

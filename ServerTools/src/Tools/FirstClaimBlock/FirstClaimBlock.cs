@@ -5,7 +5,7 @@ namespace ServerTools
     public class FirstClaimBlock
     {
         public static bool IsEnabled = false;
-        public static string Command32 = "claim";
+        public static string Command_claim = "claim";
 
         public static void FirstClaim(ClientInfo _cInfo)
         {
@@ -19,7 +19,7 @@ namespace ServerTools
 
                 if (Equals(itemValue, ItemValue.None))
                 {
-                    SdtdConsole.Instance.Output(string.Format("Unable to find block {0} for /{1} command", claimBlock, Command32));
+                    SdtdConsole.Instance.Output(string.Format("Unable to find block {0} for /{1} command", claimBlock, Command_claim));
                 }
                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {

@@ -8,7 +8,7 @@ namespace ServerTools
     class ExitCommand
     {
         public static bool IsEnabled = false, Drop = false, Remove = false, All = false, Belt = false, Bag = false, Equipment = false;
-        public static string Command131 = "exit", Command132 = "quit";
+        public static string Command_exit = "exit", Command_quit = "quit";
         public static int Admin_Level = 0, Exit_Time = 15;
         public static Dictionary<int, Vector3> Players = new Dictionary<int, Vector3>();
 
@@ -63,8 +63,7 @@ namespace ServerTools
                             if (_blockValue.Block != null)
                             {
                                 GameManager.Instance.World.SetBlockRPC(chunk.ClrIdx, _pos, _blockValue);
-                                TileEntityLootContainer tileEntityLootContainer = GameManager.Instance.World.GetTileEntity(chunk.ClrIdx, _pos) as TileEntityLootContainer;
-                                if (tileEntityLootContainer != null)
+                                if (GameManager.Instance.World.GetTileEntity(chunk.ClrIdx, _pos) is TileEntityLootContainer tileEntityLootContainer)
                                 {
                                     if (All || Bag)
                                     {
@@ -251,8 +250,8 @@ namespace ServerTools
             try
             {
                 Phrases.Dict.TryGetValue(672, out string _phrase672);
-                _phrase672 = _phrase672.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase672 = _phrase672.Replace("{Command131}", Command131);
+                _phrase672 = _phrase672.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase672 = _phrase672.Replace("{Command_exit}", Command_exit);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase672 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)

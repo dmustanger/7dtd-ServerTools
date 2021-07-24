@@ -1,5 +1,45 @@
 ﻿CHANGELOG
 
+19.5.3
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+-Added to the BlockLogs to give more information
+-Added a colon after the player name for the Webhook chat out to Discord
+-Added console command to add an entry to the output log
+-Added detection of players shooting zombies during bloodmoon while inside
+the Lobby or Market. Teleports them out of the area automatically
+-Added ChatColors.xml to Chat_Color_Prefix tool. Allows you to setup
+a list of HTML color tags including color arrays
+-Added option Rotate to Chat_Color_Prefix. If enabled, players on the 
+ChatColorPrefix.xml list can rotate their chat color from the 
+ChatColor.xml list using command /ccpr
+-Added option Custom_Color to Chat_Color_Prefix tool. If enabled, players
+on the ChatColorPrefix.xml list can specify their own HTML color
+using command /ccpr [000000] or /ccnr [000000]. Delay is optional
+-Added phrase 329,330,932-936,1051,1052
+-Changed DamageLogs for the Damage_Detector tool
+-Changed Zones.xml to allow all four player killing modes to be set
+-Changed all phrases that reference a command and #260,323,461,952
+-Changed Chat_Color_Prefix tool to utilize the optional ChatColors.xml
+-Changed EventTriggers.xml to CommandList.xml
+-Changed CommandList.xml to no longer require a command number
+-Changed PvE protection to block explosion damage
+-Changed PvE protection implementation
+-Changed shutdown failsafe process(no more hanging servers at shutdown)
+-Fixed Zones not removing player data when they die
+-Fixed Falling_Blocks_Remover not functioning as intended
+-Fixed changes to CommandList.xml requiring a server restart
+-Fixed in game reports not being forwarded to online Admins
+-Fixed error in WebAPI on server shutdown
+-Fixed Zone reminder message
+-Updated console commands for Donor and Chat_Color_Prefix
+-Removed phrase 329,330,383,571-575
+-Removed command /return
+Refresh your CommandList.xml, Phrases.xml, Zones.xml by deleting the 
+existing files with your server off. Add your custom changes manually from a
+backup
+
 19.5.2
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

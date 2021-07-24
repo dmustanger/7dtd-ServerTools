@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Delay_Between_Uses = 60;
-        public static string Command90 = "stuck";
+        public static string Command_stuck = "stuck";
 
         public static void Exec(ClientInfo _cInfo)
         {
@@ -58,8 +58,8 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(551, out string _phrase551);
                 _phrase551 = _phrase551.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase551 = _phrase551.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase551 = _phrase551.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase551 = _phrase551.Replace("{Command90}", Command90);
+                _phrase551 = _phrase551.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase551 = _phrase551.Replace("{Command_stuck}", Command_stuck);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase551 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }

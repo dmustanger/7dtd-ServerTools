@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Player_Check = false, Zombie_Check = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
-        public static string Command59 = "friend", Command60 = "accept";
+        public static string Command_friend = "friend", Command_accept = "accept";
         public static Dictionary<int, int> Dict = new Dictionary<int, int>();
         public static Dictionary<int, DateTime> Dict1 = new Dictionary<int, DateTime>();
 
@@ -76,8 +76,7 @@ namespace ServerTools
                     {
                         if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            DateTime _dt;
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                             if (DateTime.Now < _dt)
                             {
                                 int _delay = Delay_Between_Uses / 2;
@@ -159,8 +158,8 @@ namespace ServerTools
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase363 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             Phrases.Dict.TryGetValue(364, out string _phrase364);
             _phrase364 = _phrase364.Replace("{PlayerName}", _cInfo.playerName);
-            _phrase364 = _phrase364.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-            _phrase364 = _phrase364.Replace("{Command60}", Command60);
+            _phrase364 = _phrase364.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+            _phrase364 = _phrase364.Replace("{Command_friend}", Command_friend);
             ChatHook.ChatMessage(_friend, Config.Chat_Response_Color + _phrase364 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 

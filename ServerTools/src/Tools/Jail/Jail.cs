@@ -8,14 +8,14 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Jail_Shock = false;
         public static int Jail_Size = 8;
-        public static string Command26 = "set jail", Command27 = "jail", Command28 = "unjail", Command55 = "forgive";
+        public static string Command_set_jail = "set jail", Command_jail = "jail", Command_unjail = "unjail", Command_forgive = "forgive";
         public static string Jail_Position = "0,0,0";
         public static SortedDictionary<string, Vector3> JailReleasePosition = new SortedDictionary<string, Vector3>();
         public static List<string> Jailed = new List<string>();
 
         public static void SetJail(ClientInfo _cInfo)
         {
-            string[] _command1 = { Command26 };
+            string[] _command1 = { Command_set_jail };
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_command1, _cInfo))
             {
                 Phrases.Dict.TryGetValue(199, out string _phrase199);
@@ -41,7 +41,7 @@ namespace ServerTools
 
         public static void PutInJail(ClientInfo _cInfo, string _playerName)
         {
-            string[] _command2 = { Command27 };
+            string[] _command2 = { Command_jail };
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_command2, _cInfo))
             {
                 Phrases.Dict.TryGetValue(199, out string _phrase199);
@@ -56,7 +56,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    _playerName = _playerName.Replace(Command27 + " ", "");
+                    _playerName = _playerName.Replace(Command_jail + " ", "");
                     ClientInfo _PlayertoJail = ConsoleHelper.ParseParamIdOrName(_playerName);
                     if (_PlayertoJail == null)
                     {
@@ -84,10 +84,9 @@ namespace ServerTools
         private static void PutPlayerInJail(ClientInfo _cInfo, ClientInfo _PlayertoJail)
         {
             string[] _cords = Jail_Position.Split(',');
-            int _x, _y, _z;
-            int.TryParse(_cords[0], out _x);
-            int.TryParse(_cords[1], out _y);
-            int.TryParse(_cords[2], out _z);
+            int.TryParse(_cords[0], out int _x);
+            int.TryParse(_cords[1], out int _y);
+            int.TryParse(_cords[2], out int _z);
             _PlayertoJail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
             Jailed.Add(_PlayertoJail.playerId);
             PersistentContainer.Instance.Players[_PlayertoJail.playerId].JailTime = 60;
@@ -108,7 +107,7 @@ namespace ServerTools
 
         public static void RemoveFromJail(ClientInfo _cInfo, string _playerName)
         {
-            string[] _command3 = { Command28 };
+            string[] _command3 = { Command_unjail };
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_command3, _cInfo))
             {
                 Phrases.Dict.TryGetValue(199, out string _phrase199);
@@ -212,64 +211,6 @@ namespace ServerTools
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase198 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
-                        }
-                    }
-                }
-            }
-        }
-
-        public static void Forgive(ClientInfo _cInfo)
-        {
-            int _killId;
-            if (Zones.Forgive.TryGetValue(_cInfo.entityId, out _killId))
-            {
-                ClientInfo _cInfoKiller = ConnectionManager.Instance.Clients.ForEntityId(_killId);
-                if (_cInfoKiller == null)
-                {
-                    Phrases.Dict.TryGetValue(200, out string _phrase200);
-                    _phrase200 = _phrase200.Replace("{PlayerName}", _killId.ToString());
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase200 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                }
-                else
-                {
-                    if (!Jailed.Contains(_cInfoKiller.playerId))
-                    {
-                        Zones.Forgive.Remove(_cInfo.entityId);
-                        Phrases.Dict.TryGetValue(196, out string _phrase196);
-                        _phrase196 = _phrase196.Replace("{PlayerName}", _cInfoKiller.playerName);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase196 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                    else
-                    {
-                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoKiller.entityId];
-                        if (_player.IsSpawned())
-                        {
-                            Zones.Forgive.Remove(_cInfo.entityId);
-                            Jailed.Remove(_cInfoKiller.playerId);
-                            PersistentContainer.Instance.Players[_cInfoKiller.playerId].JailTime = 0;
-                            PersistentContainer.DataChange = true;
-                            EntityBedrollPositionList _position = _player.SpawnPoints;
-                            if (_position.Count > 0)
-                            {
-                                _cInfoKiller.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_position[0].x, _position[0].y + 1, _position[0].z), null, false));
-                            }
-                            else
-                            {
-                                Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                _cInfoKiller.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), null, false));
-                            }
-                            Phrases.Dict.TryGetValue(201, out string _phrase201);
-                            _phrase201 = _phrase201.Replace("{PlayerName}", _cInfoKiller.playerName);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase201 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            Phrases.Dict.TryGetValue(202, out string _phrase202);
-                            _phrase202 = _phrase202.Replace("{PlayerName}", _cInfo.playerName);
-                            ChatHook.ChatMessage(_cInfoKiller, Config.Chat_Response_Color + _phrase202 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                        else
-                        {
-                            Phrases.Dict.TryGetValue(203, out string _phrase203);
-                            _phrase203 = _phrase203.Replace("{PlayerName}", _cInfoKiller.playerName);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase203 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }

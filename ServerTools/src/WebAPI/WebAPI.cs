@@ -13,7 +13,7 @@ namespace ServerTools
 {
     public class WebAPI
     {
-        public static bool IsEnabled = false, IsRunning = false;
+        public static bool IsEnabled = false, IsRunning = false, Shutdown = false;
         public static int Port = 8084;
         public static string Directory = "";
         public static AesCryptoServiceProvider AESProvider = new AesCryptoServiceProvider();
@@ -23,7 +23,7 @@ namespace ServerTools
         public static Dictionary<string, string> POSTFollowUp = new Dictionary<string, string>();
 
         private static string Redirect = "", BaseAddress = "";
-        private static HttpListener Listener;
+        private static HttpListener Listener = new HttpListener();
         private static Thread Thread;
         private static readonly Version HttpVersion = new Version(1, 1);
 
@@ -37,19 +37,22 @@ namespace ServerTools
         public static void Unload()
         {
             IsRunning = false;
-            if (Listener.IsListening)
-            {
-                Listener.Stop();
-                Listener.Close();
-            }
-            if (Thread.IsAlive)
+            if (Thread != null && Thread.IsAlive)
             {
                 Thread.Abort();
+            }
+            if (Listener != null && Listener.IsListening)
+            {
+                Listener.Stop();
             }
         }
 
         private static void Start()
         {
+            if (Listener == null)
+            {
+                Listener = new HttpListener();
+            }
             Thread = new Thread(new ThreadStart(Exec))
             {
                 IsBackground = true
@@ -161,7 +164,6 @@ namespace ServerTools
                 {
                     if (HttpListener.IsSupported)
                     {
-                        Listener = new HttpListener();
                         Listener.Prefixes.Add(string.Format("http://*:{0}/", Port));
                         Listener.Start();
                         if (SetBaseAddress())
@@ -174,7 +176,7 @@ namespace ServerTools
                             {
                                 Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel is available @ {0}", _address));
                             }
-                            while (Listener.IsListening)
+                            while (Listener != null && Listener.IsListening)
                             {
                                 HttpListenerContext _context = Listener.GetContext();
                                 if (_context != null)
@@ -228,6 +230,7 @@ namespace ServerTools
                                     }
                                 }
                             }
+
                         }
                         else
                         {
@@ -247,18 +250,20 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in WebAPI.Exec: {0}", e.Message));
+                if (e.Message.Length > 0)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in WebAPI.Exec: {0}", e.Message));
+                }
             }
-            if (Listener.IsListening)
-            {
-                Listener.Stop();
-                Listener.Close();
-            }
-            if (Thread.IsAlive)
+            if (Thread != null && Thread.IsAlive)
             {
                 Thread.Abort();
             }
-            if (IsEnabled)
+            if (Listener != null && Listener.IsListening)
+            {
+                Listener.Stop();
+            }
+            if (IsEnabled && IsRunning && !PersistentOperations.Shutdown_Initiated)
             {
                 Start();
             }

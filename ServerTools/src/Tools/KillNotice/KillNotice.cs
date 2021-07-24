@@ -219,5 +219,17 @@ namespace ServerTools
                 ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase544 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
         }
+
+        public static void ProcessStrength(EntityPlayer _player, int _strength)
+        {
+            if (Damage.ContainsKey(_player.entityId))
+            {
+                Damage[_player.entityId] = _strength;
+            }
+            else
+            {
+                Damage.Add(_player.entityId, _strength);
+            }
+        }
     }
 }

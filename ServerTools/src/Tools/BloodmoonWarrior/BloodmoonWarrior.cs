@@ -226,7 +226,7 @@ namespace ServerTools
             {
                 if (!BloodmoonStarted)
                 {
-                    if (PersistentOperations.BloodMoonSky())
+                    if (PersistentOperations.IsBloodmoon())
                     {
                         BloodmoonStarted = true;
                         List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
@@ -254,7 +254,7 @@ namespace ServerTools
                         }
                     }
                 }
-                else if (!PersistentOperations.BloodMoonSky())
+                else if (!PersistentOperations.IsBloodmoon())
                 {
                     BloodmoonStarted = false;
                     RewardWarriors();

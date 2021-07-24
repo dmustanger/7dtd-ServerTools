@@ -48,11 +48,13 @@ namespace ServerTools
         private DateTime lastJoined;
         private DateTime lastKillMe;
         private DateTime lastLobby;
+        private DateTime lastLog;
         private DateTime lastMarket;
         private DateTime lastMiniBike;
         private DateTime lastMotorBike;
-        private DateTime lastLog;
+        private DateTime lastNameColorChange;
         private DateTime lastPrayer;
+        private DateTime lastPrefixColorChange;
         private DateTime lastScout;
         private DateTime lastStuck;
         private DateTime lastTravel;
@@ -416,18 +418,6 @@ namespace ServerTools
             }
         }
 
-        public DateTime LastGimme
-        {
-            get
-            {
-                return lastGimme;
-            }
-            set
-            {
-                lastGimme = value;
-            }
-        }
-
         public DateTime LastAnimal
         {
             get
@@ -473,6 +463,18 @@ namespace ServerTools
             set
             {
                 lastFriendTele = value;
+            }
+        }
+
+        public DateTime LastGimme
+        {
+            get
+            {
+                return lastGimme;
+            }
+            set
+            {
+                lastGimme = value;
             }
         }
 
@@ -596,6 +598,18 @@ namespace ServerTools
             }
         }
 
+        public DateTime LastNameColorChange
+        {
+            get
+            {
+                return lastNameColorChange;
+            }
+            set
+            {
+                lastNameColorChange = value;
+            }
+        }
+
         public DateTime LastPrayer
         {
             get
@@ -605,6 +619,18 @@ namespace ServerTools
             set
             {
                 lastPrayer = value;
+            }
+        }
+
+        public DateTime LastPrefixColorChange
+        {
+            get
+            {
+                return lastPrefixColorChange;
+            }
+            set
+            {
+                lastPrefixColorChange = value;
             }
         }
 

@@ -6,7 +6,7 @@ namespace ServerTools
     class Event
     {
         public static bool Open = false, Invited = false, Cancel = false, Extend = false, Return = false, OperatorWarned = false;
-        public static string Command100 = "join";
+        public static string Command_join = "join";
         public static Dictionary<string, int> Teams = new Dictionary<string, int>();
         public static string Operator = "", EventName = "";
         public static int TeamCount = 0, PlayerCount = 0, TeamSetup = 0, Time = 0;
@@ -80,11 +80,10 @@ namespace ServerTools
                             {
                                 Teams.TryGetValue(_teamPlayer.Key, out int _teamNumber);
                                 string _spawnPosition = _setup[_teamNumber + 4];
-                                int _x, _y, _z;
                                 string[] _cords = _spawnPosition.Split(',');
-                                int.TryParse(_cords[0], out _x);
-                                int.TryParse(_cords[1], out _y);
-                                int.TryParse(_cords[2], out _z);
+                                int.TryParse(_cords[0], out int _x);
+                                int.TryParse(_cords[1], out int _y);
+                                int.TryParse(_cords[2], out int _z);
                                 _eventClientInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                             }
                             else
@@ -110,8 +109,8 @@ namespace ServerTools
                 {
                     Phrases.Dict.TryGetValue(777, out string _phrase777);
                     _phrase777 = _phrase777.Replace("{EventName}", TeamSetup.ToString());
-                    _phrase777 = _phrase777.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                    _phrase777 = _phrase777.Replace("{Command100}", Command100);
+                    _phrase777 = _phrase777.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase777 = _phrase777.Replace("{Command_join}", Command_join);
                     ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase777 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                     Phrases.Dict.TryGetValue(778, out string _phrase778);
                     _phrase778 = _phrase778.Replace("{Value}", Teams.Count.ToString());

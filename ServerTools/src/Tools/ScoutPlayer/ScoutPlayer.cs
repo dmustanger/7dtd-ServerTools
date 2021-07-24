@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 10;
-        public static string Command129 = "scoutplayer", Command130 = "scout";
+        public static string Command_scoutplayer = "scoutplayer", Command_scout = "scout";
 
         public static void Exec(ClientInfo _cInfo)
         {
@@ -32,8 +32,7 @@ namespace ServerTools
                 {
                     if (ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                     {
-                        DateTime _dt;
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                         if (DateTime.Now < _dt)
                         {
                             int _delay = Delay_Between_Uses / 2;
@@ -65,8 +64,8 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(831, out string _phrase831);
                 _phrase831 = _phrase831.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase831 = _phrase831.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase831 = _phrase831.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase831 = _phrase831.Replace("{Command129}", Command129);
+                _phrase831 = _phrase831.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase831 = _phrase831.Replace("{Command_scoutplayer}", Command_scoutplayer);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase831 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }

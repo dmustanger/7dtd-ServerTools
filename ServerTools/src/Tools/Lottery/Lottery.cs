@@ -6,7 +6,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, OpenLotto = false, ShuttingDown = false;
         public static int Bonus = 0, LottoValue = 0;
-        public static string Command84 = "lottery", Command85 = "lottery enter";
+        public static string Command_lottery = "lottery", Command_lottery_enter = "lottery enter";
         public static List<ClientInfo> LottoEntries = new List<ClientInfo>();
 
         public static void Response(ClientInfo _cInfo)
@@ -18,20 +18,20 @@ namespace ServerTools
                 _phrase222 = _phrase222.Replace("{Value}", _value.ToString());
                 _phrase222 = _phrase222.Replace("{CoinName}", Wallet.Coin_Name);
                 _phrase222 = _phrase222.Replace("{BuyIn}", LottoValue.ToString());
-                _phrase222 = _phrase222.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase222 = _phrase222.Replace("{Command85}", Command85);
+                _phrase222 = _phrase222.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase222 = _phrase222.Replace("{Command_lottery_enter}", Command_lottery_enter);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase222 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
                 Phrases.Dict.TryGetValue(221, out string _phrase221);
-                _phrase221 = _phrase221.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase221 = _phrase221.Replace("{Command84}", Command84);
+                _phrase221 = _phrase221.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase221 = _phrase221.Replace("{Command_lottery}", Command_lottery);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase221 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static void NewLotto(ClientInfo _cInfo, string _message, string _playerName)
+        public static void NewLotto(ClientInfo _cInfo, string _message)
         {
             if (!ShuttingDown)
             {
@@ -42,14 +42,13 @@ namespace ServerTools
                     _phrase222 = _phrase222.Replace("{Value}", _winnings.ToString());
                     _phrase222 = _phrase222.Replace("{CoinName}", Wallet.Coin_Name);
                     _phrase222 = _phrase222.Replace("{BuyIn}", LottoValue.ToString());
-                    _phrase222 = _phrase222.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                    _phrase222 = _phrase222.Replace("{Command85}", Command85);
+                    _phrase222 = _phrase222.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase222 = _phrase222.Replace("{Command_lottery_enter}", Command_lottery_enter);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase222 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    int _lottoValue;
-                    if (int.TryParse(_message, out _lottoValue))
+                    if (int.TryParse(_message, out int _lottoValue))
                     {
                         if (_lottoValue > 0)
                         {
@@ -66,8 +65,8 @@ namespace ServerTools
                                 Phrases.Dict.TryGetValue(225, out string _phrase225);
                                 _phrase225 = _phrase225.Replace("{Value}", LottoValue.ToString());
                                 _phrase225 = _phrase225.Replace("{CoinName}", Wallet.Coin_Name);
-                                _phrase225 = _phrase225.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                                _phrase225 = _phrase225.Replace("{Command85}", Command85);
+                                _phrase225 = _phrase225.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                _phrase225 = _phrase225.Replace("{Command_lottery_enter}", Command_lottery_enter);
                                 ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase225 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                             }
                             else
@@ -125,8 +124,8 @@ namespace ServerTools
             else
             {
                 Phrases.Dict.TryGetValue(221, out string _phrase221);
-                _phrase221 = _phrase221.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase221 = _phrase221.Replace("{Command84}", Command84);
+                _phrase221 = _phrase221.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase221 = _phrase221.Replace("{Command_lottery}", Command_lottery);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase221 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
@@ -159,8 +158,8 @@ namespace ServerTools
         public static void Alert()
         {
             Phrases.Dict.TryGetValue(229, out string _phrase229);
-            _phrase229 = _phrase229.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-            _phrase229 = _phrase229.Replace("{Command85}", Command85);
+            _phrase229 = _phrase229.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+            _phrase229 = _phrase229.Replace("{Command_lottery_enter}", Command_lottery_enter);
             ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase229 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
     }

@@ -5,7 +5,7 @@ namespace ServerTools
     public class Bloodmoon
     {
         public static bool IsEnabled = false, Show_On_Login = false, Show_On_Respawn = false, Auto_Show = false;
-        public static string Command18 = "bloodmoon", Command19 = "bm";
+        public static string Command_bloodmoon = "bloodmoon", Command_bm = "bm";
         public static int Delay = 60;
 
         public static void Exec(ClientInfo _cInfo)

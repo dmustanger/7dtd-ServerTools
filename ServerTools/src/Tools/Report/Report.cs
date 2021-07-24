@@ -10,7 +10,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Admin_Level = 0, Delay = 60, Length = 150, Days_Before_Log_Delete = 5;
-        public static string Command82 = "report";
+        public static string Command_report = "report";
         private static string _file = string.Format("Report_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string _filepath = string.Format("{0}/Logs/PlayerReports/{1}", API.ConfigPath, _file);
 
@@ -36,7 +36,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo, string _message)
         {
-            _message = _message.Replace(Command82 + " ", "");
+            _message = _message.Replace(Command_report + " ", "");
             if (_message.Length > Length)
             {
                 Phrases.Dict.TryGetValue(524, out string _phrase524);
@@ -50,8 +50,8 @@ namespace ServerTools
             {
                 for (int i = 0; i < ClientInfoList.Count; i++)
                 {
-                    ClientInfo _cInfoAdmins = ClientInfoList[i];
-                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= Admin_Level)
+                    ClientInfo _cInfoAdmin = ClientInfoList[i];
+                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfoAdmin) <= Admin_Level)
                     {
                         Phrases.Dict.TryGetValue(522, out string _phrase522);
                         _phrase522 = _phrase522.Replace("{Position}", _pos.ToString());

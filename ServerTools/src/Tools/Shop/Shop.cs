@@ -10,7 +10,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Inside_Market = false, Inside_Traders = false;
         public static int Delay_Between_Uses = 60;
-        public static string Command57 = "shop", Command58 = "shop buy";
+        public static string Command_shop = "shop", Command_shop_buy = "shop buy";
         private const string file = "Shop.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         public static SortedDictionary<int, string[]> Dict = new SortedDictionary<int, string[]>();
@@ -329,8 +329,8 @@ namespace ServerTools
             }
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _categories + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             Phrases.Dict.TryGetValue(342, out string _phrase342);
-            _phrase342 = _phrase342.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-            _phrase342 = _phrase342.Replace("{Command57}", Command57);
+            _phrase342 = _phrase342.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+            _phrase342 = _phrase342.Replace("{Command_shop}", Command_shop);
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase342 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 
@@ -379,16 +379,16 @@ namespace ServerTools
                 if (_count != 0)
                 {
                     Phrases.Dict.TryGetValue(353, out string _phrase353);
-                    _phrase353 = _phrase353.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                    _phrase353 = _phrase353.Replace("{Command58}", Command58);
+                    _phrase353 = _phrase353.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase353 = _phrase353.Replace("{Command_shop_buy}", Command_shop_buy);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase353 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
                 Phrases.Dict.TryGetValue(354, out string _phrase354);
-                _phrase354 = _phrase354.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase354 = _phrase354.Replace("{Command57}", Command57);
+                _phrase354 = _phrase354.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase354 = _phrase354.Replace("{Command_shop}", Command_shop);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase354 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }

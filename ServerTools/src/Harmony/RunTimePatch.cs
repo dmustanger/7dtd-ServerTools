@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using LiteNetLib;
 using System;
 using System.Reflection;
 
@@ -16,21 +17,9 @@ namespace ServerTools
                 {
                     Log.Out("[SERVERTOOLS] Runtime patching initialized");
                     Harmony harmony = new Harmony("com.github.servertools.patch");
-                    MethodInfo original = AccessTools.Method(typeof(EntityAlive), "ProcessDamageResponse");
-                    if (original == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.ProcessDamageResponse method was not found"));
-                    }
-                    else
-                    {
-                        MethodInfo prefix = typeof(Injections).GetMethod("DamageResponse_Prefix");
-                        if (prefix == null)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: ProcessDamageResponse.prefix"));
-                            return;
-                        }
-                        harmony.Patch(original, new HarmonyMethod(prefix), null);
-                    }
+
+                    MethodInfo original = AccessTools.Method(typeof(GameManager), "PlayerLoginRPC");
+
                     original = typeof(GameManager).GetMethod("PlayerLoginRPC");
                     if (original == null)
                     {
@@ -52,6 +41,7 @@ namespace ServerTools
                         }
                         harmony.Patch(original, new HarmonyMethod(prefix), new HarmonyMethod(postfix));
                     }
+
                     original = typeof(ConnectionManager).GetMethod("ServerConsoleCommand");
                     if (original == null)
                     {
@@ -67,6 +57,7 @@ namespace ServerTools
                         }
                         harmony.Patch(original, null, new HarmonyMethod(postfix));
                     }
+
                     original = typeof(GameManager).GetMethod("ChangeBlocks");
                     if (original == null)
                     {
@@ -82,6 +73,23 @@ namespace ServerTools
                         }
                         harmony.Patch(original, new HarmonyMethod(prefix), null);
                     }
+
+                    original = typeof(World).GetMethod("AddFallingBlock");
+                    if (original == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.AddFallingBlock method was not found"));
+                    }
+                    else
+                    {
+                        MethodInfo postfix = typeof(Injections).GetMethod("AddFallingBlock_Postfix");
+                        if (postfix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: AddFallingBlock.postfix"));
+                            return;
+                        }
+                        harmony.Patch(original, null, new HarmonyMethod(postfix));
+                    }
+
                     original = typeof(World).GetMethod("AddFallingBlocks");
                     if (original == null)
                     {
@@ -97,6 +105,7 @@ namespace ServerTools
                         }
                         harmony.Patch(original, null, new HarmonyMethod(postfix));
                     }
+
                     original = typeof(GameManager).GetMethod("ChatMessageServer");
                     if (original == null)
                     {
@@ -112,6 +121,39 @@ namespace ServerTools
                         }
                         harmony.Patch(original, null, new HarmonyMethod(postfix));
                     }
+
+                    original = typeof(EntityAlive).GetMethod("DamageEntity");
+                    if (original == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.DamageEntity method was not found"));
+                    }
+                    else
+                    {
+                        MethodInfo prefix = typeof(Injections).GetMethod("DamageEntity_Prefix");
+                        if (prefix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: DamageEntity.prefix"));
+                            return;
+                        }
+                        harmony.Patch(original, new HarmonyMethod(prefix), null);
+                    }
+
+                    original = typeof(GameManager).GetMethod("Cleanup");
+                    if (original == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.Cleanup method was not found"));
+                    }
+                    else
+                    {
+                        MethodInfo postfix = typeof(Injections).GetMethod("Cleanup_Postfix");
+                        if (postfix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: Cleanup.postfix"));
+                            return;
+                        }
+                        harmony.Patch(original, null, new HarmonyMethod(postfix));
+                    }
+                    
                     Applied = true;
                     Log.Out("[SERVERTOOLS] Runtime patching complete");
                 }

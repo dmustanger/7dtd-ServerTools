@@ -6,7 +6,7 @@ namespace ServerTools
     public class Mute
     {
         public static bool IsEnabled = false, Block_Commands = false;
-        public static string Command13 = "mute", Command14 = "unmute", Command119 = "mutelist";
+        public static string Command_mute = "mute", Command_unmute = "unmute", Command_mutelist = "mutelist";
         public static List<string> Mutes = new List<string>();
         public static Dictionary<int, List<int>> PrivateMutes = new Dictionary<int, List<int>>();
 
@@ -57,7 +57,7 @@ namespace ServerTools
         {
             try
             {
-                _playerEntityId = _playerEntityId.Replace(Command13 + " ", "");
+                _playerEntityId = _playerEntityId.Replace(Command_mute + " ", "");
                 if (!string.IsNullOrEmpty(_playerEntityId))
                 {
                     if (int.TryParse(_playerEntityId, out int _id))
@@ -121,7 +121,7 @@ namespace ServerTools
         {
             try
             {
-                _playerEntityId = _playerEntityId.Replace(Command14 + " ", "");
+                _playerEntityId = _playerEntityId.Replace(Command_unmute + " ", "");
                 if (!string.IsNullOrEmpty(_playerEntityId))
                 {
                     if (int.TryParse(_playerEntityId, out int _id))

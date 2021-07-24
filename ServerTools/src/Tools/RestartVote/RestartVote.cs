@@ -6,7 +6,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, VoteOpen = false, Cycle = false;
         public static int Players_Online = 5, Votes_Needed = 3, Admin_Level = 0;
-        public static string Command66 = "restartvote", Command70 = "yes";
+        public static string Command_restartvote = "restartvote", Command_yes = "yes";
         public static List<int> Restart = new List<int>();
 
         public static void CallForVote1(ClientInfo _cInfo)
@@ -40,8 +40,8 @@ namespace ServerTools
                         {
                             VoteOpen = true;
                             Phrases.Dict.TryGetValue(441, out string _phrase441);
-                            _phrase441 = _phrase441.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                            _phrase441 = _phrase441.Replace("{Command70}", Command70);
+                            _phrase441 = _phrase441.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                            _phrase441 = _phrase441.Replace("{Command_yes}", Command_yes);
                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase441 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         }
                         else

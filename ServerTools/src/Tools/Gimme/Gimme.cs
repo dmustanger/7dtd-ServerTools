@@ -11,7 +11,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Zombies = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
-        public static string Command24 = "gimme", Command25 = "gimmie", Zombie_Id = "4,9,11";
+        public static string Command_gimme = "gimme", Command_gimmie = "gimmie", Zombie_Id = "4,9,11";
         private const string file = "Gimme.xml";
         private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
@@ -335,8 +335,8 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue(21, out string _phrase21);
                 _phrase21 = _phrase21.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase21 = _phrase21.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase21 = _phrase21.Replace("{CommandPrivate}", ChatHook.Chat_Command_Prefix1);
-                _phrase21 = _phrase21.Replace("{Command24}", Command24);
+                _phrase21 = _phrase21.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase21 = _phrase21.Replace("{Command_gimme}", Command_gimme);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase21 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }

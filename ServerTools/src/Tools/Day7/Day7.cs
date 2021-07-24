@@ -5,7 +5,7 @@ namespace ServerTools
     public class Day7
     {
         public static bool IsEnabled = false;
-        public static string Command16 = "day7", Command17 = "day";
+        public static string Command_day7 = "day7", Command_day = "day";
 
         public static void GetInfo(ClientInfo _cInfo)
         {
