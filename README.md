@@ -3,6 +3,9 @@ Server tools for 7 days to die dedicated servers<br>
 <br>
 # Installation
 <br>
+If you are seeking support, general help, have some suggestions or bug reports. The best way to contact us
+is through Discord. https://discord.gg/6G8VZQg
+<br>
 Go to the releases tab and check for the latest files https://github.com/dmustanger/7dtd-ServerTools/releases <br>
 <br>
 Download and extract the files.<br>
