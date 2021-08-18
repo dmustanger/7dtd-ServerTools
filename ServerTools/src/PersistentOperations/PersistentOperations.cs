@@ -655,10 +655,10 @@ namespace ServerTools
                     _world.SpawnEntityInWorld(entityItem);
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                     _world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                    Phrases.Dict.TryGetValue(901, out string _phrase901);
-                    _phrase901 = _phrase901.Replace("{Value}", _quantity.ToString());
-                    _phrase901 = _phrase901.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase901 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("GiveItem1", out string _phrase);
+                    _phrase = _phrase.Replace("{Value}", _quantity.ToString());
+                    _phrase = _phrase.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -705,35 +705,35 @@ namespace ServerTools
         public static void Jail(ClientInfo _cInfoKiller)
         {
             SdtdConsole.Instance.ExecuteSync(string.Format("st-Jail add {0} 120", _cInfoKiller.playerId), null);
-            Phrases.Dict.TryGetValue(204, out string _phrase204);
-            _phrase204 = _phrase204.Replace("{PlayerName}", _cInfoKiller.playerName);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase204 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            Phrases.Dict.TryGetValue("Jail1", out string _phrase);
+            _phrase = _phrase.Replace("{PlayerName}", _cInfoKiller.playerName);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
         public static void Kill(ClientInfo _cInfo)
         {
             SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), null);
-            Phrases.Dict.TryGetValue(324, out string _phrase324);
-            _phrase324 = _phrase324.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase324 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            Phrases.Dict.TryGetValue("Zones4", out string _phrase);
+            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
         public static void Kick(ClientInfo _cInfo)
         {
-            Phrases.Dict.TryGetValue(326, out string _phrase326);
-            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase326), null);
-            Phrases.Dict.TryGetValue(325, out string _phrase325);
-            _phrase325 = _phrase325.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase325 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            Phrases.Dict.TryGetValue("Zones6", out string _phrase);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase), null);
+            Phrases.Dict.TryGetValue("Zones5", out _phrase);
+            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
         public static void Ban(ClientInfo _cInfo)
         {
-            Phrases.Dict.TryGetValue(328, out string _phrase328);
-            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase328), null);
-            Phrases.Dict.TryGetValue(327, out string _phrase327);
-            _phrase327 = _phrase327.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase327 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            Phrases.Dict.TryGetValue("Zones8", out string _phrase);
+            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase), null);
+            Phrases.Dict.TryGetValue("Zones7", out _phrase);
+            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
     }
 }

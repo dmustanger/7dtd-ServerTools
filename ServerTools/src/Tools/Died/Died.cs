@@ -68,12 +68,12 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                Phrases.Dict.TryGetValue(431, out string _phrase431);
-                _phrase431 = _phrase431.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase431 = _phrase431.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase431 = _phrase431.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                _phrase431 = _phrase431.Replace("{Command_died}", Command_died);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase431 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Died1", out string _phrase);
+                _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase = _phrase.Replace("{Command_died}", Command_died);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -86,9 +86,9 @@ namespace ServerTools
             }
             else
             {
-                Phrases.Dict.TryGetValue(433, out string _phrase433);
-                _phrase433 = _phrase433.Replace("{CoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase433 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Died3", out string _phrase);
+                _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -133,15 +133,15 @@ namespace ServerTools
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue(432, out string _phrase432);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase432 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Died2", out string _phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                Phrases.Dict.TryGetValue(434, out string _phrase434);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase434 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Died4", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

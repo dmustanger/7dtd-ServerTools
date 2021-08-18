@@ -46,38 +46,38 @@ namespace ServerTools
                         string _tags = _e.EntityClass.Tags.ToString();
                         if (_tags.Contains("zombie") && _e.IsAlive())
                         {
-                            _zombies = _zombies + 1;
+                            _zombies++;
                         }
                         else if (_tags.Contains("animal") && _e.IsAlive())
                         {
-                            _animals = _animals + 1;
+                            _animals++;
                         }
                         else
                         {
                             string _name = EntityClass.list[_e.entityClass].entityClassName;
                             if (_name == "vehicleBicycle")
                             {
-                                _bicycles = _bicycles + 1;
+                                _bicycles++;
                             }
                             else if (_name == "vehicleMinibike")
                             {
-                                _miniBikes = _miniBikes + 1;
+                                _miniBikes++;
                             }
                             else if (_name == "vehicleMotorcycle")
                             {
-                                _motorcycles = _motorcycles + 1;
+                                _motorcycles++;
                             }
                             else if (_name == "vehicle4x4Truck")
                             {
-                                _4x4 = _4x4 + 1;
+                                _4x4++;
                             }
                             else if (_name == "vehicleGyrocopter")
                             {
-                                _gyros = _gyros + 1;
+                                _gyros++;
                             }
                             else if (_name == "sc_General")
                             {
-                                _supplyCrates = _supplyCrates + 1;
+                                _supplyCrates++;
                             }
                         }
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Server FPS:{0}", GameManager.Instance.fps.Counter));

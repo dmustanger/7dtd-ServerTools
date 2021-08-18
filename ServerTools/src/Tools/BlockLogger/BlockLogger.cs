@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
 
-        private static string file = string.Format("BlockLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static readonly string file = string.Format("BlockLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         public static string Filepath = string.Format("{0}/Logs/BlockLogs/{1}", API.ConfigPath, file);
 
         public static void PlacedBlock(string _persistentPlayerId, Block _newBlock, Vector3i _position)

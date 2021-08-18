@@ -70,8 +70,7 @@ namespace ServerTools
                     }
                     int _min = 1;
                     int _max = 1;
-                    int _itemQuality;
-                    if (_params.Count > 3 && int.TryParse(_params[3], out _itemQuality))
+                    if (_params.Count > 3 && int.TryParse(_params[3], out int _itemQuality))
                     {
                         if (_itemQuality > 0 && _itemQuality < 7)
                         {
@@ -117,10 +116,10 @@ namespace ServerTools
                                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gave {0} to {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
                                             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                                             world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                                            Phrases.Dict.TryGetValue(901, out string _phrase901);
-                                            _phrase901 = _phrase901.Replace("{Value}", _itemCount.ToString());
-                                            _phrase901 = _phrase901.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase901 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                            Phrases.Dict.TryGetValue("GiveItem1", out string _phrase);
+                                            _phrase = _phrase.Replace("{Value}", _itemCount.ToString());
+                                            _phrase = _phrase.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
                                     else
@@ -152,10 +151,10 @@ namespace ServerTools
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gave {0} to {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
                                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                                    Phrases.Dict.TryGetValue(901, out string _phrase901);
-                                    _phrase901 = _phrase901.Replace("{Value}", _itemCount.ToString());
-                                    _phrase901 = _phrase901.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase901 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("GiveItem1", out string _phrase);
+                                    _phrase = _phrase.Replace("{Value}", _itemCount.ToString());
+                                    _phrase = _phrase.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else

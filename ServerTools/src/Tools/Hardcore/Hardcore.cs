@@ -20,9 +20,9 @@ namespace ServerTools
                     int _lives = Max_Deaths - (XUiM_Player.GetDeaths(_player) - _deaths) + _extraLives;
                     if (_lives > 0)
                     {
-                        Phrases.Dict.TryGetValue(595, out string _phrase595);
-                        _phrase595 = _phrase595.Replace("{Value}", _lives.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase595 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Hardcore5", out string _phrase);
+                        _phrase = _phrase.Replace("{Value}", _lives.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
@@ -184,29 +184,29 @@ namespace ServerTools
             }
             if (_sessionName1 != "" || _ScoreName1 != null)
             {
-                Phrases.Dict.TryGetValue(591, out string _phrase591);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase591 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                Phrases.Dict.TryGetValue(592, out string _phrase592);
-                _phrase592 = _phrase592.Replace("{Name1}", _sessionName1);
-                _phrase592 = _phrase592.Replace("{Session1}", _topSession1.ToString());
-                _phrase592 = _phrase592.Replace("{Name2}", _sessionName2);
-                _phrase592 = _phrase592.Replace("{Session2}", _topSession2.ToString());
-                _phrase592 = _phrase592.Replace("{Name3}", _sessionName3);
-                _phrase592 = _phrase592.Replace("{Session3}", _topSession3.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase592 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                Phrases.Dict.TryGetValue(593, out string _phrase593);
-                _phrase593 = _phrase593.Replace("{Name1}", _ScoreName1);
-                _phrase593 = _phrase593.Replace("{Score1}", _topScore1.ToString());
-                _phrase593 = _phrase593.Replace("{Name2}", _ScoreName2);
-                _phrase593 = _phrase593.Replace("{Score2}", _topScore2.ToString());
-                _phrase593 = _phrase593.Replace("{Name3}", _ScoreName3);
-                _phrase593 = _phrase593.Replace("{Score3}", _topScore3.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase593 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Hardcore1", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Hardcore2", out _phrase);
+                _phrase = _phrase.Replace("{Name1}", _sessionName1);
+                _phrase = _phrase.Replace("{Session1}", _topSession1.ToString());
+                _phrase = _phrase.Replace("{Name2}", _sessionName2);
+                _phrase = _phrase.Replace("{Session2}", _topSession2.ToString());
+                _phrase = _phrase.Replace("{Name3}", _sessionName3);
+                _phrase = _phrase.Replace("{Session3}", _topSession3.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Hardcore3", out _phrase);
+                _phrase = _phrase.Replace("{Name1}", _ScoreName1);
+                _phrase = _phrase.Replace("{Score1}", _topScore1.ToString());
+                _phrase = _phrase.Replace("{Name2}", _ScoreName2);
+                _phrase = _phrase.Replace("{Score2}", _topScore2.ToString());
+                _phrase = _phrase.Replace("{Name3}", _ScoreName3);
+                _phrase = _phrase.Replace("{Score3}", _topScore3.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                Phrases.Dict.TryGetValue(596, out string _phrase596);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase596 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Hardcore6", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -220,20 +220,20 @@ namespace ServerTools
                     for (int i = 0; i < _hardcoreSavedStats.Count; i++)
                     {
                         string[] _stats = _hardcoreSavedStats[i];
-                        Phrases.Dict.TryGetValue(594, out string _phrase594);
-                        _phrase594 = _phrase594.Replace("{PlayerName}", _stats[0]);
-                        _phrase594 = _phrase594.Replace("{PlayTime}", _stats[1]);
-                        _phrase594 = _phrase594.Replace("{PlayerKills}", _stats[2]);
-                        _phrase594 = _phrase594.Replace("{ZombieKills}", _stats[3]);
-                        _phrase594 = _phrase594.Replace("{Deaths}", _stats[4]);
-                        _phrase594 = _phrase594.Replace("{Score}", _stats[5]);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase594 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Hardcore4", out string _phrase);
+                        _phrase = _phrase.Replace("{PlayerName}", _stats[0]);
+                        _phrase = _phrase.Replace("{PlayTime}", _stats[1]);
+                        _phrase = _phrase.Replace("{PlayerKills}", _stats[2]);
+                        _phrase = _phrase.Replace("{ZombieKills}", _stats[3]);
+                        _phrase = _phrase.Replace("{Deaths}", _stats[4]);
+                        _phrase = _phrase.Replace("{Score}", _stats[5]);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(596, out string _phrase596);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase596 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Hardcore6", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -268,32 +268,32 @@ namespace ServerTools
                                     _stats[2] = (_extraLives + 1).ToString();
                                     PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats = _stats;
                                     PersistentContainer.DataChange = true;
-                                    Phrases.Dict.TryGetValue(597, out string _phrase597);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase597 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Hardcore7", out string _phrase);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else
                                 {
-                                    Phrases.Dict.TryGetValue(598, out string _phrase598);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase598 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Hardcore8", out string _phrase);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue(599, out string _phrase599);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase599 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Hardcore9", out string _phrase);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                             
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue(600, out string _phrase600);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase600 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Hardcore10", out string _phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue(599, out string _phrase599);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase599 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Hardcore9", out string _phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -418,14 +418,14 @@ namespace ServerTools
             {
                 if (_cInfo != null)
                 {
-                    Phrases.Dict.TryGetValue(594, out string _phrase594);
-                    _phrase594 = _phrase594.Replace("{PlayerName}", _stats[0]);
-                    _phrase594 = _phrase594.Replace("{PlayTime}", _stats[1]);
-                    _phrase594 = _phrase594.Replace("{PlayerKills}", _stats[2]);
-                    _phrase594 = _phrase594.Replace("{ZombieKills}", _stats[3]);
-                    _phrase594 = _phrase594.Replace("{Deaths}", _stats[4]);
-                    _phrase594 = _phrase594.Replace("{Score}", _stats[5]);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase594 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Hardcore4", out string _phrase);
+                    _phrase = _phrase.Replace("{PlayerName}", _stats[0]);
+                    _phrase = _phrase.Replace("{PlayTime}", _stats[1]);
+                    _phrase = _phrase.Replace("{PlayerKills}", _stats[2]);
+                    _phrase = _phrase.Replace("{ZombieKills}", _stats[3]);
+                    _phrase = _phrase.Replace("{Deaths}", _stats[4]);
+                    _phrase = _phrase.Replace("{Score}", _stats[5]);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     Timers.DisconnectHardcorePlayer(_cInfo);
                 }
             }

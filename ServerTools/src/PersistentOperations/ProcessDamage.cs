@@ -10,7 +10,7 @@ namespace ServerTools
         private static readonly string file = string.Format("DamageLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static readonly string Filepath = string.Format("{0}/Logs/DamageLogs/{1}", API.ConfigPath, file);
 
-        public static bool Exec(EntityAlive __instance, DamageSource _dmgSource, int _strength)
+        public static bool Exec(EntityAlive __instance, DamageSource _dmgSource, ref int _strength)
         {
             try
             {
@@ -28,6 +28,25 @@ namespace ServerTools
                                 if (_player2 != null)
                                 {
                                     EntityPlayer _player1 = (EntityPlayer)__instance;
+                                    if (NewPlayerProtection.IsEnabled)
+                                    {
+                                        if (_player1.Progression.Level < NewPlayerProtection.Level)
+                                        {
+                                            Phrases.Dict.TryGetValue("NewPlayerProtection1", out string _phrase);
+                                            ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                            return false;
+                                        }
+                                        else if (_player2.Progression.Level < NewPlayerProtection.Level)
+                                        {
+                                            ClientInfo _cInfo1 = PersistentOperations.GetClientInfoFromEntityId(__instance.entityId);
+                                            if (_cInfo1 != null)
+                                            {
+                                                Phrases.Dict.TryGetValue("NewPlayerProtection2", out string _phrase);
+                                                ChatHook.ChatMessage(_cInfo1, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                return false;
+                                            }
+                                        }
+                                    }
                                     int _distance = (int)_player2.GetDistance(_player1);
                                     using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                     {

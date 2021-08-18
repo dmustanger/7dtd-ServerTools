@@ -39,8 +39,7 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not ban Id: Invalid Id {0}", _params[0]));
                     return;
                 }
-                int _time;
-                if (!int.TryParse(_params[1], out _time))
+                if (!int.TryParse(_params[1], out int _time))
                 {
                     _time = 15;
                 }

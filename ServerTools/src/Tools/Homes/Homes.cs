@@ -32,8 +32,8 @@ namespace ServerTools
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(731, out string _phrase731);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase731 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Homes1", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -57,12 +57,12 @@ namespace ServerTools
                         int.TryParse(_cords[1], out int _y);
                         int.TryParse(_cords[2], out int _z);
                         _count++;
-                        Phrases.Dict.TryGetValue(732, out string _phrase732);
-                        _phrase732 = _phrase732.Replace("{Name}", _home.Key);
-                        _phrase732 = _phrase732.Replace("{Value}", _x.ToString());
-                        _phrase732 = _phrase732.Replace("{Value2}", _y.ToString());
-                        _phrase732 = _phrase732.Replace("{Value3}", _z.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase732 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Homes2", out string _phrase);
+                        _phrase = _phrase.Replace("{Name}", _home.Key);
+                        _phrase = _phrase.Replace("{Value}", _x.ToString());
+                        _phrase = _phrase.Replace("{Value2}", _y.ToString());
+                        _phrase = _phrase.Replace("{Value3}", _z.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -86,8 +86,8 @@ namespace ServerTools
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue(731, out string _phrase731);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase731 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Homes1", out string _phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
@@ -121,16 +121,16 @@ namespace ServerTools
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue(731, out string _phrase731);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase731 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Homes1", out string _phrase);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(733, out string _phrase733);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase733 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Homes3", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -150,12 +150,12 @@ namespace ServerTools
                 else
                 {
                     int _timeleft = _delay - _timepassed;
-                    Phrases.Dict.TryGetValue(734, out string _phrase734);
-                    _phrase734 = _phrase734.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    _phrase734 = _phrase734.Replace("{DelayBetweenUses}", _delay.ToString());
-                    _phrase734 = _phrase734.Replace("{Value}", _timeleft.ToString());
-                    _phrase734 = _phrase734.Replace("{Command_home}", Command_home);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase734 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Homes4", out string _phrase);
+                    _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                    _phrase = _phrase.Replace("{Value}", _timeleft.ToString());
+                    _phrase = _phrase.Replace("{Command_home}", Command_home);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -176,8 +176,8 @@ namespace ServerTools
                         Entity _attachedEntity = _player.AttachedToEntity;
                         if (_attachedEntity != null)
                         {
-                            Phrases.Dict.TryGetValue(853, out string _phrase853);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase853 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Teleport3", out string _phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             return;
                         }
                     }
@@ -216,9 +216,9 @@ namespace ServerTools
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue(736, out string _phrase736);
-                        _phrase736 = _phrase736.Replace("{CoinName}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase736 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Homes6", out string _phrase);
+                        _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
@@ -258,14 +258,14 @@ namespace ServerTools
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue(737, out string _phrase737);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase737 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Homes7", out string _phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(737, out string _phrase737);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase737 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Homes7", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -291,15 +291,15 @@ namespace ServerTools
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue(738, out string _phrase738);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase738 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Homes8", out string _phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(733, out string _phrase733);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase733 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Homes3", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -333,6 +333,12 @@ namespace ServerTools
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(_homeName))
+                {
+                    Phrases.Dict.TryGetValue("Homes11", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    return;
+                }
                 if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes != null && PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Count > 0)
                 {
                     if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Count < _homeTotal)
@@ -349,23 +355,23 @@ namespace ServerTools
                             {
                                 PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Add(_homeName, _wposition);
                                 PersistentContainer.DataChange = true;
-                                Phrases.Dict.TryGetValue(739, out string _phrase739);
-                                _phrase739 = _phrase739.Replace("{Name}", _homeName);
-                                _phrase739 = _phrase739.Replace("{Position}", _wposition);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase739 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Homes9", out string _phrase);
+                                _phrase = _phrase.Replace("{Name}", _homeName);
+                                _phrase = _phrase.Replace("{Position}", _wposition);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue(740, out string _phrase740);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase740 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Homes10", out string _phrase);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue(741, out string _phrase741);
-                        _phrase741 = _phrase741.Replace("{Value}", _homeTotal.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase741 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Homes11", out string _phrase);
+                        _phrase = _phrase.Replace("{Value}", _homeTotal.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else if (_homeTotal > 0)
@@ -382,17 +388,17 @@ namespace ServerTools
                         _homes.Add(_homeName, _wposition);
                         PersistentContainer.Instance.Players[_cInfo.playerId].Homes = _homes;
                         PersistentContainer.DataChange = true;
-                        Phrases.Dict.TryGetValue(742, out string _phrase742);
-                        _phrase742 = _phrase742.Replace("{Name}", _homeName);
-                        _phrase742 = _phrase742.Replace("{Position}", _wposition);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase742 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Homes12", out string _phrase);
+                        _phrase = _phrase.Replace("{Name}", _homeName);
+                        _phrase = _phrase.Replace("{Position}", _wposition);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(741, out string _phrase741);
-                    _phrase741 = _phrase741.Replace("{Value}", _homeTotal.ToString());
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase741 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Homes11", out string _phrase);
+                    _phrase = _phrase.Replace("{Value}", _homeTotal.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -409,14 +415,14 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Remove(_homeName);
                     PersistentContainer.DataChange = true;
-                    Phrases.Dict.TryGetValue(743, out string _phrase743);
-                    _phrase743 = _phrase743.Replace("{Name}", _homeName);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase743 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Homes13", out string _phrase);
+                    _phrase = _phrase.Replace("{Name}", _homeName);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(737, out string _phrase737);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase737 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Homes7", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -444,14 +450,14 @@ namespace ServerTools
                         {
                             if ((x - (int)_player2.position.x) * (x - (int)_player2.position.x) + (z - (int)_player2.position.z) * (z - (int)_player2.position.z) <= 10 * 10)
                             {
-                                Phrases.Dict.TryGetValue(744, out string _phrase744);
-                                _phrase744 = _phrase744.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase744 = _phrase744.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                                _phrase744 = _phrase744.Replace("{Command_go}", Command_go);
-                                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase744 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                Phrases.Dict.TryGetValue(745, out string _phrase745);
-                                _phrase745 = _phrase745.Replace("{PlayerName}", _cInfo2.playerName);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase745 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Homes14", out string _phrase);
+                                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                _phrase = _phrase.Replace("{Command_go}", Command_go);
+                                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Homes15", out _phrase);
+                                _phrase = _phrase.Replace("{PlayerName}", _cInfo2.playerName);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 if (Invite.ContainsKey(_cInfo2.entityId))
                                 {
                                     Invite.Remove(_cInfo2.entityId);
@@ -496,8 +502,8 @@ namespace ServerTools
                     {
                         Invite.Remove(_cInfo.entityId);
                         FriendPosition.Remove(_cInfo.entityId);
-                        Phrases.Dict.TryGetValue(746, out string _phrase746);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase746 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Homes16", out string _phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }

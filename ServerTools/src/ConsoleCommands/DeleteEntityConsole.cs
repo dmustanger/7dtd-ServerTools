@@ -3,23 +3,23 @@ using System.Collections.Generic;
 
 namespace ServerTools
 {
-    public class RemoveEntityConsole : ConsoleCmdAbstract
+    public class DeleteEntityConsole : ConsoleCmdAbstract
     {
         public override string GetDescription()
         {
-            return "[ServerTools] - Removes an entity from the game.";
+            return "[ServerTools] - Deletes an entity from the game.";
         }
 
         public override string GetHelp()
         {
-            return "Removes an entity from the game.\n" +
-                "Usage: st-er <EntityId>\n" +
-                "Usage: er <EntityId>";
+            return "Deletes an entity from the game.\n" +
+                "Usage: st-de <EntityId>\n" +
+                "Usage: de <EntityId>";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-EntityRemove", "er", "st-er" };
+            return new string[] { "st-DeleteEntity", "de", "st-de" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -40,12 +40,12 @@ namespace ServerTools
                 else
                 {
                     GameManager.Instance.World.RemoveEntity(_entityId, EnumRemoveEntityReason.Despawned);
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed entity {0} ", _entityId));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Deleted entity {0} ", _entityId));
                 }    
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in EntityRemoveConsole.Run: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in DeleteEntityConsole.Run: {0}.", e.Message));
             }
         }
     }

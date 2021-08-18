@@ -161,8 +161,7 @@ namespace ServerTools
                     {
                         foreach (var _key in ReservedSlots.Dict)
                         {
-                            string _name;
-                            if (ReservedSlots.Dict1.TryGetValue(_key.Key, out _name))
+                            if (ReservedSlots.Dict1.TryGetValue(_key.Key, out string _name))
                             {
                                 SdtdConsole.Instance.Output(string.Format("{0} {1} {2}", _key.Key, _name, _key.Value));
                             }

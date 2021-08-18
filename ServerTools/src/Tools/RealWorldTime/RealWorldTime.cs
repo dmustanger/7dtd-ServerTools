@@ -16,9 +16,9 @@ namespace ServerTools
             {
                 _time = DateTime.Now.AddHours(Adjustment);
             }
-            Phrases.Dict.TryGetValue(471, out string _phrase471);
-            _phrase471 = _phrase471.Replace("{Time}", _time.ToShortTimeString());
-            _phrase471 = _phrase471.Replace("{TimeZone}", Time_Zone);
+            Phrases.Dict.TryGetValue("RealWorldTime1", out string _phrase);
+            _phrase = _phrase.Replace("{Time}", _time.ToShortTimeString());
+            _phrase = _phrase.Replace("{TimeZone}", Time_Zone);
             List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
             if (_cInfoList != null && _cInfoList.Count > 0)
             {
@@ -27,7 +27,7 @@ namespace ServerTools
                     ClientInfo _cInfo = _cInfoList[i];
                     if (_cInfo != null)
                     {
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase471 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }

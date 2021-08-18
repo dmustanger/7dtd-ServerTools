@@ -8,139 +8,131 @@ namespace ServerTools
 {
     class LoginNotice
     {
-
-
         public static bool IsEnabled = false, IsRunning = false;
+        public static Dictionary<string, string> Dict = new Dictionary<string, string>();
+
         private const string file = "LoginNotice.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        public static Dictionary<string, string> dict = new Dictionary<string, string>();
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static bool updateConfig = false;
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
-            if (IsEnabled && !IsRunning)
-            {
-                LoadXml();
-                InitFileWatcher();
-            }
+            LoadXml();
+            InitFileWatcher();
         }
 
         public static void Unload()
         {
-            if (!IsEnabled && IsRunning)
-            {
-                dict.Clear();
-                fileWatcher.Dispose();
-                IsRunning = false;
-            }
+            Dict.Clear();
+            FileWatcher.Dispose();
+            IsRunning = false;
         }
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(filePath);
+                xmlDoc.Load(FilePath);
             }
             catch (XmlException e)
             {
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNode _XmlNode = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _XmlNode.ChildNodes)
+            XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
+            if (_childNodes != null && _childNodes.Count > 0)
             {
-                if (childNode.Name == "Logins")
+                Dict.Clear();
+                bool upgrade = true;
+                for (int i = 0; i < _childNodes.Count; i++)
                 {
-                    dict.Clear();
-                    foreach (XmlNode subChild in childNode.ChildNodes)
+                    if (_childNodes[i].NodeType == XmlNodeType.Comment)
                     {
-                        if (subChild.NodeType == XmlNodeType.Comment)
+                        continue;
+                    }
+                    XmlElement _line = (XmlElement)_childNodes[i];
+                    if (_line.HasAttributes)
+                    {
+                        if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
                         {
-                            continue;
+                            upgrade = false;
                         }
-                        if (subChild.NodeType != XmlNodeType.Element)
+                        if (_line.HasAttribute("Id") && _line.HasAttribute("Message"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Logins' section: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("Id"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Login_Notice entry because of missing Id attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("Message"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Login_Notice entry because of missing Message attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        string _id = _line.GetAttribute("Id");
-                        string _message = _line.GetAttribute("Message");
-                        if (!dict.ContainsKey(_id))
-                        {
-                            dict.Add(_id, _message);
+                            string _id = _line.GetAttribute("Id");
+                            string _message = _line.GetAttribute("Message");
+                            if (!Dict.ContainsKey(_id))
+                            {
+                                Dict.Add(_id, _message);
+                            }
                         }
                     }
                 }
-            }
-            if (updateConfig)
-            {
-                updateConfig = false;
-                UpdateXml();
+                if (upgrade)
+                {
+                    UpgradeXml(_childNodes);
+                    return;
+                }
             }
         }
 
         private static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
+            try
             {
-                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                sw.WriteLine("<LoginNotice>");
-                sw.WriteLine("    <Logins>");
-                if (dict.Count > 0)
+                FileWatcher.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    foreach (KeyValuePair<string, string> kvp in dict)
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<LoginNotice>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    if (Dict.Count > 0)
                     {
-                        string _message;
-                        if (dict.TryGetValue(kvp.Key, out _message))
+                        foreach (KeyValuePair<string, string> kvp in Dict)
                         {
-                            sw.WriteLine(string.Format("        <Player Id=\"{0}\" Message=\"{1}\" />", kvp.Key, _message));
+                            if (Dict.TryGetValue(kvp.Key, out string _message))
+                            {
+                                sw.WriteLine(string.Format("    <Player Id=\"{0}\" Message=\"{1}\" />", kvp.Key, _message));
+                            }
                         }
                     }
+                    else
+                    {
+                        sw.WriteLine("    <Player Id=\"76561191234567891\" Message=\"Time to kick ass and chew bubble gum\" />");
+                        sw.WriteLine("    <Player Id=\"76561199876543210\" Message=\"Head admin has arrived... shhh\" />");
+                        sw.WriteLine("    <Player Id=\"76561191234509876\" Message=\"Run for your lives, {PlayerName} has logged on\" />");
+                    }
+                    sw.WriteLine("</LoginNotice>");
+                    sw.Flush();
+                    sw.Close();
                 }
-                else
-                {
-                    sw.WriteLine("        <Player Id=\"76561191234567891\" Message=\"Time to kick ass and chew bubble gum\" />");
-                    sw.WriteLine("        <Player Id=\"76561199876543210\" Message=\"Head admin has arrived... shhh\" />");
-                    sw.WriteLine("        <Player Id=\"76561191234509876\" Message=\"Run for your lives, {PlayerName} has logged on\" />");
-                }
-                sw.WriteLine("    </Logins>");
-                sw.WriteLine("</LoginNotice>");
-                sw.Flush();
-                sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in LoginNotice.UpdateXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
@@ -149,12 +141,58 @@ namespace ServerTools
 
         public static void PlayerNotice(ClientInfo _cInfo)
         {
-            string _message;
-            if (dict.TryGetValue(_cInfo.playerId, out _message))
+            if (Dict.TryGetValue(_cInfo.playerId, out string _message))
             {
                 _message = _message.Replace("{PlayerName}", _cInfo.playerName);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
+        }
+
+        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        {
+            try
+            {
+                FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<LoginNotice>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        XmlElement _line = (XmlElement)_oldChildNodes[i];
+                        if (_line.HasAttributes)
+                        {
+                            string _id = "", _message = "";
+                            if (_line.HasAttribute("Id"))
+                            {
+                                _id = _line.GetAttribute("Id");
+                            }
+                            if (_line.HasAttribute("Message"))
+                            {
+                                _message = _line.GetAttribute("Message");
+                            }
+                            sw.WriteLine(string.Format("    <Player Id=\"{0}\" Message=\"{1}\" />", _id, _message));
+                        }
+                    }
+                    sw.WriteLine("</LoginNotice>");
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in LoginNotice.UpgradeXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
+            LoadXml();
         }
     }
 }

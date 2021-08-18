@@ -12,229 +12,187 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Zone_Message = false, Set_Home = false;
         public static int Reminder_Delay = 20;
-
         public static Dictionary<int, DateTime> Reminder = new Dictionary<int, DateTime>();
         public static Dictionary<int, string[]> ZonePlayer = new Dictionary<int, string[]>();
         public static List<string[]> ZoneList = new List<string[]>();
+        public static Dictionary<int, string[]> ZoneSetup = new Dictionary<int, string[]>();
 
         private const string file = "Zones.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        
-        public static Dictionary<int, string[]> ZoneSetup = new Dictionary<int, string[]>();
-
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
-            if (IsEnabled && !IsRunning)
-            {
-                LoadXml();
-                InitFileWatcher();
-            }
+            LoadXml();
+            InitFileWatcher();
         }
 
         public static void Unload()
         {
-            if (!IsEnabled && IsRunning)
-            {
-                ZoneList.Clear();
-                Reminder.Clear();
-                ZonePlayer.Clear();
-                FileWatcher.Dispose();
-                IsRunning = false;
-            }
+            ZoneList.Clear();
+            Reminder.Clear();
+            ZonePlayer.Clear();
+            FileWatcher.Dispose();
+            IsRunning = false;
         }
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(FilePath))
-            {
-                UpdateXml();
-            }
-            XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(FilePath);
-            }
-            catch (XmlException e)
-            {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
-                return;
-            }
-            XmlNode _XmlNode = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _XmlNode.ChildNodes)
-            {
-                if (childNode.Name == "Zone")
+                if (!Utils.FileExists(FilePath))
+                {
+                    UpdateXml();
+                }
+                XmlDocument xmlDoc = new XmlDocument();
+                try
+                {
+                    xmlDoc.Load(FilePath);
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    return;
+                }
+                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (_childNodes != null && _childNodes.Count > 0)
                 {
                     ZoneList.Clear();
                     Reminder.Clear();
                     ZonePlayer.Clear();
-                    foreach (XmlNode subChild in childNode.ChildNodes)
+                    bool upgrade = true;
+                    for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (subChild.NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
                         {
                             continue;
                         }
-                        if (subChild.NodeType != XmlNodeType.Element)
+                        XmlElement _line = (XmlElement)_childNodes[i];
+                        if (_line.HasAttributes)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Zone' section: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("Name"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Name attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("Corner1"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Corner1 attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("Corner2"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Corner2 attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("Circle"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Circle attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("EntryMessage"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing EntryMessage attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("ExitMessage"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing ExitMessage attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("EntryCommand"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing EntryCommand attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("ExitCommand"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing ExitCommand attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("ReminderNotice"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing ReminderNotice attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("PvPvE"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing PvPvE attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("NoZombie"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing NoZombie attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        else
-                        {
-                            string[] _zone = { _line.GetAttribute("Name"), _line.GetAttribute("Corner1"), _line.GetAttribute("Corner2"), _line.GetAttribute("Circle"),
+                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            {
+                                upgrade = false;
+                            }
+                            else if (_line.HasAttribute("Name") && _line.HasAttribute("Corner1") && _line.HasAttribute("Corner2") && _line.HasAttribute("Circle") &&
+                                _line.HasAttribute("EntryMessage") && _line.HasAttribute("ExitMessage") && _line.HasAttribute("EntryCommand") && _line.HasAttribute("ExitCommand") &&
+                                _line.HasAttribute("ReminderNotice") && _line.HasAttribute("PvPvE") && _line.HasAttribute("NoZombie"))
+                            {
+                                string[] _zone = { _line.GetAttribute("Name"), _line.GetAttribute("Corner1"), _line.GetAttribute("Corner2"), _line.GetAttribute("Circle"),
                                 _line.GetAttribute("EntryMessage"), _line.GetAttribute("ExitMessage"), _line.GetAttribute("EntryCommand"),_line.GetAttribute("ExitCommand"),
                                 _line.GetAttribute("ReminderNotice"), _line.GetAttribute("PvPvE"), _line.GetAttribute("NoZombie") };
-                            if (_zone[6] == "")
-                            {
-                                _zone[6] = "***";
-                            }
-                            if (_zone[7] == "")
-                            {
-                                _zone[7] = "***";
-                            }
-                            if (_zone[3].ToLower() == "false")
-                            {
-                                if (_zone[1].Contains(",") && _zone[2].Contains(","))
+                                if (_zone[6] == "")
                                 {
-                                    string[] _corner1 = _zone[1].Split(',');
-                                    string[] _corner2 = _zone[2].Split(',');
-                                    int.TryParse(_corner1[0], out int x1);
-                                    int.TryParse(_corner1[1], out int y1);
-                                    int.TryParse(_corner1[2], out int z1);
-                                    int.TryParse(_corner2[0], out int x2);
-                                    int.TryParse(_corner2[1], out int y2);
-                                    int.TryParse(_corner2[2], out int z2);
-                                    int _switch;
-                                    if (x1 > x2)
-                                    {
-                                        _switch = x2;
-                                        x2 = x1;
-                                        x1 = _switch;
-                                    }
-                                    if (y1 > y2)
-                                    {
-                                        _switch = y2;
-                                        y2 = y1;
-                                        y1 = _switch;
-                                    }
-                                    else if (y1 == y2)
-                                    {
-                                        y2++;
-                                    }
-                                    if (z1 > z2)
-                                    {
-                                        _switch = z2;
-                                        z2 = z1;
-                                        z1 = _switch;
-                                    }
-                                    _zone[1] = x1 + "," + y1 + "," + z1;
-                                    _zone[2] = x2 + "," + y2 + "," + z2;
+                                    _zone[6] = "";
                                 }
-                                else
+                                if (_zone[7] == "")
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring Zones entry because of improper format in corner1 or corner2 attribute: {0}", subChild.OuterXml));
-                                    continue;
+                                    _zone[7] = "";
                                 }
-                            }
-
-                            if (!ZoneList.Contains(_zone))
-                            {
-                                ZoneList.Add(_zone);
+                                if (_zone[3].ToLower() == "false")
+                                {
+                                    if (_zone[1].Contains(",") && _zone[2].Contains(","))
+                                    {
+                                        string[] _corner1 = _zone[1].Split(',');
+                                        string[] _corner2 = _zone[2].Split(',');
+                                        int.TryParse(_corner1[0], out int x1);
+                                        int.TryParse(_corner1[1], out int y1);
+                                        int.TryParse(_corner1[2], out int z1);
+                                        int.TryParse(_corner2[0], out int x2);
+                                        int.TryParse(_corner2[1], out int y2);
+                                        int.TryParse(_corner2[2], out int z2);
+                                        int _switch;
+                                        if (x1 > x2)
+                                        {
+                                            _switch = x2;
+                                            x2 = x1;
+                                            x1 = _switch;
+                                        }
+                                        if (y1 > y2)
+                                        {
+                                            _switch = y2;
+                                            y2 = y1;
+                                            y1 = _switch;
+                                        }
+                                        else if (y1 == y2)
+                                        {
+                                            y2++;
+                                        }
+                                        if (z1 > z2)
+                                        {
+                                            _switch = z2;
+                                            z2 = z1;
+                                            z1 = _switch;
+                                        }
+                                        _zone[1] = x1 + "," + y1 + "," + z1;
+                                        _zone[2] = x2 + "," + y2 + "," + z2;
+                                    }
+                                    else
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Zones.xml entry. Improper format in corner1 or corner2 attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                }
+                                if (!ZoneList.Contains(_zone))
+                                {
+                                    ZoneList.Add(_zone);
+                                }
                             }
                         }
                     }
+                    if (upgrade)
+                    {
+                        UpgradeXml(_childNodes);
+                        return;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.LoadXml: {0}", e.Message));
             }
         }
 
         public static void UpdateXml()
         {
-            FileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+            try
             {
-                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                sw.WriteLine("<Zones>");
-                sw.WriteLine("  <Zone>");
-                sw.WriteLine("     <!-- Do not use decimals in the corner positions -->");
-                sw.WriteLine("     <!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
-
-                if (ZoneList.Count > 0)
+                FileWatcher.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    for (int i = 0; i < ZoneList.Count; i++)
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<Zones>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- Do not use decimals in the corner positions -->");
+                    sw.WriteLine("<!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
+                    sw.WriteLine("<!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
+                    sw.WriteLine("<!-- Possible variables for commands include {PlayerName}, {EntityId}, {PlayerId}, {Delay} -->");
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    if (ZoneList.Count > 0)
                     {
-                        string[] _zone = ZoneList[i];
-                        sw.WriteLine(string.Format("     <Zone Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Circle=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" EntryCommand=\"{6}\" ExitCommand=\"{7}\" ReminderNotice=\"{8}\" PvPvE=\"{9}\" NoZombie=\"{10}\" />", _zone[0], _zone[1], _zone[2], _zone[3], _zone[4], _zone[5], _zone[6], _zone[7], _zone[8], _zone[9], _zone[10]));
+                        for (int i = 0; i < ZoneList.Count; i++)
+                        {
+                            string[] _zone = ZoneList[i];
+                            sw.WriteLine(string.Format("    <Zone Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Circle=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" EntryCommand=\"{6}\" ExitCommand=\"{7}\" ReminderNotice=\"{8}\" PvPvE=\"{9}\" NoZombie=\"{10}\" />", _zone[0], _zone[1], _zone[2], _zone[3], _zone[4], _zone[5], _zone[6], _zone[7], _zone[8], _zone[9], _zone[10]));
+                        }
                     }
+                    else
+                    {
+                        sw.WriteLine("    <!-- <Zone Name=\"North\" Corner1=\"-8000,0,8000\" Corner2=\"8000,200,0\" Circle=\"false\" EntryMessage=\"You are entering the Northern side\" ExitMessage=\"You have exited the Northern Side\" EntryCommand=\"\" ExitCommand=\"\" ReminderNotice=\"You are still in the North\" PvPvE=\"0\" NoZombie=\"false\" /> -->");
+                        sw.WriteLine("    <!-- <Zone Name=\"South\" Corner1=\"-8000,0,-1\" Corner2=\"8000,200,-8000\" Circle=\"false\" EntryMessage=\"You are entering the Southern side\" ExitMessage=\"You have exited the Southern Side\" EntryCommand=\"whisper {PlayerName} you have entered the south side ^ ser {EntityId} 40 @ 4\" ExitCommand=\"\" ReminderNotice=\"You are still in the South\" PvPvE=\"3\" NoZombie=\"false\" /> -->");
+                        sw.WriteLine("    <!-- <Zone Name=\"Arena\" Corner1=\"-100,0,-90\" Corner2=\"40\" Circle=\"true\" EntryMessage=\"You have entered the arena\" ExitMessage=\"You have exited the arena\" EntryCommand=\"whisper {PlayerName} you have entered the arena\" ExitCommand=\"whisper {PlayerName} you have exited the arena\" ReminderNotice=\"\" PvPvE=\"2\" NoZombie=\"true\" /> -->");
+                        sw.WriteLine("    <!-- <Zone Name=\"TradeSpace\" Corner1=\"0,0,0\" Corner2=\"25,105,25\" Circle=\"false\" EntryMessage=\"You have entered the trade space\" ExitMessage=\"You have exited the trade space\" EntryCommand=\"\" ExitCommand=\"\" ReminderNotice=\"You have been in the trade space for a long time...\" PvPvE=\"1\" NoZombie=\"true\" /> -->");
+                    }
+                    sw.WriteLine("</Zones>");
+                    sw.Flush();
+                    sw.Close();
+                    sw.Dispose();
                 }
-                else
-                {
-                    sw.WriteLine("     <!-- <Zone Name=\"North\" Corner1=\"-8000,0,8000\" Corner2=\"8000,200,0\" Circle=\"false\" EntryMessage=\"You are entering the Northern side\" ExitMessage=\"You have exited the Northern Side\" EntryCommand=\"\" ExitCommand=\"\" ReminderNotice=\"You are still in the North\" PvPvE=\"0\" NoZombie=\"false\" /> -->");
-                    sw.WriteLine("     <!-- <Zone Name=\"South\" Corner1=\"-8000,0,-1\" Corner2=\"8000,200,-8000\" Circle=\"false\" EntryMessage=\"You are entering the Southern side\" ExitMessage=\"You have exited the Southern Side\" EntryCommand=\"whisper {PlayerName} you have entered the south side ^ ser {EntityId} 40 @ 4\" ExitCommand=\"\" ReminderNotice=\"You are still in the South\" PvPvE=\"3\" NoZombie=\"false\" /> -->");
-                    sw.WriteLine("     <!-- <Zone Name=\"Arena\" Corner1=\"-100,0,-90\" Corner2=\"40\" Circle=\"true\" EntryMessage=\"You have entered the arena\" ExitMessage=\"You have exited the arena\" EntryCommand=\"whisper {PlayerName} you have entered the arena\" ExitCommand=\"whisper {PlayerName} you have exited the arena\" ReminderNotice=\"\" PvPvE=\"2\" NoZombie=\"true\" /> -->");
-                    sw.WriteLine("     <!-- <Zone Name=\"TradeSpace\" Corner1=\"0,0,0\" Corner2=\"25,105,25\" Circle=\"false\" EntryMessage=\"You have entered the trade space\" ExitMessage=\"You have exited the trade space\" EntryCommand=\"***\" ExitCommand=\"***\" ReminderNotice=\"You have been in the trade space for a long time...\" PvPvE=\"1\" NoZombie=\"true\" /> -->");
-                }
-                sw.WriteLine("  </Zone>");
-                sw.WriteLine("</Zones>");
-                sw.Flush();
-                sw.Close();
-                sw.Dispose();
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.UpdateXml: {0}", e.Message));
             }
             FileWatcher.EnableRaisingEvents = true;
         }
@@ -259,28 +217,60 @@ namespace ServerTools
 
         public static void ZoneCheck(ClientInfo _cInfo, EntityAlive _player)
         {
-            if (ZoneList.Count > 0)
+            try
             {
-                for (int i = 0; i < ZoneList.Count; i++)
+                if (ZoneList.Count > 0)
                 {
-                    string[] _zone = ZoneList[i];
-                    if (InsideZone(_zone, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z))
+                    for (int i = 0; i < ZoneList.Count; i++)
                     {
-                        if (ZonePlayer.ContainsKey(_player.entityId))
+                        string[] _zone = ZoneList[i];
+                        if (InsideZone(_zone, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z))
                         {
-                            ZonePlayer.TryGetValue(_player.entityId, out string[] _info);
-                            if (_info != _zone)
+                            if (ZonePlayer.ContainsKey(_player.entityId))
+                            {
+                                ZonePlayer.TryGetValue(_player.entityId, out string[] _info);
+                                if (_info != _zone)
+                                {
+                                    if (Zone_Message)
+                                    {
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    }
+                                    if (_zone[6] != "")
+                                    {
+                                        ProcessCommand(_cInfo, _zone[6]);
+                                    }
+                                    ZonePlayer[_player.entityId] = _zone;
+                                    Reminder[_player.entityId] = DateTime.Now;
+                                    if (_zone[9] == "0")
+                                    {
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
+                                    }
+                                    else if (_zone[9] == "1")
+                                    {
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
+                                    }
+                                    else if (_zone[9] == "2")
+                                    {
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
+                                    }
+                                }
+                            }
+                            else
                             {
                                 if (Zone_Message)
                                 {
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
-                                if (_zone[6] != "***")
+                                if (_zone[6] != "")
                                 {
-                                    EntryCommand(_cInfo, _zone[6]);
+                                    ProcessCommand(_cInfo, _zone[6]);
                                 }
-                                ZonePlayer[_player.entityId] = _zone;
-                                Reminder[_player.entityId] = DateTime.Now;
+                                ZonePlayer.Add(_player.entityId, _zone);
+                                Reminder.Add(_player.entityId, DateTime.Now);
                                 if (_zone[9] == "0")
                                 {
                                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
@@ -298,86 +288,116 @@ namespace ServerTools
                                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
                                 }
                             }
+                            return;
                         }
-                        else
-                        {
-                            if (Zone_Message)
-                            {
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            }
-                            if (_zone[6] != "***")
-                            {
-                                EntryCommand(_cInfo, _zone[6]);
-                            }
-                            ZonePlayer.Add(_player.entityId, _zone);
-                            Reminder.Add(_player.entityId, DateTime.Now);
-                            if (_zone[9] == "0")
-                            {
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
-                            }
-                            else if (_zone[9] == "1")
-                            {
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
-                            }
-                            else if (_zone[9] == "2")
-                            {
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
-                            }
-                        }
-                        return;
                     }
                 }
+                if (ZonePlayer.ContainsKey(_player.entityId))
+                {
+                    ZonePlayer.TryGetValue(_player.entityId, out string[] _zone);
+                    if (Zone_Message && _zone[5] != "")
+                    {
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _zone[5] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                    if (_zone[7] != "")
+                    {
+                        ProcessCommand(_cInfo, _zone[7]);
+                    }
+                    if (_zone[9] != PersistentOperations.Player_Killing_Mode.ToString())
+                    {
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup(string.Format("sgs PlayerKillingMode {0}", PersistentOperations.Player_Killing_Mode), true));
+                    }
+                    ZonePlayer.Remove(_player.entityId);
+                    Reminder.Remove(_player.entityId);
+                }
             }
-            if (ZonePlayer.ContainsKey(_player.entityId))
+            catch (Exception e)
             {
-                ZonePlayer.TryGetValue(_player.entityId, out string[] _zone);
-                if (Zone_Message && _zone[5] != "")
-                {
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _zone[5] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                }
-                if (_zone[9] != PersistentOperations.Player_Killing_Mode.ToString())
-                {
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup(string.Format("sgs PlayerKillingMode {0}", PersistentOperations.Player_Killing_Mode), true));
-                }
-                ZonePlayer.Remove(_player.entityId);
-                Reminder.Remove(_player.entityId);
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.ZoneCheck: {0}", e.Message));
             }
         }
 
-        public static void EntryCommand(ClientInfo _cInfo, string _command)
+        private static void ProcessCommand(ClientInfo _cInfo, string _command)
         {
-            if (_command.Contains("^"))
+            try
             {
-                string[] _responseSplit = _command.Split('^');
-                for (int i = 0; i < _responseSplit.Length; i++)
+                if (_command.Contains("^"))
                 {
-                    string _responseAdj = _responseSplit[i].Trim();
-                    _responseAdj = _responseAdj.Replace("{EntityId}", _cInfo.entityId.ToString());
-                    _responseAdj = _responseAdj.Replace("{SteamId}", _cInfo.playerId);
-                    _responseAdj = _responseAdj.Replace("{PlayerName}", _cInfo.playerName);
-                    if (_responseAdj.ToLower().StartsWith("global "))
+                    List<string> _commands = _command.Split('^').ToList();
+                    for (int i = 0; i < _commands.Count; i++)
                     {
-                        _responseAdj = _responseAdj.Replace("Global ", "");
-                        _responseAdj = _responseAdj.Replace("global ", "");
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _responseAdj + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        string _commandTrimmed = _commands[i].Trim();
+                        if (_commandTrimmed.StartsWith("{Delay}"))
+                        {
+                            string[] _commandSplit = _commandTrimmed.Split(' ');
+                            if (int.TryParse(_commandSplit[1], out int _time))
+                            {
+                                _commands.RemoveRange(0, i + 1);
+                                Timers.Zone_SingleUseTimer(_time, _cInfo.playerId, _commands);
+                                return;
+                            }
+                            else
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Custom command error. Unable to commit delay with improper integer: {0}", _command));
+                            }
+                        }
+                        else
+                        {
+                            Command(_cInfo, _commandTrimmed);
+                        }
                     }
-                    else if (_responseAdj.ToLower().StartsWith("whisper "))
+                }
+                else
+                {
+                    Command(_cInfo, _command);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.ProcessCommand: {0}", e.Message));
+            }
+        }
+
+        public static void ZoneCommandDelayed(string _playerId, List<string> _commands)
+        {
+            try
+            {
+                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_playerId);
+                if (_cInfo != null)
+                {
+                    for (int i = 0; i < _commands.Count; i++)
                     {
-                        _responseAdj = _responseAdj.Replace("Whisper ", "");
-                        _responseAdj = _responseAdj.Replace("whisper ", "");
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _responseAdj + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                    else
-                    {
-                        SdtdConsole.Instance.ExecuteSync(_responseAdj, null);
+                        string _commandTrimmed = _commands[i].Trim();
+                        if (_commandTrimmed.StartsWith("{Delay}"))
+                        {
+                            string[] _commandSplit = _commandTrimmed.Split(' ');
+                            if (int.TryParse(_commandSplit[1], out int _time))
+                            {
+                                _commands.RemoveRange(0, i + 1);
+                                Timers.Zone_SingleUseTimer(_time, _cInfo.playerId, _commands);
+                                return;
+                            }
+                            else
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Custom command error. Unable to commit delay with improper integer: {0}", _commands));
+                            }
+                        }
+                        else
+                        {
+                            Command(_cInfo, _commandTrimmed);
+                        }
                     }
                 }
             }
-            else
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.ZoneCommandDelayed: {0}", e.Message));
+            }
+        }
+
+        public static void Command(ClientInfo _cInfo, string _command)
+        {
+            try
             {
                 _command = _command.Replace("{EntityId}", _cInfo.entityId.ToString());
                 _command = _command.Replace("{SteamId}", _cInfo.playerId);
@@ -394,10 +414,22 @@ namespace ServerTools
                     _command = _command.Replace("whisper ", "");
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
+                else if (_command.StartsWith("tele ") || _command.StartsWith("tp ") || _command.StartsWith("teleportplayer "))
+                {
+                    if (Zones.IsEnabled && Zones.ZonePlayer.ContainsKey(_cInfo.entityId))
+                    {
+                        Zones.ZonePlayer.Remove(_cInfo.entityId);
+                    }
+                    SdtdConsole.Instance.ExecuteSync(_command, null);
+                }
                 else
                 {
                     SdtdConsole.Instance.ExecuteSync(_command, null);
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.Command: {0}", e.Message));
             }
         }
 
@@ -556,8 +588,8 @@ namespace ServerTools
                     ZonePlayer.TryGetValue(_player2.entityId, out string[] _zone2);
                     if (_zone1[9] != _zone2[9])
                     {
-                        Phrases.Dict.TryGetValue(323, out string _phrase323);
-                        ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase323 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Zones3", out string _phrase);
+                        ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         return false;
                     }
                 }
@@ -566,8 +598,8 @@ namespace ServerTools
                     ZonePlayer.TryGetValue(_player1.entityId, out string[] _zone);
                     if (_zone[9] != PersistentOperations.Player_Killing_Mode.ToString())
                     {
-                        Phrases.Dict.TryGetValue(323, out string _phrase323);
-                        ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase323 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Zones3", out string _phrase);
+                        ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         return false;
                     }
                 }
@@ -576,8 +608,8 @@ namespace ServerTools
                     ZonePlayer.TryGetValue(_player2.entityId, out string[] _zone);
                     if (_zone[9] != PersistentOperations.Player_Killing_Mode.ToString())
                     {
-                        Phrases.Dict.TryGetValue(323, out string _phrase323);
-                        ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase323 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Zones3", out string _phrase);
+                        ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         return false;
                     }
                 }
@@ -589,6 +621,92 @@ namespace ServerTools
             return true;
         }
 
-        
+        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        {
+            try
+            {
+                FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<Zones>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- Do not use decimals in the corner positions -->");
+                    sw.WriteLine("<!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
+                    sw.WriteLine("<!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
+                    sw.WriteLine("<!-- Possible variables for commands include {PlayerName}, {EntityId}, {PlayerId}, {Delay} -->");
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        XmlElement _line = (XmlElement)_oldChildNodes[i];
+                        if (_line.HasAttributes)
+                        {
+                            string _name = "", _corner1 = "", _corner2 = "", _circle = "", _entryMessage = "", _exitMessage = "", _entryCommand = "",
+                                _exitCommand = "", _reminder = "", _pvpve = "", _noZ = "";
+                            if (_line.HasAttribute("Name"))
+                            {
+                                _name = _line.GetAttribute("Name");
+                            }
+                            if (_line.HasAttribute("Corner1"))
+                            {
+                                _corner1 = _line.GetAttribute("Corner1");
+                            }
+                            if (_line.HasAttribute("Corner2"))
+                            {
+                                _corner2 = _line.GetAttribute("Corner2");
+                            }
+                            if (_line.HasAttribute("Circle"))
+                            {
+                                _circle = _line.GetAttribute("Circle");
+                            }
+                            if (_line.HasAttribute("EntryMessage"))
+                            {
+                                _entryMessage = _line.GetAttribute("EntryMessage");
+                            }
+                            if (_line.HasAttribute("ExitMessage"))
+                            {
+                                _exitMessage = _line.GetAttribute("ExitMessage");
+                            }
+                            if (_line.HasAttribute("EntryCommand"))
+                            {
+                                _entryCommand = _line.GetAttribute("EntryCommand");
+                            }
+                            if (_line.HasAttribute("ExitCommand"))
+                            {
+                                _exitCommand = _line.GetAttribute("ExitCommand");
+                            }
+                            if (_line.HasAttribute("ReminderNotice"))
+                            {
+                                _reminder = _line.GetAttribute("ReminderNotice");
+                            }
+                            if (_line.HasAttribute("PvPvE"))
+                            {
+                                _pvpve = _line.GetAttribute("PvPvE");
+                            }
+                            if (_line.HasAttribute("NoZombie"))
+                            {
+                                _noZ = _line.GetAttribute("NoZombie");
+                            }
+                            sw.WriteLine(string.Format("    <Zone Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Circle=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" EntryCommand=\"{6}\" ExitCommand=\"{7}\" ReminderNotice=\"{8}\" PvPvE=\"{9}\" NoZombie=\"{10}\" />", _name, _corner1, _corner2, _circle, _entryMessage, _exitMessage, _entryCommand, _exitCommand, _reminder, _pvpve, _noZ));
+                        }
+                    }
+                    sw.WriteLine("</Zones>");
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.UpgradeXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
+            LoadXml();
+        }
     }
 }

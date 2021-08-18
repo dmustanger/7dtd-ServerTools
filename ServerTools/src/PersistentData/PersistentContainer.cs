@@ -23,6 +23,7 @@ namespace ServerTools
         private Dictionary<string, bool> pollVote;
         private List<string> regionReset;
         private List<string[]> track;
+        private Dictionary<string, string[]> waypoints;
         private Dictionary<string, string[]> webPanelAuthorizedIVKeyList;
         private Dictionary<string, DateTime> webPanelAuthorizedTimeList;
         private List<string> webPanelBanList;
@@ -227,6 +228,18 @@ namespace ServerTools
             set
             {
                 track = value;
+            }
+        }
+
+        public Dictionary<string, string[]> Waypoints
+        {
+            get
+            {
+                return waypoints;
+            }
+            set
+            {
+                waypoints = value;
             }
         }
 

@@ -87,8 +87,7 @@ namespace ServerTools
                 }
                 if (_params.Count == 4)
                 {
-                    int _entityId;
-                    if (!int.TryParse(_params[0], out _entityId))
+                    if (!int.TryParse(_params[0], out int _entityId))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack id value: {0}", _entityId));
                         return;
@@ -104,18 +103,17 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Backpack with id {0} can not be a player. Use a different command for teleporting players", _entityId));
                         return;
                     }
-                    float _x, _y, _z;
-                    if (!float.TryParse(_params[1], out _x))
+                    if (!float.TryParse(_params[1], out float _x))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack value: {0}", _x));
                         return;
                     }
-                    if (!float.TryParse(_params[2], out _y))
+                    if (!float.TryParse(_params[2], out float _y))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack value: {0}", _y));
                         return;
                     }
-                    if (!float.TryParse(_params[3], out _z))
+                    if (!float.TryParse(_params[3], out float _z))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack value: {0}", _z));
                         return;

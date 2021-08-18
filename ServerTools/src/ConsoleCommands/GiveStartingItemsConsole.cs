@@ -64,7 +64,7 @@ namespace ServerTools
         {
             try
             {
-                if (StartingItems.ItemList.Count > 0)
+                if (StartingItems.Dict.Count > 0)
                 {
                     World world = GameManager.Instance.World;
                     if (world.Players.dict.ContainsKey(_cInfo.entityId))
@@ -74,11 +74,11 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems = true;
                             PersistentContainer.DataChange = true;
-                            List<string> _itemList = StartingItems.ItemList.Keys.ToList();
+                            List<string> _itemList = StartingItems.Dict.Keys.ToList();
                             for (int i = 0; i < _itemList.Count; i++)
                             {
                                 string _item = _itemList[i];
-                                StartingItems.ItemList.TryGetValue(_item, out int[]  _itemData);
+                                StartingItems.Dict.TryGetValue(_item, out int[]  _itemData);
                                 ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
                                 if (_itemValue.HasQuality && _itemData[1] > 0)
                                 {
@@ -102,8 +102,8 @@ namespace ServerTools
                             }
                             Log.Out(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
-                            Phrases.Dict.TryGetValue(841, out string _phrase841);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase841 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("StartingItems1", out string _phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {

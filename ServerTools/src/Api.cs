@@ -151,7 +151,7 @@ namespace ServerTools
                             }
                             else if (_respawnReason == RespawnType.JoinMultiplayer)//Old player spawning
                             {
-                                if (_player.distanceWalked < 1 && _player.totalTimePlayed <= 10)
+                                if (_player.distanceWalked < 1 && _player.totalTimePlayed <= 1)
                                 {
                                     Timers.NewPlayerTimer(_cInfo);
                                 }
@@ -219,18 +219,18 @@ namespace ServerTools
                                     {
                                         if (KillNotice.Show_Level)
                                         {
-                                            Phrases.Dict.TryGetValue(545, out string _phrase545);
-                                            _phrase545 = _phrase545.Replace("{PlayerName}", _cInfo.playerName);
-                                            _phrase545 = _phrase545.Replace("{Level}", _player.Progression.Level.ToString());
-                                            _phrase545 = _phrase545.Replace("{ZombieName}", _entityAlive.EntityName);
-                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase545 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                            Phrases.Dict.TryGetValue("KillNotice5", out string _phrase);
+                                            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                            _phrase = _phrase.Replace("{Level}", _player.Progression.Level.ToString());
+                                            _phrase = _phrase.Replace("{ZombieName}", _entityAlive.EntityName);
+                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                         }
                                         else
                                         {
-                                            Phrases.Dict.TryGetValue(546, out string _phrase546);
-                                            _phrase546 = _phrase546.Replace("{PlayerName}", _cInfo.playerName);
-                                            _phrase546 = _phrase546.Replace("{ZombieName}", _entityAlive.EntityName);
-                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase546 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                            Phrases.Dict.TryGetValue("KillNotice6", out string _phrase);
+                                            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                            _phrase = _phrase.Replace("{ZombieName}", _entityAlive.EntityName);
+                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                         }
 
                                     }
@@ -303,6 +303,10 @@ namespace ServerTools
                     if (DupeLog.IsEnabled)
                     {
                         DupeLog.Exec(_cInfo, _playerDataFile);
+                    }
+                    if (LevelUp.IsEnabled)
+                    {
+                        LevelUp.CheckLevel(_cInfo);
                     }
                 }
             }
@@ -394,6 +398,10 @@ namespace ServerTools
                         {
                             PlayerChecks.Movement.Remove(_cInfo.entityId);
                         }
+                        if (LevelUp.PlayerLevels.ContainsKey(_cInfo.entityId))
+                        {
+                            LevelUp.PlayerLevels.Remove(_cInfo.entityId);
+                        }
                     }
                     else
                     {
@@ -462,12 +470,12 @@ namespace ServerTools
                             if (NewSpawnTele.IsEnabled && NewSpawnTele.New_Spawn_Tele_Position != "0,0,0")
                             {
                                 NewSpawnTele.TeleNewSpawn(_cInfo, _player);
-                                if (StartingItems.IsEnabled && StartingItems.ItemList.Count > 0)
+                                if (StartingItems.IsEnabled && StartingItems.Dict.Count > 0)
                                 {
                                     Timers.StartingItemsTimer(_cInfo);
                                 }
                             }
-                            else if (StartingItems.IsEnabled && StartingItems.ItemList.Count > 0)
+                            else if (StartingItems.IsEnabled && StartingItems.Dict.Count > 0)
                             {
                                 StartingItems.Exec(_cInfo);
                             }
@@ -557,7 +565,7 @@ namespace ServerTools
                         }
                     }
                 }
-                if (LoginNotice.IsEnabled && LoginNotice.dict.ContainsKey(_cInfo.playerId))
+                if (LoginNotice.IsEnabled && LoginNotice.Dict.ContainsKey(_cInfo.playerId))
                 {
                     LoginNotice.PlayerNotice(_cInfo);
                 }

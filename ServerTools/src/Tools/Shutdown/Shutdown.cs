@@ -33,8 +33,8 @@ namespace ServerTools
                     int _remainingTime = (int)fractionalMinutes;
                     if (_remainingTime <= 10 && Event.Open)
                     {
-                        Phrases.Dict.TryGetValue(422, out string _phrase422);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase422 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Shutdown2", out string _phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         return;
                     }
                     if (_remainingTime < 0)
@@ -43,9 +43,9 @@ namespace ServerTools
                     }
                     string TimeLeft;
                     TimeLeft = string.Format("{0:00} H : {1:00} M", _remainingTime / 60, _remainingTime % 60);
-                    Phrases.Dict.TryGetValue(421, out string _phrase421);
-                    _phrase421 = _phrase421.Replace("{TimeLeft}", TimeLeft);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase421 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Shutdown1", out string _phrase1);
+                    _phrase1 = _phrase1.Replace("{TimeLeft}", TimeLeft);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

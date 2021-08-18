@@ -24,31 +24,31 @@ namespace ServerTools
                         {
                             if (Mute.Mutes.Contains(_playerToMute.playerId))
                             {
-                                Phrases.Dict.TryGetValue(915, out string _phrase915);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase915 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("MuteVote5", out string _phrase);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 return;
                             }
                             _playerMute = _playerToMute;
                             VoteOpen = true;
-                            Phrases.Dict.TryGetValue(911, out string _phrase911);
-                            _phrase911 = _phrase911.Replace("{PlayerName}", _playerToMute.playerName);
-                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase911 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                            Phrases.Dict.TryGetValue(912, out string _phrase912);
-                            _phrase912 = _phrase912.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                            _phrase912 = _phrase912.Replace("{Command_yes}", RestartVote.Command_yes);
-                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase912 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                            Phrases.Dict.TryGetValue("MuteVote1", out string _phrase1);
+                            _phrase1 = _phrase1.Replace("{PlayerName}", _playerToMute.playerName);
+                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                            Phrases.Dict.TryGetValue("MuteVote2", out _phrase1);
+                            _phrase1 = _phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                            _phrase1 = _phrase1.Replace("{Command_yes}", RestartVote.Command_yes);
+                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue(916, out string _phrase916);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase916 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("MuteVote6", out string _phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(917, out string _phrase917);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase917 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("MuteVote7", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -62,9 +62,9 @@ namespace ServerTools
                 PersistentContainer.Instance.Players[_playerMute.playerId].MuteName = _playerMute.playerName;
                 PersistentContainer.Instance.Players[_playerMute.playerId].MuteDate = DateTime.Now;
                 PersistentContainer.DataChange = true;
-                Phrases.Dict.TryGetValue(913, out string _phrase913);
-                _phrase913 = _phrase913.Replace("{PlayerName}", _playerMute.playerName);
-                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase913 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                Phrases.Dict.TryGetValue("MuteVote3", out string _phrase);
+                _phrase = _phrase.Replace("{PlayerName}", _playerMute.playerName);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
             _playerMute = null;
             MuteVote.Votes.Clear();
@@ -80,22 +80,22 @@ namespace ServerTools
                     ClientInfo _cInfo2 = ClientInfoList[i];
                     if (_cInfo2 != _cInfo)
                     {
-                        Phrases.Dict.TryGetValue(918, out string _phrase918);
-                        _phrase918 = _phrase918.Replace("{PlayerName}", _cInfo2.playerName);
-                        _phrase918 = _phrase918.Replace("{Id}", _cInfo2.entityId.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase918 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("MuteVote8", out string _phrase);
+                        _phrase = _phrase.Replace("{PlayerName}", _cInfo2.playerName);
+                        _phrase = _phrase.Replace("{Id}", _cInfo2.entityId.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
 
                     }
                 }
-                Phrases.Dict.TryGetValue(914, out string _phrase914);
-                _phrase914 = _phrase914.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                _phrase914 = _phrase914.Replace("{Command_mutevote}", Command_mutevote);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase914 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("MuteVote4", out string _phrase1);
+                _phrase1 = _phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase1 = _phrase1.Replace("{Command_mutevote}", Command_mutevote);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                Phrases.Dict.TryGetValue(919, out string _phrase919);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase919 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("MuteVote9", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

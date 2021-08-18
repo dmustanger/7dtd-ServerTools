@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using LiteNetLib;
 using System;
 using System.Reflection;
 
@@ -19,8 +18,6 @@ namespace ServerTools
                     Harmony harmony = new Harmony("com.github.servertools.patch");
 
                     MethodInfo original = AccessTools.Method(typeof(GameManager), "PlayerLoginRPC");
-
-                    original = typeof(GameManager).GetMethod("PlayerLoginRPC");
                     if (original == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.PlayerLoginRPC method was not found"));
@@ -41,8 +38,8 @@ namespace ServerTools
                         }
                         harmony.Patch(original, new HarmonyMethod(prefix), new HarmonyMethod(postfix));
                     }
-
-                    original = typeof(ConnectionManager).GetMethod("ServerConsoleCommand");
+                    
+                    original = AccessTools.Method(typeof(ConnectionManager), "ServerConsoleCommand");
                     if (original == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: ConnectionManager.ServerConsoleCommand method was not found"));
@@ -57,8 +54,8 @@ namespace ServerTools
                         }
                         harmony.Patch(original, null, new HarmonyMethod(postfix));
                     }
-
-                    original = typeof(GameManager).GetMethod("ChangeBlocks");
+                    
+                    original = AccessTools.Method(typeof(GameManager), "ChangeBlocks");
                     if (original == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ChangeBlocks method was not found"));
@@ -73,8 +70,8 @@ namespace ServerTools
                         }
                         harmony.Patch(original, new HarmonyMethod(prefix), null);
                     }
-
-                    original = typeof(World).GetMethod("AddFallingBlock");
+                    
+                    original = AccessTools.Method(typeof(World), "AddFallingBlock");
                     if (original == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.AddFallingBlock method was not found"));
@@ -89,8 +86,8 @@ namespace ServerTools
                         }
                         harmony.Patch(original, null, new HarmonyMethod(postfix));
                     }
-
-                    original = typeof(World).GetMethod("AddFallingBlocks");
+                    
+                    original = AccessTools.Method(typeof(World), "AddFallingBlocks");
                     if (original == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.AddFallingBlocks method was not found"));
@@ -105,8 +102,8 @@ namespace ServerTools
                         }
                         harmony.Patch(original, null, new HarmonyMethod(postfix));
                     }
-
-                    original = typeof(GameManager).GetMethod("ChatMessageServer");
+                    
+                    original = AccessTools.Method(typeof(GameManager), "ChatMessageServer");
                     if (original == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ChatMessageServer method was not found"));
@@ -121,8 +118,8 @@ namespace ServerTools
                         }
                         harmony.Patch(original, null, new HarmonyMethod(postfix));
                     }
-
-                    original = typeof(EntityAlive).GetMethod("DamageEntity");
+                    
+                    original = AccessTools.Method(typeof(EntityAlive), "DamageEntity");
                     if (original == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.DamageEntity method was not found"));
@@ -137,8 +134,8 @@ namespace ServerTools
                         }
                         harmony.Patch(original, new HarmonyMethod(prefix), null);
                     }
-
-                    original = typeof(GameManager).GetMethod("Cleanup");
+                    
+                    original = AccessTools.Method(typeof(GameManager), "Cleanup");
                     if (original == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.Cleanup method was not found"));
@@ -154,6 +151,38 @@ namespace ServerTools
                         harmony.Patch(original, null, new HarmonyMethod(postfix));
                     }
                     
+                    original = AccessTools.Method(typeof(ObjectiveTreasureChest), "CalculateTreasurePoint");
+                    if (original == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ObjectiveTreasureChest.CalculateTreasurePoint method was not found"));
+                    }
+                    else
+                    {
+                        MethodInfo finalizer = typeof(Injections).GetMethod("CalculateTreasurePoint_Finalizer");
+                        if (finalizer == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: CalculateTreasurePoint_Finalizer.finalizer"));
+                            return;
+                        }
+                        harmony.Patch(original, new HarmonyMethod(finalizer), null);
+                    }
+                    
+                    original = AccessTools.Method(typeof(EntityAlive), "ProcessDamageResponse");
+                    if (original == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.ProcessDamageResponse method was not found"));
+                    }
+                    else
+                    {
+                        MethodInfo postfix = typeof(Injections).GetMethod("EntityAlive_ProcessDamageResponse_Postfix");
+                        if (postfix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_ProcessDamageResponse.postfix"));
+                            return;
+                        }
+                        harmony.Patch(original, null, new HarmonyMethod(postfix));
+                    }
+
                     Applied = true;
                     Log.Out("[SERVERTOOLS] Runtime patching complete");
                 }

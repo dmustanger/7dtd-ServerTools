@@ -16,16 +16,16 @@ namespace ServerTools
             return "Usage:\n" +
                    "  1. st-web off\n" +
                    "  2. st-web on\n" +
-                   "  3. st-web add {steamId}\n" +
-                   "  4. st-web remove {steamId}\n" +
-                   "  5. st-web reset {steamId}\n" +
+                   "  3. st-web add {clientId}\n" +
+                   "  4. st-web remove {clientId}\n" +
+                   "  5. st-web reset {clientId}\n" +
                    "  6. st-web timeout add {IP}\n" +
                    "  7. st-web timeout remove {IP}\n" +
                    "  8. st-web clear\n" +
                    "  9. st-web list\n" +
                    "1. Turn off the web panel\n" +
                    "2. Turn on the web panel\n" +
-                   "3. Add a client id to the web panel list\n" +
+                   "3. Add a client id to the web panel list. Id must be 8-20 chars in length\n" +
                    "4. Remove a client id from the web panel list or ban list\n" +
                    "5. Reset a client. Changes their current password and clears out their existing session. They must relog with the new password\n" +
                    "6. Add a IP address to the timeout list, restricting all access for ten minutes\n" +

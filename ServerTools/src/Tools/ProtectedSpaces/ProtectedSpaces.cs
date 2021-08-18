@@ -12,136 +12,129 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false;
         public static List<int[]> Protected = new List<int[]>();
         public static Dictionary<int, int[]> Vectors = new Dictionary<int, int[]>();
+
         private const string file = "ProtectedSpaces.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
-            if (IsEnabled && !IsRunning)
-            {
-                LoadXml();
-                InitFileWatcher();
-            }
+            LoadXml();
+            InitFileWatcher();
         }
 
         public static void Unload()
         {
-            if (!IsEnabled && IsRunning)
-            {
-                FileWatcher.Dispose();
-                IsRunning = false;
-            }
+            Protected.Clear();
+            Vectors.Clear();
+            FileWatcher.Dispose();
+            IsRunning = false;
         }
 
         public static void LoadXml()
         {
             try
             {
-                if (!Utils.FileExists(filePath))
+                if (!Utils.FileExists(FilePath))
                 {
                     UpdateXml();
                 }
                 XmlDocument xmlDoc = new XmlDocument();
                 try
                 {
-                    xmlDoc.Load(filePath);
+                    xmlDoc.Load(FilePath);
                 }
                 catch (XmlException e)
                 {
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNode _XmlNode = xmlDoc.DocumentElement;
-                foreach (XmlNode childNode in _XmlNode.ChildNodes)
+                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (_childNodes != null && _childNodes.Count > 0)
                 {
-                    if (childNode.Name == "Spaces")
+                    Protected.Clear();
+                    Vectors.Clear();
+                    bool upgrade = true;
+                    for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        Protected.Clear();
-                        Vectors.Clear();
-                        foreach (XmlNode subChild in childNode.ChildNodes)
+                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            if (subChild.NodeType == XmlNodeType.Comment)
+                            continue;
+                        }
+                        XmlElement _line = (XmlElement)_childNodes[i];
+                        if (_line.HasAttributes)
+                        {
+                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
                             {
-                                continue;
+                                upgrade = false;
                             }
-                            if (subChild.NodeType != XmlNodeType.Element)
+                            else if (_line.HasAttribute("Corner1") && _line.HasAttribute("Corner2") && _line.HasAttribute("Active"))
                             {
-                                Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Spaces' section: {0}", subChild.OuterXml));
-                                continue;
-                            }
-                            XmlElement _line = (XmlElement)subChild;
-                            if (!_line.HasAttribute("Corner1"))
-                            {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of missing Corner1 attribute: {0}", subChild.OuterXml));
-                                continue;
-                            }
-                            if (!_line.HasAttribute("Corner2"))
-                            {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of missing Corner2 attribute: {0}", subChild.OuterXml));
-                                continue;
-                            }
-                            string corner1 = _line.GetAttribute("Corner1");
-                            string corner2 = _line.GetAttribute("Corner2");
-                            if (!corner1.Contains(","))
-                            {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of invalid form missing comma attribute: {0}", subChild.OuterXml));
-                                continue;
-                            }
-                            if (!corner2.Contains(","))
-                            {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of invalid form missing comma attribute: {0}", subChild.OuterXml));
-                                continue;
-                            }
-                            if (!_line.HasAttribute("Active"))
-                            {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of missing Active attribute: {0}", subChild.OuterXml));
-                                continue;
-                            }
-                            if (!bool.TryParse(_line.GetAttribute("Active"), out bool _isActive))
-                            {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because improper True/False for Active attribute: {0}.", subChild.OuterXml));
-                                continue;
-                            }
-                            string[] _corner1Split = corner1.Split(',');
-                            string[] _corner2Split = corner2.Split(',');
-                            int.TryParse(_corner1Split[0], out int _corner1_x);
-                            int.TryParse(_corner1Split[1], out int _corner1_z);
-                            int.TryParse(_corner2Split[0], out int _corner2_x);
-                            int.TryParse(_corner2Split[1], out int _corner2_z);
-                            int[] _vectors = new int[5];
-                            if (_corner1_x < _corner2_x)
-                            {
-                                _vectors[0] = _corner1_x;
-                                _vectors[2] = _corner2_x;
-                            }
-                            else
-                            {
-                                _vectors[0] = _corner2_x;
-                                _vectors[2] = _corner1_x;
-                            }
-                            if (_corner1_z < _corner2_z)
-                            {
-                                _vectors[1] = _corner1_z;
-                                _vectors[3] = _corner2_z;
-                            }
-                            else
-                            {
-                                _vectors[1] = _corner2_z;
-                                _vectors[3] = _corner1_z;
-                            }
-                            if (_isActive)
-                            {
-                                _vectors[4] = 1;
-                            }
-                            else
-                            {
-                                _vectors[4] = 0;
-                            }
-                            if (!Protected.Contains(_vectors))
-                            {
-                                Protected.Add(_vectors);
-                                if (_vectors[4] == 1)
+                                string corner1 = _line.GetAttribute("Corner1");
+                                string corner2 = _line.GetAttribute("Corner2");
+                                if (!corner1.Contains(","))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid form missing comma attribute: {0}", _line.OuterXml));
+                                    continue;
+                                }
+                                if (!corner2.Contains(","))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid form missing comma attribute: {0}", _line.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Active"), out bool _isActive))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid True/False for Active attribute: {0}.", _line.OuterXml));
+                                    continue;
+                                }
+                                string[] _corner1Split = corner1.Split(',');
+                                string[] _corner2Split = corner2.Split(',');
+                                int.TryParse(_corner1Split[0], out int _corner1_x);
+                                int.TryParse(_corner1Split[1], out int _corner1_z);
+                                int.TryParse(_corner2Split[0], out int _corner2_x);
+                                int.TryParse(_corner2Split[1], out int _corner2_z);
+                                int[] _vectors = new int[5];
+                                if (_corner1_x < _corner2_x)
+                                {
+                                    _vectors[0] = _corner1_x;
+                                    _vectors[2] = _corner2_x;
+                                }
+                                else
+                                {
+                                    _vectors[0] = _corner2_x;
+                                    _vectors[2] = _corner1_x;
+                                }
+                                if (_corner1_z < _corner2_z)
+                                {
+                                    _vectors[1] = _corner1_z;
+                                    _vectors[3] = _corner2_z;
+                                }
+                                else
+                                {
+                                    _vectors[1] = _corner2_z;
+                                    _vectors[3] = _corner1_z;
+                                }
+                                if (_isActive)
+                                {
+                                    _vectors[4] = 1;
+                                }
+                                else
+                                {
+                                    _vectors[4] = 0;
+                                }
+                                if (!Protected.Contains(_vectors))
+                                {
+                                    Protected.Add(_vectors);
+                                    if (_vectors[4] == 1)
+                                    {
+                                        AddProtection(_vectors);
+                                    }
+                                    else
+                                    {
+                                        RemoveProtection(_vectors);
+                                    }
+                                }
+                                else if (_vectors[4] == 1)
                                 {
                                     AddProtection(_vectors);
                                 }
@@ -150,15 +143,12 @@ namespace ServerTools
                                     RemoveProtection(_vectors);
                                 }
                             }
-                            else if (_vectors[4] == 1)
-                            {
-                                AddProtection(_vectors);
-                            }
-                            else
-                            {
-                                RemoveProtection(_vectors);
-                            }
                         }
+                    }
+                    if (upgrade)
+                    {
+                        UpgradeXml(_childNodes);
+                        return;
                     }
                 }
             }
@@ -171,32 +161,33 @@ namespace ServerTools
         public static void UpdateXml()
         {
             FileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
+            using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Protected>");
-                sw.WriteLine("    <Spaces>");
+                sw.WriteLine("<!-- <Protected Corner1=\"-30,-20\" Corner2=\"10,50\" Active=\"True\" /> -->");
+                sw.WriteLine("<!-- <Protected Corner1=\"-800,75\" Corner2=\"-300,100\" Active=\"True\" /> -->");
+                sw.WriteLine("<!-- <Protected Corner1=\"-50,-600\" Corner2=\"-5,-550\" Active=\"True\" /> -->");
+                sw.WriteLine();
+                sw.WriteLine();
                 if (Protected.Count > 0)
                 {
                     for (int i = 0; i < Protected.Count; i++)
                     {
                         if (Protected[i][4] == 1)
                         {
-                            sw.WriteLine(string.Format("        <Protected Corner1=\"{0},{1}\" Corner2=\"{2},{3}\" Active=\"True\" />", Protected[i][0], Protected[i][1], Protected[i][2], Protected[i][3]));
+                            sw.WriteLine(string.Format("    <Protected Corner1=\"{0},{1}\" Corner2=\"{2},{3}\" Active=\"True\" />", Protected[i][0], Protected[i][1], Protected[i][2], Protected[i][3]));
                         }
                         else
                         {
-                            sw.WriteLine(string.Format("        <Protected Corner1=\"{0},{1}\" Corner2=\"{2},{3}\" Active=\"False\" />", Protected[i][0], Protected[i][1], Protected[i][2], Protected[i][3]));
+                            sw.WriteLine(string.Format("    <Protected Corner1=\"{0},{1}\" Corner2=\"{2},{3}\" Active=\"False\" />", Protected[i][0], Protected[i][1], Protected[i][2], Protected[i][3]));
                         }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <!-- <Protected Corner1=\"-30,-20\" Corner2=\"10,50\" Active=\"True\" /> -->");
-                    sw.WriteLine("        <!-- <Protected Corner1=\"-800,75\" Corner2=\"-300,100\" Active=\"True\" /> -->");
-                    sw.WriteLine("        <!-- <Protected Corner1=\"-50,-600\" Corner2=\"-5,-550\" Active=\"True\" /> -->");
+                    sw.WriteLine("        <!-- <Protected Corner1=\"\" Corner2=\"\" Active=\"\" /> -->");
                 }
-                sw.WriteLine("    </Spaces>");
                 sw.WriteLine("</Protected>");
                 sw.Flush();
                 sw.Close();
@@ -215,7 +206,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
@@ -382,6 +373,57 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedSpaces.RemoveProtection: {0}", e.Message));
             }
+        }
+
+        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        {
+            try
+            {
+                FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<Protected>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        XmlElement _line = (XmlElement)_oldChildNodes[i];
+                        if (_line.HasAttributes)
+                        {
+                            string _corner1 = "", _corner2 = "", _active = "";
+                            if (_line.HasAttribute("Corner1"))
+                            {
+                                _corner1 = _line.GetAttribute("Corner1");
+                            }
+                            if (_line.HasAttribute("Corner2"))
+                            {
+                                _corner2 = _line.GetAttribute("Corner2");
+                            }
+                            if (_line.HasAttribute("Active"))
+                            {
+                                _active = _line.GetAttribute("Active");
+                            }
+                            sw.WriteLine(string.Format("    <Protected Corner1=\"{0}\" Corner2=\"{1}\" Active=\"{2}\" />", _corner1, _corner2, _active));
+                        }
+                    }
+                    sw.WriteLine("</Protected>");
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedSpaces.UpgradeXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
+            LoadXml();
         }
     }
 }

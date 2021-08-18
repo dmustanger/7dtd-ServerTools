@@ -53,8 +53,7 @@ namespace ServerTools
                         int _muteTime = 60;
                         if (_params[2] != null)
                         {
-                            int _value;
-                            if (int.TryParse(_params[2], out _value))
+                            if (int.TryParse(_params[2], out int _value))
                                 _muteTime = _value;
                         }
                         ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);

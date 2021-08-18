@@ -80,9 +80,9 @@ namespace ServerTools
                     }
                     _params.RemoveAt(0);
                     string _word = _params.ToString().ToLower();
-                    if (Badwords.Words.Contains(_word))
+                    if (Badwords.Dict.Contains(_word))
                     {
-                        Badwords.Words.Add(_word);
+                        Badwords.Dict.Add(_word);
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added bad word to the list: {0}", _word));
                         return;
                     }
@@ -101,9 +101,9 @@ namespace ServerTools
                     }
                     _params.RemoveAt(0);
                     string _word = _params.ToString().ToLower();
-                    if (Badwords.Words.Contains(_word))
+                    if (Badwords.Dict.Contains(_word))
                     {
-                        Badwords.Words.Remove(_word);
+                        Badwords.Dict.Remove(_word);
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed bad word from the list: {0}", _word));
                         return;
                     }
@@ -120,11 +120,11 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
-                    if (Badwords.Words.Count > 0)
+                    if (Badwords.Dict.Count > 0)
                     {
-                        for (int i = 0; i < Badwords.Words.Count; i++)
+                        for (int i = 0; i < Badwords.Dict.Count; i++)
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bad word: {0}", Badwords.Words[i]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bad word: {0}", Badwords.Dict[i]));
                         }
                         return;
                     }

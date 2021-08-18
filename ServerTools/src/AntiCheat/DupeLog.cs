@@ -9,16 +9,16 @@ namespace ServerTools
     class DupeLog
     {
         public static bool IsEnabled = false, IsRunning = false;
+        public static List<string> Dict = new List<string>();
+
         private static readonly Dictionary<int, ItemStack[]> Bag = new Dictionary<int, ItemStack[]>();
         private static readonly Dictionary<int, ItemStack[]> Inventory = new Dictionary<int, ItemStack[]>();
         private static readonly Dictionary<int, int> Crafted = new Dictionary<int, int>();
-        private static readonly string _file = string.Format("DupeLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static readonly string _filepath = string.Format("{0}/Logs/DupeLogs/{1}", API.ConfigPath, _file);
-        private const string file = "DuplicateItems.xml";
-        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        public static List<string> dict = new List<string>();
-        private static readonly FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static bool updateConfig = false;
+        private const string file = "DuplicateItemExemption.xml";
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly string DupeFile = string.Format("DupeLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static readonly string DupeFilepath = string.Format("{0}/Logs/DupeLogs/{1}", API.ConfigPath, DupeFile);
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -33,110 +33,124 @@ namespace ServerTools
         {
             if (!IsEnabled && IsRunning)
             {
-                dict.Clear();
-                fileWatcher.Dispose();
+                Dict.Clear();
+                FileWatcher.Dispose();
                 IsRunning = false;
             }
         }
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(filePath))
-            {
-                UpdateXml();
-            }
-            XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(filePath);
-            }
-            catch (XmlException e)
-            {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
-                return;
-            }
-            XmlNode _XmlNode = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _XmlNode.ChildNodes)
-            {
-                if (childNode.Name == "Duplicates")
+                if (!Utils.FileExists(FilePath))
                 {
-                    dict.Clear();
-                    foreach (XmlNode subChild in childNode.ChildNodes)
+                    UpdateXml();
+                }
+                XmlDocument xmlDoc = new XmlDocument();
+                try
+                {
+                    xmlDoc.Load(FilePath);
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    return;
+                }
+                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (_childNodes != null && _childNodes.Count > 0)
+                {
+                    Dict.Clear();
+                    bool upgrade = true;
+                    for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (subChild.NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
                         {
                             continue;
                         }
-                        if (subChild.NodeType != XmlNodeType.Element)
+                        XmlElement _line = (XmlElement)_childNodes[i];
+                        if (_line.HasAttributes)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'duplicates' section: {0}", subChild.OuterXml));
-                            continue;
+                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            {
+                                upgrade = false;
+                                continue;
+                            }
+                            else if (_line.HasAttribute("Name"))
+                            {
+                                string _name = _line.GetAttribute("Name");
+                                if (!Dict.Contains(_name))
+                                {
+                                    Dict.Add(_name);
+                                }
+                            }
                         }
-                        XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("Name"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring duplicates entry because of missing Name attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        string _name = _line.GetAttribute("Name");
-                        if (!dict.Contains(_name))
-                        {
-                            dict.Add(_name);
-                        }
+                    }
+                    if (upgrade)
+                    {
+                        UpgradeXml(_childNodes);
+                        return;
                     }
                 }
             }
-            if (updateConfig)
+            catch (Exception e)
             {
-                updateConfig = false;
-                UpdateXml();
+                Log.Out(string.Format("[SERVERTOOLS] Error in DupeLog.LoadXml: {0}", e.Message));
             }
         }
 
         private static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
+            try
             {
-                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                sw.WriteLine("<DuplicateItems>");
-                sw.WriteLine("    <Duplicates>");
-                if (dict.Count > 0)
+                FileWatcher.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    for (int i = 0; i < dict.Count; i++)
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<DuplicateItemExemption>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    if (Dict.Count > 0)
                     {
-                        string _name = dict[i];
-                        sw.WriteLine(string.Format("        <Duplicate Name=\"{0}\" />", _name));
+                        for (int i = 0; i < Dict.Count; i++)
+                        {
+                            string _name = Dict[i];
+                            sw.WriteLine(string.Format("    <Item Name=\"{0}\" />", _name));
+                        }
                     }
+                    else
+                    {
+                        sw.WriteLine("    <Item Name=\"sand\" />");
+                        sw.WriteLine("    <Item Name=\"dirt\" />");
+                        sw.WriteLine("    <Item Name=\"rockSmall\" />");
+                        sw.WriteLine("    <Item Name=\"yuccaFibers\" />");
+                        sw.WriteLine("    <Item Name=\"stoneAxe\" />");
+                    }
+                    sw.WriteLine("</DuplicateItemExemption>");
+                    sw.Flush();
+                    sw.Close();
                 }
-                else
-                {
-                    sw.WriteLine("        <Duplicate Name=\"sand\" />");
-                    sw.WriteLine("        <Duplicate Name=\"dirt\" />");
-                    sw.WriteLine("        <Duplicate Name=\"rockSmall\" />");
-                    sw.WriteLine("        <Duplicate Name=\"yuccaFibers\" />");
-                    sw.WriteLine("        <Duplicate Name=\"stoneAxe\" />");
-                }
-                sw.WriteLine("    </Duplicates>");
-                sw.WriteLine("</DuplicateItems>");
-                sw.Flush();
-                sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in DupeLog.UpdateXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
@@ -190,7 +204,7 @@ namespace ServerTools
                                 if (!_bagStackNew.Equals(_bagStackOld) && !_bagStackNew.IsEmpty())
                                 {
                                     string _name = _bagStackNew.itemValue.ItemClass.Name;
-                                    if (!dict.Contains(_name))
+                                    if (!Dict.Contains(_name))
                                     {
                                         for (int j = 0; j < _bagSize; j++)
                                         {
@@ -293,7 +307,7 @@ namespace ServerTools
                                                         EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                         if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                         {
-                                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                            using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                             {
                                                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their bag inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
@@ -303,7 +317,7 @@ namespace ServerTools
                                                         }
                                                         else
                                                         {
-                                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                            using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                             {
                                                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their bag at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
@@ -324,7 +338,7 @@ namespace ServerTools
                                                         EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                         if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                         {
-                                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                            using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                             {
                                                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
@@ -334,7 +348,7 @@ namespace ServerTools
                                                         }
                                                         else
                                                         {
-                                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                            using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                             {
                                                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
@@ -360,7 +374,7 @@ namespace ServerTools
                                                             EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                             if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                                using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -370,7 +384,7 @@ namespace ServerTools
                                                             }
                                                             else
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                                using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -391,7 +405,7 @@ namespace ServerTools
                                                             EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                             if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                                using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -401,7 +415,7 @@ namespace ServerTools
                                                             }
                                                             else
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                                using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -427,7 +441,7 @@ namespace ServerTools
                                     if (!_invStackNew.IsEmpty())
                                     {
                                         string _invName = _invStackNew.itemValue.ItemClass.Name;
-                                        if (!dict.Contains(_invName))
+                                        if (!Dict.Contains(_invName))
                                         {
                                             int _oldTotal = 0, _newTotal = 0, _newCount;
                                             for (int j = 0; j < _invSize; j++)
@@ -530,7 +544,7 @@ namespace ServerTools
                                                             EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                             if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                                using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -540,7 +554,7 @@ namespace ServerTools
                                                             }
                                                             else
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                                using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -561,7 +575,7 @@ namespace ServerTools
                                                             EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                             if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                                using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -571,7 +585,7 @@ namespace ServerTools
                                                             }
                                                             else
                                                             {
-                                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                                using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
@@ -597,7 +611,7 @@ namespace ServerTools
                                                                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                                 if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                                 {
-                                                                    using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                                    using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                     {
                                                                         sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                         sw.WriteLine();
@@ -607,7 +621,7 @@ namespace ServerTools
                                                                 }
                                                                 else
                                                                 {
-                                                                    using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                                    using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                     {
                                                                         sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                         sw.WriteLine();
@@ -628,7 +642,7 @@ namespace ServerTools
                                                                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                                 if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                                 {
-                                                                    using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                                    using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                     {
                                                                         sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                         sw.WriteLine();
@@ -638,7 +652,7 @@ namespace ServerTools
                                                                 }
                                                                 else
                                                                 {
-                                                                    using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                                    using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                     {
                                                                         sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                         sw.WriteLine();
@@ -663,8 +677,51 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in DupeLog.Exec: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in DupeLog.Exec: {0}", e.Message));
             }
+        }
+
+        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        {
+            try
+            {
+                FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<DuplicateItemExemption>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        XmlElement _line = (XmlElement)_oldChildNodes[i];
+                        if (_line.HasAttributes && _line.OuterXml.Contains("Weapon"))
+                        {
+                            string _name = "";
+                            if (_line.HasAttribute("Name"))
+                            {
+                                _name = _line.GetAttribute("Name");
+                            }
+                            sw.WriteLine(string.Format("    <Item Name=\"{0}\" />", _name));
+                        }
+                    }
+                    sw.WriteLine("</DuplicateItemExemption>");
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in DupeLog.UpgradeXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
+            LoadXml();
         }
     }
 }

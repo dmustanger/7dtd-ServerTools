@@ -169,15 +169,15 @@ namespace ServerTools
             {
                 DupeLog.Load();
             }
-            if (ChatColorPrefix.IsRunning && !ChatColorPrefix.IsEnabled)
+            if (ChatColor.IsRunning && !ChatColor.IsEnabled)
             {
                 ColorList.Unload();
-                ChatColorPrefix.Unload();
+                ChatColor.Unload();
             }
-            if (!ChatColorPrefix.IsRunning && ChatColorPrefix.IsEnabled)
+            if (!ChatColor.IsRunning && ChatColor.IsEnabled)
             {
                 ColorList.Load();
-                ChatColorPrefix.Load();
+                ChatColor.Load();
             }
             if (KillNotice.IsRunning && !KillNotice.IsEnabled)
             {
@@ -202,6 +202,22 @@ namespace ServerTools
             else if (!BloodmoonWarrior.IsRunning && BloodmoonWarrior.IsEnabled)
             {
                 BloodmoonWarrior.Load();
+            }
+            if (Waypoints.IsRunning && !Waypoints.Public_Waypoints)
+            {
+                Waypoints.Unload();
+            }
+            else if (!Waypoints.IsRunning && Waypoints.Public_Waypoints)
+            {
+                Waypoints.Load();
+            }
+            if (LevelUp.IsRunning && !LevelUp.IsEnabled)
+            {
+                LevelUp.Unload();
+            }
+            else if (!LevelUp.IsRunning && LevelUp.IsEnabled)
+            {
+                LevelUp.Load();
             }
             if (ProtectedSpaces.IsRunning && !ProtectedSpaces.IsEnabled)
             {

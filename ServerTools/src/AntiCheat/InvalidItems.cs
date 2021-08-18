@@ -10,13 +10,14 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Invalid_Stack = false, Ban_Player = false, Check_Storage = false;
         public static int Admin_Level = 0, Days_Before_Log_Delete = 5;
-        private static readonly string file = "InvalidItems.xml";
-        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static readonly List<string> dict = new List<string>();
+
+        private static readonly List<string> Dict = new List<string>();
         private static readonly Dictionary<int, int> Flags = new Dictionary<int, int>();
-        private static readonly FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static readonly string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static readonly string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
+        private static readonly string file = "InvalidItems.xml";
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly string DetectionFile = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static readonly string DetectionFilepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, DetectionFile);
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -29,131 +30,139 @@ namespace ServerTools
 
         public static void Unload()
         {
-            dict.Clear();
-            fileWatcher.Dispose();
+            Dict.Clear();
+            FileWatcher.Dispose();
             IsRunning = false;
         }
 
         private static void LoadXml()
         {
-            if (!Utils.FileExists(filePath))
-            {
-                UpdateXml();
-            }
-            XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(filePath);
-            }
-            catch (XmlException e)
-            {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
-                return;
-            }
-            XmlNode _XmlNode = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _XmlNode.ChildNodes)
-            {
-                if (childNode.Name == "Items")
+                if (!Utils.FileExists(FilePath))
                 {
-                    dict.Clear();
-                    foreach (XmlNode subChild in childNode.ChildNodes)
+                    UpdateXml();
+                }
+                XmlDocument xmlDoc = new XmlDocument();
+                try
+                {
+                    xmlDoc.Load(FilePath);
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    return;
+                }
+                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (_childNodes != null && _childNodes.Count > 0)
+                {
+                    Dict.Clear();
+                    bool upgrade = true;
+                    for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (subChild.NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
                         {
                             continue;
                         }
-                        if (subChild.NodeType != XmlNodeType.Element)
+                        XmlElement _line = (XmlElement)_childNodes[i];
+                        if (_line.HasAttributes)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Items' section: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("Name"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Item entry because of missing 'Name' attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        string _item = _line.GetAttribute("Name");
-                        ItemClass _class;
-                        Block _block;
-                        if (int.TryParse(_item, out int _id))
-                        {
-                            _class = ItemClass.GetForId(_id);
-                            _block = Block.GetBlockByName(_item, true);
-                        }
-                        else
-                        {
-                            _class = ItemClass.GetItemClass(_item, true);
-                            _block = Block.GetBlockByName(_item, true);
-                        }
-                        if (_class == null && _block == null)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Invalid item entry skipped. Item or block not found: {0}", _item));
-                            continue;
-                        }
-                        if (!dict.Contains(_item))
-                        {
-                            dict.Add(_item);
+                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            {
+                                upgrade = false;
+                                continue;
+                            }
+                            else if (_line.HasAttribute("Name"))
+                            {
+                                string _item = _line.GetAttribute("Name");
+                                ItemClass _class = ItemClass.GetItemClass(_item, true);
+                                if (_class == null)
+                                {
+                                    Log.Out(string.Format("[SERVERTOOLS] Invalid InvalidItems.xml entry. Item or block not found: {0}", _item));
+                                    continue;
+                                }
+                                if (!Dict.Contains(_item))
+                                {
+                                    Dict.Add(_item);
+                                }
+                            }
                         }
                     }
+                    if (upgrade)
+                    {
+                        UpgradeXml(_childNodes);
+                        return;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItems.LoadXml: {0}", e.Message));
             }
         }
 
         private static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
+            try
             {
-                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                sw.WriteLine("<InvalidItems>");
-                sw.WriteLine("    <Items>");
-                if (dict.Count > 0)
+                FileWatcher.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    foreach (string _item in dict)
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<InvalidItems>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    if (Dict.Count > 0)
                     {
-                        sw.WriteLine(string.Format("        <Item Name=\"{0}\" />", _item));
+                        foreach (string _item in Dict)
+                        {
+                            sw.WriteLine(string.Format("    <Item Name=\"{0}\" />", _item));
+                        }
                     }
+                    else
+                    {
+                        sw.WriteLine(string.Format("    <Item Name=\"air\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrOrePotassiumNitrate\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrOreIron\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrOreLead\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrBedrock\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrDesertGround\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrIce\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrFertileDirt\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrFertileGrass\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrOreSilver\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrOreCoal\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrainFiller\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrOreGold\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrDestroyedWoodDebris\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrOreOilDeposit\" />"));
+                        sw.WriteLine(string.Format("    <Item Name=\"terrOreDiamond\" />"));
+                    }
+                    sw.WriteLine("</InvalidItems>");
+                    sw.Flush();
+                    sw.Close();
                 }
-                else
-                {
-                    sw.WriteLine(string.Format("        <Item Name=\"air\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrOrePotassiumNitrate\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrOreIron\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrOreLead\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrBedrock\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrDesertGround\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrIce\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrFertileDirt\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrFertileGrass\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrOreSilver\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrOreCoal\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrainFiller\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrOreGold\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrDestroyedWoodDebris\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrOreOilDeposit\" />"));
-                    sw.WriteLine(string.Format("        <Item Name=\"terrOreDiamond\" />"));
-                }
-                sw.WriteLine("    </Items>");
-                sw.WriteLine("</InvalidItems>");
-                sw.Flush();
-                sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItems.UpdateXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
@@ -184,7 +193,7 @@ namespace ServerTools
                                         MaxStack(_cInfo, _name, _count, _maxAllowed);
                                     }
                                 }
-                                if (IsEnabled && dict.Contains(_name))
+                                if (IsEnabled && Dict.Contains(_name))
                                 {
                                     if (Ban_Player)
                                     {
@@ -231,7 +240,7 @@ namespace ServerTools
                                         MaxStack(_cInfo, _name, _count, _maxAllowed);
                                     }
                                 }
-                                if (IsEnabled && dict.Contains(_name))
+                                if (IsEnabled && Dict.Contains(_name))
                                 {
                                     if (Ban_Player)
                                     {
@@ -270,7 +279,7 @@ namespace ServerTools
                                 if (_itemValue != null && !_itemValue.Equals(ItemValue.None))
                                 {
                                     string _name = ItemClass.list[_itemValue.type].Name;
-                                    if (dict.Contains(_name))
+                                    if (Dict.Contains(_name))
                                     {
                                         if (Ban_Player)
                                         {
@@ -311,84 +320,120 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InventoryCheck.CheckInv: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItems.CheckInv: {0}", e.Message));
             }
         }
 
         private static void MaxStack(ClientInfo _cInfo, string _name, int _count, int _maxAllowed)
         {
-            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+            try
             {
-                sw.WriteLine(string.Format("Detected \"{0}\", Steam Id {1}, with invalid stack: {2} {3}. Warned the player.", _cInfo.playerName, _cInfo.playerId, _name, _count));
-                sw.WriteLine();
-                sw.Flush();
-                sw.Close();
+                using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
+                {
+                    sw.WriteLine(string.Format("Detected \"{0}\", Steam Id {1}, with invalid stack: {2} {3}. Warned the player.", _cInfo.playerName, _cInfo.playerId, _name, _count));
+                    sw.WriteLine();
+                    sw.Flush();
+                    sw.Close();
+                }
+                Phrases.Dict.TryGetValue("InvalidItem1", out string _phrase1);
+                _phrase1 = _phrase1.Replace("{ItemName}", _name);
+                _phrase1 = _phrase1.Replace("{ItemCount}", _count.ToString());
+                _phrase1 = _phrase1.Replace("{MaxPerStack}", _maxAllowed.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
-            Phrases.Dict.TryGetValue(11, out string _phrase11);
-            _phrase11 = _phrase11.Replace("{ItemName}", _name);
-            _phrase11 = _phrase11.Replace("{ItemCount}", _count.ToString());
-            _phrase11 = _phrase11.Replace("{MaxPerStack}", _maxAllowed.ToString());
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase11 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItems.MaxStack: {0}", e.Message));
+            }
         }
 
         private static void Ban(ClientInfo _cInfo, string _name)
         {
-            Phrases.Dict.TryGetValue(14, out string _phrase14);
-            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.entityId, _phrase14), null);
-            Phrases.Dict.TryGetValue(12, out string _phrase12);
-            _phrase12 = _phrase12.Replace("{PlayerName}", _cInfo.playerName);
-            _phrase12 = _phrase12.Replace("{ItemName}", _name);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase12 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            try
+            {
+                Phrases.Dict.TryGetValue("InvalidItem4", out string _phrase);
+                _phrase = _phrase.Replace("{ItemName}", _name);
+                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.entityId, _phrase), null);
+                Phrases.Dict.TryGetValue("InvalidItem2", out _phrase);
+                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase = _phrase.Replace("{ItemName}", _name);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItems.Ban: {0}", e.Message));
+            }
         }
 
         private static void Flag1(ClientInfo _cInfo, string _name)
         {
-            Flags.Add(_cInfo.entityId, 1);
-            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+            try
             {
-                sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
-                sw.WriteLine();
-                sw.Flush();
-                sw.Close();
+                Flags.Add(_cInfo.entityId, 1);
+                using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
+                {
+                    sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
+                    sw.WriteLine();
+                    sw.Flush();
+                    sw.Close();
+                }
+                Phrases.Dict.TryGetValue("InvalidItem5", out string _phrase);
+                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase = _phrase.Replace("{ItemName}", _name);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
-            Phrases.Dict.TryGetValue(15, out string _phrase15);
-            _phrase15 = _phrase15.Replace("{PlayerName}", _cInfo.playerName);
-            _phrase15 = _phrase15.Replace("{ItemName}", _name);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase15 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItems.Flag1: {0}", e.Message));
+            }
         }
 
         private static void Flag2(ClientInfo _cInfo, string _name)
         {
-            Flags[_cInfo.entityId] = 2;
-            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+            try
             {
-                sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Final warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
-                sw.WriteLine();
-                sw.Flush();
-                sw.Close();
+                Flags[_cInfo.entityId] = 2;
+                using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
+                {
+                    sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Final warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
+                    sw.WriteLine();
+                    sw.Flush();
+                    sw.Close();
+                }
+                Phrases.Dict.TryGetValue("InvalidItem6", out string _phrase);
+                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase = _phrase.Replace("{ItemName}", _name);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
-            Phrases.Dict.TryGetValue(16, out string _phrase16);
-            _phrase16 = _phrase16.Replace("{PlayerName}", _cInfo.playerName);
-            _phrase16 = _phrase16.Replace("{ItemName}", _name);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase16 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItems.Flag2: {0}", e.Message));
+            }
         }
 
         private static void Flag3(ClientInfo _cInfo, string _name)
         {
-            Phrases.Dict.TryGetValue(14, out string _phrase14);
-            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase14), null);
-            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+            try
             {
-                sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Kicked the player.", _cInfo.playerName, _cInfo.playerId, _name));
-                sw.WriteLine();
-                sw.Flush();
-                sw.Close();
+                Phrases.Dict.TryGetValue("InvalidItem4", out string _phrase4);
+                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase4), null);
+                using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
+                {
+                    sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Kicked the player.", _cInfo.playerName, _cInfo.playerId, _name));
+                    sw.WriteLine();
+                    sw.Flush();
+                    sw.Close();
+                }
+                Flags.Remove(_cInfo.entityId);
+                Phrases.Dict.TryGetValue("InvalidItem3", out string _phrase);
+                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase = _phrase.Replace("{ItemName}", _name);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
-            Flags.Remove(_cInfo.entityId);
-            Phrases.Dict.TryGetValue(13, out string _phrase13);
-            _phrase13 = _phrase13.Replace("{PlayerName}", _cInfo.playerName);
-            _phrase13 = _phrase13.Replace("{ItemName}", _name);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase13 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItems.Flag3: {0}", e.Message));
+            }
         }
 
         public static void CheckStorage()
@@ -419,13 +464,13 @@ namespace ServerTools
                                         if (!_item.IsEmpty())
                                         {
                                             string _itemName = ItemClass.list[_item.itemValue.type].Name;
-                                            if (dict.Contains(_itemName))
+                                            if (Dict.Contains(_itemName))
                                             {
                                                 ItemStack itemStack = new ItemStack();
                                                 SecureLoot.UpdateSlot(slotNumber, itemStack.Clone());
                                                 _tile.SetModified();
                                                 Vector3i _chestPos = SecureLoot.localChunkPos;
-                                                using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+                                                using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine("[SERVERTOOLS] Removed {0} {1}, from a secure loot located at {2} {3} {4}, owned by {5}", _item.count, _itemName, _chestPos.x, _chestPos.y, _chestPos.z, SecureLoot.GetOwner());
                                                     sw.WriteLine();
@@ -445,8 +490,51 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InventoryCheck.ChestCheck: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItems.CheckStorage: {0}", e.Message));
             }
+        }
+
+        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        {
+            try
+            {
+                FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<InvalidItems>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        XmlElement _line = (XmlElement)_oldChildNodes[i];
+                        if (_line.HasAttributes && _line.OuterXml.Contains("Item"))
+                        {
+                            string _name = "";
+                            if (_line.HasAttribute("Name"))
+                            {
+                                _name = _line.GetAttribute("Name");
+                            }
+                            sw.WriteLine(string.Format("    <Item Name=\"{0}\" />", _name));
+                        }
+                    }
+                    sw.WriteLine("</InvalidItems>");
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItems.UpgradeXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
+            LoadXml();
         }
     }
 }

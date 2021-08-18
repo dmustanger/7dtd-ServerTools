@@ -33,14 +33,12 @@ namespace ServerTools
                 }
                 if (_params.Count == 2)
                 {
-                    int _entityId1;
-                    if (!int.TryParse(_params[0], out _entityId1))
+                    if (!int.TryParse(_params[0], out int _entityId1))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid entity id value: {0}", _entityId1));
                         return;
                     }
-                    int _entityId2;
-                    if (!int.TryParse(_params[1], out _entityId2))
+                    if (!int.TryParse(_params[1], out int _entityId2))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid entity id value: {0}", _entityId2));
                         return;
@@ -67,8 +65,7 @@ namespace ServerTools
                 }
                 if (_params.Count == 4)
                 {
-                    int _entityId;
-                    if (!int.TryParse(_params[0], out _entityId))
+                    if (!int.TryParse(_params[0], out int _entityId))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid entityId value: {0}", _entityId));
                         return;
@@ -84,18 +81,17 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Entity with id {0} can not be a player. Use a different command for teleporting players", _entityId));
                         return;
                     }
-                    int _x, _y, _z;
-                    if (!int.TryParse(_params[1], out _x))
+                    if (!int.TryParse(_params[1], out int _x))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid entityId value: {0}", _x));
                         return;
                     }
-                    if (!int.TryParse(_params[2], out _y))
+                    if (!int.TryParse(_params[2], out int _y))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid entityId value: {0}", _y));
                         return;
                     }
-                    if (!int.TryParse(_params[3], out _z))
+                    if (!int.TryParse(_params[3], out int _z))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid entityId value: {0}", _z));
                         return;

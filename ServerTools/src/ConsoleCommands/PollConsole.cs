@@ -241,22 +241,19 @@ namespace ServerTools
                             PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                             PersistentContainer.Instance.PollOpen = false;
                             PersistentContainer.DataChange = true;
-                            PersistentContainer.DataChange = true;
-                            string _phrase926;
-                            if (!Phrases.Dict.TryGetValue(926, out _phrase926))
+                            if (!Phrases.Dict.TryGetValue("Poll2", out string _phrase))
                             {
-                                _phrase926 = "Poll: {Message}";
+                                _phrase = "Poll: {Message}";
                             }
-                            _phrase926 = _phrase926.Replace("{Message}", _pollData[2]);
-                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase926 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                            string _phrase925;
-                            if (!Phrases.Dict.TryGetValue(925, out _phrase925))
+                            _phrase = _phrase.Replace("{Message}", _pollData[2]);
+                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                            if (!Phrases.Dict.TryGetValue("Poll1", out _phrase))
                             {
-                                _phrase925 = "Poll results: Yes {YesVote} / No {NoVote}";
+                                _phrase = "Poll results: Yes {YesVote} / No {NoVote}";
                             }
-                            _phrase925 = _phrase925.Replace("{YesVote}", _yes.ToString());
-                            _phrase925 = _phrase925.Replace("{NoVote}", _no.ToString());
-                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase925 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                            _phrase = _phrase.Replace("{YesVote}", _yes.ToString());
+                            _phrase = _phrase.Replace("{NoVote}", _no.ToString());
+                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                             return;
                         }
                     }
@@ -379,22 +376,19 @@ namespace ServerTools
                                         sw.Close();
                                     }
                                 }
-                                string _phrase926;
-                                if (!Phrases.Dict.TryGetValue(926, out _phrase926))
+                                if (!Phrases.Dict.TryGetValue("Poll2", out string _phrase))
                                 {
-                                    _phrase926 = "Poll: {Message}";
+                                    _phrase = "Poll: {Message}";
                                 }
-                                _phrase926 = _phrase926.Replace("{Message}", _pollData[2]);
-                                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase926 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                                string _phrase925;
-                                if (!Phrases.Dict.TryGetValue(925, out _phrase925))
+                                _phrase = _phrase.Replace("{Message}", _pollData[2]);
+                                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                if (!Phrases.Dict.TryGetValue("Poll1", out _phrase))
                                 {
-                                    _phrase925 = "Poll results: Yes {YesVote} / No {NoVote}";
+                                    _phrase = "Poll results: Yes {YesVote} / No {NoVote}";
                                 }
-                                _phrase925 = _phrase925.Replace("{YesVote}", _yes.ToString());
-                                _phrase925 = _phrase925.Replace("{NoVote}", _no.ToString());
-                                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase925 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                                _params.RemoveAt(0);
+                                _phrase = _phrase.Replace("{YesVote}", _yes.ToString());
+                                _phrase = _phrase.Replace("{NoVote}", _no.ToString());
+                                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                 _params.RemoveAt(0);
                                 string _message = string.Join(" ", _params.ToArray());
                                 string[] _newPollData = { DateTime.Now.ToString(), _pollHours.ToString(), _message };

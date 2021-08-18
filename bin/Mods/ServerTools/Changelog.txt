@@ -1,5 +1,53 @@
 ﻿CHANGELOG
 
+19.6.0
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+-Added option Passthrough to Chat_Command_Response_Extended. Setting 
+this to false will block chat commands that do not match ServerTools
+commands from showing in the chat
+-Added option Vehicle to Player_Logs. Logs active vehicle inventory
+-Added Level_Up tool. Displays a message in global chat if a player
+reaches a new level. Enables LevelUp.xml allowing a list of commands
+to be triggered upon reaching specific levels
+-Added version tags to all Xml files
+-Added New_Player to the enabled tool list shown at server startup
+-Added Wallet failsafe to correct a negative value
+-Added Public_Waypoint tool. Admins can set public waypoints for
+everyone to use
+-Added Noob_Protection tool. Level controls the level they must reach 
+before PvP is valid and the level they must reach before taking full
+zombie damage
+-Added {Delay} as an option for Zone.xml commands
+-Added internal fix for treasure maps causing array errors
+-Fixed Player_Logs using the wrong delay time
+-Fixed CommandList.xml duplicate of command cc
+-Fixed CommandList.xml applying the wrong command to ccnr
+-Fixed Chat_Color response when using command /ccnr
+-Fixed Wallet console command when reducing the wallet value
+-Fixed Zones ExitCommand not triggering
+-Changed PlayerLog.txt to PlayerLogs.xml
+-Changed PlayerLog.xml to a cleaner format making it easier to read
+-Changed Phrases.xml to no longer use integers. It uses a string value
+to allow more flexibility in the file
+-Changed Phrases.xml to be sorted alphabetically by tool name
+-Changed DuplicateItems.xml to DuplicateItemExemption.xml
+-Changed CustomChatCommands.xml to CustomCommands.xml
+-Changed ChatColors.xml to ColorList.xml
+-Changed ChatColorPrefix.xml to ChatColor.xml
+-Changed Chat_Color_Prefix to Chat_Color
+-Changed chat command /ccp to /cc
+-Changed all Xml to be upgraded based on version but retain settings
+-Changed Flying_Detector to omit drawbridge and doors
+-Changed Homes save command to prevent blank names
+-Changed Waypoints save command to prevent blank names
+-Changed console command st-EntityRemove to st-DeleteEntity
+-Updated Maze generator to remove all objects in the allocated space
+prior to generating
+-Updated console command Donor with more options
+-Updated to latest Harmony version 2.1.1
+
 19.5.3
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

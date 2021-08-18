@@ -34,8 +34,8 @@ namespace ServerTools
         {
             string _adminList = string.Join(", ", Admins.ToArray());
             string _modList = string.Join(", ", Mods.ToArray());
-            Phrases.Dict.TryGetValue(411, out string _phrase1);
-            Phrases.Dict.TryGetValue(412, out string _phrase2);
+            Phrases.Dict.TryGetValue("AdminList1", out string _phrase1);
+            Phrases.Dict.TryGetValue("AdminList2", out string _phrase2);
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + _adminList + ".[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase2 + _modList + ".[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }

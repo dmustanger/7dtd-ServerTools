@@ -16,10 +16,10 @@ namespace ServerTools
                 int _timepassed = (int)fractionalMinutes;
                 int _sessionTime = PersistentContainer.Instance.Players[_cInfo.playerId].SessionTime;
                 _sessionTime = _sessionTime + _timepassed;
-                Phrases.Dict.TryGetValue(791, out string _phrase791);
-                _phrase791 = _phrase791.Replace("{TimePassed}", _timepassed.ToString());
-                _phrase791 = _phrase791.Replace("{TotalTimePassed}", _sessionTime.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase791 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Session1", out string _phrase);
+                _phrase = _phrase.Replace("{TimePassed}", _timepassed.ToString());
+                _phrase = _phrase.Replace("{TotalTimePassed}", _sessionTime.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

@@ -14,11 +14,11 @@ namespace ServerTools
 
         public static void Set(ClientInfo _cInfo)
         {
-            string[] _command = { Market.Command_set };
+            string[] _command = { Command_set };
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo))
             {
-                Phrases.Dict.TryGetValue(257, out string _phrase257);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase257 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market7", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -30,9 +30,9 @@ namespace ServerTools
                 string _mposition = x + "," + y + "," + z;
                 Market_Position = _mposition;
                 Config.WriteXml();
-                Phrases.Dict.TryGetValue(256, out string _phrase256);
-                _phrase256 = _phrase256.Replace("{MarketPosition}", Market_Position);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase256 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market6", out string _phrase);
+                _phrase = _phrase.Replace("{MarketPosition}", Market_Position);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -40,8 +40,8 @@ namespace ServerTools
         {
             if (Reserved_Only && ReservedSlots.IsEnabled && !ReservedSlots.ReservedCheck(_cInfo.playerId))
             {
-                Phrases.Dict.TryGetValue(258, out string _phrase258);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase258 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market8", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
             if (Delay_Between_Uses < 1)
@@ -94,12 +94,12 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                Phrases.Dict.TryGetValue(251, out string _phrase251);
-                _phrase251 = _phrase251.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase251 = _phrase251.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase251 = _phrase251.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                _phrase251 = _phrase251.Replace("{Command_market}", Command_market);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase251 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market1", out string _phrase);
+                _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase = _phrase.Replace("{Command_market}", Command_market);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -111,9 +111,9 @@ namespace ServerTools
             }
             else
             {
-                Phrases.Dict.TryGetValue(259, out string _phrase259);
-                _phrase259 = _phrase259.Replace("{CoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase259 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market9", out string _phrase);
+                _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -154,10 +154,10 @@ namespace ServerTools
                             MarketPlayers.Add(_cInfo.entityId);
                             PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = _mposition;
                             PersistentContainer.DataChange = true;
-                            Phrases.Dict.TryGetValue(252, out string _phrase252);
-                            _phrase252 = _phrase252.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                            _phrase252 = _phrase252.Replace("{Command_marketback}", Command_marketback);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase252 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Market2", out string _phrase);
+                            _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                            _phrase = _phrase.Replace("{Command_marketback}", Command_marketback);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                         string[] _cords = Market_Position.Split(',').ToArray();
                         if (int.TryParse(_cords[0], out int _x))
@@ -179,15 +179,15 @@ namespace ServerTools
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue(250, out string _phrase250);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase250 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Market11", out string _phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                Phrases.Dict.TryGetValue(254, out string _phrase254);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase254 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market4", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -212,17 +212,17 @@ namespace ServerTools
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue(255, out string _phrase255);
-                        _phrase255 = _phrase255.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                        _phrase255 = _phrase255.Replace("{Command_marketback}", Command_marketback);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase255 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Market5", out string _phrase);
+                        _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                        _phrase = _phrase.Replace("{Command_marketback}", Command_marketback);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                Phrases.Dict.TryGetValue(253, out string _phrase253);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase253 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market3", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -235,10 +235,10 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
                     PersistentContainer.DataChange = true;
-                    Phrases.Dict.TryGetValue(255, out string _phrase255);
-                    _phrase255 = _phrase255.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    _phrase255 = _phrase255.Replace("{Command_marketback}", Command_marketback);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase255 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Market5", out string _phrase);
+                    _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase = _phrase.Replace("{Command_marketback}", Command_marketback);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -259,8 +259,8 @@ namespace ServerTools
         {
             try
             {
-                Phrases.Dict.TryGetValue(260, out string _phrase260);
-                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase260 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market10", out string _phrase);
+                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 if (PersistentOperations.PvEViolations.ContainsKey(_cInfo2.entityId))
                 {
                     PersistentOperations.PvEViolations.TryGetValue(_cInfo2.entityId, out int _violations);

@@ -1,4 +1,5 @@
-﻿using System.Timers;
+﻿using System.Collections.Generic;
+using System.Timers;
 
 namespace ServerTools
 {
@@ -42,11 +43,11 @@ namespace ServerTools
             Exec();
         }
 
-        public static void SingleUseTimer(int _delay, string _playerId, string _commands)
+        public static void Custom_SingleUseTimer(int _delay, string _playerId, List<string> _commands)
         {
-            if (_delay > 120)
+            if (_delay > 180)
             {
-                _delay = 120;
+                _delay = 180;
             }
             int _delayAdjusted = _delay * 1000;
             System.Timers.Timer _singleUseTimer = new System.Timers.Timer(_delayAdjusted)
@@ -57,6 +58,48 @@ namespace ServerTools
             _singleUseTimer.Elapsed += (sender, e) =>
             {
                 Init1(_playerId, _commands);
+                _singleUseTimer.Stop();
+                _singleUseTimer.Close();
+                _singleUseTimer.Dispose();
+            };
+        }
+
+        public static void Zone_SingleUseTimer(int _delay, string _playerId, List<string> _commands)
+        {
+            if (_delay > 180)
+            {
+                _delay = 180;
+            }
+            int _delayAdjusted = _delay * 1000;
+            System.Timers.Timer _singleUseTimer = new System.Timers.Timer(_delayAdjusted)
+            {
+                AutoReset = false
+            };
+            _singleUseTimer.Start();
+            _singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init7(_playerId, _commands);
+                _singleUseTimer.Stop();
+                _singleUseTimer.Close();
+                _singleUseTimer.Dispose();
+            };
+        }
+
+        public static void Level_SingleUseTimer(int _delay, string _playerId, List<string> _commands)
+        {
+            if (_delay > 180)
+            {
+                _delay = 180;
+            }
+            int _delayAdjusted = _delay * 1000;
+            System.Timers.Timer _singleUseTimer = new System.Timers.Timer(_delayAdjusted)
+            {
+                AutoReset = false
+            };
+            _singleUseTimer.Start();
+            _singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init8(_playerId, _commands);
                 _singleUseTimer.Stop();
                 _singleUseTimer.Close();
                 _singleUseTimer.Dispose();
@@ -216,9 +259,9 @@ namespace ServerTools
             Log.Out("--------------------------------------");
             Log.Out("[SERVERTOOLS] Chat color-prefix tools:");
             Log.Out("--------------------------------------");
-            if (ChatColorPrefix.IsEnabled)
+            if (ChatColor.IsEnabled)
             {
-                Log.Out("Chat color and prefix enabled");
+                Log.Out("Chat color enabled");
             }
             if (ChatHook.Normal_Player_Color_Prefix)
             {
@@ -405,6 +448,10 @@ namespace ServerTools
             {
                 Log.Out("Kill notice enabled");
             }
+            if (LevelUp.IsEnabled)
+            {
+                Log.Out("Level up enabled");
+            }
             if (Lobby.IsEnabled)
             {
                 Log.Out("Lobby enabled");
@@ -436,6 +483,14 @@ namespace ServerTools
             if (MuteVote.IsEnabled)
             {
                 Log.Out("Mute vote enabled");
+            }
+            if (NewPlayer.IsEnabled)
+            {
+                Log.Out("New player enabled");
+            }
+            if (NewPlayerProtection.IsEnabled)
+            {
+                Log.Out("New player protection enabled");
             }
             if (NewSpawnTele.IsEnabled)
             {
@@ -756,9 +811,9 @@ namespace ServerTools
             }
         }
 
-        private static void Init1(string _playerId, string _commands)
+        private static void Init1(string _playerId, List<string> _commands)
         {
-            CustomCommands.DelayedCommand(_playerId, _commands);
+            CustomCommands.CustomCommandDelayed(_playerId, _commands);
         }
 
         private static void Init2(ClientInfo _cInfo)
@@ -784,6 +839,16 @@ namespace ServerTools
         private static void Init6(ClientInfo _cInfo, string _ip)
         {
             ExitCommand.ExitWithoutCommand(_cInfo, _ip);
+        }
+
+        private static void Init7(string _playerId, List<string> _commands)
+        {
+            Zones.ZoneCommandDelayed(_playerId, _commands);
+        }
+
+        private static void Init8(string _playerId, List<string> _commands)
+        {
+            LevelUp.LevelCommandDelayed(_playerId, _commands);
         }
     }
 }

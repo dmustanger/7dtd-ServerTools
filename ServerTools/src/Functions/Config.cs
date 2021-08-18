@@ -7,11 +7,12 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string version = "19.5.3";
+        public const string Version = "19.6.0";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]", OldXmlDirectory = "";
-        private const string configFile = "ServerToolsConfig.xml";
-        public static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
-        private static readonly FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
+        public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
+
+        private const string ConfigFile = "ServerToolsConfig.xml";
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, ConfigFile);
 
         public static void Load()
         {
@@ -24,18 +25,18 @@ namespace ServerTools
             Log.Out("---------------------------------------------------------------");
             Log.Out("[SERVERTOOLS] Verifying configuration file & Saving new entries");
             Log.Out("---------------------------------------------------------------");
-            if (!Utils.FileExists(configFilePath))
+            if (!Utils.FileExists(ConfigFilePath))
             {
                 WriteXml();
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(configFilePath);
+                xmlDoc.Load(ConfigFilePath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", configFilePath, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", ConfigFilePath, e.Message));
                 return;
             }
             XmlNode _XmlNode = xmlDoc.DocumentElement;
@@ -51,7 +52,7 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Tools' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Version' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
@@ -60,7 +61,7 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring config entry in ServerToolsConfig.xml because of missing 'Version' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        else if (_line.GetAttribute("Version") != version)
+                        else if (_line.GetAttribute("Version") != Version)
                         {
                             Log.Out("[SERVERTOOLS] Detected updated version of ServerTools");
                             string _version = _line.GetAttribute("Version");
@@ -650,35 +651,35 @@ namespace ServerTools
                                     EventSchedule.Remove("BreakTime");
                                 }
                                 break;
-                            case "Chat_Color_Prefix":
+                            case "Chat_Color":
                                 if (!_line.HasAttribute("Enable"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatColorPrefix.IsEnabled))
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatColor.IsEnabled))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Rotate"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry in ServerToolsConfig.xml because of missing 'Rotate' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color entry in ServerToolsConfig.xml because of missing 'Rotate' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Rotate"), out ChatColorPrefix.Rotate))
+                                if (!bool.TryParse(_line.GetAttribute("Rotate"), out ChatColor.Rotate))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Rotate' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Rotate' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Custom_Color"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry in ServerToolsConfig.xml because of missing 'Custom_Color' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color entry in ServerToolsConfig.xml because of missing 'Custom_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Custom_Color"), out ChatColorPrefix.Custom_Color))
+                                if (!bool.TryParse(_line.GetAttribute("Custom_Color"), out ChatColor.Custom_Color))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Custom_Color' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Custom_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -740,6 +741,16 @@ namespace ServerTools
                                 if (_line.HasAttribute("Party_Chat_Color"))
                                 {
                                     ChatHook.Party_Chat_Color = _line.GetAttribute("Party_Chat_Color");
+                                }
+                                if (!_line.HasAttribute("Passthrough"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Flood_Protection entry in ServerToolsConfig.xml because of missing 'Passthrough' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Passthrough"), out ChatHook.Passthrough))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Flood_Protection entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Passthrough' attribute: {0}", subChild.OuterXml));
+                                    continue;
                                 }
                                 break;
                             case "Chat_Flood_Protection":
@@ -1886,6 +1897,18 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "Level_Up":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Level_Up entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out LevelUp.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Level_Up entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "Lobby":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -2285,6 +2308,28 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "New_Player_Protection":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player_Protection entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out NewPlayerProtection.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player_Protection entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Level"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player_Protection entry in ServerToolsConfig.xml because of missing a Level attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Level"), out NewPlayerProtection.Level))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player_Protection entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "New_Spawn_Tele":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -2412,6 +2457,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Logs entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Vehicle"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Logs entry in ServerToolsConfig.xml because of missing 'Vehicle' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Vehicle"), out PlayerLogs.Vehicle))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Logs entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Vehicle' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 if (!_line.HasAttribute("Interval"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Logs entry in ServerToolsConfig.xml because of missing 'Interval' attribute: {0}", subChild.OuterXml));
@@ -2427,7 +2482,7 @@ namespace ServerTools
                                     if (EventSchedule._playerLogs != PlayerLogs.Delay)
                                     {
                                         EventSchedule._playerLogs = PlayerLogs.Delay;
-                                        EventSchedule.Add("PlayerLogs", DateTime.Now.AddMinutes(PlayerLogs.Delay));
+                                        EventSchedule.Add("PlayerLogs", DateTime.Now.AddSeconds(PlayerLogs.Delay));
                                     }
                                 }
                                 else if (EventSchedule.Schedule.ContainsKey("PlayerLogs"))
@@ -2626,6 +2681,18 @@ namespace ServerTools
                                 if (!bool.TryParse(_line.GetAttribute("Enable"), out ProtectedSpaces.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Protected_Spaces entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
+                            case "Public_Waypoints":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Public_Waypoints entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Waypoints.Public_Waypoints))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Public_Waypoints entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -3749,13 +3816,13 @@ namespace ServerTools
 
         public static void WriteXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(configFilePath, false, Encoding.UTF8))
+            FileWatcher.EnableRaisingEvents = false;
+            using (StreamWriter sw = new StreamWriter(ConfigFilePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ServerTools>");
                 sw.WriteLine("    <Version>");
-                sw.WriteLine(string.Format("        <Version Version=\"{0}\" />", version.ToString()));
+                sw.WriteLine(string.Format("        <Version Version=\"{0}\" />", Version.ToString()));
                 sw.WriteLine("    </Version>");
                 sw.WriteLine("    <Tools>");
                 sw.WriteLine(string.Format("        <Tool Name=\"Admin_Chat_Commands\" Enable=\"{0}\" />", AdminChat.IsEnabled));
@@ -3772,10 +3839,10 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon_Warrior\" Enable=\"{0}\" Zombie_Kills=\"{1}\" Chance=\"{2}\" Reduce_Death_Count=\"{3}\" Reward_Count=\"{4}\" />", BloodmoonWarrior.IsEnabled, BloodmoonWarrior.Zombie_Kills, BloodmoonWarrior.Chance, BloodmoonWarrior.Reduce_Death_Count, BloodmoonWarrior.Reward_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bounties\" Enable=\"{0}\" Minimum_Bounty=\"{1}\" Kill_Streak=\"{2}\" Bonus=\"{3}\" />", Bounties.IsEnabled, Bounties.Minimum_Bounty, Bounties.Kill_Streak, Bounties.Bonus));
                 sw.WriteLine(string.Format("        <Tool Name=\"Break_Reminder\" Enable=\"{0}\" Break_Time=\"{1}\" Break_Message=\"{2}\" />", BreakTime.IsEnabled, BreakTime.Delay, BreakTime.Break_Message));
-                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Color_Prefix\" Enable=\"{0}\" Rotate=\"{1}\" Custom_Color=\"{2}\" />", ChatColorPrefix.IsEnabled, ChatColorPrefix.Rotate, ChatColorPrefix.Custom_Color));
+                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Color\" Enable=\"{0}\" Rotate=\"{1}\" Custom_Color=\"{2}\" />", ChatColor.IsEnabled, ChatColor.Rotate, ChatColor.Custom_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Log\" Enable=\"{0}\" />", ChatCommandLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response\" Server_Response_Name=\"{0}\" Main_Color=\"{1}\" Chat_Command_Prefix1=\"{2}\" Chat_Command_Prefix2=\"{3}\" />", Server_Response_Name, Chat_Response_Color, ChatHook.Chat_Command_Prefix1, ChatHook.Chat_Command_Prefix2));
-                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response_Extended\" Friend_Chat_Color=\"{0}\" Party_Chat_Color=\"{1}\" />", ChatHook.Friend_Chat_Color, ChatHook.Party_Chat_Color));
+                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response_Extended\" Friend_Chat_Color=\"{0}\" Party_Chat_Color=\"{1}\" Passthrough=\"{2}\" />", ChatHook.Friend_Chat_Color, ChatHook.Party_Chat_Color, ChatHook.Passthrough));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Flood_Protection\" Enable=\"{0}\" Max_Length=\"{1}\" Messages_Per_Min=\"{2}\" Wait_Time=\"{3}\" />", ChatHook.ChatFlood, ChatHook.Max_Length, ChatHook.Messages_Per_Min, ChatHook.Wait_Time));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Logger\" Enable=\"{0}\" />", ChatLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Clan_Manager\" Enable=\"{0}\" Max_Name_Length=\"{1}\" Private_Chat_Color=\"{2}\" />", ClanManager.IsEnabled, ClanManager.Max_Name_Length, ClanManager.Private_Chat_Color));
@@ -3811,6 +3878,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Jail\" Enable=\"{0}\" Jail_Size=\"{1}\" Jail_Position=\"{2}\" Jail_Shock=\"{3}\" />", Jail.IsEnabled, Jail.Jail_Size, Jail.Jail_Position, Jail.Jail_Shock));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kick_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", KickVote.IsEnabled, KickVote.Players_Online, KickVote.Votes_Needed));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice\" Enable=\"{0}\" PvP=\"{1}\" Zombie_Kills=\"{2}\" Show_Level=\"{3}\" Show_Damage=\"{4}\" />", KillNotice.IsEnabled, KillNotice.PvP, KillNotice.Zombie_Kills, KillNotice.Show_Level, KillNotice.Show_Damage));
+                sw.WriteLine(string.Format("        <Tool Name=\"Level_Up\" Enable=\"{0}\" />", LevelUp.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Lobby\" Enable=\"{0}\" Return=\"{1}\" Delay_Between_Uses=\"{2}\" Lobby_Size=\"{3}\" Lobby_Position=\"{4}\" />", Lobby.IsEnabled, Lobby.Return, Lobby.Delay_Between_Uses, Lobby.Lobby_Size, Lobby.Lobby_Position));
                 sw.WriteLine(string.Format("        <Tool Name=\"Lobby_Extended\" Reserved_Only=\"{0}\" Command_Cost=\"{1}\" Player_Check=\"{2}\" Zombie_Check=\"{3}\" PvE=\"{4}\" />", Lobby.Reserved_Only, Lobby.Command_Cost, Lobby.Player_Check, Lobby.Zombie_Check, Lobby.PvE));
                 sw.WriteLine(string.Format("        <Tool Name=\"Location\" Enable=\"{0}\" />", Loc.IsEnabled));
@@ -3825,11 +3893,12 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Mute_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", MuteVote.IsEnabled, MuteVote.Players_Online, MuteVote.Votes_Needed));
                 sw.WriteLine(string.Format("        <Tool Name=\"New_Player\" Enable=\"{0}\" Entry_Message=\"{1}\" />", NewPlayer.IsEnabled, NewPlayer.Entry_Message));
                 sw.WriteLine(string.Format("        <Tool Name=\"New_Player_Extended\" Block_During_Bloodmoon=\"{0}\" />", NewPlayer.Block_During_Bloodmoon));
+                sw.WriteLine(string.Format("        <Tool Name=\"New_Player_Protection\" Enable=\"{0}\" Level=\"{1}\" />", NewPlayerProtection.IsEnabled, NewPlayerProtection.Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"New_Spawn_Tele\" Enable=\"{0}\" New_Spawn_Tele_Position=\"{1}\" Return=\"{2}\" />", NewSpawnTele.IsEnabled, NewSpawnTele.New_Spawn_Tele_Position, NewSpawnTele.Return));
                 sw.WriteLine(string.Format("        <Tool Name=\"Night_Alert\" Enable=\"{0}\" Delay=\"{1}\" />", NightAlert.IsEnabled, NightAlert.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Normal_Player_Color_Prefix\" Enable=\"{0}\" Prefix=\"{1}\" Name_Color=\"{2}\" Prefix_Color=\"{3}\" />", ChatHook.Normal_Player_Color_Prefix, ChatHook.Normal_Player_Prefix, ChatHook.Normal_Player_Name_Color, ChatHook.Normal_Player_Prefix_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_List\" Enable=\"{0}\" />", PlayerList.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Player_Logs\" Enable=\"{0}\" Interval=\"{1}\" />", PlayerLogs.IsEnabled, PlayerLogs.Delay));
+                sw.WriteLine(string.Format("        <Tool Name=\"Player_Logs\" Enable=\"{0}\" Vehicle=\"{1}\" Interval=\"{2}\" />", PlayerLogs.IsEnabled, PlayerLogs.Vehicle, PlayerLogs.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_Stats\" Enable=\"{0}\" Max_Speed=\"{1}\" Health=\"{2}\" Stamina=\"{3}\" Jump_Strength=\"{4}\" />", PlayerStats.IsEnabled, PlayerStats.Max_Speed, PlayerStats.Health, PlayerStats.Stamina, PlayerStats.Jump_Strength));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_Stats_Extended\" Height=\"{0}\" Admin_Level=\"{1}\" Kick_Enabled=\"{2}\" Ban_Enabled=\"{3}\" />", PlayerStats.Height, PlayerStats.Admin_Level, PlayerStats.Kick_Enabled, PlayerStats.Ban_Enabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"POI_Protection\" Enable=\"{0}\" Bed=\"{1}\" Claim=\"{2}\" />", POIProtection.IsEnabled, POIProtection.Bed, POIProtection.Claim));
@@ -3837,6 +3906,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Prayer\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", Prayer.IsEnabled, Prayer.Delay_Between_Uses, Prayer.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Private_Message\" Enable=\"{0}\" />", Whisper.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Protected_Spaces\" Enable=\"{0}\" />", ProtectedSpaces.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Public_Waypoints\" Enable=\"{0}\" />", Waypoints.Public_Waypoints));
                 sw.WriteLine(string.Format("        <Tool Name=\"PvE_Violations\" Jail=\"{0}\" Kill=\"{1}\" Kick=\"{2}\" Ban=\"{3}\" />", PersistentOperations.Jail_Violation, PersistentOperations.Kill_Violation, PersistentOperations.Kick_Violation, PersistentOperations.Ban_Violation));
                 sw.WriteLine(string.Format("        <Tool Name=\"Real_World_Time\" Enable=\"{0}\" Delay=\"{1}\" Time_Zone=\"{2}\" Adjustment=\"{3}\" />", RealWorldTime.IsEnabled, RealWorldTime.Delay, RealWorldTime.Time_Zone, RealWorldTime.Adjustment));
                 sw.WriteLine(string.Format("        <Tool Name=\"Report\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Length=\"{2}\" Admin_Level=\"{3}\" />", Report.IsEnabled, Report.Delay, Report.Length, Report.Admin_Level));
@@ -3872,15 +3942,15 @@ namespace ServerTools
                 sw.Close();
                 sw.Dispose();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
@@ -3895,7 +3965,7 @@ namespace ServerTools
             {
                 if (OldXmlDirectory != "")
                 {
-                    if (Utils.FileExists(configFilePath))
+                    if (Utils.FileExists(ConfigFilePath))
                     {
                         XmlDocument _oldXml = new XmlDocument();
                         try
@@ -3912,11 +3982,11 @@ namespace ServerTools
                         XmlDocument _newXml = new XmlDocument();
                         try
                         {
-                            _newXml.Load(configFilePath);
+                            _newXml.Load(ConfigFilePath);
                         }
                         catch (XmlException e)
                         {
-                            Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", configFilePath, e.Message));
+                            Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", ConfigFilePath, e.Message));
                             return;
                         }
                         XmlNode _newXmlNode = _newXml.DocumentElement;
@@ -3978,7 +4048,7 @@ namespace ServerTools
                                             if (_newAttribute.Value != _oldAttribute.Value)
                                             {
                                                 _newAttribute.Value = _oldAttribute.Value;
-                                                _newXml.Save(configFilePath);
+                                                _newXml.Save(ConfigFilePath);
                                             }
                                             return;
                                         }

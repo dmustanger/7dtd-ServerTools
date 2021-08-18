@@ -104,8 +104,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-                    int _steamId;
-                    if (int.TryParse(_params[1], out _steamId))
+                    if (int.TryParse(_params[1], out int _steamId))
                     {
                         if (ClanManager.ClanMember.Contains(_params[1]))
                         {
@@ -130,13 +129,9 @@ namespace ServerTools
                                             ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_id);
                                             if (_cInfo2 != null)
                                             {
-                                                string _phrase121;
-                                                if (!Phrases.Dict.TryGetValue(121, out _phrase121))
-                                                {
-                                                    _phrase121 = "You have been removed from the clan {ClanName}.";
-                                                }
-                                                _phrase121 = _phrase121.Replace("{ClanName}", _clanName);
-                                                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase121 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                Phrases.Dict.TryGetValue("Clan21", out string _phrase);
+                                                _phrase = _phrase.Replace("{ClanName}", _clanName);
+                                                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                             }
                                         }
                                         else if (p.ClanInvite != null && p.ClanInvite == _clanName)
@@ -177,7 +172,6 @@ namespace ServerTools
                                 {
                                     if (p.ClanName != null && p.ClanName == _params[1])
                                     {
-                                        p.ClanName = "";
                                         p.ClanOwner = false;
                                         p.ClanOfficer = false;
                                         p.ClanRequestToJoin = null;
@@ -186,9 +180,11 @@ namespace ServerTools
                                         ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_id);
                                         if (_cInfo2 != null)
                                         {
-                                            Phrases.Dict.TryGetValue(91, out string _phrase91);
-                                            ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase91 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                            Phrases.Dict.TryGetValue("Clan21", out string _phrase);
+                                            _phrase = _phrase.Replace("{ClanName}", p.ClanName);
+                                            ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
+                                        p.ClanName = "";
                                     }
                                     else if (p.ClanInvite != null && p.ClanInvite == _params[1])
                                     {

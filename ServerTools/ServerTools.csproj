@@ -74,11 +74,13 @@
     <Compile Include="src\Tools\BlockLogger\BlockLogger.cs" />
     <Compile Include="src\Tools\BloodmoonWarrior\BloodmoonWarrior.cs" />
     <Compile Include="src\Tools\BreakTime\BreakTime.cs" />
-    <Compile Include="src\Tools\ChatColorPrefix\ColorList.cs" />
+    <Compile Include="src\Tools\ChatColor\ColorList.cs" />
     <Compile Include="src\Tools\ConsoleCommandLog\Console_Command_Log.cs" />
     <Compile Include="src\Tools\DiscordBot\DiscordBot.cs" />
     <Compile Include="src\Tools\FallingBlocks\FallingBlocks.cs" />
+    <Compile Include="src\Tools\LevelUp\LevelUp.cs" />
     <Compile Include="src\Tools\Market\Market.cs" />
+    <Compile Include="src\Tools\NewPlayerProtection\NewPlayerProtection.cs" />
     <Compile Include="src\Tools\OutputLog\OutputLog.cs" />
     <Compile Include="src\Tools\POIProtection\POIProtection.cs" />
     <Compile Include="src\Tools\Poll\Poll.cs" />
@@ -86,7 +88,7 @@
     <Compile Include="src\Tools\DeletePlayerData\DeletePlayerData.cs" />
     <Compile Include="src\Tools\RegionReset\RegionReset.cs" />
     <Compile Include="src\Tools\Session\Session.cs" />
-    <Compile Include="src\Tools\ChatColorPrefix\ChatColorPrefix.cs" />
+    <Compile Include="src\Tools\ChatColor\ChatColor.cs" />
     <Compile Include="src\Tools\ScoutPlayer\ScoutPlayer.cs" />
     <Compile Include="src\Chat\ChatCommandLog\ChatCommandLog.cs" />
     <Compile Include="src\ConsoleCommands\AdminChatCommandConsole.cs" />
@@ -246,7 +248,7 @@
     <Compile Include="src\ConsoleCommands\PingImmunityConsole.cs" />
     <Compile Include="src\Functions\Timers.cs" />
     <Compile Include="src\Tools\HighPingKicker\HighPingKicker.cs" />
-    <Compile Include="src\ConsoleCommands\EntityRemoveConsole.cs" />
+    <Compile Include="src\ConsoleCommands\DeleteEntityConsole.cs" />
     <Compile Include="src\Tools\Hordes\Hordes.cs" />
     <Compile Include="src\HowToSetup\HowToSetup.cs" />
     <Compile Include="src\Tools\Lobby\Lobby.cs" />
@@ -275,8 +277,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lib.Harmony.2.0.4\lib\net472\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lib.Harmony.2.1.1\lib\net472\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\7dtd-binaries\Assembly-CSharp.dll</HintPath>

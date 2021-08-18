@@ -12,109 +12,129 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (Delay_Between_Uses < 1)
+            try
             {
-                Kill(_cInfo);
-            }
-            else
-            {
-                DateTime _lastkillme = PersistentContainer.Instance.Players[_cInfo.playerId].LastKillMe;
-                TimeSpan varTime = DateTime.Now - _lastkillme;
-                double fractionalMinutes = varTime.TotalMinutes;
-                int _timepassed = (int)fractionalMinutes;
-                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                if (Delay_Between_Uses < 1)
                 {
-                    if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                    Kill(_cInfo);
+                }
+                else
+                {
+                    DateTime _lastkillme = PersistentContainer.Instance.Players[_cInfo.playerId].LastKillMe;
+                    TimeSpan varTime = DateTime.Now - _lastkillme;
+                    double fractionalMinutes = varTime.TotalMinutes;
+                    int _timepassed = (int)fractionalMinutes;
+                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                     {
-                        DateTime _dt;
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                        if (DateTime.Now < _dt)
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            int _delay = Delay_Between_Uses / 2;
-                            Time(_cInfo, _timepassed, _delay);
-                            return;
+                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
+                            if (DateTime.Now < _dt)
+                            {
+                                int _delay = Delay_Between_Uses / 2;
+                                Time(_cInfo, _timepassed, _delay);
+                                return;
+                            }
                         }
                     }
+                    Time(_cInfo, _timepassed, Delay_Between_Uses);
                 }
-                Time(_cInfo, _timepassed, Delay_Between_Uses);
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Suicide.Exec: {0}", e.Message));
             }
         }
 
         private static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
         {
-            if (_timepassed >= _delay)
+            try
             {
-                Kill(_cInfo);
+                if (_timepassed >= _delay)
+                {
+                    Kill(_cInfo);
+                }
+                else
+                {
+                    int _timeleft = _delay - _timepassed;
+                    Phrases.Dict.TryGetValue("Suicide1", out string _phrase1);
+                    _phrase1 = _phrase1.Replace("{DelayBetweenUses}", _delay.ToString());
+                    _phrase1 = _phrase1.Replace("{TimeRemaining}", _timeleft.ToString());
+                    _phrase1 = _phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase1 = _phrase1.Replace("{Command_killme}", Command_killme);
+                    _phrase1 = _phrase1.Replace("{Command_wrist}", Command_wrist);
+                    _phrase1 = _phrase1.Replace("{Command_hang}", Command_hang);
+                    _phrase1 = _phrase1.Replace("{Command_suicide}", Command_suicide);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                }
             }
-            else
+            catch (Exception e)
             {
-                int _timeleft = _delay - _timepassed;
-                Phrases.Dict.TryGetValue(31, out string _phrase31);
-                _phrase31 = _phrase31.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase31 = _phrase31.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase31 = _phrase31.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                _phrase31 = _phrase31.Replace("{Command_killme}", Command_killme);
-                _phrase31 = _phrase31.Replace("{Command_wrist}", Command_wrist);
-                _phrase31 = _phrase31.Replace("{Command_hang}", Command_hang);
-                _phrase31 = _phrase31.Replace("{Command_suicide}", Command_suicide);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase31 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Log.Out(string.Format("[SERVERTOOLS] Error in Suicide.Time: {0}", e.Message));
             }
         }
 
 
         private static void Kill(ClientInfo _cInfo)
         {
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (Player_Check)
+            try
             {
-                List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
-                for (int i = 0; i < ClientInfoList.Count; i++)
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                if (Player_Check)
                 {
-                    ClientInfo _cInfo2 = ClientInfoList[i];
-                    if (_cInfo2 != null)
+                    List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
+                    for (int i = 0; i < ClientInfoList.Count; i++)
                     {
-                        EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                        if (_player2 != null)
+                        ClientInfo _cInfo2 = ClientInfoList[i];
+                        if (_cInfo2 != null)
                         {
-                            Vector3 _pos2 = _player2.GetPosition();
-                            if (((int)_player.position.x - (int)_pos2.x) * ((int)_player.position.x - (int)_pos2.x) + ((int)_player.position.z - (int)_pos2.z) * ((int)_player.position.z - (int)_pos2.z) <= 25 * 25)
+                            EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
+                            if (_player2 != null)
                             {
-                                if (!_player.IsFriendsWith(_player2))
+                                Vector3 _pos2 = _player2.GetPosition();
+                                if (((int)_player.position.x - (int)_pos2.x) * ((int)_player.position.x - (int)_pos2.x) + ((int)_player.position.z - (int)_pos2.z) * ((int)_player.position.z - (int)_pos2.z) <= 25 * 25)
                                 {
-                                    Phrases.Dict.TryGetValue(32, out string _phrase32);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase32 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    if (!_player.IsFriendsWith(_player2))
+                                    {
+                                        Phrases.Dict.TryGetValue("Suicide2", out string _phrase2);
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (Zombie_Check)
+                {
+                    List<Entity> Entities = GameManager.Instance.World.Entities.list;
+                    for (int i = 0; i < Entities.Count; i++)
+                    {
+                        Entity _entity = Entities[i];
+                        if (_entity != null)
+                        {
+                            EntityType _type = _entity.entityType;
+                            if (_type == EntityType.Zombie)
+                            {
+                                Vector3 _pos2 = _entity.GetPosition();
+                                if (((int)_player.position.x - (int)_pos2.x) * ((int)_player.position.x - (int)_pos2.x) + ((int)_player.position.z - (int)_pos2.z) * ((int)_player.position.z - (int)_pos2.z) <= 10 * 10)
+                                {
+                                    Phrases.Dict.TryGetValue("Suicide3", out string _phrase3);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase3 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                             }
                         }
                     }
                 }
+                SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), null);
+                PersistentContainer.Instance.Players[_cInfo.playerId].LastKillMe = DateTime.Now;
+                PersistentContainer.DataChange = true;
             }
-            if (Zombie_Check)
+            catch (Exception e)
             {
-                List<Entity> Entities = GameManager.Instance.World.Entities.list;
-                for (int i = 0; i < Entities.Count; i++)
-                {
-                    Entity _entity = Entities[i];
-                    if (_entity != null)
-                    {
-                        EntityType _type = _entity.entityType;
-                        if (_type == EntityType.Zombie)
-                        {
-                            Vector3 _pos2 = _entity.GetPosition();
-                            if (((int)_player.position.x - (int)_pos2.x) * ((int)_player.position.x - (int)_pos2.x) + ((int)_player.position.z - (int)_pos2.z) * ((int)_player.position.z - (int)_pos2.z) <= 10 * 10)
-                            {
-                                Phrases.Dict.TryGetValue(33, out string _phrase33);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase33 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                return;
-                            }
-                        }
-                    }
-                }
+                Log.Out(string.Format("[SERVERTOOLS] Error in Suicide.Kill: {0}", e.Message));
             }
-            SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), (ClientInfo)null);
-            PersistentContainer.Instance.Players[_cInfo.playerId].LastKillMe = DateTime.Now;
-            PersistentContainer.DataChange = true;
         }
     }
 }

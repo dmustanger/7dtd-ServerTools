@@ -17,17 +17,17 @@ namespace ServerTools
                     ClientInfo _cInfo1 = ClientInfoList[i];
                     if (_cInfo.entityId != _cInfo1.entityId)
                     {
-                        Phrases.Dict.TryGetValue(811, out string _phrase811);
-                        _phrase811 = _phrase811.Replace("{PlayerName}", _cInfo1.playerName);
-                        _phrase811 = _phrase811.Replace("{EntityId}", _cInfo1.entityId.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase811 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("PlayerList1", out string _phrase);
+                        _phrase = _phrase.Replace("{PlayerName}", _cInfo1.playerName);
+                        _phrase = _phrase.Replace("{EntityId}", _cInfo1.entityId.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                Phrases.Dict.TryGetValue(812, out string _phrase812);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase812 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("PlayerList2", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

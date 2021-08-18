@@ -14,7 +14,9 @@ namespace ServerTools
         public static Dictionary<string, DateTime> Dict = new Dictionary<string, DateTime>();
         public static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> Kicked = new Dictionary<string, DateTime>();
-        private static string file = "ReservedSlots.xml", filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+
+        private static string file = "ReservedSlots.xml";
+        private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
@@ -36,93 +38,95 @@ namespace ServerTools
 
         private static void LoadXml()
         {
-            if (!Utils.FileExists(filePath))
-            {
-                UpdateXml();
-            }
-            XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(filePath);
-            }
-            catch (XmlException e)
-            {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
-                return;
-            }
-            XmlNode _XmlNode = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _XmlNode.ChildNodes)
-            {
-                if (childNode.Name == "Players")
+                if (!Utils.FileExists(FilePath))
+                {
+                    UpdateXml();
+                }
+                XmlDocument xmlDoc = new XmlDocument();
+                try
+                {
+                    xmlDoc.Load(FilePath);
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    return;
+                }
+                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (_childNodes != null && _childNodes.Count > 0)
                 {
                     Dict.Clear();
                     Dict1.Clear();
-                    foreach (XmlNode subChild in childNode.ChildNodes)
+                    bool upgrade = true;
+                    for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (subChild.NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
                         {
                             continue;
                         }
-                        if (subChild.NodeType != XmlNodeType.Element)
+                        XmlElement _line = (XmlElement)_childNodes[i];
+                        if (_line.HasAttributes)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Players' section: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("SteamId"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of missing 'SteamId' attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("Name"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of missing 'Name' attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("Expires"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of missing 'Expires' attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!DateTime.TryParse(_line.GetAttribute("Expires"), out DateTime _dt))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of invalid (date) value for 'Expires' attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!Dict.ContainsKey(_line.GetAttribute("SteamId")))
-                        {
-                            Dict.Add(_line.GetAttribute("SteamId"), _dt);
-                        }
-                        if (!Dict1.ContainsKey(_line.GetAttribute("SteamId")))
-                        {
-                            Dict1.Add(_line.GetAttribute("SteamId"), _line.GetAttribute("Name"));
+                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            {
+                                upgrade = false;
+                                continue;
+                            }
+                            else if (_line.HasAttribute("SteamId") && _line.HasAttribute("Name") && _line.HasAttribute("Expires"))
+                            {
+                                if (!DateTime.TryParse(_line.GetAttribute("Expires"), out DateTime _dt))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots.xml entry. Invalid (date) value for 'Expires' attribute: {0}", _line.OuterXml));
+                                    continue;
+                                }
+                                if (!Dict.ContainsKey(_line.GetAttribute("SteamId")))
+                                {
+                                    Dict.Add(_line.GetAttribute("SteamId"), _dt);
+                                }
+                                if (!Dict1.ContainsKey(_line.GetAttribute("SteamId")))
+                                {
+                                    Dict1.Add(_line.GetAttribute("SteamId"), _line.GetAttribute("Name"));
+                                }
+                            }
                         }
                     }
+                    if (upgrade)
+                    {
+                        UpgradeXml(_childNodes);
+                        return;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlots.LoadXml: {0}", e.Message));
             }
         }
 
         public static void UpdateXml()
         {
             FileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
+            using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ReservedSlots>");
-                sw.WriteLine("    <Players>");
+                sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                sw.WriteLine();
+                sw.WriteLine();
                 if (Dict.Count > 0)
                 {
                     foreach (KeyValuePair<string, DateTime> kvp in Dict)
                     {
                         Dict1.TryGetValue(kvp.Key, out string _name);
-                        sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" Name=\"{1}\" Expires=\"{2}\" />", kvp.Key, _name, kvp.Value.ToString()));
+                        sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" Expires=\"{2}\" />", kvp.Key, _name, kvp.Value.ToString()));
                     }
                 }
                 else
                 {
-                    sw.WriteLine(string.Format("        <Player SteamId=\"76561191234567891\" Name=\"foobar.\" Expires=\"10/29/2050 7:30:00 AM\" />"));
+                    sw.WriteLine(string.Format("    <Player SteamId=\"\" Name=\"\" Expires=\"\" />"));
                 }
-                sw.WriteLine("    </Players>");
                 sw.WriteLine("</ReservedSlots>");
                 sw.Flush();
                 sw.Close();
@@ -141,7 +145,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
@@ -169,22 +173,22 @@ namespace ServerTools
                 {
                     if (DateTime.Now < _dt)
                     {
-                        Phrases.Dict.TryGetValue(64, out string _phrase64);
-                        _phrase64 = _phrase64.Replace("{DateTime}", _dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase64 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Reserved4", out string _phrase4);
+                        _phrase4 = _phrase4.Replace("{DateTime}", _dt.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase4 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue(65, out string _phrase65);
-                        _phrase65 = _phrase65.Replace("{DateTime}", _dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase65 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Reserved5", out string _phrase5);
+                        _phrase5 = _phrase5.Replace("{DateTime}", _dt.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase5 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                Phrases.Dict.TryGetValue(66, out string _phrase66);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase66 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Reserved6", out string _phrase6);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase6 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -283,16 +287,16 @@ namespace ServerTools
                     {
                         Kicked.Add(_clientToKick, DateTime.Now);
                     }
-                    Phrases.Dict.TryGetValue(61, out string _phrase61);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _clientToKick, _phrase61), null);
+                    Phrases.Dict.TryGetValue("Reserved1", out string _phrase1);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _clientToKick, _phrase1), null);
                     return true;
                 }
                 else if (_reservedKicks != null && _reservedKicks.Count > 0)
                 {
                     _reservedKicks.RandomizeList();
                     _clientToKick = _reservedKicks[0];
-                    Phrases.Dict.TryGetValue(61, out string _phrase61);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _clientToKick, _phrase61), null);
+                    Phrases.Dict.TryGetValue("Reserved1", out string _phrase1);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _clientToKick, _phrase1), null);
                     return true;
                 }
             }
@@ -301,6 +305,57 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlots.FullServer: {0}", e.Message));
             }
             return false;
+        }
+
+        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        {
+            try
+            {
+                FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<ReservedSlots>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        XmlElement _line = (XmlElement)_oldChildNodes[i];
+                        if (_line.HasAttributes && _line.OuterXml.Contains("Player"))
+                        {
+                            string _steamId = "", _name = "", _expires = "";
+                            if (_line.HasAttribute("SteamId"))
+                            {
+                                _steamId = _line.GetAttribute("SteamId");
+                            }
+                            if (_line.HasAttribute("Name"))
+                            {
+                                _name = _line.GetAttribute("Name");
+                            }
+                            if (_line.HasAttribute("Expires"))
+                            {
+                                _expires = _line.GetAttribute("Expires");
+                            }
+                            sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" Expires=\"{2}\" />", _steamId, _name, _expires));
+                        }
+                    }
+                    sw.WriteLine("</ReservedSlots>");
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlots.UpgradeXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
+            LoadXml();
         }
     }
 }

@@ -14,9 +14,10 @@ namespace ServerTools
             Command_wallet_deposit = "wallet deposit", Command_wallet_withdraw = "wallet withdraw", Command_transfer = "transfer";
         public static int Deposit_Fee_Percent = 5;
         public static Dictionary<string, int> TransferId = new Dictionary<string, int>();
+
         private static readonly string file = string.Format("Bank_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static readonly string filepath = string.Format("{0}/Logs/BankLogs/{1}", API.ConfigPath, file);
-        private static readonly System.Random random = new System.Random();
+        private static readonly string Filepath = string.Format("{0}/Logs/BankLogs/{1}", API.ConfigPath, file);
+        private static readonly System.Random Random = new System.Random();
 
         public static int GetCurrentBank(string _steamid)
         {
@@ -62,10 +63,10 @@ namespace ServerTools
                 if (TransferId.ContainsKey(_cInfo.playerId))
                 {
                     TransferId.TryGetValue(_cInfo.playerId, out int _id);
-                    Phrases.Dict.TryGetValue(641, out string _phrase641);
-                    _phrase641 = _phrase641.Replace("{Value}", _bank.ToString());
-                    _phrase641 = _phrase641.Replace("{Id}", _id.ToString());
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase641 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Bank1", out string _phrase);
+                    _phrase = _phrase.Replace("{Value}", _bank.ToString());
+                    _phrase = _phrase.Replace("{Id}", _id.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -97,16 +98,16 @@ namespace ServerTools
 
         private static int GenerateTransferId()
         {
-            int _id = random.Next(1000, 5001);
+            int _id = Random.Next(1000, 5001);
             if (TransferId.ContainsValue(_id))
             {
-                _id = random.Next(1000, 5001);
+                _id = Random.Next(1000, 5001);
                 if (TransferId.ContainsValue(_id))
                 {
-                    _id = random.Next(1000, 5001);
+                    _id = Random.Next(1000, 5001);
                     if (TransferId.ContainsValue(_id))
                     {
-                        _id = random.Next(1000, 5001);
+                        _id = Random.Next(1000, 5001);
                         return 0;
                     }
                     else
@@ -140,8 +141,8 @@ namespace ServerTools
                             Vector3i _vec3i = new Vector3i((int)_position.x, (int)_position.y, (int)_position.z);
                             if (!PersistentOperations.ClaimedByAllyOrSelf(_cInfo.playerId, _vec3i))
                             {
-                                Phrases.Dict.TryGetValue(642, out string _phrase642);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase642 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Bank2", out string _phrase);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 return;
                             }
                         }
@@ -256,62 +257,62 @@ namespace ServerTools
                                             float _fee = _currencyRemoved * ((float)Deposit_Fee_Percent / 100);
                                             int _adjustedDeposit = _currencyRemoved - (int)_fee;
                                             AddCoinsToBank(_cInfo.playerId, _adjustedDeposit);
-                                            using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
+                                            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                             {
                                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} to their bank account from a secure loot.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _adjustedDeposit));
                                                 sw.WriteLine();
                                                 sw.Flush();
                                                 sw.Close();
                                             }
-                                            Phrases.Dict.TryGetValue(643, out string _phrase643);
-                                            _phrase643 = _phrase643.Replace("{Value}", _adjustedDeposit.ToString());
-                                            _phrase643 = _phrase643.Replace("{CoinName}", Ingame_Coin);
-                                            _phrase643 = _phrase643.Replace("{Percent}", Deposit_Fee_Percent.ToString());
-                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase643 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                            Phrases.Dict.TryGetValue("Bank3", out string _phrase);
+                                            _phrase = _phrase.Replace("{Value}", _adjustedDeposit.ToString());
+                                            _phrase = _phrase.Replace("{CoinName}", Ingame_Coin);
+                                            _phrase = _phrase.Replace("{Percent}", Deposit_Fee_Percent.ToString());
+                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                         else
                                         {
                                             AddCoinsToBank(_cInfo.playerId, _currencyRemoved);
-                                            using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
+                                            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                             {
                                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} to their bank account from a secure loot.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _currencyRemoved));
                                                 sw.WriteLine();
                                                 sw.Flush();
                                                 sw.Close();
                                             }
-                                            Phrases.Dict.TryGetValue(644, out string _phrase644);
-                                            _phrase644 = _phrase644.Replace("{Value}", _currencyRemoved.ToString());
-                                            _phrase644 = _phrase644.Replace("{CoinName}", Ingame_Coin);
-                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase644 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                            Phrases.Dict.TryGetValue("Bank4", out string _phrase);
+                                            _phrase = _phrase.Replace("{Value}", _currencyRemoved.ToString());
+                                            _phrase = _phrase.Replace("{CoinName}", Ingame_Coin);
+                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
                                     else
                                     {
-                                        Phrases.Dict.TryGetValue(645, out string _phrase645);
-                                        _phrase645 = _phrase645.Replace("{CoinName}", Ingame_Coin);
-                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase645 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        Phrases.Dict.TryGetValue("Bank5", out string _phrase);
+                                        _phrase = _phrase.Replace("{CoinName}", Ingame_Coin);
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                                 else
                                 {
-                                    Phrases.Dict.TryGetValue(646, out string _phrase646);
-                                    _phrase646 = _phrase646.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                                    _phrase646 = _phrase646.Replace("{Command_deposit}", Command_deposit);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase646 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Bank6", out string _phrase);
+                                    _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                    _phrase = _phrase.Replace("{Command_deposit}", Command_deposit);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue(646, out string _phrase646);
-                                _phrase646 = _phrase646.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                                _phrase646 = _phrase646.Replace("{Command_deposit}", Command_deposit);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase646 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Bank6", out string _phrase);
+                                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                _phrase = _phrase.Replace("{Command_deposit}", Command_deposit);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue(647, out string _phrase647);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase647 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Bank7", out string _phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             Log.Out(string.Format("[SERVERTOOLS] Bank operation failed. Unable to find item {0}. Check the default game currency from your items.xml", Ingame_Coin));
                         }
                     }
@@ -347,7 +348,7 @@ namespace ServerTools
                                         if (itemStack != null)
                                         {
                                             SubtractCoinsFromBank(_cInfo.playerId, _value);
-                                            using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
+                                            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                             {
                                                 sw.WriteLine(string.Format("{0}: {1} has removed {2} from their bank account as {3}.", DateTime.Now, _cInfo.playerName, _value, Ingame_Coin));
                                                 sw.WriteLine();
@@ -356,15 +357,15 @@ namespace ServerTools
                                             }
                                             if (!_player.bag.CanTakeItem(itemStack))
                                             {
-                                                Phrases.Dict.TryGetValue(648, out string _phrase648);
-                                                _phrase648 = _phrase648.Replace("{CoinName}", Ingame_Coin);
-                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase648 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                Phrases.Dict.TryGetValue("Bank8", out string _phrase);
+                                                _phrase = _phrase.Replace("{CoinName}", Ingame_Coin);
+                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                             }
                                             else
                                             {
-                                                Phrases.Dict.TryGetValue(649, out string _phrase649);
-                                                _phrase649 = _phrase649.Replace("{CoinName}", Ingame_Coin);
-                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase649 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                Phrases.Dict.TryGetValue("Bank9", out string _phrase);
+                                                _phrase = _phrase.Replace("{CoinName}", Ingame_Coin);
+                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                             }
                                             var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                                             {
@@ -383,30 +384,30 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        Phrases.Dict.TryGetValue(650, out string _phrase650);
-                                        _phrase650 = _phrase650.Replace("{Max}", _maxAllowed.ToString());
-                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase650 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        Phrases.Dict.TryGetValue("Bank10", out string _phrase);
+                                        _phrase = _phrase.Replace("{Max}", _maxAllowed.ToString());
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                                 else
                                 {
-                                    Phrases.Dict.TryGetValue(651, out string _phrase651);
-                                    _phrase651 = _phrase651.Replace("{Total}", _bank.ToString());
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase651 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Bank11", out string _phrase);
+                                    _phrase = _phrase.Replace("{Total}", _bank.ToString());
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue(652, out string _phrase652);
-                                _phrase652 = _phrase652.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                                _phrase652 = _phrase652.Replace("{Command_withdraw}", Command_withdraw);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase652 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Bank12", out string _phrase);
+                                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                _phrase = _phrase.Replace("{Command_withdraw}", Command_withdraw);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue(647, out string _phrase647);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase647 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Bank7", out string _phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             Log.Out(string.Format("[SERVERTOOLS] Bank operation failed. Unable to find item {0}. Check the default game currency from your items.xml", Ingame_Coin));
                         }
                     }
@@ -433,47 +434,47 @@ namespace ServerTools
                             float _fee = _value * ((float)Deposit_Fee_Percent / 100);
                             int _adjustedDeposit = _value - (int)_fee;
                             AddCoinsToBank(_cInfo.playerId, _adjustedDeposit);
-                            using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
+                            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                             {
                                 sw.WriteLine(string.Format("{0}: {1} has added {2} to their bank account from their wallet.", DateTime.Now, _cInfo.playerName, _adjustedDeposit));
                                 sw.WriteLine();
                                 sw.Flush();
                                 sw.Close();
                             }
-                            Phrases.Dict.TryGetValue(653, out string _phrase653);
-                            _phrase653 = _phrase653.Replace("{Value}", _value.ToString());
-                            _phrase653 = _phrase653.Replace("{CoinName}", Wallet.Coin_Name);
-                            _phrase653 = _phrase653.Replace("{Percent}", Deposit_Fee_Percent.ToString());
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase653 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Bank13", out string _phrase);
+                            _phrase = _phrase.Replace("{Value}", _value.ToString());
+                            _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                            _phrase = _phrase.Replace("{Percent}", Deposit_Fee_Percent.ToString());
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {
                             AddCoinsToBank(_cInfo.playerId, _value);
-                            using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
+                            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                             {
                                 sw.WriteLine(string.Format("{0}: {1} {2} has added {3} to their bank account from their wallet.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _value));
                                 sw.WriteLine();
                                 sw.Flush();
                                 sw.Close();
                             }
-                            Phrases.Dict.TryGetValue(654, out string _phrase654);
-                            _phrase654 = _phrase654.Replace("{Value}", _value.ToString());
-                            _phrase654 = _phrase654.Replace("{CoinName}", Wallet.Coin_Name);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase654 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Bank14", out string _phrase);
+                            _phrase = _phrase.Replace("{Value}", _value.ToString());
+                            _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue(655, out string _phrase655);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase655 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Bank15", out string _phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(656, out string _phrase656);
-                    _phrase656 = _phrase656.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    _phrase656 = _phrase656.Replace("{Command_wallet_deposit}", Command_wallet_deposit);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase656 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Bank16", out string _phrase);
+                    _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase = _phrase.Replace("{Command_wallet_deposit}", Command_wallet_deposit);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -493,29 +494,29 @@ namespace ServerTools
                     {
                         Wallet.AddCoinsToWallet(_cInfo.playerId, _value);
                         SubtractCoinsFromBank(_cInfo.playerId, _value);
-                        using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
+                        using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                         {
                             sw.WriteLine(string.Format("{0}: {1} has removed {2} from their bank account and it has been placed into their wallet.", DateTime.Now, _cInfo.playerName, _value));
                             sw.WriteLine();
                             sw.Flush();
                             sw.Close();
                         }
-                        Phrases.Dict.TryGetValue(657, out string _phrase657);
-                        _phrase657 = _phrase657.Replace("{Name}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase657 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Bank17", out string _phrase);
+                        _phrase = _phrase.Replace("{Name}", Wallet.Coin_Name);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue(658, out string _phrase658);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase658 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Bank18", out string _phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(659, out string _phrase659);
-                    _phrase659 = _phrase659.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    _phrase659 = _phrase659.Replace("{Command_wallet_withdraw}", Command_wallet_withdraw);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase659 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Bank19", out string _phrase);
+                    _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase = _phrase.Replace("{Command_wallet_withdraw}", Command_wallet_withdraw);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -551,62 +552,62 @@ namespace ServerTools
                                                 TransferId.Remove(_cInfo2.playerId);
                                                 SubtractCoinsFromBank(_cInfo.playerId, _transferValue);
                                                 AddCoinsToBank(_cInfo2.playerId, _transferValue);
-                                                using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
+                                                using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0}: {1} {2} has made a bank transfer of {3} to {4} {5}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _transferValue, _cInfo2.playerId, _cInfo2.playerName));
                                                     sw.WriteLine();
                                                     sw.Flush();
                                                     sw.Close();
                                                 }
-                                                Phrases.Dict.TryGetValue(660, out string _phrase660);
-                                                _phrase660 = _phrase660.Replace("{Value}", _transferValue.ToString());
-                                                _phrase660 = _phrase660.Replace("{PlayerName}", _cInfo2.playerName);
-                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase660 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                                Phrases.Dict.TryGetValue(661, out string _phrase661);
-                                                _phrase661 = _phrase661.Replace("{Value}", _transferValue.ToString());
-                                                _phrase661 = _phrase661.Replace("{PlayerName}", _cInfo.playerName);
-                                                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase661 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                Phrases.Dict.TryGetValue("Bank20", out string _phrase);
+                                                _phrase = _phrase.Replace("{Value}", _transferValue.ToString());
+                                                _phrase = _phrase.Replace("{PlayerName}", _cInfo2.playerName);
+                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                Phrases.Dict.TryGetValue("Bank21", out _phrase);
+                                                _phrase = _phrase.Replace("{Value}", _transferValue.ToString());
+                                                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 return;
                                             }
                                             else
                                             {
-                                                Phrases.Dict.TryGetValue(662, out string _phrase662);
-                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase662 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                Phrases.Dict.TryGetValue("Bank22", out string _phrase);
+                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                             }
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    Phrases.Dict.TryGetValue(651, out string _phrase651);
-                                    _phrase651 = _phrase651.Replace("{Total}", _bank.ToString());
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase651 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Bank11", out string _phrase);
+                                    _phrase = _phrase.Replace("{Total}", _bank.ToString());
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue(663, out string _phrase663);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase663 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Bank23", out string _phrase);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue(664, out string _phrase664);
-                            _phrase664 = _phrase664.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                            _phrase664 = _phrase664.Replace("{Command_transfer}", Command_transfer);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase664 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Bank24", out string _phrase);
+                            _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                            _phrase = _phrase.Replace("{Command_transfer}", Command_transfer);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue(665, out string _phrase665);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase665 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Bank25", out string _phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(665, out string _phrase665);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase665 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Bank25", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

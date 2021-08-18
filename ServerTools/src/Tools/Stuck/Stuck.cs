@@ -32,8 +32,7 @@ namespace ServerTools
                 {
                     if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                     {
-                        DateTime _dt;
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                         if (DateTime.Now < _dt)
                         {
                             int _delay = Delay_Between_Uses / 2;
@@ -55,12 +54,12 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                Phrases.Dict.TryGetValue(551, out string _phrase551);
-                _phrase551 = _phrase551.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase551 = _phrase551.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase551 = _phrase551.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                _phrase551 = _phrase551.Replace("{Command_stuck}", Command_stuck);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase551 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Stuck1", out string _phrase);
+                _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase = _phrase.Replace("{Command_stuck}", Command_stuck);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -84,14 +83,14 @@ namespace ServerTools
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(554, out string _phrase554);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase554 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Stuck4", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                Phrases.Dict.TryGetValue(552, out string _phrase552);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase552 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Stuck2", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -120,8 +119,8 @@ namespace ServerTools
             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player.position.x, -1, (int)_player.position.z), null, false));
             PersistentContainer.Instance.Players[_cInfo.playerId].LastStuck = DateTime.Now;
             PersistentContainer.DataChange = true;
-            Phrases.Dict.TryGetValue(553, out string _phrase553);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase553 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue("Stuck3", out string _phrase);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
     }
 }

@@ -52,14 +52,14 @@ namespace ServerTools
                             ReservedSlots.Dict.Remove(_params[1]);
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed id {0} from the reserved slots list.", _params[1]));
                         }
-                        if (!ChatColorPrefix.Players.ContainsKey(_params[1]))
+                        if (!ChatColor.Players.ContainsKey(_params[1]))
                         {
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not remove id from the chat color prefix list. {0} is not in the list.", _params[1]));
                         }
                         else
                         {
-                            ChatColorPrefix.Players.Remove(_params[1]);
-                            ChatColorPrefix.ExpireDate.Remove(_params[1]);
+                            ChatColor.Players.Remove(_params[1]);
+                            ChatColor.ExpireDate.Remove(_params[1]);
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed id {0} from the chat color prefix list.", _params[1]));
                         }
                     }
@@ -89,7 +89,7 @@ namespace ServerTools
                         }
                         if (_params.Count == 7)
                         {
-                            foreach (var group in ChatColorPrefix.Players)
+                            foreach (var group in ChatColor.Players)
                             {
                                 if (group.Value[1] == _params[2])
                                 {
@@ -135,19 +135,19 @@ namespace ServerTools
                             }
                             ReservedSlots.UpdateXml();
                             string[] _c = new string[] { _cInfo.playerName, _params[2], _params[3], _params[4], _params[5] };
-                            if (ChatColorPrefix.Players.ContainsKey(_params[1]))
+                            if (ChatColor.Players.ContainsKey(_params[1]))
                             {
-                                ChatColorPrefix.Players[_params[1]] = _c;
-                                ChatColorPrefix.ExpireDate[_params[1]] = _expiryDate;
+                                ChatColor.Players[_params[1]] = _c;
+                                ChatColor.ExpireDate[_params[1]] = _expiryDate;
                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Updated id {0}, with the name of {1} to the group {2} using prefix {3}, name color {4} and prefix color {5} that expires {6} to the chat color prefix list.", _params[1], _cInfo.playerName, _params[2], _params[3], _params[4], _params[5], _expiryDate.ToString()));
                             }
                             else
                             {
-                                ChatColorPrefix.Players.Add(_params[1], _c);
-                                ChatColorPrefix.ExpireDate.Add(_params[1], _expiryDate);
+                                ChatColor.Players.Add(_params[1], _c);
+                                ChatColor.ExpireDate.Add(_params[1], _expiryDate);
                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added id {0}, with the name of {1} to the group {2} using prefix {3}, name color {4} and prefix color {5} that expires {6} to the chat color prefix list.", _params[1], _cInfo.playerName, _params[2], _params[3], _params[4], _params[5], _expiryDate.ToString()));
                             }
-                            ChatColorPrefix.UpdateXml();
+                            ChatColor.UpdateXml();
                         }
                         else
                         {

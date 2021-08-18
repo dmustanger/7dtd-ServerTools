@@ -86,8 +86,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id. {0} is already in the Jail list", _params[1]));
                         return;
                     }
-                    int _jailTime;
-                    if (!int.TryParse(_params[2], out _jailTime))
+                    if (!int.TryParse(_params[2], out int _jailTime))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jail time is not valid: {0}", _params[2]));
                         return;
@@ -112,11 +111,10 @@ namespace ServerTools
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                                 if (_player != null && _player.IsSpawned())
                                 {
-                                    int x, y, z;
                                     string[] _cords = Jail.Jail_Position.Split(',');
-                                    int.TryParse(_cords[0], out x);
-                                    int.TryParse(_cords[1], out y);
-                                    int.TryParse(_cords[2], out z);
+                                    int.TryParse(_cords[0], out int x);
+                                    int.TryParse(_cords[1], out int y);
+                                    int.TryParse(_cords[2], out int z);
                                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                                 }
                                 Jail.Jailed.Add(_cInfo.playerId);
@@ -127,14 +125,14 @@ namespace ServerTools
                                 if (_jailTime > 0)
                                 {
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have put {0} in jail for {1} minutes", _cInfo.playerName, _jailTime));
-                                    Phrases.Dict.TryGetValue(190, out string _phrase190);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase190 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Jail1", out string _phrase);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 if (_jailTime == -1)
                                 {
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have put {0} in jail for life", _cInfo.playerName));
-                                    Phrases.Dict.TryGetValue(190, out string _phrase190);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase190 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Jail1", out string _phrase);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }

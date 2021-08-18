@@ -57,8 +57,7 @@ namespace ServerTools
                     {
                         if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            DateTime _dt;
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                             if (DateTime.Now < _dt)
                             {
                                 int _delay = Delay_Between_Uses / 2;
@@ -92,10 +91,10 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                Phrases.Dict.TryGetValue(497, out string _phrase497);
-                _phrase497 = _phrase497.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase497 = _phrase497.Replace("{TimeRemaining}", _timeleft.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase497 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("VehicleTeleport7", out string _phrase);
+                _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -108,9 +107,9 @@ namespace ServerTools
             }
             else
             {
-                Phrases.Dict.TryGetValue(499, out string _phrase499);
-                _phrase499 = _phrase499.Replace("{CoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase499 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("VehicleTeleport9", out string _phrase);
+                _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -129,8 +128,8 @@ namespace ServerTools
                 EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
                 if (!PersistentOperations.ClaimedByAllyOrSelf(_cInfo.playerId, _vec3i))
                 {
-                    Phrases.Dict.TryGetValue(491, out string _phrase491);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase491 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("VehicleTeleport1", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }
             }
@@ -183,15 +182,15 @@ namespace ServerTools
                     PersistentContainer.Instance.Players[_cInfo.playerId].GyroId = _vehicleId;
                 }
                 PersistentContainer.DataChange = true;
-                Phrases.Dict.TryGetValue(492, out string _phrase492);
-                _phrase492 = _phrase492.Replace("{Vehicle}", _vehicleName);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase492 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("VehicleTeleport2", out string _phrase);
+                _phrase = _phrase.Replace("{Vehicle}", _vehicleName);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                Phrases.Dict.TryGetValue(498, out string _phrase498);
-                _phrase498 = _phrase498.Replace("{Vehicle}", _vehicleName);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase498 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("VehicleTeleport8", out string _phrase);
+                _phrase = _phrase.Replace("{Vehicle}", _vehicleName);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -258,27 +257,27 @@ namespace ServerTools
                                         PersistentContainer.Instance.Players[_cInfo.playerId].LastGyro = DateTime.Now;
                                     }
                                     PersistentContainer.DataChange = true;
-                                    Phrases.Dict.TryGetValue(493, out string _phrase493);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase493 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("VehicleTeleport3", out string _phrase);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                                 else
                                 {
-                                    Phrases.Dict.TryGetValue(496, out string _phrase496);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase496 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("VehicleTeleport6", out string _phrase);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                             }
                         }
                     }
                 }
-                Phrases.Dict.TryGetValue(495, out string _phrase495);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase495 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("VehicleTeleport5", out string _phrase1);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                Phrases.Dict.TryGetValue(494, out string _phrase494);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase494 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("VehicleTeleport4", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

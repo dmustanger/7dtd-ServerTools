@@ -16,31 +16,31 @@ namespace ServerTools
             if (Zones.IsEnabled && Zones.ZonePlayer.ContainsKey(_cInfo.entityId))
             {
                 Zones.ZonePlayer.TryGetValue(_cInfo.entityId, out string[] _zone);
-                Phrases.Dict.TryGetValue(461, out string _phrase461);
-                _phrase461 = _phrase461.Replace("{Position}", _position.ToString());
-                _phrase461 = _phrase461.Replace("{Name}", _zone[0]);
+                Phrases.Dict.TryGetValue("Location1", out string _phrase);
+                _phrase = _phrase.Replace("{Position}", _position.ToString());
+                _phrase = _phrase.Replace("{Name}", _zone[0]);
                 if (_zone[9] == "0")
                 {
-                    _phrase461 = _phrase461.Replace("{Mode}", "no killing");
+                    _phrase = _phrase.Replace("{Mode}", "no killing");
                 }
                 else if (_zone[9] == "1")
                 {
-                    _phrase461 = _phrase461.Replace("{Mode}", "kill allies only");
+                    _phrase = _phrase.Replace("{Mode}", "kill allies only");
                 }
                 else if (_zone[9] == "2")
                 {
-                    _phrase461 = _phrase461.Replace("{Mode}", "kill strangers only");
+                    _phrase = _phrase.Replace("{Mode}", "kill strangers only");
                 }
                 else
                 {
-                    _phrase461 = _phrase461.Replace("{Mode}", "kill everyone");
+                    _phrase = _phrase.Replace("{Mode}", "kill everyone");
                 }
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase461 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
-            Phrases.Dict.TryGetValue(462, out string _phrase462);
-            _phrase462 = _phrase462.Replace("{Position}", _position.ToString());
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase462 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue("Location2", out string _phrase1);
+            _phrase1 = _phrase1.Replace("{Position}", _position.ToString());
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
     }
 }

@@ -13,19 +13,19 @@ namespace ServerTools
             int _daysRemaining = Day7.DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
             if (_daysRemaining == 0 && !SkyManager.BloodMoon())
             {
-                Phrases.Dict.TryGetValue(682, out string _phrase682);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase682 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Bloodmoon2", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else if (SkyManager.BloodMoon())
             {
-                Phrases.Dict.TryGetValue(683, out string _phrase683);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase683 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Bloodmoon3", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                Phrases.Dict.TryGetValue(681, out string _phrase681);
-                _phrase681 = _phrase681.Replace("{Value}", _daysRemaining.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase681 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Bloodmoon1", out string _phrase);
+                _phrase = _phrase.Replace("{Value}", _daysRemaining.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -36,19 +36,19 @@ namespace ServerTools
                 int _daysRemaining = Day7.DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
                 if (_daysRemaining == 0 && !SkyManager.BloodMoon())
                 {
-                    Phrases.Dict.TryGetValue(682, out string _phrase682);
-                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase682 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    Phrases.Dict.TryGetValue("Bloodmoon2", out string _phrase);
+                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
                 else if (SkyManager.BloodMoon())
                 {
-                    Phrases.Dict.TryGetValue(683, out string _phrase683);
-                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase683 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    Phrases.Dict.TryGetValue("Bloodmoon3", out string _phrase);
+                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(681, out string _phrase681);
-                    _phrase681 = _phrase681.Replace("{Value}", _daysRemaining.ToString());
-                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase681 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    Phrases.Dict.TryGetValue("Bloodmoon1", out string _phrase);
+                    _phrase = _phrase.Replace("{Value}", _daysRemaining.ToString());
+                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
             }
         }

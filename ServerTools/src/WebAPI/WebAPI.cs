@@ -1042,11 +1042,11 @@ namespace ServerTools
                                         XmlDocument _xmlDoc = new XmlDocument();
                                         try
                                         {
-                                            _xmlDoc.Load(Config.configFilePath);
+                                            _xmlDoc.Load(Config.ConfigFilePath);
                                         }
                                         catch (XmlException e)
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", Config.configFilePath, e.Message));
+                                            Log.Out(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", Config.ConfigFilePath, e.Message));
                                         }
                                         if (_xmlDoc != null)
                                         {
@@ -1089,7 +1089,7 @@ namespace ServerTools
                                             }
                                             if (_changed)
                                             {
-                                                _xmlDoc.Save(Config.configFilePath);
+                                                _xmlDoc.Save(Config.ConfigFilePath);
                                                 WebPanel.Writer(string.Format("Client {0} at IP {1} has updated the Config ", _IVKey[0], _ip));
                                                 _response.StatusCode = 200;
                                             }
@@ -1610,22 +1610,22 @@ namespace ServerTools
             return encrypted;
         }
 
-        private static string DiscordEncrypt(string _target)
-        {
-            string result = "";
-            try
-            {
-                ICryptoTransform cryptoTransform = WebAPI.AESProvider.CreateEncryptor();
-                byte[] array = Convert.FromBase64String(_target);
-                result = Convert.ToBase64String(cryptoTransform.TransformFinalBlock(array, 0, array.Length));
-                cryptoTransform.Dispose();
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in WebAPI.DiscordEncrypt: {0}", e.Message));
-            }
-            return result;
-        }
+        //private static string DiscordEncrypt(string _target)
+        //{
+        //    string result = "";
+        //    try
+        //    {
+        //        ICryptoTransform cryptoTransform = WebAPI.AESProvider.CreateEncryptor();
+        //        byte[] array = Convert.FromBase64String(_target);
+        //        result = Convert.ToBase64String(cryptoTransform.TransformFinalBlock(array, 0, array.Length));
+        //        cryptoTransform.Dispose();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Log.Out(string.Format("[SERVERTOOLS] Error in WebAPI.DiscordEncrypt: {0}", e.Message));
+        //    }
+        //    return result;
+        //}
 
         private static string DiscordSecurityDecrypt(string _target)
         {

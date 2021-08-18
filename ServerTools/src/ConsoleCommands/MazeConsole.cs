@@ -20,12 +20,11 @@ namespace ServerTools
                    "  1. st-mz add {Blocks} {Floors}\n" +
                    "  2. st-mz add {Blocks} {Floors} {BlockName}\n" +
                    "  3. st-mz undo\n" +
-                   "1. Generate a maze with this width of blocks, floors\n" +
+                   "1. Generate a maze with this width of blocks and this many floors\n" +
                    "2. Generate a maze with this width of blocks, floors and inner block name that forms the walls" +
                    "3. Revert the maze last generated to the original blocks" +
                    "*Note*" +
-                   "Undo command is limited to the user that spawned the maze. Server restarts remove the old data" +
-                   "Difficulty: Easy 1, Medium 2, Hard 3. Changes the length of path";
+                   "Undo command is limited to the user that spawned the maze. Server restarts remove the old data";
         }
 
         public override string[] GetCommands()
@@ -70,7 +69,7 @@ namespace ServerTools
                                     else if (_floors > 10)
                                     {
                                         _floors = 10;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Floor count is too high. Floor count increased to 10"));
+                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Floor count is too high. Floor count decreased to 10"));
                                     }
                                     if (_floors >= 2 && _blocks > 110)
                                     {
@@ -235,22 +234,27 @@ namespace ServerTools
                                                                         _undo.Add(_block.Key, _oldBlockValue);
                                                                         if (_block.Value == "...")
                                                                         {
+                                                                            GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _stoneBlockValue);
                                                                         }
                                                                         else if (_block.Value == "steel")
                                                                         {
+                                                                            GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _steelBlockValue);
                                                                         }
                                                                         else if (_block.Value == "glassWall")
                                                                         {
+                                                                            GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _glassBlockValue);
                                                                         }
                                                                         else if (_block.Value == "wall")
                                                                         {
+                                                                            GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _concreteBlockValue);
                                                                         }
                                                                         else if (_block.Value == "wallPassage")
                                                                         {
+                                                                            GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _concreteBlockValue);
                                                                         }
                                                                         else if (_block.Value == "air")
@@ -264,21 +268,25 @@ namespace ServerTools
                                                                         else if (_block.Value == "ladder1")
                                                                         {
                                                                             _ladderValue.rotation = 1;
+                                                                            GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                         }
                                                                         else if (_block.Value == "ladder2")
                                                                         {
                                                                             _ladderValue.rotation = 3;
+                                                                            GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                         }
                                                                         else if (_block.Value == "ladder3")
                                                                         {
                                                                             _ladderValue.rotation = 3;
+                                                                            GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                         }
                                                                         else if (_block.Value == "ladder4")
                                                                         {
                                                                             _ladderValue.rotation = 4;
+                                                                            GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                             GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                         }
                                                                         else if (_block.Value == "glass")
@@ -389,22 +397,27 @@ namespace ServerTools
                                                                             _undo.Add(_block.Key, _oldBlockValue);
                                                                             if (_block.Value == "...")
                                                                             {
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _stoneBlockValue);
                                                                             }
                                                                             else if (_block.Value == "steel")
                                                                             {
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _steelBlockValue);
                                                                             }
                                                                             else if (_block.Value == "glassWall")
                                                                             {
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _glassBlockValue);
                                                                             }
                                                                             else if (_block.Value == "wall")
                                                                             {
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _customBlockValue);
                                                                             }
                                                                             else if (_block.Value == "wallPassage")
                                                                             {
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _customBlockValue);
                                                                             }
                                                                             else if (_block.Value == "air")
@@ -418,25 +431,30 @@ namespace ServerTools
                                                                             else if (_block.Value == "ladder1")
                                                                             {
                                                                                 _ladderValue.rotation = 1;
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                             }
                                                                             else if (_block.Value == "ladder2")
                                                                             {
                                                                                 _ladderValue.rotation = 3;
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                             }
                                                                             else if (_block.Value == "ladder3")
                                                                             {
                                                                                 _ladderValue.rotation = 3;
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                             }
                                                                             else if (_block.Value == "ladder4")
                                                                             {
                                                                                 _ladderValue.rotation = 4;
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _ladderValue);
                                                                             }
                                                                             else if (_block.Value == "glass")
                                                                             {
+                                                                                GameManager.Instance.World.SetBlockRPC(_block.Key, BlockValue.Air);
                                                                                 GameManager.Instance.World.SetBlockRPC(_block.Key, _glassCeilingBlockValue);
                                                                             }
                                                                         }

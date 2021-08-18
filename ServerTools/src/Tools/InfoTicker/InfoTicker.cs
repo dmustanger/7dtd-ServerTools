@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -14,10 +15,9 @@ namespace ServerTools
 
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();
         private static List<string> MsgList = new List<string>();
-        
         private const string file = "InfoTicker.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -35,112 +35,113 @@ namespace ServerTools
 
         private static void LoadXml()
         {
-            if (!Utils.FileExists(FilePath))
-            {
-                UpdateXml();
-            }
-            XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(FilePath);
-            }
-            catch (XmlException e)
-            {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
-                return;
-            }
-            XmlNode _XmlNode = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _XmlNode.ChildNodes)
-            {
-                if (childNode.Name == "Messages")
+                if (!Utils.FileExists(FilePath))
+                {
+                    UpdateXml();
+                }
+                XmlDocument xmlDoc = new XmlDocument();
+                try
+                {
+                    xmlDoc.Load(FilePath);
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    return;
+                }
+                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (_childNodes != null && _childNodes.Count > 0)
                 {
                     Dict.Clear();
                     MsgList.Clear();
-                    foreach (XmlNode subChild in childNode.ChildNodes)
+                    bool upgrade = true;
+                    for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (subChild.NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
                         {
                             continue;
                         }
-                        if (subChild.NodeType != XmlNodeType.Element)
+                        XmlElement _line = (XmlElement)_childNodes[i];
+                        if (_line.HasAttributes)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Info_Ticker' section: {0}", subChild.OuterXml));
-                            continue;
+                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            {
+                                upgrade = false;
+                            }
+                            else if (_line.HasAttribute("Message"))
+                            {
+                                string _message = _line.GetAttribute("Message");
+                                if (!Dict.ContainsKey(_message))
+                                {
+                                    Dict.Add(_message, null);
+                                }
+                            }
                         }
-                        XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("Message"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Info_Ticker entry because of missing Message attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        string _message = _line.GetAttribute("Message");
-                        if (!Dict.ContainsKey(_message))
-                        {
-                            Dict.Add(_message, null);
-                        }
-                        else
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Info_Ticker entry because this message already exists: {0}", subChild.OuterXml));
-                            continue;
-                        }
+                        
+                    }
+                    if (upgrade)
+                    {
+                        UpgradeXml(_childNodes);
+                        return;
                     }
                 }
+                if (Dict.Count > 0)
+                {
+                    BuildList();
+                }
             }
-            if (Dict.Count == 0)
+            catch (Exception e)
             {
-                Log.Warning("------------------------------------------------------------------------------");
-                Log.Warning("[SERVERTOOLS] Ignoring Info_Ticker because no messages were found on your list");
-                Log.Warning("------------------------------------------------------------------------------");
-            }
-            else
-            {
-                BuildList();
+                Log.Out(string.Format("[SERVERTOOLS] Error in InfoTicker.LoadXml: {0}", e.Message));
             }
         }
 
         public static void BuildList()
         {
-            if (Dict.Count > 0)
-            {
-                MsgList = new List<string>(Dict.Keys);
-            }
-            else
-            {
-                Log.Warning("[SERVERTOOLS] Ignoring Info_Ticker because no messages were found on your list");
-            }
+            MsgList = new List<string>(Dict.Keys);
         }
 
         private static void UpdateXml()
         {
-            FileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+            try
             {
-                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                sw.WriteLine("<InfoTicketer>");
-                sw.WriteLine("    <Messages>");
-                sw.WriteLine("        <!-- possible variables {EntityId} {SteamId} {PlayerName}-->");
-                if (Dict.Count > 0)
+                FileWatcher.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    foreach (KeyValuePair<string, string> kvp in Dict)
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<InfoTicketer>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- possible variables {EntityId} {SteamId} {PlayerName}-->");
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    if (Dict.Count > 0)
                     {
-                        sw.WriteLine(string.Format("        <Ticker Message=\"{0}\" />", kvp.Key));
+                        foreach (KeyValuePair<string, string> kvp in Dict)
+                        {
+                            sw.WriteLine(string.Format("    <Ticker Message=\"{0}\" />", kvp.Key));
+                        }
                     }
+                    else
+                    {
+                        sw.WriteLine("    <Ticker Message=\"Have a suggestion or complaint? Post on our forums or discord and let us know.\" />");
+                        sw.WriteLine("    <!-- <Ticker Message=\"Type /gimme once an hour for a free gift!\" /> -->");
+                        sw.WriteLine("    <!-- <Ticker Message=\"Typ /gimme, einmal pro Stunde für ein freies Geschenk!\" /> -->");
+                        sw.WriteLine("    <!-- <Ticker Message=\"Visit 'Yoursitehere' for rules, custom recipes and forum discussions!\" /> -->");
+                        sw.WriteLine("    <!-- <Ticker Message=\"Besuchen Yoursitehere für Regelungen , kundenspezifische Rezepturen und Forumsdiskussionen!\" /> -->");
+                        sw.WriteLine("    <!-- <Ticker Message=\"Type /commands for a list of the chat commands.\" /> -->");
+                    }
+                    sw.WriteLine("</InfoTicketer>");
+                    sw.Flush();
+                    sw.Close();
                 }
-                else
-                {
-                    sw.WriteLine("        <Ticker Message=\"Have a suggestion or complaint? Post on our forums or discord and let us know.\" />");
-                    sw.WriteLine("        <!-- <Ticker Message=\"Type /gimme once an hour for a free gift!\" /> -->");
-                    sw.WriteLine("        <!-- <Ticker Message=\"Typ /gimme, einmal pro Stunde für ein freies Geschenk!\" /> -->");
-                    sw.WriteLine("        <!-- <Ticker Message=\"Visit 'Yoursitehere' for rules, custom recipes and forum discussions!\" /> -->");
-                    sw.WriteLine("        <!-- <Ticker Message=\"Besuchen Yoursitehere für Regelungen , kundenspezifische Rezepturen und Forumsdiskussionen!\" /> -->");
-                    sw.WriteLine("        <!-- <Ticker Message=\"Type /commands for a list of the chat commands.\" /> -->");
-                }
-                sw.WriteLine("    </Messages>");
-                sw.WriteLine("</InfoTicketer>");
-                sw.Flush();
-                sw.Close();
+                FileWatcher.EnableRaisingEvents = true;
             }
-            FileWatcher.EnableRaisingEvents = true;
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in InfoTicker.UpdateXml: {0}", e.Message));
+            }
         }
 
         private static void InitFileWatcher()
@@ -162,58 +163,109 @@ namespace ServerTools
 
         public static void Exec()
         {
-            if (ConnectionManager.Instance.ClientCount() > 0)
+            try
             {
-                if (Random)
+                if (ConnectionManager.Instance.ClientCount() > 0)
                 {
-                    MsgList.RandomizeList();
-                    string _message = MsgList[0];
-                    List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                    if (_cInfoList != null && _cInfoList.Count > 0)
+                    if (Random)
                     {
-                        for (int i = 0; i < _cInfoList.Count; i++)
+                        MsgList.RandomizeList();
+                        string _message = MsgList[0];
+                        List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
+                        if (_cInfoList != null && _cInfoList.Count > 0)
                         {
-                            ClientInfo _cInfo = _cInfoList[i];
-                            if (_cInfo != null)
+                            for (int i = 0; i < _cInfoList.Count; i++)
                             {
-                                if (!ExemptionList.Contains(_cInfo.playerId))
+                                ClientInfo _cInfo = _cInfoList[i];
+                                if (_cInfo != null)
                                 {
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    if (!ExemptionList.Contains(_cInfo.playerId))
+                                    {
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    }
                                 }
                             }
-                        }
-                        MsgList.RemoveAt(0);
-                        if (MsgList.Count == 0)
-                        {
-                            BuildList();
+                            MsgList.RemoveAt(0);
+                            if (MsgList.Count == 0)
+                            {
+                                BuildList();
+                            }
                         }
                     }
-                }
-                else
-                {
-                    string _message = MsgList[0];
-                    List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                    if (_cInfoList != null && _cInfoList.Count > 0)
+                    else
                     {
-                        for (int i = 0; i < _cInfoList.Count; i++)
+                        string _message = MsgList[0];
+                        List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
+                        if (_cInfoList != null && _cInfoList.Count > 0)
                         {
-                            ClientInfo _cInfo = _cInfoList[i];
-                            if (_cInfo != null)
+                            for (int i = 0; i < _cInfoList.Count; i++)
                             {
-                                if (!ExemptionList.Contains(_cInfo.playerId))
+                                ClientInfo _cInfo = _cInfoList[i];
+                                if (_cInfo != null)
                                 {
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    if (!ExemptionList.Contains(_cInfo.playerId))
+                                    {
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    }
                                 }
                             }
-                        }
-                        MsgList.RemoveAt(0);
-                        if (MsgList.Count == 0)
-                        {
-                            BuildList();
+                            MsgList.RemoveAt(0);
+                            if (MsgList.Count == 0)
+                            {
+                                BuildList();
+                            }
                         }
                     }
                 }
             }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in InfoTicker.Exec: {0}", e.Message));
+            }
+        }
+
+        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        {
+            try
+            {
+                FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<InfoTicketer>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- possible variables {EntityId} {SteamId} {PlayerName}-->");
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        XmlElement _line = (XmlElement)_oldChildNodes[i];
+                        if (_line.HasAttributes)
+                        {
+                            string _message = "";
+                            if (_line.HasAttribute("Message"))
+                            {
+                                _message = _line.GetAttribute("Message");
+                            }
+                            sw.WriteLine(string.Format("    <Ticker Message=\"{0}\" />", _message));
+                        }
+                    }
+                    sw.WriteLine("</InfoTicketer>");
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in InfoTicker.UpgradeXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
+            LoadXml();
         }
     }
 }

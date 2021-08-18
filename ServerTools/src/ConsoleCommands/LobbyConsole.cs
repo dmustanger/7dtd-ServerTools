@@ -76,14 +76,13 @@ namespace ServerTools
                     int z = (int)_position.z;
                     string _lposition = x + "," + y + "," + z;
                     Lobby.Lobby_Position = _lposition;
-                    string _phrase551;
-                    if (!Phrases.Dict.TryGetValue(551, out _phrase551))
+                    if (!Phrases.Dict.TryGetValue("Stuck1", out string _phrase))
                     {
-                        _phrase551 = "{PlayerName} you have set the lobby position as {LobbyPosition}";
+                        _phrase = "{PlayerName} you have set the lobby position as {LobbyPosition}";
                     }
-                    _phrase551 = _phrase551.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase551 = _phrase551.Replace("{LobbyPosition}", _lposition);
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0}", _phrase551));
+                    _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase = _phrase.Replace("{LobbyPosition}", _lposition);
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0}", _phrase));
                     Config.WriteXml();
                 }
                 else

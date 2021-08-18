@@ -73,14 +73,13 @@ namespace ServerTools
                     if (PersistentContainer.Instance.Track != null && PersistentContainer.Instance.Track.Count > 0)
                     {
                         bool _found = false;
-                        int _hours, _range;
-                        if (int.TryParse(_params[0], out _hours))
+                        if (int.TryParse(_params[0], out int _hours))
                         {
                             if (_hours > 48)
                             {
                                 _hours = 48;
                             }
-                            if (int.TryParse(_params[1], out _range))
+                            if (int.TryParse(_params[1], out int _range))
                             {
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_senderInfo.RemoteClientInfo.entityId];
                                 if (_player != null)

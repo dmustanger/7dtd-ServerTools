@@ -73,8 +73,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found {0}", _params.Count));
                         return;
                     }
-                    int _value;
-                    if (!int.TryParse(_params[2], out _value))
+                    if (!int.TryParse(_params[2], out int _value))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Must input a valid interger: {0}", _params[2]));
                         return;

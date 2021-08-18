@@ -6,9 +6,9 @@ namespace ServerTools
 {
     class EventSchedule
     {
-        public static int _autoBackup = int.MinValue, _autoSaveWorld = int.MinValue, _bloodmoon = int.MinValue, _breakTime = int.MinValue,
-            _infoTicker = int.MinValue, _nightAlert = int.MinValue, _playerLogs = int.MinValue, _realWorldTime = int.MinValue,
-            _shutdown = int.MinValue, _watchlist = int.MinValue, _zones = int.MinValue;
+        public static int _autoBackup = -1, _autoSaveWorld = -1, _bloodmoon = -1, _breakTime = -1,
+            _infoTicker = -1, _nightAlert = -1, _playerLogs = -1, _realWorldTime = -1,
+            _shutdown = -1, _watchlist = -1, _zones = -1;
         public static Dictionary<string, DateTime> Schedule = new Dictionary<string, DateTime>();
 
         public static void Add(string _classMethod, DateTime _time)
@@ -85,7 +85,7 @@ namespace ServerTools
                         }
                         else if (_event.Key == "PlayerLogs")
                         {
-                            Add("PlayerLogs", DateTime.Now.AddMinutes(PlayerLogs.Delay));
+                            Add("PlayerLogs", DateTime.Now.AddSeconds(PlayerLogs.Delay));
                             PlayerLogs.Exec();
                         }
                         else if (_event.Key == "RealWorldTime")
@@ -96,7 +96,7 @@ namespace ServerTools
                         else if (_event.Key == "Watchlist")
                         {
                             Add("Watchlist", DateTime.Now.AddMinutes(Watchlist.Delay));
-                            Watchlist.CheckWatchlist();
+                            Watchlist.List();
                         }
                         else if (_event.Key == "Zones")
                         {

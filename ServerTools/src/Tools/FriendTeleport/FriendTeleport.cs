@@ -26,18 +26,18 @@ namespace ServerTools
                         if (_player != _player2 && _player.IsFriendsWith(_player2))
                         {
                             ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_player2.entityId);
-                            Phrases.Dict.TryGetValue(361, out string _phrase361);
-                            _phrase361 = _phrase361.Replace("{FriendName}", _cInfo2.playerName);
-                            _phrase361 = _phrase361.Replace("{EntityId}", _cInfo2.entityId.ToString());
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase361 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("FriendTeleport1", out string _phrase);
+                            _phrase = _phrase.Replace("{FriendName}", _cInfo2.playerName);
+                            _phrase = _phrase.Replace("{EntityId}", _cInfo2.entityId.ToString());
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
             }
             else
             {
-                Phrases.Dict.TryGetValue(368, out string _phrase368);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase368 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("FriendTeleport8", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -89,8 +89,8 @@ namespace ServerTools
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(369, out string _phrase369);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase369 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("FriendTeleport9", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -111,10 +111,10 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                Phrases.Dict.TryGetValue(366, out string _phrase366);
-                _phrase366 = _phrase366.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase366 = _phrase366.Replace("{TimeRemaining}", _timeleft.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase366 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("FriendTeleport6", out string _phrase);
+                _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -128,9 +128,9 @@ namespace ServerTools
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(370, out string _phrase370);
-                    _phrase370 = _phrase370.Replace("{CoinName}", Wallet.Coin_Name);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase370 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("FriendTeleport10", out string _phrase);
+                    _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -153,14 +153,14 @@ namespace ServerTools
                 Dict.Add(_friend.entityId, _cInfo.entityId);
                 Dict1.Add(_friend.entityId, DateTime.Now);
             }
-            Phrases.Dict.TryGetValue(363, out string _phrase363);
-            _phrase363 = _phrase363.Replace("{PlayerName}", _friend.playerName);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase363 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-            Phrases.Dict.TryGetValue(364, out string _phrase364);
-            _phrase364 = _phrase364.Replace("{PlayerName}", _cInfo.playerName);
-            _phrase364 = _phrase364.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-            _phrase364 = _phrase364.Replace("{Command_friend}", Command_friend);
-            ChatHook.ChatMessage(_friend, Config.Chat_Response_Color + _phrase364 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue("FriendTeleport3", out string _phrase);
+            _phrase = _phrase.Replace("{PlayerName}", _friend.playerName);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue("FriendTeleport4", out _phrase);
+            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+            _phrase = _phrase.Replace("{Command_friend}", Command_friend);
+            ChatHook.ChatMessage(_friend, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void TeleFriend(ClientInfo _cInfo, int _invitingFriend)
@@ -179,14 +179,14 @@ namespace ServerTools
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue(370, out string _phrase370);
-                            _phrase370 = _phrase370.Replace("{CoinName}", Wallet.Coin_Name);
-                            ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase370 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("FriendTeleport10", out string _phrase);
+                            _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                            ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             return;
                         }
                     }
-                    Phrases.Dict.TryGetValue(367, out string _phrase367);
-                    ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase367 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("FriendTeleport7", out string _phrase1);
+                    ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player.position.x, (int)_player.position.y, (int)_player.position.z), null, false));
                     PersistentContainer.Instance.Players[_cInfo2.playerId].LastFriendTele = DateTime.Now;
                     PersistentContainer.DataChange = true;
@@ -194,8 +194,8 @@ namespace ServerTools
             }
             else
             {
-                Phrases.Dict.TryGetValue(371, out string _phrase371);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase371 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("FriendTeleport11", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

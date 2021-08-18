@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -10,9 +11,10 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false;
         public static int Admin_Level = 0, Delay = 5;
         public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
+
         private static string file = "Watchlist.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -26,131 +28,199 @@ namespace ServerTools
         public static void Unload()
         {
             Dict.Clear();
-            fileWatcher.Dispose();
+            FileWatcher.Dispose();
             IsRunning = false;
         }
 
         private static void LoadXml()
         {
-            if (!Utils.FileExists(filePath))
-            {
-                UpdateXml();
-            }
-            XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(filePath);
-            }
-            catch (XmlException e)
-            {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
-                return;
-            }
-            XmlNode _XmlNode = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _XmlNode.ChildNodes)
-            {
-                if (childNode.Name == "Players")
+                if (!Utils.FileExists(FilePath))
+                {
+                    UpdateXml();
+                }
+                XmlDocument xmlDoc = new XmlDocument();
+                try
+                {
+                    xmlDoc.Load(FilePath);
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    return;
+                }
+                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (_childNodes != null && _childNodes.Count > 0)
                 {
                     Dict.Clear();
-                    foreach (XmlNode subChild in childNode.ChildNodes)
+                    bool upgrade = true;
+                    for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (subChild.NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
                         {
                             continue;
                         }
-                        if (subChild.NodeType != XmlNodeType.Element)
+                        XmlElement _line = (XmlElement)_childNodes[i];
+                        if (_line.HasAttributes)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Players' section: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("SteamId"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player entry because of missing 'SteamId' attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("Reason"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player entry because of missing 'Reason' attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!Dict.ContainsKey(_line.GetAttribute("SteamId")))
-                        {
-                            Dict.Add(_line.GetAttribute("SteamId"), _line.GetAttribute("Reason"));
+                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            {
+                                upgrade = false;
+                                continue;
+                            }
+                            else if (_line.HasAttribute("SteamId") && _line.HasAttribute("Reason"))
+                            {
+                                string _steamdId = _line.GetAttribute("SteamId");
+                                string _reason = _line.GetAttribute("Reason");
+                                if (!Dict.ContainsKey(_line.GetAttribute("SteamId")))
+                                {
+                                    Dict.Add(_steamdId, _reason);
+                                }
+                            }
                         }
                     }
+                    if (upgrade)
+                    {
+                        UpgradeXml(_childNodes);
+                        return;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Watchlist.LoadXml: {0}", e.Message));
             }
         }
 
         public static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
+            try
             {
-                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                sw.WriteLine("<Watchlist>");
-                sw.WriteLine("    <Players>");
-                if (Dict.Count > 0)
+                FileWatcher.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    foreach (KeyValuePair<string, string> kvp in Dict)
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<Watchlist>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- Player SteamId=\"12345678909876543\" Reason=\"Suspected cheating.\" / -->");
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    if (Dict.Count > 0)
                     {
-                        sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" Reason=\"{1}\" />", kvp.Key, kvp.Value));
+                        foreach (KeyValuePair<string, string> kvp in Dict)
+                        {
+                            sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Reason=\"{1}\" />", kvp.Key, kvp.Value));
+                        }
                     }
+                    sw.WriteLine("</Watchlist>");
+                    sw.Flush();
+                    sw.Close();
                 }
-                else
-                {
-                    sw.WriteLine(string.Format("        <!-- Player SteamId=\"123456\" Reason=\"Suspected cheating.\" / -->"));
-                }
-                sw.WriteLine("    </Players>");
-                sw.WriteLine("</Watchlist>");
-                sw.Flush();
-                sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Watchlist.UpdateXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
             LoadXml();
         }
 
-        public static void CheckWatchlist()
+        public static void List()
         {
-            List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-            for (int i = 0; i < _cInfoList.Count; i++)
+            try
             {
-                ClientInfo _cInfo = _cInfoList[i];
-                if (Dict.ContainsKey(_cInfo.playerId))
+                List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
+                for (int i = 0; i < _cInfoList.Count; i++)
                 {
-                    foreach (var _cInfo1 in _cInfoList)
+                    ClientInfo _cInfo = _cInfoList[i];
+                    if (Dict.ContainsKey(_cInfo.playerId))
                     {
-                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= Admin_Level)
+                        foreach (var _cInfo1 in _cInfoList)
                         {
-                            Phrases.Dict.TryGetValue(140, out string _phrase140);
-                            if (Dict.TryGetValue(_cInfo.playerId, out string _reason))
+                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= Admin_Level)
                             {
-                                _phrase140 = _phrase140.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase140 = _phrase140.Replace("{Reason}", _reason);
-                                ChatHook.ChatMessage(_cInfo1, Config.Chat_Response_Color + _phrase140 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Watchlist1", out string _phrase);
+                                if (Dict.TryGetValue(_cInfo.playerId, out string _reason))
+                                {
+                                    _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase = _phrase.Replace("{Reason}", _reason);
+                                    ChatHook.ChatMessage(_cInfo1, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                }
                             }
                         }
                     }
                 }
             }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Watchlist.List: {0}", e.Message));
+            }
+        }
+
+        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        {
+            try
+            {
+                FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<Watchlist>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- Player SteamId=\"12345678909876543\" Reason=\"Suspected cheating.\" / -->");
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        XmlElement _line = (XmlElement)_oldChildNodes[i];
+                        if (_line.HasAttributes && _line.OuterXml.Contains("Player"))
+                        {
+                            string _steamId = "", _reason = "";
+                            if (_line.HasAttribute("SteamId"))
+                            {
+                                _steamId = _line.GetAttribute("SteamId");
+                            }
+                            if (_line.HasAttribute("Reason"))
+                            {
+                                _reason = _line.GetAttribute("Reason");
+                            }
+                            sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Reason=\"{1}\" />", _steamId, _reason));
+                        }
+                    }
+                    sw.WriteLine("</Watchlist>");
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Watchlist.UpgradeXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
+            LoadXml();
         }
     }
 }

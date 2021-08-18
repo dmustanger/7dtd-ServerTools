@@ -18,8 +18,8 @@ namespace ServerTools
             string[] _command1 = { Command_set_jail };
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_command1, _cInfo))
             {
-                Phrases.Dict.TryGetValue(199, out string _phrase199);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase199 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Jail10", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -32,9 +32,9 @@ namespace ServerTools
                     string _sposition = _x + "," + _y + "," + _z;
                     Jail_Position = _sposition;
                     Config.WriteXml();
-                    Phrases.Dict.TryGetValue(192, out string _phrase192);
-                    _phrase192 = _phrase192.Replace("{JailPosition}", Jail_Position);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase192 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Jail3", out string _phrase);
+                    _phrase = _phrase.Replace("{JailPosition}", Jail_Position);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -44,15 +44,15 @@ namespace ServerTools
             string[] _command2 = { Command_jail };
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_command2, _cInfo))
             {
-                Phrases.Dict.TryGetValue(199, out string _phrase199);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase199 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Jail10", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
                 if (Jail_Position == "0,0,0" || Jail_Position == "0 0 0" || Jail_Position == "")
                 {
-                    Phrases.Dict.TryGetValue(193, out string _phrase193);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase193 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Jail4", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -60,9 +60,9 @@ namespace ServerTools
                     ClientInfo _PlayertoJail = ConsoleHelper.ParseParamIdOrName(_playerName);
                     if (_PlayertoJail == null)
                     {
-                        Phrases.Dict.TryGetValue(200, out string _phrase200);
-                        _phrase200 = _phrase200.Replace("{PlayerName}", _playerName);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase200 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Jail11", out string _phrase);
+                        _phrase = _phrase.Replace("{PlayerName}", _playerName);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
@@ -72,9 +72,9 @@ namespace ServerTools
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue(194, out string _phrase194);
-                            _phrase194 = _phrase194.Replace("{PlayerName}", _playerName);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase194 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Jail5", out string _phrase);
+                            _phrase = _phrase.Replace("{PlayerName}", _playerName);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -93,16 +93,16 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_PlayertoJail.playerId].JailName= _PlayertoJail.playerName;
             PersistentContainer.Instance.Players[_PlayertoJail.playerId].JailDate = DateTime.Now;
             PersistentContainer.DataChange = true;
-            Phrases.Dict.TryGetValue(190, out string _phrase190);
-            ChatHook.ChatMessage(_PlayertoJail, Config.Chat_Response_Color + _phrase190 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue("Jail1", out string _phrase);
+            ChatHook.ChatMessage(_PlayertoJail, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             if (Jail_Shock)
             {
-                Phrases.Dict.TryGetValue(197, out string _phrase197);
-                ChatHook.ChatMessage(_PlayertoJail, Config.Chat_Response_Color + _phrase197 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Jail8", out _phrase);
+                ChatHook.ChatMessage(_PlayertoJail, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
-            Phrases.Dict.TryGetValue(195, out string _phrase195);
-            _phrase195 = _phrase195.Replace("{PlayerName}", _PlayertoJail.playerName);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase195 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue("Jail6", out _phrase);
+            _phrase = _phrase.Replace("{PlayerName}", _PlayertoJail.playerName);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void RemoveFromJail(ClientInfo _cInfo, string _playerName)
@@ -110,8 +110,8 @@ namespace ServerTools
             string[] _command3 = { Command_unjail };
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_command3, _cInfo))
             {
-                Phrases.Dict.TryGetValue(199, out string _phrase199);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase199 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Jail10", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -119,26 +119,26 @@ namespace ServerTools
                 ClientInfo _PlayertoUnJail = ConsoleHelper.ParseParamIdOrName(_playerName);
                 if (_PlayertoUnJail == null)
                 {
-                    Phrases.Dict.TryGetValue(200, out string _phrase200);
-                    _phrase200 = _phrase200.Replace("{PlayerName}", _playerName);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase200 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Jail11", out string _phrase);
+                    _phrase = _phrase.Replace("{PlayerName}", _playerName);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
                     int _jailTime = PersistentContainer.Instance.Players[_PlayertoUnJail.playerId].JailTime;
                     if (_jailTime == 0)
                     {
-                        Phrases.Dict.TryGetValue(196, out string _phrase196);
-                        _phrase196 = _phrase196.Replace("{PlayerName}", _playerName);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase196 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Jail7", out string _phrase);
+                        _phrase = _phrase.Replace("{PlayerName}", _playerName);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
                         if (!Jailed.Contains(_PlayertoUnJail.playerId))
                         {
-                            Phrases.Dict.TryGetValue(196, out string _phrase196);
-                            _phrase196 = _phrase196.Replace("{PlayerName}", _playerName);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase196 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Jail7", out string _phrase);
+                            _phrase = _phrase.Replace("{PlayerName}", _playerName);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {
@@ -176,8 +176,8 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            Phrases.Dict.TryGetValue(191, out string _phrase191);
-                            ChatHook.ChatMessage(_PlayertoUnJail, Config.Chat_Response_Color + _phrase191 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Jail2", out string _phrase);
+                            ChatHook.ChatMessage(_PlayertoUnJail, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -207,8 +207,8 @@ namespace ServerTools
                                 if (Jail_Shock)
                                 {
                                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("buff buffShocked", true));
-                                    Phrases.Dict.TryGetValue(198, out string _phrase198);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase198 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Jail9", out string _phrase);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }
@@ -252,8 +252,8 @@ namespace ServerTools
                                         Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
                                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), null, false));
                                     }
-                                    Phrases.Dict.TryGetValue(191, out string _phrase191);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase191 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Jail2", out string _phrase);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else

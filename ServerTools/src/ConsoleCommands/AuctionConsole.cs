@@ -80,8 +80,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-                    int _id;
-                    if (int.TryParse(_params[1], out _id))
+                    if (int.TryParse(_params[1], out int _id))
                     {
                         if (Auction.AuctionItems.ContainsKey(_id))
                         {

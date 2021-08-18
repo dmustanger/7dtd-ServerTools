@@ -16,13 +16,13 @@ namespace ServerTools
         public static List<string> Queue = new List<string>();
 
         private const string file = "DiscordToken.txt";
-        private static readonly string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
 
         public static void BuildToken()
         {
             try
             {
-                if (!Utils.FileExists(filePath))
+                if (!Utils.FileExists(FilePath))
                 {
                     WebAPI.AESProvider.BlockSize = 128;
                     WebAPI.AESProvider.KeySize = 256;
@@ -31,7 +31,7 @@ namespace ServerTools
                     WebAPI.AESProvider.GenerateKey();
                     TokenBytes = WebAPI.AESProvider.Key;
                     TokenKey = Convert.ToBase64String(WebAPI.AESProvider.Key);
-                    using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
+                    using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                     {
                         sw.WriteLine(TokenKey);
                         sw.Close();
@@ -42,7 +42,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
+                    using (FileStream fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.None))
                     {
                         using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
                         {

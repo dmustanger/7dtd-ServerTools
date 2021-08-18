@@ -28,8 +28,7 @@ namespace ServerTools
                                 {
                                     if (ReservedSlots.IsEnabled)
                                     {
-                                        DateTime _dt;
-                                        if (ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt))
+                                        if (ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt))
                                         {
                                             if (DateTime.Now < _dt)
                                             {
@@ -79,8 +78,8 @@ namespace ServerTools
                     _vec3z = (int)_player.position.z + 6;
                 }
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_vec3x, -1, _vec3z), null, false));
-                Phrases.Dict.TryGetValue(1021, out string _phrase1021);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1021 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("WorldRadius1", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -106,8 +105,8 @@ namespace ServerTools
                     _vec3z = (int)_player.position.z + 6;
                 }
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_vec3x, -1, _vec3z), null, false));
-                Phrases.Dict.TryGetValue(1021, out string _phrase1021);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1021 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("WorldRadius1", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

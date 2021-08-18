@@ -13,8 +13,8 @@ namespace ServerTools
         {
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo))
             {
-                Phrases.Dict.TryGetValue(217, out string _phrase217);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase217 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("NewSpawnTele7", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -26,9 +26,9 @@ namespace ServerTools
                 string _sposition = x + "," + y + "," + z;
                 New_Spawn_Tele_Position = _sposition;
                 Config.WriteXml();
-                Phrases.Dict.TryGetValue(211, out string _phrase211);
-                _phrase211 = _phrase211.Replace("{Position}", New_Spawn_Tele_Position);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase211 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("NewSpawnTele1", out string _phrase);
+                _phrase = _phrase.Replace("{Position}", New_Spawn_Tele_Position);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -48,14 +48,14 @@ namespace ServerTools
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                 PersistentContainer.Instance.Players[_cInfo.playerId].NewSpawn = true;
                 PersistentContainer.DataChange = true;
-                Phrases.Dict.TryGetValue(212, out string _phrase212);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase212 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("NewSpawnTele2", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 if (Return)
                 {
-                    Phrases.Dict.TryGetValue(213, out string _phrase213);
-                    _phrase213 = _phrase213.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    _phrase213 = _phrase213.Replace("{Command_ready}", Command_ready);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase213 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("NewSpawnTele3", out _phrase);
+                    _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase = _phrase.Replace("{Command_ready}", Command_ready);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -86,21 +86,21 @@ namespace ServerTools
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                     PersistentContainer.Instance.Players[_cInfo.playerId].NewSpawnPosition = "";
                     PersistentContainer.DataChange = true;
-                    Phrases.Dict.TryGetValue(216, out string _phrase216);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase216 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("NewSpawnTele6", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(215, out string _phrase215);
-                    _phrase215 = _phrase215.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    _phrase215 = _phrase215.Replace("{Command_ready}", Command_ready);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase215 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("NewSpawnTele5", out string _phrase);
+                    _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    _phrase = _phrase.Replace("{Command_ready}", Command_ready);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                Phrases.Dict.TryGetValue(214, out string _phrase214);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase214 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("NewSpawnTele4", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

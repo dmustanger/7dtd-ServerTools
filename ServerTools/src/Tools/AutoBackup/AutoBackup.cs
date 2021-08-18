@@ -160,8 +160,8 @@ namespace ServerTools
                 {
                     _compression = CompressionLevel.BestCompression;
                 }
-                Phrases.Dict.TryGetValue(1051, out string _phrase1051);
-                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1051 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                Phrases.Dict.TryGetValue("AutoBackup1", out string _phrase);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 string _location = _destinationDirInfo.FullName + string.Format("/Backup_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
                 string _name = string.Format("Backup_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
                 using (ZipFile zip = new ZipFile(_location))
@@ -186,8 +186,8 @@ namespace ServerTools
                     zip.Save(Path.ChangeExtension(_location, ".zip"));
                 }
                 Log.Out(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at {0}. File is named {1}", _destinationDirInfo.FullName, _name + ".zip"));
-                Phrases.Dict.TryGetValue(1052, out string _phrase1052);
-                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1052 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                Phrases.Dict.TryGetValue("AutoBackup2", out _phrase);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
             catch (Exception e)
             {

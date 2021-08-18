@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using LiteNetLib;
 
 public static class Injections
 {
@@ -14,7 +15,7 @@ public static class Injections
         {
             if (__instance.entityId != _damageSource.getEntityId())
             {
-                return ProcessDamage.Exec(__instance, _damageSource, _strength);
+                return ProcessDamage.Exec(__instance, _damageSource, ref _strength);
             }
         }
         catch (Exception e)
@@ -133,7 +134,7 @@ public static class Injections
         }
     }
 
-    public static void ChatMessageServer_Postfix(ClientInfo _cInfo, EChatType _chatType, int _senderEntityId, string _msg, string _mainName)
+    public static void ChatMessageServer_Postfix(ClientInfo _cInfo, EChatType _chatType, string _msg, string _mainName)
     {
         try
         {
@@ -194,6 +195,26 @@ public static class Injections
         catch (Exception e)
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.Cleanup_Postfix: {0}", e.Message));
+        }
+    }
+
+    public static bool CalculateTreasurePoint_Finalizer()
+    {
+        return false;
+    }
+
+    public static void EntityAlive_ProcessDamageResponse_Postfix(EntityAlive __instance, DamageResponse _dmResponse)
+    {
+        try
+        {
+            if (NewPlayerProtection.IsEnabled && __instance is EntityPlayer)
+            {
+                NewPlayerProtection.AddHealing(__instance, _dmResponse);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.EntityAlive_ProcessDamageResponse_Prefix: {0}", e.Message));
         }
     }
 }

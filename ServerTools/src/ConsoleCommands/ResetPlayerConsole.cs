@@ -33,12 +33,8 @@ namespace ServerTools
                 ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
                 if (_cInfo != null)
                 {
-                    string _phrase400;
-                    if (!Phrases.Dict.TryGetValue(400, out _phrase400))
-                    {
-                        _phrase400 = "Reseting players profile.";
-                    }
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase400), null);
+                    Phrases.Dict.TryGetValue("ResetPlayer1", out string _phrase);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase), null);
                     GameManager.Instance.World.aiDirector.RemoveEntity(PersistentOperations.GetEntityPlayer(_cInfo.playerId));
                     GC.Collect();
                     MemoryPools.Cleanup();
@@ -46,8 +42,7 @@ namespace ServerTools
                 }
                 else if (_params[0].Length == 17)
                 {
-                    int _id;
-                    if (int.TryParse(_params[0], out _id))
+                    if (int.TryParse(_params[0], out int _id))
                     {
                         if (PersistentOperations.GetPersistentPlayerDataFromSteamId(_params[0]) != null)
                         {
@@ -197,13 +192,9 @@ namespace ServerTools
                     p.ZoneDeathTime = new DateTime();
                     PersistentContainer.DataChange = true;
                 }
-                string _phrase401;
-                if (!Phrases.Dict.TryGetValue(401, out _phrase401))
-                {
-                    _phrase401 = "You have reset the profile for Player {SteamId}.";
-                }
-                _phrase401 = _phrase401.Replace("{SteamId}", _id);
-                SdtdConsole.Instance.Output(string.Format("{0}", _phrase401));
+                Phrases.Dict.TryGetValue("ResetPlayer2", out string _phrase);
+                _phrase = _phrase.Replace("{SteamId}", _id);
+                SdtdConsole.Instance.Output(string.Format("{0}", _phrase));
             }
             catch (Exception e)
             {

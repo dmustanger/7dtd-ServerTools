@@ -206,8 +206,8 @@ namespace ServerTools
                             {
                                 if (_player.position != _pos)
                                 {
-                                    Phrases.Dict.TryGetValue(671, out string _phrase671);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase671 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("ExitCommand1", out string _phrase);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                                 else
@@ -235,9 +235,9 @@ namespace ServerTools
         {
             try
             {
-                Phrases.Dict.TryGetValue(673, out string _phrase673);
-                _phrase673 = _phrase673.Replace("{PlayerName}", _cInfo.playerName);
-                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase673), null);
+                Phrases.Dict.TryGetValue("ExitCommand3", out string _phrase);
+                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase), null);
             }
             catch (Exception e)
             {
@@ -249,10 +249,10 @@ namespace ServerTools
         {
             try
             {
-                Phrases.Dict.TryGetValue(672, out string _phrase672);
-                _phrase672 = _phrase672.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                _phrase672 = _phrase672.Replace("{Command_exit}", Command_exit);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase672 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("ExitCommand2", out string _phrase);
+                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase = _phrase.Replace("{Command_exit}", Command_exit);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)
             {

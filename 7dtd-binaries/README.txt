@@ -1,4 +1,5 @@
-Put the Assembly-CSharp.dll, Assembly-CSharp-firstpass.dll, LogLibrary.dll, mscorlib.dll,
-System.Core.dll, System.dll, System.Xml.dll, UnityEngine.CoreModule.dll, UnityEngine.dll,
-and UnityEngine.ImageConversionModule.dll from your dedicated server in this folder.
+When compiling your own version of ServerTools, direct your projects reference folder to the Binary folder provided with ServerTools.
+Add all of the reference files to your project that are located in the Binary folder.
+If you find anything missing, they should be located on your 7DTD dedicated server inside the folder named Managed.
+If you are still unable to locate the required files to compile your own ServerTools, please contact the development team on Discord and Github.
 

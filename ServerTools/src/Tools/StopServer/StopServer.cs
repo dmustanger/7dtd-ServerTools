@@ -46,26 +46,26 @@ namespace ServerTools
             }
             Timers.StopServerMinutes = Delay;
             ShuttingDown = true;
-            Phrases.Dict.TryGetValue(170, out string _phrase170);
-            _phrase170 = _phrase170.Replace("{Value}", Delay.ToString());
-            Alert(_phrase170, Shutdown.Alert_Count);
+            Phrases.Dict.TryGetValue("StopServer1", out string _phrase);
+            _phrase = _phrase.Replace("{Value}", Delay.ToString());
+            Alert(_phrase, Shutdown.Alert_Count);
         }
 
         public static void TimeRemaining(int _newCount)
         {
-            Phrases.Dict.TryGetValue(170, out string _phrase170);
-            _phrase170 = _phrase170.Replace("{Value}", _newCount.ToString());
-            Alert(_phrase170, Shutdown.Alert_Count);
+            Phrases.Dict.TryGetValue("StopServer1", out string _phrase);
+            _phrase = _phrase.Replace("{Value}", _newCount.ToString());
+            Alert(_phrase, Shutdown.Alert_Count);
         }
 
         public static void OneMinuteRemains()
         {
             NoEntry = true;
-            Phrases.Dict.TryGetValue(171, out string _phrase171);
-            Alert(_phrase171, 1);
-            Phrases.Dict.TryGetValue(170, out string _phrase170);
-            _phrase170 = _phrase170.Replace("{Value}", 1.ToString());
-            Alert(_phrase170, 1);
+            Phrases.Dict.TryGetValue("StopServer2", out string _phrase);
+            Alert(_phrase, 1);
+            Phrases.Dict.TryGetValue("StopServer1", out _phrase);
+            _phrase = _phrase.Replace("{Value}", 1.ToString());
+            Alert(_phrase, 1);
             SdtdConsole.Instance.ExecuteSync("saveworld", null);
             SdtdConsole.Instance.ExecuteSync("mem clean", null);
             if (VehicleManager.Instance != null)
@@ -83,8 +83,8 @@ namespace ServerTools
         public static void Kick30()
         {
             PersistentContainer.Instance.Save();
-            Phrases.Dict.TryGetValue(172, out string _phrase172);
-            SdtdConsole.Instance.ExecuteSync(string.Format("kickall \"{0}\"", _phrase172), null);
+            Phrases.Dict.TryGetValue("StopServer3", out string _phrase);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kickall \"{0}\"", _phrase), null);
         }
 
         public static void Alert(string _message, int _count)

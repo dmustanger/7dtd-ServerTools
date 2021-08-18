@@ -61,12 +61,12 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                Phrases.Dict.TryGetValue(831, out string _phrase831);
-                _phrase831 = _phrase831.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase831 = _phrase831.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase831 = _phrase831.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                _phrase831 = _phrase831.Replace("{Command_scoutplayer}", Command_scoutplayer);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase831 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("ScoutPlayer1", out string _phrase);
+                _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                _phrase = _phrase.Replace("{Command_scoutplayer}", Command_scoutplayer);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -80,9 +80,9 @@ namespace ServerTools
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue(832, out string _phrase832);
-                    _phrase832 = _phrase832.Replace("{CoinName}", Wallet.Coin_Name);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase832 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("ScoutPlayer2", out string _phrase);
+                    _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -106,17 +106,17 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastScout = DateTime.Now;
                         PersistentContainer.DataChange = true;
                         int _distance = (int)distanceSq;
-                        Phrases.Dict.TryGetValue(833, out string _phrase833);
-                        _phrase833 = _phrase833.Replace("{Value}", _distance.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase833 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("ScoutPlayer3", out string _phrase);
+                        _phrase = _phrase.Replace("{Value}", _distance.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         return;
                     }
                 }
             }
             PersistentContainer.Instance.Players[_cInfo.playerId].LastScout = DateTime.Now;
             PersistentContainer.DataChange = true;
-            Phrases.Dict.TryGetValue(834, out string _phrase834);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase834 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue("ScoutPlayer4", out string _phrase1);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
     }
 }

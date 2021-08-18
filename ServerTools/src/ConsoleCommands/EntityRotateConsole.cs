@@ -35,8 +35,7 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
-                int _entityId;
-                if (!int.TryParse(_params[0], out _entityId))
+                if (!int.TryParse(_params[0], out int _entityId))
                 {
                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid entityId value: {0}", _entityId));
                     return;
