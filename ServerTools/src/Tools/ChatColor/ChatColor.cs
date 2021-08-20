@@ -20,22 +20,16 @@ namespace ServerTools
 
         public static void Load()
         {
-            if (IsEnabled && !IsRunning)
-            {
-                LoadXml();
-                InitFileWatcher();
-            }
+            LoadXml();
+            InitFileWatcher();
         }
 
         public static void Unload()
         {
-            if (!IsEnabled && IsRunning)
-            {
-                Players.Clear();
-                ExpireDate.Clear();
-                FileWatcher.Dispose();
-                IsRunning = false;
-            }
+            Players.Clear();
+            ExpireDate.Clear();
+            FileWatcher.Dispose();
+            IsRunning = false;
         }
 
         public static void LoadXml()
@@ -150,7 +144,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("    <!-- <Player SteamId=\"12345678901234567\" Name=\"bob\" Group=\"admin\" Prefix=\"(Captain)\" NameColor=\"[FF0000]\" PrefixColor=\"[FFFFFF]\" Expires=\"10/29/2050 7:30:00 AM\" />");
+                    sw.WriteLine("    <Player SteamId=\"12345678901234567\" Name=\"bob\" Group=\"admin\" Prefix=\"(Captain)\" NameColor=\"[FF0000]\" PrefixColor=\"[FFFFFF]\" Expires=\"10/29/2050 7:30:00 AM\" />");
                 }
                 sw.WriteLine("</ChatColor>");
                 sw.Flush();
@@ -421,7 +415,6 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
-                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -437,7 +430,7 @@ namespace ServerTools
                             continue;
                         }
                         XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes)
+                        if (_line.HasAttributes && _line.Name == "Player")
                         {
                             string _steamId = "", _name = "", _group = "", _prefix = "", _nameColor = "", _prefixColor = "";
                             DateTime _dateTime = DateTime.Now;

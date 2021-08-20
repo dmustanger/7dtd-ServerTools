@@ -290,7 +290,6 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
-                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -305,7 +304,7 @@ namespace ServerTools
                             continue;
                         }
                         XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes)
+                        if (_line.HasAttributes && _line.Name == "Buff")
                         {
                             string _name = "", _message = "";
                             if (_line.HasAttribute("Name"))

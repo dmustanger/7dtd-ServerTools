@@ -158,13 +158,13 @@ namespace ServerTools
                     }
                     else
                     {
-                        MethodInfo finalizer = typeof(Injections).GetMethod("CalculateTreasurePoint_Finalizer");
+                        MethodInfo finalizer = typeof(Injections).GetMethod("ObjectiveTreasureChest_CalculateTreasurePoint_finalizer");
                         if (finalizer == null)
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: CalculateTreasurePoint_Finalizer.finalizer"));
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: ObjectiveTreasureChest_CalculateTreasurePoint.finalizer"));
                             return;
                         }
-                        harmony.Patch(original, new HarmonyMethod(finalizer), null);
+                        harmony.Patch(original, null, null, null, new HarmonyMethod(finalizer));
                     }
                     
                     original = AccessTools.Method(typeof(EntityAlive), "ProcessDamageResponse");

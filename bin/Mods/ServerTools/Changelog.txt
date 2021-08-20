@@ -1,5 +1,19 @@
 ﻿CHANGELOG
 
+19.6.1
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+-Added output log when a tool is turned on/off
+-Fixed Player_Stats options not applying correctly
+-Fixed chat command /home response
+-Fixed chat command /waypoint response
+-Fixed some of the xml upgrades creating an entry with no values
+-Fixed Phrases.xml version upgrade
+-Changed internal fix for treasure maps to prevent map marker issue
+-Updated phrases Homes2, Waypoints12
+-Removed duplicate entry in Phrases.xml for Night_Alert
+
 19.6.0
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions
@@ -45,7 +59,6 @@ to allow more flexibility in the file
 -Changed console command st-EntityRemove to st-DeleteEntity
 -Updated Maze generator to remove all objects in the allocated space
 prior to generating
--Updated console command Donor with more options
 -Updated to latest Harmony version 2.1.1
 
 19.5.3

@@ -28,13 +28,8 @@ namespace ServerTools
                             return;
                         }
                     }
-                    ListResult(_cInfo, Max_Homes);
                 }
-                else
-                {
-                    Phrases.Dict.TryGetValue("Homes1", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                }
+                ListResult(_cInfo, Max_Homes);
             }
             catch (Exception e)
             {
@@ -46,24 +41,32 @@ namespace ServerTools
         {
             try
             {
-                Dictionary<string, string> _homes = PersistentContainer.Instance.Players[_cInfo.playerId].Homes;
-                int _count = 1;
-                foreach (var _home in _homes)
+                Dictionary<string, string> _homes = new Dictionary<string, string>();
+                if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes != null)
                 {
-                    if (_count <= _homeLimit)
+                    _homes = PersistentContainer.Instance.Players[_cInfo.playerId].Homes;
+                }
+                int _count = 0;
+                if (_homes.Count > 0)
+                {
+                    foreach (var _home in _homes)
                     {
-                        string[] _cords = _home.Value.Split(',');
-                        int.TryParse(_cords[0], out int _x);
-                        int.TryParse(_cords[1], out int _y);
-                        int.TryParse(_cords[2], out int _z);
-                        _count++;
-                        Phrases.Dict.TryGetValue("Homes2", out string _phrase);
-                        _phrase = _phrase.Replace("{Name}", _home.Key);
-                        _phrase = _phrase.Replace("{Value}", _x.ToString());
-                        _phrase = _phrase.Replace("{Value2}", _y.ToString());
-                        _phrase = _phrase.Replace("{Value3}", _z.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        _count += 1;
+                        if (_count <= _homeLimit)
+                        {
+                            Phrases.Dict.TryGetValue("Homes2", out string _phrase);
+                            _phrase = _phrase.Replace("{Name}", _home.Key);
+                            _phrase = _phrase.Replace("{Position}", _home.Value);
+                            _phrase = _phrase.Replace("{Cost}", Command_Cost.ToString());
+                            _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
                     }
+                }
+                else
+                {
+                    Phrases.Dict.TryGetValue("Homes1", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

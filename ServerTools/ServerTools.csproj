@@ -67,6 +67,7 @@
     <Compile Include="src\Functions\EventSchedule.cs" />
     <Compile Include="src\Harmony\RunTimePatch.cs" />
     <Compile Include="src\Harmony\Injections.cs" />
+    <Compile Include="src\PersistentOperations\ActiveTools.cs" />
     <Compile Include="src\PersistentOperations\ProcessDamage.cs" />
     <Compile Include="src\Serialize\ItemStackSerializable.cs" />
     <Compile Include="src\Tools\AutoBackup\AutoBackup.cs" />

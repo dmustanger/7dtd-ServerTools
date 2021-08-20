@@ -76,10 +76,6 @@ namespace ServerTools
                             stream.Dispose();
                             Saving = false;
                         }
-                        else
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Unable to run data save so close to shutdown."));
-                        }
                     }
                     DataChange = false;
                 }

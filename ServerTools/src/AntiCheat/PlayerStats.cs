@@ -40,7 +40,7 @@ namespace ServerTools
                                             var p_Stamina = _player.Stats.Stamina.Value;
                                             var p_jumpStrength = _player.jumpStrength;
                                             var p_height = _player.height;
-                                            if (p_Health > 250)
+                                            if (p_Health > Health)
                                             {
                                                 using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                                 {
@@ -67,7 +67,7 @@ namespace ServerTools
                                                     ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                 }
                                             }
-                                            if (p_Stamina > 250)
+                                            if (p_Stamina > Stamina)
                                             {
                                                 using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                                 {
@@ -94,7 +94,7 @@ namespace ServerTools
                                                     ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                                 }
                                             }
-                                            if (p_jumpStrength >= 1.5)
+                                            if (p_jumpStrength >= Jump_Strength)
                                             {
                                                 using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                                 {

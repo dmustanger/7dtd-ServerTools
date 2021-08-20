@@ -73,14 +73,9 @@ namespace ServerTools
                             {
                                 upgrade = false;
                             }
-                            else if (_line.HasAttribute("Id") && _line.HasAttribute("Name") && _line.HasAttribute("Count") &&
-                                _line.HasAttribute("Quality") && _line.HasAttribute("Price") && _line.HasAttribute("Category"))
+                            else if (_line.HasAttribute("Name") && _line.HasAttribute("Count") && _line.HasAttribute("Quality") && 
+                                _line.HasAttribute("Price") && _line.HasAttribute("Category"))
                             {
-                                if (!int.TryParse(_line.GetAttribute("Id"), out int _id))
-                                {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop.xml entry. Invalid (non-numeric) value for 'Item' attribute: {0}", _line.OuterXml));
-                                    continue;
-                                }
                                 if (!int.TryParse(_line.GetAttribute("Count"), out int _count))
                                 {
                                     Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop.xml entry. Invalid (non-numeric) value for 'Count' attribute: {0}", _line.OuterXml));
@@ -129,6 +124,7 @@ namespace ServerTools
                                 {
                                     _quality = 600;
                                 }
+                                int _id = Dict.Count + 1;
                                 if (!Dict.ContainsKey(_id))
                                 {
                                     string[] _strings = new string[] { _name, _secondaryname, _category };
@@ -170,14 +166,14 @@ namespace ServerTools
                         {
                             if (Dict1.TryGetValue(kvp.Key, out int[] _values))
                             {
-                                sw.WriteLine(string.Format("    <Shop Id=\"{0}\" Name=\"{1}\" SecondaryName=\"{2}\" Count=\"{3}\" Quality=\"{4}\" Price=\"{5}\" Category=\"{6}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], _values[0], _values[1], _values[2], kvp.Value[2]));
+                                sw.WriteLine(string.Format("    <Item Name=\"{0}\" SecondaryName=\"{1}\" Count=\"{2}\" Quality=\"{3}\" Price=\"{4}\" Category=\"{5}\" />", kvp.Value[0], kvp.Value[1], _values[0], _values[1], _values[2], kvp.Value[2]));
                             }
                         }
                     }
                     else
                     {
-                        sw.WriteLine("    <Shop Id=\"1\" Name=\"drinkJarBoiledWater\" SecondaryName=\"Bottled Water\" Count=\"1\" Quality=\"1\" Price=\"20\" Category=\"Food\" />");
-                        sw.WriteLine("    <Shop Id=\"2\" Name=\"casinoCoin\" SecondaryName=\"Dukes\" Count=\"1\" Quality=\"1\" Price=\"1\" Category=\"Extra\" />");
+                        sw.WriteLine("    <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"Bottled Water\" Count=\"1\" Quality=\"1\" Price=\"20\" Category=\"Food\" />");
+                        sw.WriteLine("    <Item Name=\"casinoCoin\" SecondaryName=\"Dukes\" Count=\"1\" Quality=\"1\" Price=\"1\" Category=\"Extra\" />");
                     }
                     sw.WriteLine("</Shop>");
                     sw.Flush();
@@ -309,7 +305,7 @@ namespace ServerTools
                 {
                     _categories = string.Join(", ", Categories.ToArray());
                 }
-                else if (Categories.Count == 1)
+                else
                 {
                     _categories = Categories[0];
                 }
@@ -331,10 +327,9 @@ namespace ServerTools
             {
                 if (Categories.Contains(_category))
                 {
-                    int _count = 0;
-                    for (int i = 0; i <= Dict.Count; i++)
+                    for (int i = 0; i < Dict.Count; i++)
                     {
-                        if (Dict.TryGetValue(i, out string[]  _dictValues))
+                        if (Dict.TryGetValue(i, out string[] _dictValues))
                         {
                             if (_dictValues[2] == _category)
                             {
@@ -342,37 +337,34 @@ namespace ServerTools
                                 {
                                     if (_dict1Values[1] > 1)
                                     {
-                                        _count++;
                                         Phrases.Dict.TryGetValue("Shop11", out string _phrase);
-                                        _phrase = _phrase.Replace("{Id}", i.ToString());
+                                        _phrase = _phrase.Replace("{Id}", i + 1.ToString());
                                         _phrase = _phrase.Replace("{Count}", _dict1Values[0].ToString());
-                                        _phrase = _phrase.Replace("{Item}", _dictValues[1]);
+                                        _phrase = _phrase.Replace("{Item}", _dictValues[0]);
                                         _phrase = _phrase.Replace("{Quality}", _dict1Values[1].ToString());
                                         _phrase = _phrase.Replace("{Price}", _dict1Values[2].ToString());
                                         _phrase = _phrase.Replace("{Name}", Wallet.Coin_Name);
                                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        return;
                                     }
                                     else
                                     {
-                                        _count++;
                                         Phrases.Dict.TryGetValue("Shop12", out string _phrase);
-                                        _phrase = _phrase.Replace("{Id}", i.ToString());
+                                        _phrase = _phrase.Replace("{Id}", i + 1.ToString());
                                         _phrase = _phrase.Replace("{Count}", _dict1Values[0].ToString());
-                                        _phrase = _phrase.Replace("{Item}", _dictValues[1]);
+                                        _phrase = _phrase.Replace("{Item}", _dictValues[0]);
                                         _phrase = _phrase.Replace("{Price}", _dict1Values[2].ToString());
                                         _phrase = _phrase.Replace("{Name}", Wallet.Coin_Name);
                                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        return;
                                     }
                                 }
                             }
                         }
-                    }
-                    if (_count != 0)
-                    {
-                        Phrases.Dict.TryGetValue("Shop13", out string _phrase);
-                        _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                        _phrase = _phrase.Replace("{Command_shop_buy}", Command_shop_buy);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Shop13", out string _phrase1);
+                        _phrase1 = _phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                        _phrase1 = _phrase1.Replace("{Command_shop_buy}", Command_shop_buy);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
@@ -393,11 +385,11 @@ namespace ServerTools
         {
             try
             {
-                if (Dict.ContainsKey(_item))
+                if (Dict.ContainsKey(_item - 1))
                 {
-                    if (Dict.TryGetValue(_item, out string[] _stringValues))
+                    if (Dict.TryGetValue(_item - 1, out string[] _stringValues))
                     {
-                        if (Dict1.TryGetValue(_item, out int[] _integerValues))
+                        if (Dict1.TryGetValue(_item - 1, out int[] _integerValues))
                         {
                             int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
                             int _newAmount = _integerValues[2] * _count;
@@ -482,7 +474,6 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
-                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -497,13 +488,9 @@ namespace ServerTools
                             continue;
                         }
                         XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes)
+                        if (_line.HasAttributes && (_line.Name == "Shop" || _line.Name == "Item"))
                         {
-                            string _id = "", _name = "", _secondaryName = "", _count = "", _quality = "", _price = "", _category = "";
-                            if (_line.HasAttribute("Id"))
-                            {
-                                _id = _line.GetAttribute("Id");
-                            }
+                            string _name = "", _secondaryName = "", _count = "", _quality = "", _price = "", _category = "";
                             if (_line.HasAttribute("Name"))
                             {
                                 _name = _line.GetAttribute("Name");
@@ -528,7 +515,7 @@ namespace ServerTools
                             {
                                 _category = _line.GetAttribute("Category");
                             }
-                            sw.WriteLine(string.Format("    <Shop Id=\"{0}\" Name=\"{1}\" SecondaryName=\"{2}\" Count=\"{3}\" Quality=\"{4}\" Price=\"{5}\" Category=\"{6}\" />", _id, _name, _secondaryName, _count, _quality, _price, _category));
+                            sw.WriteLine(string.Format("    <Item Name=\"{0}\" SecondaryName=\"{1}\" Count=\"{2}\" Quality=\"{3}\" Price=\"{4}\" Category=\"{5}\" />", _name, _secondaryName, _count, _quality, _price, _category));
                         }
                     }
                     sw.WriteLine("</Shop>");

@@ -194,8 +194,8 @@ namespace ServerTools
 
             Track.Cleanup();
 
-            Timers.LogAlert();
-            Timers.LoadAlert();
+            ActiveTools.Exec(true);
+
             Timers.PersistentDataSave();
         }
 

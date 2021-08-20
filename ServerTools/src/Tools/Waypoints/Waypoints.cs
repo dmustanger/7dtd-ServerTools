@@ -127,7 +127,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("    <Waypoint Name=\"\" Position=\"\" Cost=\"\" />");
+                        sw.WriteLine("    <!-- <Waypoint Name=\"\" Position=\"\" Cost=\"\" /> -->");
                     }
                     sw.WriteLine("</PublicWaypoints>");
                     sw.Flush();
@@ -164,7 +164,6 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
-                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -179,7 +178,7 @@ namespace ServerTools
                             continue;
                         }
                         XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes)
+                        if (_line.HasAttributes && _line.Name == "Waypoint")
                         {
                             string _name = "", _position = "", _cost = "";
                             if (_line.HasAttribute("Name"))
@@ -235,14 +234,46 @@ namespace ServerTools
         {
             try
             {
-                Dictionary<string, string> _waypoints = PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints;
-                Phrases.Dict.TryGetValue("Waypoints12", out string _phrase);
-                int _count = 1;
-                foreach (var _waypoint in _waypoints)
+                Dictionary<string, string> _waypoints = new Dictionary<string, string>();
+                if (PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints != null)
                 {
-                    if (_count <= _waypointLimit)
+                    _waypoints = PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints;
+                }
+                
+                int _count = 0;
+                if (_waypoints.Count > 0)
+                {
+                    foreach (var _waypoint in _waypoints)
                     {
-                        _count++;
+                        _count += 1;
+                        if (_count <= _waypointLimit)
+                        {
+                            Phrases.Dict.TryGetValue("Waypoints12", out string _phrase);
+                            _phrase = _phrase.Replace("{Name}", _waypoint.Key);
+                            _phrase = _phrase.Replace("{Position}", _waypoint.Value);
+                            _phrase = _phrase.Replace("{Cost}", Command_Cost.ToString());
+                            _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
+                    }
+                    if (Public_Waypoints && PersistentContainer.Instance.Waypoints != null && PersistentContainer.Instance.Waypoints.Count > 0)
+                    {
+                        foreach (var _waypoint in _waypoints)
+                        {
+                            Phrases.Dict.TryGetValue("Waypoints12", out string _phrase);
+                            _phrase = _phrase.Replace("{Name}", _waypoint.Key);
+                            _phrase = _phrase.Replace("{Position}", _waypoint.Value);
+                            _phrase = _phrase.Replace("{Cost}", Command_Cost.ToString());
+                            _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
+                    }
+                }
+                else if (Public_Waypoints && PersistentContainer.Instance.Waypoints != null && PersistentContainer.Instance.Waypoints.Count > 0)
+                {
+                    foreach (var _waypoint in _waypoints)
+                    {
+                        Phrases.Dict.TryGetValue("Waypoints12", out string _phrase);
                         _phrase = _phrase.Replace("{Name}", _waypoint.Key);
                         _phrase = _phrase.Replace("{Position}", _waypoint.Value);
                         _phrase = _phrase.Replace("{Cost}", Command_Cost.ToString());
@@ -250,16 +281,10 @@ namespace ServerTools
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
-                if (Public_Waypoints && PersistentContainer.Instance.Waypoints != null && PersistentContainer.Instance.Waypoints.Count > 0)
+                else
                 {
-                    foreach (var _waypoint in _waypoints)
-                    {
-                        _phrase = _phrase.Replace("{Name}", _waypoint.Key);
-                        _phrase = _phrase.Replace("{Position}", _waypoint.Value);
-                        _phrase = _phrase.Replace("{Cost}", Command_Cost.ToString());
-                        _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    Phrases.Dict.TryGetValue("Waypoints19", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

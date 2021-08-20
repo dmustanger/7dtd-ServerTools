@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using LiteNetLib;
 
 public static class Injections
 {
@@ -198,9 +197,20 @@ public static class Injections
         }
     }
 
-    public static bool CalculateTreasurePoint_Finalizer()
+    public static Exception ObjectiveTreasureChest_CalculateTreasurePoint_finalizer(Exception __exception, ref Vector3i __result)
     {
-        return false;
+        try
+        {
+            if (__exception != null)
+            {
+                __result = new Vector3i(0, -99999, 0);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ObjectiveTreasureChest_CalculateTreasurePoint_finalizer: {0}", e.Message));
+        }
+        return null;
     }
 
     public static void EntityAlive_ProcessDamageResponse_Postfix(EntityAlive __instance, DamageResponse _dmResponse)

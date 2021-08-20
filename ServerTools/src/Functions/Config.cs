@@ -7,8 +7,8 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "19.6.0";
-        public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]", OldXmlDirectory = "";
+        public const string Version = "19.6.1";
+        public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
         private const string ConfigFile = "ServerToolsConfig.xml";
@@ -39,8 +39,7 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", ConfigFilePath, e.Message));
                 return;
             }
-            XmlNode _XmlNode = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _XmlNode.ChildNodes)
+            foreach (XmlNode childNode in xmlDoc.DocumentElement.ChildNodes)
             {
                 if (childNode.Name == "Version")
                 {
@@ -75,7 +74,6 @@ namespace ServerTools
                                 if (!Directory.Exists(API.ConfigPath + "/XMLBackups/" + _version))
                                 {
                                     Directory.CreateDirectory(API.ConfigPath + "/XMLBackups/" + _version);
-                                    OldXmlDirectory = API.ConfigPath + "/XMLBackups/" + _version;
                                     for (int i = 0; i < _files.Length; i++)
                                     {
                                         string _fileName = _files[i];
@@ -87,7 +85,7 @@ namespace ServerTools
                                         }
                                     }
                                     WriteXml();
-                                    Config.UpgradeXml();
+                                    Config.UpgradeXml(xmlDoc.DocumentElement.ChildNodes[1].ChildNodes);
                                     Log.Out("[SERVERTOOLS] Created backup of xml files for version {0}", _version);
                                 }
                             }
@@ -3957,112 +3955,67 @@ namespace ServerTools
         {
             LoadXml();
             Mods.Load();
+            ActiveTools.Exec(false);
         }
 
-        public static void UpgradeXml()
+        public static void UpgradeXml(XmlNodeList _oldRootNodes)
         {
             try
             {
-                if (OldXmlDirectory != "")
+                FileWatcher.EnableRaisingEvents = false;
+                if (Utils.FileExists(ConfigFilePath))
                 {
-                    if (Utils.FileExists(ConfigFilePath))
+                    XmlDocument _newXml = new XmlDocument();
+                    try
                     {
-                        XmlDocument _oldXml = new XmlDocument();
-                        try
+                        _newXml.Load(ConfigFilePath);
+                    }
+                    catch (XmlException e)
+                    {
+                        Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", ConfigFilePath, e.Message));
+                        return;
+                    }
+                    XmlNodeList _newRootNodes = _newXml.DocumentElement.ChildNodes[1].ChildNodes;
+                    for (int i = 0; i < _newRootNodes.Count; i++)
+                    {
+                        if (_newRootNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            _oldXml.Load(OldXmlDirectory + "/ServerToolsConfig.xml");
+                            continue;
                         }
-                        catch (XmlException e)
+                        if (_newRootNodes[i].Attributes.Count > 0 && _newRootNodes[i].Attributes[0].Name == "Name")
                         {
-                            Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", OldXmlDirectory + "/ServerToolsConfig.xml", e.Message));
-                            return;
-                        }
-                        XmlNode _oldXmlNode = _oldXml.DocumentElement;
-                        XmlNodeList _oldNodeList = _oldXmlNode.ChildNodes;
-                        XmlDocument _newXml = new XmlDocument();
-                        try
-                        {
-                            _newXml.Load(ConfigFilePath);
-                        }
-                        catch (XmlException e)
-                        {
-                            Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", ConfigFilePath, e.Message));
-                            return;
-                        }
-                        XmlNode _newXmlNode = _newXml.DocumentElement;
-                        XmlNodeList _newNodeList = _newXmlNode.ChildNodes;
-                        for (int i = 0; i < _oldNodeList.Count; i++)
-                        {
-                            XmlNode _oldChildNode = _oldNodeList[i];
-                            if (_oldChildNode.Name == "Tools")
+                            for (int j = 0; j < _oldRootNodes.Count; j++)
                             {
-                                for (int j = 0; j < _oldChildNode.ChildNodes.Count; j++)
+                                if (_oldRootNodes[j].NodeType == XmlNodeType.Comment)
                                 {
-                                    XmlNode _oldSubChild = _oldChildNode.ChildNodes[j];
-                                    if (_oldSubChild.Name == "Tool")
+                                    continue;
+                                }
+                                if (_oldRootNodes[j].Attributes.Count > 0 && _oldRootNodes[j].Attributes[0].Name == "Name" && _oldRootNodes[j].Attributes[0].Value == _newRootNodes[i].Attributes[0].Value)
+                                {
+                                    for (int k = 1; k < _newRootNodes[i].Attributes.Count; k++)
                                     {
-                                        XmlElement _oldElement = (XmlElement)_oldSubChild;
-                                        XmlAttributeCollection _attributes = _oldElement.Attributes;
-                                        string _elementName = _attributes[0].Value;
-                                        for (int k = 1; k < _attributes.Count; k++)
+                                        for (int l = 1; l < _oldRootNodes[j].Attributes.Count; l++)
                                         {
-                                            XmlAttribute _oldAttribute = _attributes[k];
-                                            SetXml(_newXml, _newNodeList, _elementName, _oldAttribute);
+                                            if (_newRootNodes[i].Attributes[k].Name == _oldRootNodes[j].Attributes[l].Name)
+                                            {
+                                                _newRootNodes[i].Attributes[k].Value = _oldRootNodes[j].Attributes[l].Value;
+                                                break;
+                                            }
                                         }
                                     }
+                                    break;
                                 }
                             }
                         }
                     }
+                    _newXml.Save(ConfigFilePath);
                 }
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in Config.UpgradeXml: {0}", e.Message));
             }
-        }
-
-        private static void SetXml(XmlDocument _newXml, XmlNodeList _newNodeList, string _elementName, XmlAttribute _oldAttribute)
-        {
-            try
-            {
-                for (int i = 0; i < _newNodeList.Count; i++)
-                {
-                    XmlNode _newChildNode = _newNodeList[i];
-                    if (_newChildNode.Name == "Tools")
-                    {
-                        for (int j = 0; j < _newChildNode.ChildNodes.Count; j++)
-                        {
-                            XmlNode _newSubChild = _newChildNode.ChildNodes[j];
-                            if (_newSubChild.Name == "Tool")
-                            {
-                                XmlElement _newElement = (XmlElement)_newSubChild;
-                                XmlAttributeCollection _newAttributes = _newElement.Attributes;
-                                if (_newElement.Attributes[0].Value == _elementName)
-                                {
-                                    for (int k = 1; k < _newElement.Attributes.Count; k++)
-                                    {
-                                        XmlAttribute _newAttribute = _newElement.Attributes[k];
-                                        if (_newAttribute.Name == _oldAttribute.Name)
-                                        {
-                                            if (_newAttribute.Value != _oldAttribute.Value)
-                                            {
-                                                _newAttribute.Value = _oldAttribute.Value;
-                                                _newXml.Save(ConfigFilePath);
-                                            }
-                                            return;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Config.SetXml: {0}", e.Message));
-            }
+            FileWatcher.EnableRaisingEvents = true;
         }
     }
 }

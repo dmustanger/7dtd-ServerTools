@@ -932,6 +932,11 @@ namespace ServerTools
                         _phrase = "You have run out of time to accept your friend's waypoint invitation";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Waypoints18\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Waypoints19", out _phrase))
+                    {
+                        _phrase = "You have no waypoints saved";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Waypoints19\" Message=\"{0}\" />", _phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************* Animal_Tracking ******************** -->");
@@ -1654,15 +1659,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Poll6\" Message=\"{0}\" />", _phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
-                    sw.WriteLine("    <!-- ********************* Night_Alert ********************** -->");
-                    sw.WriteLine("    <!-- ******************************************************** -->");
-                    if (!Dict.TryGetValue("NightAlert1", out _phrase))
-                    {
-                        _phrase = "{Time} hours until night time";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"NightAlert1\" Message=\"{0}\" />", _phrase));
-                    sw.WriteLine();
-                    sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************** Hardcore ************************ -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("Hardcore1", out _phrase))
@@ -2101,91 +2097,91 @@ namespace ServerTools
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************ Homes ************************* -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
-                    if (!Dict.TryGetValue("Home1", out _phrase))
+                    if (!Dict.TryGetValue("Homes1", out _phrase))
                     {
                         _phrase = "You have no homes saved";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home1\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home2", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes1\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes2", out _phrase))
                     {
-                        _phrase = "Home {Name} @ {Value} {Value2} {Value3}";
+                        _phrase = "Home {Name} @ {Position} for {Cost} {CoinName}";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home2\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home3", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes2\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes3", out _phrase))
                     {
                         _phrase = "You can not use home commands while in a event";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home3\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home4", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes3\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes4", out _phrase))
                     {
                         _phrase = "You can only use {Command_Prefix1}{Command_home} once every {DelayBetweenUses} minutes. Time remaining: {Value} minutes";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home4\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home5", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes4\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes5", out _phrase))
                     {
                         _phrase = "You can only teleport to a home that is inside of a claimed space";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home5\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home6", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes5\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes6", out _phrase))
                     {
                         _phrase = "You do not have enough {CoinName} in your wallet to run this command";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home6\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home7", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes6\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes7", out _phrase))
                     {
                         _phrase = "This home was not found on your list";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home7\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home8", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes7\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes8", out _phrase))
                     {
                         _phrase = "You can only save a home that is inside of a claimed space";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home8\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home9", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes8\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes9", out _phrase))
                     {
                         _phrase = "Saved home as {Name} at position {Position}";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home9\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home10", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes9\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes10", out _phrase))
                     {
                         _phrase = "This home already exists. Choose another name";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home10\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home11", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes10\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes11", out _phrase))
                     {
                         _phrase = "You have a maximum {Value} homes";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home11\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home12", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes11\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes12", out _phrase))
                     {
                         _phrase = "Saved home as {Name} at position {Position}";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home12\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home13", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes12\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes13", out _phrase))
                     {
                         _phrase = "Home {Name} has been deleted";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home13\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home14", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes13\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes14", out _phrase))
                     {
                         _phrase = "Your friend {PlayerName} has invited you to their saved home. Type {Command_Prefix1}{Command_go} to accept the request";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home14\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home15", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes14\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes15", out _phrase))
                     {
                         _phrase = "Invited your friend {PlayerName} to your saved home";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home15\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home16", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes15\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes16", out _phrase))
                     {
                         _phrase = "You have run out of time to accept your friend's home invitation";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home16\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Home17", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes16\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Homes17", out _phrase))
                     {
                         _phrase = "The home name you are saving is blank. Unable to save";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Home17\" Message=\"{0}\" />", _phrase));
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Homes17\" Message=\"{0}\" />", _phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************* Mute ************************* -->");
@@ -2944,39 +2940,42 @@ namespace ServerTools
         {
             try
             {
+                UpdateXml();
                 FileWatcher.EnableRaisingEvents = false;
-                File.Delete(FilePath);
-                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                XmlDocument xmlDoc = new XmlDocument();
+                try
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    sw.WriteLine("<Phrases>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    sw.WriteLine("    <!-- ******************************************************** -->");
-                    sw.WriteLine("    <!-- ******************** High_Ping_Kicker ****************** -->");
-                    sw.WriteLine("    <!-- ******************************************************** -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    xmlDoc.Load(FilePath);
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    return;
+                }
+                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
+                for (int i = 0; i < _childNodes.Count; i++)
+                {
+                    if (_childNodes[i].NodeType == XmlNodeType.Comment)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        continue;
+                    }
+                    if (_childNodes[i].Name == "Phrase" && _childNodes[i].Attributes.Count > 0)
+                    {
+                        for (int j = 0; j < _oldChildNodes.Count; j++)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.OuterXml.Contains("Phrase"))
-                        {
-                            string _name = "";
-                            if (_line.HasAttribute("Name"))
+                            if (_oldChildNodes[j].NodeType == XmlNodeType.Comment)
                             {
-                                _name = _line.GetAttribute("Name");
+                                continue;
                             }
-                            sw.WriteLine(string.Format("    <Item Name=\"{0}\" />", _name));
+                            if (_oldChildNodes[j].Name == "Phrase" && _oldChildNodes[j].Attributes.Count > 0 && _oldChildNodes[j].Attributes[0].Value == _childNodes[i].Attributes[0].Value)
+                            {
+                                _childNodes[i].Attributes[1].Value = _oldChildNodes[j].Attributes[1].Value;
+                                break;
+                            }
                         }
                     }
-                    sw.WriteLine("</Phrases>");
-                    sw.Flush();
-                    sw.Close();
                 }
+                xmlDoc.Save(FilePath);
             }
             catch (Exception e)
             {

@@ -72,7 +72,6 @@ namespace ServerTools
                             if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
                             {
                                 upgrade = false;
-                                continue;
                             }
                             else if (_line.HasAttribute("SteamId") && _line.HasAttribute("Name") && _line.HasAttribute("Expires"))
                             {
@@ -312,7 +311,6 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
-                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
