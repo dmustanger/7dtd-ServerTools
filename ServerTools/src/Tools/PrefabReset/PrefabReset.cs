@@ -35,6 +35,7 @@ namespace ServerTools
         {
             World world = GameManager.Instance.World;
 
+            int cnt = 0;
             foreach (XmlNode childNode in prefabsXML.DocumentElement.ChildNodes)
             {
                 XmlElement _line = (XmlElement)childNode;
@@ -49,8 +50,6 @@ namespace ServerTools
 
                     Bounds bounds = prefab.GetAABB();
                     Vector3 size = bounds.size;
-
-                    int i = 0;
                     // Only update larger POI
                     if ((size.x + size.z) > 4)
                     {
@@ -59,15 +58,16 @@ namespace ServerTools
 
                         // Executing chunkreset command
                         SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", areaStart.x, areaStart.z, areaSize.x, areaSize.z), null);
-                        i++;
+                        cnt++;
                     }
-                    Log.Out(string.Format("[SERVERTOOLS] Prefab_Preset : {0} prefab chunks reset."));
                 }
                 catch (Exception e)
                 {
                     Log.Error(string.Format("[SERVERTOOLS] Failed resetting prefab: {0}", e.Message));
                 }
             }
+
+            Log.Out(string.Format("[SERVERTOOLS] Prefab_Preset : {0} prefabs reset.", cnt));
         }
 
         public static void PlayerCheck(ClientInfo _cInfo, EntityAlive _player)
