@@ -64,7 +64,7 @@ Lobby. Location, Login_Notice, Log Clean Up, Lottery, Market, Message_Color, Mot
 <br>
 New_Spawn_Tele, Night_Alert, Normal_Player_Color_Prefix, Player_List, Player_Logs, Player_Stats, POI_Protection,<br>
 <br>
-Poll, Prayer, Private_Message, Protected_Spaces, PvE_Violations, Real_World_Time, Report, Reserved_Slots,<br>
+Poll, Prayer,Prefab_Reset, Private_Message, Protected_Spaces, PvE_Violations, Real_World_Time, Report, Reserved_Slots,<br>
 <br>
 Restart_Vote, Scout_Player, Shop, Shutdown, Sleeper_Respawn, Spectator_Detector, Starting_Items, Stuck, Suicide,<br>
 <br>

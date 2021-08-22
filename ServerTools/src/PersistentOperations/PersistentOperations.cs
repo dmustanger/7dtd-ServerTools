@@ -96,8 +96,8 @@ namespace ServerTools
                                             {
                                                 Market.MarketCheck(_cInfo, _player);
                                             }
-                                            if (POIProtection.IsEnabled) {
-                                                POIProtection.PlayerCheck(_cInfo,_player);
+                                            if (PrefabReset.IsEnabled) {
+                                                PrefabReset.PlayerCheck(_cInfo,_player);
                                             }
                                         }
                                     }

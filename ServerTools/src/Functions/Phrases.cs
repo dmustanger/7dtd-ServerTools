@@ -2378,6 +2378,16 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Prayer2\" Message=\"{0}\" />", _phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ************************ Prefab_Reset ************************ -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    
+                    if (!Dict.TryGetValue("PrefabReset1", out _phrase))
+                    {
+                        _phrase = "You are in a POI reset zone, POI resets after server restart";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"PrefabReset1\" Message=\"{0}\" />", _phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* Scout_Player ********************* -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("ScoutPlayer1", out _phrase))
@@ -2846,11 +2856,6 @@ namespace ServerTools
                         _phrase = "You can not place a claim in a POI";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"POI2\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("POI3", out _phrase))
-                    {
-                        _phrase = "You are in a POI reset zone, POI resets after server restart";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"POI3\" Message=\"{0}\" />", _phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************* Travel *********************** -->");

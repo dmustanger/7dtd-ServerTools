@@ -13,10 +13,9 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false;
 
+        public static Dictionary<int, bool> PlayerInZone = new Dictionary<int, bool>();
         public static void Load()
         {
-            Log.Out(string.Format("[SERVERTOOLS] Tool PrefabReset Loaded! "));
-
             string _file = GameUtils.GetWorldDir()+"/prefabs.xml";
 
             XmlDocument xmlDoc = new XmlDocument();
@@ -71,6 +70,41 @@ namespace ServerTools
                 i++;
             }
            // world.Save();
+        }
+
+        public static void PlayerCheck(ClientInfo _cInfo, EntityAlive _player)
+        {
+            World _world = GameManager.Instance.World;
+
+            if (_world.IsPositionWithinPOI(_player.position, 5))
+            {
+                bool SendMessage = false;
+                if (PlayerInZone.ContainsKey(_player.entityId))
+                {
+                    if (PlayerInZone[_player.entityId] == false)
+                    {
+                        SendMessage = true;
+                    }
+                }
+                else
+                {
+                    SendMessage = true;
+                }
+
+                if (SendMessage)
+                {
+                    PlayerInZone[_player.entityId] = true;
+                    Phrases.Dict.TryGetValue("PrefabReset1", out string _phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "[-]" + _phrase, -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
+            else
+            {
+                if (PlayerInZone.ContainsKey(_player.entityId) && PlayerInZone[_player.entityId] == true)
+                {
+                    PlayerInZone[_player.entityId] = false;
+                }
+            }
         }
     }
 }
