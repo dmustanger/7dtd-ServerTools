@@ -388,3 +388,13 @@ D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.3.1\ServerTools\
 D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.3.1\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.cache
 D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.3.1\ServerTools\obj\Debug\ServerTools.csproj.CopyComplete
 D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.3.1\ServerTools\obj\Debug\ServerTools.dll
+C:\Users\menno\source\repos\7dtd-ServerTools\bin\Mods\ServerTools\ModInfo.xml
+C:\Users\menno\source\repos\7dtd-ServerTools\bin\Mods\ServerTools\Changelog.txt
+C:\Users\menno\source\repos\7dtd-ServerTools\bin\Mods\ServerTools\ServerTools.dll.config
+C:\Users\menno\source\repos\7dtd-ServerTools\bin\Mods\ServerTools\ServerTools.dll
+C:\Users\menno\source\repos\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csprojAssemblyReference.cache
+C:\Users\menno\source\repos\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
+C:\Users\menno\source\repos\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.cache
+C:\Users\menno\source\repos\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csproj.CoreCompileInputs.cache
+C:\Users\menno\source\repos\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csproj.Fody.CopyLocal.cache
+C:\Users\menno\source\repos\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.dll

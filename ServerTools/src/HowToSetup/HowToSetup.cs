@@ -918,6 +918,7 @@ namespace ServerTools
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set True or False for Bed");
                 sw.WriteLine("Set True or False for Claim");
+                sw.WriteLine("Optional: Set integer(numeric) value for Offset");
                 sw.WriteLine();
                 sw.WriteLine("Enable protection from placement of beds and claims on a POI(Place of interest).");
                 sw.WriteLine("Set bed, claim or both to true to stop that specific block type from being placed.");
@@ -941,6 +942,14 @@ namespace ServerTools
                 sw.WriteLine("Players can type /pray to receive a buff from a custom list called Prayer.xml.");
                 sw.WriteLine("Set the time delay before players can use this command again. Time is in minutes.");
                 sw.WriteLine("Set the cost to use this command with Command_Cost");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine("<Tool Name=\"Prefab_Reset\" />");
+                sw.WriteLine();
+                sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine();
+                sw.WriteLine("Causes all prefabs to be reset on server start");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

@@ -85,6 +85,7 @@
     <Compile Include="src\Tools\OutputLog\OutputLog.cs" />
     <Compile Include="src\Tools\POIProtection\POIProtection.cs" />
     <Compile Include="src\Tools\Poll\Poll.cs" />
+    <Compile Include="src\Tools\PrefabReset\PrefabReset.cs" />
     <Compile Include="src\Tools\ProtectedSpaces\ProtectedSpaces.cs" />
     <Compile Include="src\Tools\DeletePlayerData\DeletePlayerData.cs" />
     <Compile Include="src\Tools\RegionReset\RegionReset.cs" />
@@ -278,8 +279,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lib.Harmony.2.1.1\lib\net472\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\PrefabReset\7dtd-binaries\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\7dtd-binaries\Assembly-CSharp.dll</HintPath>
@@ -299,10 +300,8 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="Pathfinding.Ionic.Zip.Reduced, Version=1.9.1.9000, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\7dtd-ServerTools-master-18.0.3\7dtd-binaries\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Pathfinding.Ionic.Zip.Reduced">
+      <HintPath>..\7dtd-binaries\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

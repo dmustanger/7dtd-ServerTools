@@ -244,6 +244,11 @@ namespace ServerTools
             {
                 Jail.JailList();
             }
+            if (PrefabReset.IsEnabled) {
+                PrefabReset.Load();
+            }
+
+
             if (WebAPI.IsEnabled && !WebAPI.IsRunning)
             {
                 WebAPI.Load();

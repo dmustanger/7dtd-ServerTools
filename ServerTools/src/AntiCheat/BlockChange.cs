@@ -34,7 +34,7 @@ namespace ServerTools
                                 {
                                     if (_newBlock is BlockSleepingBag)//placed a sleeping bag
                                     {
-                                        if (POIProtection.IsEnabled && POIProtection.Bed && _world.IsPositionWithinPOI(_newBlockInfo.pos.ToVector3(), 5))
+                                        if (POIProtection.IsEnabled && POIProtection.Bed && _world.IsPositionWithinPOI(_newBlockInfo.pos.ToVector3(), POIProtection.Offset))
                                         {
                                             GameManager.Instance.World.SetBlockRPC(_newBlockInfo.pos, BlockValue.Air);
                                             PersistentOperations.ReturnBlock(_cInfo, _newBlock.GetBlockName(), 1);
@@ -45,7 +45,7 @@ namespace ServerTools
                                     }
                                     else if (_newBlock is BlockLandClaim)//placed a land claim
                                     {
-                                        if (POIProtection.IsEnabled && POIProtection.Claim && _world.IsPositionWithinPOI(_newBlockInfo.pos.ToVector3(), 5))
+                                        if (POIProtection.IsEnabled && POIProtection.Claim && _world.IsPositionWithinPOI(_newBlockInfo.pos.ToVector3(), POIProtection.Offset))
                                         {
                                             GameManager.Instance.World.SetBlockRPC(_newBlockInfo.pos, BlockValue.Air);
                                             PersistentOperations.ReturnBlock(_cInfo, _newBlock.GetBlockName(), 1);
