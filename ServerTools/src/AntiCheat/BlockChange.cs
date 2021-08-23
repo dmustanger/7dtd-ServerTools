@@ -27,6 +27,11 @@ namespace ServerTools
                             BlockChangeInfo _newBlockInfo = _blocksToChange[i];//new block info
                             BlockValue _oldBlockValue = _world.GetBlock(_newBlockInfo.pos);//old block value
                             Block _oldBlock = _oldBlockValue.Block;
+
+                            if (PrefabReset.IsEnabled)
+                            {
+                                PrefabReset.SetChunkUpdated(_newBlockInfo.pos);
+                            }
                             if (_newBlockInfo != null && _newBlockInfo.bChangeBlockValue)//new block value
                             {
                                 Block _newBlock = _newBlockInfo.blockValue.Block;
@@ -58,6 +63,8 @@ namespace ServerTools
                                     {
                                         BlockLogger.PlacedBlock(_persistentPlayerId, _newBlock, _newBlockInfo.pos);
                                     }
+
+
                                     return true;
                                 }
 

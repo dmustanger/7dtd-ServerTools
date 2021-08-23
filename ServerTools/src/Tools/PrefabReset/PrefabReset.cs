@@ -14,61 +14,137 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false;
 
         public static Dictionary<int, bool> PlayerInZone = new Dictionary<int, bool>();
+
+        public static bool DisableResetPrefabs = false;
+
+        public static Dictionary<int,Vector3i> UpdatedChunks = new Dictionary<int, Vector3i>();
+
+
+        private static readonly string file = "ResetChunks.xml";
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+
+
         public static void Load()
         {
-            string _file = GameUtils.GetWorldDir()+"/prefabs.xml";
+                ResetPrefabs();
+        }
+
+        public static void InitXML() {
+            using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+            {
+                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+
+                sw.WriteLine("<Chunks>");
+                sw.WriteLine("</Chunks>");
+                sw.Flush();
+                sw.Close();
+                sw.Dispose();
+            }
+        }
+
+        public static bool LoadXML() {
+            XmlDocument xmlDoc = new XmlDocument();
+            if (Utils.FileExists(FilePath))
+            {
+                try
+                {
+                    xmlDoc.Load(FilePath);
+
+                    // UpdatedChunks
+                    XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
+                    for (int i = 0; i < _childNodes.Count; i++)
+                    {
+                        XmlElement _line = (XmlElement)_childNodes[i];
+                        if (_line.HasAttribute("hash") && _line.HasAttribute("position")) {
+                            int hash = int.Parse(_line.GetAttribute("hash"));
+
+                            string[] posArr = _line.GetAttribute("position").Split(',');
+
+                            UpdatedChunks[hash] = new Vector3i(int.Parse(posArr[0]), int.Parse(posArr[1]), int.Parse(posArr[2]));
+                        }
+                    }
+                    return true;
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", FilePath, e.Message));
+                    return false;
+                }
+            }
+            return false;
+        }
+
+
+        public static void SaveChunk(int hashCode,Vector3i position) {
+
+            if (!Utils.FileExists(FilePath)) {
+                InitXML();
+            }
 
             XmlDocument xmlDoc = new XmlDocument();
 
             try
             {
-                xmlDoc.Load(_file);
-                ResetPrefabs(xmlDoc);
+                xmlDoc.Load(FilePath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _file, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", FilePath, e.Message));
+                return;
             }
+            XmlElement _root = xmlDoc.DocumentElement;
+
+            XmlElement _child = xmlDoc.CreateElement("Chunk");
+            _child.SetAttribute("hash", hashCode.ToString());
+            _child.SetAttribute("position", position.x + "," + position.y + "," + position.z);
+            _root.AppendChild(_child);
+
+            xmlDoc.Save(FilePath);
         }
 
-        protected static void ResetPrefabs(XmlDocument prefabsXML)
+        protected static void ResetPrefabs()
         {
-            World world = GameManager.Instance.World;
-
-            int cnt = 0;
-            foreach (XmlNode childNode in prefabsXML.DocumentElement.ChildNodes)
+            if (!DisableResetPrefabs && LoadXML())
             {
-                XmlElement _line = (XmlElement)childNode;
+                World world = GameManager.Instance.World;
 
-                string _position = _line.GetAttribute("position");
-                string[] sArray = _position.Split(',');
-
-                Vector3 vector = new Vector3(float.Parse(sArray[0]), float.Parse(sArray[1]), float.Parse(sArray[2]));
-                try
+                int cnt = 0;
+                if (UpdatedChunks.Count() > 0)
                 {
-                    PrefabInstance prefab = world.GetPOIAtPosition(vector);
-
-                    Bounds bounds = prefab.GetAABB();
-                    Vector3 size = bounds.size;
-                    // Only update larger POI
-                    if ((size.x + size.z) > 4)
+                    foreach (KeyValuePair<int, Vector3i> chunk in UpdatedChunks)
                     {
-                        Vector3i areaStart = new Vector3i(vector.x, vector.y, vector.z);
-                        Vector3i areaSize = new Vector3i(areaStart.x + size.x, 0, areaStart.z + size.z);
-
-                        // Executing chunkreset command
-                        SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", areaStart.x, areaStart.z, areaSize.x, areaSize.z), null);
-                        cnt++;
+                            Vector3i areaStart = new Vector3i(chunk.Value.x, chunk.Value.y, chunk.Value.z);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1}", areaStart.x, areaStart.z), null);
+                            cnt++;
                     }
                 }
-                catch (Exception e)
-                {
-                    Log.Error(string.Format("[SERVERTOOLS] Failed resetting prefab: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Prefab_Preset : {0} prefab chunks reset.", cnt));
+
+
+                File.Delete(FilePath);
+                UpdatedChunks = new Dictionary<int, Vector3i>();
+            }
+        }
+
+        public static void SetChunkUpdated(Vector3i position)
+        {
+            World _world = GameManager.Instance.World;
+            if (_world.IsPositionWithinPOI(position.ToVector3(), POIProtection.Offset)) {
+
+                IChunk chunk = _world.GetChunkFromWorldPos(position);
+
+                int hashCode = chunk.GetHashCode();
+
+                Vector3i chunkPos = chunk.GetWorldPos();
+
+                if (!UpdatedChunks.ContainsKey(hashCode)) {
+                    UpdatedChunks[hashCode] = chunkPos;
+                    SaveChunk(hashCode,chunkPos);
                 }
             }
-
-            Log.Out(string.Format("[SERVERTOOLS] Prefab_Preset : {0} prefabs reset.", cnt));
         }
+
+
 
         public static void PlayerCheck(ClientInfo _cInfo, EntityAlive _player)
         {
