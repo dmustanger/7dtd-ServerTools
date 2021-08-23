@@ -949,7 +949,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine();
-                sw.WriteLine("Causes all prefabs to be reset on server start");
+                sw.WriteLine("Causes all prefab chunks to be reset on server start if they have block updates");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
