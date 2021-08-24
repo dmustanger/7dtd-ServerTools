@@ -12,13 +12,10 @@ namespace ServerTools
     class PrefabReset
     {
         public static bool IsEnabled = false, IsRunning = false;
-
-        public static Dictionary<int, bool> PlayerInZone = new Dictionary<int, bool>();
-
         public static bool DisableResetPrefabs = false;
 
-        public static Dictionary<int,Vector3i> UpdatedChunks = new Dictionary<int, Vector3i>();
-
+        public static Dictionary<int, bool> PlayerInZone = new Dictionary<int, bool>();
+        public static Dictionary<int, Vector3i> UpdatedChunks = new Dictionary<int, Vector3i>();
 
         private static readonly string file = "ResetChunks.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -26,10 +23,11 @@ namespace ServerTools
 
         public static void Load()
         {
-                ResetPrefabs();
+            ResetPrefabs();
         }
 
-        public static void InitXML() {
+        public static void InitXML()
+        {
             using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -42,7 +40,8 @@ namespace ServerTools
             }
         }
 
-        public static bool LoadXML() {
+        public static bool LoadXML()
+        {
             XmlDocument xmlDoc = new XmlDocument();
             if (Utils.FileExists(FilePath))
             {
@@ -55,7 +54,8 @@ namespace ServerTools
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
                         XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttribute("hash") && _line.HasAttribute("position")) {
+                        if (_line.HasAttribute("hash") && _line.HasAttribute("position"))
+                        {
                             int hash = int.Parse(_line.GetAttribute("hash"));
 
                             string[] posArr = _line.GetAttribute("position").Split(',');
@@ -75,9 +75,10 @@ namespace ServerTools
         }
 
 
-        public static void SaveChunk(int hashCode,Vector3i position) {
-
-            if (!Utils.FileExists(FilePath)) {
+        public static void SaveChunk(int hashCode, Vector3i position)
+        {
+            if (!Utils.FileExists(FilePath))
+            {
                 InitXML();
             }
 
@@ -113,9 +114,9 @@ namespace ServerTools
                 {
                     foreach (KeyValuePair<int, Vector3i> chunk in UpdatedChunks)
                     {
-                            Vector3i areaStart = new Vector3i(chunk.Value.x, chunk.Value.y, chunk.Value.z);
-                            SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1}", areaStart.x, areaStart.z), null);
-                            cnt++;
+                        Vector3i areaStart = new Vector3i(chunk.Value.x, chunk.Value.y, chunk.Value.z);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1}", areaStart.x, areaStart.z), null);
+                        cnt++;
                     }
                 }
                 Log.Out(string.Format("[SERVERTOOLS] Prefab_Preset : {0} prefab chunks reset.", cnt));
@@ -129,7 +130,8 @@ namespace ServerTools
         public static void SetChunkUpdated(Vector3i position)
         {
             World _world = GameManager.Instance.World;
-            if (_world.IsPositionWithinPOI(position.ToVector3(), POIProtection.Offset)) {
+            if (_world.IsPositionWithinPOI(position.ToVector3(), POIProtection.Offset))
+            {
 
                 IChunk chunk = _world.GetChunkFromWorldPos(position);
 
@@ -137,9 +139,10 @@ namespace ServerTools
 
                 Vector3i chunkPos = chunk.GetWorldPos();
 
-                if (!UpdatedChunks.ContainsKey(hashCode)) {
+                if (!UpdatedChunks.ContainsKey(hashCode))
+                {
                     UpdatedChunks[hashCode] = chunkPos;
-                    SaveChunk(hashCode,chunkPos);
+                    SaveChunk(hashCode, chunkPos);
                 }
             }
         }
