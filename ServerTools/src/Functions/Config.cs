@@ -2613,7 +2613,8 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring POI_Protection entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Claim' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Offset"), out POIProtection.Offset)) {
+                                if (!int.TryParse(_line.GetAttribute("Offset"), out POIProtection.Offset))
+                                {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring POI_Protection entry in ServerToolsConfig.xml because of invalid integer value for 'Offset' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
@@ -3768,8 +3769,6 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-
-
                             case "Zones":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -3917,7 +3916,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_Logs\" Enable=\"{0}\" Vehicle=\"{1}\" Interval=\"{2}\" />", PlayerLogs.IsEnabled, PlayerLogs.Vehicle, PlayerLogs.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_Stats\" Enable=\"{0}\" Max_Speed=\"{1}\" Health=\"{2}\" Stamina=\"{3}\" Jump_Strength=\"{4}\" />", PlayerStats.IsEnabled, PlayerStats.Max_Speed, PlayerStats.Health, PlayerStats.Stamina, PlayerStats.Jump_Strength));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_Stats_Extended\" Height=\"{0}\" Admin_Level=\"{1}\" Kick_Enabled=\"{2}\" Ban_Enabled=\"{3}\" />", PlayerStats.Height, PlayerStats.Admin_Level, PlayerStats.Kick_Enabled, PlayerStats.Ban_Enabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"POI_Protection\" Enable=\"{0}\" Bed=\"{1}\" Claim=\"{2}\" Offset=\"{3}\" />", POIProtection.IsEnabled, POIProtection.Bed, POIProtection.Claim, POIProtection.Offset ));
+                sw.WriteLine(string.Format("        <Tool Name=\"POI_Protection\" Enable=\"{0}\" Bed=\"{1}\" Claim=\"{2}\" Offset=\"{3}\" />", POIProtection.IsEnabled, POIProtection.Bed, POIProtection.Claim, POIProtection.Offset));
                 sw.WriteLine(string.Format("        <Tool Name=\"Poll\" Enable=\"{0}\" />", Poll.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Prayer\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", Prayer.IsEnabled, Prayer.Delay_Between_Uses, Prayer.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Prefab_Reset\" Enable=\"{0}\"  />", PrefabReset.IsEnabled));

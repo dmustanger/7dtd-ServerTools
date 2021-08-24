@@ -247,8 +247,6 @@ namespace ServerTools
             if (PrefabReset.IsEnabled) {
                 PrefabReset.Load();
             }
-
-
             if (WebAPI.IsEnabled && !WebAPI.IsRunning)
             {
                 WebAPI.Load();
