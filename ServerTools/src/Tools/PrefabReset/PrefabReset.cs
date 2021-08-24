@@ -20,7 +20,6 @@ namespace ServerTools
         private static readonly string file = "ResetChunks.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
 
-
         public static void Load()
         {
             ResetPrefabs();
@@ -73,7 +72,6 @@ namespace ServerTools
             }
             return false;
         }
-
 
         public static void SaveChunk(int hashCode, Vector3i position)
         {
