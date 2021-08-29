@@ -17,6 +17,8 @@ namespace ServerTools
 
         public static Dictionary<int, int> PvEViolations = new Dictionary<int, int>();
 
+        public static List<ClientInfo> NewPlayerQue = new List<ClientInfo>();
+
         public static readonly string AlphaNumSet = "jJkqQr9Kl3wXAbyYz0ZLmFpPRsMn5NoO6dDe1EfStaBc2CgGhH7iITu4U8vWxV";
         public static readonly char[] InvalidPrefix = new char[] { '!', '@', '#', '$', '%', '&', '/', '\\' };
 

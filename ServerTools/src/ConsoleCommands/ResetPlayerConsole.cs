@@ -42,19 +42,15 @@ namespace ServerTools
                 }
                 else if (_params[0].Length == 17)
                 {
-                    if (int.TryParse(_params[0], out int _id))
+                    if (PersistentOperations.GetPersistentPlayerDataFromSteamId(_params[0]) != null)
                     {
-                        if (PersistentOperations.GetPersistentPlayerDataFromSteamId(_params[0]) != null)
-                        {
-                            GC.Collect();
-                            MemoryPools.Cleanup();
-                            ResetProfileExec(_params[0]);
-                        }
+                        GC.Collect();
+                        MemoryPools.Cleanup();
+                        ResetProfileExec(_params[0]);
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player id {0} is not a valid integer", _params[0]));
-                        return;
+                        Log.Out(string.Format("[SERVERTOOLS] Unable to find player data for id: {0}", _params[0]));
                     }
                 }
                 else

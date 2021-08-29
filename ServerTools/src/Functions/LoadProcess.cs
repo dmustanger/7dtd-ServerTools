@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static int Days_Before_Log_Delete = 5;
 
-        public static void Load()
+        public static void Load(bool _initiating)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace ServerTools
 
             try
             {
-                Mods.Load();
+                Mods.Load(true);
             }
             catch (XmlException e)
             {

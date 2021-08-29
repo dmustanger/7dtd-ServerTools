@@ -15,7 +15,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Shutdown = false;
         public static int Port = 8084;
-        public static string Directory = "";
+        public static string Directory = "", Panel_Address = "";
         public static AesCryptoServiceProvider AESProvider = new AesCryptoServiceProvider();
         public static Dictionary<string, string[]> AuthorizedIvKey = new Dictionary<string, string[]>();
         public static Dictionary<string, DateTime> AuthorizedTime = new Dictionary<string, DateTime>();
@@ -69,24 +69,6 @@ namespace ServerTools
                 {
                     BaseAddress = _ip;
                     return true;
-                }
-                else
-                {
-                    BaseAddress = new WebClient().DownloadString("https://ipinfo.io/ip/");
-                    if (!string.IsNullOrEmpty(BaseAddress) && BaseAddress != "")
-                    {
-                        BaseAddress = BaseAddress.RemoveLineBreaks().Trim();
-                        return true;
-                    }
-                    else
-                    {
-                        BaseAddress = new WebClient().DownloadString("https://api.ipify.org/");
-                        if (!string.IsNullOrEmpty(BaseAddress) && BaseAddress != "")
-                        {
-                            BaseAddress = BaseAddress.RemoveLineBreaks().Trim();
-                            return true;
-                        }
-                    }
                 }
             }
             catch (Exception e)
@@ -168,13 +150,12 @@ namespace ServerTools
                         Listener.Start();
                         if (SetBaseAddress())
                         {
-                            string _address = "http://" + BaseAddress + ":" + Port;
-                            Log.Out(string.Format("[SERVERTOOLS] ServerTools web api has opened @ {0}", _address));
-                            _address = "http://" + BaseAddress + ":" + Port + "/st.html";
-                            Redirect = _address;
+                            Redirect = "http://" + BaseAddress + ":" + Port;
+                            Log.Out(string.Format("[SERVERTOOLS] ServerTools web api has opened @ {0}", Redirect));
+                            Panel_Address = "http://" + BaseAddress + ":" + Port + "/st.html";
                             if (WebPanel.IsEnabled)
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel is available @ {0}", _address));
+                                Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel is available @ {0}", Panel_Address));
                             }
                             while (Listener != null && Listener.IsListening)
                             {

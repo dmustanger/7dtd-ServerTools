@@ -668,6 +668,17 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
+                sw.WriteLine("<Tool Name=\"Level_Up\" />");
+                sw.WriteLine();
+                sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine();
+                sw.WriteLine("Enabling will create a LevelUp.xml.");
+                sw.WriteLine("If enabled, chat will display a message about a player reaching a new level.");
+                sw.WriteLine("You can set what will happen when a player reaches specific levels in the xml file.");
+                sw.WriteLine("Commands in LevelUp.xml will accept console commands.");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine();
                 sw.WriteLine("<Tool Name=\"Lobby\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");

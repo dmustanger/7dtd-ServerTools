@@ -8,7 +8,7 @@ namespace ServerTools
         public static bool IsRunning = false;
         public static int StopServerMinutes, _eventTime;
         private static int CoreCount = 0, _twoSecondTick, _fiveSecondTick, _tenSecondTick, _twentySecondTick, _oneMinTick, _fiveMinTick, _stopServerSeconds, _eventInvitation,
-            _eventOpen, _horde, _kickVote, _lottery, _muteVote, _restartVoteCycle, _restartVote, _weatherVote;
+            _eventOpen, _horde, _kickVote, _lottery, _muteVote, _newPlayer, _restartVoteCycle, _restartVote, _weatherVote;
         private static readonly System.Timers.Timer Core = new System.Timers.Timer();
 
         public static void TimerStart()
@@ -106,22 +106,6 @@ namespace ServerTools
             };
         }
 
-        public static void NewPlayerTimer(ClientInfo _cInfo)
-        {
-            System.Timers.Timer _newPlayerExecTimer = new System.Timers.Timer(5000)
-            {
-                AutoReset = false
-            };
-            _newPlayerExecTimer.Start();
-            _newPlayerExecTimer.Elapsed += (sender, e) =>
-            {
-                Init2(_cInfo);
-                _newPlayerExecTimer.Stop();
-                _newPlayerExecTimer.Close();
-                _newPlayerExecTimer.Dispose();
-            };
-        }
-
         public static void StartingItemsTimer(ClientInfo _cInfo)
         {
             System.Timers.Timer _newPlayerStartingItemsTimer = new System.Timers.Timer(3000)
@@ -188,7 +172,7 @@ namespace ServerTools
 
         public static void PersistentDataSave()
         {
-            System.Timers.Timer _saveDelay = new System.Timers.Timer(15000)
+            System.Timers.Timer _saveDelay = new System.Timers.Timer(120000)
             {
                 AutoReset = true
             };
@@ -196,6 +180,22 @@ namespace ServerTools
             _saveDelay.Elapsed += (sender, e) =>
             {
                 PersistentContainer.Instance.Save();
+            };
+        }
+
+        public static void Delayed_Web_API()
+        {
+            System.Timers.Timer _singleUseTimer = new System.Timers.Timer(30000)
+            {
+                AutoReset = false
+            };
+            _singleUseTimer.Start();
+            _singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init9();
+                _singleUseTimer.Stop();
+                _singleUseTimer.Close();
+                _singleUseTimer.Dispose();
             };
         }
 
@@ -278,6 +278,16 @@ namespace ServerTools
                 if (InvalidItems.Check_Storage)
                 {
                     InvalidItems.CheckStorage();
+                }
+            }
+            if (PersistentOperations.NewPlayerQue.Count > 0)
+            {
+                _newPlayer++;
+                if (_newPlayer >= 5)
+                {
+                    ClientInfo _cInfo = PersistentOperations.NewPlayerQue[0];
+                    PersistentOperations.NewPlayerQue.RemoveAt(0);
+                    API.NewPlayerExec(_cInfo);
                 }
             }
             if (WeatherVote.IsEnabled && WeatherVote.VoteOpen)
@@ -426,11 +436,6 @@ namespace ServerTools
             CustomCommands.CustomCommandDelayed(_playerId, _commands);
         }
 
-        private static void Init2(ClientInfo _cInfo)
-        {
-            API.NewPlayerExec(_cInfo);
-        }
-
         private static void Init3(ClientInfo _cInfo)
         {
             StartingItems.Exec(_cInfo);
@@ -459,6 +464,14 @@ namespace ServerTools
         private static void Init8(string _playerId, List<string> _commands)
         {
             LevelUp.LevelCommandDelayed(_playerId, _commands);
+        }
+
+        private static void Init9()
+        {
+            if (WebAPI.IsEnabled && !WebAPI.IsRunning)
+            {
+                WebAPI.Load();
+            }
         }
     }
 }

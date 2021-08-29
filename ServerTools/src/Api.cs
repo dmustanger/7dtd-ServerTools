@@ -38,7 +38,7 @@ namespace ServerTools
         {
             try
             {
-                LoadProcess.Load();
+                LoadProcess.Load(true);
             }
             catch (Exception e)
             {
@@ -145,9 +145,9 @@ namespace ServerTools
                                 {
                                     _player.Detach();
                                 }
-                                if (_player.distanceWalked < 1 && _player.totalTimePlayed <= 1)
+                                if (_player.distanceWalked < 1 && _player.totalTimePlayed <= 1 && !PersistentOperations.NewPlayerQue.Contains(_cInfo))
                                 {
-                                    Timers.NewPlayerTimer(_cInfo);
+                                    PersistentOperations.NewPlayerQue.Add(_cInfo);
                                 }
                                 else
                                 {
@@ -164,9 +164,9 @@ namespace ServerTools
                                 {
                                     _player.Detach();
                                 }
-                                if (_player.distanceWalked < 1 && _player.totalTimePlayed <= 1)
+                                if (_player.distanceWalked < 1 && _player.totalTimePlayed <= 1 && !PersistentOperations.NewPlayerQue.Contains(_cInfo))
                                 {
-                                    Timers.NewPlayerTimer(_cInfo);
+                                    PersistentOperations.NewPlayerQue.Add(_cInfo);
                                 }
                                 else
                                 {
@@ -419,6 +419,11 @@ namespace ServerTools
                         {
                             LevelUp.PlayerLevels.Remove(_cInfo.entityId);
                         }
+                        if (PersistentOperations.NewPlayerQue.Contains(_cInfo))
+                        {
+                            PersistentOperations.NewPlayerQue.Remove(_cInfo);
+                        }
+                        
                     }
                     else
                     {
@@ -497,6 +502,10 @@ namespace ServerTools
                                 StartingItems.Exec(_cInfo);
                             }
                             ProcessPlayer(_cInfo, _player);
+                        }
+                        else
+                        {
+                            PersistentOperations.NewPlayerQue.Add(_cInfo);
                         }
                     }
                 }

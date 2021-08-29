@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "19.6.2";
+        public const string Version = "19.6.3";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -3314,7 +3314,7 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            case "Vehicle_Teleport_Extended":
+                            case "Vehicle_Recall_Extended":
                                 if (!_line.HasAttribute("Normal_Max"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall_Extended entry in ServerToolsConfig.xml because of missing 'Normal_Max' attribute: {0}", subChild.OuterXml));
@@ -3947,7 +3947,7 @@ namespace ServerTools
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
             LoadXml();
-            Mods.Load();
+            Mods.Load(false);
             ActiveTools.Exec(false);
         }
 

@@ -581,7 +581,6 @@ namespace ServerTools
                     Dict.Add("Entity falling tree cleanup");
                     Log.Out("Entity falling tree cleanup enabled");
                 }
-                Log.Out("Entity falling tree cleanup enabled");
             }
             else if (Dict.Contains("Entity falling tree cleanup") && !_initiating)
             {

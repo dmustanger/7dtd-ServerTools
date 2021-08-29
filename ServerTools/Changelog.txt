@@ -1,5 +1,19 @@
 ﻿CHANGELOG
 
+19.6.3
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+-Fixed console command st-ResetPlayerProfile not functioning as intended
+-Fixed Vehicle_Recall_Extended entry in ServerToolsConfig.xml
+-Fixed CommandList.xml upgrade process
+-Fixed LevelUp.xml upgrade process
+-Fixed Entity falling tree cleanup reporting as active twice on startup
+-Updated Web_API and Web_Panel to complete loading only after the server
+has fully loaded to avoid needing a third party I.P. check
+-Updated player joining process to que new players and avoid bottlenecks
+that could cause server crashes in rare incidents
+
 19.6.2
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions
