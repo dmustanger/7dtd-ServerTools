@@ -188,7 +188,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("    !-- <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" /> -->");
+                        sw.WriteLine("    <!-- <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" /> -->");
                     }
                     sw.WriteLine("</VoteRewards>");
                     sw.Flush();
@@ -598,7 +598,7 @@ namespace ServerTools
                     {
                         if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Items that do not") &&
                             !_oldChildNodes[i].OuterXml.StartsWith("<!-- WalletCoin can be") && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Reward ItemOrBlock=\"meleeToolTorch\"") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("    !-- <Reward ItemOrBlock=\"\""))
+                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Reward ItemOrBlock=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
@@ -641,7 +641,7 @@ namespace ServerTools
                     }
                     if (_blank)
                     {
-                        sw.WriteLine("    !-- <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" /> -->");
+                        sw.WriteLine("    <!-- <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" /> -->");
                     }
                     sw.WriteLine("</VoteRewards>");
                     sw.Flush();

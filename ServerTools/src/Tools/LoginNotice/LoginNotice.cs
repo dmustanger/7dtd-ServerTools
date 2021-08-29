@@ -100,7 +100,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("    <!-- <Player Id=\"\" Message=\"\" /> ->");
+                        sw.WriteLine("    <!-- <Player Id=\"\" Message=\"\" /> -->");
                     }
                     sw.WriteLine("</LoginNotice>");
                     sw.Flush();
@@ -186,7 +186,7 @@ namespace ServerTools
                     }
                     if (_blank)
                     {
-                        sw.WriteLine("    <!-- <Player Id=\"\" Message=\"\" /> ->");
+                        sw.WriteLine("    <!-- <Player Id=\"\" Message=\"\" /> -->");
                     }
                     sw.WriteLine("</LoginNotice>");
                     sw.Flush();

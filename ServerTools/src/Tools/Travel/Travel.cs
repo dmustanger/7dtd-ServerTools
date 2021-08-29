@@ -137,7 +137,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("    !-- <Location Name=\"\" Corner1=\"\" Corner2=\"\" Destination=\"\" /> -->");
+                        sw.WriteLine("    <!-- <Location Name=\"\" Corner1=\"\" Corner2=\"\" Destination=\"\" /> -->");
                     }
                     sw.WriteLine("</Travel>");
                     sw.Flush();
@@ -350,7 +350,7 @@ namespace ServerTools
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Location Name=\"Zone1\"") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Location Name=\"Zone2\"") && !_oldChildNodes[i].OuterXml.StartsWith("    !-- <Location Name=\"\""))
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Location Name=\"Zone2\"") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Location Name=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
@@ -389,7 +389,7 @@ namespace ServerTools
                     }
                     if (_blank)
                     {
-                        sw.WriteLine("    !-- <Location Name=\"\" Corner1=\"\" Corner2=\"\" Destination=\"\" /> -->");
+                        sw.WriteLine("    <!-- <Location Name=\"\" Corner1=\"\" Corner2=\"\" Destination=\"\" /> -->");
                     }
                     sw.WriteLine("</Travel>");
                     sw.Flush();
