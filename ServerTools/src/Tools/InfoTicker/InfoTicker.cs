@@ -56,35 +56,28 @@ namespace ServerTools
                 {
                     Dict.Clear();
                     MsgList.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                            }
-                            else if (_line.HasAttribute("Message"))
-                            {
-                                string _message = _line.GetAttribute("Message");
-                                if (!Dict.ContainsKey(_message))
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                                 {
-                                    Dict.Add(_message, null);
+                                    UpgradeXml(_childNodes);
+                                    return;
+                                }
+                                else if (_line.HasAttribute("Message"))
+                                {
+                                    string _message = _line.GetAttribute("Message");
+                                    if (!Dict.ContainsKey(_message))
+                                    {
+                                        Dict.Add(_message, null);
+                                    }
                                 }
                             }
                         }
-                        
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                 }
                 if (Dict.Count > 0)
@@ -111,9 +104,12 @@ namespace ServerTools
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    sw.WriteLine("<InfoTicketer>");
+                    sw.WriteLine("<InfoTicker>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- possible variables {EntityId} {SteamId} {PlayerName}-->");
+                    sw.WriteLine("<!-- Possible variables {EntityId}, {SteamId}, {PlayerName} -->");
+                    sw.WriteLine("<!-- <Ticker Message=\"Have a suggestion or complaint? Post on our forums or discord and let us know\" /> -->");
+                    sw.WriteLine("<!-- <Ticker Message=\"Type /gimme once an hour for a free gift!\" /> -->");
+                    sw.WriteLine("<!-- <Ticker Message=\"Type /commands for a list of the chat commands\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -125,14 +121,9 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("    <Ticker Message=\"Have a suggestion or complaint? Post on our forums or discord and let us know.\" />");
-                        sw.WriteLine("    <!-- <Ticker Message=\"Type /gimme once an hour for a free gift!\" /> -->");
-                        sw.WriteLine("    <!-- <Ticker Message=\"Typ /gimme, einmal pro Stunde für ein freies Geschenk!\" /> -->");
-                        sw.WriteLine("    <!-- <Ticker Message=\"Visit 'Yoursitehere' for rules, custom recipes and forum discussions!\" /> -->");
-                        sw.WriteLine("    <!-- <Ticker Message=\"Besuchen Yoursitehere für Regelungen , kundenspezifische Rezepturen und Forumsdiskussionen!\" /> -->");
-                        sw.WriteLine("    <!-- <Ticker Message=\"Type /commands for a list of the chat commands.\" /> -->");
+                        sw.WriteLine("    <!-- <Ticker Message=\"\" /> -->");
                     }
-                    sw.WriteLine("</InfoTicketer>");
+                    sw.WriteLine("</InfoTicker>");
                     sw.Flush();
                     sw.Close();
                 }
@@ -181,6 +172,9 @@ namespace ServerTools
                                 {
                                     if (!ExemptionList.Contains(_cInfo.playerId))
                                     {
+                                        _message = _message.Replace("{EntityId}", _cInfo.entityId.ToString());
+                                        _message = _message.Replace("{SteamId}", _cInfo.playerId);
+                                        _message = _message.Replace("{PlayerName}", _cInfo.playerName);
                                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
@@ -205,6 +199,9 @@ namespace ServerTools
                                 {
                                     if (!ExemptionList.Contains(_cInfo.playerId))
                                     {
+                                        _message = _message.Replace("{EntityId}", _cInfo.entityId.ToString());
+                                        _message = _message.Replace("{SteamId}", _cInfo.playerId);
+                                        _message = _message.Replace("{PlayerName}", _cInfo.playerName);
                                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
@@ -232,29 +229,48 @@ namespace ServerTools
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    sw.WriteLine("<InfoTicketer>");
+                    sw.WriteLine("<InfoTicker>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- possible variables {EntityId} {SteamId} {PlayerName}-->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("<!-- Possible variables {EntityId}, {SteamId}, {PlayerName} -->");
+                    sw.WriteLine("<!-- <Ticker Message=\"Have a suggestion or complaint? Post on our forums or discord and let us know\" /> -->");
+                    sw.WriteLine("<!-- <Ticker Message=\"Type /gimme once an hour for a free gift!\" /> -->");
+                    sw.WriteLine("<!-- <Ticker Message=\"Type /commands for a list of the chat commands\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Possible variables") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Ticker Message=\"Have a suggestion") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Ticker Message=\"Type /gimme") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Ticker Message=\"Type /commands") && 
+                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Ticker Message=\"\""))
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Ticker")
-                        {
-                            string _message = "";
-                            if (_line.HasAttribute("Message"))
-                            {
-                                _message = _line.GetAttribute("Message");
-                            }
-                            sw.WriteLine(string.Format("    <Ticker Message=\"{0}\" />", _message));
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
-                    sw.WriteLine("</InfoTicketer>");
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        {
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && _line.Name == "Ticker")
+                            {
+                                _blank = false;
+                                string _message = "";
+                                if (_line.HasAttribute("Message"))
+                                {
+                                    _message = _line.GetAttribute("Message");
+                                }
+                                sw.WriteLine(string.Format("    <Ticker Message=\"{0}\" />", _message));
+                            }
+                        }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    <!-- <Ticker Message=\"\" /> -->");
+                    }
+                    sw.WriteLine("</InfoTicker>");
                     sw.Flush();
                     sw.Close();
                 }

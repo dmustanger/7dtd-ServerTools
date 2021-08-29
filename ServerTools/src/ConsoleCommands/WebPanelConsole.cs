@@ -93,7 +93,7 @@ namespace ServerTools
                     else
                     {
                         string _password = PersistentOperations.CreatePassword(16);
-                        if (!PersistentContainer.Instance.Players.Players.ContainsKey(_params[1]) && PersistentContainer.Instance.Players[_params[1]].WebPass == null)
+                        if (!PersistentContainer.Instance.Players.Players.ContainsKey(_params[1]))
                         {
                             PersistentContainer.Instance.Players.Players.Add(_params[1], new PersistentPlayer(_params[1]));
                         }

@@ -129,7 +129,6 @@ namespace ServerTools
                     p.Auction = new Dictionary<int, ItemDataSerializable>();
                     p.AuctionReturn = new Dictionary<int, ItemDataSerializable>();
                     p.Bank = 0;
-                    p.BikeId = 0;
                     p.Bounty = 0;
                     p.BountyHunter = 0;
                     p.ClanInvite = "";
@@ -140,7 +139,6 @@ namespace ServerTools
                     p.CountryBanImmune = false;
                     p.CustomCommandDelays = new Dictionary<string, DateTime>();
                     p.FirstClaimBlock = false;
-                    p.GyroId = 0;
                     p.HardcoreEnabled = false;
                     p.HardcoreSavedStats = new List<string[]>();
                     p.HardcoreStats = new string[0];
@@ -150,22 +148,16 @@ namespace ServerTools
                     p.JailDate = new DateTime();
                     p.JailName = "";
                     p.JailTime = 0;
-                    p.JeepId = 0;
                     p.LastAnimal = new DateTime();
-                    p.LastBike = new DateTime();
                     p.LastDied = new DateTime();
                     p.LastFriendTele = new DateTime();
                     p.LastGimme = new DateTime();
-                    p.LastGyro = new DateTime();
                     p.LastHome = new DateTime();
-                    p.LastJeep = new DateTime();
                     p.LastJoined = new DateTime();
                     p.LastKillMe = new DateTime();
                     p.LastLobby = new DateTime();
                     p.LastLog = new DateTime();
                     p.LastMarket = new DateTime();
-                    p.LastMiniBike = new DateTime();
-                    p.LastMotorBike = new DateTime();
                     p.LastStuck = new DateTime();
                     p.LastTravel = new DateTime();
                     p.LastVote = new DateTime();
@@ -173,8 +165,6 @@ namespace ServerTools
                     p.LastWhisper = "";
                     p.LobbyReturnPos = "";
                     p.MarketReturnPos = "";
-                    p.MiniBikeId = 0;
-                    p.MotorBikeId = 0;
                     p.MuteDate = new DateTime();
                     p.MuteName = "";
                     p.MuteTime = 0;
@@ -186,6 +176,7 @@ namespace ServerTools
                     p.SessionTime = 0;
                     p.StartingItems = false;
                     p.TotalTimePlayed = 0;
+                    p.Vehicles = new Dictionary<int, string[]>();
                     p.VoteWeekCount = 0;
                     p.Waypoints = new Dictionary<string, string>();
                     p.WebPass = "";

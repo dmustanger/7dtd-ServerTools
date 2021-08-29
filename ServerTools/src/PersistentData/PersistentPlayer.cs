@@ -11,7 +11,6 @@ namespace ServerTools
         private Dictionary<int, ItemDataSerializable> auction;
         private Dictionary<int, ItemDataSerializable> auctionReturn;
         private int bank;
-        private int bikeId;
         private int bounty;
         private int bountyHunter;
         private string clanInvite;
@@ -26,7 +25,6 @@ namespace ServerTools
         private bool eventSpawn;
         private List<List<string>> events;
         private bool firstClaimBlock;
-        private int gyroId;
         private bool hardcoreEnabled;
         private List<string[]> hardcoreSavedStats;
         private string[] hardcoreStats;
@@ -36,22 +34,16 @@ namespace ServerTools
         private DateTime jailDate;
         private string jailName;
         private int jailTime;
-        private int jeepId;
         private DateTime lastAnimal;
-        private DateTime lastBike;
         private DateTime lastDied;
         private DateTime lastFriendTele;
         private DateTime lastGimme;
-        private DateTime lastGyro;
         private DateTime lastHome;
-        private DateTime lastJeep;
         private DateTime lastJoined;
         private DateTime lastKillMe;
         private DateTime lastLobby;
         private DateTime lastLog;
         private DateTime lastMarket;
-        private DateTime lastMiniBike;
-        private DateTime lastMotorBike;
         private DateTime lastNameColorChange;
         private DateTime lastPrayer;
         private DateTime lastPrefixColorChange;
@@ -64,8 +56,6 @@ namespace ServerTools
         private string lastWhisper;
         private string lobbyReturnPos;
         private string marketReturnPos;
-        private int miniBikeId;
-        private int motorBikeId;
         private DateTime muteDate;
         private string muteName;
         private int muteTime;
@@ -77,6 +67,7 @@ namespace ServerTools
         private int sessionTime;
         private bool startingItems;
         private int totalTimePlayed;
+        private Dictionary<int, string[]> vehicles;
         private int voteWeekCount;
         private Dictionary<string, string> waypoints;
         private string webPass;
@@ -115,18 +106,6 @@ namespace ServerTools
             set
             {
                 bank = value;
-            }
-        }
-
-        public int BikeId
-        {
-            get
-            {
-                return bikeId;
-            }
-            set
-            {
-                bikeId = value;
             }
         }
 
@@ -298,18 +277,6 @@ namespace ServerTools
             }
         }
 
-        public int GyroId
-        {
-            get
-            {
-                return gyroId;
-            }
-            set
-            {
-                gyroId = value;
-            }
-        }
-
         public bool HardcoreEnabled
         {
             get
@@ -406,18 +373,6 @@ namespace ServerTools
             }
         }
 
-        public int JeepId
-        {
-            get
-            {
-                return jeepId;
-            }
-            set
-            {
-                jeepId = value;
-            }
-        }
-
         public DateTime LastAnimal
         {
             get
@@ -427,18 +382,6 @@ namespace ServerTools
             set
             {
                 lastAnimal = value;
-            }
-        }
-
-        public DateTime LastBike
-        {
-            get
-            {
-                return lastBike;
-            }
-            set
-            {
-                lastBike = value;
             }
         }
 
@@ -478,18 +421,6 @@ namespace ServerTools
             }
         }
 
-        public DateTime LastGyro
-        {
-            get
-            {
-                return lastGyro;
-            }
-            set
-            {
-                lastGyro = value;
-            }
-        }
-
         public DateTime LastHome
         {
             get
@@ -499,18 +430,6 @@ namespace ServerTools
             set
             {
                 lastHome = value;
-            }
-        }
-
-        public DateTime LastJeep
-        {
-            get
-            {
-                return lastJeep;
-            }
-            set
-            {
-                lastJeep = value;
             }
         }
 
@@ -571,30 +490,6 @@ namespace ServerTools
             set
             {
                 lastMarket = value;
-            }
-        }
-
-        public DateTime LastMiniBike
-        {
-            get
-            {
-                return lastMiniBike;
-            }
-            set
-            {
-                lastMiniBike = value;
-            }
-        }
-
-        public DateTime LastMotorBike
-        {
-            get
-            {
-                return lastMotorBike;
-            }
-            set
-            {
-                lastMotorBike = value;
             }
         }
 
@@ -742,30 +637,6 @@ namespace ServerTools
             }
         }
 
-        public int MiniBikeId
-        {
-            get
-            {
-                return miniBikeId;
-            }
-            set
-            {
-                miniBikeId = value;
-            }
-        }
-
-        public int MotorBikeId
-        {
-            get
-            {
-                return motorBikeId;
-            }
-            set
-            {
-                motorBikeId = value;
-            }
-        }
-
         public string MuteName
         {
             get
@@ -883,6 +754,18 @@ namespace ServerTools
             set
             {
                 totalTimePlayed = value;
+            }
+        }
+
+        public Dictionary<int, string[]> Vehicles
+        {
+            get
+            {
+                return vehicles;
+            }
+            set
+            {
+                vehicles = value;
             }
         }
 

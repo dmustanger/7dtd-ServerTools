@@ -54,68 +54,62 @@ namespace ServerTools
             {
                 Dict.Clear();
                 Destination.Clear();
-                bool upgrade = true;
                 for (int i = 0; i < _childNodes.Count; i++)
                 {
-                    if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                    if (_childNodes[i].NodeType != XmlNodeType.Comment)
                     {
-                        continue;
-                    }
-                    XmlElement _line = (XmlElement)_childNodes[i];
-                    if (_line.HasAttributes)
-                    {
-                        if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                        XmlElement _line = (XmlElement)_childNodes[i];
+                        if (_line.HasAttributes)
                         {
-                            upgrade = false;
-                        }
-                        else if (_line.HasAttribute("Name") && _line.HasAttribute("Corner1") && _line.HasAttribute("Corner2") && _line.HasAttribute("Destination"))
-                        {
-                            string _name = _line.GetAttribute("Name");
-                            string[] _corner1 = _line.GetAttribute("Corner1").Split(',');
-                            string[] _corner2 = _line.GetAttribute("Corner2").Split(',');
-                            string _destination = _line.GetAttribute("Destination");
-                            int.TryParse(_corner1[0], out int _x1);
-                            int.TryParse(_corner1[1], out int _y1);
-                            int.TryParse(_corner1[2], out int _z1);
-                            int.TryParse(_corner2[0], out int _x2);
-                            int.TryParse(_corner2[1], out int _y2);
-                            int.TryParse(_corner2[2], out int _z2);
-                            if (_x1 > _x2)
+                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                             {
-                                int _switch = _x2;
-                                _x2 = _x1;
-                                _x1 = _switch;
+                                UpgradeXml(_childNodes);
+                                return;
                             }
-                            if (_y1 > _y2)
+                            else if (_line.HasAttribute("Name") && _line.HasAttribute("Corner1") && _line.HasAttribute("Corner2") && _line.HasAttribute("Destination"))
                             {
-                                int _switch = _y2;
-                                _y2 = _y1;
-                                _y1 = _switch;
-                            }
-                            if (_y1 == _y2)
-                            {
-                                _y2++;
-                            }
-                            if (_z1 > _z2)
-                            {
-                                int _switch = _z2;
-                                _z2 = _z1;
-                                _z1 = _switch;
-                            }
-                            string _c1 = _x1 + "," + _y1 + "," + _z1;
-                            string _c2 = _x2 + "," + _y2 + "," + _z2;
-                            string[] box = { _c1, _c2, _destination };
-                            if (!Dict.ContainsKey(_name))
-                            {
-                                Dict.Add(_name, box);
+                                string _name = _line.GetAttribute("Name");
+                                string[] _corner1 = _line.GetAttribute("Corner1").Split(',');
+                                string[] _corner2 = _line.GetAttribute("Corner2").Split(',');
+                                string _destination = _line.GetAttribute("Destination");
+                                int.TryParse(_corner1[0], out int _x1);
+                                int.TryParse(_corner1[1], out int _y1);
+                                int.TryParse(_corner1[2], out int _z1);
+                                int.TryParse(_corner2[0], out int _x2);
+                                int.TryParse(_corner2[1], out int _y2);
+                                int.TryParse(_corner2[2], out int _z2);
+                                if (_x1 > _x2)
+                                {
+                                    int _switch = _x2;
+                                    _x2 = _x1;
+                                    _x1 = _switch;
+                                }
+                                if (_y1 > _y2)
+                                {
+                                    int _switch = _y2;
+                                    _y2 = _y1;
+                                    _y1 = _switch;
+                                }
+                                if (_y1 == _y2)
+                                {
+                                    _y2++;
+                                }
+                                if (_z1 > _z2)
+                                {
+                                    int _switch = _z2;
+                                    _z2 = _z1;
+                                    _z1 = _switch;
+                                }
+                                string _c1 = _x1 + "," + _y1 + "," + _z1;
+                                string _c2 = _x2 + "," + _y2 + "," + _z2;
+                                string[] box = { _c1, _c2, _destination };
+                                if (!Dict.ContainsKey(_name))
+                                {
+                                    Dict.Add(_name, box);
+                                }
                             }
                         }
                     }
-                }
-                if (upgrade)
-                {
-                    UpgradeXml(_childNodes);
-                    return;
                 }
             }
         }
@@ -143,7 +137,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("    <Location Name=\"\" Corner1=\"\" Corner2=\"\" Destination=\"\" />");
+                        sw.WriteLine("    !-- <Location Name=\"\" Corner1=\"\" Corner2=\"\" Destination=\"\" /> -->");
                     }
                     sw.WriteLine("</Travel>");
                     sw.Flush();
@@ -353,36 +347,49 @@ namespace ServerTools
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("<!-- <Location Name=\"Zone1\" Corner1=\"0,100,0\" Corner2=\"10,100,10\" Destination=\"-100,-1,-100\" /> -->");
                     sw.WriteLine("<!-- <Location Name=\"Zone2\" Corner1=\"-1,100,-1\" Corner2=\"-10,100,-10\" Destination=\"100,-1,100\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Location Name=\"Zone1\"") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Location Name=\"Zone2\"") && !_oldChildNodes[i].OuterXml.StartsWith("    !-- <Location Name=\"\""))
                         {
-                            continue;
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Location")
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            string _name = "", _c1 = "", _c2 = "", _destination = "";
-                            if (_line.HasAttribute("Name"))
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && _line.Name == "Location")
                             {
-                                _name = _line.GetAttribute("Name");
+                                _blank = false;
+                                string _name = "", _c1 = "", _c2 = "", _destination = "";
+                                if (_line.HasAttribute("Name"))
+                                {
+                                    _name = _line.GetAttribute("Name");
+                                }
+                                if (_line.HasAttribute("Corner1"))
+                                {
+                                    _c1 = _line.GetAttribute("Corner1");
+                                }
+                                if (_line.HasAttribute("Corner2"))
+                                {
+                                    _c2 = _line.GetAttribute("Corner2");
+                                }
+                                if (_line.HasAttribute("Destination"))
+                                {
+                                    _destination = _line.GetAttribute("Destination");
+                                }
+                                sw.WriteLine(string.Format("    <Location Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Destination=\"{3}\" />", _name, _c1, _c2, _destination));
                             }
-                            if (_line.HasAttribute("Corner1"))
-                            {
-                                _c1 = _line.GetAttribute("Corner1");
-                            }
-                            if (_line.HasAttribute("Corner2"))
-                            {
-                                _c2 = _line.GetAttribute("Corner2");
-                            }
-                            if (_line.HasAttribute("Destination"))
-                            {
-                                _destination = _line.GetAttribute("Destination");
-                            }
-                            sw.WriteLine(string.Format("    <Location Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Destination=\"{3}\" />", _name, _c1, _c2, _destination));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    !-- <Location Name=\"\" Corner1=\"\" Corner2=\"\" Destination=\"\" /> -->");
                     }
                     sw.WriteLine("</Travel>");
                     sw.Flush();

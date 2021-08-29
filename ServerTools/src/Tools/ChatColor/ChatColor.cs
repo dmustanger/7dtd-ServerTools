@@ -55,65 +55,59 @@ namespace ServerTools
                 {
                     Players.Clear();
                     ExpireDate.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                            }
-                            else if (_line.HasAttribute("SteamId") && _line.HasAttribute("Name") && _line.HasAttribute("Group") && _line.HasAttribute("Prefix") &&
-                                 _line.HasAttribute("NameColor") && _line.HasAttribute("PrefixColor") && _line.HasAttribute("Expires"))
-                            {
-                                string _steamId = _line.GetAttribute("SteamId");
-                                string _name = _line.GetAttribute("Name");
-                                string _group = _line.GetAttribute("Group");
-                                string _prefix = _line.GetAttribute("Prefix");
-                                string _nameColor = _line.GetAttribute("NameColor");
-                                string _prefixColor = _line.GetAttribute("PrefixColor");
-                                DateTime _dt = DateTime.Parse(_line.GetAttribute("Expires"));
-                                if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(_nameColor))
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                                 {
-                                    ColorList.Colors.TryGetValue(_nameColor, out string _colorArray);
-                                    _nameColor = _colorArray;
+                                    UpgradeXml(_childNodes);
+                                    return;
                                 }
-                                if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(_prefixColor))
+                                else if (_line.HasAttribute("SteamId") && _line.HasAttribute("Name") && _line.HasAttribute("Group") && _line.HasAttribute("Prefix") &&
+                                     _line.HasAttribute("NameColor") && _line.HasAttribute("PrefixColor") && _line.HasAttribute("Expires"))
                                 {
-                                    ColorList.Colors.TryGetValue(_prefixColor, out string _colorArray);
-                                    _prefixColor = _colorArray;
-                                }
-                                if ((_nameColor[0] != '[' || _nameColor[7] != ']') && _nameColor != "")
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColor.xml entry because of missing brackets[] or name matching the ColorList.xml for NameColor attribute: {0}", _line.OuterXml));
-                                    continue;
-                                }
+                                    string _steamId = _line.GetAttribute("SteamId");
+                                    string _name = _line.GetAttribute("Name");
+                                    string _group = _line.GetAttribute("Group");
+                                    string _prefix = _line.GetAttribute("Prefix");
+                                    string _nameColor = _line.GetAttribute("NameColor");
+                                    string _prefixColor = _line.GetAttribute("PrefixColor");
+                                    DateTime _dt = DateTime.Parse(_line.GetAttribute("Expires"));
+                                    if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(_nameColor))
+                                    {
+                                        ColorList.Colors.TryGetValue(_nameColor, out string _colorArray);
+                                        _nameColor = _colorArray;
+                                    }
+                                    if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(_prefixColor))
+                                    {
+                                        ColorList.Colors.TryGetValue(_prefixColor, out string _colorArray);
+                                        _prefixColor = _colorArray;
+                                    }
+                                    if ((_nameColor[0] != '[' || _nameColor[7] != ']') && _nameColor != "")
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColor.xml entry because of missing brackets[] or name matching the ColorList.xml for NameColor attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
 
-                                if ((_prefixColor[0] != '[' || _prefixColor[7] != ']') && _prefixColor != "")
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColor.xml entry because of missing brackets[] or name matching the ColorList.xml for PrefixColor attribute: {0}", _line.OuterXml));
-                                    continue;
-                                }
+                                    if ((_prefixColor[0] != '[' || _prefixColor[7] != ']') && _prefixColor != "")
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColor.xml entry because of missing brackets[] or name matching the ColorList.xml for PrefixColor attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
 
-                                if (!Players.ContainsKey(_steamId) && DateTime.Now < _dt)
-                                {
-                                    string[] _c = new string[] { _name, _group, _prefix, _nameColor, _prefixColor };
-                                    Players.Add(_steamId, _c);
-                                    ExpireDate.Add(_steamId, _dt);
+                                    if (!Players.ContainsKey(_steamId) && DateTime.Now < _dt)
+                                    {
+                                        string[] _c = new string[] { _name, _group, _prefix, _nameColor, _prefixColor };
+                                        Players.Add(_steamId, _c);
+                                        ExpireDate.Add(_steamId, _dt);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                 }
             }
@@ -132,6 +126,7 @@ namespace ServerTools
                 sw.WriteLine("<ChatColor>");
                 sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                 sw.WriteLine("<!-- PrefixColor and NameColor can come from the ColorList.xml -->");
+                sw.WriteLine("<!-- <Player SteamId=\"12345678901234567\" Name=\"bob\" Group=\"admin\" Prefix=\"(Captain)\" NameColor=\"[FF0000]\" PrefixColor=\"[FFFFFF]\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
                 sw.WriteLine();
                 sw.WriteLine();
                 if (Players.Count > 0)
@@ -144,7 +139,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("    <Player SteamId=\"12345678901234567\" Name=\"bob\" Group=\"admin\" Prefix=\"(Captain)\" NameColor=\"[FF0000]\" PrefixColor=\"[FFFFFF]\" Expires=\"10/29/2050 7:30:00 AM\" />");
+                    sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" Group=\"\" Prefix=\"\" NameColor=\"\" PrefixColor=\"\" Expires=\"\" /> -->");
                 }
                 sw.WriteLine("</ChatColor>");
                 sw.Flush();
@@ -421,49 +416,63 @@ namespace ServerTools
                     sw.WriteLine("<ChatColor>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("<!-- PrefixColor and NameColor can come from the ColorList.xml -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("<!-- <Player SteamId=\"12345678901234567\" Name=\"bob\" Group=\"admin\" Prefix=\"(Captain)\" NameColor=\"[FF0000]\" PrefixColor=\"[FFFFFF]\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- PrefixColor and NameColor") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Player SteamId=\"12345678901234567\"") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Player SteamId=\"\""))
                         {
-                            continue;
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Player")
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            string _steamId = "", _name = "", _group = "", _prefix = "", _nameColor = "", _prefixColor = "";
-                            DateTime _dateTime = DateTime.Now;
-                            if (_line.HasAttribute("SteamId"))
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && _line.Name == "Player")
                             {
-                                _steamId = _line.GetAttribute("SteamId");
+                                _blank = false;
+                                string _steamId = "", _name = "", _group = "", _prefix = "", _nameColor = "", _prefixColor = "";
+                                DateTime _dateTime = DateTime.Now;
+                                if (_line.HasAttribute("SteamId"))
+                                {
+                                    _steamId = _line.GetAttribute("SteamId");
+                                }
+                                if (_line.HasAttribute("Name"))
+                                {
+                                    _name = _line.GetAttribute("Name");
+                                }
+                                if (_line.HasAttribute("Group"))
+                                {
+                                    _group = _line.GetAttribute("Group");
+                                }
+                                if (_line.HasAttribute("Prefix"))
+                                {
+                                    _prefix = _line.GetAttribute("Prefix");
+                                }
+                                if (_line.HasAttribute("NameColor"))
+                                {
+                                    _nameColor = _line.GetAttribute("NameColor");
+                                }
+                                if (_line.HasAttribute("PrefixColor"))
+                                {
+                                    _prefixColor = _line.GetAttribute("PrefixColor");
+                                }
+                                if (_line.HasAttribute("Expires"))
+                                {
+                                    DateTime.TryParse(_line.GetAttribute("Expires"), out _dateTime);
+                                }
+                                sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" Group=\"{2}\" Prefix=\"{3}\" NameColor=\"{4}\" PrefixColor=\"{5}\" Expires=\"{6}\" />", _steamId, _name, _group, _prefix, _nameColor, _prefixColor, _dateTime));
                             }
-                            if (_line.HasAttribute("Name"))
-                            {
-                                _name = _line.GetAttribute("Name");
-                            }
-                            if (_line.HasAttribute("Group"))
-                            {
-                                _group = _line.GetAttribute("Group");
-                            }
-                            if (_line.HasAttribute("Prefix"))
-                            {
-                                _prefix = _line.GetAttribute("Prefix");
-                            }
-                            if (_line.HasAttribute("NameColor"))
-                            {
-                                _nameColor = _line.GetAttribute("NameColor");
-                            }
-                            if (_line.HasAttribute("PrefixColor"))
-                            {
-                                _prefixColor = _line.GetAttribute("PrefixColor");
-                            }
-                            if (_line.HasAttribute("Expires"))
-                            {
-                                DateTime.TryParse(_line.GetAttribute("Expires"), out _dateTime);
-                            }
-                            sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" Group=\"{2}\" Prefix=\"{3}\" NameColor=\"{4}\" PrefixColor=\"{5}\" Expires=\"{6}\" />", _steamId, _name, _group, _prefix, _nameColor, _prefixColor, _dateTime));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" Group=\"\" Prefix=\"\" NameColor=\"\" PrefixColor=\"\" Expires=\"\" /> -->");
                     }
                     sw.WriteLine("</ChatColor>");
                     sw.Flush();

@@ -17,6 +17,7 @@ namespace ServerTools
         private const string file = "CustomCommands.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static readonly System.Random Random = new System.Random();
 
         public static void Load()
         {
@@ -53,45 +54,43 @@ namespace ServerTools
                 if (_childNodes != null && _childNodes.Count > 0)
                 {
                     Dict.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                            }
-                            else if (_line.HasAttribute("Trigger") && _line.HasAttribute("Command") && _line.HasAttribute("DelayBetweenUses") && _line.HasAttribute("Hidden") &&
-                                _line.HasAttribute("Permission") && _line.HasAttribute("Cost"))
-                            {
-                                string _trigger = _line.GetAttribute("Trigger");
-                                string _command = _line.GetAttribute("Command");
-                                string _stringDelay = _line.GetAttribute("DelayBetweenUses");
-                                string _hidden = _line.GetAttribute("Hidden");
-                                string _permission = _line.GetAttribute("Permission");
-                                string _stringCost = _line.GetAttribute("Cost");
-                                string[] _c = { _command, _stringDelay, _hidden, _permission, _stringCost };
-                                if (!Dict.ContainsKey(_trigger))
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                                 {
-                                    Dict.Add(_trigger, _c);
+                                    UpgradeXml(_childNodes);
+                                    return;
                                 }
-                                if (_permission.ToLower() == "true" && !GameManager.Instance.adminTools.GetCommands().ContainsKey(_trigger))
+                                else if (_line.HasAttribute("Trigger") && _line.HasAttribute("Command") && _line.HasAttribute("DelayBetweenUses") && _line.HasAttribute("Hidden") &&
+                                    _line.HasAttribute("Permission") && _line.HasAttribute("Cost"))
                                 {
-                                    GameManager.Instance.adminTools.AddCommandPermission(_trigger, 0);
+                                    string _trigger = _line.GetAttribute("Trigger");
+                                    string _command = _line.GetAttribute("Command");
+                                    string _delay = _line.GetAttribute("DelayBetweenUses");
+                                    string _hidden = _line.GetAttribute("Hidden");
+                                    string _permission = _line.GetAttribute("Permission");
+                                    if (!int.TryParse(_line.GetAttribute("Cost"), out int _cost))
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring CustomCommands.xml entry. Invalid (non-numeric) value for 'Cost' attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                    string[] _c = { _command, _delay, _hidden, _permission, _cost.ToString() };
+                                    if (!Dict.ContainsKey(_trigger))
+                                    {
+                                        Dict.Add(_trigger, _c);
+                                    }
+                                    if (_permission.ToLower() == "true" && !GameManager.Instance.adminTools.GetCommands().ContainsKey(_trigger))
+                                    {
+                                        GameManager.Instance.adminTools.AddCommandPermission(_trigger, 0, true);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                 }
             }
@@ -111,7 +110,8 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- possible variables {EntityId} {SteamId} {PlayerName} {Delay} -->");
+                    sw.WriteLine("<!-- Possible variables {EntityId}, {SteamId}, {PlayerName}, {Delay}, {RandomPlayerId}, whisper, global -->");
+                    sw.WriteLine("<!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ whisper You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -123,26 +123,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("    <Custom Trigger=\"help\" Command=\"global Type " + ChatHook.Chat_Command_Prefix1 + Command_commands + " for a list of chat commands.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"info\" Command=\"global Server Info: \" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"rules\" Command=\"whisper Visit YourSiteHere to see the rules.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"website\" Command =\"whisper Visit YourSiteHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"teamspeak\" Command=\"whisper The Teamspeak3 info is YourInfoHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"spawnz\" Command=\"st-ser {EntityId} r.40 4 11 17 ^ whisper Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"discord\" Command=\"whisper The discord channel is ...\" DelayBetweenUses=\"20\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"cc8\" Command=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"cc9\" Command=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"cc10\" Command=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"cc11\" Command=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"cc12\" Command=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"cc13\" Command=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"cc14\" Command=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"cc15\" Command=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"cc16\" Command=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"cc17\" Command=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"cc18\" Command=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"cc19\" Command=\"First command ^ {Delay} 30 ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                        sw.WriteLine("    <Custom Trigger=\"cc20\" Command=\"First command ^ Second command ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                        sw.WriteLine("    <!-- <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Permission=\"\" Cost=\"\" /> -->");
                     }
                     sw.WriteLine("</CustomCommands>");
                     sw.Flush();
@@ -605,48 +586,14 @@ namespace ServerTools
                         _commands = string.Format("{0} {1}{2} 'name'", _commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_fwaypoint);
                     }
                 }
-                if (VehicleTeleport.IsEnabled)
-                {
-                    if (VehicleTeleport.Bike)
-                    {
-                        if (VehicleTeleport.Command_bike != "")
-                        {
-                            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, VehicleTeleport.Command_bike);
-                        }
-                    }
-                    if (VehicleTeleport.Mini_Bike)
-                    {
-                        if (VehicleTeleport.Command_minibike != "")
-                        {
-                            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, VehicleTeleport.Command_minibike);
-                        }
-                    }
-                    if (VehicleTeleport.Motor_Bike)
-                    {
-                        if (VehicleTeleport.Command_motorbike != "")
-                        {
-                            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, VehicleTeleport.Command_motorbike);
-                        }
-                    }
-                    if (VehicleTeleport.Jeep)
-                    {
-                        if (VehicleTeleport.Command_jeep != "")
-                        {
-                            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, VehicleTeleport.Command_jeep);
-                        }
-                    }
-                    if (VehicleTeleport.Gyro)
-                    {
-                        if (VehicleTeleport.Command_gyro != "")
-                        {
-                            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, VehicleTeleport.Command_gyro);
-                        }
-                    }
-                }
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     _commands = "";
+                }
+                if (VehicleRecall.IsEnabled)
+                {
+                    _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, VehicleRecall.Command_recall);
                 }
                 if (PlayerList.IsEnabled)
                 {
@@ -835,7 +782,7 @@ namespace ServerTools
                     string _commands = "";
                     foreach (KeyValuePair<string, string[]> kvp in Dict)
                     {
-                        if (bool.TryParse(kvp.Value[1], out bool _result))
+                        if (bool.TryParse(kvp.Value[2], out bool _result))
                         {
                             if (!_result)
                             {
@@ -907,7 +854,7 @@ namespace ServerTools
                 {
                     int.TryParse(_c[1], out int _delay);
                     int.TryParse(_c[4], out int _cost);
-                    bool _permission = bool.Parse(_c[2]);
+                    bool _permission = bool.Parse(_c[3]);
                     if (_permission && !Permission(_cInfo, _command))
                     {
                         return;
@@ -1008,7 +955,6 @@ namespace ServerTools
         {
             try
             {
-
                 if (Wallet.IsEnabled && _cost > 0)
                 {
                     int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
@@ -1061,9 +1007,9 @@ namespace ServerTools
                 PersistentContainer.DataChange = true;
                 if (Dict.TryGetValue(_command, out string[] _commandData))
                 {
-                    if (_commandData[1].Contains("^"))
+                    if (_commandData[0].Contains("^"))
                     {
-                        List<string> _commands = _commandData[1].Split('^').ToList();
+                        List<string> _commands = _commandData[0].Split('^').ToList();
                         for (int i = 0; i < _commands.Count; i++)
                         {
                             string _commandTrimmed = _commands[i].Trim();
@@ -1089,7 +1035,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        CommandExec(_cInfo, _commandData[1]);
+                        CommandExec(_cInfo, _commandData[0]);
                     }
                 }
             }
@@ -1142,9 +1088,27 @@ namespace ServerTools
             {
                 if (_cInfo != null)
                 {
-                    _command = _command.Replace("{EntityId}", _cInfo.entityId.ToString());
-                    _command = _command.Replace("{SteamId}", _cInfo.playerId);
-                    _command = _command.Replace("{PlayerName}", _cInfo.playerName);
+                    if (_command.Contains("{EntityId}"))
+                    {
+                        _command = _command.Replace("{EntityId}", _cInfo.entityId.ToString());
+                    }
+                    if (_command.Contains("{SteamId}"))
+                    {
+                        _command = _command.Replace("{SteamId}", _cInfo.playerId);
+                    }
+                    if (_command.Contains("{PlayerName}"))
+                    {
+                        _command = _command.Replace("{PlayerName}", _cInfo.playerName);
+                    }
+                    if (_command.Contains("{RandomPlayerId}"))
+                    {
+                        List<ClientInfo> _clients = PersistentOperations.ClientList();
+                        ClientInfo _client = _clients.ElementAt(Random.Next(_clients.Count));
+                        if (_client != null)
+                        {
+                            _command = _command.Replace("{RandomPlayerId}", _client.playerId);
+                        }
+                    }
                     if (_command.ToLower().StartsWith("global "))
                     {
                         _command = _command.Replace("Global ", "");
@@ -1187,45 +1151,59 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- possible variables {EntityId} {SteamId} {PlayerName} {Delay} -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("<!-- Possible variables {EntityId}, {SteamId}, {PlayerName}, {Delay}, {RandomPlayerId}, whisper, global -->");
+                    sw.WriteLine("<!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ whisper You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Possible variables {EntityId}") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Custom Trigger=\"Example\"") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Custom Trigger=\"\""))
                         {
-                            continue;
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Command")
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            string _trigger = "", _command = "", _delay = "", _hidden = "", _permission = "", _cost = "";
-                            if (_line.HasAttribute("Trigger"))
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && (_line.Name == "Custom" || _line.Name == "Command"))
                             {
-                                _trigger = _line.GetAttribute("Trigger");
+                                _blank = false;
+                                string _trigger = "", _command = "", _delay = "", _hidden = "", _permission = "", _cost = "";
+                                if (_line.HasAttribute("Trigger"))
+                                {
+                                    _trigger = _line.GetAttribute("Trigger");
+                                }
+                                if (_line.HasAttribute("Command"))
+                                {
+                                    _command = _line.GetAttribute("Command");
+                                }
+                                if (_line.HasAttribute("DelayBetweenUses"))
+                                {
+                                    _delay = _line.GetAttribute("DelayBetweenUses");
+                                }
+                                if (_line.HasAttribute("Hidden"))
+                                {
+                                    _hidden = _line.GetAttribute("Hidden");
+                                }
+                                if (_line.HasAttribute("Permission"))
+                                {
+                                    _permission = _line.GetAttribute("Permission");
+                                }
+                                if (_line.HasAttribute("Cost"))
+                                {
+                                    _cost = _line.GetAttribute("Cost");
+                                }
+                                sw.WriteLine(string.Format("    <Custom Trigger=\"{0}\" Command=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Permission=\"{4}\" Cost=\"{5}\" />", _trigger, _command, _delay, _hidden, _permission, _cost));
                             }
-                            if (_line.HasAttribute("Command"))
-                            {
-                                _command = _line.GetAttribute("Command");
-                            }
-                            if (_line.HasAttribute("DelayBetweenUses"))
-                            {
-                                _delay = _line.GetAttribute("DelayBetweenUses");
-                            }
-                            if (_line.HasAttribute("Hidden"))
-                            {
-                                _hidden = _line.GetAttribute("Hidden");
-                            }
-                            if (_line.HasAttribute("Permission"))
-                            {
-                                _permission = _line.GetAttribute("Permission");
-                            }
-                            if (_line.HasAttribute("Cost"))
-                            {
-                                _cost = _line.GetAttribute("Cost");
-                            }
-                            sw.WriteLine(string.Format("    <Command Trigger=\"{0}\" Command=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Permission=\"{4}\" Cost=\"{5}\" />", _trigger, _command, _delay, _hidden, _permission, _cost));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    <!-- <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Permission=\"\" Cost=\"\" /> -->");
                     }
                     sw.WriteLine("</CustomCommands>");
                     sw.Flush();
@@ -1234,7 +1212,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommands.UpdateXml: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommands.UpgradeXml: {0}", e.Message));
             }
             FileWatcher.EnableRaisingEvents = true;
             LoadXml();

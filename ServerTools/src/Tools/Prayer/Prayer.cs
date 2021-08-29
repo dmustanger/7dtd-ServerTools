@@ -53,41 +53,35 @@ namespace ServerTools
                 if (_childNodes != null && _childNodes.Count > 0)
                 {
                     Dict.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                            }
-                            else if (_line.HasAttribute("Name") && _line.HasAttribute("Message"))
-                            {
-                                string _buff = _line.GetAttribute("Name");
-                                string _message = _line.GetAttribute("Message");
-                                BuffClass _class = BuffManager.GetBuff(_buff);
-                                if (_class == null)
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer.xml entry. Buff is not valid: {0}", _line.OuterXml));
-                                    continue;
+                                    UpgradeXml(_childNodes);
+                                    return;
                                 }
-                                if (!Dict.ContainsKey(_buff))
+                                else if (_line.HasAttribute("Name") && _line.HasAttribute("Message"))
                                 {
-                                    Dict.Add(_buff, _message);
+                                    string _buff = _line.GetAttribute("Name");
+                                    string _message = _line.GetAttribute("Message");
+                                    BuffClass _class = BuffManager.GetBuff(_buff);
+                                    if (_class == null)
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer.xml entry. Buff is not valid: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!Dict.ContainsKey(_buff))
+                                    {
+                                        Dict.Add(_buff, _message);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                 }
             }
@@ -107,6 +101,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Prayer>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- <Buff Name=\"buffPerkCharismaticNature\" Message=\"Your charisma has blossomed through your prayer\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -118,10 +113,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("    <Buff Name=\"buffPerkCharismaticNature\" Message=\"Your charisma has blossomed through your prayer\" />");
-                        sw.WriteLine("    <Buff Name=\"buffPerkParkour\" Message=\"You can fall without taking damage by the grace of your prayers\" />");
-                        sw.WriteLine("    <Buff Name=\"buffPistolPeteSwissKnees\" Message=\"Your prayers have developed in to a higher chance to cripple\" />");
-                        sw.WriteLine("    <Buff Name=\"buffAutoWeaponsRagdoll\" Message=\"Your prayers have been answered with auto weapon knockdown damage\" />");
+                        sw.WriteLine("    <!-- <Buff Name=\"\" Message=\"\" /> -->");
                     }
                     sw.WriteLine("</Prayer>");
                     sw.Flush();
@@ -295,28 +287,42 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Prayer>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("<!-- <Buff Name=\"buffPerkCharismaticNature\" Message=\"Your charisma has blossomed through your prayer\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Buff Name=\"buffPerkCharismaticNature\"") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Buff Name=\"\""))
                         {
-                            continue;
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Buff")
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            string _name = "", _message = "";
-                            if (_line.HasAttribute("Name"))
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && _line.Name == "Buff")
                             {
-                                _name = _line.GetAttribute("Name");
+                                _blank = false;
+                                string _name = "", _message = "";
+                                if (_line.HasAttribute("Name"))
+                                {
+                                    _name = _line.GetAttribute("Name");
+                                }
+                                if (_line.HasAttribute("Message"))
+                                {
+                                    _message = _line.GetAttribute("Message");
+                                }
+                                sw.WriteLine(string.Format("    <Buff Name=\"{0}\" Message=\"{1}\" />", _name, _message));
                             }
-                            if (_line.HasAttribute("Message"))
-                            {
-                                _message = _line.GetAttribute("Message");
-                            }
-                            sw.WriteLine(string.Format("    <Buff Name=\"{0}\" Message=\"{1}\" />", _name, _message));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    <!-- <Buff Name=\"\" Message=\"\" /> -->");
                     }
                     sw.WriteLine("</Prayer>");
                     sw.Flush();

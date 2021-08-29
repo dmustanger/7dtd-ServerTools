@@ -15,7 +15,7 @@ namespace ServerTools
         {
             try
             {
-                if ((BlockLogger.IsEnabled || DamageDetector.IsEnabled) && __instance != null && _blocksToChange != null && !string.IsNullOrEmpty(_persistentPlayerId) &&
+                if ((BlockLogger.IsEnabled || DamageDetector.IsEnabled || POIProtection.IsEnabled) && __instance != null && _blocksToChange != null && !string.IsNullOrEmpty(_persistentPlayerId) &&
                     _blocksToChange != null)
                 {
                     ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
@@ -34,8 +34,10 @@ namespace ServerTools
                                 {
                                     if (_newBlock is BlockSleepingBag)//placed a sleeping bag
                                     {
+                                        Log.Out(string.Format("[SERVERTOOLS] Block is sleeping bag"));
                                         if (POIProtection.IsEnabled && POIProtection.Bed && _world.IsPositionWithinPOI(_newBlockInfo.pos.ToVector3(), 5))
                                         {
+                                            Log.Out(string.Format("[SERVERTOOLS] Inside POI"));
                                             GameManager.Instance.World.SetBlockRPC(_newBlockInfo.pos, BlockValue.Air);
                                             PersistentOperations.ReturnBlock(_cInfo, _newBlock.GetBlockName(), 1);
                                             Phrases.Dict.TryGetValue("POI1", out string _phrase);
@@ -45,8 +47,10 @@ namespace ServerTools
                                     }
                                     else if (_newBlock is BlockLandClaim)//placed a land claim
                                     {
+                                        Log.Out(string.Format("[SERVERTOOLS] Block is land claim"));
                                         if (POIProtection.IsEnabled && POIProtection.Claim && _world.IsPositionWithinPOI(_newBlockInfo.pos.ToVector3(), 5))
                                         {
+                                            Log.Out(string.Format("[SERVERTOOLS] Inside POI"));
                                             GameManager.Instance.World.SetBlockRPC(_newBlockInfo.pos, BlockValue.Air);
                                             PersistentOperations.ReturnBlock(_cInfo, _newBlock.GetBlockName(), 1);
                                             Phrases.Dict.TryGetValue("POI2", out string _phrase);

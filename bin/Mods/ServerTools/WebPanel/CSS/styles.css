@@ -1,660 +1,605 @@
-:root {
-  --background: rgba(0, 0, 0, .70);
-  --background2: rgba(0, 0, 0, 1);
+:root
+{
+	font-family:"seven_days_later";
+	background:linear-gradient(to bottom right,rgba(0,0,0,.70),rgba(0,0,0,1)) fixed;
 }
 
-/*fonts start here */
-
-@font-face{
-	src: url(../Font/7DaysLater.ttf);
-	font-family: seven_days_later;
+@font-face
+{
+	font-family:"seven_days_later";
+	src:url(../Font/7DaysLater.woff2) format("woff2");
+	font-display:swap;
 }
 
-/* containers start here */
-
-#GeneralBody {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-
-	background-color: #000;
-	margin: 0;
-	padding: 0;
-
-	overflow: hidden;
+#GeneralBody
+{
+	position:absolute;
+	width:100%;
+	height:100%;
+	margin:0;
+	padding:0;
+	overflow:hidden;
 }
 
-#Head {
-	position: relative;
-	width: 100%;
-	height: 20%;
-
-	background-image: url("../Img/BloodBorder.png");
+#Head
+{
+	position:relative;
+	width:100%;
+	height:20%;
+	background-image:url(../Img/BloodBorder.webp);
 	background-repeat:no-repeat;
-	background-position: relative;
-	background-size: contain;
+	background-size:contain;
 }
 
-#ContentContainer {
-	position: relative;
-	height: 90%;
-	width: 100%;
-	
-	z-index: 0;
-
-	overflow: hidden;
+#ContentContainer
+{
+	position:relative;
+	height:90%;
+	width:100%;
+	z-index:0;
+	overflow:hidden;
 }
 
-#SubheaderLeft {
-	position: relative;
-	width: 20%;
-	height: 100%;
-	top: 0;
-	left: 0;
-	float: left;
-
-	text-align: center;
-
-	margin: 0;
-	padding: 0;
+#SubheaderLeft
+{
+	position:relative;
+	width:20%;
+	height:100%;
+	top:0;
+	left:0;
+	float:left;
+	text-align:center;
+	margin:0;
+	padding:0;
 }
 
-#SubheaderRight {
-	position: relative;
-	width: 80%;
-	height: 100%;
-	top: 0;
-	right: 0;
-	float: right;
-
-	margin: 0;
-	padding: 0;
-
-	overflow: hidden;
+#SubheaderRight
+{
+	position:relative;
+	width:80%;
+	height:100%;
+	top:0;
+	right:0;
+	float:right;
+	margin:0;
+	padding:0;
+	overflow:hidden;
 }
 
-#LogoContainer {
-	position: relative;
-	width: 100%;
-	height: 100%;
-
-	background-image: url("../Img/STLogo.png");
+#LogoContainer
+{
+	position:relative;
+	width:100%;
+	height:100%;
+	background-image:url(../Img/STLogo.webp);
 	background-repeat:no-repeat;
-	background-size: 38%;
-	background-position: center;
-
-	overflow: hidden;
+	background-size:38%;
+	background-position:center;
+	overflow:hidden;
 }
 
-#MenuContainer {
-	position: relative;
-	width: 100%;
-	height: 10%;
-	z-index : 2;
-
-	text-align: center;
-
-	visibility: hidden;
-	margin: 0;
-	padding: 0;
+#MenuContainer
+{
+	position:relative;
+	width:100%;
+	height:10%;
+	z-index:2;
+	text-align:center;
+	visibility:hidden;
+	margin:0;
+	padding:0;
 }
 
-#ClientContainer {
-	position: relative;
-
-	color: #FFF;
-	text-align: center;
-	font-family: seven_days_later;
-
-	margin: 0;
-	padding: 5%;
+#ClientContainer
+{
+	position:relative;
+	color:#FFF;
+	text-align:center;
+	font-family:seven_days_later;
+	margin:0;
+	padding:5%;
 }
 
-#DisclaimerContainer {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-
-	text-align: center;
-	cursor: pointer;
-
-	padding: 0;
-	
-	z-index: 1;
-
-	visibility: visible;
-	overflow: auto;
+#DisclaimerContainer
+{
+	position:absolute;
+	width:100%;
+	height:100%;
+	text-align:center;
+	text-shadow:2px 2px #000;
+	cursor:pointer;
+	padding:0;
+	z-index:1;
+	visibility:visible;
+	overflow:auto;
 }
 
-#ConsoleContainer {
-	position: absolute;
-	height: 92%;
-	width: 100%;
-	
-	z-index: 2;
-	
-	visibility: hidden;
+#ConsoleContainer
+{
+	position:absolute;
+	height:92%;
+	width:100%;
+	z-index:2;
+	visibility:hidden;
 }
 
-#PlayersContainer {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-
-  color: #FFF;
-
-  overflow-x: auto;
-  overflow-y: auto;
-  
-  z-index: 3;
-
-  visibility: hidden;
+#PlayersContainer
+{
+	position:absolute;
+	height:100%;
+	width:100%;
+	color:#FFF;
+	overflow-x:auto;
+	overflow-y:auto;
+	z-index:3;
+	visibility:hidden;
 }
 
-#ConfigContainer {
-	position: absolute;
-	height: 82%;
-	width: 100%;
-	background-color:  #585858;
-	
-	color: #FFF;
-	
-	overflow-x: auto;
-	overflow-y: auto;
-	
-	z-index: 4;
-	
-	visibility: hidden;
+#ConfigContainer
+{
+	position:absolute;
+	height:82%;
+	width:100%;
+	background-color:#585858;
+	color:#FFF;
+	overflow-x:auto;
+	overflow-y:auto;
+	z-index:4;
+	visibility:hidden;
 }
 
-#DevsContainer {
-	position: absolute;
-	height: 90%;
-	width: 100%;
-	
-	z-index: 5;
-	
-	visibility: hidden;
+#DevsContainer
+{
+	position:absolute;
+	height:90%;
+	width:100%;
+	z-index:5;
+	visibility:hidden;
 }
 
-#ContactsContainer {
-	position: absolute;
-	height: 90%;
-	width: 100%;
-	
-	z-index: 6;
-	
-	visibility: hidden;
+#ContactsContainer
+{
+	position:absolute;
+	height:90%;
+	width:100%;
+	z-index:6;
+	visibility:hidden;
 }
 
-#LogContainer {
-  position: relative;
-  height: 78%;
-  width: 100%;
-  
-  color: #FFF;
-
-  overflow-x: auto;
-  overflow-y: auto;
-
-  margin: 0;
-  padding: 0;
+#LogContainer
+{
+	position:relative;
+	height:78%;
+	width:100%;
+	color:#FFF;
+	overflow-x:auto;
+	overflow-y:auto;
+	margin:0;
+	padding:0;
 }
 
-#ConsoleCommandContainer {
-  position: relative;
-  height: 4%;
-  width: 100%;
-  float: left;
-
-  margin: 0;
-  padding: 0;
+#ConsoleCommandContainer
+{
+	position:relative;
+	height:4%;
+	width:100%;
+	float:left;
+	margin:0;
+	padding:0;
 }
 
-#BackgroundContainer {
-	position: relative;
-
-	z-index: 0;
-
-	visibility: hidden;
+#BackgroundContainer
+{
+	position:relative;
+	z-index:0;
+	visibility:hidden;
 }
 
-#MenuText {
-	color: #FFF;
-	font-size: 2rem;
-	font-family: seven_days_later;
-	text-decoration: none;
-	text-align: center;
-
-	margin: 0;
-	margin-top: 25px;
-	margin-left: 25px;
-	margin-right: 25px;
-
-	overflow: none;
+.MenuText
+{
+	color:#FFF;
+	font-size:2rem;
+	font-family:seven_days_later;
+	text-decoration:none;
+	text-align:center;
+	margin:25px 25px 0 25px;
+	overflow:auto;
 }
 
-#MenuText:hover {
-	color: #AB1700;
-	cursor: crosshair;
-	text-shadow:
-    2px 2px 1px #E61F00,
-    2px 2px 1px #CC1B00;
+.MenuText:hover
+{
+	color:#AB1700;
+	cursor:crosshair;
+	text-shadow:2px 2px 1px #E61F00,2px 2px 1px #CC1B00;
 }
 
-#Disclaimer {
-	color: #E00000;
-	text-decoration: underline;
-
-	margin-top: 30px;
-	margin-left: 30px;
-	margin-right: 30px;
+#Disclaimer
+{
+	color:#E00000;
+	text-decoration:underline;
+	margin-top:30px;
+	margin-left:30px;
+	margin-right:30px;
 }
 
-#DisclaimerInfo {
-	color: #BEAD00;
-	text-decoration: none;
-
-	margin-left: 30px;
-	margin-right: 30px;
+.DisclaimerInfo
+{
+	color:#BEAD00;
+	text-decoration:none;
+	margin-left:30px;
+	margin-right:30px;
 }
 
-#AcceptBox {
-	color: #FFF;
-	margin-top: 18px;
-	margin-left: 30px;
-
-	cursor: pointer;
+#AcceptBox
+{
+	color:#FFF;
+	margin-top:18px;
+	margin-left:30px;
+	cursor:pointer;
 }
 
-#LoginContainer {
-	position: absolute;
-	top: 0;
-	
-	z-index: 1;
-	
-	visibility: hidden;
+#LoginContainer
+{
+	position:absolute;
+	top:0;
+	z-index:1;
+	visibility:hidden;
 }
 
-#PasswordContainer {
-	position: absolute;
-	top: 0;
-	
-	z-index: 2;
-	
-	visibility: hidden;
+#PasswordContainer
+{
+	position:absolute;
+	top:0;
+	z-index:2;
+	visibility:hidden;
 }
 
-#LogoutContainer {
-	position: absolute;
-	top: 0;
-	
-	z-index: 3;
-	
-	visibility: hidden;
+#LogoutContainer
+{
+	position:absolute;
+	top:0;
+	z-index:3;
+	visibility:hidden;
 }
 
-#SignInButton {
-	color: #FFF;
-
-	background-color : #AB1700;
-
-	margin-top: 10px;
-
-	border: 1px solid #FFF;
+#SignInButton
+{
+	color:#FFF;
+	background-color:#AB1700;
+	margin-top:10px;
+	border:1px solid #FFF;
 	border-radius:5px;
 }
 
-#SetPassButton {
-	color: #FFF;
-
-	background-color : #AB1700;
-
-	margin-top: 10px;
-
-	border: 1px solid #FFF;
+#SetPassButton
+{
+	color:#FFF;
+	background-color:#AB1700;
+	margin-top:10px;
+	border:1px solid #FFF;
 	border-radius:5px;
 }
 
-#CancelButton {
-	color: #FFF;
-
-	background-color : #AB1700;
-
-	margin-top: 10px;
-
-	border: 1px solid #FFF;
+#CancelButton
+{
+	color:#FFF;
+	background-color:#AB1700;
+	margin-top:10px;
+	border:1px solid #FFF;
 	border-radius:5px;
 }
 
-#SignOutButton {
-	color: #FFF;
-
-	background-color : #AB1700;
-
-	margin-top: 10px;
-
-	border: 1px solid #FFF;
+#SignOutButton
+{
+	color:#FFF;
+	background-color:#AB1700;
+	margin-top:10px;
+	border:1px solid #FFF;
 	border-radius:5px;
 }
 
-#Text1 {
-	color: #000;
-	text-align: center;
-
-	background-color : #FFF;
-
-	padding: 1px;
-
-	border: 1px solid #AB1700;
+#Text1
+{
+	color:#000;
+	text-align:center;
+	background-color:#FFF;
+	padding:1px;
+	border:1px solid #AB1700;
 	border-radius:5px;
 }
 
-#Text2 {
-	color: #000;
-	text-align: center;
-
-	background-color : #FFF;
-
-	padding: 1px;
-
-	border: 1px solid #AB1700;
+#Text2
+{
+	color:#000;
+	text-align:center;
+	background-color:#FFF;
+	padding:1px;
+	border:1px solid #AB1700;
 	border-radius:5px;
 }
 
-#Text3 {
-	color: #000;
-	text-align: center;
-
-	background-color : #FFF;
-
-	padding: 1px;
-
-	border: 1px solid #AB1700;
+#Text3
+{
+	color:#000;
+	text-align:center;
+	background-color:#FFF;
+	padding:1px;
+	border:1px solid #AB1700;
 	border-radius:5px;
 }
 
-#Text4 {
-	color: #000;
-	text-align: center;
-
-	background-color : #FFF;
-
-	padding: 1px;
-
-	border: 1px solid #AB1700;
+#Text4
+{
+	color:#000;
+	text-align:center;
+	background-color:#FFF;
+	padding:1px;
+	border:1px solid #AB1700;
 	border-radius:5px;
 }
 
-#Icon {
-	margin-right: 10px;
+.Icon
+{
+	margin-right:10px;
+	width:25px;
+	height:25px;
 }
 
-#AcceptText {
-	color: #E00000;
-	text-decoration: none;
-
-	margin-left: 20px;
+#AcceptText
+{
+	color:#E00000;
+	text-decoration:none;
+	margin-left:20px;
 }
 
-#Version {
-	position: relative;
-	color: #FFF;
-	top: 10px;
-	text-align: right;
-	
-	float: right;
-	margin: 0;
-	padding-right: 50px;
+#Version
+{
+	position:relative;
+	color:#FFF;
+	top:10px;
+	text-align:right;
+	text-shadow:2px 2px #000;
+	float:right;
+	margin:0;
+	padding-right:50px;
 }
 
-#NewPassButton {
-	position: relative;
-	color: #FFF;
-
-	background-color : #AB1700;
-
-	margin-top: 10px;
-
-	border: 1px solid #FFF;
+#NewPassButton
+{
+	position:relative;
+	color:#FFF;
+	background-color:#AB1700;
+	margin-top:10px;
+	border:1px solid #FFF;
 	border-radius:5px;
-
-	visibility: hidden;
+	visibility:hidden;
 }
 
-#CancelButton {
-	position: relative;
-	color: #FFF;
-	
-	background-color : #AB1700;
-	
-	margin-top: 10px;
-	
-	border: 1px solid #FFF;
+#CancelButton
+{
+	position:relative;
+	color:#FFF;
+	background-color:#AB1700;
+	margin-top:10px;
+	border:1px solid #FFF;
 	border-radius:5px;
-
-	visibility: hidden;
+	visibility:hidden;
 }
 
-#About {
-	color: #C10000;
-	font-family: seven_days_later;
-	text-align: center;
-	text-decoration: none;
-	text-shadow: 4px 4px #000;
-	font-stretch: 10px;
-	
-	padding-top: 30;
+#About
+{
+	color:#C10000;
+	font-family:seven_days_later;
+	text-align:center;
+	text-decoration:none;
+	text-shadow:4px 4px #000;
+	font-stretch:semi-expanded;
+	padding-top:30px;
 }
 
-#Developer {
-	color: #C15500;
+.Developer
+{
+	color:#C15500;
 }
 
-#Contacts {
-	color: #C10000;
-	font-family: seven_days_later;
-	text-align: center;
-	text-decoration: none;
-	text-shadow: 4px 4px #000;
-	font-stretch: 10px;
-	
-	padding-top: 30;
+#Contacts
+{
+	color:#C10000;
+	font-family:seven_days_later;
+	text-align:center;
+	text-decoration:none;
+	text-shadow:4px 4px #000;
+	font-stretch:semi-expanded;
+	padding-top:30px;
 }
 
-#contacts-h1 {
-	color: #FFF;
-	font-size: 40px;
-	font-family: old_school_shadow;
+#contacts-h1
+{
+	color:#FFF;
+	font-size:40px;
 }
 
-#contacts-p {
-	color: #FFF;
-	font-size: 24px;
-	font-family: old_school_italic;
+#contacts-p
+{
+	color:#FFF;
+	font-size:24px;
 }
 
-#Discord {
-	font-size: 18px;
+#Discord
+{
+	font-size:18px;
 }
 
-#Console {
-	color: #FFF;
-
-	margin: 0;
-	padding: 0;
-	
-	white-space: pre-wrap;
-	word-wrap: break-word;
+#Console
+{
+	color:#FFF;
+	margin:0;
+	padding:0;
+	white-space:pre-wrap;
+	word-wrap:break-word;
 }
 
-#ConsoleCommand {
-	position: relative;
-	height: 90%;
-	width: 88%;
-	left: 0;
-	bottom: 0;
-
-	margin: 0;
-	padding: 0;
-  
-	z-index: 2;
+#ConsoleCommand
+{
+	position:relative;
+	height:90%;
+	width:88%;
+	left:0;
+	bottom:0;
+	margin:0;
+	padding:0;
+	z-index:2;
 }
 
-#ConsoleNote {
-	position: relative;
-	color: #C10000;
-	bottom: 13px;
-	left: 5px;
-  
-	z-index: 1;
+#ConsoleNote
+{
+	position:relative;
+	color:#C10000;
+	bottom:13px;
+	left:5px;
+	z-index:1;
 }
 
-#SendButton {
-	position: relative;
-	height: 90%;
-	width: 10%;
-	right: 0;
-
-	margin: 0;
-	padding: 0;
-	
-	z-index: 2;
+#SendButton
+{
+	position:relative;
+	height:90%;
+	width:10%;
+	right:0;
+	margin:0;
+	padding:0;
+	z-index:2;
 }
 
-#PlayersTable {
-	border: 1px solid #FFF;
-	width: 100%;
-	
-	text-align: center;
-	font-size: 24px;
-	color: #FFF;
-	
-	background-color: #585858;
+#PlayersTable
+{
+	border:1px solid #FFF;
+	width:100%;
+	text-align:center;
+	font-size:24px;
+	color:#FFF;
+	background-color:#585858;
 }
 
-#PlayersHeader {
-	height: 50px;
-
-	text-decoration: underline;
+#PlayersHeader
+{
+	height:50px;
+	text-decoration:underline;
 }
 
-#PlayersSteamId {
-	color: #000;
-	text-align: center;
-	
-	background-color : #FFF;
-	
-	padding: 1px;
-	
-	border: 1px solid #AB1700;
+#PlayersSteamId
+{
+	color:#000;
+	text-align:center;
+	background-color:#FFF;
+	padding:1px;
+	border:1px solid #AB1700;
 	border-radius:5px;
 }
 
-#PlayersEdit {
-  color: #FFF;
-
-  background-color : #AB1700;
-
-  margin: 10px;
-  padding: 1px;
-
-  border: 1px solid #FFF;
-  border-radius:5px;
+.PlayersEdit
+{
+	color:#FFF;
+	background-color:#AB1700;
+	margin:10px;
+	padding:1px;
+	border:1px solid #FFF;
+	border-radius:5px;
 }
 
-#PlayersBody {
-  position: relative;
-  bottom: 50px;
-
-  font-size: 20px;
+#PlayersBody
+{
+	position:relative;
+	height:50px;
+	font-size:20px;
 }
 
-#PlayerCount {
-  color: #FFF;
-
-  background-color : #000;
-
-  margin: 20px;
-
-  border: 1px solid #AB1700;
-  border-radius:5px;
+#PlayerCount
+{
+	color:#FFF;
+	background-color:#000;
+	margin:20px;
+	border:1px solid #AB1700;
+	border-radius:5px;
 }
 
-#SaveButton {
-  border: 1px solid #FFF;
-  border-radius:5px;
-
-  margin: 20px;
+#SaveButton
+{
+	border:1px solid #FFF;
+	border-radius:5px;
+	margin:20px;
 }
 
-#CurrentButton {
-  border: 1px solid #FFF;
-  border-radius:5px;
-
-  margin: 20px;
+#CurrentButton
+{
+	border:1px solid #FFF;
+	border-radius:5px;
+	margin:20px;
 }
 
-#ConfigToolName {
-  font-size: 20px;
-  text-decoration: underline;
-
-  background-color : #585858;
-
-  border: 2px solid #000;
+#ConfigToolName
+{
+	font-size:20px;
+	text-decoration:underline;
+	background-color:#585858;
+	border:2px solid #000;
 }
 
-#ConfigToolOption {
-  position: relative;
-  left: 250px;
-
-  font-size: 20px;
-  text-decoration: underline;
-
-  background-color : #585858;
+#ConfigToolOption
+{
+	position:relative;
+	left:250px;
+	font-size:20px;
+	text-decoration:underline;
+	background-color:#585858;
 }
 
-#AcceptSave {
-	color: #FFF;
-	margin-top: 18px;
-	margin-left: 30px;
-
-	cursor: pointer;
+#AcceptSave
+{
+	color:#FFF;
+	margin-top:18px;
+	margin-left:30px;
+	cursor:pointer;
 }
 
-#ConfigTable {
-  border-top: 3px solid #000;
-  border-bottom: 3px solid #000;
+#ConfigTable
+{
+	border-top:3px solid #000;
+	border-bottom:3px solid #000;
 }
 
-#ZombieBackground {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 50%;
-
-  z-index: 0;
+#ZombieBackground
+{
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+	width:50%;
+	z-index:0;
 }
 
-#ContactsHeader {
-  color: #CC5200;
+#ContactsHeader
+{
+	color:#CC5200;
 }
 
-td {
-  width: 10%;
-
-  border-top: 1px solid #000;
-  border-bottom: 1px solid #000;
+td
+{
+	width:10%;
+	border-top:1px solid #000;
+	border-bottom:1px solid #000;
 }
 
-tr:nth-child(even) {
-  background-color: #999;
+tr:nth-child(even)
+{
+	background-color:#999;
 }
 
-tr:nth-child(odd) {
-  background-color: #393939;
+tr:nth-child(odd)
+{
+	background-color:#393939;
 }
 
-a:link {
-  color: #CC5200;
+a:link
+{
+	color:#CC5200;
 }

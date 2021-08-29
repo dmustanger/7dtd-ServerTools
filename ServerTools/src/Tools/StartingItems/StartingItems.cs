@@ -53,90 +53,84 @@ namespace ServerTools
                 if (_childNodes != null && _childNodes.Count > 0)
                 {
                     Dict.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                            }
-                            else if (_line.HasAttribute("Name") && _line.HasAttribute("Count") && _line.HasAttribute("Quality"))
-                            {
-                                if (!int.TryParse(_line.GetAttribute("Count"), out int _count))
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Invalid (non-numeric) value for 'Count' attribute: {0}", _line.OuterXml));
-                                    continue;
+                                    UpgradeXml(_childNodes);
+                                    return;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Quality"), out int _quality))
+                                else if (_line.HasAttribute("Name") && _line.HasAttribute("Count") && _line.HasAttribute("Quality"))
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Invalid (non-numeric) value for 'Quality' attribute: {0}", _line.OuterXml));
-                                    continue;
-                                }
-                                string _item = _line.GetAttribute("Name");
-                                if (_item == "WalletCoin" || _item == "walletCoin" || _item == "walletcoin")
-                                {
-                                    if (Wallet.IsEnabled)
+                                    if (!int.TryParse(_line.GetAttribute("Count"), out int _count))
                                     {
-                                        if (_count < 1)
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Invalid (non-numeric) value for 'Count' attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!int.TryParse(_line.GetAttribute("Quality"), out int _quality))
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Invalid (non-numeric) value for 'Quality' attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                    string _item = _line.GetAttribute("Name");
+                                    if (_item == "WalletCoin" || _item == "walletCoin" || _item == "walletcoin")
+                                    {
+                                        if (Wallet.IsEnabled)
                                         {
-                                            _count = 1;
+                                            if (_count < 1)
+                                            {
+                                                _count = 1;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Wallet tool is not enabled: {0}", _line.OuterXml));
+                                            continue;
                                         }
                                     }
                                     else
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Wallet tool is not enabled: {0}", _line.OuterXml));
-                                        continue;
+                                        ItemValue _itemValue = ItemClass.GetItem(_item, false);
+                                        if (_itemValue.type == ItemValue.None.type)
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Item not found: {0}", _item));
+                                            continue;
+                                        }
+                                        if (_count > _itemValue.ItemClass.Stacknumber.Value)
+                                        {
+                                            _count = _itemValue.ItemClass.Stacknumber.Value;
+                                            Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} was set above the max stack value. It has been reduced to the maximum of {1}", _item, _count));
+                                        }
+                                        if (Dict.ContainsKey(_item))
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} has a duplicate entry", _item));
+                                        }
+                                        if (_count > _itemValue.ItemClass.Stacknumber.Value)
+                                        {
+                                            _count = _itemValue.ItemClass.Stacknumber.Value;
+                                        }
+                                        else if (_count < 1)
+                                        {
+                                            _count = 1;
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    ItemValue _itemValue = ItemClass.GetItem(_item, false);
-                                    if (_itemValue.type == ItemValue.None.type)
+                                    if (_quality < 1)
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Item not found: {0}", _item));
-                                        continue;
+                                        _quality = 1;
                                     }
-                                    if (_count > _itemValue.ItemClass.Stacknumber.Value)
+                                    int[] _c = new int[] { _count, _quality };
+                                    if (!Dict.ContainsKey(_item))
                                     {
-                                        _count = _itemValue.ItemClass.Stacknumber.Value;
-                                        Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} was set above the max stack value. It has been reduced to the maximum of {1}", _item, _count));
+                                        Dict.Add(_item, _c);
                                     }
-                                    if (Dict.ContainsKey(_item))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} has a duplicate entry", _item));
-                                    }
-                                    if (_count > _itemValue.ItemClass.Stacknumber.Value)
-                                    {
-                                        _count = _itemValue.ItemClass.Stacknumber.Value;
-                                    }
-                                    else if (_count < 1)
-                                    {
-                                        _count = 1;
-                                    }
-                                }
-                                if (_quality < 1)
-                                {
-                                    _quality = 1;
-                                }
-                                int[] _c = new int[] { _count, _quality };
-                                if (!Dict.ContainsKey(_item))
-                                {
-                                    Dict.Add(_item, _c);
                                 }
                             }
                         }
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                 }
             }
@@ -157,6 +151,7 @@ namespace ServerTools
                     sw.WriteLine("<StartingItems>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("<!-- Use WalletCoin for the Name if you want to give currency to their wallet -->");
+                    sw.WriteLine("<!-- <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -168,10 +163,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("    <Item Name=\"meleeToolRepairT0StoneAxe\" Count=\"1\" Quality=\"1\" />");
-                        sw.WriteLine("    <Item Name=\"meleeToolTorch\" Count=\"1\" Quality=\"1\" />");
-                        sw.WriteLine("    <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" />");
-                        sw.WriteLine("    <Item Name=\"drinkJarBoiledWater\" Count=\"1\" Quality=\"1\" />");
+                        sw.WriteLine("    <!-- <Item Name=\"\" Count=\"\" Quality=\"\" /> -->");
                     }
                     sw.WriteLine("</StartingItems>");
                     sw.Flush();
@@ -297,32 +289,46 @@ namespace ServerTools
                     sw.WriteLine("<StartingItems>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("<!-- Use WalletCoin for the Name if you want to give currency to their wallet -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("<!-- <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Use WalletCoin for") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Item Name=\"foodCanChili\"") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Item Name=\"\""))
                         {
-                            continue;
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Item")
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            string _name = "", _count = "", _quality = "";
-                            if (_line.HasAttribute("Name"))
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && _line.Name == "Item")
                             {
-                                _name = _line.GetAttribute("Name");
+                                _blank = false;
+                                string _name = "", _count = "", _quality = "";
+                                if (_line.HasAttribute("Name"))
+                                {
+                                    _name = _line.GetAttribute("Name");
+                                }
+                                if (_line.HasAttribute("Count"))
+                                {
+                                    _count = _line.GetAttribute("Count");
+                                }
+                                if (_line.HasAttribute("Quality"))
+                                {
+                                    _quality = _line.GetAttribute("Quality");
+                                }
+                                sw.WriteLine(string.Format("    <Item Name=\"{0}\" Count=\"{1}\" Quality=\"{2}\" />", _name, _count, _quality));
                             }
-                            if (_line.HasAttribute("Count"))
-                            {
-                                _count = _line.GetAttribute("Count");
-                            }
-                            if (_line.HasAttribute("Quality"))
-                            {
-                                _quality = _line.GetAttribute("Quality");
-                            }
-                            sw.WriteLine(string.Format("    <Item Name=\"{0}\" Count=\"{1}\" Quality=\"{2}\" />", _name, _count, _quality));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    <!-- <Item Name=\"\" Count=\"\" Quality=\"\" /> -->");
                     }
                     sw.WriteLine("</StartingItems>");
                     sw.Flush();

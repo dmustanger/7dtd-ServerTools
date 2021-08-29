@@ -39,90 +39,180 @@ namespace ServerTools
                                 }
                                 else if (PersistentContainer.Instance.Players[_cInfo.playerId].Auction.Count < Total_Items)
                                 {
-                                    LinkedList<Chunk> _chunkArray = new LinkedList<Chunk>();
+                                    List<Chunk> _chunks = new List<Chunk>();
                                     DictionaryList<Vector3i, TileEntity> _tiles = new DictionaryList<Vector3i, TileEntity>();
-                                    ChunkClusterList _chunklist = GameManager.Instance.World.ChunkClusters;
-                                    for (int i = 0; i < _chunklist.Count; i++)
+                                    Vector3 _position = _player.position;
+                                    Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)_position.x - 5, (int)_position.y, (int)_position.z);
+                                    if (_chunk != null && !_chunks.Contains(_chunk))
                                     {
-                                        ChunkCluster _chunk = _chunklist[i];
-                                        _chunkArray = _chunk.GetChunkArray();
-                                        foreach (Chunk _c in _chunkArray)
+                                        _chunks.Add(_chunk);
+                                    }
+                                    _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)_position.x + 5, (int)_position.y, (int)_position.z);
+                                    if (_chunk != null && !_chunks.Contains(_chunk))
+                                    {
+                                        _chunks.Add(_chunk);
+                                    }
+                                    _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)_position.x, (int)_position.y, (int)_position.z - 5);
+                                    if (_chunk != null && !_chunks.Contains(_chunk))
+                                    {
+                                        _chunks.Add(_chunk);
+                                    }
+                                    _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)_position.x + 5, (int)_position.y, (int)_position.z + 5);
+                                    if (_chunk != null && !_chunks.Contains(_chunk))
+                                    {
+                                        _chunks.Add(_chunk);
+                                    }
+                                    for (int i = 0; i < _chunks.Count; i++)
+                                    {
+                                        _tiles = _chunks[i].GetTileEntities();
+                                        foreach (TileEntity _tile in _tiles.dict.Values)
                                         {
-                                            _tiles = _c.GetTileEntities();
-                                            foreach (TileEntity _tile in _tiles.dict.Values)
+                                            TileEntityType _type = _tile.GetTileEntityType();
+                                            if (_type.ToString().Equals("SecureLoot"))
                                             {
-                                                TileEntityType _type = _tile.GetTileEntityType();
-                                                if (_type.ToString().Equals("SecureLoot"))
+                                                TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)_tile;
+                                                Vector3i vec3i = SecureLoot.ToWorldPos();
+                                                if ((vec3i.x - _player.position.x) * (vec3i.x - _player.position.x) + (vec3i.z - _player.position.z) * (vec3i.z - _player.position.z) <= 3 * 3)
                                                 {
-                                                    TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)_tile;
-                                                    Vector3i vec3i = SecureLoot.ToWorldPos();
-                                                    if ((vec3i.x - _player.position.x) * (vec3i.x - _player.position.x) + (vec3i.z - _player.position.z) * (vec3i.z - _player.position.z) <= 3 * 3)
+                                                    if (vec3i.y >= (int)_player.position.y - 3 && vec3i.y <= (int)_player.position.y + 3)
                                                     {
-                                                        if (vec3i.y >= (int)_player.position.y - 3 && vec3i.y <= (int)_player.position.y + 3)
+                                                        if (SecureLoot.IsUserAllowed(_cInfo.playerId) && !SecureLoot.IsUserAccessing())
                                                         {
-                                                            if (SecureLoot.IsUserAllowed(_cInfo.playerId) && !SecureLoot.IsUserAccessing())
+                                                            ItemStack[] items = SecureLoot.items;
+                                                            ItemStack _item = items[0];
+                                                            if (_item != null && !_item.IsEmpty())
                                                             {
-                                                                ItemStack[] items = SecureLoot.items;
-                                                                ItemStack _item = items[0];
-                                                                if (_item != null && !_item.IsEmpty())
+                                                                if (_item.itemValue.Modifications.Length > 0)
                                                                 {
-                                                                    int _id = GenerateAuctionId();
-                                                                    if (_id > 0)
+                                                                    for (int j = 0; j < _item.itemValue.Modifications.Length; j++)
                                                                     {
-                                                                        AuctionItems.Add(_id, _cInfo.playerId);
-                                                                        items[0] = ItemStack.Empty.Clone();
-                                                                        if (PersistentContainer.Instance.Players[_cInfo.playerId].Auction != null && PersistentContainer.Instance.Players[_cInfo.playerId].Auction.Count > 0)
+                                                                        if (!_item.itemValue.Modifications[j].IsEmpty())
                                                                         {
-                                                                            ItemDataSerializable _serializedItemStack = new ItemDataSerializable();
-                                                                            {
-                                                                                _serializedItemStack.name = _item.itemValue.ItemClass.GetItemName();
-                                                                                _serializedItemStack.count = _item.count;
-                                                                                _serializedItemStack.useTimes = _item.itemValue.UseTimes;
-                                                                                _serializedItemStack.quality = _item.itemValue.Quality;
-                                                                            }
-                                                                            PersistentContainer.Instance.Players[_cInfo.playerId].Auction.Add(_id, _serializedItemStack);
+                                                                            Phrases.Dict.TryGetValue("Auction18", out string _phrase);
+                                                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                                            return;
                                                                         }
-                                                                        else
+                                                                    }
+                                                                }
+                                                                if (_item.itemValue.CosmeticMods.Length > 0)
+                                                                {
+                                                                    for (int j = 0; j < _item.itemValue.CosmeticMods.Length; j++)
+                                                                    {
+                                                                        if (!_item.itemValue.CosmeticMods[j].IsEmpty())
                                                                         {
-                                                                            ItemDataSerializable _serializedItemStack = new ItemDataSerializable();
+                                                                            Phrases.Dict.TryGetValue("Auction18", out string _phrase);
+                                                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                                            return;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                int _id = GenerateAuctionId();
+                                                                if (_id > 0)
+                                                                {
+                                                                    AuctionItems.Add(_id, _cInfo.playerId);
+                                                                    items[0] = ItemStack.Empty.Clone();
+                                                                    if (PersistentContainer.Instance.Players[_cInfo.playerId].Auction != null && PersistentContainer.Instance.Players[_cInfo.playerId].Auction.Count > 0)
+                                                                    {
+                                                                        ItemDataSerializable _serializedItemStack = new ItemDataSerializable();
+                                                                        {
+                                                                            _serializedItemStack.name = _item.itemValue.ItemClass.GetItemName();
+                                                                            _serializedItemStack.count = _item.count;
+                                                                            _serializedItemStack.useTimes = _item.itemValue.UseTimes;
+                                                                            _serializedItemStack.quality = _item.itemValue.Quality;
+                                                                            if (_item.itemValue.CosmeticMods.Length > 0)
                                                                             {
-                                                                                _serializedItemStack.name = _item.itemValue.ItemClass.GetItemName();
-                                                                                _serializedItemStack.count = _item.count;
-                                                                                _serializedItemStack.useTimes = _item.itemValue.UseTimes;
-                                                                                _serializedItemStack.quality = _item.itemValue.Quality;
+                                                                                _serializedItemStack.modSlots = _item.itemValue.Modifications.Length;
                                                                             }
-                                                                            Dictionary<int, ItemDataSerializable> _auctionItems = new Dictionary<int, ItemDataSerializable>
+                                                                            else
+                                                                            {
+                                                                                _serializedItemStack.modSlots = 0;
+                                                                            }
+                                                                            if (_item.itemValue.CosmeticMods.Length > 0)
+                                                                            {
+                                                                                _serializedItemStack.cosmeticSlots = _item.itemValue.CosmeticMods.Length;
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                _serializedItemStack.cosmeticSlots = 0;
+                                                                            }
+                                                                        }
+                                                                        PersistentContainer.Instance.Players[_cInfo.playerId].Auction.Add(_id, _serializedItemStack);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        ItemDataSerializable _serializedItemStack = new ItemDataSerializable();
+                                                                        {
+                                                                            _serializedItemStack.name = _item.itemValue.ItemClass.GetItemName();
+                                                                            _serializedItemStack.count = _item.count;
+                                                                            _serializedItemStack.useTimes = _item.itemValue.UseTimes;
+                                                                            _serializedItemStack.quality = _item.itemValue.Quality;
+                                                                            if (_item.itemValue.Modifications.Length > 0)
+                                                                            {
+                                                                                _serializedItemStack.modSlots = _item.itemValue.Modifications.Length;
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                _serializedItemStack.modSlots = 0;
+                                                                            }
+                                                                            if (_item.itemValue.CosmeticMods.Length > 0)
+                                                                            {
+                                                                                _serializedItemStack.cosmeticSlots = _item.itemValue.CosmeticMods.Length;
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                _serializedItemStack.cosmeticSlots = 0;
+                                                                            }
+                                                                        }
+                                                                        Dictionary<int, ItemDataSerializable> _auctionItems = new Dictionary<int, ItemDataSerializable>
                                                                             {
                                                                                 { _id, _serializedItemStack }
                                                                             };
-                                                                            PersistentContainer.Instance.Players[_cInfo.playerId].Auction = _auctionItems;
-                                                                        }
-                                                                        if (PersistentContainer.Instance.AuctionPrices != null && PersistentContainer.Instance.AuctionPrices.Count > 0)
-                                                                        {
-                                                                            PersistentContainer.Instance.AuctionPrices.Add(_id, _auctionPrice);
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            Dictionary<int, int> _auctionPrices = new Dictionary<int, int>
+                                                                        PersistentContainer.Instance.Players[_cInfo.playerId].Auction = _auctionItems;
+                                                                    }
+                                                                    if (PersistentContainer.Instance.AuctionPrices != null && PersistentContainer.Instance.AuctionPrices.Count > 0)
+                                                                    {
+                                                                        PersistentContainer.Instance.AuctionPrices.Add(_id, _auctionPrice);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        Dictionary<int, int> _auctionPrices = new Dictionary<int, int>
                                                                             {
                                                                                 { _id, _auctionPrice }
                                                                             };
-                                                                            PersistentContainer.Instance.AuctionPrices = _auctionPrices;
-                                                                        }
-                                                                        _tile.SetModified();
-                                                                        PersistentContainer.DataChange = true;
+                                                                        PersistentContainer.Instance.AuctionPrices = _auctionPrices;
+                                                                    }
+                                                                    _tile.SetModified();
+                                                                    PersistentContainer.DataChange = true;
+                                                                    if (_item.itemValue.HasQuality)
+                                                                    {
                                                                         using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                                                         {
-                                                                            sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4}, {5} quality, {6} percent durability for {7} {8}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _item.count, _item.itemValue.ItemClass.GetItemName(), _item.itemValue.Quality, _item.itemValue.UseTimes / _item.itemValue.MaxUseTimes * 100, _price, Wallet.Coin_Name));
+                                                                            sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4}, {5} quality, {6} percent durability for {7} {8}", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _item.count, _item.itemValue.ItemClass.GetItemName(), _item.itemValue.Quality, _item.itemValue.UseTimes / _item.itemValue.MaxUseTimes * 100, _price, Wallet.Coin_Name));
                                                                             sw.WriteLine();
                                                                             sw.Flush();
                                                                             sw.Close();
                                                                         }
-                                                                        Phrases.Dict.TryGetValue("Auction1", out string _phrase);
-                                                                        _phrase = _phrase.Replace("{Name}", _item.itemValue.ItemClass.GetLocalizedItemName() ?? _item.itemValue.ItemClass.GetItemName());
-                                                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                                                        return;
                                                                     }
+                                                                    else
+                                                                    {
+                                                                        using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                                                                        {
+                                                                            sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4}, for {5} {6}", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _item.count, _item.itemValue.ItemClass.GetItemName(), _price, Wallet.Coin_Name));
+                                                                            sw.WriteLine();
+                                                                            sw.Flush();
+                                                                            sw.Close();
+                                                                        }
+                                                                    }
+                                                                    Phrases.Dict.TryGetValue("Auction1", out string _phrase);
+                                                                    _phrase = _phrase.Replace("{Name}", _item.itemValue.ItemClass.GetLocalizedItemName() ?? _item.itemValue.ItemClass.GetItemName());
+                                                                    _phrase = _phrase.Replace("{Value}", _id.ToString());
+                                                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                                    return;
+                                                                }
+                                                                else
+                                                                {
+                                                                    Phrases.Dict.TryGetValue("Auction16", out string _phrase);
+                                                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                                 }
                                                             }
                                                         }
@@ -156,7 +246,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AuctionBox.CheckBox: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Auction.CheckBox: {0}", e.Message));
             }
         }
 
@@ -185,15 +275,28 @@ namespace ServerTools
                                         {
                                             if (_auctionPrices.TryGetValue(_item.Key, out int _price))
                                             {
-                                                Phrases.Dict.TryGetValue("Auction5", out string _phrase);
-                                                _phrase = _phrase.Replace("{Id}", _item.Key.ToString());
-                                                _phrase = _phrase.Replace("{Count}", _item.Value.count.ToString());
-                                                _phrase = _phrase.Replace("{Item}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName());
-                                                _phrase = _phrase.Replace("{Quality}", _item.Value.quality.ToString());
-                                                _phrase = _phrase.Replace("{Durability}", (_item.Value.useTimes / _itemValue.MaxUseTimes * 100).ToString());
-                                                _phrase = _phrase.Replace("{Price}", _price.ToString());
-                                                _phrase = _phrase.Replace("{Coin}", Wallet.Coin_Name);
-                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                if (_itemValue.HasQuality)
+                                                {
+                                                    Phrases.Dict.TryGetValue("Auction5", out string _phrase);
+                                                    _phrase = _phrase.Replace("{Id}", _item.Key.ToString());
+                                                    _phrase = _phrase.Replace("{Count}", _item.Value.count.ToString());
+                                                    _phrase = _phrase.Replace("{Item}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName());
+                                                    _phrase = _phrase.Replace("{Quality}", _item.Value.quality.ToString());
+                                                    _phrase = _phrase.Replace("{Durability}", (_item.Value.useTimes / _itemValue.MaxUseTimes * 100).ToString());
+                                                    _phrase = _phrase.Replace("{Price}", _price.ToString());
+                                                    _phrase = _phrase.Replace("{Coin}", Wallet.Coin_Name);
+                                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                }
+                                                else
+                                                {
+                                                    Phrases.Dict.TryGetValue("Auction17", out string _phrase);
+                                                    _phrase = _phrase.Replace("{Id}", _item.Key.ToString());
+                                                    _phrase = _phrase.Replace("{Count}", _item.Value.count.ToString());
+                                                    _phrase = _phrase.Replace("{Item}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName());
+                                                    _phrase = _phrase.Replace("{Price}", _price.ToString());
+                                                    _phrase = _phrase.Replace("{Coin}", Wallet.Coin_Name);
+                                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                }
                                             }
                                         }
                                     }
@@ -210,7 +313,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AuctionBox.AuctionList: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Auction.AuctionList: {0}", e.Message));
             }
         }     
 
@@ -257,11 +360,18 @@ namespace ServerTools
                 if (PersistentContainer.Instance.Players[_steamId].Auction != null && PersistentContainer.Instance.Players[_steamId].Auction.Count > 0)
                 {
                     PersistentContainer.Instance.Players[_steamId].Auction.TryGetValue(_purchase, out ItemDataSerializable _itemData);
-                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_itemData.name, false).type, false);
+                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_itemData.name, false).type, _itemData.quality, _itemData.quality, false);
                     if (_itemValue != null)
                     {
                         _itemValue.UseTimes = _itemData.useTimes;
-                        _itemValue.Quality = _itemData.quality;
+                        if (_itemData.modSlots > 0)
+                        {
+                            _itemValue.Modifications = new ItemValue[_itemData.modSlots];
+                        }
+                        if (_itemData.cosmeticSlots > 0)
+                        {
+                            _itemValue.CosmeticMods = new ItemValue[_itemData.cosmeticSlots];
+                        }
                         World world = GameManager.Instance.World;
                         EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                         {
@@ -319,11 +429,18 @@ namespace ServerTools
                     {
                         if (PersistentContainer.Instance.Players[_cInfo.playerId].Auction.TryGetValue(_id, out ItemDataSerializable _itemData))
                         {
-                            ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_itemData.name, false).type, false);
+                            ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_itemData.name, false).type, _itemData.quality, _itemData.quality, false);
                             if (_itemValue != null)
                             {
                                 _itemValue.UseTimes = _itemData.useTimes;
-                                _itemValue.Quality = _itemData.quality;
+                                if (_itemData.modSlots > 0)
+                                {
+                                    _itemValue.Modifications = new ItemValue[_itemData.modSlots];
+                                }
+                                if (_itemData.cosmeticSlots > 0)
+                                {
+                                    _itemValue.CosmeticMods = new ItemValue[_itemData.cosmeticSlots];
+                                }
                                 World world = GameManager.Instance.World;
                                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                                 {
@@ -385,32 +502,16 @@ namespace ServerTools
 
         private static int GenerateAuctionId()
         {
-            int _id = Random.Next(1000, 5001);
-            if (AuctionItems.ContainsKey(_id))
+            int _id = 0;
+            for (int i = 0; i < 20; i++)
             {
                 _id = Random.Next(1000, 5001);
-                if (AuctionItems.ContainsKey(_id))
+                if (!AuctionItems.ContainsKey(_id))
                 {
-                    _id = Random.Next(1000, 5001);
-                    if (AuctionItems.ContainsKey(_id))
-                    {
-                        _id = Random.Next(1000, 5001);
-                        return 0;
-                    }
-                    else
-                    {
-                        return _id;
-                    }
-                }
-                else
-                {
-                    return _id;
+                    break;
                 }
             }
-            else
-            {
-                return _id;
-            }
+            return _id;
         }
     }
 }

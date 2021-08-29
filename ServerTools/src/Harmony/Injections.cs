@@ -8,18 +8,18 @@ using System.Text.RegularExpressions;
 public static class Injections
 {
 
-    public static bool DamageEntity_Prefix(EntityAlive __instance, DamageSource _damageSource, int _strength)
+    public static bool EntityAlive_DamageEntity_Prefix(EntityAlive __instance, DamageSource _damageSource, int _strength)
     {
         try
         {
             if (__instance.entityId != _damageSource.getEntityId())
             {
-                return ProcessDamage.Exec(__instance, _damageSource, ref _strength);
+                return ProcessDamage.Exec(__instance, _damageSource, _strength);
             }
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageDamageEntity_Prefix: {0}", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.EntityAlive_DamageEntity_Prefix: {0}", e.Message));
         }
         return true;
     }
@@ -180,7 +180,29 @@ public static class Injections
         }
     }
 
-    public static void Cleanup_Postfix()
+    public static void GameManager_OnApplicationQuit_Prefix()
+    {
+        try
+        {
+            Dictionary<int, EntityPlayer> _entityPlayers = PersistentOperations.GetEntityPlayers();
+            if (_entityPlayers != null && _entityPlayers.Count > 0)
+            {
+                foreach (var _entityPlayer in _entityPlayers)
+                {
+                    if (_entityPlayer.Value.AttachedToEntity != null && _entityPlayer.Value.IsSpawned())
+                    {
+                        _entityPlayer.Value.Detach();
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_OnApplicationQuit_Prefix: {0}", e.Message));
+        }
+    }
+
+    public static void GameManager_Cleanup_Postfix()
     {
         try
         {
@@ -193,7 +215,7 @@ public static class Injections
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.Cleanup_Postfix: {0}", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_Cleanup_Postfix: {0}", e.Message));
         }
     }
 
@@ -213,7 +235,7 @@ public static class Injections
         return null;
     }
 
-    public static void EntityAlive_ProcessDamageResponse_Postfix(EntityAlive __instance, DamageResponse _dmResponse)
+    public static bool EntityAlive_ProcessDamageResponse_Prefix(EntityAlive __instance, DamageResponse _dmResponse)
     {
         try
         {
@@ -221,10 +243,32 @@ public static class Injections
             {
                 NewPlayerProtection.AddHealing(__instance, _dmResponse);
             }
+            return ProcessDamage.Exec(__instance, _dmResponse.Source, _dmResponse.Strength);
         }
         catch (Exception e)
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.EntityAlive_ProcessDamageResponse_Prefix: {0}", e.Message));
         }
+        return true;
+    }
+
+    public static bool GameManager_CollectEntityServer_Prefix(int _entityId)
+    {
+        try
+        {
+            if (PersistentOperations.No_Vehicle_Pickup)
+            {
+                Entity _entity = PersistentOperations.GetEntity(_entityId);
+                if (_entity != null && _entity is EntityVehicle)
+                {
+                    return false;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_CollectEntityServer_Prefix: {0}", e.Message));
+        }
+        return true;
     }
 }

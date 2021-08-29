@@ -48,48 +48,42 @@ namespace ServerTools
                 if (_childNodes != null && _childNodes.Count > 0)
                 {
                     Colors.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                            }
-                            else if (_line.HasAttribute("Name") && _line.HasAttribute("Tags"))
-                            {
-                                if (string.IsNullOrWhiteSpace(_line.Attributes[0].Value) || string.IsNullOrWhiteSpace(_line.Attributes[1].Value))
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring ChatColors.xml entry: {0}", _line.OuterXml));
-                                    continue;
+                                    UpgradeXml(_childNodes);
+                                    return;
                                 }
-                                else
+                                else if (_line.HasAttribute("Name") && _line.HasAttribute("Tags"))
                                 {
-                                    string _name = _line.GetAttribute("Name");
-                                    string _tags = _line.GetAttribute("Tags");
-                                    if (!_tags.Contains("[") || !_tags.Contains("]"))
+                                    if (string.IsNullOrWhiteSpace(_line.Attributes[0].Value) || string.IsNullOrWhiteSpace(_line.Attributes[1].Value))
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring ChatColors.xml entry with missing brackets[] around the Tags: {0}", _line.OuterXml));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring ChatColors.xml entry: {0}", _line.OuterXml));
                                         continue;
                                     }
-                                    if (!Colors.ContainsKey(_name))
+                                    else
                                     {
-                                        Colors.Add(_name, _tags);
+                                        string _name = _line.GetAttribute("Name");
+                                        string _tags = _line.GetAttribute("Tags");
+                                        if (!_tags.Contains("[") || !_tags.Contains("]"))
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring ChatColors.xml entry with missing brackets[] around the Tags: {0}", _line.OuterXml));
+                                            continue;
+                                        }
+                                        if (!Colors.ContainsKey(_name))
+                                        {
+                                            Colors.Add(_name, _tags);
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                 }
             }
@@ -109,6 +103,8 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Colors>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- <Color Name=\"Red\" Tags=\"[FF0000]\" /> -->");
+                    sw.WriteLine("<!-- <Color Name=\"Rainbow\" Tags=\"[FF0000],[FF9933],[FFFF00],[009933],[0000CC],[9900CC],[FF33CC]\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Colors.Count > 0)
@@ -120,26 +116,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("  <Color Name=\"Red\" Tags=\"[FF0000]\" />");
-                        sw.WriteLine("  <Color Name=\"Orange\" Tags=\"[FF9933]\" />");
-                        sw.WriteLine("  <Color Name=\"Yellow\" Tags=\"[FFFF00]\" />");
-                        sw.WriteLine("  <Color Name=\"Green\" Tags=\"[009933]\" />");
-                        sw.WriteLine("  <Color Name=\"Blue\" Tags=\"[0000CC]\" />");
-                        sw.WriteLine("  <Color Name=\"Purple\" Tags=\"[9900CC]\" />");
-                        sw.WriteLine("  <Color Name=\"Pink\" Tags=\"[FF33CC]\" />");
-                        sw.WriteLine("  <Color Name=\"Brown\" Tags=\"[4D0000]\" />");
-                        sw.WriteLine("  <Color Name=\"Grey\" Tags=\"[696969]\" />");
-                        sw.WriteLine("  <Color Name=\"Teal\" Tags=\"[33CCFF]\" />");
-                        sw.WriteLine("  <Color Name=\"Mustard\" Tags=\"[CCCC00]\" />");
-                        sw.WriteLine("  <Color Name=\"Forest\" Tags=\"[339933]\" />");
-                        sw.WriteLine("  <Color Name=\"Aqua\" Tags=\"[3399FF]\" />");
-                        sw.WriteLine("  <Color Name=\"Fire\" Tags=\"[F66302]\" />");
-                        sw.WriteLine("  <Color Name=\"Rainbow\" Tags=\"[FF0000],[FF9933],[FFFF00],[009933],[0000CC],[9900CC],[FF33CC]\" />");
-                        sw.WriteLine("  <Color Name=\"R-O\" Tags=\"[FF0000],[FF4300],[FF6100],[FF8700],[FFFF00],[009933]\" />");
-                        sw.WriteLine("  <Color Name=\"R-Y\" Tags=\"[FF0000],[FF4300],[FF6100],[FF8700],[FFB000],[FFD500],[FFFF00]\" />");
-                        sw.WriteLine("  <Color Name=\"Y-G\" Tags=\"[FFFF00],[AEEC00],[5FD600],[12BF00],[00AF11],[009933]\" />");
-                        sw.WriteLine("  <Color Name=\"G-B\" Tags=\"[009933],[00A792],[0085B6],[0058C3],[0000CC]\" />");
-                        sw.WriteLine("  <Color Name=\"W-R\" Tags=\"[FFFFFF],[FFC2C2],[FF8585],[FF4242],[FF0000]\" />");
+                        sw.WriteLine("    <!-- <Color Name=\"\" Tags=\"\" /> -->");
                     }
                     sw.WriteLine("</Colors>");
                     sw.Flush();
@@ -180,29 +157,44 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Colors>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("<!-- <Color Name=\"Red\" Tags=\"[FF0000]\" /> -->");
+                    sw.WriteLine("<!-- <Color Name=\"Rainbow\" Tags=\"[FF0000],[FF9933],[FFFF00],[009933],[0000CC],[9900CC],[FF33CC]\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Color Name=\"Red\"") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Color Name=\"Rainbow\"") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Color Name=\"\""))
                         {
-                            continue;
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Color")
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            string _name = "", _tags = "";
-                            DateTime _dateTime = DateTime.Now;
-                            if (_line.HasAttribute("Name"))
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && _line.Name == "Color")
                             {
-                                _name = _line.GetAttribute("Name");
+                                _blank = false;
+                                string _name = "", _tags = "";
+                                DateTime _dateTime = DateTime.Now;
+                                if (_line.HasAttribute("Name"))
+                                {
+                                    _name = _line.GetAttribute("Name");
+                                }
+                                if (_line.HasAttribute("Tags"))
+                                {
+                                    _tags = _line.GetAttribute("Tags");
+                                }
+                                sw.WriteLine(string.Format("    <Color Name=\"{0}\" Tags=\"{1}\" />", _name, _tags));
                             }
-                            if (_line.HasAttribute("Tags"))
-                            {
-                                _tags = _line.GetAttribute("Tags");
-                            }
-                            sw.WriteLine(string.Format("    <Color Name=\"{0}\" Tags=\"{1}\" />", _name, _tags));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    <!-- <Color Name=\"\" Tags=\"\" /> -->");
                     }
                     sw.WriteLine("</Colors>");
                     sw.Flush();

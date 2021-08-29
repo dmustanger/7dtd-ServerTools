@@ -10,7 +10,7 @@ namespace ServerTools
         private static readonly string file = string.Format("DamageLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static readonly string Filepath = string.Format("{0}/Logs/DamageLogs/{1}", API.ConfigPath, file);
 
-        public static bool Exec(EntityAlive __instance, DamageSource _dmgSource, ref int _strength)
+        public static bool Exec(EntityAlive __instance, DamageSource _dmgSource, int _strength)
         {
             try
             {

@@ -233,6 +233,10 @@ namespace ServerTools
                 {
                     PlayerStats.Exec();
                 }
+                if (Fps.IsEnabled)
+                {
+                    Fps.LowFPS();
+                }
             }
             if (_tenSecondTick >= 10)
             {

@@ -1,5 +1,33 @@
 ﻿CHANGELOG
 
+19.6.2
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+-Added No_Vehicle_Pickup tool. Does what the name says while enabled
+-Added variable {RandomPlayerId} to CustomCommands.xml. It will apply a
+random player's id. This allows for more creative command applications
+-Added Low_FPS option to FPS tool. If the server runs at this fps for
+20 seconds, it will try to remove zombies too far from players
+-Added phrase Auction18
+-Fixed Gimme and Bloodmoon_Warrior spawning items with missing mod slots
+-Fixed Zones protection PvPvE allowing cross zone damage
+-Fixed POI_Protection tool not function as intended
+-Fixed Custom_Commands tool not functioning as intended
+-Fixed Shop tool not functioning as intended
+-Fixed Waypoints.xml failing to add entries due to invalid cost
+-Fixed Auction tool creating items with different mod slot counts
+-Fixed Web_Panel player list overlapping visually (ThunderBolt)
+-Changed Vehicle_Teleport to Vehicle_Recall
+-Updated Xml upgrade process to retain custom comments
+-Updated Web_Panel with various optimizations (ThunderBolt)
+-Updated Auction tool to reject items with mods and cosmetics. It will
+warn the player to first remove them before placing it for auction
+-Updated phrase Auction1
+-Updated Vehicle_Recall tool. Complete redo of code and function. 
+Instructions can be found in the HowToSetup.txt
+-Removed phrase Shop17
+
 19.6.1
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

@@ -230,80 +230,6 @@ namespace ServerTools
                 Dict.Remove("Message color");
                 Log.Out("Message color disabled");
             }
-            if (VehicleTeleport.IsEnabled)
-            {
-                if (_initiating)
-                {
-                    Log.Out("-------------------------------------");
-                    Log.Out("[SERVERTOOLS] Vehicle Teleport tools:");
-                    Log.Out("-------------------------------------");
-                }
-                if (VehicleTeleport.Bike)
-                {
-                    if (!Dict.Contains("Bike"))
-                    {
-                        Dict.Add("Bike");
-                        Log.Out("Bike enabled");
-                    }
-                }
-                else if (Dict.Contains("Bike") && !_initiating)
-                {
-                    Dict.Remove("Bike");
-                    Log.Out("Bike disabled");
-                }
-                if (VehicleTeleport.Mini_Bike)
-                {
-                    if (!Dict.Contains("Mini bike"))
-                    {
-                        Dict.Add("Mini bike");
-                        Log.Out("Mini bike enabled");
-                    }
-                }
-                else if (Dict.Contains("Mini bike") && !_initiating)
-                {
-                    Dict.Remove("Mini bike");
-                    Log.Out("Mini bike disabled");
-                }
-                if (VehicleTeleport.Motor_Bike)
-                {
-                    if (!Dict.Contains("Motor bike"))
-                    {
-                        Dict.Add("Motor bike");
-                        Log.Out("Motor bike enabled");
-                    }
-                }
-                else if (Dict.Contains("Motor bike") && !_initiating)
-                {
-                    Dict.Remove("Motor bike");
-                    Log.Out("Motor bike disabled");
-                }
-                if (VehicleTeleport.Jeep)
-                {
-                    if (!Dict.Contains("Jeep"))
-                    {
-                        Dict.Add("Jeep");
-                        Log.Out("Jeep enabled");
-                    }
-                }
-                else if (Dict.Contains("Jeep") && !_initiating)
-                {
-                    Dict.Remove("Jeep");
-                    Log.Out("Jeep disabled");
-                }
-                if (VehicleTeleport.Gyro)
-                {
-                    if (!Dict.Contains("Gyro"))
-                    {
-                        Dict.Add("Gyro");
-                        Log.Out("Gyro enabled");
-                    }
-                }
-                else if (Dict.Contains("Gyro") && !_initiating)
-                {
-                    Dict.Remove("Gyro");
-                    Log.Out("Gyro disabled");
-                }
-            }
             if (_initiating)
             {
                 Log.Out("--------------------------");
@@ -1142,6 +1068,19 @@ namespace ServerTools
             {
                 Dict.Remove("Travel");
                 Log.Out("Travel disabled");
+            }
+            if (VehicleRecall.IsEnabled)
+            {
+                if (!Dict.Contains("Vehicle recall"))
+                {
+                    Dict.Add("Vehicle recall");
+                    Log.Out("Vehicle recall enabled");
+                }
+            }
+            else if (Dict.Contains("Vehicle recall") && !_initiating)
+            {
+                Dict.Remove("Vehicle recall");
+                Log.Out("Vehicle recall disabled");
             }
             if (VoteReward.IsEnabled)
             {

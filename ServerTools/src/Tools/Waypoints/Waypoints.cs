@@ -56,47 +56,41 @@ namespace ServerTools
                 if (_childNodes != null && _childNodes.Count > 0)
                 {
                     Dict.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                            }
-                            else if (_line.HasAttribute("Name") && _line.HasAttribute("Position") && _line.HasAttribute("Cost"))
-                            {
-                                string _name = _line.GetAttribute("Name");
-                                string _position = _line.GetAttribute("Position");
-                                string _cost = _line.GetAttribute("Position");
-                                if (!int.TryParse(_cost, out int _value))
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring Waypoints.xml entry. Invalid (non-numeric) value for 'Cost' attribute: {0}", _line.OuterXml));
-                                    continue;
+                                    UpgradeXml(_childNodes);
+                                    return;
                                 }
-                                if (!_position.Contains(","))
+                                else if (_line.HasAttribute("Name") && _line.HasAttribute("Position") && _line.HasAttribute("Cost"))
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring Waypoints.xml entry. Invalid value for 'Position' attribute: {0}", _line.OuterXml));
-                                    continue;
-                                }
-                                string[] _waypoint = { _position, _cost };
-                                if (!Dict.ContainsKey(_name))
-                                {
-                                    Dict.Add(_name, _waypoint);
+                                    string _name = _line.GetAttribute("Name");
+                                    string _position = _line.GetAttribute("Position");
+                                    string _cost = _line.GetAttribute("Cost");
+                                    if (!int.TryParse(_cost, out int _value))
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Waypoints.xml entry. Invalid (non-numeric) value for 'Cost' attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!_position.Contains(","))
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Waypoints.xml entry. Invalid value for 'Position' attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                    string[] _waypoint = { _position, _cost };
+                                    if (!Dict.ContainsKey(_name))
+                                    {
+                                        Dict.Add(_name, _waypoint);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                 }
             }
@@ -116,6 +110,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<PublicWaypoints>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- <Waypoint Name=\"Example\" Position=\"-500,20,500\" Cost=\"150\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -169,8 +164,18 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<PublicWaypoints>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- <Waypoint Name=\"Example\" Position=\"-500,20,500\" Cost=\"150\" /> -->");
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Waypoint Name=\"Example\"") && 
+                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Waypoint Name=\"\""))
+                        {
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                        }
+                    }
                     sw.WriteLine();
                     sw.WriteLine();
+                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
@@ -180,6 +185,7 @@ namespace ServerTools
                         XmlElement _line = (XmlElement)_oldChildNodes[i];
                         if (_line.HasAttributes && _line.Name == "Waypoint")
                         {
+                            _blank = false;
                             string _name = "", _position = "", _cost = "";
                             if (_line.HasAttribute("Name"))
                             {
@@ -195,6 +201,10 @@ namespace ServerTools
                             }
                             sw.WriteLine(string.Format("    <Waypoint Name=\"{0}\" Position=\"{1}\" Cost=\"{2}\" />", _name, _position, _cost));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    <!-- <Waypoint Name=\"\" Position=\"\" Cost=\"\" /> -->");
                     }
                     sw.WriteLine("</PublicWaypoints>");
                     sw.Flush();

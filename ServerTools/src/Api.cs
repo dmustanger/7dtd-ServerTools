@@ -109,7 +109,19 @@ namespace ServerTools
 
         private static void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)//Setting player view and profile
         {
-            
+            if (_cInfo != null)
+            {
+                if (CredentialCheck.IsEnabled && !CredentialCheck.AccCheck(_cInfo))
+                {
+                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"Auto detection has banned you for false credentials. Contact an admin if this is a mistake\"", _cInfo.playerId), null);
+                    return;
+                }
+                if (CountryBan.IsEnabled && CountryBan.IsCountryBanned(_cInfo))
+                {
+                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"Auto detection has banned you for country IP region\"", _cInfo.playerId), null);
+                    return;
+                }
+            }
         }
 
         private static void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)//Spawning player
@@ -118,28 +130,21 @@ namespace ServerTools
             {
                 if (_cInfo != null && _cInfo.playerId != null)
                 {
-                    if (CredentialCheck.IsEnabled && !CredentialCheck.AccCheck(_cInfo))
-                    {
-                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"Auto detection has banned you for false credentials. Contact an admin if this is a mistake\"", _cInfo.playerId), null);
-                        return;
-                    }
-                    if (CountryBan.IsEnabled && CountryBan.IsCountryBanned(_cInfo))
-                    {
-                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"Auto detection has banned you for country IP region\"", _cInfo.playerId), null);
-                        return;
-                    }
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastJoined = DateTime.Now;
-                    PersistentContainer.DataChange = true;
                     if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
                     {
                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                         if (_player != null)
                         {
-                            PersistentContainer.Instance.Players[_cInfo.playerId].PlayerName = _cInfo.playerName;
-                            PersistentContainer.DataChange = true;
-                            PersistentOperations.SessionTime(_cInfo);
                             if (_respawnReason == RespawnType.EnterMultiplayer)//New player spawning. Game bug can trigger this incorrectly
                             {
+                                PersistentOperations.SessionTime(_cInfo);
+                                PersistentContainer.Instance.Players[_cInfo.playerId].PlayerName = _cInfo.playerName;
+                                PersistentContainer.Instance.Players[_cInfo.playerId].LastJoined = DateTime.Now;
+                                PersistentContainer.DataChange = true;
+                                if (_player.AttachedToEntity != null)
+                                {
+                                    _player.Detach();
+                                }
                                 if (_player.distanceWalked < 1 && _player.totalTimePlayed <= 1)
                                 {
                                     Timers.NewPlayerTimer(_cInfo);
@@ -151,6 +156,14 @@ namespace ServerTools
                             }
                             else if (_respawnReason == RespawnType.JoinMultiplayer)//Old player spawning
                             {
+                                PersistentOperations.SessionTime(_cInfo);
+                                PersistentContainer.Instance.Players[_cInfo.playerId].PlayerName = _cInfo.playerName;
+                                PersistentContainer.Instance.Players[_cInfo.playerId].LastJoined = DateTime.Now;
+                                PersistentContainer.DataChange = true;
+                                if (_player.AttachedToEntity != null)
+                                {
+                                    _player.Detach();
+                                }
                                 if (_player.distanceWalked < 1 && _player.totalTimePlayed <= 1)
                                 {
                                     Timers.NewPlayerTimer(_cInfo);
@@ -162,6 +175,10 @@ namespace ServerTools
                             }
                             else if (_respawnReason == RespawnType.Died)//Player died, respawning
                             {
+                                if (_player.AttachedToEntity != null)
+                                {
+                                    _player.Detach();
+                                }
                                 PlayerDied(_cInfo);
                             }
                             else if (_respawnReason == RespawnType.Teleport)

@@ -20,22 +20,16 @@ namespace ServerTools
 
         public static void Load()
         {
-            if (IsEnabled && !IsRunning)
-            {
-                LoadXml();
-                InitFileWatcher();
-            }
+            LoadXml();
+            InitFileWatcher();
         }
 
         public static void Unload()
         {
-            if (!IsEnabled && IsRunning)
-            {
-                Dict.Clear();
-                FlagCounts.Clear();
-                FileWatcher.Dispose();
-                IsRunning = false;
-            }
+            Dict.Clear();
+            FlagCounts.Clear();
+            FileWatcher.Dispose();
+            IsRunning = false;
         }
 
         public static void LoadXml()
@@ -61,35 +55,29 @@ namespace ServerTools
                 {
                     Dict.Clear();
                     FlagCounts.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                            }
-                            else if (_line.HasAttribute("SteamId") && _line.HasAttribute("Name"))
-                            {
-                                string _id = _line.GetAttribute("SteamId");
-                                string _name = _line.GetAttribute("Name");
-                                if (!Dict.ContainsKey(_id))
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                                 {
-                                    Dict.Add(_id, _name);
+                                    UpgradeXml(_childNodes);
+                                    return;
+                                }
+                                else if (_line.HasAttribute("SteamId") && _line.HasAttribute("Name"))
+                                {
+                                    string _id = _line.GetAttribute("SteamId");
+                                    string _name = _line.GetAttribute("Name");
+                                    if (!Dict.ContainsKey(_id))
+                                    {
+                                        Dict.Add(_id, _name);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                 }
             }
@@ -109,6 +97,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<HighPing>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- <Player SteamId=\"76561191234567890\" Name=\"Example\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -120,7 +109,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("    <Player SteamId=\"\" Name=\"\" />");
+                        sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" /> -->");
                     }
                     sw.WriteLine("</HighPing>");
                     sw.Flush();
@@ -237,28 +226,42 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<HighPing>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("<!-- <Player SteamId=\"76561191234567890\" Name=\"Example\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Player SteamId=\"76561191234567890\"") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Player SteamId=\"\""))
                         {
-                            continue;
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Player")
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            string _steamId = "", _name = "";
-                            if (_line.HasAttribute("SteamId"))
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && _line.Name == "Player")
                             {
-                                _steamId = _line.GetAttribute("SteamId");
+                                _blank = false;
+                                string _steamId = "", _name = "";
+                                if (_line.HasAttribute("SteamId"))
+                                {
+                                    _steamId = _line.GetAttribute("SteamId");
+                                }
+                                if (_line.HasAttribute("Name"))
+                                {
+                                    _name = _line.GetAttribute("Name");
+                                }
+                                sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" />", _steamId, _name));
                             }
-                            if (_line.HasAttribute("Name"))
-                            {
-                                _name = _line.GetAttribute("Name");
-                            }
-                            sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" />", _steamId, _name));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" /> -->");
                     }
                     sw.WriteLine("</HighPing>");
                     sw.Flush();

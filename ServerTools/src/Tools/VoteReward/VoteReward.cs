@@ -59,104 +59,98 @@ namespace ServerTools
                 {
                     Dict.Clear();
                     Items.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                            }
-                            else if (_line.HasAttribute("ItemOrBlock") && _line.HasAttribute("MinCount") && _line.HasAttribute("MaxCount") &&
-                                _line.HasAttribute("MinQuality") && _line.HasAttribute("MaxQuality"))
-                            {
-                                if (!int.TryParse(_line.GetAttribute("MinCount"), out int _minCount))
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinCount' attribute: {0}", _line.OuterXml));
-                                    continue;
+                                    UpgradeXml(_childNodes);
+                                    return;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("MaxCount"), out int _maxCount))
+                                else if (_line.HasAttribute("ItemOrBlock") && _line.HasAttribute("MinCount") && _line.HasAttribute("MaxCount") &&
+                                    _line.HasAttribute("MinQuality") && _line.HasAttribute("MaxQuality"))
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxCount' attribute: {0}", _line.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("MinQuality"), out int _minQuality))
-                                {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinQuality' attribute: {0}", _line.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("MaxQuality"), out int _maxQuality))
-                                {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxQuality' attribute: {0}", _line.OuterXml));
-                                    continue;
-                                }
-                                string _item = _line.GetAttribute("ItemOrBlock");
-                                if (_item == "WalletCoin")
-                                {
-                                    if (Wallet.IsEnabled)
+                                    if (!int.TryParse(_line.GetAttribute("MinCount"), out int _minCount))
                                     {
-                                        if (_minCount < 1)
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinCount' attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!int.TryParse(_line.GetAttribute("MaxCount"), out int _maxCount))
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxCount' attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!int.TryParse(_line.GetAttribute("MinQuality"), out int _minQuality))
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinQuality' attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!int.TryParse(_line.GetAttribute("MaxQuality"), out int _maxQuality))
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxQuality' attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                    string _item = _line.GetAttribute("ItemOrBlock");
+                                    if (_item == "WalletCoin")
+                                    {
+                                        if (Wallet.IsEnabled)
                                         {
-                                            _minCount = 1;
+                                            if (_minCount < 1)
+                                            {
+                                                _minCount = 1;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Wallet tool is not enabled: {0}", _line.OuterXml));
+                                            continue;
                                         }
                                     }
                                     else
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Wallet tool is not enabled: {0}", _line.OuterXml));
-                                        continue;
+                                        ItemValue _itemValue = ItemClass.GetItem(_item, false);
+                                        if (_itemValue.type == ItemValue.None.type)
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Item not found: {0}", _item));
+                                            continue;
+                                        }
+                                        if (_minCount > _itemValue.ItemClass.Stacknumber.Value)
+                                        {
+                                            _minCount = _itemValue.ItemClass.Stacknumber.Value;
+                                        }
+                                        else if (_minCount < 1)
+                                        {
+                                            _minCount = 1;
+                                        }
+                                        if (_maxCount > _itemValue.ItemClass.Stacknumber.Value)
+                                        {
+                                            _maxCount = _itemValue.ItemClass.Stacknumber.Value;
+                                        }
+                                        else if (_maxCount < 1)
+                                        {
+                                            _maxCount = 1;
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    ItemValue _itemValue = ItemClass.GetItem(_item, false);
-                                    if (_itemValue.type == ItemValue.None.type)
+                                    if (_minQuality < 1)
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Item not found: {0}", _item));
-                                        continue;
+                                        _minQuality = 1;
                                     }
-                                    if (_minCount > _itemValue.ItemClass.Stacknumber.Value)
+                                    if (_maxQuality < 1)
                                     {
-                                        _minCount = _itemValue.ItemClass.Stacknumber.Value;
+                                        _maxQuality = 1;
                                     }
-                                    else if (_minCount < 1)
+                                    if (!Dict.ContainsKey(_item))
                                     {
-                                        _minCount = 1;
+                                        int[] _c = new int[] { _minCount, _maxCount, _minQuality, _maxQuality };
+                                        Dict.Add(_item, _c);
                                     }
-                                    if (_maxCount > _itemValue.ItemClass.Stacknumber.Value)
-                                    {
-                                        _maxCount = _itemValue.ItemClass.Stacknumber.Value;
-                                    }
-                                    else if (_maxCount < 1)
-                                    {
-                                        _maxCount = 1;
-                                    }
-                                }
-                                if (_minQuality < 1)
-                                {
-                                    _minQuality = 1;
-                                }
-                                if (_maxQuality < 1)
-                                {
-                                    _maxQuality = 1;
-                                }
-                                if (!Dict.ContainsKey(_item))
-                                {
-                                    int[] _c = new int[] { _minCount, _maxCount, _minQuality, _maxQuality };
-                                    Dict.Add(_item, _c);
                                 }
                             }
                         }
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                     if (Dict.Count > 0)
                     {
@@ -180,8 +174,9 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<VoteRewards>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!--  Items that do not require a quality should be set to 0 or 1 for min and max  -->");
-                    sw.WriteLine("<!--  WalletCoin can be used as the item name  -->");
+                    sw.WriteLine("<!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
+                    sw.WriteLine("<!-- WalletCoin can be used as the item name -->");
+                    sw.WriteLine("<!-- <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -193,13 +188,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("    <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                        sw.WriteLine("    <Reward ItemOrBlock=\"ammo9mmBullet\" MinCount=\"10\" MaxCount=\"30\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                        sw.WriteLine("    <Reward ItemOrBlock=\"ammo44MagnumBullet\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                        sw.WriteLine("    <Reward ItemOrBlock=\"armorIronChest\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"1\" MaxQuality=\"6\" />");
-                        sw.WriteLine("    <Reward ItemOrBlock=\"foodCropCorn\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                        sw.WriteLine("    <Reward ItemOrBlock=\"terrSand\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                        sw.WriteLine("    <Reward ItemOrBlock=\"terrSnow\" MinCount=\"2\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                        sw.WriteLine("    !-- <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" /> -->");
                     }
                     sw.WriteLine("</VoteRewards>");
                     sw.Flush();
@@ -237,7 +226,7 @@ namespace ServerTools
             {
                 if (!Reward_Entity && Dict.Count == 0)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] No items available for reward. Check for an error in the VoteReward.xml file."));
+                    Log.Out(string.Format("[SERVERTOOLS] No items available for reward. Check for an error in the VoteReward.xml file"));
                     Phrases.Dict.TryGetValue("VoteReward2", out string _phrase);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
@@ -602,42 +591,57 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<VoteRewards>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!--  Items that do not require a quality should be set to 0 or 1 for min and max  -->");
-                    sw.WriteLine("<!--  WalletCoin can be used as the item name  -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("<!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
+                    sw.WriteLine("<!-- WalletCoin can be used as the item name -->");
+                    sw.WriteLine("<!-- <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Items that do not") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- WalletCoin can be") && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Reward ItemOrBlock=\"meleeToolTorch\"") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("    !-- <Reward ItemOrBlock=\"\""))
                         {
-                            continue;
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Reward")
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            string _itemBlock = "", _minCount = "", _maxCount = "", _minQuality = "", _maxQuality = "";
-                            if (_line.HasAttribute("ItemOrBlock"))
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && _line.Name == "Reward")
                             {
-                                _itemBlock = _line.GetAttribute("ItemOrBlock");
+                                _blank = false;
+                                string _itemBlock = "", _minCount = "", _maxCount = "", _minQuality = "", _maxQuality = "";
+                                if (_line.HasAttribute("ItemOrBlock"))
+                                {
+                                    _itemBlock = _line.GetAttribute("ItemOrBlock");
+                                }
+                                if (_line.HasAttribute("MinCount"))
+                                {
+                                    _minCount = _line.GetAttribute("MinCount");
+                                }
+                                if (_line.HasAttribute("MaxCount"))
+                                {
+                                    _maxCount = _line.GetAttribute("MaxCount");
+                                }
+                                if (_line.HasAttribute("MinQuality"))
+                                {
+                                    _minQuality = _line.GetAttribute("MinQuality");
+                                }
+                                if (_line.HasAttribute("MaxQuality"))
+                                {
+                                    _maxQuality = _line.GetAttribute("MaxQuality");
+                                }
+                                sw.WriteLine(string.Format("    <Reward ItemOrBlock=\"{0}\" MinCount=\"{1}\" MaxCount=\"{2}\" MinQuality=\"{3}\" MaxQuality=\"{4}\" />", _itemBlock, _minCount, _maxCount, _minQuality, _maxQuality));
                             }
-                            if (_line.HasAttribute("MinCount"))
-                            {
-                                _minCount = _line.GetAttribute("MinCount");
-                            }
-                            if (_line.HasAttribute("MaxCount"))
-                            {
-                                _maxCount = _line.GetAttribute("MaxCount");
-                            }
-                            if (_line.HasAttribute("MinQuality"))
-                            {
-                                _minQuality = _line.GetAttribute("MinQuality");
-                            }
-                            if (_line.HasAttribute("MaxQuality"))
-                            {
-                                _maxQuality = _line.GetAttribute("MaxQuality");
-                            }
-                            sw.WriteLine(string.Format("    <Reward ItemOrBlock=\"{0}\" MinCount=\"{1}\" MaxCount=\"{2}\" MinQuality=\"{3}\" MaxQuality=\"{4}\" />", _itemBlock, _minCount, _maxCount, _minQuality, _maxQuality));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    !-- <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" /> -->");
                     }
                     sw.WriteLine("</VoteRewards>");
                     sw.Flush();

@@ -54,78 +54,85 @@ namespace ServerTools
                 {
                     Protected.Clear();
                     Vectors.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                            }
-                            else if (_line.HasAttribute("Corner1") && _line.HasAttribute("Corner2") && _line.HasAttribute("Active"))
-                            {
-                                string corner1 = _line.GetAttribute("Corner1");
-                                string corner2 = _line.GetAttribute("Corner2");
-                                if (!corner1.Contains(","))
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid form missing comma attribute: {0}", _line.OuterXml));
-                                    continue;
+                                    UpgradeXml(_childNodes);
+                                    return;
                                 }
-                                if (!corner2.Contains(","))
+                                else if (_line.HasAttribute("Corner1") && _line.HasAttribute("Corner2") && _line.HasAttribute("Active"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid form missing comma attribute: {0}", _line.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Active"), out bool _isActive))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid True/False for Active attribute: {0}.", _line.OuterXml));
-                                    continue;
-                                }
-                                string[] _corner1Split = corner1.Split(',');
-                                string[] _corner2Split = corner2.Split(',');
-                                int.TryParse(_corner1Split[0], out int _corner1_x);
-                                int.TryParse(_corner1Split[1], out int _corner1_z);
-                                int.TryParse(_corner2Split[0], out int _corner2_x);
-                                int.TryParse(_corner2Split[1], out int _corner2_z);
-                                int[] _vectors = new int[5];
-                                if (_corner1_x < _corner2_x)
-                                {
-                                    _vectors[0] = _corner1_x;
-                                    _vectors[2] = _corner2_x;
-                                }
-                                else
-                                {
-                                    _vectors[0] = _corner2_x;
-                                    _vectors[2] = _corner1_x;
-                                }
-                                if (_corner1_z < _corner2_z)
-                                {
-                                    _vectors[1] = _corner1_z;
-                                    _vectors[3] = _corner2_z;
-                                }
-                                else
-                                {
-                                    _vectors[1] = _corner2_z;
-                                    _vectors[3] = _corner1_z;
-                                }
-                                if (_isActive)
-                                {
-                                    _vectors[4] = 1;
-                                }
-                                else
-                                {
-                                    _vectors[4] = 0;
-                                }
-                                if (!Protected.Contains(_vectors))
-                                {
-                                    Protected.Add(_vectors);
-                                    if (_vectors[4] == 1)
+                                    string corner1 = _line.GetAttribute("Corner1");
+                                    string corner2 = _line.GetAttribute("Corner2");
+                                    if (!corner1.Contains(","))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid form missing comma attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!corner2.Contains(","))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid form missing comma attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!bool.TryParse(_line.GetAttribute("Active"), out bool _isActive))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid True/False for Active attribute: {0}.", _line.OuterXml));
+                                        continue;
+                                    }
+                                    string[] _corner1Split = corner1.Split(',');
+                                    string[] _corner2Split = corner2.Split(',');
+                                    int.TryParse(_corner1Split[0], out int _corner1_x);
+                                    int.TryParse(_corner1Split[1], out int _corner1_z);
+                                    int.TryParse(_corner2Split[0], out int _corner2_x);
+                                    int.TryParse(_corner2Split[1], out int _corner2_z);
+                                    int[] _vectors = new int[5];
+                                    if (_corner1_x < _corner2_x)
+                                    {
+                                        _vectors[0] = _corner1_x;
+                                        _vectors[2] = _corner2_x;
+                                    }
+                                    else
+                                    {
+                                        _vectors[0] = _corner2_x;
+                                        _vectors[2] = _corner1_x;
+                                    }
+                                    if (_corner1_z < _corner2_z)
+                                    {
+                                        _vectors[1] = _corner1_z;
+                                        _vectors[3] = _corner2_z;
+                                    }
+                                    else
+                                    {
+                                        _vectors[1] = _corner2_z;
+                                        _vectors[3] = _corner1_z;
+                                    }
+                                    if (_isActive)
+                                    {
+                                        _vectors[4] = 1;
+                                    }
+                                    else
+                                    {
+                                        _vectors[4] = 0;
+                                    }
+                                    if (!Protected.Contains(_vectors))
+                                    {
+                                        Protected.Add(_vectors);
+                                        if (_vectors[4] == 1)
+                                        {
+                                            AddProtection(_vectors);
+                                        }
+                                        else
+                                        {
+                                            RemoveProtection(_vectors);
+                                        }
+                                    }
+                                    else if (_vectors[4] == 1)
                                     {
                                         AddProtection(_vectors);
                                     }
@@ -134,21 +141,8 @@ namespace ServerTools
                                         RemoveProtection(_vectors);
                                     }
                                 }
-                                else if (_vectors[4] == 1)
-                                {
-                                    AddProtection(_vectors);
-                                }
-                                else
-                                {
-                                    RemoveProtection(_vectors);
-                                }
                             }
                         }
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                 }
             }
@@ -166,8 +160,6 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Protected>");
                 sw.WriteLine("<!-- <Protected Corner1=\"-30,-20\" Corner2=\"10,50\" Active=\"True\" /> -->");
-                sw.WriteLine("<!-- <Protected Corner1=\"-800,75\" Corner2=\"-300,100\" Active=\"True\" /> -->");
-                sw.WriteLine("<!-- <Protected Corner1=\"-50,-600\" Corner2=\"-5,-550\" Active=\"True\" /> -->");
                 sw.WriteLine();
                 sw.WriteLine();
                 if (Protected.Count > 0)
@@ -186,7 +178,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("        <!-- <Protected Corner1=\"\" Corner2=\"\" Active=\"\" /> -->");
+                    sw.WriteLine("    <!-- <Protected Corner1=\"\" Corner2=\"\" Active=\"\" /> -->");
                 }
                 sw.WriteLine("</Protected>");
                 sw.Flush();
@@ -385,32 +377,46 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Protected>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("<!-- <Protected Corner1=\"-30,-20\" Corner2=\"10,50\" Active=\"True\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Protected Corner1=\"-30,-20\"") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Protected Corner1=\"\""))
                         {
-                            continue;
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Protected")
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            string _corner1 = "", _corner2 = "", _active = "";
-                            if (_line.HasAttribute("Corner1"))
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && _line.Name == "Protected")
                             {
-                                _corner1 = _line.GetAttribute("Corner1");
+                                _blank = false;
+                                string _corner1 = "", _corner2 = "", _active = "";
+                                if (_line.HasAttribute("Corner1"))
+                                {
+                                    _corner1 = _line.GetAttribute("Corner1");
+                                }
+                                if (_line.HasAttribute("Corner2"))
+                                {
+                                    _corner2 = _line.GetAttribute("Corner2");
+                                }
+                                if (_line.HasAttribute("Active"))
+                                {
+                                    _active = _line.GetAttribute("Active");
+                                }
+                                sw.WriteLine(string.Format("    <Protected Corner1=\"{0}\" Corner2=\"{1}\" Active=\"{2}\" />", _corner1, _corner2, _active));
                             }
-                            if (_line.HasAttribute("Corner2"))
-                            {
-                                _corner2 = _line.GetAttribute("Corner2");
-                            }
-                            if (_line.HasAttribute("Active"))
-                            {
-                                _active = _line.GetAttribute("Active");
-                            }
-                            sw.WriteLine(string.Format("    <Protected Corner1=\"{0}\" Corner2=\"{1}\" Active=\"{2}\" />", _corner1, _corner2, _active));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    <!-- <Protected Corner1=\"\" Corner2=\"\" Active=\"\" /> -->");
                     }
                     sw.WriteLine("</Protected>");
                     sw.Flush();

@@ -49,18 +49,21 @@ namespace ServerTools
         {
             try
             {
-                if (PersistentContainer.Instance.Players.Players.ContainsKey(_cInfo.playerId) && PersistentContainer.Instance.Players[_cInfo.playerId].CountryBanImmune)
+                if (_cInfo.playerId != null && _cInfo.ip != null)
                 {
-                    return false;
-                }
-                if (BannedCountries != null && BannedCountries.Count > 0 && _cInfo != null && !string.IsNullOrEmpty(_cInfo.ip))
-                {
-                    long _ipInteger = PersistentOperations.ConvertIPToLong(_cInfo.ip);
-                    foreach (var ipRange in BannedCountries)
+                    if (PersistentContainer.Instance.Players.Players.ContainsKey(_cInfo.playerId) && PersistentContainer.Instance.Players[_cInfo.playerId].CountryBanImmune)
                     {
-                        if (_ipInteger >= ipRange.Key[0] && _ipInteger <= ipRange.Key[1] && Countries_Not_Allowed.Contains(ipRange.Value))
+                        return false;
+                    }
+                    if (BannedCountries != null && BannedCountries.Count > 0 && _cInfo != null && !string.IsNullOrEmpty(_cInfo.ip))
+                    {
+                        long _ipInteger = PersistentOperations.ConvertIPToLong(_cInfo.ip);
+                        foreach (var ipRange in BannedCountries)
                         {
-                            return true;
+                            if (_ipInteger >= ipRange.Key[0] && _ipInteger <= ipRange.Key[1] && Countries_Not_Allowed.Contains(ipRange.Value))
+                            {
+                                return true;
+                            }
                         }
                     }
                 }

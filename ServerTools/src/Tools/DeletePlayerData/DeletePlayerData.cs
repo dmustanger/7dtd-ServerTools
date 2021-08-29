@@ -23,7 +23,6 @@ namespace ServerTools
                             _p.Auction = new Dictionary<int, ItemDataSerializable>();
                             _p.AuctionReturn = new Dictionary<int, ItemDataSerializable>();
                             _p.Bank = 0;
-                            _p.BikeId = 0;
                             _p.Bounty = 0;
                             _p.BountyHunter = 0;
                             _p.ClanInvite = "";
@@ -34,7 +33,6 @@ namespace ServerTools
                             _p.CountryBanImmune = false;
                             _p.CustomCommandDelays = new Dictionary<string, DateTime>();
                             _p.FirstClaimBlock = false;
-                            _p.GyroId = 0;
                             _p.HardcoreEnabled = false;
                             _p.HardcoreStats = new string[0];
                             _p.HighPingImmune = false;
@@ -43,22 +41,16 @@ namespace ServerTools
                             _p.JailDate = new DateTime();
                             _p.JailName = "";
                             _p.JailTime = 0;
-                            _p.JeepId = 0;
                             _p.LastAnimal = new DateTime();
-                            _p.LastBike = new DateTime();
                             _p.LastDied = new DateTime();
                             _p.LastFriendTele = new DateTime();
                             _p.LastGimme = new DateTime();
-                            _p.LastGyro = new DateTime();
                             _p.LastHome = new DateTime();
-                            _p.LastJeep = new DateTime();
                             _p.LastJoined = new DateTime();
                             _p.LastKillMe = new DateTime();
                             _p.LastLobby = new DateTime();
                             _p.LastLog = new DateTime();
                             _p.LastMarket = new DateTime();
-                            _p.LastMiniBike = new DateTime();
-                            _p.LastMotorBike = new DateTime();
                             _p.LastStuck = new DateTime();
                             _p.LastTravel = new DateTime();
                             _p.LastVote = new DateTime();
@@ -66,8 +58,6 @@ namespace ServerTools
                             _p.LastWhisper = "";
                             _p.LobbyReturnPos = "";
                             _p.MarketReturnPos = "";
-                            _p.MiniBikeId = 0;
-                            _p.MotorBikeId = 0;
                             _p.MuteDate = new DateTime();
                             _p.MuteName = "";
                             _p.MuteTime = 0;
@@ -79,6 +69,7 @@ namespace ServerTools
                             _p.SessionTime = 0;
                             _p.StartingItems = false;
                             _p.TotalTimePlayed = 0;
+                            _p.Vehicles = new Dictionary<int, string[]>();
                             _p.VoteWeekCount = 0;
                             _p.WebPass = "";
                             _p.ZoneDeathTime = new DateTime();
@@ -93,7 +84,7 @@ namespace ServerTools
                     PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                     PersistentContainer.Instance.Track = new List<string[]>();
                     PersistentContainer.DataChange = true;
-                    Log.Out(string.Format("[SERVERTOOLS] Detected a new or unplayed map and old save data. Old data has been cleared from ServerTools"));
+                    Log.Out(string.Format("[SERVERTOOLS] All save data from ServerTools.bin has been deleted"));
                 }
             }
         }

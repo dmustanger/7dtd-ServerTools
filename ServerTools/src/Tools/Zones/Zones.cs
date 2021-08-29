@@ -60,90 +60,84 @@ namespace ServerTools
                     ZoneList.Clear();
                     Reminder.Clear();
                     ZonePlayer.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                            }
-                            else if (_line.HasAttribute("Name") && _line.HasAttribute("Corner1") && _line.HasAttribute("Corner2") && _line.HasAttribute("Circle") &&
-                                _line.HasAttribute("EntryMessage") && _line.HasAttribute("ExitMessage") && _line.HasAttribute("EntryCommand") && _line.HasAttribute("ExitCommand") &&
-                                _line.HasAttribute("ReminderNotice") && _line.HasAttribute("PvPvE") && _line.HasAttribute("NoZombie"))
-                            {
-                                string[] _zone = { _line.GetAttribute("Name"), _line.GetAttribute("Corner1"), _line.GetAttribute("Corner2"), _line.GetAttribute("Circle"),
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                {
+                                    UpgradeXml(_childNodes);
+                                    return;
+                                }
+                                else if (_line.HasAttribute("Name") && _line.HasAttribute("Corner1") && _line.HasAttribute("Corner2") && _line.HasAttribute("Circle") &&
+                                    _line.HasAttribute("EntryMessage") && _line.HasAttribute("ExitMessage") && _line.HasAttribute("EntryCommand") && _line.HasAttribute("ExitCommand") &&
+                                    _line.HasAttribute("ReminderNotice") && _line.HasAttribute("PvPvE") && _line.HasAttribute("NoZombie"))
+                                {
+                                    string[] _zone = { _line.GetAttribute("Name"), _line.GetAttribute("Corner1"), _line.GetAttribute("Corner2"), _line.GetAttribute("Circle"),
                                 _line.GetAttribute("EntryMessage"), _line.GetAttribute("ExitMessage"), _line.GetAttribute("EntryCommand"),_line.GetAttribute("ExitCommand"),
                                 _line.GetAttribute("ReminderNotice"), _line.GetAttribute("PvPvE"), _line.GetAttribute("NoZombie") };
-                                if (_zone[6] == "")
-                                {
-                                    _zone[6] = "";
-                                }
-                                if (_zone[7] == "")
-                                {
-                                    _zone[7] = "";
-                                }
-                                if (_zone[3].ToLower() == "false")
-                                {
-                                    if (_zone[1].Contains(",") && _zone[2].Contains(","))
+                                    if (_zone[6] == "")
                                     {
-                                        string[] _corner1 = _zone[1].Split(',');
-                                        string[] _corner2 = _zone[2].Split(',');
-                                        int.TryParse(_corner1[0], out int x1);
-                                        int.TryParse(_corner1[1], out int y1);
-                                        int.TryParse(_corner1[2], out int z1);
-                                        int.TryParse(_corner2[0], out int x2);
-                                        int.TryParse(_corner2[1], out int y2);
-                                        int.TryParse(_corner2[2], out int z2);
-                                        int _switch;
-                                        if (x1 > x2)
-                                        {
-                                            _switch = x2;
-                                            x2 = x1;
-                                            x1 = _switch;
-                                        }
-                                        if (y1 > y2)
-                                        {
-                                            _switch = y2;
-                                            y2 = y1;
-                                            y1 = _switch;
-                                        }
-                                        else if (y1 == y2)
-                                        {
-                                            y2++;
-                                        }
-                                        if (z1 > z2)
-                                        {
-                                            _switch = z2;
-                                            z2 = z1;
-                                            z1 = _switch;
-                                        }
-                                        _zone[1] = x1 + "," + y1 + "," + z1;
-                                        _zone[2] = x2 + "," + y2 + "," + z2;
+                                        _zone[6] = "";
                                     }
-                                    else
+                                    if (_zone[7] == "")
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Zones.xml entry. Improper format in corner1 or corner2 attribute: {0}", _line.OuterXml));
-                                        continue;
+                                        _zone[7] = "";
                                     }
-                                }
-                                if (!ZoneList.Contains(_zone))
-                                {
-                                    ZoneList.Add(_zone);
+                                    if (_zone[3].ToLower() == "false")
+                                    {
+                                        if (_zone[1].Contains(",") && _zone[2].Contains(","))
+                                        {
+                                            string[] _corner1 = _zone[1].Split(',');
+                                            string[] _corner2 = _zone[2].Split(',');
+                                            int.TryParse(_corner1[0], out int x1);
+                                            int.TryParse(_corner1[1], out int y1);
+                                            int.TryParse(_corner1[2], out int z1);
+                                            int.TryParse(_corner2[0], out int x2);
+                                            int.TryParse(_corner2[1], out int y2);
+                                            int.TryParse(_corner2[2], out int z2);
+                                            int _switch;
+                                            if (x1 > x2)
+                                            {
+                                                _switch = x2;
+                                                x2 = x1;
+                                                x1 = _switch;
+                                            }
+                                            if (y1 > y2)
+                                            {
+                                                _switch = y2;
+                                                y2 = y1;
+                                                y1 = _switch;
+                                            }
+                                            else if (y1 == y2)
+                                            {
+                                                y2++;
+                                            }
+                                            if (z1 > z2)
+                                            {
+                                                _switch = z2;
+                                                z2 = z1;
+                                                z1 = _switch;
+                                            }
+                                            _zone[1] = x1 + "," + y1 + "," + z1;
+                                            _zone[2] = x2 + "," + y2 + "," + z2;
+                                        }
+                                        else
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Zones.xml entry. Improper format in corner1 or corner2 attribute: {0}", _line.OuterXml));
+                                            continue;
+                                        }
+                                    }
+                                    if (!ZoneList.Contains(_zone))
+                                    {
+                                        ZoneList.Add(_zone);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                 }
             }
@@ -164,9 +158,11 @@ namespace ServerTools
                     sw.WriteLine("<Zones>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("<!-- Do not use decimals in the corner positions -->");
+                    sw.WriteLine("<!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
                     sw.WriteLine("<!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
                     sw.WriteLine("<!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
-                    sw.WriteLine("<!-- Possible variables for commands include {PlayerName}, {EntityId}, {PlayerId}, {Delay} -->");
+                    sw.WriteLine("<!-- Possible variables for commands include {PlayerName}, {EntityId}, {PlayerId}, {Delay}, whisper, global -->");
+                    sw.WriteLine("<!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (ZoneList.Count > 0)
@@ -179,10 +175,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("    <!-- <Zone Name=\"North\" Corner1=\"-8000,0,8000\" Corner2=\"8000,200,0\" Circle=\"false\" EntryMessage=\"You are entering the Northern side\" ExitMessage=\"You have exited the Northern Side\" EntryCommand=\"\" ExitCommand=\"\" ReminderNotice=\"You are still in the North\" PvPvE=\"0\" NoZombie=\"false\" /> -->");
-                        sw.WriteLine("    <!-- <Zone Name=\"South\" Corner1=\"-8000,0,-1\" Corner2=\"8000,200,-8000\" Circle=\"false\" EntryMessage=\"You are entering the Southern side\" ExitMessage=\"You have exited the Southern Side\" EntryCommand=\"whisper {PlayerName} you have entered the south side ^ ser {EntityId} 40 @ 4\" ExitCommand=\"\" ReminderNotice=\"You are still in the South\" PvPvE=\"3\" NoZombie=\"false\" /> -->");
-                        sw.WriteLine("    <!-- <Zone Name=\"Arena\" Corner1=\"-100,0,-90\" Corner2=\"40\" Circle=\"true\" EntryMessage=\"You have entered the arena\" ExitMessage=\"You have exited the arena\" EntryCommand=\"whisper {PlayerName} you have entered the arena\" ExitCommand=\"whisper {PlayerName} you have exited the arena\" ReminderNotice=\"\" PvPvE=\"2\" NoZombie=\"true\" /> -->");
-                        sw.WriteLine("    <!-- <Zone Name=\"TradeSpace\" Corner1=\"0,0,0\" Corner2=\"25,105,25\" Circle=\"false\" EntryMessage=\"You have entered the trade space\" ExitMessage=\"You have exited the trade space\" EntryCommand=\"\" ExitCommand=\"\" ReminderNotice=\"You have been in the trade space for a long time...\" PvPvE=\"1\" NoZombie=\"true\" /> -->");
+                        sw.WriteLine("    <!-- <Zone Name=\"\" Corner1=\"\" Corner2=\"\" Circle=\"\" EntryMessage=\"\" ExitMessage=\"\" EntryCommand=\"\" ExitCommand=\"\" ReminderNotice=\"\" PvPvE=\"\" NoZombie=\"\" /> -->");
                     }
                     sw.WriteLine("</Zones>");
                     sw.Flush();
@@ -338,7 +331,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Custom command error. Unable to commit delay with improper integer: {0}", _command));
+                                Log.Out(string.Format("[SERVERTOOLS] Zone command error. Unable to commit delay with improper integer: {0}", _command));
                             }
                         }
                         else
@@ -379,7 +372,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Custom command error. Unable to commit delay with improper integer: {0}", _commands));
+                                Log.Out(string.Format("[SERVERTOOLS] Zone command error. Unable to commit delay with improper integer: {0}", _commands));
                             }
                         }
                         else
@@ -632,68 +625,85 @@ namespace ServerTools
                     sw.WriteLine("<Zones>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("<!-- Do not use decimals in the corner positions -->");
+                    sw.WriteLine("<!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
                     sw.WriteLine("<!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
                     sw.WriteLine("<!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
-                    sw.WriteLine("<!-- Possible variables for commands include {PlayerName}, {EntityId}, {PlayerId}, {Delay} -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("<!-- Possible variables for commands include {PlayerName}, {EntityId}, {PlayerId}, {Delay}, whisper, global -->");
+                    sw.WriteLine("<!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Do not use decimals") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- Overlapping zones:") && !_oldChildNodes[i].OuterXml.StartsWith("<!-- PvPvE: 0 = No Killing") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- EntryCommand and ExitCommand") && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Possible variables for commands") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Zone Name=\"Example\"") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Zone Name=\"\""))
                         {
-                            continue;
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Zone")
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            string _name = "", _corner1 = "", _corner2 = "", _circle = "", _entryMessage = "", _exitMessage = "", _entryCommand = "",
-                                _exitCommand = "", _reminder = "", _pvpve = "", _noZ = "";
-                            if (_line.HasAttribute("Name"))
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && _line.Name == "Zone")
                             {
-                                _name = _line.GetAttribute("Name");
+                                _blank = false;
+                                string _name = "", _corner1 = "", _corner2 = "", _circle = "", _entryMessage = "", _exitMessage = "", _entryCommand = "",
+                                    _exitCommand = "", _reminder = "", _pvpve = "", _noZ = "";
+                                if (_line.HasAttribute("Name"))
+                                {
+                                    _name = _line.GetAttribute("Name");
+                                }
+                                if (_line.HasAttribute("Corner1"))
+                                {
+                                    _corner1 = _line.GetAttribute("Corner1");
+                                }
+                                if (_line.HasAttribute("Corner2"))
+                                {
+                                    _corner2 = _line.GetAttribute("Corner2");
+                                }
+                                if (_line.HasAttribute("Circle"))
+                                {
+                                    _circle = _line.GetAttribute("Circle");
+                                }
+                                if (_line.HasAttribute("EntryMessage"))
+                                {
+                                    _entryMessage = _line.GetAttribute("EntryMessage");
+                                }
+                                if (_line.HasAttribute("ExitMessage"))
+                                {
+                                    _exitMessage = _line.GetAttribute("ExitMessage");
+                                }
+                                if (_line.HasAttribute("EntryCommand"))
+                                {
+                                    _entryCommand = _line.GetAttribute("EntryCommand");
+                                }
+                                if (_line.HasAttribute("ExitCommand"))
+                                {
+                                    _exitCommand = _line.GetAttribute("ExitCommand");
+                                }
+                                if (_line.HasAttribute("ReminderNotice"))
+                                {
+                                    _reminder = _line.GetAttribute("ReminderNotice");
+                                }
+                                if (_line.HasAttribute("PvPvE"))
+                                {
+                                    _pvpve = _line.GetAttribute("PvPvE");
+                                }
+                                if (_line.HasAttribute("NoZombie"))
+                                {
+                                    _noZ = _line.GetAttribute("NoZombie");
+                                }
+                                sw.WriteLine(string.Format("    <Zone Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Circle=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" EntryCommand=\"{6}\" ExitCommand=\"{7}\" ReminderNotice=\"{8}\" PvPvE=\"{9}\" NoZombie=\"{10}\" />", _name, _corner1, _corner2, _circle, _entryMessage, _exitMessage, _entryCommand, _exitCommand, _reminder, _pvpve, _noZ));
                             }
-                            if (_line.HasAttribute("Corner1"))
-                            {
-                                _corner1 = _line.GetAttribute("Corner1");
-                            }
-                            if (_line.HasAttribute("Corner2"))
-                            {
-                                _corner2 = _line.GetAttribute("Corner2");
-                            }
-                            if (_line.HasAttribute("Circle"))
-                            {
-                                _circle = _line.GetAttribute("Circle");
-                            }
-                            if (_line.HasAttribute("EntryMessage"))
-                            {
-                                _entryMessage = _line.GetAttribute("EntryMessage");
-                            }
-                            if (_line.HasAttribute("ExitMessage"))
-                            {
-                                _exitMessage = _line.GetAttribute("ExitMessage");
-                            }
-                            if (_line.HasAttribute("EntryCommand"))
-                            {
-                                _entryCommand = _line.GetAttribute("EntryCommand");
-                            }
-                            if (_line.HasAttribute("ExitCommand"))
-                            {
-                                _exitCommand = _line.GetAttribute("ExitCommand");
-                            }
-                            if (_line.HasAttribute("ReminderNotice"))
-                            {
-                                _reminder = _line.GetAttribute("ReminderNotice");
-                            }
-                            if (_line.HasAttribute("PvPvE"))
-                            {
-                                _pvpve = _line.GetAttribute("PvPvE");
-                            }
-                            if (_line.HasAttribute("NoZombie"))
-                            {
-                                _noZ = _line.GetAttribute("NoZombie");
-                            }
-                            sw.WriteLine(string.Format("    <Zone Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Circle=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" EntryCommand=\"{6}\" ExitCommand=\"{7}\" ReminderNotice=\"{8}\" PvPvE=\"{9}\" NoZombie=\"{10}\" />", _name, _corner1, _corner2, _circle, _entryMessage, _exitMessage, _entryCommand, _exitCommand, _reminder, _pvpve, _noZ));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    <!-- <Zone Name=\"\" Corner1=\"\" Corner2=\"\" Circle=\"\" EntryMessage=\"\" ExitMessage=\"\" EntryCommand=\"\" ExitCommand=\"\" ReminderNotice=\"\" PvPvE=\"\" NoZombie=\"\" /> -->");
                     }
                     sw.WriteLine("</Zones>");
                     sw.Flush();

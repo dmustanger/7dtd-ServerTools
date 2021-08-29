@@ -21,11 +21,8 @@ namespace ServerTools
 
         public static void Load()
         {
-            if (IsEnabled && !IsRunning)
-            {
-                LoadXml();
-                InitFileWatcher();
-            }
+            LoadXml();
+            InitFileWatcher();
         }
 
         public static void Unload()
@@ -57,41 +54,34 @@ namespace ServerTools
                 if (_childNodes != null && _childNodes.Count > 0)
                 {
                     Dict.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                                continue;
-                            }
-                            else if (_line.HasAttribute("Name"))
-                            {
-                                string _item = _line.GetAttribute("Name");
-                                ItemClass _class = ItemClass.GetItemClass(_item, true);
-                                if (_class == null)
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Invalid InvalidItems.xml entry. Item or block not found: {0}", _item));
-                                    continue;
+                                    UpgradeXml(_childNodes);
+                                    return;
                                 }
-                                if (!Dict.Contains(_item))
+                                else if (_line.HasAttribute("Name"))
                                 {
-                                    Dict.Add(_item);
+                                    string _item = _line.GetAttribute("Name");
+                                    ItemClass _class = ItemClass.GetItemClass(_item, true);
+                                    if (_class == null)
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Invalid InvalidItems.xml entry. Item or block not found: {0}", _item));
+                                        continue;
+                                    }
+                                    if (!Dict.Contains(_item))
+                                    {
+                                        Dict.Add(_item);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                 }
             }
@@ -111,6 +101,8 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<InvalidItems>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- <Item Name=\"air\" /> -->");
+                    sw.WriteLine("<!-- <Item Name=\"terrOrePotassiumNitrate\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -122,22 +114,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine(string.Format("    <Item Name=\"air\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrOrePotassiumNitrate\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrOreIron\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrOreLead\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrBedrock\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrDesertGround\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrIce\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrFertileDirt\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrFertileGrass\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrOreSilver\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrOreCoal\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrainFiller\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrOreGold\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrDestroyedWoodDebris\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrOreOilDeposit\" />"));
-                        sw.WriteLine(string.Format("    <Item Name=\"terrOreDiamond\" />"));
+                        sw.WriteLine("    <!-- <Item Name=\"\" /> -->");
                     }
                     sw.WriteLine("</InvalidItems>");
                     sw.Flush();
@@ -505,24 +482,39 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<InvalidItems>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("<!-- <Item Name=\"air\" /> -->");
+                    sw.WriteLine("<!-- <Item Name=\"terrOrePotassiumNitrate\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Item Name=\"air\"") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Item Name=\"terrOrePotassiumNitrate\"") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Item Name=\"\""))
                         {
-                            continue;
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.OuterXml.Contains("Item"))
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            string _name = "";
-                            if (_line.HasAttribute("Name"))
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && _line.OuterXml.Contains("Item"))
                             {
-                                _name = _line.GetAttribute("Name");
+                                _blank = false;
+                                string _name = "";
+                                if (_line.HasAttribute("Name"))
+                                {
+                                    _name = _line.GetAttribute("Name");
+                                }
+                                sw.WriteLine(string.Format("    <Item Name=\"{0}\" />", _name));
                             }
-                            sw.WriteLine(string.Format("    <Item Name=\"{0}\" />", _name));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    <!-- <Item Name=\"\" /> -->");
                     }
                     sw.WriteLine("</InvalidItems>");
                     sw.Flush();

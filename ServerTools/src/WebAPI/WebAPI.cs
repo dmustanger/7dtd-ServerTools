@@ -205,10 +205,7 @@ namespace ServerTools
                                             else
                                             {
                                                 WebPanel.TimeOut.TryGetValue(_ip, out DateTime _timeout);
-                                                TimeSpan varTime = DateTime.Now - _timeout;
-                                                double fractionalMinutes = varTime.TotalMinutes;
-                                                int _timepassed = (int)fractionalMinutes;
-                                                if (_timepassed >= 10)
+                                                if (DateTime.Now >= _timeout)
                                                 {
                                                     WebPanel.TimeOut.Remove(_ip);
                                                     PersistentContainer.Instance.WebPanelTimeoutList.Remove(_ip);
@@ -293,10 +290,10 @@ namespace ServerTools
                                     WebPanel.PageHits.Remove(_ip);
                                     if (!_request.IsLocal)
                                     {
-                                        WebPanel.TimeOut.Add(_ip, DateTime.Now);
-                                        PersistentContainer.Instance.WebPanelTimeoutList.Add(_ip, DateTime.Now);
+                                        WebPanel.TimeOut.Add(_ip, DateTime.Now.AddMinutes(5));
+                                        PersistentContainer.Instance.WebPanelTimeoutList.Add(_ip, DateTime.Now.AddMinutes(5));
                                         PersistentContainer.DataChange = true;
-                                        WebPanel.Writer(string.Format("Homepage request denied for IP {0}. Client is now in time out for ten minutes", _ip));
+                                        WebPanel.Writer(string.Format("Homepage request denied for IP {0}. Client is now in time out for five minutes", _ip));
                                         _response.StatusCode = 403;
                                     }
                                 }

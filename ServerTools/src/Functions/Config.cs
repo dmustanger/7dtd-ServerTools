@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "19.6.1";
+        public const string Version = "19.6.2";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -1375,6 +1375,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring FPS entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Set_Target' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Low_FPS"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring FPS entry in ServerToolsConfig.xml because of missing 'Low_FPS' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Low_FPS"), out Fps.Low_FPS))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring FPS entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Low_FPS' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "Friend_Teleport":
                                 if (!_line.HasAttribute("Enable"))
@@ -2393,6 +2403,18 @@ namespace ServerTools
                                     EventSchedule.Remove("NightAlert");
                                 }
                                 break;
+                            case "No_Vehicle_Pickup":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring No_Vehicle_Pickup entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out PersistentOperations.No_Vehicle_Pickup))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring No_Vehicle_Pickup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "Normal_Player_Color_Prefix":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -3240,107 +3262,77 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            case "Vehicle_Teleport":
+                            case "Vehicle_Recall":
                                 if (!_line.HasAttribute("Enable"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out VehicleTeleport.IsEnabled))
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out VehicleRecall.IsEnabled))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Bike"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of missing 'Bike' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Bike"), out VehicleTeleport.Bike))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Bike' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Mini_Bike"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of missing 'Mini_Bike' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Mini_Bike"), out VehicleTeleport.Mini_Bike))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Mini_Bike' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Motor_Bike"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of missing 'Motor_Bike' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Motor_Bike"), out VehicleTeleport.Motor_Bike))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Motor_Bike' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Jeep"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of missing 'Jeep' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Jeep"), out VehicleTeleport.Jeep))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Jeep' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                break;
-                            case "Vehicle_Teleport_Extended":
-                                if (!_line.HasAttribute("Gyro"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport_Extended entry in ServerToolsConfig.xml because of missing 'Gyro' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Gyro"), out VehicleTeleport.Gyro))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Gyro' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Inside_Claim"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of missing 'Inside_Claim' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of missing 'Inside_Claim' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Inside_Claim"), out VehicleTeleport.Inside_Claim))
+                                if (!bool.TryParse(_line.GetAttribute("Inside_Claim"), out VehicleRecall.Inside_Claim))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Inside_Claim' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Inside_Claim' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Distance"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of missing 'Distance' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of missing 'Distance' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Distance"), out VehicleTeleport.Distance))
+                                if (!int.TryParse(_line.GetAttribute("Distance"), out VehicleRecall.Distance))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Distance' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Distance' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Delay_Between_Uses"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out VehicleTeleport.Delay_Between_Uses))
+                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out VehicleRecall.Delay_Between_Uses))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Command_Cost"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out VehicleTeleport.Command_Cost))
+                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out VehicleRecall.Command_Cost))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
+                            case "Vehicle_Teleport_Extended":
+                                if (!_line.HasAttribute("Normal_Max"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall_Extended entry in ServerToolsConfig.xml because of missing 'Normal_Max' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Normal_Max"), out VehicleRecall.Normal_Max))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Normal_Max' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Reserved_Max"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall_Extended entry in ServerToolsConfig.xml because of missing 'Reserved_Max' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Reserved_Max"), out VehicleRecall.Reserved_Max))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Reserved_Max' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -3861,7 +3853,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Falling_Blocks_Remover\" Enable=\"{0}\" Log=\"{1}\" Max_Blocks=\"{2}\" />", FallingBlocks.IsEnabled, FallingBlocks.OutputLog, FallingBlocks.Max_Blocks));
                 sw.WriteLine(string.Format("        <Tool Name=\"First_Claim_Block\" Enable=\"{0}\" />", FirstClaimBlock.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Flying_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", PlayerChecks.FlyEnabled, PlayerChecks.Flying_Admin_Level, PlayerChecks.Flying_Flags));
-                sw.WriteLine(string.Format("        <Tool Name=\"FPS\" Enable=\"{0}\" Set_Target=\"{1}\" />", Fps.IsEnabled, Fps.Set_Target));
+                sw.WriteLine(string.Format("        <Tool Name=\"FPS\" Enable=\"{0}\" Set_Target=\"{1}\" Low_FPS=\"{2}\" />", Fps.IsEnabled, Fps.Set_Target, Fps.Low_FPS));
                 sw.WriteLine(string.Format("        <Tool Name=\"Friend_Teleport\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" Player_Check=\"{3}\" Zombie_Check=\"{4}\" />", FriendTeleport.IsEnabled, FriendTeleport.Delay_Between_Uses, FriendTeleport.Command_Cost, FriendTeleport.Player_Check, FriendTeleport.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Gimme\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Zombies=\"{2}\" Command_Cost=\"{3}\" />", Gimme.IsEnabled, Gimme.Delay_Between_Uses, Gimme.Zombies, Gimme.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Godmode_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" />", PlayerChecks.GodEnabled, PlayerChecks.Godmode_Admin_Level));
@@ -3894,6 +3886,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"New_Player_Protection\" Enable=\"{0}\" Level=\"{1}\" />", NewPlayerProtection.IsEnabled, NewPlayerProtection.Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"New_Spawn_Tele\" Enable=\"{0}\" New_Spawn_Tele_Position=\"{1}\" Return=\"{2}\" />", NewSpawnTele.IsEnabled, NewSpawnTele.New_Spawn_Tele_Position, NewSpawnTele.Return));
                 sw.WriteLine(string.Format("        <Tool Name=\"Night_Alert\" Enable=\"{0}\" Delay=\"{1}\" />", NightAlert.IsEnabled, NightAlert.Delay));
+                sw.WriteLine(string.Format("        <Tool Name=\"No_Vehicle_Pickup\" Enable=\"{0}\" />", PersistentOperations.No_Vehicle_Pickup));
                 sw.WriteLine(string.Format("        <Tool Name=\"Normal_Player_Color_Prefix\" Enable=\"{0}\" Prefix=\"{1}\" Name_Color=\"{2}\" Prefix_Color=\"{3}\" />", ChatHook.Normal_Player_Color_Prefix, ChatHook.Normal_Player_Prefix, ChatHook.Normal_Player_Name_Color, ChatHook.Normal_Player_Prefix_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_List\" Enable=\"{0}\" />", PlayerList.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_Logs\" Enable=\"{0}\" Vehicle=\"{1}\" Interval=\"{2}\" />", PlayerLogs.IsEnabled, PlayerLogs.Vehicle, PlayerLogs.Delay));
@@ -3920,8 +3913,8 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Suicide\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Player_Check=\"{2}\" Zombie_Check=\"{3}\" />", Suicide.IsEnabled, Suicide.Delay_Between_Uses, Suicide.Player_Check, Suicide.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Tracking\" Enable=\"{0}\" />", Track.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Travel\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" Player_Check=\"{3}\" Zombie_Check=\"{4}\" />", Travel.IsEnabled, Travel.Delay_Between_Uses, Travel.Command_Cost, Travel.Player_Check, Travel.Zombie_Check));
-                sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Teleport\" Enable=\"{0}\" Bike=\"{1}\" Mini_Bike=\"{2}\" Motor_Bike=\"{3}\" Jeep=\"{4}\" />", VehicleTeleport.IsEnabled, VehicleTeleport.Bike, VehicleTeleport.Mini_Bike, VehicleTeleport.Motor_Bike, VehicleTeleport.Jeep));
-                sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Teleport_Extended\" Gyro=\"{0}\" Inside_Claim=\"{1}\" Distance=\"{2}\" Delay_Between_Uses=\"{3}\" Command_Cost=\"{4}\" />", VehicleTeleport.Gyro, VehicleTeleport.Inside_Claim, VehicleTeleport.Distance, VehicleTeleport.Delay_Between_Uses, VehicleTeleport.Command_Cost));
+                sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Recall\" Enable=\"{0}\" Inside_Claim=\"{1}\" Distance=\"{2}\" Delay_Between_Uses=\"{3}\" Command_Cost=\"{4}\" />", VehicleRecall.IsEnabled, VehicleRecall.Inside_Claim, VehicleRecall.Distance, VehicleRecall.Delay_Between_Uses, VehicleRecall.Command_Cost));
+                sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Recall_Extended\" Normal_Max=\"{0}\" Reserved_Max=\"{1}\" />", VehicleRecall.Normal_Max, VehicleRecall.Reserved_Max));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Your_Voting_Site=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" />", VoteReward.IsEnabled, VoteReward.Your_Voting_Site, VoteReward.API_Key, VoteReward.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting_Extended\" Reward_Count=\"{0}\" Reward_Entity=\"{1}\" Entity_Id=\"{2}\" Weekly_Votes=\"{3}\" />", VoteReward.Reward_Count, VoteReward.Reward_Entity, VoteReward.Entity_Id, VoteReward.Weekly_Votes));
                 sw.WriteLine(string.Format("        <Tool Name=\"Wallet\" Enable=\"{0}\" Coin_Name=\"{1}\" PVP=\"{2}\" Zombie_Kill_Value=\"{3}\" Player_Kill_Value=\"{4}\" />", Wallet.IsEnabled, Wallet.Coin_Name, Wallet.PVP, Wallet.Zombie_Kills, Wallet.Player_Kills));

@@ -51,40 +51,34 @@ namespace ServerTools
                 if (_childNodes != null && _childNodes.Count > 0)
                 {
                     Dict.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                            }
-                            else if (_line.HasAttribute("Name") && _line.HasAttribute("NewName"))
-                            {
-                                string _name = _line.GetAttribute("Name");
-                                ItemClass _class = ItemClass.GetItemClass(_name, true);
-                                if (_class == null)
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring KillNotice.xml entry. Weapon not found: {0}", _name));
-                                    continue;
+                                    UpgradeXml(_childNodes);
+                                    return;
                                 }
-                                if (!Dict.ContainsKey(_name))
+                                else if (_line.HasAttribute("Name") && _line.HasAttribute("NewName"))
                                 {
-                                    Dict.Add(_name, _line.GetAttribute("NewName"));
+                                    string _name = _line.GetAttribute("Name");
+                                    ItemClass _class = ItemClass.GetItemClass(_name, true);
+                                    if (_class == null)
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring KillNotice.xml entry. Weapon not found: {0}", _name));
+                                        continue;
+                                    }
+                                    if (!Dict.ContainsKey(_name))
+                                    {
+                                        Dict.Add(_name, _line.GetAttribute("NewName"));
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                 }
             }
@@ -252,27 +246,58 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<KillNotice>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine();
-                    sw.WriteLine();
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            continue;
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Weapon")
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            string _name = "", _newName = "";
-                            if (_line.HasAttribute("Name"))
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && _line.Name == "Weapon")
                             {
-                                _name = _line.GetAttribute("Name");
+                                _blank = false;
+                                string _name = "", _newName = "";
+                                if (_line.HasAttribute("Name"))
+                                {
+                                    _name = _line.GetAttribute("Name");
+                                }
+                                if (_line.HasAttribute("NewName"))
+                                {
+                                    _newName = _line.GetAttribute("NewName");
+                                }
+                                sw.WriteLine(string.Format("    <Weapon Name=\"{0}\" NewName=\"{1}\" />", _name, _newName));
                             }
-                            if (_line.HasAttribute("NewName"))
+                        }
+                    }
+                    if (_blank)
+                    {
+                        List<ItemClass> _itemClassMelee = ItemClass.GetItemsWithTag(FastTags.Parse("melee"));
+                        List<ItemClass> _itemClassRanged = ItemClass.GetItemsWithTag(FastTags.Parse("ranged"));
+                        for (int i = 0; i < _itemClassMelee.Count; i++)
+                        {
+                            ItemClass _itemClass = _itemClassMelee[i];
+                            List<string> _tags = _itemClass.ItemTags.GetTagNames();
+                            if (_itemClass.CreativeMode != EnumCreativeMode.None && _itemClass.CreativeMode != EnumCreativeMode.Dev && !_tags.Contains("ammo"))
                             {
-                                _newName = _line.GetAttribute("NewName");
+                                sw.WriteLine(string.Format("    <Weapon Name=\"{0}\" NewName=\"{1}\" />", _itemClass.GetItemName(), _itemClass.GetLocalizedItemName() ?? _itemClass.GetItemName()));
                             }
-                            sw.WriteLine(string.Format("    <Weapon Name=\"{0}\" NewName=\"{1}\" />", _name, _newName));
+                        }
+                        for (int i = 0; i < _itemClassRanged.Count; i++)
+                        {
+                            ItemClass _itemClass = _itemClassRanged[i];
+                            List<string> _tags = _itemClass.ItemTags.GetTagNames();
+                            if (_itemClass.CreativeMode != EnumCreativeMode.None && _itemClass.CreativeMode != EnumCreativeMode.Dev && !_tags.Contains("ammo"))
+                            {
+                                sw.WriteLine(string.Format("    <Weapon Name=\"{0}\" NewName=\"{1}\" />", _itemClass.GetItemName(), _itemClass.GetLocalizedItemName() ?? _itemClass.GetItemName()));
+                            }
                         }
                     }
                     sw.WriteLine("</KillNotice>");

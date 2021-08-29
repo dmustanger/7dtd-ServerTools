@@ -48,34 +48,28 @@ namespace ServerTools
             if (_childNodes != null && _childNodes.Count > 0)
             {
                 Dict.Clear();
-                bool upgrade = true;
                 for (int i = 0; i < _childNodes.Count; i++)
                 {
-                    if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                    if (_childNodes[i].NodeType != XmlNodeType.Comment)
                     {
-                        continue;
-                    }
-                    XmlElement _line = (XmlElement)_childNodes[i];
-                    if (_line.HasAttributes)
-                    {
-                        if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                        XmlElement _line = (XmlElement)_childNodes[i];
+                        if (_line.HasAttributes)
                         {
-                            upgrade = false;
-                        }
-                        if (_line.HasAttribute("Message"))
-                        {
-                            string _message = _line.GetAttribute("Message");
-                            if (!Dict.Contains(_message))
+                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                             {
-                                Dict.Add(_message);
+                                UpgradeXml(_childNodes);
+                                return;
+                            }
+                            if (_line.HasAttribute("Message"))
+                            {
+                                string _message = _line.GetAttribute("Message");
+                                if (!Dict.Contains(_message))
+                                {
+                                    Dict.Add(_message);
+                                }
                             }
                         }
                     }
-                }
-                if (upgrade)
-                {
-                    UpgradeXml(_childNodes);
-                    return;
                 }
             }
         }
@@ -90,7 +84,8 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Motds>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- possible variables {EntityId} {SteamId} {PlayerName} -->");
+                    sw.WriteLine("<!-- Possible variables {EntityId} {SteamId} {PlayerName} -->");
+                    sw.WriteLine("<!-- <Server Message=\"Welcome to the server\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -102,8 +97,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        sw.WriteLine("    <Server Message=\"Welcome to the server\" />");
-                        sw.WriteLine("    <Server Message=\"The server restarts every 4 hours\" />");
+                        sw.WriteLine("    <!-- <Server Message=\"\" /> -->");
                     }
                     sw.WriteLine("</Motds>");
                     sw.Flush();
@@ -167,9 +161,19 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Motds>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- possible variables {EntityId} {SteamId} {PlayerName} -->");
+                    sw.WriteLine("<!-- Possible variables {EntityId} {SteamId} {PlayerName} -->");
+                    sw.WriteLine("<!-- <Server Message=\"Welcome to the server\" /> -->");
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Possible variables") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Server Message=\"Welcome to the server\"") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Server Message=\"\""))
+                        {
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                        }
+                    }
                     sw.WriteLine();
                     sw.WriteLine();
+                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
@@ -179,6 +183,7 @@ namespace ServerTools
                         XmlElement _line = (XmlElement)_oldChildNodes[i];
                         if (_line.HasAttributes && _line.Name == "Server")
                         {
+                            _blank = false;
                             string _message = "";
                             if (_line.HasAttribute("Message"))
                             {
@@ -186,6 +191,10 @@ namespace ServerTools
                             }
                             sw.WriteLine(string.Format("    <Server Message=\"{0}\" />", _message));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    <!-- <Server Message=\"\" /> -->");
                     }
                     sw.WriteLine("</Motds>");
                     sw.Flush();

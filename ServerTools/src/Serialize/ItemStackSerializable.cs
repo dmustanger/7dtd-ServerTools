@@ -13,14 +13,8 @@ namespace ServerTools
             this.count = 0;
             this.useTimes = 0f;
             this.quality = 0;
-        }
-
-        public ItemDataSerializable(string _name, int _count, int _useTimes, int _quality)
-        {
-            this.name = _name;
-            this.count = _count;
-            this.useTimes = _useTimes;
-            this.quality = _quality;
+            this.modSlots = 0;
+            this.cosmeticSlots = 0;
         }
 
         public string name;
@@ -30,5 +24,9 @@ namespace ServerTools
         public float useTimes;
 
         public int quality;
+
+        public int modSlots;
+
+        public int cosmeticSlots;
     }
 }

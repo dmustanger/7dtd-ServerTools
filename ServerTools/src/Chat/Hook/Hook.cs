@@ -605,7 +605,7 @@ namespace ServerTools
                             if (Shop.IsEnabled && Wallet.IsEnabled && messageLowerCase.StartsWith(Shop.Command_shop_buy + " "))
                             {
                                 _message = _message.Replace(Shop.Command_shop_buy + " ", "");
-                                if (_message.Length == 1)
+                                if (!_message.Contains(" "))
                                 {
                                     Shop.PosCheck(_cInfo, _message, 3, 1);
                                 }
@@ -613,8 +613,7 @@ namespace ServerTools
                                 {
                                     string[] _split = _message.Split(' ');
                                     string _id = _split[0];
-                                    string _amount = _split[1];
-                                    if (int.TryParse(_amount, out int _count))
+                                    if (int.TryParse(_split[1], out int _count))
                                     {
                                         Shop.PosCheck(_cInfo, _id, 3, _count);
                                     }
@@ -631,15 +630,7 @@ namespace ServerTools
                             if (Shop.IsEnabled && Wallet.IsEnabled && messageLowerCase.StartsWith(Shop.Command_shop + " "))//show specific category
                             {
                                 string _category = messageLowerCase.Replace(Shop.Command_shop + " ", "");
-                                if (Shop.Categories.Contains(_category))
-                                {
-                                    Shop.PosCheck(_cInfo, _category, 2, 0);
-                                }
-                                else
-                                {
-                                    Phrases.Dict.TryGetValue("Shop18", out string _phrase);
-                                    ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                }
+                                Shop.PosCheck(_cInfo, _category, 2, 0);
                                 return false;
                             }
                             if (Shop.IsEnabled && Wallet.IsEnabled && messageLowerCase == Shop.Command_shop)//show all categories
@@ -965,7 +956,7 @@ namespace ServerTools
                             }
                             if (Fps.IsEnabled && messageLowerCase == Fps.Command_fps)
                             {
-                                Fps.FPS(_cInfo);
+                                Fps.Exec(_cInfo);
                                 return false;
                             }
                             if (Loc.IsEnabled && messageLowerCase == Loc.Command_loc)
@@ -973,31 +964,17 @@ namespace ServerTools
                                 Loc.Exec(_cInfo);
                                 return false;
                             }
-                            if (VehicleTeleport.IsEnabled)
+                            if (VehicleRecall.IsEnabled)
                             {
-                                if (VehicleTeleport.Bike && messageLowerCase == VehicleTeleport.Command_bike)
+                                if (messageLowerCase.StartsWith(VehicleRecall.Command_recall + " "))
                                 {
-                                    VehicleTeleport.Exec(_cInfo, 1);
+                                    _message = messageLowerCase.Replace(VehicleRecall.Command_recall + " ", "");
+                                    VehicleRecall.Exec(_cInfo, _message);
                                     return false;
                                 }
-                                else if (VehicleTeleport.Mini_Bike && messageLowerCase == VehicleTeleport.Command_minibike)
+                                else if (messageLowerCase == VehicleRecall.Command_recall)
                                 {
-                                    VehicleTeleport.Exec(_cInfo, 2);
-                                    return false;
-                                }
-                                else if (VehicleTeleport.Motor_Bike && messageLowerCase == VehicleTeleport.Command_motorbike)
-                                {
-                                    VehicleTeleport.Exec(_cInfo, 3);
-                                    return false;
-                                }
-                                else if (VehicleTeleport.Jeep && messageLowerCase == VehicleTeleport.Command_jeep)
-                                {
-                                    VehicleTeleport.Exec(_cInfo, 4);
-                                    return false;
-                                }
-                                else if (VehicleTeleport.Gyro && messageLowerCase == VehicleTeleport.Command_gyro)
-                                {
-                                    VehicleTeleport.Exec(_cInfo, 5);
+                                    VehicleRecall.Exec(_cInfo, "");
                                     return false;
                                 }
                             }

@@ -189,11 +189,7 @@ namespace ServerTools
                     sw.WriteLine("    <Command Default=\"auction sell\" Replacement=\"auction sell\" />");
                     sw.WriteLine("    <Command Default=\"fps\" Replacement=\"fps\" />");
                     sw.WriteLine("    <Command Default=\"loc\" Replacement=\"loc\" />");
-                    sw.WriteLine("    <Command Default=\"bike\" Replacement=\"bike\" />");
-                    sw.WriteLine("    <Command Default=\"minibike\" Replacement=\"minibike\" />");
-                    sw.WriteLine("    <Command Default=\"motorbike\" Replacement=\"motorbike\" />");
-                    sw.WriteLine("    <Command Default=\"jeep\" Replacement=\"jeep\" />");
-                    sw.WriteLine("    <Command Default=\"gyro\" Replacement=\"gyro\" />");
+                    sw.WriteLine("    <Command Default=\"recall\" Replacement=\"recall\" />");
                     sw.WriteLine("    <Command Default=\"report\" Replacement=\"report\" />");
                     sw.WriteLine("    <Command Default=\"bounty\" Replacement=\"bounty\" />");
                     sw.WriteLine("    <Command Default=\"lottery\" Replacement=\"lottery\" />");
@@ -601,25 +597,9 @@ namespace ServerTools
                     {
                         Loc.Command_loc = kvp.Value;
                     }
-                    else if (kvp.Key == "bike")
+                    else if (kvp.Key == "recall")
                     {
-                        VehicleTeleport.Command_bike = kvp.Value;
-                    }
-                    else if (kvp.Key == "minibike")
-                    {
-                        VehicleTeleport.Command_minibike = kvp.Value;
-                    }
-                    else if (kvp.Key == "motorbike")
-                    {
-                        VehicleTeleport.Command_motorbike = kvp.Value;
-                    }
-                    else if (kvp.Key == "jeep")
-                    {
-                        VehicleTeleport.Command_jeep = kvp.Value;
-                    }
-                    else if (kvp.Key == "gyro")
-                    {
-                        VehicleTeleport.Command_gyro = kvp.Value;
+                        VehicleRecall.Command_recall = kvp.Value;
                     }
                     else if (kvp.Key == "report")
                     {
@@ -812,6 +792,13 @@ namespace ServerTools
                     sw.WriteLine("<CommandList>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("<!-- All capital letters in commands will be reduced to lowercase -->");
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- All capital letters in commands"))
+                        {
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                        }
+                    }
                     sw.WriteLine();
                     sw.WriteLine();
                     for (int i = 0; i < _oldChildNodes.Count; i++)

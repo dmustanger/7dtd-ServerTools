@@ -153,7 +153,7 @@ namespace ServerTools
         {
             try
             {
-                if (_cInfo != null)
+                if (_cInfo.playerId != null && _cInfo.ownerId != null && _cInfo.ip != null)
                 {
                     if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level)
                     {

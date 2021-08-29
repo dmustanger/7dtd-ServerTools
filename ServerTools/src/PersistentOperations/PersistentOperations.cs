@@ -9,7 +9,7 @@ namespace ServerTools
 {
     class PersistentOperations
     {
-        public static bool IsRunning = false, Shutdown_Initiated = false;
+        public static bool IsRunning = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false;
         public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0;
 
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
@@ -663,6 +663,22 @@ namespace ServerTools
             }
         }
 
+        public static Dictionary<int, EntityPlayer> GetEntityPlayers()
+        {
+            try
+            {
+                if (GameManager.Instance.World != null && GameManager.Instance.World.Players.dict != null && GameManager.Instance.World.Players.dict.Count > 0)
+                {
+                    return GameManager.Instance.World.Players.dict;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.GetEntityPlayers: {0}", e.Message));
+            }
+            return null;
+        }
+
         public static string CreatePassword(int _length)
         {
             string _pass = "";
@@ -676,7 +692,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in WebPanel.SetPassword: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.SetPassword: {0}", e.Message));
             }
             return _pass;
         }
@@ -697,7 +713,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CountryBan.ConvertIPToLong: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.ConvertIPToLong: {0}", e.Message));
             }
             return 0;
         }

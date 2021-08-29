@@ -605,28 +605,6 @@ namespace ServerTools
                         _phrase = "Player {PlayerName} was not found";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Jail11\" Message=\"{0}\" />", _phrase));
-
-
-                    //if (!Dict.TryGetValue(201, out _phrase))
-                    //{
-                    //    _phrase = "You have forgiven {PlayerName} and released them from jail";
-                    //}
-                    //sw.WriteLine(string.Format("    <Phrase Name=\"201\" Message=\"{0}\" />", _phrase));
-                    //if (!Dict.TryGetValue(202, out _phrase))
-                    //{
-                    //    _phrase = "You have been forgiven and released from jail by {PlayerName}";
-                    //}
-                    //sw.WriteLine(string.Format("    <Phrase Name=\"202\" Message=\"{0}\" />", _phrase));
-                    //if (!Dict.TryGetValue(203, out _phrase))
-                    //{
-                    //    _phrase = "Player {PlayerName} has not spawned. Try again";
-                    //}
-                    //sw.WriteLine(string.Format("    <Phrase Name=\"203\" Message=\"{0}\" />", _phrase));
-                    //if (!Dict.TryGetValue(204, out _phrase))
-                    //{
-                    //    _phrase = "[FF0000]{PlayerName} has been jailed for attempted murder in a pve zone";
-                    //}
-                    //sw.WriteLine(string.Format("    <Phrase Name=\"204\" Message=\"{0}\" />", _phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************** New_Spawn_Tele ******************** -->");
@@ -1172,16 +1150,6 @@ namespace ServerTools
                         _phrase = "{Count} {Item} was purchased through the shop. If your bag is full, check the ground";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Shop16\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Shop17", out _phrase))
-                    {
-                        _phrase = "You can only purchase a full stack worth at a time. The maximum stack size for this is {Value}";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Shop17\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("Shop18", out _phrase))
-                    {
-                        _phrase = "Could not find shop category";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Shop18\" Message=\"{0}\" />", _phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************** Friend_Teleport ******************* -->");
@@ -1436,53 +1404,78 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Day7_7\" Message=\"{0}\" />", _phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
-                    sw.WriteLine("    <!-- ******************* Vehicle_Teleport ******************* -->");
+                    sw.WriteLine("    <!-- ******************** Vehicle_Recall ******************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
-                    if (!Dict.TryGetValue("VehicleTeleport1", out _phrase))
+                    if (!Dict.TryGetValue("VehicleRecall1", out _phrase))
                     {
-                        _phrase = "You or a friend have not claimed this space. You can only save your vehicle inside a claimed space";
+                        _phrase = "Vehicle {Id}, {Type}";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleTeleport1\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("VehicleTeleport2", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall1\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("VehicleRecall2", out _phrase))
                     {
-                        _phrase = "Saved your current {Vehicle} for retrieval";
+                        _phrase = "You do not have any vehicles in your list";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleTeleport2\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("VehicleTeleport3", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall2\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("VehicleRecall3", out _phrase))
                     {
-                        _phrase = "Found your vehicle and sent it to you";
+                        _phrase = "Invalid vehicle Id provided. Requires a valid number";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleTeleport3\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("VehicleTeleport4", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall3\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("VehicleRecall4", out _phrase))
                     {
-                        _phrase = "You do not have this vehicle type saved";
+                        _phrase = "You can only use {Command_Prefix1}{Command_recall} once every {DelayBetweenUses} minutes for each vehicle you have saved. Time remaining: {TimeRemaining} minute";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleTeleport4\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("VehicleTeleport5", out _phrase))
-                    {
-                        _phrase = "Could not find your vehicle near by";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleTeleport5\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("VehicleTeleport6", out _phrase))
-                    {
-                        _phrase = "Found your vehicle but someone else is on it";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleTeleport6\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("VehicleTeleport7", out _phrase))
-                    {
-                        _phrase = "You can only use vehicle teleport once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minute";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleTeleport7\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("VehicleTeleport8", out _phrase))
-                    {
-                        _phrase = "You are on the wrong vehicle to save it with this command. You are using a {Vehicle}";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleTeleport8\" Message=\"{0}\" />", _phrase));
-                    if (!Dict.TryGetValue("VehicleTeleport9", out _phrase))
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall4\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("VehicleRecall5", out _phrase))
                     {
                         _phrase = "You do not have enough {CoinName} in your wallet to run this command";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleTeleport9\" Message=\"{0}\" />", _phrase));
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall5\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("VehicleRecall6", out _phrase))
+                    {
+                        _phrase = "You are outside of your claimed space or a friends. Command is unavailable";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall6\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("VehicleRecall7", out _phrase))
+                    {
+                        _phrase = "Saved {Type} for recall with Id {Value}";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall7\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("VehicleRecall8", out _phrase))
+                    {
+                        _phrase = "You are at the maximum vehicle count. Remove one from your list before saving more";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall8\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("VehicleRecall9", out _phrase))
+                    {
+                        _phrase = "This vehicle has already been saved";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall9\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("VehicleRecall10", out _phrase))
+                    {
+                        _phrase = "Someone is using this vehicle. Unable to recall it";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall10\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("VehicleRecall11", out _phrase))
+                    {
+                        _phrase = "Vehicle has been recalled to your location";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall11\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("VehicleRecall12", out _phrase))
+                    {
+                        _phrase = "This vehicle is out of range. Unable to recall";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall12\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("VehicleRecall13", out _phrase))
+                    {
+                        _phrase = "This id is not on your vehicle list";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall13\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("VehicleRecall14", out _phrase))
+                    {
+                        _phrase = "Unable to locate this vehicle";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall14\" Message=\"{0}\" />", _phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* World_Radius ********************* -->");
@@ -1741,7 +1734,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("Auction1", out _phrase))
                     {
-                        _phrase = "Your auction item {Name} has been removed from the secure loot and added to the auction";
+                        _phrase = "Your auction item {Name} has been removed from the secure loot and added to the auction as id {value}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction1\" Message=\"{0}\" />", _phrase));
                     if (!Dict.TryGetValue("Auction2", out _phrase))
@@ -1814,6 +1807,21 @@ namespace ServerTools
                         _phrase = "Command is disabled. Wallet is not enabled";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction15\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Auction16", out _phrase))
+                    {
+                        _phrase = "Unable to set a unique id for your auction item. Try again";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Auction16\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Auction17", out _phrase))
+                    {
+                        _phrase = "# {Id}: {Count} {Item} for {Price} {Coin}";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Auction17\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("Auction18", out _phrase))
+                    {
+                        _phrase = "You must remove modifications and cosmetics from the item you wish to enter the auction";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Auction18\" Message=\"{0}\" />", _phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************* Bank ************************* -->");

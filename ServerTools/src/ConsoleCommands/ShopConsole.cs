@@ -121,43 +121,22 @@ namespace ServerTools
                                             {
                                                 _quality = 600;
                                             }
-                                            foreach (var _item in Shop.Dict)
+                                            int _id = Shop.Dict.Count + 1;
+                                            string[] _item = new string[] { _id.ToString(), _params[1], _params[2], _params[3], _params[4], _params[5], _params[6] };
+                                            if (!Shop.Dict.Contains(_item))
                                             {
-                                                if (_item.Value[0] == _params[1])
+                                                if (!Shop.Categories.Contains(_params[6]))
                                                 {
-                                                    Shop.Dict1.TryGetValue(_item.Key, out int[] _values);
-                                                    if (_values[0] == _count && _values[1] == _quality)
-                                                    {
-                                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to add item {0}. It is already on the shop list", _params[1]));
-                                                        return;
-                                                    }
+                                                    Shop.Categories.Add(_params[6]);
                                                 }
-                                            }
-                                            if (!Shop.Categories.Contains(_params[6]))
-                                            {
-                                                Shop.Categories.Add(_params[6]);
-                                            }
-                                            string[] _strings = new string[] { _params[1], _params[2], _params[6] };
-                                            int[] _integers = new int[] { _count, _quality, _price };
-                                            if (!Shop.Dict.ContainsKey(Shop.Dict.Count + 1))
-                                            {
-                                                Shop.Dict.Add(Shop.Dict.Count + 1, _strings);
-                                                Shop.Dict1.Add(Shop.Dict1.Count + 1, _integers);
-                                                Shop.UpdateXml();
-                                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Item {0} has been added to the shop", _params[1]));
-                                                return;
-                                            }
-                                            else if (!Shop.Dict.ContainsKey(Shop.Dict.Count + 2))
-                                            {
-                                                Shop.Dict.Add(Shop.Dict.Count + 2, _strings);
-                                                Shop.Dict1.Add(Shop.Dict1.Count + 2, _integers);
+                                                Shop.Dict.Add(_item);
                                                 Shop.UpdateXml();
                                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Item {0} has been added to the shop", _params[1]));
                                                 return;
                                             }
                                             else
                                             {
-                                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to add item {0}. Shop id are out of order. Check the xml file", _params[1]));
+                                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to add item to Shop.xml. Entry is already on the list"));
                                                 return;
                                             }
                                         }
@@ -179,27 +158,23 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-                    else
+                    else if (_params[1] != "0")
                     {
                         if (!int.TryParse(_params[1], out int _number))
                         {
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid id: {0}", _params[1]));
                             return;
                         }
+                        if (Shop.Dict.Count >= _number - 1)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} not found on the shop list", _params[1]));
+                            return;
+                        }
                         else
                         {
-                            if (!Shop.Dict.ContainsKey(_number - 1))
-                            {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id not found on the shop list: {0}", _params[1]));
-                                return;
-                            }
-                            else
-                            {
-                                Shop.Dict.Remove(_number - 1);
-                                Shop.Dict1.Remove(_number - 1);
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} has been removed from the shop list", _number));
-                                return;
-                            }
+                            Shop.Dict.RemoveAt(_number - 1);
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} has been removed from the shop list", _number));
+                            return;
                         }
                     }
                 }
@@ -214,18 +189,16 @@ namespace ServerTools
                     {
                         if (Shop.Dict.Count > 0)
                         {
-                            foreach (var _item in Shop.Dict)
+                            for (int i = 0; i < Shop.Dict.Count; i++)
                             {
-                                if (Shop.Dict1.TryGetValue(_item.Key, out int[] _values))
+                                string[] _item = Shop.Dict[i];
+                                if (int.Parse(_item[4]) > 1)
                                 {
-                                    if (_values[1] > 1)
-                                    {
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] # {0}: {1} {2} {3} quality for {4} {5}", _item.Key, _values[0], _item.Value[1], _values[1], _values[2], Wallet.Coin_Name));
-                                    }
-                                    else
-                                    {
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] # {0}: {1} {2} for {3} {4}", _item.Key, _values[0], _item.Value[1], _values[2], Wallet.Coin_Name));
-                                    }
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] # {0}: {1} {2} at {3} quality for {4} {5}", _item[0], _item[3], _item[2], _item[4], _item[5], Wallet.Coin_Name));
+                                }
+                                else
+                                {
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] # {0}: {1} {2} for {3} {4}", _item[0], _item[3], _item[2], _item[5], Wallet.Coin_Name));
                                 }
                             }
                         }

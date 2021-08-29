@@ -126,10 +126,10 @@ namespace ServerTools
                     }
                     else
                     {
-                        MethodInfo prefix = typeof(Injections).GetMethod("DamageEntity_Prefix");
+                        MethodInfo prefix = typeof(Injections).GetMethod("EntityAlive_DamageEntity_Prefix");
                         if (prefix == null)
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: DamageEntity.prefix"));
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_DamageEntity.prefix"));
                             return;
                         }
                         harmony.Patch(original, new HarmonyMethod(prefix), null);
@@ -142,10 +142,10 @@ namespace ServerTools
                     }
                     else
                     {
-                        MethodInfo postfix = typeof(Injections).GetMethod("Cleanup_Postfix");
+                        MethodInfo postfix = typeof(Injections).GetMethod("GameManager_Cleanup_Postfix");
                         if (postfix == null)
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: Cleanup.postfix"));
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_Cleanup.postfix"));
                             return;
                         }
                         harmony.Patch(original, null, new HarmonyMethod(postfix));
@@ -174,13 +174,61 @@ namespace ServerTools
                     }
                     else
                     {
-                        MethodInfo postfix = typeof(Injections).GetMethod("EntityAlive_ProcessDamageResponse_Postfix");
-                        if (postfix == null)
+                        MethodInfo prefix = typeof(Injections).GetMethod("EntityAlive_ProcessDamageResponse_Prefix");
+                        if (prefix == null)
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_ProcessDamageResponse.postfix"));
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_ProcessDamageResponse.prefix"));
                             return;
                         }
-                        harmony.Patch(original, null, new HarmonyMethod(postfix));
+                        harmony.Patch(original, new HarmonyMethod(prefix), null);
+                    }
+
+                    original = AccessTools.Method(typeof(GameManager), "CollectEntityServer");
+                    if (original == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.CollectEntityServer method was not found"));
+                    }
+                    else
+                    {
+                        MethodInfo prefix = typeof(Injections).GetMethod("GameManager_CollectEntityServer_Prefix");
+                        if (prefix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_CollectEntityServer.prefix"));
+                            return;
+                        }
+                        harmony.Patch(original, new HarmonyMethod(prefix), null);
+                    }
+
+                    //original = AccessTools.Method(typeof(World), "SpawnEntityInWorld");
+                    //if (original == null)
+                    //{
+                    //    Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.SpawnEntityInWorld method was not found"));
+                    //}
+                    //else
+                    //{
+                    //    MethodInfo prefix = typeof(Injections).GetMethod("World_SpawnEntityInWorld_Prefix");
+                    //    if (prefix == null)
+                    //    {
+                    //        Log.Out(string.Format("[SERVERTOOLS] Injection failed: World_SpawnEntityInWorld.prefix"));
+                    //        return;
+                    //    }
+                    //    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                    //}
+
+                    original = AccessTools.Method(typeof(GameManager), "OnApplicationQuit");
+                    if (original == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.OnApplicationQuit method was not found"));
+                    }
+                    else
+                    {
+                        MethodInfo prefix = typeof(Injections).GetMethod("GameManager_OnApplicationQuit_Prefix");
+                        if (prefix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_OnApplicationQuit.prefix"));
+                            return;
+                        }
+                        harmony.Patch(original, new HarmonyMethod(prefix), null);
                     }
 
                     Applied = true;

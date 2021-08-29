@@ -7,29 +7,19 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools] - Enable or disable vehicle teleport tool.";
+            return "[ServerTools] - Enable or disable vehicle recall tool.";
         }
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. st-vt off\n" +
-                   "  2. st-vt on\n" +
-                   "  3. st-vt bike\n" +
-                   "  4. st-vt minibike\n" +
-                   "  5. st-vt motorbike\n" +
-                   "  6. st-vt jeep\n" +
-                   "  7. st-vt gyro\n" +
-                   "1. Turn off the vehicle teleport tool\n" +
-                   "2. Turn on the vehicle teleport tool\n" +
-                   "3. Turn on/off the vehicle teleport for bike\n" +
-                   "4. Turn on/off the vehicle teleport for minibike\n" +
-                   "5. Turn on/off the vehicle teleport for motorbike\n" +
-                   "6. Turn on/off the vehicle teleport for jeep\n" +
-                   "7. Turn on/off the vehicle teleport for gyro\n";
+                   "  1. st-recall off\n" +
+                   "  2. st-recall on\n" +
+                   "1. Turn off the vehicle recall tool\n" +
+                   "2. Turn on the vehicle recall tool\n";
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-VehicleTeleport", "vt", "st-vt" };
+            return new string[] { "st-VehicleRecall", "recall", "st-recall" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -42,116 +32,31 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (VehicleTeleport.IsEnabled)
+                    if (VehicleRecall.IsEnabled)
                     {
-                        VehicleTeleport.IsEnabled = false;
+                        VehicleRecall.IsEnabled = false;
                         Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle recall has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle recall is already off"));
                         return;
                     }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (!VehicleTeleport.IsEnabled)
+                    if (!VehicleRecall.IsEnabled)
                     {
-                        VehicleTeleport.IsEnabled = true;
+                        VehicleRecall.IsEnabled = true;
                         Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle recall has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport is already on"));
-                        return;
-                    }
-                }
-                else if (_params[0].ToLower().Equals("bike"))
-                {
-                    if (VehicleTeleport.Bike)
-                    {
-                        VehicleTeleport.Bike = false;
-                        Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport bike has been set to off"));
-                        return;
-                    }
-                    else
-                    {
-                        VehicleTeleport.Bike = true;
-                        Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport bike has been set to on"));
-                        return;
-                    }
-                }
-                else if (_params[0].ToLower().Equals("minibike"))
-                {
-                    if (VehicleTeleport.Mini_Bike)
-                    {
-                        VehicleTeleport.Mini_Bike = false;
-                        Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport minibike has been set to off"));
-                        return;
-                    }
-                    else
-                    {
-                        VehicleTeleport.Mini_Bike = true;
-                        Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport minibike has been set to on"));
-                        return;
-                    }
-                }
-                else if (_params[0].ToLower().Equals("motorbike"))
-                {
-                    if (VehicleTeleport.Motor_Bike)
-                    {
-                        VehicleTeleport.Motor_Bike = false;
-                        Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport minibike has been set to off"));
-                        return;
-                    }
-                    else
-                    {
-                        VehicleTeleport.Motor_Bike = true;
-                        Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport minibike has been set to on"));
-                        return;
-                    }
-                }
-                else if (_params[0].ToLower().Equals("jeep"))
-                {
-                    if (VehicleTeleport.Jeep)
-                    {
-                        VehicleTeleport.Jeep = false;
-                        Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport jeep has been set to off"));
-                        return;
-                    }
-                    else
-                    {
-                        VehicleTeleport.Jeep = true;
-                        Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport jeep has been set to on"));
-                        return;
-                    }
-                }
-                else if (_params[0].ToLower().Equals("gyro"))
-                {
-                    if (VehicleTeleport.Gyro)
-                    {
-                        VehicleTeleport.Gyro = false;
-                        Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport gyro has been set to off"));
-                        return;
-                    }
-                    else
-                    {
-                        VehicleTeleport.Gyro = true;
-                        Config.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Vehicle teleport gyro has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle recall is already on"));
                         return;
                     }
                 }
@@ -162,7 +67,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in VehicleTeleportConsole.Execute: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in VehicleRecallConsole.Execute: {0}", e.Message));
             }
         }
     }

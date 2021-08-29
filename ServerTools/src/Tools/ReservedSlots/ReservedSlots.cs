@@ -21,11 +21,8 @@ namespace ServerTools
 
         public static void Load()
         {
-            if (IsEnabled && !IsRunning)
-            {
-                LoadXml();
-                InitFileWatcher();
-            }
+            LoadXml();
+            InitFileWatcher();
         }
 
         public static void Unload()
@@ -59,42 +56,36 @@ namespace ServerTools
                 {
                     Dict.Clear();
                     Dict1.Clear();
-                    bool upgrade = true;
                     for (int i = 0; i < _childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
-                        {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            XmlElement _line = (XmlElement)_childNodes[i];
+                            if (_line.HasAttributes)
                             {
-                                upgrade = false;
-                            }
-                            else if (_line.HasAttribute("SteamId") && _line.HasAttribute("Name") && _line.HasAttribute("Expires"))
-                            {
-                                if (!DateTime.TryParse(_line.GetAttribute("Expires"), out DateTime _dt))
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots.xml entry. Invalid (date) value for 'Expires' attribute: {0}", _line.OuterXml));
-                                    continue;
+                                    UpgradeXml(_childNodes);
+                                    return;
                                 }
-                                if (!Dict.ContainsKey(_line.GetAttribute("SteamId")))
+                                else if (_line.HasAttribute("SteamId") && _line.HasAttribute("Name") && _line.HasAttribute("Expires"))
                                 {
-                                    Dict.Add(_line.GetAttribute("SteamId"), _dt);
-                                }
-                                if (!Dict1.ContainsKey(_line.GetAttribute("SteamId")))
-                                {
-                                    Dict1.Add(_line.GetAttribute("SteamId"), _line.GetAttribute("Name"));
+                                    if (!DateTime.TryParse(_line.GetAttribute("Expires"), out DateTime _dt))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots.xml entry. Invalid (date) value for 'Expires' attribute: {0}", _line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!Dict.ContainsKey(_line.GetAttribute("SteamId")))
+                                    {
+                                        Dict.Add(_line.GetAttribute("SteamId"), _dt);
+                                    }
+                                    if (!Dict1.ContainsKey(_line.GetAttribute("SteamId")))
+                                    {
+                                        Dict1.Add(_line.GetAttribute("SteamId"), _line.GetAttribute("Name"));
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
                     }
                 }
             }
@@ -124,7 +115,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine(string.Format("    <Player SteamId=\"\" Name=\"\" Expires=\"\" />"));
+                    sw.WriteLine(string.Format("    <!-- <Player SteamId=\"\" Name=\"\" Expires=\"\" /> -->"));
                 }
                 sw.WriteLine("</ReservedSlots>");
                 sw.Flush();
@@ -316,32 +307,44 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<ReservedSlots>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine();
-                    sw.WriteLine();
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Player SteamId=\"\""))
                         {
-                            continue;
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.OuterXml.Contains("Player"))
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    bool _blank = true;
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            string _steamId = "", _name = "", _expires = "";
-                            if (_line.HasAttribute("SteamId"))
+                            XmlElement _line = (XmlElement)_oldChildNodes[i];
+                            if (_line.HasAttributes && _line.OuterXml.Contains("Player"))
                             {
-                                _steamId = _line.GetAttribute("SteamId");
+                                _blank = false;
+                                string _steamId = "", _name = "", _expires = "";
+                                if (_line.HasAttribute("SteamId"))
+                                {
+                                    _steamId = _line.GetAttribute("SteamId");
+                                }
+                                if (_line.HasAttribute("Name"))
+                                {
+                                    _name = _line.GetAttribute("Name");
+                                }
+                                if (_line.HasAttribute("Expires"))
+                                {
+                                    _expires = _line.GetAttribute("Expires");
+                                }
+                                sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" Expires=\"{2}\" />", _steamId, _name, _expires));
                             }
-                            if (_line.HasAttribute("Name"))
-                            {
-                                _name = _line.GetAttribute("Name");
-                            }
-                            if (_line.HasAttribute("Expires"))
-                            {
-                                _expires = _line.GetAttribute("Expires");
-                            }
-                            sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" Expires=\"{2}\" />", _steamId, _name, _expires));
                         }
+                    }
+                    if (_blank)
+                    {
+                        sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" Expires=\"\" /> -->");
                     }
                     sw.WriteLine("</ReservedSlots>");
                     sw.Flush();

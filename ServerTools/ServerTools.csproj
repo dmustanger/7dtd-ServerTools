@@ -190,7 +190,7 @@
     <Compile Include="src\Tools\Shutdown\Shutdown.cs" />
     <Compile Include="src\Tools\AutoSaveWorld\AutoSaveWorld.cs" />
     <Compile Include="src\Tools\Bounties\Bounties.cs" />
-    <Compile Include="src\Tools\VehicleTeleport\Vehicle_Teleport.cs" />
+    <Compile Include="src\Tools\VehicleRecall\Vehicle Recall.cs" />
     <Compile Include="src\Tools\AdminChat\AdminChat.cs" />
     <Compile Include="src\Tools\Mute\Mute.cs" />
     <Compile Include="src\Tools\BadWordFilter\BadWordFilter.cs" />
@@ -299,6 +299,9 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Noemax.GZip">
+      <HintPath>..\7dtd-binaries\Noemax.GZip.dll</HintPath>
+    </Reference>
     <Reference Include="Pathfinding.Ionic.Zip.Reduced, Version=1.9.1.9000, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\7dtd-ServerTools-master-18.0.3\7dtd-binaries\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
