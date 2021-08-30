@@ -34,10 +34,8 @@ namespace ServerTools
                                 {
                                     if (_newBlock is BlockSleepingBag)//placed a sleeping bag
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Block is sleeping bag"));
                                         if (POIProtection.IsEnabled && POIProtection.Bed && _world.IsPositionWithinPOI(_newBlockInfo.pos.ToVector3(), 5))
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Inside POI"));
                                             GameManager.Instance.World.SetBlockRPC(_newBlockInfo.pos, BlockValue.Air);
                                             PersistentOperations.ReturnBlock(_cInfo, _newBlock.GetBlockName(), 1);
                                             Phrases.Dict.TryGetValue("POI1", out string _phrase);
@@ -47,10 +45,8 @@ namespace ServerTools
                                     }
                                     else if (_newBlock is BlockLandClaim)//placed a land claim
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Block is land claim"));
                                         if (POIProtection.IsEnabled && POIProtection.Claim && _world.IsPositionWithinPOI(_newBlockInfo.pos.ToVector3(), 5))
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Inside POI"));
                                             GameManager.Instance.World.SetBlockRPC(_newBlockInfo.pos, BlockValue.Air);
                                             PersistentOperations.ReturnBlock(_cInfo, _newBlock.GetBlockName(), 1);
                                             Phrases.Dict.TryGetValue("POI2", out string _phrase);
@@ -99,11 +95,14 @@ namespace ServerTools
                                     {
                                         if (!PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, _newBlockInfo.pos))
                                         {
-                                            int _total = _oldBlock.MaxDamage - _oldBlockValue.damage;
-                                            if (_total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                            if (DamageDetector.IsEnabled)
                                             {
-                                                Penalty(_total, _persistentPlayerId, _cInfo);
-                                                return false;
+                                                int _total = _oldBlock.MaxDamage - _oldBlockValue.damage;
+                                                if (_total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                                {
+                                                    Penalty(_total, _persistentPlayerId, _cInfo);
+                                                    return false;
+                                                }
                                             }
                                             if (BlockLogger.IsEnabled)
                                             {
@@ -120,11 +119,14 @@ namespace ServerTools
                                 {
                                     if (_newBlockInfo.bChangeDamage)//block took damage
                                     {
-                                        int _total = _newBlockInfo.blockValue.damage - _oldBlockValue.damage;
-                                        if (_total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                        if (DamageDetector.IsEnabled)
                                         {
-                                            Penalty(_total, _persistentPlayerId, _cInfo);
-                                            return false;
+                                            int _total = _newBlockInfo.blockValue.damage - _oldBlockValue.damage;
+                                            if (_total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                            {
+                                                Penalty(_total, _persistentPlayerId, _cInfo);
+                                                return false;
+                                            }
                                         }
                                     }
                                     if (_oldBlockValue.damage == _newBlockInfo.blockValue.damage || _newBlockInfo.blockValue.damage == 0)//block replaced
@@ -142,11 +144,14 @@ namespace ServerTools
                                         }
                                         return true;
                                     }
-                                    int _total = _oldBlock.MaxDamage - _oldBlockValue.damage + _newBlockInfo.blockValue.damage;
-                                    if (_total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                    if (DamageDetector.IsEnabled)
                                     {
-                                        Penalty(_total, _persistentPlayerId, _cInfo);
-                                        return false;
+                                        int _total = _oldBlock.MaxDamage - _oldBlockValue.damage + _newBlockInfo.blockValue.damage;
+                                        if (_total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                        {
+                                            Penalty(_total, _persistentPlayerId, _cInfo);
+                                            return false;
+                                        }
                                     }
                                     if (BlockLogger.IsEnabled)
                                     {
@@ -174,8 +179,9 @@ namespace ServerTools
                 {
                     if (GameManager.Instance.adminTools.GetUserPermissionLevel(_persistentPlayerId) > Admin_Level)
                     {
-                        Phrases.Dict.TryGetValue("DamageDetector2", out string _phrase);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1} {2}\"", _cInfo.playerId, _phrase, _total.ToString()), null);
+                        Phrases.Dict.TryGetValue("DamageDetector3", out string _phrase);
+                        _phrase = _phrase.Replace("{Value}", _total.ToString());
+                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase), null);
                         using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
                         {
                             sw.WriteLine(string.Format("Detected \"{0}\" Steam id {1} using {2} that exceeded the damage limit @ {3}. Damage recorded: {4}", _cInfo.playerName, _persistentPlayerId, _player.inventory.holdingItem.GetLocalizedItemName() ?? _player.inventory.holdingItem.GetItemName(), _player.position, _total));

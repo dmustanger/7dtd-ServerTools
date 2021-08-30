@@ -2691,9 +2691,14 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"DamageDetector1\" Message=\"{0}\" />", _phrase));
                     if (!Dict.TryGetValue("DamageDetector2", out _phrase))
                     {
-                        _phrase = "Auto detection has banned you for exceeding the damage limit. Damage recorded:";
+                        _phrase = "Auto detection has banned you for exceeding the damage limit. Damage recorded: {Value}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"DamageDetector2\" Message=\"{0}\" />", _phrase));
+                    if (!Dict.TryGetValue("DamageDetector3", out _phrase))
+                    {
+                        _phrase = "Auto detection has banned you for exceeding the block damage limit. Damage recorded: {Value}";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"DamageDetector3\" Message=\"{0}\" />", _phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************** Spectator *********************** -->");

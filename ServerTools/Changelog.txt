@@ -4,6 +4,7 @@
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions
 
+-Fixed Damage_Detector triggering while turned off
 -Fixed console command st-ResetPlayerProfile not functioning as intended
 -Fixed Vehicle_Recall_Extended entry in ServerToolsConfig.xml
 -Fixed CommandList.xml upgrade process

@@ -15,24 +15,22 @@ namespace ServerTools
         {
             try
             {
-                if (_itemValue != null)
+                if (_itemValue != null && _strength >= Player_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo2) > Admin_Level)
                 {
-                    if (_strength >= Player_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo2) > Admin_Level)
+                    Phrases.Dict.TryGetValue("DamageDetector2", out string _phrase);
+                    _phrase = _phrase.Replace("{Value}", _strength.ToString());
+                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo2.playerId, _phrase), null);
+                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                     {
-                        Phrases.Dict.TryGetValue("DamageDetector2", out string _phrase);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1} {2}\"", _cInfo2.playerId, _phrase, _strength), null);
-                        using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
-                        {
-                            sw.WriteLine(string.Format("Detected \"{0}\" Steam Id {1} using {2} that exceeded the damage limit @ {3}. Damage recorded: {4}", _cInfo2.playerName, _cInfo2.playerId, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _player1.position, _strength));
-                            sw.WriteLine();
-                            sw.Flush();
-                            sw.Close();
-                        }
-                        Phrases.Dict.TryGetValue("DamageDetector1", out string _phrase1);
-                        _phrase1 = _phrase1.Replace("{PlayerName}", _cInfo2.playerName);
-                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                        return false;
+                        sw.WriteLine(string.Format("Detected \"{0}\" Steam Id {1} using {2} that exceeded the player damage limit @ {3}. Damage recorded: {4}", _cInfo2.playerName, _cInfo2.playerId, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _player1.position, _strength));
+                        sw.WriteLine();
+                        sw.Flush();
+                        sw.Close();
                     }
+                    Phrases.Dict.TryGetValue("DamageDetector1", out string _phrase1);
+                    _phrase1 = _phrase1.Replace("{PlayerName}", _cInfo2.playerName);
+                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    return false;
                 }
             }
             catch (Exception e)
@@ -46,7 +44,7 @@ namespace ServerTools
         {
             try
             {
-                if (_strength >= Entity_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level)
+                if (_itemValue != null && _strength >= Entity_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level)
                 {
                     Phrases.Dict.TryGetValue("DamageDetector2", out string _phrase);
                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1} {2}\"", _cInfo.playerId, _phrase, _strength), null);
