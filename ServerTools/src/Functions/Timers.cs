@@ -6,9 +6,9 @@ namespace ServerTools
     class Timers
     {
         public static bool IsRunning = false;
-        public static int StopServerMinutes, _eventTime;
-        private static int CoreCount = 0, _twoSecondTick, _fiveSecondTick, _tenSecondTick, _twentySecondTick, _oneMinTick, _fiveMinTick, _stopServerSeconds, _eventInvitation,
-            _eventOpen, _horde, _kickVote, _lottery, _muteVote, _newPlayer, _restartVoteCycle, _restartVote, _weatherVote;
+        public static int StopServerMinutes = 0, eventTime = 0;
+        private static int CoreCount = 0, twoSecondTick, fiveSecondTick, tenSecondTick, twentySecondTick, oneMinTick, fiveMinTick, stopServerSeconds, eventInvitation,
+            eventOpen, horde, kickVote, lottery, muteVote, newPlayer, restartVoteCycle, restartVote, weatherVote;
         private static readonly System.Timers.Timer Core = new System.Timers.Timer();
 
         public static void TimerStart()
@@ -34,12 +34,12 @@ namespace ServerTools
 
         private static void Tick(object sender, ElapsedEventArgs e)
         {
-            _twoSecondTick++;
-            _fiveSecondTick++;
-            _tenSecondTick++;
-            _twentySecondTick++;
-            _oneMinTick++;
-            _fiveMinTick++;
+            twoSecondTick++;
+            fiveSecondTick++;
+            tenSecondTick++;
+            twentySecondTick++;
+            oneMinTick++;
+            fiveMinTick++;
             Exec();
         }
 
@@ -210,9 +210,9 @@ namespace ServerTools
             {
                 DiscordBot.WebHook();
             }
-            if (_twoSecondTick >= 2)
+            if (twoSecondTick >= 2)
             {
-                _twoSecondTick = 0;
+                twoSecondTick = 0;
                 if (WorldRadius.IsEnabled)
                 {
                     WorldRadius.Exec();
@@ -222,9 +222,9 @@ namespace ServerTools
                     PlayerChecks.Exec();
                 }
             }
-            if (_fiveSecondTick >= 5)
+            if (fiveSecondTick >= 5)
             {
-                _fiveSecondTick = 0;
+                fiveSecondTick = 0;
                 if (Zones.IsEnabled)
                 {
                     Zones.HostileCheck();
@@ -238,26 +238,26 @@ namespace ServerTools
                     Fps.LowFPS();
                 }
             }
-            if (_tenSecondTick >= 10)
+            if (tenSecondTick >= 10)
             {
-                _tenSecondTick = 0;
+                tenSecondTick = 0;
                 if (EntityCleanup.IsEnabled)
                 {
                     EntityCleanup.EntityCheck();
                 }
-                EventSchedule.Exec();
             }
-            if (_twentySecondTick >= 20)
+            if (twentySecondTick >= 20)
             {
-                _twentySecondTick = 0;
+                twentySecondTick = 0;
                 if (Track.IsEnabled)
                 {
                     Track.Exec();
                 }
+                EventSchedule.Exec();
             }
-            if (_oneMinTick >= 60)
+            if (oneMinTick >= 60)
             {
-                _oneMinTick = 0;
+                oneMinTick = 0;
                 if (Jail.IsEnabled && Jail.Jailed.Count > 0)
                 {
                     Jail.Clear();
@@ -271,9 +271,9 @@ namespace ServerTools
                     BloodmoonWarrior.Exec();
                 }
             }
-            if (_fiveMinTick >= 300)
+            if (fiveMinTick >= 300)
             {
-                _fiveMinTick = 0;
+                fiveMinTick = 0;
                 StateManager.Save();
                 if (InvalidItems.Check_Storage)
                 {
@@ -282,8 +282,8 @@ namespace ServerTools
             }
             if (PersistentOperations.NewPlayerQue.Count > 0)
             {
-                _newPlayer++;
-                if (_newPlayer >= 5)
+                newPlayer++;
+                if (newPlayer >= 5)
                 {
                     ClientInfo _cInfo = PersistentOperations.NewPlayerQue[0];
                     PersistentOperations.NewPlayerQue.RemoveAt(0);
@@ -292,139 +292,146 @@ namespace ServerTools
             }
             if (WeatherVote.IsEnabled && WeatherVote.VoteOpen)
             {
-                _weatherVote++;
-                if (_weatherVote >= 60)
+                weatherVote++;
+                if (weatherVote >= 60)
                 {
-                    _weatherVote = 0;
+                    weatherVote = 0;
                     WeatherVote.VoteOpen = false;
                     WeatherVote.ProcessWeatherVote();
                 }
             }
             if (RestartVote.IsEnabled && RestartVote.VoteOpen)
             {
-                _restartVote++;
-                if (_restartVote >= 60)
+                restartVote++;
+                if (restartVote >= 60)
                 {
-                    _restartVote = 0;
+                    restartVote = 0;
                     RestartVote.VoteOpen = false;
                     RestartVote.ProcessRestartVote();
                 }
             }
             if (MuteVote.IsEnabled && MuteVote.VoteOpen)
             {
-                _muteVote++;
-                if (_muteVote >= 60)
+                muteVote++;
+                if (muteVote >= 60)
                 {
-                    _muteVote = 0;
+                    muteVote = 0;
                     MuteVote.VoteOpen = false;
                     MuteVote.ProcessMuteVote();
                 }
             }
             if (KickVote.IsEnabled && KickVote.VoteOpen)
             {
-                _kickVote++;
-                if (_kickVote >= 60)
+                kickVote++;
+                if (kickVote >= 60)
                 {
-                    _kickVote = 0;
+                    kickVote = 0;
                     KickVote.VoteOpen = false;
                     KickVote.ProcessKickVote();
                 }
             }
             if (Lottery.IsEnabled && Lottery.OpenLotto)
             {
-                _lottery++;
-                if (_lottery == 3300)
+                lottery++;
+                if (lottery == 3300)
                 {
                     Lottery.Alert();
                 }
-                if (_lottery >= 3600)
+                if (lottery >= 3600)
                 {
-                    _lottery = 0;
+                    lottery = 0;
                     Lottery.StartLotto();
                 }
             }
             else
             {
-                _lottery = 0;
+                lottery = 0;
             }
             if (Hordes.IsEnabled)
             {
-                _horde++;
-                if (_horde >= 1200)
+                horde++;
+                if (horde >= 1200)
                 {
-                    _horde = 0;
+                    horde = 0;
                     Hordes.Exec();
                 }
             }
             else
             {
-                _horde = 0;
+                horde = 0;
             }
-            if (StopServer.ShuttingDown)
+            if (Shutdown.ShuttingDown)
             {
-                _stopServerSeconds++;
-                if (_stopServerSeconds >= 60)
+                stopServerSeconds++;
+                if (stopServerSeconds >= 60)
                 {
-                    _stopServerSeconds = 0;
+                    stopServerSeconds = 0;
                     StopServerMinutes--;
                     if (StopServerMinutes > 1)
                     {
-                        StopServer.TimeRemaining(StopServerMinutes);
+                        Shutdown.TimeRemaining(StopServerMinutes);
                     }
                     else if (StopServerMinutes == 1)
                     {
-                        StopServer.OneMinuteRemains();
+                        Shutdown.OneMinute();
                     }
                     else if (StopServerMinutes == 0)
                     {
-                        StopServer.ShuttingDown = false;
-                        StopServer.Stop();
+                        Shutdown.ShuttingDown = false;
+                        Shutdown.Close();
                     }
                 }
-                if (_stopServerSeconds == 30 && StopServerMinutes == 1)
+                if (StopServerMinutes == 1)
                 {
-                    StopServer.Kick30();
+                    if (Shutdown.UI_Lock && stopServerSeconds == 15)
+                    {
+                        Shutdown.Lock();
+                    }
+                    else if (stopServerSeconds == 30)
+                    {
+                        Shutdown.Kick();
+                    }
                 }
             }
             else
             {
-                _stopServerSeconds = 0;
+                stopServerSeconds = 0;
             }
             if (Event.Invited)
             {
-                _eventInvitation++;
-                if (_eventInvitation >= 900)
+                eventInvitation++;
+                if (eventInvitation >= 900)
                 {
-                    _eventInvitation = 0;
+                    eventInvitation = 0;
                     Event.Invited = false;
                     Event.CheckOpen();
                 }
             }
             if (Event.Open)
             {
-                _eventOpen++;
-                if (_eventOpen == _eventTime / 2)
+                eventOpen++;
+                if (eventOpen == eventTime / 2)
                 {
                     Event.HalfTime();
                 }
-                if (_eventOpen == _eventTime - 300)
+                if (eventOpen == eventTime - 300)
                 {
                     Event.FiveMin();
                 }
-                if (_eventOpen >= _eventTime)
+                if (eventOpen >= eventTime)
                 {
-                    _eventOpen = 0;
+                    eventOpen = 0;
                     Event.EndEvent();
                 }
             }
             else
             {
-                _eventOpen = 0;
+                eventOpen = 0;
             }
             if (RestartVote.Cycle)
             {
-                _restartVoteCycle++;
-                if (_restartVoteCycle >= 1800)
+                restartVoteCycle++;
+                if (restartVoteCycle >= 1800)
                 {
                     RestartVote.Cycle = false;
                 }

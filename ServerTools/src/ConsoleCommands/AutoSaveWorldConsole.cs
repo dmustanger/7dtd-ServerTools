@@ -36,6 +36,7 @@ namespace ServerTools
                     {
                         AutoSaveWorld.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auto save world has been set to off"));
                         return;
                     }
@@ -51,6 +52,7 @@ namespace ServerTools
                     {
                         AutoSaveWorld.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auto save world has been set to on"));
                         return;
                     }

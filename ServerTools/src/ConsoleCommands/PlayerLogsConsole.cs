@@ -36,6 +36,7 @@ namespace ServerTools
                     {
                         PlayerLogs.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player logs has been set to off"));
                         return;
                     }
@@ -51,6 +52,7 @@ namespace ServerTools
                     {
                         PlayerLogs.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player logs has been set to on"));
                         return;
                     }

@@ -54,99 +54,100 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
                     Dict.Clear();
                     Items.Clear();
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_childNodes[i];
-                            if (_line.HasAttributes)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    UpgradeXml(_childNodes);
-                                    return;
+                                    upgrade = false;
+                                    continue;
                                 }
-                                else if (_line.HasAttribute("ItemOrBlock") && _line.HasAttribute("MinCount") && _line.HasAttribute("MaxCount") &&
-                                    _line.HasAttribute("MinQuality") && _line.HasAttribute("MaxQuality"))
+                                else if (line.HasAttribute("ItemOrBlock") && line.HasAttribute("MinCount") && line.HasAttribute("MaxCount") &&
+                                    line.HasAttribute("MinQuality") && line.HasAttribute("MaxQuality"))
                                 {
-                                    if (!int.TryParse(_line.GetAttribute("MinCount"), out int _minCount))
+                                    if (!int.TryParse(line.GetAttribute("MinCount"), out int minCount))
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinCount' attribute: {0}", _line.OuterXml));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinCount' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    if (!int.TryParse(_line.GetAttribute("MaxCount"), out int _maxCount))
+                                    if (!int.TryParse(line.GetAttribute("MaxCount"), out int maxCount))
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxCount' attribute: {0}", _line.OuterXml));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxCount' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    if (!int.TryParse(_line.GetAttribute("MinQuality"), out int _minQuality))
+                                    if (!int.TryParse(line.GetAttribute("MinQuality"), out int minQuality))
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinQuality' attribute: {0}", _line.OuterXml));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinQuality' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    if (!int.TryParse(_line.GetAttribute("MaxQuality"), out int _maxQuality))
+                                    if (!int.TryParse(line.GetAttribute("MaxQuality"), out int maxQuality))
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxQuality' attribute: {0}", _line.OuterXml));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxQuality' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    string _item = _line.GetAttribute("ItemOrBlock");
-                                    if (_item == "WalletCoin")
+                                    string item = line.GetAttribute("ItemOrBlock");
+                                    if (item == "WalletCoin")
                                     {
                                         if (Wallet.IsEnabled)
                                         {
-                                            if (_minCount < 1)
+                                            if (minCount < 1)
                                             {
-                                                _minCount = 1;
+                                                minCount = 1;
                                             }
                                         }
                                         else
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Wallet tool is not enabled: {0}", _line.OuterXml));
+                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Wallet tool is not enabled: {0}", line.OuterXml));
                                             continue;
                                         }
                                     }
                                     else
                                     {
-                                        ItemValue _itemValue = ItemClass.GetItem(_item, false);
-                                        if (_itemValue.type == ItemValue.None.type)
+                                        ItemValue itemValue = ItemClass.GetItem(item, false);
+                                        if (itemValue.type == ItemValue.None.type)
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Item not found: {0}", _item));
+                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Item not found: {0}", item));
                                             continue;
                                         }
-                                        if (_minCount > _itemValue.ItemClass.Stacknumber.Value)
+                                        if (minCount > itemValue.ItemClass.Stacknumber.Value)
                                         {
-                                            _minCount = _itemValue.ItemClass.Stacknumber.Value;
+                                            minCount = itemValue.ItemClass.Stacknumber.Value;
                                         }
-                                        else if (_minCount < 1)
+                                        else if (minCount < 1)
                                         {
-                                            _minCount = 1;
+                                            minCount = 1;
                                         }
-                                        if (_maxCount > _itemValue.ItemClass.Stacknumber.Value)
+                                        if (maxCount > itemValue.ItemClass.Stacknumber.Value)
                                         {
-                                            _maxCount = _itemValue.ItemClass.Stacknumber.Value;
+                                            maxCount = itemValue.ItemClass.Stacknumber.Value;
                                         }
-                                        else if (_maxCount < 1)
+                                        else if (maxCount < 1)
                                         {
-                                            _maxCount = 1;
+                                            maxCount = 1;
                                         }
                                     }
-                                    if (_minQuality < 1)
+                                    if (minQuality < 1)
                                     {
-                                        _minQuality = 1;
+                                        minQuality = 1;
                                     }
-                                    if (_maxQuality < 1)
+                                    if (maxQuality < 1)
                                     {
-                                        _maxQuality = 1;
+                                        maxQuality = 1;
                                     }
-                                    if (!Dict.ContainsKey(_item))
+                                    if (!Dict.ContainsKey(item))
                                     {
-                                        int[] _c = new int[] { _minCount, _maxCount, _minQuality, _maxQuality };
-                                        Dict.Add(_item, _c);
+                                        int[] c = new int[] { minCount, maxCount, minQuality, maxQuality };
+                                        Dict.Add(item, c);
                                     }
                                 }
                             }
@@ -156,6 +157,11 @@ namespace ServerTools
                     {
                         Items = new List<string>(Dict.Keys);
                     }
+                }
+                if (childNodes != null && upgrade)
+                {
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)

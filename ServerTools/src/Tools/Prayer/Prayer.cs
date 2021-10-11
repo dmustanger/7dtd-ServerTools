@@ -49,40 +49,46 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
                     Dict.Clear();
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_childNodes[i];
-                            if (_line.HasAttributes)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    UpgradeXml(_childNodes);
-                                    return;
+                                    upgrade = false;
+                                    continue;
                                 }
-                                else if (_line.HasAttribute("Name") && _line.HasAttribute("Message"))
+                                else if (line.HasAttribute("Name") && line.HasAttribute("Message"))
                                 {
-                                    string _buff = _line.GetAttribute("Name");
-                                    string _message = _line.GetAttribute("Message");
-                                    BuffClass _class = BuffManager.GetBuff(_buff);
+                                    string buff = line.GetAttribute("Name");
+                                    string message = line.GetAttribute("Message");
+                                    BuffClass _class = BuffManager.GetBuff(buff);
                                     if (_class == null)
                                     {
-                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer.xml entry. Buff is not valid: {0}", _line.OuterXml));
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer.xml entry. Buff is not valid: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    if (!Dict.ContainsKey(_buff))
+                                    if (!Dict.ContainsKey(buff))
                                     {
-                                        Dict.Add(_buff, _message);
+                                        Dict.Add(buff, message);
                                     }
                                 }
                             }
                         }
                     }
+                }
+                if (childNodes != null && upgrade)
+                {
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)

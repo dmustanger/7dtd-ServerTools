@@ -6,10 +6,11 @@ using System.Xml;
 
 namespace ServerTools
 {
-    public class Watchlist
+    public class WatchList
     {
         public static bool IsEnabled = false, IsRunning = false;
-        public static int Admin_Level = 0, Delay = 5;
+        public static int Admin_Level = 0;
+        public static string Delay = "5";
         public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
 
         private static string file = "Watchlist.xml";
@@ -50,41 +51,41 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
                     Dict.Clear();
-                    bool upgrade = true;
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType == XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
                             continue;
                         }
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (line.HasAttributes)
                         {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                             {
                                 upgrade = false;
                                 continue;
                             }
-                            else if (_line.HasAttribute("SteamId") && _line.HasAttribute("Reason"))
+                            else if (line.HasAttribute("SteamId") && line.HasAttribute("Reason"))
                             {
-                                string _steamdId = _line.GetAttribute("SteamId");
-                                string _reason = _line.GetAttribute("Reason");
-                                if (!Dict.ContainsKey(_line.GetAttribute("SteamId")))
+                                string steamdId = line.GetAttribute("SteamId");
+                                string reason = line.GetAttribute("Reason");
+                                if (!Dict.ContainsKey(line.GetAttribute("SteamId")))
                                 {
-                                    Dict.Add(_steamdId, _reason);
+                                    Dict.Add(steamdId, reason);
                                 }
                             }
                         }
                     }
-                    if (upgrade)
-                    {
-                        UpgradeXml(_childNodes);
-                        return;
-                    }
+                }
+                if (childNodes != null && upgrade)
+                {
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)
@@ -103,7 +104,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Watchlist>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Player SteamId=\"12345678909876543\" Reason=\"Suspected cheating.\" / -->");
+                    sw.WriteLine("<!-- Player SteamId=\"12345678909876543\" Reason=\"Suspected cheating\" / -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -143,7 +144,67 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void List()
+        public static void SetDelay()
+        {
+            if (EventSchedule.watchlist != Delay)
+            {
+                EventSchedule.watchlist = Delay;
+                if (Delay.Contains(",") && Delay.Contains(":"))
+                {
+                    string[] times = Delay.Split(',');
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
+                        {
+                            if (DateTime.Now < time)
+                            {
+                                EventSchedule.Add("Shutdown", time);
+                                return;
+                            }
+                        }
+                    }
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
+                        {
+                            if (DateTime.Now < time)
+                            {
+                                EventSchedule.Add("Shutdown", time);
+                                return;
+                            }
+                        }
+                    }
+                }
+                else if (Delay.Contains(":"))
+                {
+                    if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Delay + ":00", out DateTime time))
+                    {
+                        if (DateTime.Now < time)
+                        {
+                            EventSchedule.Add("Shutdown", time);
+                        }
+                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Delay + ":00", out DateTime secondaryTime))
+                        {
+                            EventSchedule.Add("Shutdown", secondaryTime);
+                        }
+                    }
+                }
+                else
+                {
+                    if (int.TryParse(Delay, out int delay))
+                    {
+                        EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(delay));
+                    }
+                    else
+                    {
+                        Log.Out("[SERVERTOOLS] Invalid Shutdown Time detected. Use a single integer, 24h time or multiple 24h time entries");
+                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                    }
+                }
+            }
+        }
+
+        public static void Exec()
         {
             try
             {

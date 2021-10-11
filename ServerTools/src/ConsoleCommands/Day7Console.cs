@@ -106,6 +106,7 @@ namespace ServerTools
                         {
                             Day7.IsEnabled = false;
                             Config.WriteXml();
+                            Config.LoadXml();
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Day7 has been set to off"));
                             return;
                         }
@@ -121,6 +122,7 @@ namespace ServerTools
                         {
                             Day7.IsEnabled = true;
                             Config.WriteXml();
+                            Config.LoadXml();
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Day7 has been set to on"));
                             return;
                         }

@@ -39,6 +39,7 @@ namespace ServerTools
                     {
                         AdminList.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Admin list has been set to off"));
                         return;
                     }
@@ -54,6 +55,7 @@ namespace ServerTools
                     {
                         AdminList.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Admin list has been set to on"));
                         return;
                     }

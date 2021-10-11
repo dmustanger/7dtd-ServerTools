@@ -98,8 +98,8 @@ namespace ServerTools
                             PersistentContainer.DataChange = true;
                         }
                     }
-                    int _eventTime = Time * 60;
-                    Timers._eventTime = _eventTime;
+                    int eventTime = Time * 60;
+                    Timers.eventTime = eventTime;
                     Open = true;
                     Phrases.Dict.TryGetValue("Event6", out string _phrase);
                     _phrase = _phrase.Replace("{EventName}", TeamSetup.ToString());

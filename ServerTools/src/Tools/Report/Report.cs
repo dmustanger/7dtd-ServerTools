@@ -37,7 +37,6 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo, string _message)
         {
-            _message = _message.Replace(Command_report + " ", "");
             if (_message.Length > Length)
             {
                 Phrases.Dict.TryGetValue("Report4", out string _phrase);
@@ -64,7 +63,7 @@ namespace ServerTools
             }
             using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
-                sw.WriteLine(string.Format("{0}: Location: {1} {2} {3}. Player {4} {5} reports: {6}.", DateTime.Now, (int)_pos.x, (int)_pos.y, (int)_pos.z, _cInfo.playerName, _cInfo.playerId, _message));
+                sw.WriteLine(string.Format("{0}: Location {1} Player {2} {3} Report: {4}", DateTime.Now, _pos, _cInfo.playerName, _cInfo.playerId, _message));
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();

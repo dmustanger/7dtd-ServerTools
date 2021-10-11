@@ -41,7 +41,7 @@ public static class Injections
                         return;
                     }
                 }
-                if (NewPlayer.IsEnabled && NewPlayer.Block_During_Bloodmoon && SkyManager.BloodMoon())
+                if (NewPlayer.IsEnabled && NewPlayer.Block_During_Bloodmoon && PersistentOperations.IsBloodmoon())
                 {
                     PersistentPlayerData _ppd = PersistentOperations.GetPersistentPlayerDataFromSteamId(_playerId);
                     if (_ppd == null)
@@ -202,7 +202,7 @@ public static class Injections
         }
     }
 
-    public static void GameManager_Cleanup_Postfix()
+    public static void GameManager_Cleanup_Finalizer()
     {
         try
         {
@@ -215,11 +215,11 @@ public static class Injections
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_Cleanup_Postfix: {0}", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_Cleanup_Finalizer: {0}", e.Message));
         }
     }
 
-    public static Exception ObjectiveTreasureChest_CalculateTreasurePoint_finalizer(Exception __exception, ref Vector3i __result)
+    public static Exception ObjectiveTreasureChest_CalculateTreasurePoint_Finalizer(Exception __exception, ref Vector3i __result)
     {
         try
         {
@@ -239,11 +239,14 @@ public static class Injections
     {
         try
         {
-            if (NewPlayerProtection.IsEnabled && __instance is EntityPlayer)
+            if (_dmResponse.Source != null && __instance.entityId != _dmResponse.Source.getEntityId())
             {
-                NewPlayerProtection.AddHealing(__instance, _dmResponse);
+                if (NewPlayerProtection.IsEnabled && __instance is EntityPlayer)
+                {
+                    NewPlayerProtection.AddHealing(__instance, _dmResponse);
+                }
+                return ProcessDamage.Exec(__instance, _dmResponse.Source, _dmResponse.Strength);
             }
-            return ProcessDamage.Exec(__instance, _dmResponse.Source, _dmResponse.Strength);
         }
         catch (Exception e)
         {
@@ -270,5 +273,146 @@ public static class Injections
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_CollectEntityServer_Prefix: {0}", e.Message));
         }
         return true;
+    }
+
+    public static bool GameManager_OpenTileEntityAllowed_Prefix(ref bool __result, int _entityIdThatOpenedIt, TileEntity _te)
+    {
+        try
+        {
+            if (DroppedBagProtection.IsEnabled)
+            {
+                if (_te is TileEntityLootContainer)
+                {
+                    TileEntityLootContainer lootContainer = _te as TileEntityLootContainer;
+                    if (lootContainer.bPlayerBackpack)
+                    {
+                        if (!DroppedBagProtection.IsAllowed(_entityIdThatOpenedIt, lootContainer))
+                        {
+                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
+                            if (cInfo != null)
+                            {
+                                Phrases.Dict.TryGetValue("DroppedBagProtection1", out string _phrase);
+                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            }
+                            __result = false;
+                            return false;
+                        }
+                    }
+                }
+            }
+            if (Shutdown.UI_Locked)
+            {
+                if (_te is TileEntityLootContainer)
+                {
+                    TileEntityLootContainer lootContainer = _te as TileEntityLootContainer;
+                    if (lootContainer.bPlayerBackpack)
+                    {
+                        return true;
+                    }
+                }
+                if (_te is TileEntityWorkstation || _te is TileEntityLootContainer || _te is TileEntitySecureLootContainer
+                || _te is TileEntityVendingMachine || _te is TileEntityTrader)
+                {
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
+                    if (cInfo != null)
+                    {
+                        Phrases.Dict.TryGetValue("Shutdown3", out string _phrase);
+                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                    __result = false;
+                    return false;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_OpenTileEntityAllowed_Prefix: {0}", e.Message));
+        }
+        return true;
+    }
+
+    public static bool EntityAlive_OnEntityDeath_Prefix(EntityAlive __instance)
+    {
+        try
+        {
+            if (ReservedSlots.Bonus_Exp && __instance is EntityZombie)
+            {
+                EntityAlive entityAlive = __instance.GetAttackTarget();
+                if (entityAlive != null && entityAlive is EntityPlayer)
+                {
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityAlive.entityId);
+                    if (cInfo != null && ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(cInfo.playerId))
+                    {
+
+                        int experience = EntityClass.list[__instance.entityClass].ExperienceValue;
+                        experience = (int)experience / 4;
+                        NetPackageEntityAddExpClient package = NetPackageManager.GetPackage<NetPackageEntityAddExpClient>().Setup(entityAlive.entityId, experience, Progression.XPTypes.Kill);
+                        ConnectionManager.Instance.SendPackage(package, false, entityAlive.entityId, -1, -1, -1);
+                        Log.Out(string.Format("[SERVERTOOLS] Added bonus experience of {0} to reserved player {1} named {2}", experience, cInfo.playerId, cInfo.playerName));
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.EntityAlive_OnEntityDeath_Prefix: {0}", e.Message));
+        }
+        return true;
+    }
+
+    public static void ChunkCluster_AddChunkSync_Postfix(bool __result, Chunk _chunk)
+    {
+        try
+        {
+            if (__result && ProtectedSpaces.IsEnabled)
+            {
+                if (!ProtectedSpaces.ProcessedChunks.Contains(_chunk))
+                {
+                    ProtectedSpaces.ProcessedChunks.Add(_chunk);
+                    ProtectedSpaces.Process();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ChunkCluster_AddChunkSync_Postfix: {0}", e.Message));
+        }
+    }
+
+    public static void World_SpawnEntityInWorld_Postfix(Entity _entity)
+    {
+        try
+        {
+            if (DroppedBagProtection.IsEnabled && _entity != null && _entity is EntityBackpack)
+            {
+                EntityBackpack backpack = _entity as EntityBackpack;
+                List<ClientInfo> clients = PersistentOperations.ClientList();
+                if (clients != null && clients.Count > 0)
+                {
+                    for (int i = 0; i < clients.Count; i++)
+                    {
+                        if (clients[i].latestPlayerData.droppedBackpackPosition == new Vector3i(backpack.position))
+                        {
+                            if (!DroppedBagProtection.Backpacks.ContainsKey(backpack.entityId))
+                            {
+                                DroppedBagProtection.Backpacks.Add(backpack.entityId, clients[i].entityId);
+                                PersistentContainer.Instance.Backpacks.Add(backpack.entityId, clients[i].entityId);
+                            }
+                            else
+                            {
+                                DroppedBagProtection.Backpacks[backpack.entityId] = clients[i].entityId;
+                                PersistentContainer.Instance.Backpacks[backpack.entityId] = clients[i].entityId;
+                            }
+                            PersistentContainer.DataChange = true;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.World_SpawnEntityInWorld_Postfix: {0}", e.Message));
+        }
     }
 }

@@ -1,5 +1,63 @@
 ﻿CHANGELOG
 
+19.6.4
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+-Added Web_API support for MIME type .webp and .woff2
+-Added Dropped_Bag_Protection tool. Stops players from accessing dropped
+bags they do not own. Friend_Access can be enabled. Accessing the bag
+removes protection
+-Added direction to Animal_Tracking command response
+-Added ability to define 24h time entries to various delay options in
+the ServerToolsConfig.xml
+-Added Clean_Bin tool. It will clean up select entries from the
+ServerTools saved data on server startup and then turn itself off.
+It can also be triggered via console command
+-Added Auto_Party_Invite tool. Players can create a party list. If a
+player joins the game from their list, it will send an automatic party
+invitation to them. They must be friends for the invitation to send
+-Added console command st-ClientConsoleCommand. Runs a console
+command in the target players console
+-Added option Xml_Only to Level_Up tool. If set to true, the tool will
+only show the level up messages listed in the LevelUp.xml
+-Added option Bonus_Exp to Reserved_Slots. If set to true, players
+receive 25% extra experience when killing zombies
+-Added Gamble tool. Players can start a 50/50 draw. Winners have a choice
+of betting or accepting the winnings. Each round doubles the payout but
+reduces their chance of success
+-Added option Lock_Out to Shutdown tool. Forces all loot, storage,
+vehicles, traders and workstation to lock with no access for the last
+45 seconds of the shutdown process. Warning added at one minute mark
+-Added multiple new phrases
+-Fixed Chat_Color not functioning as intended when using multiple colors
+-Fixed error in Animal_Tracking preventing the spawn
+-Fixed Block_Logger recording a player placing air
+-Fixed Shutdown not giving the one minute warning if the Countdown option
+is set to 1
+-Fixed Friend_Teleport command response
+-Fixed CustomCommand.xml permission not functioning as intended
+-Fixed KillNotice.xml not functioning as intended and added the localized
+name if not found on the list
+-Fixed part of upgrade process for all Xml
+-Updated Protected_Spaces tool to allow active changes without getting
+stuck
+-Updated console command st-ChatColorPrefix
+-Updated console command st-Donor
+-Updated Country_Ban database
+-Updated Kill_Notice code to improve processing time, memory load and
+response accuracy
+-Updated Kill_Notice to report zombie damage if enabled
+-Updated upgrade process to continue despite an old xml backup existing
+of the same version
+-Updated some internal operations for performance, accuracy and security
+-Updated HowToSetup.txt
+-Updated Web_Panel to utilize .webp files for compression and load speed.
+This will not work in some browsers
+-Updated default Animal_Ids for Animal_Tracking
+-Changed default state of Hardcore Optional to True
+-Changed multiple options from ServerToolsConfig.xml
+
 19.6.3
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

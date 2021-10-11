@@ -44,47 +44,53 @@ namespace ServerTools
                     Log.Out(string.Format("{0} Failed loading {1}: {2}", DateTime.Now, FilePath, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
                     Colors.Clear();
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_childNodes[i];
+                            XmlElement _line = (XmlElement)childNodes[i];
                             if (_line.HasAttributes)
                             {
-                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
                                 {
-                                    UpgradeXml(_childNodes);
-                                    return;
+                                    upgrade = false;
+                                    continue;
                                 }
                                 else if (_line.HasAttribute("Name") && _line.HasAttribute("Tags"))
                                 {
                                     if (string.IsNullOrWhiteSpace(_line.Attributes[0].Value) || string.IsNullOrWhiteSpace(_line.Attributes[1].Value))
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring ChatColors.xml entry: {0}", _line.OuterXml));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring ColorList.xml entry: {0}", _line.OuterXml));
                                         continue;
                                     }
                                     else
                                     {
-                                        string _name = _line.GetAttribute("Name");
-                                        string _tags = _line.GetAttribute("Tags");
-                                        if (!_tags.Contains("[") || !_tags.Contains("]"))
+                                        string name = _line.GetAttribute("Name");
+                                        string tags = _line.GetAttribute("Tags");
+                                        if (!tags.Contains("[") || !tags.Contains("]"))
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring ChatColors.xml entry with missing brackets[] around the Tags: {0}", _line.OuterXml));
+                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring ColorList.xml entry with missing brackets[] around the Tags: {0}", _line.OuterXml));
                                             continue;
                                         }
-                                        if (!Colors.ContainsKey(_name))
+                                        if (!Colors.ContainsKey(name))
                                         {
-                                            Colors.Add(_name, _tags);
+                                            Colors.Add(name, tags);
                                         }
                                     }
                                 }
                             }
                         }
                     }
+                }
+                if (childNodes != null && upgrade)
+                {
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)

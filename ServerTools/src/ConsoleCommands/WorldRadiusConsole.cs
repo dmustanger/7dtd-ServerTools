@@ -40,6 +40,7 @@ namespace ServerTools
                     {
                         WorldRadius.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] World radius has been set to off"));
                         return;
                     }
@@ -55,6 +56,7 @@ namespace ServerTools
                     {
                         WorldRadius.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] World radius has been set to on"));
                         return;
                     }

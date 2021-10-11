@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -27,7 +28,7 @@ namespace ServerTools
                             BlockChangeInfo _newBlockInfo = _blocksToChange[i];//new block info
                             BlockValue _oldBlockValue = _world.GetBlock(_newBlockInfo.pos);//old block value
                             Block _oldBlock = _oldBlockValue.Block;
-                            if (_newBlockInfo != null && _newBlockInfo.bChangeBlockValue)//new block value
+                            if (_newBlockInfo != null && _newBlockInfo.bChangeBlockValue)//has new block value
                             {
                                 Block _newBlock = _newBlockInfo.blockValue.Block;
                                 if (_oldBlockValue.type == BlockValue.Air.type)//old block was air
@@ -54,19 +55,14 @@ namespace ServerTools
                                             return false;
                                         }
                                     }
-                                    if (BlockLogger.IsEnabled)
+                                    if (BlockLogger.IsEnabled && _newBlockInfo.blockValue.type != BlockValue.Air.type)
                                     {
                                         BlockLogger.PlacedBlock(_persistentPlayerId, _newBlock, _newBlockInfo.pos);
                                     }
                                     return true;
                                 }
-
-                                if (_newBlockInfo.blockValue.type == BlockValue.Air.type)//new block is air
+                                else if (_newBlockInfo.blockValue.type == BlockValue.Air.type)//new block is air
                                 {
-                                    if (_oldBlockValue.type == BlockValue.Air.type)
-                                    {
-                                        return true;
-                                    }
                                     if (_oldBlockValue.Block is BlockLandClaim)
                                     {
                                         if (!PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, _newBlockInfo.pos))
@@ -104,10 +100,6 @@ namespace ServerTools
                                                     return false;
                                                 }
                                             }
-                                            if (BlockLogger.IsEnabled)
-                                            {
-                                                BlockLogger.BrokeBlock(_persistentPlayerId, _oldBlock, _newBlockInfo.pos);
-                                            }
                                         }
                                         if (BlockLogger.IsEnabled)
                                         {
@@ -129,10 +121,6 @@ namespace ServerTools
                                             }
                                         }
                                     }
-                                    if (_oldBlockValue.damage == _newBlockInfo.blockValue.damage || _newBlockInfo.blockValue.damage == 0)//block replaced
-                                    {
-                                        return true;
-                                    }
                                 }
                                 else if (_oldBlock.DowngradeBlock.Block.blockID == _newBlock.blockID)//downgraded
                                 {
@@ -152,10 +140,6 @@ namespace ServerTools
                                             Penalty(_total, _persistentPlayerId, _cInfo);
                                             return false;
                                         }
-                                    }
-                                    if (BlockLogger.IsEnabled)
-                                    {
-                                        BlockLogger.BrokeBlock(_persistentPlayerId, _oldBlock, _newBlockInfo.pos);
                                     }
                                 }
                             }

@@ -36,6 +36,7 @@ namespace ServerTools
                     {
                         ChatHook.Message_Color_Enabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Message color has been set to off"));
                         return;
                     }
@@ -51,6 +52,7 @@ namespace ServerTools
                     {
                         ChatHook.Message_Color_Enabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Message color has been set to on"));
                         return;
                     }

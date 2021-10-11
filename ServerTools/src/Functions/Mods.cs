@@ -23,10 +23,6 @@ namespace ServerTools
             {
                 Timers.TimerStart();
             }
-            if (!CommandList.IsRunning)
-            {
-                CommandList.Load();
-            }
             if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen)
             {
                 Poll.CheckTime();
@@ -84,13 +80,13 @@ namespace ServerTools
             {
                 VoteReward.Unload();
             }
-            if (!Watchlist.IsRunning && Watchlist.IsEnabled)
+            if (!WatchList.IsRunning && WatchList.IsEnabled)
             {
-                Watchlist.Load();
+                WatchList.Load();
             }
-            if (Watchlist.IsRunning && !Watchlist.IsEnabled)
+            if (WatchList.IsRunning && !WatchList.IsEnabled)
             {
-                Watchlist.Unload();
+                WatchList.Unload();
             }
             if (!ReservedSlots.IsRunning && ReservedSlots.IsEnabled)
             {
@@ -148,13 +144,13 @@ namespace ServerTools
             {
                 HighPingKicker.Load();
             }
-            if (CredentialCheck.IsRunning && !CredentialCheck.IsEnabled)
+            if (Credentials.IsRunning && !Credentials.IsEnabled)
             {
-                CredentialCheck.Unload();
+                Credentials.Unload();
             }
-            if (!CredentialCheck.IsRunning && CredentialCheck.IsEnabled)
+            if (!Credentials.IsRunning && Credentials.IsEnabled)
             {
-                CredentialCheck.Load();
+                Credentials.Load();
             }
             if (CustomCommands.IsRunning && !CustomCommands.IsEnabled)
             {

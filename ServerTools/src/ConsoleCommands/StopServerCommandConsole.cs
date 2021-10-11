@@ -36,18 +36,37 @@ namespace ServerTools
                 }
                 if (_params[0] == "cancel")
                 {
-                    if (!StopServer.ShuttingDown)
+                    if (!Shutdown.ShuttingDown)
                     {
                         SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver is not running");
                     }
                     else
                     {
-                        StopServer.ShuttingDown = false;
-                        StopServer.NoEntry = false;
+                        Shutdown.ShuttingDown = false;
+                        Shutdown.NoEntry = false;
+                        Shutdown.UI_Locked = false;
                         Lottery.ShuttingDown = false;
+                        if (ExitCommand.IsEnabled)
+                        {
+                            List<ClientInfo> clients = PersistentOperations.ClientList();
+                            if (clients != null && clients.Count > 0)
+                            {
+                                for (int i = 0; i < clients.Count; i++)
+                                {
+                                    if (!ExitCommand.Players.ContainsKey(clients[i].entityId) && GameManager.Instance.adminTools.GetUserPermissionLevel(clients[i]) > ExitCommand.Admin_Level)
+                                    {
+                                        EntityPlayer player = GameManager.Instance.World.Players.dict[clients[i].entityId];
+                                        if (player != null)
+                                        {
+                                            ExitCommand.Players.Add(clients[i].entityId, player.position);
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         if (Shutdown.IsEnabled)
                         {
-                            EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(Shutdown.Delay));
+                            Shutdown.SetDelay();
                             SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled and the next shutdown has been reset");
                         }
                         else
@@ -58,7 +77,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    if (StopServer.ShuttingDown)
+                    if (Shutdown.ShuttingDown)
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Server is already set to shutdown. Cancel it if you wish to set a new countdown"));
                     }
@@ -70,7 +89,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            StopServer.StartShutdown();
+                            Shutdown.StartShutdown();
                         }
                     }                   
                 }

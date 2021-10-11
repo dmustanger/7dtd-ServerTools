@@ -10,13 +10,73 @@ namespace ServerTools
     class AutoBackup
     {
         public static bool IsEnabled = false, IsRunning = false;
-        public static int Delay = 240, Backup_Count = 5, Compression_Level = 0;
-        public static string Destination = "", SaveDirectory = GameUtils.GetSaveGameDir();
+        public static int Backup_Count = 5, Compression_Level = 0;
+        public static string Destination = "", SaveDirectory = GameUtils.GetSaveGameDir(), Delay = "240";
         private static Thread th;
+
+        public static void SetDelay()
+        {
+            if (EventSchedule.autoBackup != Delay)
+            {
+                EventSchedule.autoBackup = Delay;
+                if (Delay.Contains(",") && Delay.Contains(":"))
+                {
+                    string[] times = Delay.Split(',');
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
+                        {
+                            if (DateTime.Now < time)
+                            {
+                                EventSchedule.Add("AutoBackup", time);
+                                return;
+                            }
+                        }
+                    }
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
+                        {
+                            if (DateTime.Now < time)
+                            {
+                                EventSchedule.Add("AutoBackup", time);
+                                return;
+                            }
+                        }
+                    }
+                }
+                else if (Delay.Contains(":"))
+                {
+                    if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Delay + ":00", out DateTime time))
+                    {
+                        if (DateTime.Now < time)
+                        {
+                            EventSchedule.Add("AutoBackup", time);
+                        }
+                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Delay + ":00", out DateTime secondaryTime))
+                        {
+                            EventSchedule.Add("AutoBackup", secondaryTime);
+                        }
+                    }
+                }
+                else
+                {
+                    if (int.TryParse(Delay, out int delay))
+                    {
+                        EventSchedule.Add("AutoBackup", DateTime.Now.AddMinutes(delay));
+                    }
+                    else
+                    {
+                        Log.Out("[SERVERTOOLS] Invalid AutoBackup Delay_Between_Saves detected. Use a single integer, 24h time or multiple 24h time entries");
+                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                    }
+                }
+            }
+        }
 
         public static void Exec()
         {
-            if (!IsRunning && !StopServer.ShuttingDown)
+            if (!IsRunning && !Shutdown.ShuttingDown)
             {
                 try
                 {

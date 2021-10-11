@@ -42,6 +42,7 @@ namespace ServerTools
                     {
                         Badwords.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bad word filter has been set to off"));
                         return;
                     }
@@ -62,6 +63,7 @@ namespace ServerTools
                     {
                         Badwords.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bad word filter has been set to on"));
                         return;
                     }

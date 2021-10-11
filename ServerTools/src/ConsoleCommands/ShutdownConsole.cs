@@ -36,7 +36,8 @@ namespace ServerTools
                     {
                         Shutdown.IsEnabled = false;
                         Config.WriteXml();
-                        StopServer.ShuttingDown = false;
+                        Config.LoadXml();
+                        Shutdown.ShuttingDown = false;
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Shutdown has been set to off"));
                         return;
                     }
@@ -52,6 +53,7 @@ namespace ServerTools
                     {
                         Shutdown.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Shutdown has been set to on"));
                         return;
                     }

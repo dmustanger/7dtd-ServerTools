@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System;
+using System.Numerics;
 using System.Reflection;
 
 namespace ServerTools
@@ -142,13 +143,17 @@ namespace ServerTools
                     }
                     else
                     {
-                        MethodInfo postfix = typeof(Injections).GetMethod("GameManager_Cleanup_Postfix");
-                        if (postfix == null)
+                        Patches _patchInfo = Harmony.GetPatchInfo(original);
+                        if (_patchInfo == null)
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_Cleanup.postfix"));
-                            return;
+                            MethodInfo Finalizer = typeof(Injections).GetMethod("GameManager_Cleanup_Finalizer");
+                            if (Finalizer == null)
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_Cleanup.Finalizer"));
+                                return;
+                            }
+                            harmony.Patch(original, null, null, null, new HarmonyMethod(Finalizer));
                         }
-                        harmony.Patch(original, null, new HarmonyMethod(postfix));
                     }
                     
                     original = AccessTools.Method(typeof(ObjectiveTreasureChest), "CalculateTreasurePoint");
@@ -158,7 +163,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        MethodInfo finalizer = typeof(Injections).GetMethod("ObjectiveTreasureChest_CalculateTreasurePoint_finalizer");
+                        MethodInfo finalizer = typeof(Injections).GetMethod("ObjectiveTreasureChest_CalculateTreasurePoint_Finalizer");
                         if (finalizer == null)
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Injection failed: ObjectiveTreasureChest_CalculateTreasurePoint.finalizer"));
@@ -199,22 +204,6 @@ namespace ServerTools
                         harmony.Patch(original, new HarmonyMethod(prefix), null);
                     }
 
-                    //original = AccessTools.Method(typeof(World), "SpawnEntityInWorld");
-                    //if (original == null)
-                    //{
-                    //    Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.SpawnEntityInWorld method was not found"));
-                    //}
-                    //else
-                    //{
-                    //    MethodInfo prefix = typeof(Injections).GetMethod("World_SpawnEntityInWorld_Prefix");
-                    //    if (prefix == null)
-                    //    {
-                    //        Log.Out(string.Format("[SERVERTOOLS] Injection failed: World_SpawnEntityInWorld.prefix"));
-                    //        return;
-                    //    }
-                    //    harmony.Patch(original, new HarmonyMethod(prefix), null);
-                    //}
-
                     original = AccessTools.Method(typeof(GameManager), "OnApplicationQuit");
                     if (original == null)
                     {
@@ -229,6 +218,70 @@ namespace ServerTools
                             return;
                         }
                         harmony.Patch(original, new HarmonyMethod(prefix), null);
+                    }
+
+                    original = AccessTools.Method(typeof(GameManager), "OpenTileEntityAllowed");
+                    if (original == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.OpenTileEntityAllowed method was not found"));
+                    }
+                    else
+                    {
+                        MethodInfo prefix = typeof(Injections).GetMethod("GameManager_OpenTileEntityAllowed_Prefix");
+                        if (prefix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_OpenTileEntityAllowed.prefix"));
+                            return;
+                        }
+                        harmony.Patch(original, new HarmonyMethod(prefix), null);
+                    }
+
+                    original = AccessTools.Method(typeof(EntityAlive), "OnEntityDeath");
+                    if (original == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.OnEntityDeath method was not found"));
+                    }
+                    else
+                    {
+                        MethodInfo prefix = typeof(Injections).GetMethod("EntityAlive_OnEntityDeath_Prefix");
+                        if (prefix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_OnEntityDeath.prefix"));
+                            return;
+                        }
+                        harmony.Patch(original, new HarmonyMethod(prefix), null);
+                    }
+
+                    original = AccessTools.Method(typeof(ChunkCluster), "AddChunkSync");
+                    if (original == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChunkCluster.AddChunkSync method was not found"));
+                    }
+                    else
+                    {
+                        MethodInfo postfix = typeof(Injections).GetMethod("ChunkCluster_AddChunkSync_Postfix");
+                        if (postfix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChunkCluster_AddChunkSync.postfix"));
+                            return;
+                        }
+                        harmony.Patch(original, null, new HarmonyMethod(postfix));
+                    }
+
+                    original = AccessTools.Method(typeof(World), "SpawnEntityInWorld");
+                    if (original == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.SpawnEntityInWorld method was not found"));
+                    }
+                    else
+                    {
+                        MethodInfo postfix = typeof(Injections).GetMethod("World_SpawnEntityInWorld_Postfix");
+                        if (postfix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: World_SpawnEntityInWorld.postfix"));
+                            return;
+                        }
+                        harmony.Patch(original, null, new HarmonyMethod(postfix));
                     }
 
                     Applied = true;

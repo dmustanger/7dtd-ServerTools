@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class ReservedSlots
     {
-        public static bool IsEnabled = false, IsRunning = false, Operating = false, Reduced_Delay = false, Admin_Slot = false;
+        public static bool IsEnabled = false, IsRunning = false, Operating = false, Reduced_Delay = false, Admin_Slot = false, Bonus_Exp = false;
         public static int Session_Time = 30, Admin_Level = 0;
         public static string Command_reserved = "reserved";
         public static Dictionary<string, DateTime> Dict = new Dictionary<string, DateTime>();
@@ -51,42 +51,48 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
                     Dict.Clear();
                     Dict1.Clear();
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_childNodes[i];
-                            if (_line.HasAttributes)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    UpgradeXml(_childNodes);
-                                    return;
+                                    upgrade = false;
+                                    continue;
                                 }
-                                else if (_line.HasAttribute("SteamId") && _line.HasAttribute("Name") && _line.HasAttribute("Expires"))
+                                else if (line.HasAttribute("SteamId") && line.HasAttribute("Name") && line.HasAttribute("Expires"))
                                 {
-                                    if (!DateTime.TryParse(_line.GetAttribute("Expires"), out DateTime _dt))
+                                    if (!DateTime.TryParse(line.GetAttribute("Expires"), out DateTime dt))
                                     {
-                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots.xml entry. Invalid (date) value for 'Expires' attribute: {0}", _line.OuterXml));
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots.xml entry. Invalid (date) value for 'Expires' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    if (!Dict.ContainsKey(_line.GetAttribute("SteamId")))
+                                    if (!Dict.ContainsKey(line.GetAttribute("SteamId")))
                                     {
-                                        Dict.Add(_line.GetAttribute("SteamId"), _dt);
+                                        Dict.Add(line.GetAttribute("SteamId"), dt);
                                     }
-                                    if (!Dict1.ContainsKey(_line.GetAttribute("SteamId")))
+                                    if (!Dict1.ContainsKey(line.GetAttribute("SteamId")))
                                     {
-                                        Dict1.Add(_line.GetAttribute("SteamId"), _line.GetAttribute("Name"));
+                                        Dict1.Add(line.GetAttribute("SteamId"), line.GetAttribute("Name"));
                                     }
                                 }
                             }
                         }
                     }
+                }
+                if (childNodes != null && upgrade)
+                {
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)
@@ -103,6 +109,7 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ReservedSlots>");
                 sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                sw.WriteLine(string.Format("<!-- <Player SteamId=\"76561191234567891\" Name=\"Tron\" Expires=\"10/29/2050 7:30:00 AM\" /> -->"));
                 sw.WriteLine();
                 sw.WriteLine();
                 if (Dict.Count > 0)
@@ -307,9 +314,11 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<ReservedSlots>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine(string.Format("<!-- <Player SteamId=\"76561191234567891\" Name=\"Tron\" Expires=\"10/29/2050 7:30:00 AM\" /> -->"));
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Player SteamId=\"\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Player SteamId=\"\"") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Player SteamId=\"76561191234567891\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }

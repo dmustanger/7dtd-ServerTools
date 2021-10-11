@@ -37,6 +37,7 @@ namespace ServerTools
                     {
                         Whisper.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Private message has been set to off"));
                         return;
                     }
@@ -52,6 +53,7 @@ namespace ServerTools
                     {
                         Whisper.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Private message has been set to on"));
                         return;
                     }

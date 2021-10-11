@@ -38,6 +38,7 @@ namespace ServerTools
                     {
                         Homes.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes has been set to off"));
                         return;
                     }
@@ -53,6 +54,7 @@ namespace ServerTools
                     {
                         Homes.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes has been set to on"));
                         return;
                     }

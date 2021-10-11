@@ -9,7 +9,7 @@ namespace ServerTools
 {
     class LevelUp
     {
-        public static bool IsEnabled = false, IsRunning = false;
+        public static bool IsEnabled = false, IsRunning = false, Xml_Only = false;
         public static Dictionary<int, int> PlayerLevels = new Dictionary<int, int>();
 
         private static Dictionary<int, string> Dict = new Dictionary<int, string>();
@@ -48,38 +48,44 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
                     Dict.Clear();
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_childNodes[i];
-                            if (_line.HasAttributes)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    UpgradeXml(_childNodes);
-                                    return;
+                                    upgrade = false;
+                                    continue;
                                 }
-                                else if (_line.HasAttribute("Required") && _line.HasAttribute("Command"))
+                                else if (line.HasAttribute("Required") && line.HasAttribute("Command"))
                                 {
-                                    if (!int.TryParse(_line.GetAttribute("Required"), out int _level))
+                                    if (!int.TryParse(line.GetAttribute("Required"), out int level))
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring LevelUp.xml entry because of invalid (non-numeric) value for 'Required' attribute: {0}", _line.OuterXml));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring LevelUp.xml entry because of invalid (non-numeric) value for 'Required' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    string _command = _line.GetAttribute("Command");
-                                    if (!Dict.ContainsKey(_level))
+                                    string command = line.GetAttribute("Command");
+                                    if (!Dict.ContainsKey(level))
                                     {
-                                        Dict.Add(_level, _command);
+                                        Dict.Add(level, command);
                                     }
                                 }
                             }
                         }
                     }
+                }
+                if (childNodes != null && upgrade)
+                {
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)
@@ -158,14 +164,27 @@ namespace ServerTools
                         if (_player.Progression.Level > _level)
                         {
                             PlayerLevels[_player.entityId] = _player.Progression.Level;
-                            Phrases.Dict.TryGetValue("LevelUp1", out string _phrase);
-                            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase = _phrase.Replace("{Value}", _player.Progression.Level.ToString());
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                            if (Dict.ContainsKey(_player.Progression.Level))
+                            if (Xml_Only)
                             {
-                                Dict.TryGetValue(_player.Progression.Level, out string _command);
-                                ProcessCommand(_cInfo, _command);
+                                if (Dict.ContainsKey(_player.Progression.Level))
+                                {
+                                    Phrases.Dict.TryGetValue("LevelUp1", out string _phrase);
+                                    _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase = _phrase.Replace("{Value}", _player.Progression.Level.ToString());
+                                    Dict.TryGetValue(_player.Progression.Level, out string _command);
+                                    ProcessCommand(_cInfo, _command);
+                                }
+                            }
+                            else
+                            {
+                                Phrases.Dict.TryGetValue("LevelUp1", out string _phrase);
+                                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                _phrase = _phrase.Replace("{Value}", _player.Progression.Level.ToString());
+                                if (Dict.ContainsKey(_player.Progression.Level))
+                                {
+                                    Dict.TryGetValue(_player.Progression.Level, out string _command);
+                                    ProcessCommand(_cInfo, _command);
+                                }
                             }
                         }
                     }

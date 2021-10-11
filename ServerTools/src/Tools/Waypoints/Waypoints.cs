@@ -52,46 +52,52 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
                     Dict.Clear();
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_childNodes[i];
-                            if (_line.HasAttributes)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    UpgradeXml(_childNodes);
-                                    return;
+                                    upgrade = false;
+                                    continue;
                                 }
-                                else if (_line.HasAttribute("Name") && _line.HasAttribute("Position") && _line.HasAttribute("Cost"))
+                                else if (line.HasAttribute("Name") && line.HasAttribute("Position") && line.HasAttribute("Cost"))
                                 {
-                                    string _name = _line.GetAttribute("Name");
-                                    string _position = _line.GetAttribute("Position");
-                                    string _cost = _line.GetAttribute("Cost");
-                                    if (!int.TryParse(_cost, out int _value))
+                                    string name = line.GetAttribute("Name");
+                                    string position = line.GetAttribute("Position");
+                                    string cost = line.GetAttribute("Cost");
+                                    if (!int.TryParse(cost, out int value))
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Waypoints.xml entry. Invalid (non-numeric) value for 'Cost' attribute: {0}", _line.OuterXml));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Waypoints.xml entry. Invalid (non-numeric) value for 'Cost' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    if (!_position.Contains(","))
+                                    if (!position.Contains(","))
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Waypoints.xml entry. Invalid value for 'Position' attribute: {0}", _line.OuterXml));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Waypoints.xml entry. Invalid value for 'Position' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    string[] _waypoint = { _position, _cost };
-                                    if (!Dict.ContainsKey(_name))
+                                    string[] waypoint = { position, cost };
+                                    if (!Dict.ContainsKey(name))
                                     {
-                                        Dict.Add(_name, _waypoint);
+                                        Dict.Add(name, waypoint);
                                     }
                                 }
                             }
                         }
                     }
+                }
+                if (childNodes != null && upgrade)
+                {
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)

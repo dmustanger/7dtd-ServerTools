@@ -8,13 +8,12 @@ namespace ServerTools
 {
     class CommandList
     {
-        public static bool IsRunning = false;
         public static Dictionary<string, string> Dict = new Dictionary<string, string>();
 
+        private static List<string> Commands = new List<string>();
         private const string file = "CommandList.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-
 
         public static void Load()
         {
@@ -26,7 +25,6 @@ namespace ServerTools
         {
             Dict.Clear();
             FileWatcher.Dispose();
-            IsRunning = false;
         }
 
         public static void LoadXml()
@@ -45,29 +43,30 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-            if (_childNodes != null && _childNodes.Count > 0)
+            bool upgrade = true;
+            XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+            if (childNodes != null && childNodes.Count > 0)
             {
                 Dict.Clear();
-                for (int i = 0; i < _childNodes.Count; i++)
+                for (int i = 0; i < childNodes.Count; i++)
                 {
-                    if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                    if (childNodes[i].NodeType != XmlNodeType.Comment)
                     {
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (line.HasAttributes)
                         {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                            if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                             {
-                                UpgradeXml(_childNodes);
-                                return;
+                                upgrade = false;
+                                continue;
                             }
-                            else if (_line.HasAttribute("Default") && _line.HasAttribute("Replacement"))
+                            else if (line.HasAttribute("Default") && line.HasAttribute("Replacement"))
                             {
-                                string _default = _line.GetAttribute("Default");
-                                string _replacement = _line.GetAttribute("Replacement").ToLower();
+                                string _default = line.GetAttribute("Default");
+                                string replacement = line.GetAttribute("Replacement").ToLower();
                                 if (!Dict.ContainsKey(_default))
                                 {
-                                    Dict.Add(_default, _replacement);
+                                    Dict.Add(_default, replacement);
                                 }
                             }
                         }
@@ -77,6 +76,11 @@ namespace ServerTools
                 {
                     Exec();
                 }
+            }
+            if (childNodes != null && upgrade)
+            {
+                UpgradeXml(childNodes);
+                return;
             }
         }
 
@@ -88,6 +92,7 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<CommandList>");
                 sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                sw.WriteLine("<!-- Leave the default alone. Only edit the replacement to your desired command -->");
                 sw.WriteLine("<!-- All capital letters in commands will be reduced to lowercase -->");
                 sw.WriteLine();
                 sw.WriteLine();
@@ -100,133 +105,10 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("    <Command Default=\"home\" Replacement=\"home\" />");
-                    sw.WriteLine("    <Command Default=\"fhome\" Replacement=\"fhome\" />");
-                    sw.WriteLine("    <Command Default=\"home save\" Replacement=\"home save\" />");
-                    sw.WriteLine("    <Command Default=\"home del\" Replacement=\"home del\" />");
-                    sw.WriteLine("    <Command Default=\"go home\" Replacement=\"go home\" />");
-                    sw.WriteLine("    <Command Default=\"sethome\" Replacement=\"sethome\" />");
-                    sw.WriteLine("    <Command Default=\"go way\" Replacement=\"go way\" />");
-                    sw.WriteLine("    <Command Default=\"top3\" Replacement=\"top3\" />");
-                    sw.WriteLine("    <Command Default=\"score\" Replacement=\"score\" />");
-                    sw.WriteLine("    <Command Default=\"buy life\" Replacement=\"buy life\" />");
-                    sw.WriteLine("    <Command Default=\"hardcore\" Replacement=\"hardcore\" />");
-                    sw.WriteLine("    <Command Default=\"hardcore on\" Replacement=\"hardcore on\" />");
-                    sw.WriteLine("    <Command Default=\"mute\" Replacement=\"mute\" />");
-                    sw.WriteLine("    <Command Default=\"unmute\" Replacement=\"unmute\" />");
-                    sw.WriteLine("    <Command Default=\"mutelist\" Replacement=\"mutelist\" />");
-                    sw.WriteLine("    <Command Default=\"commands\" Replacement=\"commands\" />");
-                    sw.WriteLine("    <Command Default=\"day7\" Replacement=\"day7\" />");
-                    sw.WriteLine("    <Command Default=\"day\" Replacement=\"day\" />");
-                    sw.WriteLine("    <Command Default=\"bloodmoon\" Replacement=\"bloodmoon\" />");
-                    sw.WriteLine("    <Command Default=\"bm\" Replacement=\"bm\" />");
-                    sw.WriteLine("    <Command Default=\"killme\" Replacement=\"killme\" />");
-                    sw.WriteLine("    <Command Default=\"wrist\" Replacement=\"wrist\" />");
-                    sw.WriteLine("    <Command Default=\"hang\" Replacement=\"hang\" />");
-                    sw.WriteLine("    <Command Default=\"suicide\" Replacement=\"suicide\" />");
-                    sw.WriteLine("    <Command Default=\"gimme\" Replacement=\"gimme\" />");
-                    sw.WriteLine("    <Command Default=\"gimmie\" Replacement=\"gimmie\" />");
-                    sw.WriteLine("    <Command Default=\"set jail\" Replacement=\"set jail\" />");
-                    sw.WriteLine("    <Command Default=\"jail\" Replacement=\"jail\" />");
-                    sw.WriteLine("    <Command Default=\"unjail\" Replacement=\"unjail\" />");
-                    sw.WriteLine("    <Command Default=\"forgive\" Replacement=\"forgive\" />");
-                    sw.WriteLine("    <Command Default=\"setspawn\" Replacement=\"setspawn\" />");
-                    sw.WriteLine("    <Command Default=\"ready\" Replacement=\"ready\" />");
-                    sw.WriteLine("    <Command Default=\"trackanimal\" Replacement=\"trackanimal\" />");
-                    sw.WriteLine("    <Command Default=\"track\" Replacement=\"track\" />");
-                    sw.WriteLine("    <Command Default=\"claim\" Replacement=\"claim\" />");
-                    sw.WriteLine("    <Command Default=\"clan add\" Replacement=\"clan add\" />");
-                    sw.WriteLine("    <Command Default=\"clan del\" Replacement=\"clan del\" />");
-                    sw.WriteLine("    <Command Default=\"clan invite\" Replacement=\"clan invite\" />");
-                    sw.WriteLine("    <Command Default=\"clan accept\" Replacement=\"clan accept\" />");
-                    sw.WriteLine("    <Command Default=\"clan decline\" Replacement=\"clan decline\" />");
-                    sw.WriteLine("    <Command Default=\"clan remove\" Replacement=\"clan remove\" />");
-                    sw.WriteLine("    <Command Default=\"clan promote\" Replacement=\"clan promote\" />");
-                    sw.WriteLine("    <Command Default=\"clan demote\" Replacement=\"clan demote\" />");
-                    sw.WriteLine("    <Command Default=\"clan leave\" Replacement=\"clan leave\" />");
-                    sw.WriteLine("    <Command Default=\"clan commands\" Replacement=\"clan commands\" />");
-                    sw.WriteLine("    <Command Default=\"clan chat\" Replacement=\"clan chat\" />");
-                    sw.WriteLine("    <Command Default=\"clan rename\" Replacement=\"clan rename\" />");
-                    sw.WriteLine("    <Command Default=\"clan request\" Replacement=\"clan request\" />");
-                    sw.WriteLine("    <Command Default=\"cc\" Replacement=\"cc\" />");
-                    sw.WriteLine("    <Command Default=\"clanlist\" Replacement=\"clanlist\" />");
-                    sw.WriteLine("    <Command Default=\"reward\" Replacement=\"reward\" />");
-                    sw.WriteLine("    <Command Default=\"shutdown\" Replacement=\"shutdown\" />");
-                    sw.WriteLine("    <Command Default=\"adminlist\" Replacement=\"adminlist\" />");
-                    sw.WriteLine("    <Command Default=\"travel\" Replacement=\"travel\" />");
-                    sw.WriteLine("    <Command Default=\"marketback\" Replacement=\"marketback\" />");
-                    sw.WriteLine("    <Command Default=\"mback\" Replacement=\"mback\" />");
-                    sw.WriteLine("    <Command Default=\"setmarket\" Replacement=\"setmarket\" />");
-                    sw.WriteLine("    <Command Default=\"market\" Replacement=\"market\" />");
-                    sw.WriteLine("    <Command Default=\"lobbyback\" Replacement=\"lobbyback\" />");
-                    sw.WriteLine("    <Command Default=\"lback\" Replacement=\"lback\" />");
-                    sw.WriteLine("    <Command Default=\"setlobby\" Replacement=\"setlobby\" />");
-                    sw.WriteLine("    <Command Default=\"lobby\" Replacement=\"lobby\" />");
-                    sw.WriteLine("    <Command Default=\"wallet\" Replacement=\"wallet\" />");
-                    sw.WriteLine("    <Command Default=\"shop\" Replacement=\"shop\" />");
-                    sw.WriteLine("    <Command Default=\"shop buy\" Replacement=\"shop buy\" />");
-                    sw.WriteLine("    <Command Default=\"friend\" Replacement=\"friend\" />");
-                    sw.WriteLine("    <Command Default=\"accept\" Replacement=\"accept\" />");
-                    sw.WriteLine("    <Command Default=\"died\" Replacement=\"died\" />");
-                    sw.WriteLine("    <Command Default=\"weathervote\" Replacement=\"weathervote\" />");
-                    sw.WriteLine("    <Command Default=\"sun\" Replacement=\"sun\" />");
-                    sw.WriteLine("    <Command Default=\"rain\" Replacement=\"rain\" />");
-                    sw.WriteLine("    <Command Default=\"snow\" Replacement=\"snow\" />");
-                    sw.WriteLine("    <Command Default=\"restartvote\" Replacement=\"restartvote\" />");
-                    sw.WriteLine("    <Command Default=\"mutevote\" Replacement=\"mutevote\" />");
-                    sw.WriteLine("    <Command Default=\"kickvote\" Replacement=\"kickvote\" />");
-                    sw.WriteLine("    <Command Default=\"yes\" Replacement=\"yes\" />");
-                    sw.WriteLine("    <Command Default=\"reserved\" Replacement=\"reserved\" />");
-                    sw.WriteLine("    <Command Default=\"auction\" Replacement=\"auction\" />");
-                    sw.WriteLine("    <Command Default=\"auction cancel\" Replacement=\"auction cancel\" />");
-                    sw.WriteLine("    <Command Default=\"auction buy\" Replacement=\"auction buy\" />");
-                    sw.WriteLine("    <Command Default=\"auction sell\" Replacement=\"auction sell\" />");
-                    sw.WriteLine("    <Command Default=\"fps\" Replacement=\"fps\" />");
-                    sw.WriteLine("    <Command Default=\"loc\" Replacement=\"loc\" />");
-                    sw.WriteLine("    <Command Default=\"recall\" Replacement=\"recall\" />");
-                    sw.WriteLine("    <Command Default=\"report\" Replacement=\"report\" />");
-                    sw.WriteLine("    <Command Default=\"bounty\" Replacement=\"bounty\" />");
-                    sw.WriteLine("    <Command Default=\"lottery\" Replacement=\"lottery\" />");
-                    sw.WriteLine("    <Command Default=\"lottery enter\" Replacement=\"lottery enter\" />");
-                    sw.WriteLine("    <Command Default=\"playerlist\" Replacement=\"playerlist\" />");
-                    sw.WriteLine("    <Command Default=\"stuck\" Replacement=\"stuck\" />");
-                    sw.WriteLine("    <Command Default=\"poll yes\" Replacement=\"poll yes\" />");
-                    sw.WriteLine("    <Command Default=\"poll no\" Replacement=\"poll no\" />");
-                    sw.WriteLine("    <Command Default=\"poll\" Replacement=\"poll\" />");
-                    sw.WriteLine("    <Command Default=\"bank\" Replacement=\"bank\" />");
-                    sw.WriteLine("    <Command Default=\"deposit\" Replacement=\"deposit\" />");
-                    sw.WriteLine("    <Command Default=\"withdraw\" Replacement=\"withdraw\" />");
-                    sw.WriteLine("    <Command Default=\"wallet deposit\" Replacement=\"wallet deposit\" />");
-                    sw.WriteLine("    <Command Default=\"wallet withdraw\" Replacement=\"wallet withdraw\" />");
-                    sw.WriteLine("    <Command Default=\"transfer\" Replacement=\"transfer\" />");
-                    sw.WriteLine("    <Command Default=\"join\" Replacement=\"event\" />");
-                    sw.WriteLine("    <Command Default=\"infoticker\" Replacement=\"infoticker\" />");
-                    sw.WriteLine("    <Command Default=\"session\" Replacement=\"session\" />");
-                    sw.WriteLine("    <Command Default=\"waypoint\" Replacement=\"waypoint\" />");
-                    sw.WriteLine("    <Command Default=\"way\" Replacement=\"way\" />");
-                    sw.WriteLine("    <Command Default=\"wp\" Replacement=\"wp\" />");
-                    sw.WriteLine("    <Command Default=\"fwaypoint\" Replacement=\"fwaypoint\" />");
-                    sw.WriteLine("    <Command Default=\"fway\" Replacement=\"fway\" />");
-                    sw.WriteLine("    <Command Default=\"fwp\" Replacement=\"fwp\" />");
-                    sw.WriteLine("    <Command Default=\"waypoint save\" Replacement=\"waypoint save\" />");
-                    sw.WriteLine("    <Command Default=\"way save\" Replacement=\"way save\" />");
-                    sw.WriteLine("    <Command Default=\"ws\" Replacement=\"ws\" />");
-                    sw.WriteLine("    <Command Default=\"waypoint del\" Replacement=\"waypoint del\" />");
-                    sw.WriteLine("    <Command Default=\"way del\" Replacement=\"way del\" />");
-                    sw.WriteLine("    <Command Default=\"wd\" Replacement=\"wd\" />");
-                    sw.WriteLine("    <Command Default=\"admin\" Replacement=\"admin\" />");
-                    sw.WriteLine("    <Command Default=\"pmessage\" Replacement=\"pmessage\" />");
-                    sw.WriteLine("    <Command Default=\"pm\" Replacement=\"pm\" />");
-                    sw.WriteLine("    <Command Default=\"rmessage\" Replacement=\"rmessage\" />");
-                    sw.WriteLine("    <Command Default=\"rm\" Replacement=\"rm\" />");
-                    sw.WriteLine("    <Command Default=\"pray\" Replacement=\"pray\" />");
-                    sw.WriteLine("    <Command Default=\"scoutplayer\" Replacement=\"scoutplayer\" />");
-                    sw.WriteLine("    <Command Default=\"scout\" Replacement=\"scout\" />");
-                    sw.WriteLine("    <Command Default=\"exit\" Replacement=\"exit\" />");
-                    sw.WriteLine("    <Command Default=\"quit\" Replacement=\"quit\" />");
-                    sw.WriteLine("    <Command Default=\"ccc\" Replacement=\"ccc\" />");
-                    sw.WriteLine("    <Command Default=\"ccpr\" Replacement=\"ccpr\" />");
-                    sw.WriteLine("    <Command Default=\"ccnr\" Replacement=\"ccnr\" />");
+                    for (int i = 0; i < Commands.Count; i++)
+                    {
+                        sw.WriteLine(Commands[i]);
+                    }
                 }
                 sw.WriteLine("</CommandList>");
                 sw.Flush();
@@ -241,7 +123,6 @@ namespace ServerTools
             FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
             FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
             FileWatcher.EnableRaisingEvents = true;
-            IsRunning = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
@@ -389,11 +270,11 @@ namespace ServerTools
                     }
                     else if (kvp.Key == "trackanimal")
                     {
-                        Animals.Command_trackanimal = kvp.Value;
+                        AnimalTracking.Command_trackanimal = kvp.Value;
                     }
                     else if (kvp.Key == "track")
                     {
-                        Animals.Command_track = kvp.Value;
+                        AnimalTracking.Command_track = kvp.Value;
                     }
                     else if (kvp.Key == "claim")
                     {
@@ -767,12 +648,173 @@ namespace ServerTools
                     {
                         ChatColor.Command_ccnr = kvp.Value;
                     }
+                    else if (kvp.Key == "gamble")
+                    {
+                        Gamble.Command_gamble = kvp.Value;
+                    }
+                    else if (kvp.Key == "gamble bet")
+                    {
+                        Gamble.Command_gamble_bet = kvp.Value;
+                    }
+                    else if (kvp.Key == "gamble payout")
+                    {
+                        Gamble.Command_gamble_payout = kvp.Value;
+                    }
+                    else if (kvp.Key == "party")
+                    {
+                        AutoPartyInvite.Command_party = kvp.Value;
+                    }
+                    else if (kvp.Key == "party add")
+                    {
+                        AutoPartyInvite.Command_party_add = kvp.Value;
+                    }
+                    else if (kvp.Key == "party remove")
+                    {
+                        AutoPartyInvite.Command_party_remove = kvp.Value;
+                    }
                 }
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in CommandList.Exec: {0}", e.Message));
             }
+        }
+
+        public static void BuildList()
+        {
+            Commands.Add("    <Command Default=\"home\" Replacement=\"home\" />");
+            Commands.Add("    <Command Default=\"fhome\" Replacement=\"fhome\" />");
+            Commands.Add("    <Command Default=\"home save\" Replacement=\"home save\" />");
+            Commands.Add("    <Command Default=\"home del\" Replacement=\"home del\" />");
+            Commands.Add("    <Command Default=\"go home\" Replacement=\"go home\" />");
+            Commands.Add("    <Command Default=\"sethome\" Replacement=\"sethome\" />");
+            Commands.Add("    <Command Default=\"go way\" Replacement=\"go way\" />");
+            Commands.Add("    <Command Default=\"top3\" Replacement=\"top3\" />");
+            Commands.Add("    <Command Default=\"score\" Replacement=\"score\" />");
+            Commands.Add("    <Command Default=\"buy life\" Replacement=\"buy life\" />");
+            Commands.Add("    <Command Default=\"hardcore\" Replacement=\"hardcore\" />");
+            Commands.Add("    <Command Default=\"hardcore on\" Replacement=\"hardcore on\" />");
+            Commands.Add("    <Command Default=\"mute\" Replacement=\"mute\" />");
+            Commands.Add("    <Command Default=\"unmute\" Replacement=\"unmute\" />");
+            Commands.Add("    <Command Default=\"mutelist\" Replacement=\"mutelist\" />");
+            Commands.Add("    <Command Default=\"commands\" Replacement=\"commands\" />");
+            Commands.Add("    <Command Default=\"day7\" Replacement=\"day7\" />");
+            Commands.Add("    <Command Default=\"day\" Replacement=\"day\" />");
+            Commands.Add("    <Command Default=\"bloodmoon\" Replacement=\"bloodmoon\" />");
+            Commands.Add("    <Command Default=\"bm\" Replacement=\"bm\" />");
+            Commands.Add("    <Command Default=\"killme\" Replacement=\"killme\" />");
+            Commands.Add("    <Command Default=\"wrist\" Replacement=\"wrist\" />");
+            Commands.Add("    <Command Default=\"hang\" Replacement=\"hang\" />");
+            Commands.Add("    <Command Default=\"suicide\" Replacement=\"suicide\" />");
+            Commands.Add("    <Command Default=\"gimme\" Replacement=\"gimme\" />");
+            Commands.Add("    <Command Default=\"gimmie\" Replacement=\"gimmie\" />");
+            Commands.Add("    <Command Default=\"set jail\" Replacement=\"set jail\" />");
+            Commands.Add("    <Command Default=\"jail\" Replacement=\"jail\" />");
+            Commands.Add("    <Command Default=\"unjail\" Replacement=\"unjail\" />");
+            Commands.Add("    <Command Default=\"forgive\" Replacement=\"forgive\" />");
+            Commands.Add("    <Command Default=\"setspawn\" Replacement=\"setspawn\" />");
+            Commands.Add("    <Command Default=\"ready\" Replacement=\"ready\" />");
+            Commands.Add("    <Command Default=\"trackanimal\" Replacement=\"trackanimal\" />");
+            Commands.Add("    <Command Default=\"track\" Replacement=\"track\" />");
+            Commands.Add("    <Command Default=\"claim\" Replacement=\"claim\" />");
+            Commands.Add("    <Command Default=\"clan add\" Replacement=\"clan add\" />");
+            Commands.Add("    <Command Default=\"clan del\" Replacement=\"clan del\" />");
+            Commands.Add("    <Command Default=\"clan invite\" Replacement=\"clan invite\" />");
+            Commands.Add("    <Command Default=\"clan accept\" Replacement=\"clan accept\" />");
+            Commands.Add("    <Command Default=\"clan decline\" Replacement=\"clan decline\" />");
+            Commands.Add("    <Command Default=\"clan remove\" Replacement=\"clan remove\" />");
+            Commands.Add("    <Command Default=\"clan promote\" Replacement=\"clan promote\" />");
+            Commands.Add("    <Command Default=\"clan demote\" Replacement=\"clan demote\" />");
+            Commands.Add("    <Command Default=\"clan leave\" Replacement=\"clan leave\" />");
+            Commands.Add("    <Command Default=\"clan commands\" Replacement=\"clan commands\" />");
+            Commands.Add("    <Command Default=\"clan chat\" Replacement=\"clan chat\" />");
+            Commands.Add("    <Command Default=\"clan rename\" Replacement=\"clan rename\" />");
+            Commands.Add("    <Command Default=\"clan request\" Replacement=\"clan request\" />");
+            Commands.Add("    <Command Default=\"cc\" Replacement=\"cc\" />");
+            Commands.Add("    <Command Default=\"clanlist\" Replacement=\"clanlist\" />");
+            Commands.Add("    <Command Default=\"reward\" Replacement=\"reward\" />");
+            Commands.Add("    <Command Default=\"shutdown\" Replacement=\"shutdown\" />");
+            Commands.Add("    <Command Default=\"adminlist\" Replacement=\"adminlist\" />");
+            Commands.Add("    <Command Default=\"travel\" Replacement=\"travel\" />");
+            Commands.Add("    <Command Default=\"marketback\" Replacement=\"marketback\" />");
+            Commands.Add("    <Command Default=\"mback\" Replacement=\"mback\" />");
+            Commands.Add("    <Command Default=\"setmarket\" Replacement=\"setmarket\" />");
+            Commands.Add("    <Command Default=\"market\" Replacement=\"market\" />");
+            Commands.Add("    <Command Default=\"lobbyback\" Replacement=\"lobbyback\" />");
+            Commands.Add("    <Command Default=\"lback\" Replacement=\"lback\" />");
+            Commands.Add("    <Command Default=\"setlobby\" Replacement=\"setlobby\" />");
+            Commands.Add("    <Command Default=\"lobby\" Replacement=\"lobby\" />");
+            Commands.Add("    <Command Default=\"wallet\" Replacement=\"wallet\" />");
+            Commands.Add("    <Command Default=\"shop\" Replacement=\"shop\" />");
+            Commands.Add("    <Command Default=\"shop buy\" Replacement=\"shop buy\" />");
+            Commands.Add("    <Command Default=\"friend\" Replacement=\"friend\" />");
+            Commands.Add("    <Command Default=\"accept\" Replacement=\"accept\" />");
+            Commands.Add("    <Command Default=\"died\" Replacement=\"died\" />");
+            Commands.Add("    <Command Default=\"weathervote\" Replacement=\"weathervote\" />");
+            Commands.Add("    <Command Default=\"sun\" Replacement=\"sun\" />");
+            Commands.Add("    <Command Default=\"rain\" Replacement=\"rain\" />");
+            Commands.Add("    <Command Default=\"snow\" Replacement=\"snow\" />");
+            Commands.Add("    <Command Default=\"restartvote\" Replacement=\"restartvote\" />");
+            Commands.Add("    <Command Default=\"mutevote\" Replacement=\"mutevote\" />");
+            Commands.Add("    <Command Default=\"kickvote\" Replacement=\"kickvote\" />");
+            Commands.Add("    <Command Default=\"yes\" Replacement=\"yes\" />");
+            Commands.Add("    <Command Default=\"reserved\" Replacement=\"reserved\" />");
+            Commands.Add("    <Command Default=\"auction\" Replacement=\"auction\" />");
+            Commands.Add("    <Command Default=\"auction cancel\" Replacement=\"auction cancel\" />");
+            Commands.Add("    <Command Default=\"auction buy\" Replacement=\"auction buy\" />");
+            Commands.Add("    <Command Default=\"auction sell\" Replacement=\"auction sell\" />");
+            Commands.Add("    <Command Default=\"fps\" Replacement=\"fps\" />");
+            Commands.Add("    <Command Default=\"loc\" Replacement=\"loc\" />");
+            Commands.Add("    <Command Default=\"recall\" Replacement=\"recall\" />");
+            Commands.Add("    <Command Default=\"report\" Replacement=\"report\" />");
+            Commands.Add("    <Command Default=\"bounty\" Replacement=\"bounty\" />");
+            Commands.Add("    <Command Default=\"lottery\" Replacement=\"lottery\" />");
+            Commands.Add("    <Command Default=\"lottery enter\" Replacement=\"lottery enter\" />");
+            Commands.Add("    <Command Default=\"playerlist\" Replacement=\"playerlist\" />");
+            Commands.Add("    <Command Default=\"stuck\" Replacement=\"stuck\" />");
+            Commands.Add("    <Command Default=\"poll yes\" Replacement=\"poll yes\" />");
+            Commands.Add("    <Command Default=\"poll no\" Replacement=\"poll no\" />");
+            Commands.Add("    <Command Default=\"poll\" Replacement=\"poll\" />");
+            Commands.Add("    <Command Default=\"bank\" Replacement=\"bank\" />");
+            Commands.Add("    <Command Default=\"deposit\" Replacement=\"deposit\" />");
+            Commands.Add("    <Command Default=\"withdraw\" Replacement=\"withdraw\" />");
+            Commands.Add("    <Command Default=\"wallet deposit\" Replacement=\"wallet deposit\" />");
+            Commands.Add("    <Command Default=\"wallet withdraw\" Replacement=\"wallet withdraw\" />");
+            Commands.Add("    <Command Default=\"transfer\" Replacement=\"transfer\" />");
+            Commands.Add("    <Command Default=\"join\" Replacement=\"event\" />");
+            Commands.Add("    <Command Default=\"infoticker\" Replacement=\"infoticker\" />");
+            Commands.Add("    <Command Default=\"session\" Replacement=\"session\" />");
+            Commands.Add("    <Command Default=\"waypoint\" Replacement=\"waypoint\" />");
+            Commands.Add("    <Command Default=\"way\" Replacement=\"way\" />");
+            Commands.Add("    <Command Default=\"wp\" Replacement=\"wp\" />");
+            Commands.Add("    <Command Default=\"fwaypoint\" Replacement=\"fwaypoint\" />");
+            Commands.Add("    <Command Default=\"fway\" Replacement=\"fway\" />");
+            Commands.Add("    <Command Default=\"fwp\" Replacement=\"fwp\" />");
+            Commands.Add("    <Command Default=\"waypoint save\" Replacement=\"waypoint save\" />");
+            Commands.Add("    <Command Default=\"way save\" Replacement=\"way save\" />");
+            Commands.Add("    <Command Default=\"ws\" Replacement=\"ws\" />");
+            Commands.Add("    <Command Default=\"waypoint del\" Replacement=\"waypoint del\" />");
+            Commands.Add("    <Command Default=\"way del\" Replacement=\"way del\" />");
+            Commands.Add("    <Command Default=\"wd\" Replacement=\"wd\" />");
+            Commands.Add("    <Command Default=\"admin\" Replacement=\"admin\" />");
+            Commands.Add("    <Command Default=\"pmessage\" Replacement=\"pmessage\" />");
+            Commands.Add("    <Command Default=\"pm\" Replacement=\"pm\" />");
+            Commands.Add("    <Command Default=\"rmessage\" Replacement=\"rmessage\" />");
+            Commands.Add("    <Command Default=\"rm\" Replacement=\"rm\" />");
+            Commands.Add("    <Command Default=\"pray\" Replacement=\"pray\" />");
+            Commands.Add("    <Command Default=\"scoutplayer\" Replacement=\"scoutplayer\" />");
+            Commands.Add("    <Command Default=\"scout\" Replacement=\"scout\" />");
+            Commands.Add("    <Command Default=\"exit\" Replacement=\"exit\" />");
+            Commands.Add("    <Command Default=\"quit\" Replacement=\"quit\" />");
+            Commands.Add("    <Command Default=\"ccc\" Replacement=\"ccc\" />");
+            Commands.Add("    <Command Default=\"ccpr\" Replacement=\"ccpr\" />");
+            Commands.Add("    <Command Default=\"ccnr\" Replacement=\"ccnr\" />");
+            Commands.Add("    <Command Default=\"gamble\" Replacement=\"gamble\" />");
+            Commands.Add("    <Command Default=\"gamble bet\" Replacement=\"gamble bet\" />");
+            Commands.Add("    <Command Default=\"gamble payout\" Replacement=\"gamble payout\" />");
+            Commands.Add("    <Command Default=\"party\" Replacement=\"party\" />");
+            Commands.Add("    <Command Default=\"party add\" Replacement=\"party add\" />");
+            Commands.Add("    <Command Default=\"party remove\" Replacement=\"party remove\" />");
         }
 
         private static void UpgradeXml(XmlNodeList _oldChildNodes)
@@ -785,172 +827,57 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CommandList>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- Leave the default alone. Only edit the replacement to your desired command -->");
                     sw.WriteLine("<!-- All capital letters in commands will be reduced to lowercase -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- All capital letters in commands"))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- All capital letters in commands") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- Leave the default alone."))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.OuterXml.Contains("Command"))
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.OuterXml.Contains("Command"))
                             {
-                                _blank = false;
-                                string _default = "", _replacement = "";
-                                DateTime _dateTime = DateTime.Now;
-                                if (_line.HasAttribute("Default"))
+                                string defaultCommand = "", replacement = "";
+                                if (line.HasAttribute("Default") && line.HasAttribute("Replacement"))
                                 {
-                                    _default = _line.GetAttribute("Default");
+                                    defaultCommand = line.GetAttribute("Default");
+                                    replacement = line.GetAttribute("Replacement");
+                                    if (Commands.Count > 0)
+                                    {
+                                        for (int j = 0; j < Commands.Count; j++)
+                                        {
+                                            if (Commands[j].Contains(defaultCommand))
+                                            {
+                                                Commands.RemoveAt(j);
+                                                sw.WriteLine(string.Format("    <Command Default=\"{0}\" Replacement=\"{1}\" />", defaultCommand, replacement));
+                                            }
+                                        }
+                                    }
                                 }
-                                if (_line.HasAttribute("Replacement"))
-                                {
-                                    _replacement = _line.GetAttribute("Replacement");
-                                }
-                                sw.WriteLine(string.Format("    <Command Default=\"{0}\" Replacement=\"{1}\" />", _default, _replacement));
                             }
                         }
                     }
-                    if (_blank)
+                    if (Commands.Count > 0)
                     {
-                        sw.WriteLine("    <Command Default=\"home\" Replacement=\"home\" />");
-                        sw.WriteLine("    <Command Default=\"fhome\" Replacement=\"fhome\" />");
-                        sw.WriteLine("    <Command Default=\"home save\" Replacement=\"home save\" />");
-                        sw.WriteLine("    <Command Default=\"home del\" Replacement=\"home del\" />");
-                        sw.WriteLine("    <Command Default=\"go home\" Replacement=\"go home\" />");
-                        sw.WriteLine("    <Command Default=\"sethome\" Replacement=\"sethome\" />");
-                        sw.WriteLine("    <Command Default=\"go way\" Replacement=\"go way\" />");
-                        sw.WriteLine("    <Command Default=\"top3\" Replacement=\"top3\" />");
-                        sw.WriteLine("    <Command Default=\"score\" Replacement=\"score\" />");
-                        sw.WriteLine("    <Command Default=\"buy life\" Replacement=\"buy life\" />");
-                        sw.WriteLine("    <Command Default=\"hardcore\" Replacement=\"hardcore\" />");
-                        sw.WriteLine("    <Command Default=\"hardcore on\" Replacement=\"hardcore on\" />");
-                        sw.WriteLine("    <Command Default=\"mute\" Replacement=\"mute\" />");
-                        sw.WriteLine("    <Command Default=\"unmute\" Replacement=\"unmute\" />");
-                        sw.WriteLine("    <Command Default=\"mutelist\" Replacement=\"mutelist\" />");
-                        sw.WriteLine("    <Command Default=\"commands\" Replacement=\"commands\" />");
-                        sw.WriteLine("    <Command Default=\"day7\" Replacement=\"day7\" />");
-                        sw.WriteLine("    <Command Default=\"day\" Replacement=\"day\" />");
-                        sw.WriteLine("    <Command Default=\"bloodmoon\" Replacement=\"bloodmoon\" />");
-                        sw.WriteLine("    <Command Default=\"bm\" Replacement=\"bm\" />");
-                        sw.WriteLine("    <Command Default=\"killme\" Replacement=\"killme\" />");
-                        sw.WriteLine("    <Command Default=\"wrist\" Replacement=\"wrist\" />");
-                        sw.WriteLine("    <Command Default=\"hang\" Replacement=\"hang\" />");
-                        sw.WriteLine("    <Command Default=\"suicide\" Replacement=\"suicide\" />");
-                        sw.WriteLine("    <Command Default=\"gimme\" Replacement=\"gimme\" />");
-                        sw.WriteLine("    <Command Default=\"gimmie\" Replacement=\"gimmie\" />");
-                        sw.WriteLine("    <Command Default=\"set jail\" Replacement=\"set jail\" />");
-                        sw.WriteLine("    <Command Default=\"jail\" Replacement=\"jail\" />");
-                        sw.WriteLine("    <Command Default=\"unjail\" Replacement=\"unjail\" />");
-                        sw.WriteLine("    <Command Default=\"forgive\" Replacement=\"forgive\" />");
-                        sw.WriteLine("    <Command Default=\"setspawn\" Replacement=\"setspawn\" />");
-                        sw.WriteLine("    <Command Default=\"ready\" Replacement=\"ready\" />");
-                        sw.WriteLine("    <Command Default=\"trackanimal\" Replacement=\"trackanimal\" />");
-                        sw.WriteLine("    <Command Default=\"track\" Replacement=\"track\" />");
-                        sw.WriteLine("    <Command Default=\"claim\" Replacement=\"claim\" />");
-                        sw.WriteLine("    <Command Default=\"clan add\" Replacement=\"clan add\" />");
-                        sw.WriteLine("    <Command Default=\"clan del\" Replacement=\"clan del\" />");
-                        sw.WriteLine("    <Command Default=\"clan invite\" Replacement=\"clan invite\" />");
-                        sw.WriteLine("    <Command Default=\"clan accept\" Replacement=\"clan accept\" />");
-                        sw.WriteLine("    <Command Default=\"clan decline\" Replacement=\"clan decline\" />");
-                        sw.WriteLine("    <Command Default=\"clan remove\" Replacement=\"clan remove\" />");
-                        sw.WriteLine("    <Command Default=\"clan promote\" Replacement=\"clan promote\" />");
-                        sw.WriteLine("    <Command Default=\"clan demote\" Replacement=\"clan demote\" />");
-                        sw.WriteLine("    <Command Default=\"clan leave\" Replacement=\"clan leave\" />");
-                        sw.WriteLine("    <Command Default=\"clan commands\" Replacement=\"clan commands\" />");
-                        sw.WriteLine("    <Command Default=\"clan chat\" Replacement=\"clan chat\" />");
-                        sw.WriteLine("    <Command Default=\"clan rename\" Replacement=\"clan rename\" />");
-                        sw.WriteLine("    <Command Default=\"clan request\" Replacement=\"clan request\" />");
-                        sw.WriteLine("    <Command Default=\"cc\" Replacement=\"cc\" />");
-                        sw.WriteLine("    <Command Default=\"clanlist\" Replacement=\"clanlist\" />");
-                        sw.WriteLine("    <Command Default=\"reward\" Replacement=\"reward\" />");
-                        sw.WriteLine("    <Command Default=\"shutdown\" Replacement=\"shutdown\" />");
-                        sw.WriteLine("    <Command Default=\"adminlist\" Replacement=\"adminlist\" />");
-                        sw.WriteLine("    <Command Default=\"travel\" Replacement=\"travel\" />");
-                        sw.WriteLine("    <Command Default=\"marketback\" Replacement=\"marketback\" />");
-                        sw.WriteLine("    <Command Default=\"mback\" Replacement=\"mback\" />");
-                        sw.WriteLine("    <Command Default=\"setmarket\" Replacement=\"setmarket\" />");
-                        sw.WriteLine("    <Command Default=\"market\" Replacement=\"market\" />");
-                        sw.WriteLine("    <Command Default=\"lobbyback\" Replacement=\"lobbyback\" />");
-                        sw.WriteLine("    <Command Default=\"lback\" Replacement=\"lback\" />");
-                        sw.WriteLine("    <Command Default=\"setlobby\" Replacement=\"setlobby\" />");
-                        sw.WriteLine("    <Command Default=\"lobby\" Replacement=\"lobby\" />");
-                        sw.WriteLine("    <Command Default=\"wallet\" Replacement=\"wallet\" />");
-                        sw.WriteLine("    <Command Default=\"shop\" Replacement=\"shop\" />");
-                        sw.WriteLine("    <Command Default=\"shop buy\" Replacement=\"shop buy\" />");
-                        sw.WriteLine("    <Command Default=\"friend\" Replacement=\"friend\" />");
-                        sw.WriteLine("    <Command Default=\"accept\" Replacement=\"accept\" />");
-                        sw.WriteLine("    <Command Default=\"died\" Replacement=\"died\" />");
-                        sw.WriteLine("    <Command Default=\"weathervote\" Replacement=\"weathervote\" />");
-                        sw.WriteLine("    <Command Default=\"sun\" Replacement=\"sun\" />");
-                        sw.WriteLine("    <Command Default=\"rain\" Replacement=\"rain\" />");
-                        sw.WriteLine("    <Command Default=\"snow\" Replacement=\"snow\" />");
-                        sw.WriteLine("    <Command Default=\"restartvote\" Replacement=\"restartvote\" />");
-                        sw.WriteLine("    <Command Default=\"mutevote\" Replacement=\"mutevote\" />");
-                        sw.WriteLine("    <Command Default=\"kickvote\" Replacement=\"kickvote\" />");
-                        sw.WriteLine("    <Command Default=\"yes\" Replacement=\"yes\" />");
-                        sw.WriteLine("    <Command Default=\"reserved\" Replacement=\"reserved\" />");
-                        sw.WriteLine("    <Command Default=\"auction\" Replacement=\"auction\" />");
-                        sw.WriteLine("    <Command Default=\"auction cancel\" Replacement=\"auction cancel\" />");
-                        sw.WriteLine("    <Command Default=\"auction buy\" Replacement=\"auction buy\" />");
-                        sw.WriteLine("    <Command Default=\"auction sell\" Replacement=\"auction sell\" />");
-                        sw.WriteLine("    <Command Default=\"fps\" Replacement=\"fps\" />");
-                        sw.WriteLine("    <Command Default=\"loc\" Replacement=\"loc\" />");
-                        sw.WriteLine("    <Command Default=\"recall\" Replacement=\"recall\" />");
-                        sw.WriteLine("    <Command Default=\"report\" Replacement=\"report\" />");
-                        sw.WriteLine("    <Command Default=\"bounty\" Replacement=\"bounty\" />");
-                        sw.WriteLine("    <Command Default=\"lottery\" Replacement=\"lottery\" />");
-                        sw.WriteLine("    <Command Default=\"lottery enter\" Replacement=\"lottery enter\" />");
-                        sw.WriteLine("    <Command Default=\"playerlist\" Replacement=\"playerlist\" />");
-                        sw.WriteLine("    <Command Default=\"stuck\" Replacement=\"stuck\" />");
-                        sw.WriteLine("    <Command Default=\"poll yes\" Replacement=\"poll yes\" />");
-                        sw.WriteLine("    <Command Default=\"poll no\" Replacement=\"poll no\" />");
-                        sw.WriteLine("    <Command Default=\"poll\" Replacement=\"poll\" />");
-                        sw.WriteLine("    <Command Default=\"bank\" Replacement=\"bank\" />");
-                        sw.WriteLine("    <Command Default=\"deposit\" Replacement=\"deposit\" />");
-                        sw.WriteLine("    <Command Default=\"withdraw\" Replacement=\"withdraw\" />");
-                        sw.WriteLine("    <Command Default=\"wallet deposit\" Replacement=\"wallet deposit\" />");
-                        sw.WriteLine("    <Command Default=\"wallet withdraw\" Replacement=\"wallet withdraw\" />");
-                        sw.WriteLine("    <Command Default=\"transfer\" Replacement=\"transfer\" />");
-                        sw.WriteLine("    <Command Default=\"join\" Replacement=\"event\" />");
-                        sw.WriteLine("    <Command Default=\"infoticker\" Replacement=\"infoticker\" />");
-                        sw.WriteLine("    <Command Default=\"session\" Replacement=\"session\" />");
-                        sw.WriteLine("    <Command Default=\"waypoint\" Replacement=\"waypoint\" />");
-                        sw.WriteLine("    <Command Default=\"way\" Replacement=\"way\" />");
-                        sw.WriteLine("    <Command Default=\"wp\" Replacement=\"wp\" />");
-                        sw.WriteLine("    <Command Default=\"fwaypoint\" Replacement=\"fwaypoint\" />");
-                        sw.WriteLine("    <Command Default=\"fway\" Replacement=\"fway\" />");
-                        sw.WriteLine("    <Command Default=\"fwp\" Replacement=\"fwp\" />");
-                        sw.WriteLine("    <Command Default=\"waypoint save\" Replacement=\"waypoint save\" />");
-                        sw.WriteLine("    <Command Default=\"way save\" Replacement=\"way save\" />");
-                        sw.WriteLine("    <Command Default=\"ws\" Replacement=\"ws\" />");
-                        sw.WriteLine("    <Command Default=\"waypoint del\" Replacement=\"waypoint del\" />");
-                        sw.WriteLine("    <Command Default=\"way del\" Replacement=\"way del\" />");
-                        sw.WriteLine("    <Command Default=\"wd\" Replacement=\"wd\" />");
-                        sw.WriteLine("    <Command Default=\"admin\" Replacement=\"admin\" />");
-                        sw.WriteLine("    <Command Default=\"pmessage\" Replacement=\"pmessage\" />");
-                        sw.WriteLine("    <Command Default=\"pm\" Replacement=\"pm\" />");
-                        sw.WriteLine("    <Command Default=\"rmessage\" Replacement=\"rmessage\" />");
-                        sw.WriteLine("    <Command Default=\"rm\" Replacement=\"rm\" />");
-                        sw.WriteLine("    <Command Default=\"pray\" Replacement=\"pray\" />");
-                        sw.WriteLine("    <Command Default=\"scoutplayer\" Replacement=\"scoutplayer\" />");
-                        sw.WriteLine("    <Command Default=\"scout\" Replacement=\"scout\" />");
-                        sw.WriteLine("    <Command Default=\"exit\" Replacement=\"exit\" />");
-                        sw.WriteLine("    <Command Default=\"quit\" Replacement=\"quit\" />");
-                        sw.WriteLine("    <Command Default=\"ccc\" Replacement=\"ccc\" />");
-                        sw.WriteLine("    <Command Default=\"ccpr\" Replacement=\"ccpr\" />");
-                        sw.WriteLine("    <Command Default=\"ccnr\" Replacement=\"ccnr\" />");
+                        for (int i = 0; i < Commands.Count; i++)
+                        {
+                            sw.WriteLine(Commands);
+                        }
+                        Commands.Clear();
                     }
                     sw.WriteLine("</CommandList>");
                     sw.Flush();
                     sw.Close();
+                    BuildList();
                 }
             }
             catch (Exception e)

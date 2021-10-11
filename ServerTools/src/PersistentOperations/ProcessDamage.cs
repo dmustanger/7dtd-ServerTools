@@ -10,131 +10,141 @@ namespace ServerTools
         private static readonly string file = string.Format("DamageLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static readonly string Filepath = string.Format("{0}/Logs/DamageLogs/{1}", API.ConfigPath, file);
 
-        public static bool Exec(EntityAlive __instance, DamageSource _dmgSource, int _strength)
+        public static bool Exec(EntityAlive _victim, DamageSource _damageSource, int _strength)
         {
             try
             {
-                if (__instance != null && _dmgSource != null && _strength > 1)
+                if (_victim != null && _damageSource != null && _strength > 1)
                 {
-                    int _sourceId = _dmgSource.getEntityId();
-                    if (_sourceId > 0)
+                    int sourceId = _damageSource.getEntityId();
+                    if (sourceId > 0)
                     {
-                        if (__instance is EntityPlayer)
+                        if (_victim is EntityPlayer)
                         {
-                            ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromEntityId(_sourceId);
-                            if (_cInfo2 != null)
+                            EntityPlayer _player1 = _victim as EntityPlayer;
+                            ClientInfo _cInfo1 = PersistentOperations.GetClientInfoFromEntityId(_victim.entityId);
+                            if (_cInfo1 != null)
                             {
-                                EntityPlayer _player2 = PersistentOperations.GetEntityPlayer(_cInfo2.playerId);
-                                if (_player2 != null)
+                                Entity attackingEntity = PersistentOperations.GetEntity(sourceId);
+                                if (attackingEntity != null)
                                 {
-                                    EntityPlayer _player1 = (EntityPlayer)__instance;
-                                    if (NewPlayerProtection.IsEnabled)
+                                    if (attackingEntity is EntityPlayer)
                                     {
-                                        if (_player1.Progression.Level < NewPlayerProtection.Level)
+                                        EntityPlayer _player2 = attackingEntity as EntityPlayer;
+                                        ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromEntityId(attackingEntity.entityId);
+                                        if (cInfo2 != null)
                                         {
-                                            Phrases.Dict.TryGetValue("NewPlayerProtection1", out string _phrase);
-                                            ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                            return false;
-                                        }
-                                        else if (_player2.Progression.Level < NewPlayerProtection.Level)
-                                        {
-                                            ClientInfo _cInfo1 = PersistentOperations.GetClientInfoFromEntityId(__instance.entityId);
-                                            if (_cInfo1 != null)
+                                            if (NewPlayerProtection.IsEnabled)
                                             {
-                                                Phrases.Dict.TryGetValue("NewPlayerProtection2", out string _phrase);
-                                                ChatHook.ChatMessage(_cInfo1, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                if (_player1.Progression.Level < NewPlayerProtection.Level)
+                                                {
+                                                    Phrases.Dict.TryGetValue("NewPlayerProtection1", out string _phrase);
+                                                    ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                    return false;
+                                                }
+                                                else if (_player2.Progression.Level < NewPlayerProtection.Level)
+                                                {
+                                                    Phrases.Dict.TryGetValue("NewPlayerProtection2", out string _phrase);
+                                                    ChatHook.ChatMessage(_cInfo1, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                    return false;
+                                                }
+                                            }
+                                            int _distance = (int)_player2.GetDistance(_player1);
+                                            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                                            {
+                                                sw.WriteLine(string.Format("{0}: {1} \"{2}\" hit \"{3}\" with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}", DateTime.Now, cInfo2.playerId, cInfo2.playerName, _player1.EntityName, _player1.entityId, _damageSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _damageSource.AttackingItem.ItemClass.GetItemName(), _strength, _player1.position, _distance));
+                                                sw.WriteLine();
+                                                sw.Flush();
+                                                sw.Close();
+                                            }
+                                            if (DamageDetector.IsEnabled && !DamageDetector.IsValidPvP(_player1, cInfo2, _strength, _damageSource.AttackingItem))
+                                            {
                                                 return false;
+                                            }
+                                            if (Zones.IsEnabled && (Zones.ZonePlayer.ContainsKey(_player1.entityId) || Zones.ZonePlayer.ContainsKey(_player2.entityId)) && !Zones.IsValid(_player1, cInfo2, _player2))
+                                            {
+                                                return false;
+                                            }
+                                            if (Lobby.IsEnabled && Lobby.PvE && (Lobby.LobbyPlayers.Contains(_player1.entityId) || Lobby.LobbyPlayers.Contains(_player2.entityId)))
+                                            {
+                                                Lobby.PvEViolation(cInfo2);
+                                                return false;
+                                            }
+                                            if (Market.IsEnabled && Market.PvE && (Market.MarketPlayers.Contains(_player1.entityId) || Market.MarketPlayers.Contains(_player2.entityId)))
+                                            {
+                                                Market.PvEViolation(cInfo2);
+                                                return false;
+                                            }
+                                            if (KillNotice.IsEnabled && KillNotice.PvP && _victim.RecordedDamage.Fatal)
+                                            {
+                                                KillNotice.PlayerKilledPlayer(_cInfo1, _player1, cInfo2, _player2, _damageSource.AttackingItem, _strength);
+                                            }
+                                            if (Wallet.IsEnabled)
+                                            {
+                                                if (Wallet.PVP && Wallet.Player_Kills > 0)
+                                                {
+                                                    Wallet.AddCoinsToWallet(cInfo2.playerId, Wallet.Player_Kills);
+                                                }
+                                                else if (Wallet.Player_Kills > 0)
+                                                {
+                                                    Wallet.SubtractCoinsFromWallet(cInfo2.playerId, Wallet.Player_Kills);
+                                                }
+                                            }
+                                            if (Bounties.IsEnabled)
+                                            {
+                                                Bounties.PlayerKilled(_player1, _player2, _cInfo1, cInfo2);
                                             }
                                         }
                                     }
-                                    int _distance = (int)_player2.GetDistance(_player1);
-                                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                                    else if (attackingEntity is EntityZombie)
                                     {
-                                        sw.WriteLine(string.Format("{0}: {1} \"{2}\" hit \"{3}\" with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}", DateTime.Now, _cInfo2.playerId, _cInfo2.playerName, _player1.EntityName, _player1.entityId, _dmgSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _dmgSource.AttackingItem.ItemClass.GetItemName(), _strength, _player1.position, _distance));
-                                        sw.WriteLine();
-                                        sw.Flush();
-                                        sw.Close();
-                                    }
-                                    if (DamageDetector.IsEnabled && !DamageDetector.IsValidPvP(_player1, _cInfo2, _strength, _dmgSource.AttackingItem))
-                                    {
-                                        return false;
-                                    }
-                                    if (Zones.IsEnabled && (Zones.ZonePlayer.ContainsKey(_player1.entityId) || Zones.ZonePlayer.ContainsKey(_player2.entityId)) && !Zones.IsValid(_player1, _cInfo2, _player2))
-                                    {
-                                        return false;
-                                    }
-                                    if (Lobby.IsEnabled && Lobby.PvE && (Lobby.LobbyPlayers.Contains(_player1.entityId) || Lobby.LobbyPlayers.Contains(_player2.entityId)))
-                                    {
-                                        Lobby.PvEViolation(_cInfo2);
-                                        return false;
-                                    }
-                                    if (Market.IsEnabled && Market.PvE && (Market.MarketPlayers.Contains(_player1.entityId) || Market.MarketPlayers.Contains(_player2.entityId)))
-                                    {
-                                        Market.PvEViolation(_cInfo2);
-                                        return false;
-                                    }
-                                    if (KillNotice.IsEnabled && KillNotice.Show_Damage)
-                                    {
-                                        KillNotice.ProcessStrength(_player1, _strength);
+                                        if (KillNotice.IsEnabled && KillNotice.Zombie_Kills)
+                                        {
+                                            int[] attack = new int[] { attackingEntity.entityId, _strength };
+                                            if (KillNotice.ZombieDamage.ContainsKey(_victim.entityId))
+                                            {
+                                                KillNotice.ZombieDamage[_victim.entityId] = attack;
+                                            }
+                                            else
+                                            {
+                                                KillNotice.ZombieDamage.Add(_victim.entityId, attack);
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
-                        else if (__instance is EntityZombie)
+                        else if (_victim is EntityZombie)
                         {
-                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_sourceId);
-                            if (_cInfo != null)
+                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(sourceId);
+                            if (cInfo != null)
                             {
-                                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                                if (_player != null)
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                                if (player != null)
                                 {
-                                    if (PersistentOperations.IsBloodmoon() && Market.IsEnabled && Market.MarketPlayers.Contains(_cInfo.entityId))
+                                    if (PersistentOperations.IsBloodmoon() && Market.IsEnabled && Market.MarketPlayers.Contains(cInfo.entityId))
                                     {
-                                        bool _posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_player.position, 15, out int _x, out int _y, out int _z, new Vector3(Market.Market_Size, 5, Market.Market_Size), true);
-                                        if (!_posFound)
-                                        {
-                                            _posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_player.position, 15, out _x, out _y, out _z, new Vector3(Market.Market_Size + 20, 20, Market.Market_Size + 20), true);
-                                        }
-                                        if (_posFound)
-                                        {
-                                            Market.MarketPlayers.Remove(_cInfo.entityId);
-                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, -1, _z), null, false));
-                                        }
-                                        else
-                                        {
-                                            Log.Out(string.Format("[SERVERTOOLS] Player was detected attempting to kill zombies inside of the Market during bloodmoon. Unable to find a suitable respawn location near by"));
-                                        }
+                                        Phrases.Dict.TryGetValue("Market12", out string _phrase);
+                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         return false;
                                     }
-                                    if (PersistentOperations.IsBloodmoon() && Lobby.IsEnabled && Lobby.LobbyPlayers.Contains(_cInfo.entityId))
+                                    if (PersistentOperations.IsBloodmoon() && Lobby.IsEnabled && Lobby.LobbyPlayers.Contains(cInfo.entityId))
                                     {
-                                        bool _posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_player.position, 15, out int _x, out int _y, out int _z, new Vector3(Lobby.Lobby_Size, 5, Lobby.Lobby_Size), true);
-                                        if (!_posFound)
-                                        {
-                                            _posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_player.position, 15, out _x, out _y, out _z, new Vector3(Lobby.Lobby_Size + 20, 20, Lobby.Lobby_Size + 20), true);
-                                        }
-                                        if (_posFound)
-                                        {
-                                            Market.MarketPlayers.Remove(_cInfo.entityId);
-                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, -1, _z), null, false));
-                                        }
-                                        else
-                                        {
-                                            Log.Out(string.Format("[SERVERTOOLS] Player was detected attempting to kill zombies inside of the Lobby during bloodmoon. Unable to find a suitable respawn location near by"));
-                                        }
+                                        Phrases.Dict.TryGetValue("Lobby12", out string _phrase);
+                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         return false;
                                     }
-                                    if (_dmgSource.AttackingItem != null)
+                                    if (_damageSource.AttackingItem != null)
                                     {
-                                        int _distance = (int)_player.GetDistance(__instance);
+                                        int distance = (int)player.GetDistance(_victim);
                                         using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                         {
-                                            sw.WriteLine(string.Format("{0}: {1} \"{2}\" hit \"{3}\" with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}", DateTime.Now, _cInfo.playerId, _cInfo.playerName, __instance.EntityName, __instance.entityId, _dmgSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _dmgSource.AttackingItem.ItemClass.GetItemName(), _strength, __instance.position, _distance));
+                                            sw.WriteLine(string.Format("{0}: {1} \"{2}\" hit \"{3}\" with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}", DateTime.Now, cInfo.playerId, cInfo.playerName, _victim.EntityName, _victim.entityId, _damageSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _damageSource.AttackingItem.ItemClass.GetItemName(), _strength, _victim.position, distance));
                                             sw.WriteLine();
                                             sw.Flush();
                                             sw.Close();
                                         }
-                                        if (DamageDetector.IsEnabled && !DamageDetector.IsValidEntityDamage(__instance, _cInfo, _strength, _dmgSource.AttackingItem))
+                                        if (DamageDetector.IsEnabled && !DamageDetector.IsValidEntityDamage(_victim, cInfo, _strength, _damageSource.AttackingItem))
                                         {
                                             return false;
                                         }

@@ -15,14 +15,14 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. st-gi <SteamId/EntityId> <Name> <Count> <Quality> <Durability>\n" +
-                "  2. st-gi <SteamId/EntityId> <Name> <Count> <Quality>\n" +
-                "  3. st-gi <SteamId/EntityId> <Name> <Count>\n" +
-                "  4. st-gi <SteamId/EntityId> <Name>\n" +
-                "  5. st-gi all <Name> <Count> <Quality> <Durability>\n " +
-                "  6. st-gi all <Name> <Count> <Quality>\n " +
-                "  7. st-gi all <Name> <Count>\n " +
-                "  8. st-gi all <Name>\n " +
+                "  1. st-gi <SteamId/EntityId> <Item> <Count> <Quality> <Durability>\n" +
+                "  2. st-gi <SteamId/EntityId> <Item> <Count> <Quality>\n" +
+                "  3. st-gi <SteamId/EntityId> <Item> <Count>\n" +
+                "  4. st-gi <SteamId/EntityId> <Item>\n" +
+                "  5. st-gi all <Item> <Count> <Quality> <Durability>\n " +
+                "  6. st-gi all <Item> <Count> <Quality>\n " +
+                "  7. st-gi all <Item> <Count>\n " +
+                "  8. st-gi all <Item>\n " +
                 "1. Gives a player the item with specific count, quality and durability\n" +
                 "2. Gives a player the item with specific count, quality and 100 percent durability\n" +
                 "3. Gives a player the item with specific count, 1 quality and 100 percent durability\n" +
@@ -78,7 +78,7 @@ namespace ServerTools
                             _max = _itemQuality;
                         }
                     }
-                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, _min, _max, true, null, 1);
+                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, _min, _max, true, null);
                     if (_itemValue != null)
                     {
                         if (_params.Count > 4 && float.TryParse(_params[4], out float _durability))

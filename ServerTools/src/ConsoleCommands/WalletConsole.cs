@@ -46,6 +46,7 @@ namespace ServerTools
                     {
                         Wallet.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wallet has been set to off"));
                         return;
                     }
@@ -61,6 +62,7 @@ namespace ServerTools
                     {
                         Wallet.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wallet has been set to on"));
                         return;
                     }

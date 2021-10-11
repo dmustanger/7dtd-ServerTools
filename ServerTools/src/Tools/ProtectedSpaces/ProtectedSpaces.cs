@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using UnityEngine;
@@ -10,7 +11,10 @@ namespace ServerTools
     class ProtectedSpaces
     {
         public static bool IsEnabled = false, IsRunning = false;
-        public static List<int[]> Protected = new List<int[]>();
+        public static List<int[]> ProtectedList = new List<int[]>();
+        public static List<int[]> ProtectedChunks = new List<int[]>();
+        public static List<int[]> UnprotectedChunks = new List<int[]>();
+        public static List<Chunk> ProcessedChunks = new List<Chunk>();
         public static Dictionary<int, int[]> Vectors = new Dictionary<int, int[]>();
 
         private const string file = "ProtectedSpaces.xml";
@@ -25,7 +29,10 @@ namespace ServerTools
 
         public static void Unload()
         {
-            Protected.Clear();
+            ProtectedList.Clear();
+            ProtectedChunks.Clear();
+            UnprotectedChunks.Clear();
+            ProcessedChunks.Clear();
             Vectors.Clear();
             FileWatcher.Dispose();
             IsRunning = false;
@@ -49,101 +56,143 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
-                    Protected.Clear();
-                    Vectors.Clear();
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    ProtectedList.Clear();
+                    ProtectedChunks.Clear();
+                    UnprotectedChunks.Clear();
+                    ProcessedChunks.Clear();
+                    List<Chunk> chunks = new List<Chunk>();
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_childNodes[i];
-                            if (_line.HasAttributes)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    UpgradeXml(_childNodes);
-                                    return;
+                                    upgrade = false;
+                                    continue;
                                 }
-                                else if (_line.HasAttribute("Corner1") && _line.HasAttribute("Corner2") && _line.HasAttribute("Active"))
+                                else if (line.HasAttribute("Corner1") && line.HasAttribute("Corner2") && line.HasAttribute("Active"))
                                 {
-                                    string corner1 = _line.GetAttribute("Corner1");
-                                    string corner2 = _line.GetAttribute("Corner2");
+                                    string corner1 = line.GetAttribute("Corner1");
+                                    string corner2 = line.GetAttribute("Corner2");
                                     if (!corner1.Contains(","))
                                     {
-                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid form missing comma attribute: {0}", _line.OuterXml));
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid form missing comma in Corner1 attribute: {0}", line.OuterXml));
                                         continue;
                                     }
                                     if (!corner2.Contains(","))
                                     {
-                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid form missing comma attribute: {0}", _line.OuterXml));
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid form missing comma in Corner2 attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    if (!bool.TryParse(_line.GetAttribute("Active"), out bool _isActive))
+                                    if (!bool.TryParse(line.GetAttribute("Active"), out bool isActive))
                                     {
-                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid True/False for Active attribute: {0}.", _line.OuterXml));
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpaces.xml entry. Invalid True/False for Active attribute: {0}.", line.OuterXml));
                                         continue;
                                     }
-                                    string[] _corner1Split = corner1.Split(',');
-                                    string[] _corner2Split = corner2.Split(',');
-                                    int.TryParse(_corner1Split[0], out int _corner1_x);
-                                    int.TryParse(_corner1Split[1], out int _corner1_z);
-                                    int.TryParse(_corner2Split[0], out int _corner2_x);
-                                    int.TryParse(_corner2Split[1], out int _corner2_z);
-                                    int[] _vectors = new int[5];
-                                    if (_corner1_x < _corner2_x)
+                                    string[] corner1Split = corner1.Split(',');
+                                    string[] corner2Split = corner2.Split(',');
+                                    int.TryParse(corner1Split[0], out int corner1_x);
+                                    int.TryParse(corner1Split[1], out int corner1_z);
+                                    int.TryParse(corner2Split[0], out int corner2_x);
+                                    int.TryParse(corner2Split[1], out int corner2_z);
+                                    int[] vectors = new int[4];
+                                    if (corner1_x < corner2_x)
                                     {
-                                        _vectors[0] = _corner1_x;
-                                        _vectors[2] = _corner2_x;
+                                        vectors[0] = corner1_x;
+                                        vectors[2] = corner2_x;
                                     }
                                     else
                                     {
-                                        _vectors[0] = _corner2_x;
-                                        _vectors[2] = _corner1_x;
+                                        vectors[0] = corner2_x;
+                                        vectors[2] = corner1_x;
                                     }
-                                    if (_corner1_z < _corner2_z)
+                                    if (corner1_z < corner2_z)
                                     {
-                                        _vectors[1] = _corner1_z;
-                                        _vectors[3] = _corner2_z;
-                                    }
-                                    else
-                                    {
-                                        _vectors[1] = _corner2_z;
-                                        _vectors[3] = _corner1_z;
-                                    }
-                                    if (_isActive)
-                                    {
-                                        _vectors[4] = 1;
+                                        vectors[1] = corner1_z;
+                                        vectors[3] = corner2_z;
                                     }
                                     else
                                     {
-                                        _vectors[4] = 0;
+                                        vectors[1] = corner2_z;
+                                        vectors[3] = corner1_z;
                                     }
-                                    if (!Protected.Contains(_vectors))
+                                    for (int j = vectors[0]; j <= vectors[2]; j++)
                                     {
-                                        Protected.Add(_vectors);
-                                        if (_vectors[4] == 1)
+                                        for (int k = vectors[1]; k <= vectors[3]; k++)
                                         {
-                                            AddProtection(_vectors);
+                                            int[] vector = { j, k };
+                                            Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
+                                            if (chunk != null)
+                                            {
+                                                Bounds bounds = chunk.GetAABB();
+                                                int x = j - (int)bounds.min.x, z = k - (int)bounds.min.z;
+                                                if (isActive)
+                                                {
+                                                    if (!chunk.IsTraderArea(x, z))
+                                                    {
+                                                        chunk.SetTraderArea(x, z, true);
+                                                        if (!chunks.Contains(chunk))
+                                                        {
+                                                            chunks.Add(chunk);
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (chunk.IsTraderArea(x, z))
+                                                    {
+                                                        chunk.SetTraderArea(x, z, false);
+                                                        if (!chunks.Contains(chunk))
+                                                        {
+                                                            chunks.Add(chunk);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            else if (isActive)
+                                            {
+                                                ProtectedChunks.Add(vector);
+                                            }
+                                            else
+                                            {
+                                                UnprotectedChunks.Add(vector);
+                                            }
                                         }
-                                        else
-                                        {
-                                            RemoveProtection(_vectors);
-                                        }
-                                    }
-                                    else if (_vectors[4] == 1)
-                                    {
-                                        AddProtection(_vectors);
-                                    }
-                                    else
-                                    {
-                                        RemoveProtection(_vectors);
                                     }
                                 }
                             }
                         }
                     }
+                    if (chunks.Count > 0)
+                    {
+                        List<ClientInfo> clients = PersistentOperations.ClientList();
+                        if (clients != null && clients.Count > 0)
+                        {
+                            for (int i = 0; i < clients.Count; i++)
+                            {
+                                ClientInfo cInfo = clients[i];
+                                if (cInfo != null)
+                                {
+                                    for (int j = 0; j < chunks.Count; j++)
+                                    {
+                                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(chunks[j], true));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (childNodes != null && upgrade)
+                {
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)
@@ -162,17 +211,17 @@ namespace ServerTools
                 sw.WriteLine("<!-- <Protected Corner1=\"-30,-20\" Corner2=\"10,50\" Active=\"True\" /> -->");
                 sw.WriteLine();
                 sw.WriteLine();
-                if (Protected.Count > 0)
+                if (ProtectedList.Count > 0)
                 {
-                    for (int i = 0; i < Protected.Count; i++)
+                    for (int i = 0; i < ProtectedList.Count; i++)
                     {
-                        if (Protected[i][4] == 1)
+                        if (ProtectedList[i][4] == 1)
                         {
-                            sw.WriteLine(string.Format("    <Protected Corner1=\"{0},{1}\" Corner2=\"{2},{3}\" Active=\"True\" />", Protected[i][0], Protected[i][1], Protected[i][2], Protected[i][3]));
+                            sw.WriteLine(string.Format("    <Protected Corner1=\"{0},{1}\" Corner2=\"{2},{3}\" Active=\"True\" />", ProtectedList[i][0], ProtectedList[i][1], ProtectedList[i][2], ProtectedList[i][3]));
                         }
                         else
                         {
-                            sw.WriteLine(string.Format("    <Protected Corner1=\"{0},{1}\" Corner2=\"{2},{3}\" Active=\"False\" />", Protected[i][0], Protected[i][1], Protected[i][2], Protected[i][3]));
+                            sw.WriteLine(string.Format("    <Protected Corner1=\"{0},{1}\" Corner2=\"{2},{3}\" Active=\"False\" />", ProtectedList[i][0], ProtectedList[i][1], ProtectedList[i][2], ProtectedList[i][3]));
                         }
                     }
                 }
@@ -205,165 +254,72 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void AddProtection(int[] _vectors)
+        public static void Process()
         {
-            try
+            List<Chunk> chunks = new List<Chunk>();
+            if (ProtectedChunks.Count > 0)
             {
-                if (_vectors != null && _vectors.Length == 5)
+                for (int i = 0; i < ProtectedChunks.Count; i++)
                 {
-                    List<int[]> _loadedLocations = new List<int[]>();
-                    List<int[]> _unloadedLocations = new List<int[]>();
-                    for (int i = _vectors[0]; i <= _vectors[2]; i++)
+                    int x = ProtectedChunks[i][0], z = ProtectedChunks[i][1];
+                    Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(x, 1, z);
+                    if (chunk != null)
                     {
-                        for (int j = _vectors[1]; j <= _vectors[3]; j++)
+                        ProtectedChunks.RemoveAt(i);
+                        Bounds bounds = chunk.GetAABB();
+                        x -= (int)bounds.min.x;
+                        z -= (int)bounds.min.z;
+                        if (!chunk.IsTraderArea(x, z))
                         {
-                            if (!GameManager.Instance.World.IsWithinTraderArea(new Vector3i(i, 1, j)))
+                            chunk.SetTraderArea(x, z, true);
+                            if (!chunks.Contains(chunk))
                             {
-                                if (GameManager.Instance.World.IsChunkAreaLoaded(i, 1, j))
-                                {
-
-                                    _loadedLocations.Add(new int[] { i, j });
-                                }
-                                else
-                                {
-                                    _unloadedLocations.Add(new int[] { i, j });
-                                }
-                            }
-                            else
-                            {
-                                continue;
-                            }
-                        }
-                    }
-                    if (_loadedLocations.Count > 0)
-                    {
-                        List<Chunk> _chunkList = new List<Chunk>();
-                        for (int i = 0; i < _loadedLocations.Count; i++)
-                        {
-                            Chunk _chunk = GameManager.Instance.World.GetChunkFromWorldPos(_loadedLocations[i][0], 1, _loadedLocations[i][1]) as Chunk;
-                            if (!_chunkList.Contains(_chunk))
-                            {
-                                _chunkList.Add(_chunk);
-                            }
-                            Bounds bounds = _chunk.GetAABB();
-                            int _x = _loadedLocations[i][0] - (int)bounds.min.x, _z = _loadedLocations[i][1] - (int)bounds.min.z;
-                            _chunk.SetTraderArea(_x, _z, true);
-                        }
-                        if (_chunkList.Count > 0)
-                        {
-                            for (int i = 0; i < _chunkList.Count; i++)
-                            {
-                                Chunk _chunk = _chunkList[i];
-                                List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                                if (_clientList != null && _clientList.Count > 0)
-                                {
-                                    for (int j = 0; j < _clientList.Count; j++)
-                                    {
-                                        ClientInfo _cInfo = _clientList[j];
-                                        if (_cInfo != null)
-                                        {
-                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (_unloadedLocations.Count > 0)
-                    {
-                        for (int i = 0; i < _unloadedLocations.Count; i++)
-                        {
-                            if (GameManager.Instance.World.GetChunkSync(_unloadedLocations[i][0], _unloadedLocations[i][1]) is Chunk)
-                            {
-                                Chunk _chunk = GameManager.Instance.World.GetChunkSync(_unloadedLocations[i][0], 1, _unloadedLocations[i][1]) as Chunk;
-                                Bounds bounds = _chunk.GetAABB();
-                                int _x = _unloadedLocations[i][0] - (int)bounds.min.x, _z = _unloadedLocations[i][1] - (int)bounds.min.z;
-                                _chunk.SetTraderArea(_x, _z, true);
+                                chunks.Add(chunk);
                             }
                         }
                     }
                 }
             }
-            catch (Exception e)
+            if (UnprotectedChunks.Count > 0)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedSpaces.AddProtection: {0}", e.Message));
-            }
-        }
-
-        public static void RemoveProtection(int[] _vectors)
-        {
-            try
-            {
-                if (_vectors != null && _vectors.Length == 5)
+                for (int i = 0; i < UnprotectedChunks.Count; i++)
                 {
-                    List<int[]> _loadedLocations = new List<int[]>();
-                    List<int[]> _unloadedLocations = new List<int[]>();
-                    for (int i = _vectors[0]; i <= _vectors[2]; i++)
+                    int x = UnprotectedChunks[i][0], z = UnprotectedChunks[i][1];
+                    Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(x, 1, z);
+                    if (chunk != null)
                     {
-                        for (int j = _vectors[1]; j <= _vectors[3]; j++)
+                        UnprotectedChunks.RemoveAt(i);
+                        Bounds bounds = chunk.GetAABB();
+                        x -= (int)bounds.min.x;
+                        z -= (int)bounds.min.z;
+                        if (chunk.IsTraderArea(x, z))
                         {
-                            if (GameManager.Instance.World.IsChunkAreaLoaded(i, 1, j))
+                            chunk.SetTraderArea(x, z, false);
+                            if (!chunks.Contains(chunk))
                             {
-                                _loadedLocations.Add(new int[] { i, j });
-                            }
-                            else
-                            {
-                                _unloadedLocations.Add(new int[] { i, j });
-                            }
-                        }
-                    }
-                    if (_loadedLocations.Count > 0)
-                    {
-                        List<Chunk> _chunkList = new List<Chunk>();
-                        for (int i = 0; i < _loadedLocations.Count; i++)
-                        {
-                            Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_loadedLocations[i][0], 1, _loadedLocations[i][1]);
-                            if (!_chunkList.Contains(_chunk))
-                            {
-                                _chunkList.Add(_chunk);
-                            }
-                            Bounds bounds = _chunk.GetAABB();
-                            int _x = _loadedLocations[i][0] - (int)bounds.min.x, _z = _loadedLocations[i][1] - (int)bounds.min.z;
-                            _chunk.SetTraderArea(_x, _z, false);
-                        }
-                        if (_chunkList.Count > 0)
-                        {
-                            for (int i = 0; i < _chunkList.Count; i++)
-                            {
-                                Chunk _chunk = _chunkList[i];
-                                List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                                if (_clientList != null && _clientList.Count > 0)
-                                {
-                                    for (int j = 0; j < _clientList.Count; j++)
-                                    {
-                                        ClientInfo _cInfo = _clientList[j];
-                                        if (_cInfo != null)
-                                        {
-                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (_unloadedLocations.Count > 0)
-                    {
-                        for (int i = 0; i < _unloadedLocations.Count; i++)
-                        {
-                            if (GameManager.Instance.World.GetChunkSync(_unloadedLocations[i][0], _unloadedLocations[i][1]) is Chunk)
-                            {
-                                Chunk _chunk = GameManager.Instance.World.GetChunkSync(_unloadedLocations[i][0], 1, _unloadedLocations[i][1]) as Chunk;
-                                Bounds bounds = _chunk.GetAABB();
-                                int _x = _unloadedLocations[i][0] - (int)bounds.min.x, _z = _unloadedLocations[i][1] - (int)bounds.min.z;
-                                _chunk.SetTraderArea(_x, _z, false);
+                                chunks.Add(chunk);
                             }
                         }
                     }
                 }
             }
-            catch (Exception e)
+            if (chunks.Count > 0)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedSpaces.RemoveProtection: {0}", e.Message));
+                List<ClientInfo> clients = PersistentOperations.ClientList();
+                if (clients != null && clients.Count > 0)
+                {
+                    for (int i = 0; i < clients.Count; i++)
+                    {
+                        ClientInfo cInfo = clients[i];
+                        if (cInfo != null)
+                        {
+                            for (int j = 0; j < chunks.Count; j++)
+                            {
+                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(chunks[j], true));
+                            }
+                        }
+                    }
+                }
             }
         }
 

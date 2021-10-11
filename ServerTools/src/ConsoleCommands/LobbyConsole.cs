@@ -42,6 +42,7 @@ namespace ServerTools
                     {
                         Lobby.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Lobby has been set to off"));
                         return;
                     }
@@ -57,6 +58,7 @@ namespace ServerTools
                     {
                         Lobby.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Lobby has been set to on"));
                         return;
                     }

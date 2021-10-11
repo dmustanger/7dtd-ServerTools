@@ -8,13 +8,15 @@ namespace ServerTools
     [Serializable]
     public class PersistentContainer
     {
-        private static string filepath = string.Format("{0}/ServerTools.bin", API.ConfigPath);
-        private static PersistentContainer instance;
-        private static bool Saving = false;
         public static bool DataChange = false;
 
+        private static string filepath = string.Format("{0}/ServerTools.bin", API.ConfigPath);
+        private static PersistentContainer instance;
         private PersistentPlayers players;
+        private static bool Saving = false;
+        
         private Dictionary<int, int> auctionPrices;
+        private Dictionary<int, int> backpacks;
         private Dictionary<int, List<int>> clientMuteList;
         private DateTime lastWeather;
         private string[] pollData;
@@ -28,6 +30,7 @@ namespace ServerTools
         private Dictionary<string, DateTime> webPanelAuthorizedTimeList;
         private List<string> webPanelBanList;
         private Dictionary<string, DateTime> webPanelTimeoutList;
+        private int worldSeed;
         
 
         public static PersistentContainer Instance
@@ -66,7 +69,7 @@ namespace ServerTools
                 {
                     if (!Saving)
                     {
-                        if (!StopServer.NoEntry)
+                        if (!Shutdown.NoEntry)
                         {
                             Saving = true;
                             Stream stream = File.Open(filepath, FileMode.Create, FileAccess.ReadWrite);
@@ -128,6 +131,18 @@ namespace ServerTools
             set
             {
                 auctionPrices = value;
+            }
+        }
+
+        public Dictionary<int, int> Backpacks
+        {
+            get
+            {
+                return backpacks;
+            }
+            set
+            {
+                backpacks = value;
             }
         }
 
@@ -284,6 +299,18 @@ namespace ServerTools
             set
             {
                 webPanelTimeoutList = value;
+            }
+        }
+
+        public int WorldSeed
+        {
+            get
+            {
+                return worldSeed;
+            }
+            set
+            {
+                worldSeed = value;
             }
         }
     }

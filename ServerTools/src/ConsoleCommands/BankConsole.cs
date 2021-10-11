@@ -39,6 +39,7 @@ namespace ServerTools
                     {
                         Bank.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bank has been set to off"));
                         return;
                     }
@@ -54,6 +55,7 @@ namespace ServerTools
                     {
                         Bank.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bank has been set to on"));
                         return;
                     }

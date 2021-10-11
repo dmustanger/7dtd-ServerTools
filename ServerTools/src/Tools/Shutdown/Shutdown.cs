@@ -1,24 +1,190 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ServerTools
 {
     public static class Shutdown
     {
-        public static bool IsEnabled = false, Alert_On_Login = false;
-        public static int Countdown_Timer = 2, Delay = 120, Alert_Count = 2;
-        public static string Command_shutdown = "shutdown";
+        public static bool IsEnabled = false, Alert_On_Login = false, NoEntry = false, ShuttingDown = false, UI_Lock = false, UI_Locked = false;
+        public static int Countdown = 2, Alert_Count = 2;
+        public static string Command_shutdown = "shutdown", Time = "120";
 
-        public static void Stop()
+        public static void SetDelay()
         {
-            try
+            if (EventSchedule.shutdown != Time)
             {
-                Log.Out("[SERVERTOOLS] Starting shutdown process");
-                SdtdConsole.Instance.ExecuteSync(string.Format("st-StopServer {0}", Countdown_Timer), null);
+                EventSchedule.shutdown = Time;
+                if (Time.Contains(",") && Time.Contains(":"))
+                {
+                    string[] times = Time.Split(',');
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
+                        {
+                            if (DateTime.Now < time)
+                            {
+                                EventSchedule.Add("Shutdown", time);
+                                return;
+                            }
+                        }
+                    }
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
+                        {
+                            if (DateTime.Now < time)
+                            {
+                                EventSchedule.Add("Shutdown", time);
+                                return;
+                            }
+                        }
+                    }
+                }
+                else if (Time.Contains(":"))
+                {
+                    if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Time + ":00", out DateTime time))
+                    {
+                        if (DateTime.Now < time)
+                        {
+                            EventSchedule.Add("Shutdown", time);
+                        }
+                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Time + ":00", out DateTime secondaryTime))
+                        {
+                            EventSchedule.Add("Shutdown", secondaryTime);
+                        }
+                    }
+                }
+                else
+                {
+                    if (int.TryParse(Time, out int delay))
+                    {
+                        EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(delay));
+                    }
+                    else
+                    {
+                        Log.Out("[SERVERTOOLS] Invalid Shutdown Time detected. Use a single integer, 24h time or multiple 24h time entries");
+                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                    }
+                }
             }
-            catch (Exception e)
+        }
+
+        public static void PrepareShutdown()
+        {
+            if (PersistentOperations.IsBloodmoon() || Event.Open)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Shutdown.Stop: {0}", e.Message));
+                EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(10));
+                if (Event.Open && !Event.OperatorWarned)
+                {
+                    ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(Event.Operator);
+                    if (cInfo != null)
+                    {
+                        Event.OperatorWarned = true;
+                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + "A scheduled shutdown is set to begin but is on hold until the event ends" + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                }
             }
+            else
+            {
+                EventSchedule.Remove("Shutdown");
+                StartShutdown();
+            }
+        }
+
+        public static void StartShutdown()
+        {
+            if (Lottery.OpenLotto)
+            {
+                Lottery.StartLotto();
+            }
+            Lottery.ShuttingDown = true;
+            if (ExitCommand.IsEnabled)
+            {
+                ExitCommand.Players.Clear();
+            }
+            if (Countdown < 1)
+            {
+                Countdown = 1;
+            }
+            Timers.StopServerMinutes = Countdown;
+            ShuttingDown = true;
+            if (Countdown == 1)
+            {
+                OneMinute();
+            }
+            else
+            {
+                Phrases.Dict.TryGetValue("StopServer1", out string phrase);
+                phrase = phrase.Replace("{Value}", Countdown.ToString());
+                Alert(phrase, Shutdown.Alert_Count);
+            }
+        }
+
+        public static void TimeRemaining(int _newCount)
+        {
+            Phrases.Dict.TryGetValue("StopServer1", out string phrase);
+            phrase = phrase.Replace("{Value}", _newCount.ToString());
+            Alert(phrase, Shutdown.Alert_Count);
+        }
+
+        public static void OneMinute()
+        {
+            NoEntry = true;
+            Phrases.Dict.TryGetValue("StopServer2", out string phrase);
+            Alert(phrase, 1);
+            Phrases.Dict.TryGetValue("StopServer1", out phrase);
+            phrase = phrase.Replace("{Value}", 1.ToString());
+            Alert(phrase, 1);
+            SdtdConsole.Instance.ExecuteSync("saveworld", null);
+            SdtdConsole.Instance.ExecuteSync("mem clean", null);
+            if (VehicleManager.Instance != null)
+            {
+                VehicleManager.Instance.Update();
+            }
+            if (UI_Lock)
+            {
+                Phrases.Dict.TryGetValue("StopServer4", out phrase);
+                Alert(phrase, 1);
+            }
+        }
+
+        public static void Lock()
+        {
+            UI_Locked = true;
+            List<ClientInfo> clients = PersistentOperations.ClientList();
+            if (clients != null && clients.Count > 0)
+            {
+                for (int i = 0; i < clients.Count; i++)
+                {
+                    clients[i].SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close looting", true));
+                    clients[i].SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close trader", true));
+                    clients[i].SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close workstation", true));
+                }
+            }
+            Phrases.Dict.TryGetValue("StopServer5", out string phrase);
+            Alert(phrase, 1);
+        }
+
+        public static void Kick()
+        {
+            PersistentContainer.Instance.Save();
+            Phrases.Dict.TryGetValue("StopServer3", out string _phrase);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kickall \"{0}\"", _phrase), null);
+        }
+
+        public static void Alert(string _message, int _count)
+        {
+            ChatHook.ChatMessage(null, "[FF0000]" + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            if (_count > 1)
+            {
+                Alert(_message, _count - 1);
+            }
+        }
+
+        public static void Close()
+        {
+            Log.Out("[SERVERTOOLS] Running shutdown");
+            SdtdConsole.Instance.ExecuteSync("shutdown", null);
         }
 
         public static void NextShutdown(ClientInfo _cInfo)
@@ -27,25 +193,23 @@ namespace ServerTools
             {
                 if (_cInfo != null && _cInfo.playerId != null)
                 {
-                    EventSchedule.Schedule.TryGetValue("Shutdown", out DateTime _timeLeft);
-                    TimeSpan varTime = _timeLeft - DateTime.Now;
+                    EventSchedule.Schedule.TryGetValue("Shutdown", out DateTime timeLeft);
+                    TimeSpan varTime = timeLeft - DateTime.Now;
                     double fractionalMinutes = varTime.TotalMinutes;
-                    int _remainingTime = (int)fractionalMinutes;
-                    if (_remainingTime <= 10 && Event.Open)
+                    int remainingTime = (int)fractionalMinutes;
+                    if (remainingTime <= 10 && Event.Open)
                     {
-                        Phrases.Dict.TryGetValue("Shutdown2", out string _phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Shutdown2", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         return;
                     }
-                    if (_remainingTime < 0)
+                    if (remainingTime < 0)
                     {
-                        _remainingTime = 0;
+                        remainingTime = 0;
                     }
-                    string TimeLeft;
-                    TimeLeft = string.Format("{0:00} H : {1:00} M", _remainingTime / 60, _remainingTime % 60);
-                    Phrases.Dict.TryGetValue("Shutdown1", out string _phrase1);
-                    _phrase1 = _phrase1.Replace("{TimeLeft}", TimeLeft);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Shutdown1", out string phrase1);
+                    phrase1 = phrase1.Replace("{TimeLeft}", string.Format("{0:00} H : {1:00} M", remainingTime / 60, remainingTime % 60));
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

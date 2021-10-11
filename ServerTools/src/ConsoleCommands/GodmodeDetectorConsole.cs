@@ -36,6 +36,7 @@ namespace ServerTools
                     {
                         PlayerChecks.GodEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Godmode detector has been set to off"));
                         return;
                     }
@@ -51,6 +52,7 @@ namespace ServerTools
                     {
                         PlayerChecks.GodEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Godmode detector has been set to on"));
                         return;
                     }

@@ -37,6 +37,7 @@ namespace ServerTools
                     {
                         KickVote.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Kick vote has been set to off"));
                         return;
                     }
@@ -52,6 +53,7 @@ namespace ServerTools
                     {
                         KickVote.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Kick vote has been set to on"));
                         return;
                     }

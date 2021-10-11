@@ -34,10 +34,11 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (CredentialCheck.IsEnabled)
+                    if (Credentials.IsEnabled)
                     {
-                        CredentialCheck.IsEnabled = false;
+                        Credentials.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Credentials has been set to off"));
                         return;
                     }
@@ -49,10 +50,11 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (!CredentialCheck.IsEnabled)
+                    if (!Credentials.IsEnabled)
                     {
-                        CredentialCheck.IsEnabled = true;
+                        Credentials.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Credentials has been set to on"));
                         return;
                     }

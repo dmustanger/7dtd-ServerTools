@@ -36,6 +36,7 @@ namespace ServerTools
                     {
                         ChatHook.Normal_Player_Color_Prefix = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Normal player coloring has been set to off"));
                         return;
                     }
@@ -51,6 +52,7 @@ namespace ServerTools
                     {
                         ChatHook.Normal_Player_Color_Prefix = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Normal player coloring has been set to on"));
                         return;
                     }

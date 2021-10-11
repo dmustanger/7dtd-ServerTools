@@ -11,7 +11,7 @@ namespace ServerTools
     class Zones
     {
         public static bool IsEnabled = false, IsRunning = false, Zone_Message = false, Set_Home = false;
-        public static int Reminder_Delay = 20;
+        public static string Reminder_Delay = "20";
         public static Dictionary<int, DateTime> Reminder = new Dictionary<int, DateTime>();
         public static Dictionary<int, string[]> ZonePlayer = new Dictionary<int, string[]>();
         public static List<string[]> ZoneList = new List<string[]>();
@@ -54,45 +54,46 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
                     ZoneList.Clear();
                     Reminder.Clear();
                     ZonePlayer.Clear();
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_childNodes[i];
-                            if (_line.HasAttributes)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    UpgradeXml(_childNodes);
-                                    return;
+                                    upgrade = false;
+                                    continue;
                                 }
-                                else if (_line.HasAttribute("Name") && _line.HasAttribute("Corner1") && _line.HasAttribute("Corner2") && _line.HasAttribute("Circle") &&
-                                    _line.HasAttribute("EntryMessage") && _line.HasAttribute("ExitMessage") && _line.HasAttribute("EntryCommand") && _line.HasAttribute("ExitCommand") &&
-                                    _line.HasAttribute("ReminderNotice") && _line.HasAttribute("PvPvE") && _line.HasAttribute("NoZombie"))
+                                else if (line.HasAttribute("Name") && line.HasAttribute("Corner1") && line.HasAttribute("Corner2") && line.HasAttribute("Circle") &&
+                                    line.HasAttribute("EntryMessage") && line.HasAttribute("ExitMessage") && line.HasAttribute("EntryCommand") && line.HasAttribute("ExitCommand") &&
+                                    line.HasAttribute("ReminderNotice") && line.HasAttribute("PvPvE") && line.HasAttribute("NoZombie"))
                                 {
-                                    string[] _zone = { _line.GetAttribute("Name"), _line.GetAttribute("Corner1"), _line.GetAttribute("Corner2"), _line.GetAttribute("Circle"),
-                                _line.GetAttribute("EntryMessage"), _line.GetAttribute("ExitMessage"), _line.GetAttribute("EntryCommand"),_line.GetAttribute("ExitCommand"),
-                                _line.GetAttribute("ReminderNotice"), _line.GetAttribute("PvPvE"), _line.GetAttribute("NoZombie") };
-                                    if (_zone[6] == "")
+                                    string[] zone = { line.GetAttribute("Name"), line.GetAttribute("Corner1"), line.GetAttribute("Corner2"), line.GetAttribute("Circle"),
+                                line.GetAttribute("EntryMessage"), line.GetAttribute("ExitMessage"), line.GetAttribute("EntryCommand"),line.GetAttribute("ExitCommand"),
+                                line.GetAttribute("ReminderNotice"), line.GetAttribute("PvPvE"), line.GetAttribute("NoZombie") };
+                                    if (zone[6] == "")
                                     {
-                                        _zone[6] = "";
+                                        zone[6] = "";
                                     }
-                                    if (_zone[7] == "")
+                                    if (zone[7] == "")
                                     {
-                                        _zone[7] = "";
+                                        zone[7] = "";
                                     }
-                                    if (_zone[3].ToLower() == "false")
+                                    if (zone[3].ToLower() == "false")
                                     {
-                                        if (_zone[1].Contains(",") && _zone[2].Contains(","))
+                                        if (zone[1].Contains(",") && zone[2].Contains(","))
                                         {
-                                            string[] _corner1 = _zone[1].Split(',');
-                                            string[] _corner2 = _zone[2].Split(',');
+                                            string[] _corner1 = zone[1].Split(',');
+                                            string[] _corner2 = zone[2].Split(',');
                                             int.TryParse(_corner1[0], out int x1);
                                             int.TryParse(_corner1[1], out int y1);
                                             int.TryParse(_corner1[2], out int z1);
@@ -122,23 +123,28 @@ namespace ServerTools
                                                 z2 = z1;
                                                 z1 = _switch;
                                             }
-                                            _zone[1] = x1 + "," + y1 + "," + z1;
-                                            _zone[2] = x2 + "," + y2 + "," + z2;
+                                            zone[1] = x1 + "," + y1 + "," + z1;
+                                            zone[2] = x2 + "," + y2 + "," + z2;
                                         }
                                         else
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Zones.xml entry. Improper format in corner1 or corner2 attribute: {0}", _line.OuterXml));
+                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Zones.xml entry. Improper format in corner1 or corner2 attribute: {0}", line.OuterXml));
                                             continue;
                                         }
                                     }
-                                    if (!ZoneList.Contains(_zone))
+                                    if (!ZoneList.Contains(zone))
                                     {
-                                        ZoneList.Add(_zone);
+                                        ZoneList.Add(zone);
                                     }
                                 }
                             }
                         }
                     }
+                }
+                if (childNodes != null && upgrade)
+                {
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)
@@ -206,6 +212,66 @@ namespace ServerTools
                 UpdateXml();
             }
             LoadXml();
+        }
+
+        public static void SetDelay()
+        {
+            if (EventSchedule.zones != Reminder_Delay)
+            {
+                EventSchedule.zones = Reminder_Delay;
+                if (Reminder_Delay.Contains(",") && Reminder_Delay.Contains(":"))
+                {
+                    string[] times = Reminder_Delay.Split(',');
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
+                        {
+                            if (DateTime.Now < time)
+                            {
+                                EventSchedule.Add("Zones", time);
+                                return;
+                            }
+                        }
+                    }
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
+                        {
+                            if (DateTime.Now < time)
+                            {
+                                EventSchedule.Add("Zones", time);
+                                return;
+                            }
+                        }
+                    }
+                }
+                else if (Reminder_Delay.Contains(":"))
+                {
+                    if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Reminder_Delay + ":00", out DateTime time))
+                    {
+                        if (DateTime.Now < time)
+                        {
+                            EventSchedule.Add("Zones", time);
+                        }
+                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Reminder_Delay + ":00", out DateTime secondaryTime))
+                        {
+                            EventSchedule.Add("Zones", secondaryTime);
+                        }
+                    }
+                }
+                else
+                {
+                    if (int.TryParse(Reminder_Delay, out int delay))
+                    {
+                        EventSchedule.Add("Zones", DateTime.Now.AddMinutes(delay));
+                    }
+                    else
+                    {
+                        Log.Out("[SERVERTOOLS] Invalid Zones Reminder_Delay detected. Use a single integer, 24h time or multiple 24h time entries");
+                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                    }
+                }
+            }
         }
 
         public static void ZoneCheck(ClientInfo _cInfo, EntityAlive _player)
@@ -409,9 +475,9 @@ namespace ServerTools
                 }
                 else if (_command.StartsWith("tele ") || _command.StartsWith("tp ") || _command.StartsWith("teleportplayer "))
                 {
-                    if (Zones.IsEnabled && Zones.ZonePlayer.ContainsKey(_cInfo.entityId))
+                    if (IsEnabled && ZonePlayer.ContainsKey(_cInfo.entityId))
                     {
-                        Zones.ZonePlayer.Remove(_cInfo.entityId);
+                        ZonePlayer.Remove(_cInfo.entityId);
                     }
                     SdtdConsole.Instance.ExecuteSync(_command, null);
                 }
@@ -553,7 +619,8 @@ namespace ServerTools
                         TimeSpan varTime = DateTime.Now - _dt;
                         double fractionalMinutes = varTime.TotalMinutes;
                         int _timepassed = (int)fractionalMinutes;
-                        if (_timepassed >= Reminder_Delay)
+                        int.TryParse(Reminder_Delay, out int delay);
+                        if (_timepassed >= delay)
                         {
                             ZonePlayer.TryGetValue(_cInfo.entityId, out string[] _zone);
                             if (_zone != null && _zone[8] != "")

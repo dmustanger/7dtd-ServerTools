@@ -39,6 +39,7 @@ namespace ServerTools
                     {
                         AdminChat.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Admin chat commands has been set to off"));
                         return;
                     }
@@ -54,6 +55,7 @@ namespace ServerTools
                     {
                         AdminChat.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Admin chat commands has been set to on"));
                         return;
                     }

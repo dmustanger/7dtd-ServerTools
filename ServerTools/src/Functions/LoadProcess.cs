@@ -99,7 +99,7 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Out("[SERVERTOOLS] Failed to load the configuration file. Error = {0}", e.Message);
+                Log.Out("[SERVERTOOLS] Failed to load the configuration file. Check for errors in the file. Error = {0}", e.Message);
             }
 
             try
@@ -117,7 +117,7 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Out("[SERVERTOOLS] Failed to load the EventTriggers.xml. Check for errors in the file. Error = {0}", e.Message);
+                Log.Out("[SERVERTOOLS] Failed to load the CommandList.xml. Check for errors in the file. Error = {0}", e.Message);
             }
 
             try
@@ -126,7 +126,7 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Out("[SERVERTOOLS] Failed to load the Phrases.xml. Restart the server and check for errors. Error = {0}", e.Message);
+                Log.Out("[SERVERTOOLS] Failed to load the Phrases.xml. Check for errors in the file. Error = {0}", e.Message);
             }
 
             try
@@ -185,17 +185,39 @@ namespace ServerTools
                 Log.Out("[SERVERTOOLS] Failed to delete old logs. Error = {0}", e.Message);
             }
 
+            if (PersistentContainer.Instance.WorldSeed == 0)
+            {
+                PersistentContainer.Instance.WorldSeed = GameManager.Instance.World.Seed;
+                PersistentContainer.DataChange = true;
+            }
+            else if (PersistentContainer.Instance.WorldSeed != GameManager.Instance.World.Seed)
+            {
+                PersistentContainer.Instance.WorldSeed = GameManager.Instance.World.Seed;
+                PersistentContainer.DataChange = true;
+                if (!CleanBin.IsEnabled)
+                {
+                    Log.Out("[SERVERTOOLS] Detected a new world. You have old ServerTools data saved from the last map. Run the Clean_Bin tool to remove the data of your choice");
+                }
+            }
+
+            if (CleanBin.IsEnabled)
+            {
+                CleanBin.Exec();
+                Log.Out("[SERVERTOOLS] ServerTools.bin has been cleaned. The tool will now disable automatically");
+                CleanBin.IsEnabled = false;
+                Config.WriteXml();
+                Config.LoadXml();
+            }
+
             PersistentOperations.EntityIdList();
             PersistentOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
-
             CountryBan.BuildList();
-
-            RestartVote.Cycle = true;
-
+            DroppedBagProtection.BuildList();
+            CommandList.BuildList();
+            CommandList.Load();
             Track.Cleanup();
-
             ActiveTools.Exec(true);
-
+            RestartVote.Cycle = true;
             Timers.PersistentDataSave();
         }
 

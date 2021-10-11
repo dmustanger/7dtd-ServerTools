@@ -42,6 +42,7 @@ namespace ServerTools
                     {
                         Bounties.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bounties has been set to off"));
                         return;
                     }
@@ -57,6 +58,7 @@ namespace ServerTools
                     {
                         Bounties.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bounties has been set to on"));
                         return;
                     }

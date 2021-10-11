@@ -44,6 +44,7 @@ namespace ServerTools
                     {
                         Waypoints.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Waypoints has been set to off"));
                         return;
                     }
@@ -59,6 +60,7 @@ namespace ServerTools
                     {
                         Waypoints.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Waypoints has been set to on"));
                         return;
                     }

@@ -219,7 +219,9 @@ namespace ServerTools
                     Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_x, _y, _z);
                     if (_chunk == null)
                     {
-                        
+                        _chunk = (Chunk)GameManager.Instance.World.ChunkCache.GetChunkSync(_x, _y, _z);
+                        if (_chunk != null)
+                        {
                             _vehicle.SetPosition(new Vector3(_player.position.x + 1, _player.position.y, _player.position.z + 1));
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
@@ -235,7 +237,11 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[_cInfo.playerId].Vehicles[_vehicleId] = new string[] { _vehicle.EntityClass.entityClassName, DateTime.Now.AddMinutes(_delay).ToString() };
                             Phrases.Dict.TryGetValue("VehicleRecall11", out string _phrase);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-
+                        }
+                        else
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Chunk not found"));
+                        }
                     }
                     else
                     {

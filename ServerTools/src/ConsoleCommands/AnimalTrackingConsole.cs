@@ -38,10 +38,11 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (Animals.IsEnabled)
+                    if (AnimalTracking.IsEnabled)
                     {
-                        Animals.IsEnabled = false;
+                        AnimalTracking.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking has been set to off"));
                         return;
                     }
@@ -53,10 +54,11 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (!Animals.IsEnabled)
+                    if (!AnimalTracking.IsEnabled)
                     {
-                        Animals.IsEnabled = true;
+                        AnimalTracking.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking has been set to on"));
                         return;
                     }

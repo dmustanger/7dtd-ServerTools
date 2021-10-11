@@ -10,6 +10,7 @@ namespace ServerTools
         private readonly string steamId;
         private Dictionary<int, ItemDataSerializable> auction;
         private Dictionary<int, ItemDataSerializable> auctionReturn;
+        private List<string[]> autoPartyInvite;
         private int bank;
         private int bounty;
         private int bountyHunter;
@@ -37,6 +38,7 @@ namespace ServerTools
         private DateTime lastAnimal;
         private DateTime lastDied;
         private DateTime lastFriendTele;
+        private DateTime lastGamble;
         private DateTime lastGimme;
         private DateTime lastHome;
         private DateTime lastJoined;
@@ -94,6 +96,18 @@ namespace ServerTools
             set
             {
                 auctionReturn = value;
+            }
+        }
+
+        public List<string[]> AutoPartyInvite
+        {
+            get
+            {
+                return autoPartyInvite;
+            }
+            set
+            {
+                autoPartyInvite = value;
             }
         }
 
@@ -406,6 +420,18 @@ namespace ServerTools
             set
             {
                 lastFriendTele = value;
+            }
+        }
+
+        public DateTime LastGamble
+        {
+            get
+            {
+                return lastGamble;
+            }
+            set
+            {
+                lastGamble = value;
             }
         }
 

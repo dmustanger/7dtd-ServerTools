@@ -9,7 +9,7 @@ namespace ServerTools
     class KillNotice
     {
         public static bool IsEnabled = false, IsRunning = false, PvP = false, Zombie_Kills = false, Show_Level = false, Show_Damage = false;
-        public static Dictionary<int, int> Damage = new Dictionary<int, int>();
+        public static Dictionary<int, int[]> ZombieDamage = new Dictionary<int, int[]>();
 
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();
         private const string file = "KillNotice.xml";
@@ -47,39 +47,46 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
                     Dict.Clear();
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_childNodes[i];
-                            if (_line.HasAttributes)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    UpgradeXml(_childNodes);
-                                    return;
+                                    upgrade = false;
+                                    continue;
                                 }
-                                else if (_line.HasAttribute("Name") && _line.HasAttribute("NewName"))
+                                else if (line.HasAttribute("Name") && line.HasAttribute("NewName"))
                                 {
-                                    string _name = _line.GetAttribute("Name");
-                                    ItemClass _class = ItemClass.GetItemClass(_name, true);
+                                    string name = line.GetAttribute("Name");
+                                    string newName = line.GetAttribute("NewName");
+                                    ItemClass _class = ItemClass.GetItemClass(name, true);
                                     if (_class == null)
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring KillNotice.xml entry. Weapon not found: {0}", _name));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring KillNotice.xml entry. Weapon not found: {0}", name));
                                         continue;
                                     }
-                                    if (!Dict.ContainsKey(_name))
+                                    if (!Dict.ContainsKey(name))
                                     {
-                                        Dict.Add(_name, _line.GetAttribute("NewName"));
+                                        Dict.Add(name, newName);
                                     }
                                 }
                             }
                         }
                     }
+                }
+                if (childNodes != null && upgrade)
+                {
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)
@@ -160,79 +167,114 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void Exec(ClientInfo _cInfo, EntityPlayer _victim, ClientInfo _cInfo2, EntityPlayer _killer, string _holdingItem)
+        public static void PlayerKilledPlayer(ClientInfo _cInfo, EntityPlayer _victim, ClientInfo _cInfo2, EntityPlayer _killer, ItemValue _itemValue, int _damage)
         {
             try
             {
-                string _item = _holdingItem;
-                if (Dict.ContainsKey(_holdingItem))
+                string item = _itemValue.ItemClass.Name;
+                if (Dict.ContainsKey(item))
                 {
-                    Dict.TryGetValue(_holdingItem, out _item);
+                    Dict.TryGetValue(item, out item);
+                }
+                else if (string.IsNullOrEmpty(_itemValue.ItemClass.GetLocalizedItemName()))
+                {
+                    item = _itemValue.ItemClass.GetLocalizedItemName();
                 }
                 if (Show_Level)
                 {
                     if (Show_Damage)
                     {
-                        if (Damage.ContainsKey(_victim.entityId))
-                        {
-                            Damage.TryGetValue(_victim.entityId, out int _damage);
-                            Phrases.Dict.TryGetValue("KillNotice3", out string _phrase);
-                            _phrase = _phrase.Replace("{Name1}", _cInfo2.playerName);
-                            _phrase = _phrase.Replace("{Level1}", _killer.Progression.Level.ToString());
-                            _phrase = _phrase.Replace("{Name2}", _cInfo.playerName);
-                            _phrase = _phrase.Replace("{Level2}", _victim.Progression.Level.ToString());
-                            _phrase = _phrase.Replace("{Item}", _item);
-                            _phrase = _phrase.Replace("{Damage}", _damage.ToString());
-                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                            return;
-                        }
+                        Phrases.Dict.TryGetValue("KillNotice3", out string phrase);
+                        phrase = phrase.Replace("{Name1}", _cInfo2.playerName);
+                        phrase = phrase.Replace("{Level1}", _killer.Progression.Level.ToString());
+                        phrase = phrase.Replace("{Name2}", _cInfo.playerName);
+                        phrase = phrase.Replace("{Level2}", _victim.Progression.Level.ToString());
+                        phrase = phrase.Replace("{Item}", item);
+                        phrase = phrase.Replace("{Value}", _damage.ToString());
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        return;
                     }
-                    Phrases.Dict.TryGetValue("KillNotice2", out string _phrase1);
-                    _phrase1 = _phrase1.Replace("{Name1}", _cInfo2.playerName);
-                    _phrase1 = _phrase1.Replace("{Level1}", _killer.Progression.Level.ToString());
-                    _phrase1 = _phrase1.Replace("{Name2}", _cInfo.playerName);
-                    _phrase1 = _phrase1.Replace("{Level2}", _victim.Progression.Level.ToString());
-                    _phrase1 = _phrase1.Replace("{Item}", _item);
-                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    Phrases.Dict.TryGetValue("KillNotice2", out string phrase1);
+                    phrase1 = phrase1.Replace("{Name1}", _cInfo2.playerName);
+                    phrase1 = phrase1.Replace("{Level1}", _killer.Progression.Level.ToString());
+                    phrase1 = phrase1.Replace("{Name2}", _cInfo.playerName);
+                    phrase1 = phrase1.Replace("{Level2}", _victim.Progression.Level.ToString());
+                    phrase1 = phrase1.Replace("{Item}", item);
+                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
                     if (Show_Damage)
                     {
-                        if (Damage.ContainsKey(_victim.entityId))
-                        {
-                            Damage.TryGetValue(_victim.entityId, out int _damage);
-                            Phrases.Dict.TryGetValue("KillNotice1", out string _phrase);
-                            _phrase = _phrase.Replace("{Name1}", _cInfo2.playerName);
-                            _phrase = _phrase.Replace("{Name2}", _cInfo.playerName);
-                            _phrase = _phrase.Replace("{Item}", _item);
-                            _phrase = _phrase.Replace("{Damage}", _damage.ToString());
-                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                            return;
-                        }
+                        Phrases.Dict.TryGetValue("KillNotice1", out string phrase);
+                        phrase = phrase.Replace("{Name1}", _cInfo2.playerName);
+                        phrase = phrase.Replace("{Name2}", _cInfo.playerName);
+                        phrase = phrase.Replace("{Item}", item);
+                        phrase = phrase.Replace("{Value}", _damage.ToString());
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        return;
                     }
-                    Phrases.Dict.TryGetValue("KillNotice4", out string _phrase1);
-                    _phrase1 = _phrase1.Replace("{Name1}", _cInfo2.playerName);
-                    _phrase1 = _phrase1.Replace("{Name2}", _cInfo.playerName);
-                    _phrase1 = _phrase1.Replace("{Item}", _item);
-                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    Phrases.Dict.TryGetValue("KillNotice4", out string phrase1);
+                    phrase1 = phrase1.Replace("{Name1}", _cInfo2.playerName);
+                    phrase1 = phrase1.Replace("{Name2}", _cInfo.playerName);
+                    phrase1 = phrase1.Replace("{Item}", item);
+                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in KillNotice.Exec: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in KillNotice.PlayerKilledPlayer: {0}", e.Message));
             }
         }
 
-        public static void ProcessStrength(EntityPlayer _player, int _strength)
+        public static void ZombieKilledPlayer(EntityZombie _zombie, EntityPlayer _victim, ClientInfo _cInfo, int _damage)
         {
-            if (Damage.ContainsKey(_player.entityId))
+            try
             {
-                Damage[_player.entityId] = _strength;
+                if (Show_Level)
+                {
+                    if (Show_Damage)
+                    {
+                        Phrases.Dict.TryGetValue("KillNotice5", out string phrase);
+                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                        phrase = phrase.Replace("{Level}", _victim.Progression.Level.ToString());
+                        phrase = phrase.Replace("{ZombieName}", _zombie.EntityName);
+                        phrase = phrase.Replace("{Value}", _damage.ToString());
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        return;
+                    }
+                    else
+                    {
+                        Phrases.Dict.TryGetValue("KillNotice6", out string phrase);
+                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                        phrase = phrase.Replace("{Level}", _victim.Progression.Level.ToString());
+                        phrase = phrase.Replace("{ZombieName}", _zombie.EntityName);
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    }
+                }
+                else
+                {
+                    if (Show_Damage)
+                    {
+                        Phrases.Dict.TryGetValue("KillNotice7", out string phrase);
+                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                        phrase = phrase.Replace("{ZombieName}", _zombie.EntityName);
+                        phrase = phrase.Replace("{Value}", _damage.ToString());
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        return;
+                    }
+                    else
+                    {
+                        Phrases.Dict.TryGetValue("KillNotice8", out string phrase);
+                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                        phrase = phrase.Replace("{ZombieName}", _zombie.EntityName);
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    }
+                }
             }
-            else
+            catch (Exception e)
             {
-                Damage.Add(_player.entityId, _strength);
+                Log.Out(string.Format("[SERVERTOOLS] Error in KillNotice.ZombieKilledPlayer: {0}", e.Message));
             }
         }
 

@@ -16,7 +16,7 @@ namespace ServerTools
                 Log.Out("[SERVERTOOLS] Anti-Cheat tools:");
                 Log.Out("-------------------------------");
             }
-            if (CredentialCheck.IsEnabled)
+            if (Credentials.IsEnabled)
             {
                 if (!Dict.Contains("Credentials"))
                 {
@@ -159,7 +159,7 @@ namespace ServerTools
                 Dict.Remove("Spectator detector");
                 Log.Out("Spectator detector disabled");
             }
-            if (Watchlist.IsEnabled)
+            if (WatchList.IsEnabled)
             {
                 if (!Dict.Contains("Watch list"))
                 {
@@ -262,7 +262,7 @@ namespace ServerTools
                 Dict.Remove("Admin list");
                 Log.Out("Admin list disabled");
             }
-            if (Animals.IsEnabled)
+            if (AnimalTracking.IsEnabled)
             {
                 if (!Dict.Contains("Animal tracking"))
                 {
@@ -300,6 +300,19 @@ namespace ServerTools
             {
                 Dict.Remove("Auto backup");
                 Log.Out("Auto backup disabled");
+            }
+            if (AutoPartyInvite.IsEnabled)
+            {
+                if (!Dict.Contains("Auto party invite"))
+                {
+                    Dict.Add("Auto party invite");
+                    Log.Out("Auto party invite enabled");
+                }
+            }
+            else if (Dict.Contains("Auto party invite") && !_initiating)
+            {
+                Dict.Remove("Auto party invite");
+                Log.Out("Auto party invite disabled");
             }
             if (AutoSaveWorld.IsEnabled)
             {
@@ -470,6 +483,19 @@ namespace ServerTools
                 Dict.Remove("Clan manager");
                 Log.Out("Clan manager disabled");
             }
+            if (CleanBin.IsEnabled)
+            {
+                if (!Dict.Contains("Clean bin"))
+                {
+                    Dict.Add("Clean bin");
+                    Log.Out("Clean bin enabled");
+                }
+            }
+            else if (Dict.Contains("Clean bin") && !_initiating)
+            {
+                Dict.Remove("Clean bin");
+                Log.Out("Clean bin disabled");
+            }
             if (ConsoleCommandLog.IsEnabled)
             {
                 if (!Dict.Contains("Console command log"))
@@ -547,6 +573,19 @@ namespace ServerTools
             {
                 Dict.Remove("Discord bot");
                 Log.Out("Discord bot disabled");
+            }
+            if (DroppedBagProtection.IsEnabled)
+            {
+                if (!Dict.Contains("Dropped bag protection"))
+                {
+                    Dict.Add("Dropped bag protection");
+                    Log.Out("Dropped bag protection enabled");
+                }
+            }
+            else if (Dict.Contains("Dropped bag protection") && !_initiating)
+            {
+                Dict.Remove("Dropped bag protection");
+                Log.Out("Dropped bag protection disabled");
             }
             if (EntityCleanup.IsEnabled)
             {
@@ -638,6 +677,19 @@ namespace ServerTools
             {
                 Dict.Remove("Friend teleport");
                 Log.Out("Friend teleport disabled");
+            }
+            if (Gamble.IsEnabled)
+            {
+                if (!Dict.Contains("Gamble"))
+                {
+                    Dict.Add("Gamble");
+                    Log.Out("Gamble enabled");
+                }
+            }
+            else if (Dict.Contains("Gamble") && !_initiating)
+            {
+                Dict.Remove("Gamble");
+                Log.Out("Gamble disabled");
             }
             if (Gimme.IsEnabled)
             {
@@ -886,6 +938,32 @@ namespace ServerTools
                 Dict.Remove("Night alert");
                 Log.Out("Night alert disabled");
             }
+            if (PersistentOperations.No_Vehicle_Pickup)
+            {
+                if (!Dict.Contains("No vehicle pickup"))
+                {
+                    Dict.Add("No vehicle pickup");
+                    Log.Out("No vehicle pickup enabled");
+                }
+            }
+            else if (Dict.Contains("No vehicle pickup") && !_initiating)
+            {
+                Dict.Remove("No vehicle pickup");
+                Log.Out("No vehicle pickup disabled");
+            }
+            if (PlayerList.IsEnabled)
+            {
+                if (!Dict.Contains("Player list"))
+                {
+                    Dict.Add("Player list");
+                    Log.Out("Player list enabled");
+                }
+            }
+            else if (Dict.Contains("Player list") && !_initiating)
+            {
+                Dict.Remove("Player list");
+                Log.Out("Player list disabled");
+            }
             if (POIProtection.IsEnabled)
             {
                 if (!Dict.Contains("POI protection"))
@@ -924,6 +1002,19 @@ namespace ServerTools
             {
                 Dict.Remove("Private message");
                 Log.Out("Private message disabled");
+            }
+            if (Waypoints.Public_Waypoints)
+            {
+                if (!Dict.Contains("Public waypoints"))
+                {
+                    Dict.Add("Public waypoints");
+                    Log.Out("Public waypoints enabled");
+                }
+            }
+            else if (Dict.Contains("Public waypoints") && !_initiating)
+            {
+                Dict.Remove("Public waypoints");
+                Log.Out("Public waypoints disabled");
             }
             if (RealWorldTime.IsEnabled)
             {

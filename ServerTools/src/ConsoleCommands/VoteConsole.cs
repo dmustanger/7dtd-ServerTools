@@ -43,6 +43,7 @@ namespace ServerTools
                     {
                         VoteReward.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vote reward has been set to off"));
                         return;
                     }
@@ -58,6 +59,7 @@ namespace ServerTools
                     {
                         VoteReward.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vote reward has been set to on"));
                         return;
                     }

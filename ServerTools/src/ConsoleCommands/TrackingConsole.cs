@@ -44,6 +44,7 @@ namespace ServerTools
                     {
                         Track.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Tracking has been set to off"));
                         return;
                     }
@@ -59,6 +60,7 @@ namespace ServerTools
                     {
                         Track.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Tracking has been set to on"));
                         return;
                     }

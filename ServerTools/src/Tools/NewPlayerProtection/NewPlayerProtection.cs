@@ -9,17 +9,17 @@ namespace ServerTools
 
         public static void AddHealing(EntityAlive _entityAlive, DamageResponse _dmResponse)
         {
-            EntityPlayer _player = (EntityPlayer)_entityAlive;
-            if (_player != null && _player.IsAlive() && _player.Progression.Level < Level && !_player.Buffs.HasBuff("buffHealHealth"))
+            EntityPlayer player = (EntityPlayer)_entityAlive;
+            if (player != null && player.IsAlive() && player.Progression.Level <= Level && !player.Buffs.HasBuff("buffHealHealth"))
             {
-                Entity _entity = PersistentOperations.GetEntity(_dmResponse.Source.getEntityId());
-                if (_entity != null && (_entity is EntityZombie || _entity is EntityAnimal))
+                Entity entity = PersistentOperations.GetEntity(_dmResponse.Source.getEntityId());
+                if (entity != null && (entity is EntityZombie || entity is EntityAnimal))
                 {
-                    ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_entityAlive.entityId);
-                    if (_cInfo != null)
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_entityAlive.entityId);
+                    if (cInfo != null)
                     {
                         _entityAlive.SetCVar("medicalRegHealthAmount", _dmResponse.Strength);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} buffHealHealth", _cInfo.playerId), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} buffHealHealth", cInfo.playerId), null);
                     }
                 }
             }

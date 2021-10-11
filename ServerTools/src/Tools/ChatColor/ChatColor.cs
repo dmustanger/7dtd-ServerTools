@@ -50,65 +50,58 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
                     Players.Clear();
                     ExpireDate.Clear();
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_childNodes[i];
-                            if (_line.HasAttributes)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    UpgradeXml(_childNodes);
-                                    return;
+                                    upgrade = false;
+                                    continue;
                                 }
-                                else if (_line.HasAttribute("SteamId") && _line.HasAttribute("Name") && _line.HasAttribute("Group") && _line.HasAttribute("Prefix") &&
-                                     _line.HasAttribute("NameColor") && _line.HasAttribute("PrefixColor") && _line.HasAttribute("Expires"))
+                                else if (line.HasAttribute("SteamId") && line.HasAttribute("Name") && line.HasAttribute("NameColor") &&
+                                      line.HasAttribute("Prefix") && line.HasAttribute("PrefixColor") && line.HasAttribute("Expires"))
                                 {
-                                    string _steamId = _line.GetAttribute("SteamId");
-                                    string _name = _line.GetAttribute("Name");
-                                    string _group = _line.GetAttribute("Group");
-                                    string _prefix = _line.GetAttribute("Prefix");
-                                    string _nameColor = _line.GetAttribute("NameColor");
-                                    string _prefixColor = _line.GetAttribute("PrefixColor");
-                                    DateTime _dt = DateTime.Parse(_line.GetAttribute("Expires"));
-                                    if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(_nameColor))
+                                    string steamId = line.GetAttribute("SteamId");
+                                    string name = line.GetAttribute("Name");
+                                    string nameColor = line.GetAttribute("NameColor");
+                                    string prefix = line.GetAttribute("Prefix");
+                                    string prefixColor = line.GetAttribute("PrefixColor");
+                                    DateTime dt = DateTime.Parse(line.GetAttribute("Expires"));
+                                    if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(nameColor))
                                     {
-                                        ColorList.Colors.TryGetValue(_nameColor, out string _colorArray);
-                                        _nameColor = _colorArray;
+                                        ColorList.Colors.TryGetValue(nameColor, out string colorArray);
+                                        nameColor = colorArray;
                                     }
-                                    if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(_prefixColor))
+                                    if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(prefixColor))
                                     {
-                                        ColorList.Colors.TryGetValue(_prefixColor, out string _colorArray);
-                                        _prefixColor = _colorArray;
+                                        ColorList.Colors.TryGetValue(prefixColor, out string colorArray);
+                                        prefixColor = colorArray;
                                     }
-                                    if ((_nameColor[0] != '[' || _nameColor[7] != ']') && _nameColor != "")
+                                    if (!Players.ContainsKey(steamId) && DateTime.Now < dt)
                                     {
-                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColor.xml entry because of missing brackets[] or name matching the ColorList.xml for NameColor attribute: {0}", _line.OuterXml));
-                                        continue;
-                                    }
-
-                                    if ((_prefixColor[0] != '[' || _prefixColor[7] != ']') && _prefixColor != "")
-                                    {
-                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColor.xml entry because of missing brackets[] or name matching the ColorList.xml for PrefixColor attribute: {0}", _line.OuterXml));
-                                        continue;
-                                    }
-
-                                    if (!Players.ContainsKey(_steamId) && DateTime.Now < _dt)
-                                    {
-                                        string[] _c = new string[] { _name, _group, _prefix, _nameColor, _prefixColor };
-                                        Players.Add(_steamId, _c);
-                                        ExpireDate.Add(_steamId, _dt);
+                                        string[] c = new string[] { name, nameColor, prefix, prefixColor };
+                                        Players.Add(steamId, c);
+                                        ExpireDate.Add(steamId, dt);
                                     }
                                 }
                             }
                         }
                     }
+                }
+                if (childNodes != null && upgrade)
+                {
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)
@@ -125,8 +118,8 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ChatColor>");
                 sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                sw.WriteLine("<!-- PrefixColor and NameColor can come from the ColorList.xml -->");
-                sw.WriteLine("<!-- <Player SteamId=\"12345678901234567\" Name=\"bob\" Group=\"admin\" Prefix=\"(Captain)\" NameColor=\"[FF0000]\" PrefixColor=\"[FFFFFF]\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
+                sw.WriteLine("<!-- NameColor and PrefixColor can come from the ColorList.xml -->");
+                sw.WriteLine("<!-- <Player SteamId=\"12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
                 sw.WriteLine();
                 sw.WriteLine();
                 if (Players.Count > 0)
@@ -134,12 +127,12 @@ namespace ServerTools
                     foreach (KeyValuePair<string, string[]> kvp in Players)
                     {
                         ExpireDate.TryGetValue(kvp.Key, out DateTime _expiry);
-                        sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" Group=\"{2}\" Prefix=\"{3}\" NameColor=\"{4}\" PrefixColor=\"{5}\" Expires=\"{6}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3], kvp.Value[4], _expiry));
+                        sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" NameColor=\"{2}\" Prefix=\"{3}\" PrefixColor=\"{4}\" Expires=\"{5}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3], _expiry));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" Group=\"\" Prefix=\"\" NameColor=\"\" PrefixColor=\"\" Expires=\"\" /> -->");
+                    sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" NameColor=\"\" Prefix=\"\" PrefixColor=\"\" Expires=\"\" /> -->");
                 }
                 sw.WriteLine("</ChatColor>");
                 sw.Flush();
@@ -172,11 +165,6 @@ namespace ServerTools
             {
                 if (DateTime.Now > _expiry)
                 {
-                    Players.Remove(_cInfo.playerId);
-                    ExpireDate.Remove(_cInfo.playerId);
-                    UpdateXml();
-                    Phrases.Dict.TryGetValue("ChatColor1", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return true;
                 }
             }
@@ -191,19 +179,15 @@ namespace ServerTools
         {
             try
             {
-                ExpireDate.TryGetValue(_cInfo.playerId, out DateTime _expiry);
-                if (!Expired(_cInfo, _expiry))
+                ExpireDate.TryGetValue(_cInfo.playerId, out DateTime expiry);
+                if (!Expired(_cInfo, expiry))
                 {
-                    Players.TryGetValue(_cInfo.playerId, out string[] _tags);
-                    string _prefixNoBracket = _tags[4].Replace("[", "");
-                    _prefixNoBracket = _prefixNoBracket.Replace("]", "");
-                    string _nameNoBracket = _tags[3].Replace("[", "");
-                    _nameNoBracket = _nameNoBracket.Replace("]", "");
-                    Phrases.Dict.TryGetValue("ChatColor2", out string _phrase);
-                    _phrase = _phrase.Replace("{PrefixTags}", _prefixNoBracket);
-                    _phrase = _phrase.Replace("{NameTags}", _nameNoBracket);
-                    _phrase = _phrase.Replace("{DateTime}", _expiry.ToString());
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Players.TryGetValue(_cInfo.playerId, out string[] colorTags);
+                    Phrases.Dict.TryGetValue("ChatColor2", out string phrase);
+                    phrase = phrase.Replace("{NameTags}", colorTags[1]);
+                    phrase = phrase.Replace("{PrefixTags}", colorTags[3]);
+                    phrase = phrase.Replace("{DateTime}", expiry.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -212,19 +196,19 @@ namespace ServerTools
             }
         }
 
-        public static void SetPrefixColor(ClientInfo _cInfo, string messageLowerCase)
+        public static void SetPrefixColor(ClientInfo _cInfo, string _messageLowerCase)
         {
             try
             {
-                ExpireDate.TryGetValue(_cInfo.playerId, out DateTime _expiry);
-                if (!Expired(_cInfo, _expiry))
+                ExpireDate.TryGetValue(_cInfo.playerId, out DateTime expiry);
+                if (!Expired(_cInfo, expiry))
                 {
-                    DateTime _lastPrefixColorChange = DateTime.Now;
+                    DateTime lastPrefixColorChange = DateTime.Now;
                     if (PersistentContainer.Instance.Players[_cInfo.playerId].LastPrefixColorChange != null)
                     {
-                        _lastPrefixColorChange = PersistentContainer.Instance.Players[_cInfo.playerId].LastPrefixColorChange;
+                        lastPrefixColorChange = PersistentContainer.Instance.Players[_cInfo.playerId].LastPrefixColorChange;
                     }
-                    TimeSpan varTime = DateTime.Now - _lastPrefixColorChange;
+                    TimeSpan varTime = DateTime.Now - lastPrefixColorChange;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
                     if (_timepassed >= 5)
@@ -232,18 +216,16 @@ namespace ServerTools
                         Phrases.Dict.TryGetValue("ChatColor7", out string _phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    if (messageLowerCase.Length >= 8 && messageLowerCase[0] == '[' && messageLowerCase[7] == ']')
+                    if (_messageLowerCase.Length >= 8 && _messageLowerCase[0] == '[' && _messageLowerCase[7] == ']')
                     {
-                        Players.TryGetValue(_cInfo.playerId, out string[] _tags);
-                        _tags[4] = messageLowerCase;
-                        Players[_cInfo.playerId] = _tags;
+                        Players.TryGetValue(_cInfo.playerId, out string[] colorTags);
+                        colorTags[3] = _messageLowerCase;
+                        Players[_cInfo.playerId] = colorTags;
                         UpdateXml();
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastPrefixColorChange = DateTime.Now;
                         PersistentContainer.DataChange = true;
-                        string _prefixNoBracket = messageLowerCase.Replace("[", "");
-                        _prefixNoBracket = _prefixNoBracket.Replace("]", "");
                         Phrases.Dict.TryGetValue("ChatColor4", out string _phrase);
-                        _phrase = _phrase.Replace("{Tags}", _prefixNoBracket);
+                        _phrase = _phrase.Replace("{Tags}", colorTags[3]);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
@@ -263,39 +245,36 @@ namespace ServerTools
         {
             try
             {
-                ExpireDate.TryGetValue(_cInfo.playerId, out DateTime _expiry);
-                if (!Expired(_cInfo, _expiry))
+                ExpireDate.TryGetValue(_cInfo.playerId, out DateTime expiry);
+                if (!Expired(_cInfo, expiry))
                 {
                     if (ColorList.Colors.Count > 0)
                     {
-                        Players.TryGetValue(_cInfo.playerId, out string[] _tags);
-                        Phrases.Dict.TryGetValue("ChatColor4", out string _phrase);
+                        Players.TryGetValue(_cInfo.playerId, out string[] colorTags);
+                        
                         KeyValuePair<string, string>[] Colors = ColorList.Colors.ToArray();
-                        string _prefixNoBracket = "";
                         for (int i = 0; i < Colors.Length; i++)
                         {
-                            if (Colors[i].Value == _tags[4])
+                            if (Colors[i].Value == colorTags[3])
                             {
                                 if (Colors.Length > i + 1)
                                 {
-                                    _tags[4] = Colors[i + 1].Value;
-                                    Players[_cInfo.playerId] = _tags;
+                                    colorTags[3] = Colors[i + 1].Value;
+                                    Players[_cInfo.playerId] = colorTags;
                                     UpdateXml();
-                                    _prefixNoBracket = Colors[i + 1].Value.Replace("[", "");
-                                    _prefixNoBracket = _prefixNoBracket.Replace("]", "");
-                                    _phrase = _phrase.Replace("{Tags}", _prefixNoBracket);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("ChatColor4", out string phrase);
+                                    phrase = phrase.Replace("{Tags}", colorTags[3]);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                             }
                         }
-                        _tags[4] = Colors[0].Value;
-                        Players[_cInfo.playerId] = _tags;
+                        colorTags[3] = Colors[0].Value;
+                        Players[_cInfo.playerId] = colorTags;
                         UpdateXml();
-                        _prefixNoBracket = Colors[0].Value.Replace("[", "");
-                        _prefixNoBracket = _prefixNoBracket.Replace("]", "");
-                        _phrase = _phrase.Replace("{Tags}", _prefixNoBracket);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("ChatColor4", out string phrase1);
+                        phrase1 = phrase1.Replace("{Tags}", colorTags[3]);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
@@ -314,34 +293,33 @@ namespace ServerTools
         {
             try
             {
-                ExpireDate.TryGetValue(_cInfo.playerId, out DateTime _expiry);
-                if (!Expired(_cInfo, _expiry))
+                ExpireDate.TryGetValue(_cInfo.playerId, out DateTime expiry);
+                if (!Expired(_cInfo, expiry))
                 {
-                    DateTime _lastNameColorChange = DateTime.Now;
+                    DateTime lastNameColorChange = DateTime.Now;
                     if (PersistentContainer.Instance.Players[_cInfo.playerId].LastNameColorChange != null)
                     {
-                        _lastNameColorChange = PersistentContainer.Instance.Players[_cInfo.playerId].LastNameColorChange;
+                        lastNameColorChange = PersistentContainer.Instance.Players[_cInfo.playerId].LastNameColorChange;
                     }
-                    TimeSpan varTime = DateTime.Now - _lastNameColorChange;
+                    TimeSpan varTime = DateTime.Now - lastNameColorChange;
                     double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed >= 5)
+                    int timepassed = (int)fractionalMinutes;
+                    if (timepassed >= 5)
                     {
-                        Phrases.Dict.TryGetValue("ChatColor7", out string _phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("ChatColor7", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     if (messageLowerCase.Length >= 8 && messageLowerCase[0] == '[' && messageLowerCase[7] == ']')
                     {
-                        Players.TryGetValue(_cInfo.playerId, out string[] _tags);
-                        _tags[3] = messageLowerCase;
-                        Players[_cInfo.playerId] = _tags;
+                        Players.TryGetValue(_cInfo.playerId, out string[] colorTags);
+                        colorTags[1] = messageLowerCase;
+                        Players[_cInfo.playerId] = colorTags;
                         UpdateXml();
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastNameColorChange = DateTime.Now;
                         PersistentContainer.DataChange = true;
-
-                        Phrases.Dict.TryGetValue("ChatColor5", out string _phrase);
-                        _phrase = _phrase.Replace("{Tags}", messageLowerCase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("ChatColor5", out string phrase);
+                        phrase = phrase.Replace("{Tags}", colorTags[1]);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
@@ -360,42 +338,40 @@ namespace ServerTools
         {
             try
             {
-                ExpireDate.TryGetValue(_cInfo.playerId, out DateTime _expiry);
-                if (!Expired(_cInfo, _expiry))
+                ExpireDate.TryGetValue(_cInfo.playerId, out DateTime expiry);
+                if (!Expired(_cInfo, expiry))
                 {
                     if (ColorList.Colors.Count > 0)
                     {
-                        Players.TryGetValue(_cInfo.playerId, out string[] _tags);
-                        Phrases.Dict.TryGetValue("ChatColor5", out string _phrase);
+                        Players.TryGetValue(_cInfo.playerId, out string[] colorTags);
+                        Phrases.Dict.TryGetValue("ChatColor5", out string phrase);
                         KeyValuePair<string, string>[] Colors = ColorList.Colors.ToArray();
-                        string _nameNoBracket = "";
                         for (int i = 0; i < Colors.Length; i++)
                         {
-                            if (Colors[i].Value == _tags[3])
+                            if (Colors[i].Value == colorTags[1])
                             {
                                 if (Colors.Length > i + 1)
                                 {
-                                    Players[_cInfo.playerId][3] = Colors[i + 1].Value;
+                                    colorTags[1] = Colors[i + 1].Value;
+                                    Players[_cInfo.playerId] = colorTags;
                                     UpdateXml();
-                                    _nameNoBracket = Colors[i + 1].Value.Replace("[", "");
-                                    _nameNoBracket = _nameNoBracket.Replace("]", "");
-                                    _phrase = _phrase.Replace("{Tags}", _nameNoBracket);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    phrase = phrase.Replace("{Tags}", colorTags[1]);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                             }
                         }
-                        Players[_cInfo.playerId][3] = Colors[0].Value;
+                        colorTags[1] = Colors[0].Value;
+                        Players[_cInfo.playerId] = colorTags;
                         UpdateXml();
-                        _nameNoBracket = Colors[0].Value.Replace("[", "");
-                        _nameNoBracket = _nameNoBracket.Replace("]", "");
-                        _phrase = _phrase.Replace("{Tags}", _nameNoBracket);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("ChatColor5", out string phrase1);
+                        phrase = phrase.Replace("{Tags}", colorTags[1]);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("ChatColor6", out string _phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("ChatColor6", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -416,7 +392,7 @@ namespace ServerTools
                     sw.WriteLine("<ChatColor>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("<!-- PrefixColor and NameColor can come from the ColorList.xml -->");
-                    sw.WriteLine("<!-- <Player SteamId=\"12345678901234567\" Name=\"bob\" Group=\"admin\" Prefix=\"(Captain)\" NameColor=\"[FF0000]\" PrefixColor=\"[FFFFFF]\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
+                    sw.WriteLine("<!-- <Player SteamId=\"12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- PrefixColor and NameColor") &&
@@ -427,52 +403,48 @@ namespace ServerTools
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
+                    bool blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.Name == "Player")
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Player")
                             {
-                                _blank = false;
-                                string _steamId = "", _name = "", _group = "", _prefix = "", _nameColor = "", _prefixColor = "";
-                                DateTime _dateTime = DateTime.Now;
-                                if (_line.HasAttribute("SteamId"))
+                                blank = false;
+                                string steamId = "", name = "", nameColor = "", prefix = "", prefixColor = "";
+                                DateTime dateTime = DateTime.Now;
+                                if (line.HasAttribute("SteamId"))
                                 {
-                                    _steamId = _line.GetAttribute("SteamId");
+                                    steamId = line.GetAttribute("SteamId");
                                 }
-                                if (_line.HasAttribute("Name"))
+                                if (line.HasAttribute("Name"))
                                 {
-                                    _name = _line.GetAttribute("Name");
+                                    name = line.GetAttribute("Name");
                                 }
-                                if (_line.HasAttribute("Group"))
+                                if (line.HasAttribute("Prefix"))
                                 {
-                                    _group = _line.GetAttribute("Group");
+                                    prefix = line.GetAttribute("Prefix");
                                 }
-                                if (_line.HasAttribute("Prefix"))
+                                if (line.HasAttribute("NameColor"))
                                 {
-                                    _prefix = _line.GetAttribute("Prefix");
+                                    nameColor = line.GetAttribute("NameColor");
                                 }
-                                if (_line.HasAttribute("NameColor"))
+                                if (line.HasAttribute("PrefixColor"))
                                 {
-                                    _nameColor = _line.GetAttribute("NameColor");
+                                    prefixColor = line.GetAttribute("PrefixColor");
                                 }
-                                if (_line.HasAttribute("PrefixColor"))
+                                if (line.HasAttribute("Expires"))
                                 {
-                                    _prefixColor = _line.GetAttribute("PrefixColor");
+                                    DateTime.TryParse(line.GetAttribute("Expires"), out dateTime);
                                 }
-                                if (_line.HasAttribute("Expires"))
-                                {
-                                    DateTime.TryParse(_line.GetAttribute("Expires"), out _dateTime);
-                                }
-                                sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" Group=\"{2}\" Prefix=\"{3}\" NameColor=\"{4}\" PrefixColor=\"{5}\" Expires=\"{6}\" />", _steamId, _name, _group, _prefix, _nameColor, _prefixColor, _dateTime));
+                                sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" NameColor=\"{2}\" Prefix=\"{3}\" PrefixColor=\"{4}\" Expires=\"{5}\" />", steamId, name, nameColor, prefix, prefixColor, dateTime));
                             }
                         }
                     }
-                    if (_blank)
+                    if (blank)
                     {
-                        sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" Group=\"\" Prefix=\"\" NameColor=\"\" PrefixColor=\"\" Expires=\"\" /> -->");
+                        sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" NameColor=\"\" Prefix=\"\" PrefixColor=\"\" Expires=\"\" /> -->");
                     }
                     sw.WriteLine("</ChatColor>");
                     sw.Flush();

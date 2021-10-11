@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ServerTools
 {
-    public class CommandWatchlistConsole : ConsoleCmdAbstract
+    public class CommandWatchListConsole : ConsoleCmdAbstract
     {
         public override string GetDescription()
         {
@@ -20,9 +20,9 @@ namespace ServerTools
                    "  5. st-wl list\n" +
                    "1. Turn off watch list\n" +
                    "2. Turn on watch list\n" +
-                   "3. Adds a steamID  and name to the Watchlist\n" +
-                   "4. Removes a steamID from the Ping Watchlist\n" +
-                   "5. Lists all steamIDs that are on the Watchlist";
+                   "3. Adds a steam id and name to the watch list\n" +
+                   "4. Removes a steam id from the watch list\n" +
+                   "5. Lists all steam id that are on the watch list";
         }
 
         public override string[] GetCommands()
@@ -41,10 +41,11 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (Watchlist.IsEnabled)
+                    if (WatchList.IsEnabled)
                     {
-                        Watchlist.IsEnabled = false;
+                        WatchList.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list has been set to off"));
                         return;
                     }
@@ -56,10 +57,11 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (!Watchlist.IsEnabled)
+                    if (!WatchList.IsEnabled)
                     {
-                        Watchlist.IsEnabled = true;
+                        WatchList.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list has been set to on"));
                         return;
                     }
@@ -81,17 +83,17 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add SteamId: Invalid SteamId {0}", _params[1]));
                         return;
                     }
-                    if (Watchlist.Dict.ContainsKey(_params[1]))
+                    if (WatchList.Dict.ContainsKey(_params[1]))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add SteamId. {0} is already in the Watchlist.", _params[1]));
                         return;
                     }
                     if (_params.Count == 3)
                     {
-                        Watchlist.Dict.Add(_params[1], _params[2]);
+                        WatchList.Dict.Add(_params[1], _params[2]);
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added SteamId {0} with the reason {1} the Watchlist.", _params[1], _params[2]));
                     }
-                    Watchlist.UpdateXml();
+                    WatchList.UpdateXml();
                 }
                 else if (_params[0].ToLower().Equals("remove"))
                 {
@@ -100,14 +102,14 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-                    if (!Watchlist.Dict.ContainsKey(_params[1]))
+                    if (!WatchList.Dict.ContainsKey(_params[1]))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] SteamId {0} was not found", _params[1]));
                         return;
                     }
-                    Watchlist.Dict.Remove(_params[1]);
+                    WatchList.Dict.Remove(_params[1]);
                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed SteamId {0} from the Watchlist", _params[1]));
-                    Watchlist.UpdateXml();
+                    WatchList.UpdateXml();
                 }
                 else if (_params[0].ToLower().Equals("list"))
                 {
@@ -116,12 +118,12 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
-                    if (Watchlist.Dict.Count < 1)
+                    if (WatchList.Dict.Count < 1)
                     {
                         SdtdConsole.Instance.Output("[SERVERTOOLS] There are no steamIds on the Watchlist");
                         return;
                     }
-                    foreach (KeyValuePair<string, string> _key in Watchlist.Dict)
+                    foreach (KeyValuePair<string, string> _key in WatchList.Dict)
                     {
                         string _output = string.Format("{0} {1}", _key.Key, _key.Value);
                         SdtdConsole.Instance.Output(_output);

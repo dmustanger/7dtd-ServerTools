@@ -43,12 +43,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="src\AntiCheat\DupeLog.cs" />
-    <Compile Include="src\AntiCheat\BlockChange.cs" />
-    <Compile Include="src\AntiCheat\DamageDetector.cs" />
-    <Compile Include="src\AntiCheat\PlayerChecks.cs" />
+    <Compile Include="src\AntiCheat\DupeLog\DupeLog.cs" />
+    <Compile Include="src\AntiCheat\BlockChange\BlockChange.cs" />
+    <Compile Include="src\AntiCheat\DamageDetector\DamageDetector.cs" />
+    <Compile Include="src\AntiCheat\PlayerChecks\PlayerChecks.cs" />
+    <Compile Include="src\ConsoleCommands\BlockChatCommandConsole.cs" />
+    <Compile Include="src\ConsoleCommands\CleanBinConsole.cs" />
+    <Compile Include="src\ConsoleCommands\ClientConsoleCommandConsole.cs" />
     <Compile Include="src\ConsoleCommands\DeletePlayerDataConsole.cs" />
     <Compile Include="src\ConsoleCommands\FlyingConsole.cs" />
+    <Compile Include="src\ConsoleCommands\GiveExpConsole.cs" />
     <Compile Include="src\ConsoleCommands\GodmodeDetectorConsole.cs" />
     <Compile Include="src\ConsoleCommands\LogConsole.cs" />
     <Compile Include="src\ConsoleCommands\MazeConsole.cs" />
@@ -62,6 +66,7 @@
     <Compile Include="src\ConsoleCommands\SecureLootAccessConsole.cs" />
     <Compile Include="src\ConsoleCommands\ScoutPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\SpawnActiveBlocks.cs" />
+    <Compile Include="src\ConsoleCommands\TestConsole.cs" />
     <Compile Include="src\ConsoleCommands\WaypointsConsole.cs" />
     <Compile Include="src\ConsoleCommands\WebPanelConsole.cs" />
     <Compile Include="src\Functions\EventSchedule.cs" />
@@ -71,14 +76,18 @@
     <Compile Include="src\PersistentOperations\ProcessDamage.cs" />
     <Compile Include="src\Serialize\ItemStackSerializable.cs" />
     <Compile Include="src\Tools\AutoBackup\AutoBackup.cs" />
+    <Compile Include="src\Tools\AutoPartyInvite\AutoPartyInvite.cs" />
+    <Compile Include="src\Tools\DroppedBagProtection\DroppedBagProtection.cs" />
     <Compile Include="src\Tools\Bank\Bank.cs" />
     <Compile Include="src\Tools\BlockLogger\BlockLogger.cs" />
     <Compile Include="src\Tools\BloodmoonWarrior\BloodmoonWarrior.cs" />
     <Compile Include="src\Tools\BreakTime\BreakTime.cs" />
     <Compile Include="src\Tools\ChatColor\ColorList.cs" />
+    <Compile Include="src\Tools\CleanBin\CleanBin.cs" />
     <Compile Include="src\Tools\ConsoleCommandLog\Console_Command_Log.cs" />
     <Compile Include="src\Tools\DiscordBot\DiscordBot.cs" />
     <Compile Include="src\Tools\FallingBlocks\FallingBlocks.cs" />
+    <Compile Include="src\Tools\Gamble\Gamble.cs" />
     <Compile Include="src\Tools\LevelUp\LevelUp.cs" />
     <Compile Include="src\Tools\Market\Market.cs" />
     <Compile Include="src\Tools\NewPlayerProtection\NewPlayerProtection.cs" />
@@ -174,14 +183,14 @@
     <Compile Include="src\PersistentData\StateManager.cs" />
     <Compile Include="src\Tools\ExitCommand\ExitCommand.cs" />
     <Compile Include="src\Tools\Hardcore\Hardcore.cs" />
-    <Compile Include="src\AntiCheat\CredentialCheck.cs" />
-    <Compile Include="src\AntiCheat\TeleportCheck.cs" />
+    <Compile Include="src\AntiCheat\Credentials\Credentials.cs" />
+    <Compile Include="src\AntiCheat\TeleportCheck\TeleportCheck.cs" />
     <Compile Include="src\Tools\SleeperRespawn\SleeperRespawn.cs" />
     <Compile Include="src\Tools\WebPanel\WebPanel.cs" />
     <Compile Include="src\Tools\WorldRadius\WorldRadius.cs" />
-    <Compile Include="src\AntiCheat\PlayerStats.cs" />
-    <Compile Include="src\AntiCheat\PlayerLogs.cs" />
-    <Compile Include="src\AntiCheat\InvalidItems.cs" />
+    <Compile Include="src\AntiCheat\PlayerStats\PlayerStats.cs" />
+    <Compile Include="src\AntiCheat\PlayerLogs\PlayerLogs.cs" />
+    <Compile Include="src\AntiCheat\InvalidItems\InvalidItems.cs" />
     <Compile Include="src\Tools\Prayer\Prayer.cs" />
     <Compile Include="src\Tools\Tracking\Tracking.cs" />
     <Compile Include="src\Tools\Zones\Zones.cs" />
@@ -197,7 +206,7 @@
     <Compile Include="src\Tools\AdminList\AdminList.cs" />
     <Compile Include="src\Tools\Died\Died.cs" />
     <Compile Include="src\Tools\Bloodmoon\Bloodmoon.cs" />
-    <Compile Include="src\Tools\AnimalTracking\Animals.cs" />
+    <Compile Include="src\Tools\AnimalTracking\AnimalTracking.cs" />
     <Compile Include="src\Tools\Day7\Day7.cs" />
     <Compile Include="src\Tools\KickVote\KickVote.cs" />
     <Compile Include="src\Tools\Location\Loc.cs" />
@@ -257,13 +266,13 @@
     <Compile Include="src\Tools\NewPlayer\NewPlayer.cs" />
     <Compile Include="src\Tools\NewSpawnTele\NewSpawnTele.cs" />
     <Compile Include="src\ConsoleCommands\ResetPlayerConsole.cs" />
-    <Compile Include="src\ConsoleCommands\WatchlistConsole.cs" />
+    <Compile Include="src\ConsoleCommands\WatchListConsole.cs" />
     <Compile Include="src\Tools\ReservedSlots\ReservedSlots.cs" />
     <Compile Include="src\Tools\StartingItems\StartingItems.cs" />
     <Compile Include="src\Tools\StopServer\StopServer.cs" />
     <Compile Include="src\Tools\Teleportation\Teleportation.cs" />
     <Compile Include="src\Tools\VoteReward\VoteReward.cs" />
-    <Compile Include="src\Tools\Watchlist\Watchlist.cs" />
+    <Compile Include="src\Tools\Watchlist\WatchList.cs" />
     <Compile Include="src\Tools\Waypoints\Waypoints.cs" />
     <Compile Include="src\WebAPI\MimeType.cs" />
     <Compile Include="src\WebAPI\WebAPI.cs" />

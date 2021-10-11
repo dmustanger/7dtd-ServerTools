@@ -43,36 +43,36 @@ namespace ServerTools
                     }
                     if (_params[1].Length < 1 || _params[1].Length > 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id: Invalid Id {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add. Invalid id {0}", _params[1]));
                         return;
                     }
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     if (_cInfo != null)
                     {
-                        if (CredentialCheck.Dict.ContainsKey(_cInfo.playerId))
+                        if (Credentials.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id. {0} is already in the Family Share list.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add. {0} is already in the family share list", _params[1]));
                             return;
                         }
-                        CredentialCheck.Dict.Add(_cInfo.playerId, _cInfo.playerName);
-                        CredentialCheck.UpdateXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added Id {0} with the name of {1} to the Family Share list.", _params[1], _params[2]));
+                        Credentials.Dict.Add(_cInfo.playerId, _cInfo.playerName);
+                        Credentials.UpdateXml();
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added id {0} with the name of {1} to the family share list", _params[1], _params[2]));
                     }
                     else
                     {
                         if (_params[1].Length > 17)
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id: Invalid Id {0}", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add. Invalid Id: {0}", _params[1]));
                             return;
                         }
-                        if (CredentialCheck.Dict.ContainsKey(_params[1]))
+                        if (Credentials.Dict.ContainsKey(_params[1]))
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id. {0} is already in the Family Share list.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add. Id {0} is already in the family share list", _params[1]));
                             return;
                         }
-                        CredentialCheck.Dict.Add(_params[1], _params[2]);
-                        CredentialCheck.UpdateXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added Id {0} with the name of {1} to the Family Share list.", _params[1], _params[2]));
+                        Credentials.Dict.Add(_params[1], _params[2]);
+                        Credentials.UpdateXml();
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added Id {0} with the name of {1} to the family share list", _params[1], _params[2]));
                     }
                 }
                 else if (_params[0].ToLower().Equals("remove"))
@@ -84,32 +84,32 @@ namespace ServerTools
                     }
                     if (_params[1].Length < 1 || _params[1].Length > 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not remove Id: Invalid Id {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not remove. Invalid id {0}", _params[1]));
                         return;
                     }
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     if (_cInfo != null)
                     {
-                        if (!CredentialCheck.Dict.ContainsKey(_cInfo.playerId))
+                        if (!Credentials.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} was not found on the Family Share list.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} was not found on the family share list", _params[1]));
                             return;
                         }
-                        CredentialCheck.Dict.Remove(_cInfo.playerId);
-                        CredentialCheck.UpdateXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed Id {0} from Family Share list.", _params[1]));
+                        Credentials.Dict.Remove(_cInfo.playerId);
+                        Credentials.UpdateXml();
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed id {0} from family share list", _params[1]));
                     }
                     else
                     {
-                        if (CredentialCheck.Dict.ContainsKey(_params[1]))
+                        if (Credentials.Dict.ContainsKey(_params[1]))
                         {
-                            CredentialCheck.Dict.Remove(_params[1]);
-                            CredentialCheck.UpdateXml();
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed Id {0} from Family Share list.", _params[1]));
+                            Credentials.Dict.Remove(_params[1]);
+                            Credentials.UpdateXml();
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed id {0} from family share list", _params[1]));
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} was not found on the Family Share list.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} was not found on the family share list", _params[1]));
                         }
                     }
                 }
@@ -117,21 +117,21 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
-                    if (CredentialCheck.Dict.Count == 0)
+                    if (Credentials.Dict.Count == 0)
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] There are no players on the Family Share list.");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] There are no players on the family share list");
                         return;
                     }
                     else
                     {
-                        foreach (var _key in CredentialCheck.Dict)
+                        foreach (var key in Credentials.Dict)
                         {
-                            if (CredentialCheck.Dict.TryGetValue(_key.Key, out string _name))
+                            if (Credentials.Dict.TryGetValue(key.Key, out string name))
                             {
-                                SdtdConsole.Instance.Output(string.Format("{0} {1}", _key.Key, _name));
+                                SdtdConsole.Instance.Output(string.Format("{0} {1}", key.Key, name));
                             }
                         }
                     }

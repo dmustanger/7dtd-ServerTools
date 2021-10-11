@@ -44,6 +44,7 @@ namespace ServerTools
                     {
                         ClanManager.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan manager has been set to off"));
                         return;
                     }
@@ -59,6 +60,7 @@ namespace ServerTools
                     {
                         ClanManager.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan manager has been set to on"));
                         return;
                     }

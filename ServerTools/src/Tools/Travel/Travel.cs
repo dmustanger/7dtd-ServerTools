@@ -49,68 +49,74 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-            if (_childNodes != null && _childNodes.Count > 0)
+            bool upgrade = true;
+            XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+            if (childNodes != null && childNodes.Count > 0)
             {
                 Dict.Clear();
                 Destination.Clear();
-                for (int i = 0; i < _childNodes.Count; i++)
+                for (int i = 0; i < childNodes.Count; i++)
                 {
-                    if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                    if (childNodes[i].NodeType != XmlNodeType.Comment)
                     {
-                        XmlElement _line = (XmlElement)_childNodes[i];
-                        if (_line.HasAttributes)
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (line.HasAttributes)
                         {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                            if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                             {
-                                UpgradeXml(_childNodes);
-                                return;
+                                upgrade = false;
+                                continue;
                             }
-                            else if (_line.HasAttribute("Name") && _line.HasAttribute("Corner1") && _line.HasAttribute("Corner2") && _line.HasAttribute("Destination"))
+                            else if (line.HasAttribute("Name") && line.HasAttribute("Corner1") && line.HasAttribute("Corner2") && line.HasAttribute("Destination"))
                             {
-                                string _name = _line.GetAttribute("Name");
-                                string[] _corner1 = _line.GetAttribute("Corner1").Split(',');
-                                string[] _corner2 = _line.GetAttribute("Corner2").Split(',');
-                                string _destination = _line.GetAttribute("Destination");
-                                int.TryParse(_corner1[0], out int _x1);
-                                int.TryParse(_corner1[1], out int _y1);
-                                int.TryParse(_corner1[2], out int _z1);
-                                int.TryParse(_corner2[0], out int _x2);
-                                int.TryParse(_corner2[1], out int _y2);
-                                int.TryParse(_corner2[2], out int _z2);
-                                if (_x1 > _x2)
+                                string name = line.GetAttribute("Name");
+                                string[] corner1 = line.GetAttribute("Corner1").Split(',');
+                                string[] corner2 = line.GetAttribute("Corner2").Split(',');
+                                string destination = line.GetAttribute("Destination");
+                                int.TryParse(corner1[0], out int x1);
+                                int.TryParse(corner1[1], out int y1);
+                                int.TryParse(corner1[2], out int z1);
+                                int.TryParse(corner2[0], out int x2);
+                                int.TryParse(corner2[1], out int y2);
+                                int.TryParse(corner2[2], out int z2);
+                                if (x1 > x2)
                                 {
-                                    int _switch = _x2;
-                                    _x2 = _x1;
-                                    _x1 = _switch;
+                                    int alt = x2;
+                                    x2 = x1;
+                                    x1 = alt;
                                 }
-                                if (_y1 > _y2)
+                                if (y1 > y2)
                                 {
-                                    int _switch = _y2;
-                                    _y2 = _y1;
-                                    _y1 = _switch;
+                                    int alt = y2;
+                                    y2 = y1;
+                                    y1 = alt;
                                 }
-                                if (_y1 == _y2)
+                                if (y1 == y2)
                                 {
-                                    _y2++;
+                                    y2++;
                                 }
-                                if (_z1 > _z2)
+                                if (z1 > z2)
                                 {
-                                    int _switch = _z2;
-                                    _z2 = _z1;
-                                    _z1 = _switch;
+                                    int alt = z2;
+                                    z2 = z1;
+                                    z1 = alt;
                                 }
-                                string _c1 = _x1 + "," + _y1 + "," + _z1;
-                                string _c2 = _x2 + "," + _y2 + "," + _z2;
-                                string[] box = { _c1, _c2, _destination };
-                                if (!Dict.ContainsKey(_name))
+                                string c1 = x1 + "," + y1 + "," + z1;
+                                string c2 = x2 + "," + y2 + "," + z2;
+                                string[] box = { c1, c2, destination };
+                                if (!Dict.ContainsKey(name))
                                 {
-                                    Dict.Add(_name, box);
+                                    Dict.Add(name, box);
                                 }
                             }
                         }
                     }
                 }
+            }
+            if (childNodes != null && upgrade)
+            {
+                UpgradeXml(childNodes);
+                return;
             }
         }
 

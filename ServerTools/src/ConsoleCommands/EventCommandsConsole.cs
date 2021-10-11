@@ -188,7 +188,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-                    if (!int.TryParse(_params[1], out int _time))
+                    if (!int.TryParse(_params[1], out int time))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid time: {0}", _params[1]));
                         return;
@@ -197,9 +197,9 @@ namespace ServerTools
                     {
                         if (Event.Operator == _steamId)
                         {
-                            int _addTime = Timers._eventTime + (_time * 60);
-                            Timers._eventTime = _addTime;
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The event time has been extended {0} minutes", _time));
+                            int addTime = Timers.eventTime + (time * 60);
+                            Timers.eventTime = addTime;
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The event time has been extended {0} minutes", time));
                             return;
                         }
                         else

@@ -1985,6 +1985,10 @@ namespace ServerTools
 				"application/x-safari-webarchive"
 			},
 			{
+				".webp",
+				"image/webp"
+			},
+			{
 				".webtest",
 				"application/xml"
 			},
@@ -2059,6 +2063,10 @@ namespace ServerTools
 			{
 				".wmz",
 				"application/x-ms-wmz"
+			},
+			{
+				".woff2",
+				"font/woff2"
 			},
 			{
 				".wpl",

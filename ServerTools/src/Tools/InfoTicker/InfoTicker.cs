@@ -9,8 +9,7 @@ namespace ServerTools
     public class InfoTicker
     {
         public static bool IsEnabled = false, IsRunning = false, Random = false;
-        public static string Command_infoticker = "infoticker";
-        public static int Delay = 60;
+        public static string Command_infoticker = "infoticker", Delay = "60";
         public static List<string> ExemptionList = new List<string>();
 
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();
@@ -51,26 +50,27 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
                     Dict.Clear();
                     MsgList.Clear();
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_childNodes[i];
-                            if (_line.HasAttributes)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    UpgradeXml(_childNodes);
-                                    return;
+                                    upgrade = false;
+                                    continue;
                                 }
-                                else if (_line.HasAttribute("Message"))
+                                else if (line.HasAttribute("Message"))
                                 {
-                                    string _message = _line.GetAttribute("Message");
+                                    string _message = line.GetAttribute("Message");
                                     if (!Dict.ContainsKey(_message))
                                     {
                                         Dict.Add(_message, null);
@@ -79,10 +79,15 @@ namespace ServerTools
                             }
                         }
                     }
+                    if (Dict.Count > 0)
+                    {
+                        BuildList();
+                    }
                 }
-                if (Dict.Count > 0)
+                if (childNodes != null && upgrade)
                 {
-                    BuildList();
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)
@@ -150,6 +155,66 @@ namespace ServerTools
                 UpdateXml();
             }
             LoadXml();
+        }
+
+        public static void SetDelay()
+        {
+            if (EventSchedule.infoTicker != Delay)
+            {
+                EventSchedule.infoTicker = Delay;
+                if (Delay.Contains(",") && Delay.Contains(":"))
+                {
+                    string[] times = Delay.Split(',');
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
+                        {
+                            if (DateTime.Now < time)
+                            {
+                                EventSchedule.Add("InfoTicker", time);
+                                return;
+                            }
+                        }
+                    }
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
+                        {
+                            if (DateTime.Now < time)
+                            {
+                                EventSchedule.Add("InfoTicker", time);
+                                return;
+                            }
+                        }
+                    }
+                }
+                else if (Delay.Contains(":"))
+                {
+                    if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Delay + ":00", out DateTime time))
+                    {
+                        if (DateTime.Now < time)
+                        {
+                            EventSchedule.Add("InfoTicker", time);
+                        }
+                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Delay + ":00", out DateTime secondaryTime))
+                        {
+                            EventSchedule.Add("InfoTicker", secondaryTime);
+                        }
+                    }
+                }
+                else
+                {
+                    if (int.TryParse(Delay, out int delay))
+                    {
+                        EventSchedule.Add("InfoTicker", DateTime.Now.AddMinutes(delay));
+                    }
+                    else
+                    {
+                        Log.Out("[SERVERTOOLS] Invalid Info_Ticker Delay detected. Use a single integer, 24h time or multiple 24h time entries");
+                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                    }
+                }
+            }
         }
 
         public static void Exec()

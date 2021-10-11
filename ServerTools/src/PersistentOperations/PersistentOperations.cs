@@ -14,10 +14,10 @@ namespace ServerTools
 
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static Dictionary<int, int> EntityId = new Dictionary<int, int>();
-
         public static Dictionary<int, int> PvEViolations = new Dictionary<int, int>();
 
         public static List<ClientInfo> NewPlayerQue = new List<ClientInfo>();
+        public static List<ClientInfo> BlockChatCommands = new List<ClientInfo>();
 
         public static readonly string AlphaNumSet = "jJkqQr9Kl3wXAbyYz0ZLmFpPRsMn5NoO6dDe1EfStaBc2CgGhH7iITu4U8vWxV";
         public static readonly char[] InvalidPrefix = new char[] { '!', '@', '#', '$', '%', '&', '/', '\\' };
@@ -237,10 +237,20 @@ namespace ServerTools
 
         public static Entity GetEntity(int _id)
         {
-            Entity _entity = GameManager.Instance.World.GetEntity(_id);
-            if (_entity != null)
+            Entity entity = GameManager.Instance.World.GetEntity(_id);
+            if (entity != null)
             {
-                return _entity;
+                return entity;
+            }
+            return null;
+        }
+
+        public static EntityZombie GetZombie(int _id)
+        {
+            Entity entity = GameManager.Instance.World.GetEntity(_id);
+            if (entity != null && entity is EntityZombie)
+            {
+                return entity as EntityZombie;
             }
             return null;
         }

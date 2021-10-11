@@ -60,11 +60,11 @@ namespace ServerTools
                         }
                     }
                 }
-                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Loot access set for {0}", _senderInfo.RemoteClientInfo.playerId));
+                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Secure loot access set for {0} in all loaded areas. Unloaded areas have not changed", _senderInfo.RemoteClientInfo.playerId));
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in SecureChestAccess.Execute: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in SecureLootAccessConsole.Execute: {0}", e.Message));
             }
         }
     }

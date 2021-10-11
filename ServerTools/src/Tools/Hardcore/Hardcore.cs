@@ -6,7 +6,7 @@ namespace ServerTools
 {
     class Hardcore
     {
-        public static bool IsEnabled = false, Optional = false;
+        public static bool IsEnabled = false, Optional = true;
         public static int Max_Deaths = 9, Max_Extra_Lives = 3, Life_Price = 2000;
         public static string Command_top3 = "top3", Command_score = "score", Command_buy_life = "buy life", Command_hardcore = "hardcore", Command_hardcore_on = "hardcore on";
 

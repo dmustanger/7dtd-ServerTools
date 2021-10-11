@@ -50,48 +50,58 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
                     Dict.Clear();
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_childNodes[i];
-                            if (_line.HasAttributes)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    UpgradeXml(_childNodes);
-                                    return;
+                                    upgrade = false;
+                                    continue;
                                 }
-                                else if (_line.HasAttribute("Trigger") && _line.HasAttribute("Command") && _line.HasAttribute("DelayBetweenUses") && _line.HasAttribute("Hidden") &&
-                                    _line.HasAttribute("Permission") && _line.HasAttribute("Cost"))
+                                else if (line.HasAttribute("Trigger") && line.HasAttribute("Command") && line.HasAttribute("DelayBetweenUses") && line.HasAttribute("Hidden") &&
+                                    line.HasAttribute("Permission") && line.HasAttribute("Cost"))
                                 {
-                                    string _trigger = _line.GetAttribute("Trigger");
-                                    string _command = _line.GetAttribute("Command");
-                                    string _delay = _line.GetAttribute("DelayBetweenUses");
-                                    string _hidden = _line.GetAttribute("Hidden");
-                                    string _permission = _line.GetAttribute("Permission");
-                                    if (!int.TryParse(_line.GetAttribute("Cost"), out int _cost))
+                                    string trigger = line.GetAttribute("Trigger");
+                                    string command = line.GetAttribute("Command");
+                                    string delay = line.GetAttribute("DelayBetweenUses");
+                                    string hidden = line.GetAttribute("Hidden");
+                                    if (!bool.TryParse(line.GetAttribute("Permission").ToLower(), out bool permission))
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring CustomCommands.xml entry. Invalid (non-numeric) value for 'Cost' attribute: {0}", _line.OuterXml));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring CustomCommands.xml entry. Invalid (true/false) value for 'Permission' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    string[] _c = { _command, _delay, _hidden, _permission, _cost.ToString() };
-                                    if (!Dict.ContainsKey(_trigger))
+                                    if (!int.TryParse(line.GetAttribute("Cost"), out int cost))
                                     {
-                                        Dict.Add(_trigger, _c);
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring CustomCommands.xml entry. Invalid (non-numeric) value for 'Cost' attribute: {0}", line.OuterXml));
+                                        continue;
                                     }
-                                    if (_permission.ToLower() == "true" && !GameManager.Instance.adminTools.GetCommands().ContainsKey(_trigger))
+                                    string[] c = { command, delay, hidden, permission.ToString(), cost.ToString() };
+                                    if (!Dict.ContainsKey(trigger))
                                     {
-                                        GameManager.Instance.adminTools.AddCommandPermission(_trigger, 0, true);
+                                        Dict.Add(trigger, c);
+                                        if (!GameManager.Instance.adminTools.GetCommands().ContainsKey(trigger))
+                                        {
+                                            GameManager.Instance.adminTools.AddCommandPermission(trigger, 0, true);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                }
+                if (childNodes != null && upgrade)
+                {
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)
@@ -274,15 +284,15 @@ namespace ServerTools
                         _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, RestartVote.Command_restartvote);
                     }
                 }
-                if (Animals.IsEnabled)
+                if (AnimalTracking.IsEnabled)
                 {
-                    if (Animals.Command_trackanimal != "")
+                    if (AnimalTracking.Command_trackanimal != "")
                     {
-                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Animals.Command_trackanimal);
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, AnimalTracking.Command_trackanimal);
                     }
-                    if (Animals.Command_track != "")
+                    if (AnimalTracking.Command_track != "")
                     {
-                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Animals.Command_track);
+                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, AnimalTracking.Command_track);
                     }
                 }
                 if (_commands.Length >= 100)
@@ -762,7 +772,7 @@ namespace ServerTools
                         }
                     }
                 }
-                if (_commands.Length >= 0)
+                if (_commands.Length > 0)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -796,7 +806,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (_commands.Length >= 0)
+                    if (_commands.Length > 0)
                     {
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -835,7 +845,7 @@ namespace ServerTools
                         _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, NewSpawnTele.Command_setspawn);
                     }
                 }
-                if (_commands.Length >= 0)
+                if (_commands.Length > 0)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -850,23 +860,23 @@ namespace ServerTools
         {
             try
             {
-                if (Dict.TryGetValue(_command, out string[] _c))
+                if (Dict.TryGetValue(_command, out string[] c))
                 {
-                    int.TryParse(_c[1], out int _delay);
-                    int.TryParse(_c[4], out int _cost);
-                    bool _permission = bool.Parse(_c[3]);
+                    int.TryParse(c[1], out int delay);
+                    int.TryParse(c[4], out int cost);
+                    bool _permission = bool.Parse(c[3]);
                     if (_permission && !Permission(_cInfo, _command))
                     {
-                        return;
+                        return; 
                     }
                     if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_command))
                     {
-                        DateTime _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_command];
-                        Delay(_cInfo, _command, _delay, _cost, _lastUse);
+                        DateTime lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_command];
+                        Delay(_cInfo, _command, delay, cost, lastUse);
                     }
                     else
                     {
-                        Delay(_cInfo, _command, _delay, _cost, DateTime.MinValue);
+                        Delay(_cInfo, _command, delay, cost, DateTime.MinValue);
                     }
                 }
             }
@@ -880,8 +890,12 @@ namespace ServerTools
         {
             try
             {
-                string[] _commands = { _command };
-                if (GameManager.Instance.adminTools.CommandAllowedFor(_commands, _cInfo))
+                if (!GameManager.Instance.adminTools.GetCommands().ContainsKey(_command))
+                {
+                    GameManager.Instance.adminTools.AddCommandPermission(_command, 0, true);
+                }
+                string[] commands = { _command };
+                if (GameManager.Instance.adminTools.CommandAllowedFor(commands, _cInfo))
                 {
                     return true;
                 }

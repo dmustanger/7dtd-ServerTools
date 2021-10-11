@@ -48,6 +48,7 @@ namespace ServerTools
                     {
                         AutoBackup.IsEnabled = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auto backup has been set to off"));
                         return;
                     }
@@ -63,6 +64,7 @@ namespace ServerTools
                     {
                         AutoBackup.IsEnabled = true;
                         Config.WriteXml();
+                        Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auto backup has been set to on"));
                         return;
                     }

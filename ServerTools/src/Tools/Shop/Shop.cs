@@ -51,84 +51,90 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                XmlNodeList _childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (_childNodes != null && _childNodes.Count > 0)
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null && childNodes.Count > 0)
                 {
                     Dict.Clear();
                     Categories.Clear();
-                    for (int i = 0; i < _childNodes.Count; i++)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_childNodes[i];
-                            if (_line.HasAttributes)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                if (_line.HasAttribute("Version") && _line.GetAttribute("Version") != Config.Version)
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    UpgradeXml(_childNodes);
-                                    return;
+                                    upgrade = false;
+                                    continue;
                                 }
-                                else if (_line.HasAttribute("Name") && _line.HasAttribute("Count") && _line.HasAttribute("Quality") &&
-                                    _line.HasAttribute("Price") && _line.HasAttribute("Category"))
+                                else if (line.HasAttribute("Name") && line.HasAttribute("Count") && line.HasAttribute("Quality") &&
+                                    line.HasAttribute("Price") && line.HasAttribute("Category"))
                                 {
-                                    if (!int.TryParse(_line.GetAttribute("Count"), out int _count))
+                                    if (!int.TryParse(line.GetAttribute("Count"), out int count))
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop.xml entry. Invalid (non-numeric) value for 'Count' attribute: {0}", _line.OuterXml));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop.xml entry. Invalid (non-numeric) value for 'Count' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    if (!int.TryParse(_line.GetAttribute("Quality"), out int _quality))
+                                    if (!int.TryParse(line.GetAttribute("Quality"), out int quality))
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop.xml entry. Invalid (non-numeric) value for 'Quality' attribute: {0}", _line.OuterXml));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop.xml entry. Invalid (non-numeric) value for 'Quality' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    if (!int.TryParse(_line.GetAttribute("Price"), out int _price))
+                                    if (!int.TryParse(line.GetAttribute("Price"), out int price))
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop.xml entry. Invalid (non-numeric) value for 'Price' attribute: {0}", _line.OuterXml));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop.xml entry. Invalid (non-numeric) value for 'Price' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    string _name = _line.GetAttribute("Name");
-                                    string _secondaryname;
-                                    if (_line.HasAttribute("SecondaryName"))
+                                    string name = line.GetAttribute("Name");
+                                    string secondaryname;
+                                    if (line.HasAttribute("SecondaryName"))
                                     {
-                                        _secondaryname = _line.GetAttribute("SecondaryName");
+                                        secondaryname = line.GetAttribute("SecondaryName");
                                     }
                                     else
                                     {
-                                        _secondaryname = _name;
+                                        secondaryname = name;
                                     }
-                                    ItemValue _itemValue = ItemClass.GetItem(_name, false);
-                                    if (_itemValue.type == ItemValue.None.type)
+                                    ItemValue itemValue = ItemClass.GetItem(name, false);
+                                    if (itemValue.type == ItemValue.None.type)
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop.xml entry. Item could not be found: {0}", _name));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop.xml entry. Item could not be found: {0}", name));
                                         continue;
                                     }
-                                    if (_count > _itemValue.ItemClass.Stacknumber.Value)
+                                    if (count > itemValue.ItemClass.Stacknumber.Value)
                                     {
-                                        _count = _itemValue.ItemClass.Stacknumber.Value;
+                                        count = itemValue.ItemClass.Stacknumber.Value;
                                     }
-                                    string _category = _line.GetAttribute("Category").ToLower();
-                                    if (!Categories.Contains(_category))
+                                    if (quality < 1)
                                     {
-                                        Categories.Add(_category);
+                                        quality = 1;
                                     }
-                                    if (_quality < 1)
+                                    else if (quality > 600)
                                     {
-                                        _quality = 1;
+                                        quality = 600;
                                     }
-                                    else if (_quality > 600)
+                                    string category = line.GetAttribute("Category").ToLower();
+                                    int id = Dict.Count + 1;
+                                    string[] item = new string[] { id.ToString(), name, secondaryname, count.ToString(), quality.ToString(), price.ToString(), category };
+                                    if (!Dict.Contains(item))
                                     {
-                                        _quality = 600;
-                                    }
-                                    int _id = Dict.Count + 1;
-                                    string[] _item = new string[] { _id.ToString(), _name, _secondaryname, _count.ToString(), _quality.ToString(), _price.ToString(), _category };
-                                    if (!Dict.Contains(_item))
-                                    {
-                                        Dict.Add(_item);
+                                        if (!Categories.Contains(category))
+                                        {
+                                            Categories.Add(category);
+                                        }
+                                        Dict.Add(item);
                                     }
                                 }
                             }
                         }
                     }
+                }
+                if (childNodes != null && upgrade)
+                {
+                    UpgradeXml(childNodes);
+                    return;
                 }
             }
             catch (Exception e)

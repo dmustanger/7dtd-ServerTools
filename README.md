@@ -30,9 +30,9 @@ accessive player stats such as height, speed, jump strength, max stamina, max he
 <br>
 Crendentials can be checked for internal IP address, family share accounts, invalid steam id.<br>
 <br>
-Logs all player's inventory to a file for later review. Set the time between loggings. Default is once per minute.<br>
+Logs all player's to a file for later review. Set the time between loggings. Default is once per minute.<br>
 <br>
-Records player's IP address, region and location to the inventory log.<br>
+Records player's IP address, region and location to the log.<br>
 <br>
 Records identical items and stacks found in a players inventory. These are not necessarily duped but this gives a record.<br>
 <br>
@@ -48,29 +48,29 @@ All Tools<br>
 Descriptions and further help for each of these tools are found in HowToSetup.txt
 <br>
 <br>
-Admin_Chat_Commands, Admin_List, Animal_Tracking, Auction, Auto_Backup, Auto_Save_World, Bad_Word_Filter, Bank,<br>
+Admin_Chat_Commands, Admin_List, Animal_Tracking, Auction, Auto_Backup, Auto_Save_World, Auto_Party_Invite, Bad_Word_Filter,<br>
 <br>
-Block_Logger, Bloodmoon, Bloodmoon_Warrior, Bounties, Break_Reminder, Chat_Color_Prefix, Chat_Command_Log,<br>
+Bank, Block_Logger, Bloodmoon, Bloodmoon_Warrior, Bounties, Break_Reminder, Chat_Color, Chat_Command_Log,<br>
 <br>
-Chat_Command_Response, Chat_Flood_Protection, Chat_Logger, Clan_Manager, Console_Command_Log, Country_Ban,<br>
+Chat_Command_Response, Chat_Flood_Protection, Chat_Logger, Clan_Manager, Clean_Bin, Console_Command_Log, Country_Ban,<br>
 <br>
-Credentials, Custom_Commands, Damage_Detector, Day7, Died, Discord_Bot, Dupe_Log, Entity_Cleanup, Exit_Command,<br>
+Credentials, Custom_Commands, Damage_Detector, Day7, Died, Discord_Bot, Dropped_Bag_Protection, Dupe_Log, Entity_Cleanup,<br>
 <br>
-Falling_Blocks_Remover, First_Claim_Block, Flying_Detector, FPS, Friend_Teleport, Gimme, Godmode_Detector, Hardcore,<br>
+Exit_Command, Falling_Blocks_Remover, First_Claim_Block, Flying_Detector, FPS, Friend_Teleport, Gamble, Gimme,<br>
 <br>
-High_Ping_Kicker, Homes, Hordes, Info_Ticker, Invalid_Items, Invalid_Item_Stack, Jail, Kick_Vote, Kill_Notice,<br>
+Godmode_Detector, Hardcore, High_Ping_Kicker, Homes, Hordes, Info_Ticker, Invalid_Items, Invalid_Item_Stack, Jail, Kick_Vote,<br>
 <br>
-Lobby. Location, Login_Notice, Log Clean Up, Lottery, Market, Message_Color, Motd, Mute, Mute_Vote, New_Player,<br>
+Kill_Notice, Level_Up, Lobby, Location, Login_Notice, Log Clean Up, Lottery, Market, Message_Color, Motd, Mute, Mute_Vote,<br>
 <br>
-New_Spawn_Tele, Night_Alert, Normal_Player_Color_Prefix, Player_List, Player_Logs, Player_Stats, POI_Protection,<br>
+New_Player, New_Player_Protection, New_Spawn_Tele, Night_Alert, No_Vehicle_Pickup, Normal_Player_Color_Prefix, Player_List,<br>
 <br>
-Poll, Prayer, Private_Message, Protected_Spaces, PvE_Violations, Real_World_Time, Report, Reserved_Slots,<br>
+Player_Logs, Player_Stats, POI_Protection, Poll, Prayer, Private_Message, Protected_Spaces, Public_Waypoints, PvE_Violations,<br>
 <br>
-Restart_Vote, Scout_Player, Shop, Shutdown, Sleeper_Respawn, Spectator_Detector, Starting_Items, Stuck, Suicide,<br>
+Real_World_Time, Report, Reserved_Slots, Restart_Vote, Scout_Player, Shop, Shutdown, Sleeper_Respawn, Spectator_Detector,<br>
 <br>
-Tracking, Travel, Vehicle_Teleport, Voting, Wallet, Watchlist, Waypoints, Weather_Vote, Web_API, Web_Panel,<br>
+Starting_Items, Stuck, Suicide, Tracking, Travel, Vehicle_Recall, Voting, Wallet, Watchlist, Waypoints, Weather_Vote,<br>
 <br>
-World_Radius, Zones<br>
+Web_API, Web_Panel, World_Radius, Zones<br>
 <br>
 <br> 
 <br>
