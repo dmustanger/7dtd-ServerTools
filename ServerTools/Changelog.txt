@@ -26,7 +26,7 @@ receive 25% extra experience when killing zombies
 -Added Gamble tool. Players can start a 50/50 draw. Winners have a choice
 of betting or accepting the winnings. Each round doubles the payout but
 reduces their chance of success
--Added option Lock_Out to Shutdown tool. Forces all loot, storage,
+-Added option UI_Lock to Shutdown tool. Forces all loot, storage,
 vehicles, traders and workstation to lock with no access for the last
 45 seconds of the shutdown process. Warning added at one minute mark
 -Added multiple new phrases
