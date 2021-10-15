@@ -113,7 +113,6 @@
     <Compile Include="src\ConsoleCommands\TeleportUnderPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\TrackingConsole.cs" />
     <Compile Include="src\ConsoleCommands\WorldRadiusConsole.cs" />
-    <Compile Include="src\ConsoleCommands\WeatherVoteConsole.cs" />
     <Compile Include="src\ConsoleCommands\WalletConsole.cs" />
     <Compile Include="src\ConsoleCommands\VoteConsole.cs" />
     <Compile Include="src\ConsoleCommands\TravelConsole.cs" />
@@ -222,7 +221,6 @@
     <Compile Include="src\Tools\RestartVote\RestartVote.cs" />
     <Compile Include="src\Tools\Homes\Homes.cs" />
     <Compile Include="src\Tools\Travel\Travel.cs" />
-    <Compile Include="src\Tools\WeatherVote\WeatherVote.cs" />
     <Compile Include="src\Tools\LoginNotice\LoginNotice.cs" />
     <Compile Include="src\Tools\Lottery\Lottery.cs" />
     <Compile Include="src\Tools\NightAlert\NightAlert.cs" />
@@ -308,13 +306,9 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="Noemax.GZip">
-      <HintPath>..\7dtd-binaries\Noemax.GZip.dll</HintPath>
-    </Reference>
     <Reference Include="Pathfinding.Ionic.Zip.Reduced, Version=1.9.1.9000, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\7dtd-ServerTools-master-18.0.3\7dtd-binaries\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\7dtd-binaries\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -325,6 +319,12 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.IO.Compression.ZipFile, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Compression.ZipFile.4.3.0\lib\net46\System.IO.Compression.ZipFile.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
     <Reference Include="System.Security.Cryptography.Algorithms" />
     <Reference Include="System.Security.Cryptography.Encoding" />
@@ -359,7 +359,9 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="bin\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.0.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.0.0\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -49,7 +49,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
@@ -68,13 +68,13 @@ namespace ServerTools
                                 {
                                     string name = line.GetAttribute("Name");
                                     string newName = line.GetAttribute("NewName");
-                                    ItemClass _class = ItemClass.GetItemClass(name, true);
-                                    if (_class == null)
+                                    ItemValue itemValue = ItemClass.GetItem(name, false);
+                                    if (itemValue.type == ItemValue.None.type)
                                     {
                                         Log.Out(string.Format("[SERVERTOOLS] Ignoring KillNotice.xml entry. Weapon not found: {0}", name));
                                         continue;
                                     }
-                                    if (!Dict.ContainsKey(name))
+                                    else if (!Dict.ContainsKey(name))
                                     {
                                         Dict.Add(name, newName);
                                     }
@@ -83,10 +83,33 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -105,6 +128,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<KillNotice>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- <Weapon Name=\"\" NewName=\"\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -288,38 +312,39 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<KillNotice>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- <Weapon Name=\"\" NewName=\"\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- <Weapon Name=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
+                    bool blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.Name == "Weapon")
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Weapon")
                             {
-                                _blank = false;
-                                string _name = "", _newName = "";
-                                if (_line.HasAttribute("Name"))
+                                blank = false;
+                                string name = "", newName = "";
+                                if (line.HasAttribute("Name"))
                                 {
-                                    _name = _line.GetAttribute("Name");
+                                    name = line.GetAttribute("Name");
                                 }
-                                if (_line.HasAttribute("NewName"))
+                                if (line.HasAttribute("NewName"))
                                 {
-                                    _newName = _line.GetAttribute("NewName");
+                                    newName = line.GetAttribute("NewName");
                                 }
-                                sw.WriteLine(string.Format("    <Weapon Name=\"{0}\" NewName=\"{1}\" />", _name, _newName));
+                                sw.WriteLine(string.Format("    <Weapon Name=\"{0}\" NewName=\"{1}\" />", name, newName));
                             }
                         }
                     }
-                    if (_blank)
+                    if (blank)
                     {
                         List<ItemClass> _itemClassMelee = ItemClass.GetItemsWithTag(FastTags.Parse("melee"));
                         List<ItemClass> _itemClassRanged = ItemClass.GetItemsWithTag(FastTags.Parse("ranged"));

@@ -48,7 +48,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
@@ -76,10 +76,33 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -98,7 +121,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<BadWordFilter>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Bad Word=\"cracker\" /> -->");
+                    sw.WriteLine("<!-- <Bad Word=\"\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -107,10 +130,6 @@ namespace ServerTools
                         {
                             sw.WriteLine(string.Format("    <Bad Word=\"{0}\" />", Dict[i]));
                         }
-                    }
-                    else
-                    {
-                        sw.WriteLine("    <!-- <Bad Word=\"\" /> -->");
                     }
                     sw.WriteLine("</BadWordFilter>");
                     sw.Flush();
@@ -152,38 +171,31 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<BadWordFilter>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Bad Word=\"cracker\" /> -->");
+                    sw.WriteLine("<!-- <Bad Word=\"\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Bad Word=\"cracker\"") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Bad Word=\"\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- <Bad Word=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.Name == "Bad")
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Bad")
                             {
-                                _blank = false;
-                                string _word = "";
-                                if (_line.HasAttribute("Word"))
+                                string word = "";
+                                if (line.HasAttribute("Word"))
                                 {
-                                    _word = _line.GetAttribute("Word");
+                                    word = line.GetAttribute("Word");
                                 }
-                                sw.WriteLine(string.Format("    <Bad Word=\"{0}\" />", _word));
+                                sw.WriteLine(string.Format("    <Bad Word=\"{0}\" />", word));
                             }
                         }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Bad Word=\"\" /> -->");
                     }
                     sw.WriteLine("</BadWordFilter>");
                     sw.Flush();

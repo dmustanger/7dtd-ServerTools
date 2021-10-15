@@ -1,5 +1,29 @@
 ﻿CHANGELOG
 
+19.6.5
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+-Added check for user names and messages containing emoji tags. Their
+messages and responses will not show in chat
+-Added chat command /recall del so players can delete id from their
+vehicle list
+-Fixed PvPvE cross zone attacks simulating a player death that caused a
+player model to go limp and lose collision bounds
+-Fixed Level_Up phrase not showing in chat
+-Fixed error report in API.GameMessage
+-Fixed Chat_Color applying to only the first letter of a prefix or name
+-Fixed Web_Panel login process
+-Fixed tool delays triggering too quickly after the initial time was met
+-Fixed upgrade process wiping out Xml files
+-Changed Zones PvPvE to only work while the game setting for 
+PlayerKillingMode is set to kill everyone
+-Removed option Auto_Show from Bloodmoon tool
+-Removed Weather_Vote tool. Weather changes were unreliable
+*Check your Xml files are not blank before and after upgrading. If your
+CommandList.xml file is blank, delete it so that it rebuilds or replace
+it with one of your backups*
+
 19.6.4
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

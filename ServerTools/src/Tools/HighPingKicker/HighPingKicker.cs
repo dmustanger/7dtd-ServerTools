@@ -52,7 +52,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Dict.Clear();
                     FlagCounts.Clear();
@@ -81,10 +81,33 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -214,7 +237,7 @@ namespace ServerTools
                 _phrase2 = _phrase2.Replace("{PlayerPing}", _cInfo.ping.ToString());
                 _phrase2 = _phrase2.Replace("{MaxPing}", Max_Ping.ToString());
                 SdtdConsole.Instance.ExecuteSync(string.Format("Kick {0} \"{1}\"", _cInfo.entityId, _phrase2), null);
-                Log.Out(string.Format("[SERVERTOOLS] {0}", _phrase1));
+                Log.Out(string.Format("[SERVERTOOLS] Kicked player id {0} for high ping", _cInfo.playerId));
             }
             catch (Exception e)
             {
@@ -243,31 +266,25 @@ namespace ServerTools
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.Name == "Player")
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Player")
                             {
-                                _blank = false;
-                                string _steamId = "", _name = "";
-                                if (_line.HasAttribute("SteamId"))
+                                string steamId = "", name = "";
+                                if (line.HasAttribute("SteamId"))
                                 {
-                                    _steamId = _line.GetAttribute("SteamId");
+                                    steamId = line.GetAttribute("SteamId");
                                 }
-                                if (_line.HasAttribute("Name"))
+                                if (line.HasAttribute("Name"))
                                 {
-                                    _name = _line.GetAttribute("Name");
+                                    name = line.GetAttribute("Name");
                                 }
-                                sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" />", _steamId, _name));
+                                sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" />", steamId, name));
                             }
                         }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" /> -->");
                     }
                     sw.WriteLine("</HighPing>");
                     sw.Flush();

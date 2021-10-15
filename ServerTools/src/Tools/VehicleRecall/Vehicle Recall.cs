@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Inside_Claim = false;
         public static int Delay_Between_Uses = 120, Distance = 50, Normal_Max = 2, Reserved_Max = 4, Command_Cost = 0;
-        public static string Command_recall = "recall";
+        public static string Command_recall = "recall", Command_recall_del = "recall del";
 
         public static void List(ClientInfo _cInfo)
         {
@@ -191,6 +191,24 @@ namespace ServerTools
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in VehicleTeleport.SaveVehicle: {0}", e.Message));
+            }
+        }
+
+        public static void RemoveVehicle(ClientInfo _cInfo, string _vehicleId)
+        {
+            int.TryParse(_vehicleId, out int id);
+            if (PersistentContainer.Instance.Players[_cInfo.playerId].Vehicles != null && PersistentContainer.Instance.Players[_cInfo.playerId].Vehicles.ContainsKey(id))
+            {
+                PersistentContainer.Instance.Players[_cInfo.playerId].Vehicles.Remove(id);
+                PersistentContainer.DataChange = true;
+                Phrases.Dict.TryGetValue("VehicleRecall15", out string phrase);
+                phrase = phrase.Replace("{Id}", _vehicleId);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            }
+            else
+            {
+                Phrases.Dict.TryGetValue("VehicleRecall13", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

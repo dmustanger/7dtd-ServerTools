@@ -61,7 +61,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
@@ -89,10 +89,33 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -219,44 +242,46 @@ namespace ServerTools
             return true;
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml(XmlNodeList _childNodes)
         {
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
-                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<FamilyShareAccount>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("<!-- <Player SteamId=\"\" Name=\"\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    if (_childNodes != null)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Player SteamId=\"\""))
+                        for (int i = 0; i < _childNodes.Count; i++)
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
-                        }
-                    }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
-                    {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
-                        {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
-                            if (line.HasAttributes && line.OuterXml.Contains("Player"))
+                            if (_childNodes[i].NodeType == XmlNodeType.Comment && !_childNodes[i].OuterXml.Contains("<!-- <Player SteamId=\"\""))
                             {
-                                string steamId = "", name = "";
-                                if (line.HasAttribute("SteamId"))
+                                sw.WriteLine(_childNodes[i].OuterXml);
+                            }
+                        }
+                        sw.WriteLine();
+                        sw.WriteLine();
+                        for (int i = 0; i < _childNodes.Count; i++)
+                        {
+                            if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                            {
+                                XmlElement line = (XmlElement)_childNodes[i];
+                                if (line.HasAttributes && line.Name == "Player")
                                 {
-                                    steamId = line.GetAttribute("SteamId");
+                                    string steamId = "", name = "";
+                                    if (line.HasAttribute("SteamId"))
+                                    {
+                                        steamId = line.GetAttribute("SteamId");
+                                    }
+                                    if (line.HasAttribute("Name"))
+                                    {
+                                        name = line.GetAttribute("Name");
+                                    }
+                                    sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" />", steamId, name));
                                 }
-                                if (line.HasAttribute("Name"))
-                                {
-                                    name = line.GetAttribute("Name");
-                                }
-                                sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" />", steamId, name));
                             }
                         }
                     }

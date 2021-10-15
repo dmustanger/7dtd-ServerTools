@@ -51,7 +51,7 @@ namespace ServerTools
             }
             bool upgrade = true;
             XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-            if (childNodes != null && childNodes.Count > 0)
+            if (childNodes != null)
             {
                 Dict.Clear();
                 Destination.Clear();
@@ -113,10 +113,33 @@ namespace ServerTools
                     }
                 }
             }
-            if (childNodes != null && upgrade)
+            if (upgrade)
             {
-                UpgradeXml(childNodes);
-                return;
+                XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                XmlNode node = nodeList[0];
+                XmlElement line = (XmlElement)nodeList[0];
+                if (line != null)
+                {
+                    if (line.HasAttributes)
+                    {
+                        UpgradeXml(nodeList);
+                        return;
+                    }
+                    else
+                    {
+                        nodeList = node.ChildNodes;
+                        line = (XmlElement)nodeList[0];
+                        if (line != null)
+                        {
+                            if (line.HasAttributes)
+                            {
+                                UpgradeXml(nodeList);
+                                return;
+                            }
+                        }
+                    }
+                }
+                UpgradeXml(null);
             }
         }
 
@@ -140,10 +163,6 @@ namespace ServerTools
                         {
                             sw.WriteLine(string.Format("    <Location Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Destination=\"{3}\" />", kvpBox.Key, kvpBox.Value[0], kvpBox.Value[1], kvpBox.Value[2]));
                         }
-                    }
-                    else
-                    {
-                        sw.WriteLine("    <!-- <Location Name=\"\" Corner1=\"\" Corner2=\"\" Destination=\"\" /> -->");
                     }
                     sw.WriteLine("</Travel>");
                     sw.Flush();
@@ -355,47 +374,41 @@ namespace ServerTools
                     sw.WriteLine("<!-- <Location Name=\"Zone2\" Corner1=\"-1,100,-1\" Corner2=\"-10,100,-10\" Destination=\"100,-1,100\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Location Name=\"Zone1\"") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Location Name=\"Zone2\"") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Location Name=\"\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- <Location Name=\"Zone1\"") &&
+                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Location Name=\"Zone2\"") && !_oldChildNodes[i].OuterXml.Contains("    <!-- <Location Name=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.Name == "Location")
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Location")
                             {
-                                _blank = false;
-                                string _name = "", _c1 = "", _c2 = "", _destination = "";
-                                if (_line.HasAttribute("Name"))
+                                string name = "", c1 = "", c2 = "", destination = "";
+                                if (line.HasAttribute("Name"))
                                 {
-                                    _name = _line.GetAttribute("Name");
+                                    name = line.GetAttribute("Name");
                                 }
-                                if (_line.HasAttribute("Corner1"))
+                                if (line.HasAttribute("Corner1"))
                                 {
-                                    _c1 = _line.GetAttribute("Corner1");
+                                    c1 = line.GetAttribute("Corner1");
                                 }
-                                if (_line.HasAttribute("Corner2"))
+                                if (line.HasAttribute("Corner2"))
                                 {
-                                    _c2 = _line.GetAttribute("Corner2");
+                                    c2 = line.GetAttribute("Corner2");
                                 }
-                                if (_line.HasAttribute("Destination"))
+                                if (line.HasAttribute("Destination"))
                                 {
-                                    _destination = _line.GetAttribute("Destination");
+                                    destination = line.GetAttribute("Destination");
                                 }
-                                sw.WriteLine(string.Format("    <Location Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Destination=\"{3}\" />", _name, _c1, _c2, _destination));
+                                sw.WriteLine(string.Format("    <Location Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Destination=\"{3}\" />", name, c1, c2, destination));
                             }
                         }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Location Name=\"\" Corner1=\"\" Corner2=\"\" Destination=\"\" /> -->");
                     }
                     sw.WriteLine("</Travel>");
                     sw.Flush();

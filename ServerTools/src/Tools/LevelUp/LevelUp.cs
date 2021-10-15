@@ -50,7 +50,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
@@ -82,10 +82,33 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -155,42 +178,44 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                if (_player != null)
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                if (player != null)
                 {
-                    if (PlayerLevels.ContainsKey(_player.entityId))
+                    if (PlayerLevels.ContainsKey(player.entityId))
                     {
-                        PlayerLevels.TryGetValue(_player.entityId, out int _level);
-                        if (_player.Progression.Level > _level)
+                        PlayerLevels.TryGetValue(player.entityId, out int level);
+                        if (player.Progression.Level > level)
                         {
-                            PlayerLevels[_player.entityId] = _player.Progression.Level;
+                            PlayerLevels[player.entityId] = player.Progression.Level;
                             if (Xml_Only)
                             {
-                                if (Dict.ContainsKey(_player.Progression.Level))
+                                if (Dict.ContainsKey(player.Progression.Level))
                                 {
-                                    Phrases.Dict.TryGetValue("LevelUp1", out string _phrase);
-                                    _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                    _phrase = _phrase.Replace("{Value}", _player.Progression.Level.ToString());
-                                    Dict.TryGetValue(_player.Progression.Level, out string _command);
-                                    ProcessCommand(_cInfo, _command);
+                                    Dict.TryGetValue(player.Progression.Level, out string command);
+                                    ProcessCommand(_cInfo, command);
+                                    Phrases.Dict.TryGetValue("LevelUp1", out string phrase);
+                                    phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                    phrase = phrase.Replace("{Value}", player.Progression.Level.ToString());
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                 }
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue("LevelUp1", out string _phrase);
-                                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase = _phrase.Replace("{Value}", _player.Progression.Level.ToString());
-                                if (Dict.ContainsKey(_player.Progression.Level))
+                                if (Dict.ContainsKey(player.Progression.Level))
                                 {
-                                    Dict.TryGetValue(_player.Progression.Level, out string _command);
-                                    ProcessCommand(_cInfo, _command);
+                                    Dict.TryGetValue(player.Progression.Level, out string command);
+                                    ProcessCommand(_cInfo, command);
                                 }
+                                Phrases.Dict.TryGetValue("LevelUp1", out string phrase);
+                                phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                phrase = phrase.Replace("{Value}", player.Progression.Level.ToString());
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                             }
                         }
                     }
                     else
                     {
-                        PlayerLevels.Add(_player.entityId, _player.Progression.Level);
+                        PlayerLevels.Add(player.entityId, player.Progression.Level);
                     }
                 }
             }
@@ -331,40 +356,34 @@ namespace ServerTools
                     sw.WriteLine("<!-- <Level Required=\"300\" Command=\"global MAX LEVEL! Congratulations {PlayerName}!\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Command triggers console") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- Possible variables") && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Level Required=\"300\"") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Level Required=\"\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Command triggers console") &&
+                            !_oldChildNodes[i].OuterXml.Contains("<!-- Possible variables") && !_oldChildNodes[i].OuterXml.Contains("<!-- <Level Required=\"300\"") &&
+                            !_oldChildNodes[i].OuterXml.Contains("    <!-- <Level Required=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.Name == "Level")
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Level")
                             {
-                                _blank = false;
-                                string _level = "", _command = "";
-                                if (_line.HasAttribute("Required"))
+                                string level = "", command = "";
+                                if (line.HasAttribute("Required"))
                                 {
-                                    _level = _line.GetAttribute("Required");
+                                    level = line.GetAttribute("Required");
                                 }
-                                if (_line.HasAttribute("Command"))
+                                if (line.HasAttribute("Command"))
                                 {
-                                    _command = _line.GetAttribute("Command");
+                                    command = line.GetAttribute("Command");
                                 }
-                                sw.WriteLine(string.Format("    <Level Required=\"\" Command=\"{1}\"  />", _level, _command));
+                                sw.WriteLine(string.Format("    <Level Required=\"\" Command=\"{1}\"  />", level, command));
                             }
                         }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Level Required=\"\" Command=\"\" /> -->");
                     }
                     sw.WriteLine("</Levels>");
                     sw.Flush();

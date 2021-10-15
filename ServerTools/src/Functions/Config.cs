@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -7,11 +8,13 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "19.6.4";
+        public const string Version = "19.6.5";
+        public static bool Upgrade = false;
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
         private const string ConfigFile = "ServerToolsConfig.xml";
+        private static List<string> ConfigList = new List<string>();
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, ConfigFile);
 
         public static void Load()
@@ -22,9 +25,6 @@ namespace ServerTools
 
         public static void LoadXml()
         {
-            Log.Out("---------------------------------------------------------------");
-            Log.Out("[SERVERTOOLS] Verifying configuration file & Saving new entries");
-            Log.Out("---------------------------------------------------------------");
             if (!Utils.FileExists(ConfigFilePath))
             {
                 WriteXml();
@@ -39,8 +39,11 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", ConfigFilePath, e.Message));
                 return;
             }
-            foreach (XmlNode childNode in xmlDoc.DocumentElement.ChildNodes)
+            Upgrade = false;
+            XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+            for (int i = 0; i < nodeList.Count; i++)
             {
+                XmlNode childNode = nodeList[i];
                 if (childNode.Name == "Version")
                 {
                     foreach (XmlNode subChild in childNode.ChildNodes)
@@ -54,55 +57,40 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Version' section: {0}", subChild.OuterXml));
                             continue;
                         }
-                        XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("Version"))
+                        XmlElement line = (XmlElement)subChild;
+                        if (!line.HasAttribute("Version"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring config entry in ServerToolsConfig.xml because of missing 'Version' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        else if (_line.GetAttribute("Version") != Version)
+                        else if (line.GetAttribute("Version") != Version)
                         {
-                            Log.Out("[SERVERTOOLS] Detected updated version of ServerTools");
-                            string _version = _line.GetAttribute("Version");
-                            string[] _files = Directory.GetFiles(API.ConfigPath, "*.xml");
+                            Log.Out("[SERVERTOOLS] Detected ServerTools upgrade");
+                            string version = line.GetAttribute("Version");
+                            string[] files = Directory.GetFiles(API.ConfigPath, "*.xml");
                             if (!Directory.Exists(API.ConfigPath + "/XMLBackups"))
                             {
                                 Directory.CreateDirectory(API.ConfigPath + "/XMLBackups");
                             }
-                            if (_files != null && _files.Length > 0)
+                            if (files != null && files.Length > 0)
                             {
-                                if (!Directory.Exists(API.ConfigPath + "/XMLBackups/" + _version))
+                                if (!Directory.Exists(API.ConfigPath + "/XMLBackups/" + version))
                                 {
-                                    Directory.CreateDirectory(API.ConfigPath + "/XMLBackups/" + _version);
-                                    for (int i = 0; i < _files.Length; i++)
+                                    Directory.CreateDirectory(API.ConfigPath + "/XMLBackups/" + version);
+                                    for (int j = 0; j < files.Length; j++)
                                     {
-                                        string _fileName = _files[i];
-                                        string _fileNameShort = _fileName.Substring(_fileName.IndexOf("ServerTools") + 11);
-                                        File.Copy(_fileName, API.ConfigPath + "/XMLBackups/" + _version + _fileNameShort);
-                                        if (_fileNameShort == "ServerToolsConfig.xml")
-                                        {
-                                            File.Delete(_fileName);
-                                        }
+                                        string fileName = files[j];
+                                        string fileNameShort = fileName.Substring(fileName.IndexOf("ServerTools") + 11);
+                                        File.Copy(fileName, API.ConfigPath + "/XMLBackups/" + version + fileNameShort);
                                     }
-                                    WriteXml();
-                                    Config.UpgradeXml(xmlDoc.DocumentElement.ChildNodes[1].ChildNodes);
-                                    Log.Out("[SERVERTOOLS] Created backup of xml files for version {0}", _version);
-                                }
-                                else
-                                {
-                                    WriteXml();
-                                    Config.UpgradeXml(xmlDoc.DocumentElement.ChildNodes[1].ChildNodes);
-                                    Log.Out("[SERVERTOOLS] Created backup of xml files for version {0}", _version);
+                                    Log.Out("[SERVERTOOLS] Created a backup of Xml files for version {0}", version);
                                 }
                             }
-                            else
-                            {
-                                WriteXml();
-                            }
+                            Upgrade = true;
                         }
                     }
                 }
-                if (childNode.Name == "Tools")
+                if (childNode.Name == "Tools" && !Upgrade)
                 {
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
@@ -115,218 +103,218 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Tools' section: {0}", subChild.OuterXml));
                             continue;
                         }
-                        XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("Name"))
+                        XmlElement line = (XmlElement)subChild;
+                        if (!line.HasAttribute("Name"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring tool entry in ServerToolsConfig.xml because of missing 'Name' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        switch (_line.GetAttribute("Name"))
+                        switch (line.GetAttribute("Name"))
                         {
                             case "Admin_Chat_Commands":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Chat_Commands entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out AdminChat.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out AdminChat.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Chat_Commands entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Admin_List":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_List entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out AdminList.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out AdminList.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_List entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_List entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out AdminList.Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out AdminList.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_List entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Moderator_Level"))
+                                if (!line.HasAttribute("Moderator_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_List entry in ServerToolsConfig.xml because of missing 'Moderator_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Moderator_Level"), out AdminList.Mod_Level))
+                                if (!int.TryParse(line.GetAttribute("Moderator_Level"), out AdminList.Mod_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_List entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Moderator_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Animal_Tracking":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out AnimalTracking.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out AnimalTracking.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out AnimalTracking.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out AnimalTracking.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Minimum_Spawn_Radius"))
+                                if (!line.HasAttribute("Minimum_Spawn_Radius"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking entry in ServerToolsConfig.xml because of missing 'Minimum_Spawn_Radius' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Minimum_Spawn_Radius"), out AnimalTracking.Minimum_Spawn_Radius))
+                                if (!int.TryParse(line.GetAttribute("Minimum_Spawn_Radius"), out AnimalTracking.Minimum_Spawn_Radius))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Minimum_Spawn_Radius' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Maximum_Spawn_Radius"))
+                                if (!line.HasAttribute("Maximum_Spawn_Radius"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking entry in ServerToolsConfig.xml because of missing 'Maximum_Spawn_Radius' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Maximum_Spawn_Radius"), out AnimalTracking.Maximum_Spawn_Radius))
+                                if (!int.TryParse(line.GetAttribute("Maximum_Spawn_Radius"), out AnimalTracking.Maximum_Spawn_Radius))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Maximum_Spawn_Radius' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Animal_Ids"))
+                                if (!line.HasAttribute("Animal_Ids"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking entry in ServerToolsConfig.xml because of missing 'Animal_Ids' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 else
                                 {
-                                    AnimalTracking.Animal_Ids = _line.GetAttribute("Animal_Ids");
+                                    AnimalTracking.Animal_Ids = line.GetAttribute("Animal_Ids");
                                 }
                                 break;
                             case "Animal_Tracking_Extended":
-                                if (!_line.HasAttribute("Command_Cost"))
+                                if (!line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking_Extended entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out AnimalTracking.Command_Cost))
+                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out AnimalTracking.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Auction":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Auction.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Auction.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("No_Admins"))
+                                if (!line.HasAttribute("No_Admins"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry in ServerToolsConfig.xml because of missing 'No_Admins' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("No_Admins"), out Auction.No_Admins))
+                                if (!bool.TryParse(line.GetAttribute("No_Admins"), out Auction.No_Admins))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry in ServerToolsConfig.xml because of invalid (True/False) value for 'No_Admins' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out Auction.Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out Auction.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Total_Items"))
+                                if (!line.HasAttribute("Total_Items"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry in ServerToolsConfig.xml because of missing 'Total_Items' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Total_Items"), out Auction.Total_Items))
+                                if (!int.TryParse(line.GetAttribute("Total_Items"), out Auction.Total_Items))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Total_Items' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Tax"))
+                                if (!line.HasAttribute("Tax"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry in ServerToolsConfig.xml because of missing 'Tax' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Tax"), out Auction.Tax))
+                                if (!int.TryParse(line.GetAttribute("Tax"), out Auction.Tax))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Tax' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Auto_Backup":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out AutoBackup.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out AutoBackup.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Saves"))
+                                if (!line.HasAttribute("Delay_Between_Saves"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup entry in ServerToolsConfig.xml because of missing 'Delay_Between_Saves' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Delay_Between_Saves"))
+                                if (line.HasAttribute("Delay_Between_Saves"))
                                 {
-                                    AutoBackup.Delay = _line.GetAttribute("Delay_Between_Saves");
+                                    AutoBackup.Delay = line.GetAttribute("Delay_Between_Saves");
                                 }
-                                if (!_line.HasAttribute("Destination"))
+                                if (!line.HasAttribute("Destination"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup entry in ServerToolsConfig.xml because of missing 'Destination' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Destination"))
+                                if (line.HasAttribute("Destination"))
                                 {
-                                    AutoBackup.Destination = _line.GetAttribute("Destination");
+                                    AutoBackup.Destination = line.GetAttribute("Destination");
                                 }
-                                if (!_line.HasAttribute("Compression_Level"))
+                                if (!line.HasAttribute("Compression_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup entry in ServerToolsConfig.xml because of missing 'Compression_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Compression_Level"), out AutoBackup.Compression_Level))
+                                if (!int.TryParse(line.GetAttribute("Compression_Level"), out AutoBackup.Compression_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Compression_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Backup_Count"))
+                                if (!line.HasAttribute("Backup_Count"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup entry in ServerToolsConfig.xml because of missing 'Backup_Count' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Backup_Count"), out AutoBackup.Backup_Count))
+                                if (!int.TryParse(line.GetAttribute("Backup_Count"), out AutoBackup.Backup_Count))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Backup_Count' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -341,36 +329,36 @@ namespace ServerTools
                                 }
                                 break;
                             case "Auto_Party_Invite":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Party_Invite entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out AutoPartyInvite.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out AutoPartyInvite.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Party_Invite entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Auto_Save_World":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Save_World entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out AutoSaveWorld.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out AutoSaveWorld.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Save_World entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Saves"))
+                                if (!line.HasAttribute("Delay_Between_Saves"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Save_World entry in ServerToolsConfig.xml because of missing 'Delay_Between_Saves' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Delay_Between_Saves"))
+                                if (line.HasAttribute("Delay_Between_Saves"))
                                 {
-                                    AutoSaveWorld.Delay = _line.GetAttribute("Delay_Between_Saves");
+                                    AutoSaveWorld.Delay = line.GetAttribute("Delay_Between_Saves");
                                 }
                                 if (AutoSaveWorld.IsEnabled)
                                 {
@@ -382,128 +370,118 @@ namespace ServerTools
                                 }
                                 break;
                             case "Bad_Word_Filter":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bad_Word_Filter entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Badwords.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Badwords.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bad_Word_Filter entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Invalid_Name"))
+                                if (!line.HasAttribute("Invalid_Name"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bad_Word_Filter entry in ServerToolsConfig.xml because of missing 'Invalid_Name' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Invalid_Name"), out Badwords.Invalid_Name))
+                                if (!bool.TryParse(line.GetAttribute("Invalid_Name"), out Badwords.Invalid_Name))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bad_Word_Filter entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Invalid_Name' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Bank":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Bank.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Bank.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Inside_Claim"))
+                                if (!line.HasAttribute("Inside_Claim"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of missing 'Inside_Claim' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Inside_Claim"), out Bank.Inside_Claim))
+                                if (!bool.TryParse(line.GetAttribute("Inside_Claim"), out Bank.Inside_Claim))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Inside_Claim' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Ingame_Coin"))
+                                if (!line.HasAttribute("Ingame_Coin"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of missing 'Ingame_Coin' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Ingame_Coin"))
+                                if (line.HasAttribute("Ingame_Coin"))
                                 {
-                                    Bank.Ingame_Coin = _line.GetAttribute("Ingame_Coin");
+                                    Bank.Ingame_Coin = line.GetAttribute("Ingame_Coin");
                                 }
-                                if (!_line.HasAttribute("Deposit_Fee_Percent"))
+                                if (!line.HasAttribute("Deposit_Fee_Percent"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of missing 'Deposit_Fee_Percent' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Deposit_Fee_Percent"), out Bank.Deposit_Fee_Percent))
+                                if (!int.TryParse(line.GetAttribute("Deposit_Fee_Percent"), out Bank.Deposit_Fee_Percent))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Deposit_Fee_Percent' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Player_Transfers"))
+                                if (!line.HasAttribute("Player_Transfers"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of missing 'Player_Transfers' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Player_Transfers"), out Bank.Player_Transfers))
+                                if (!bool.TryParse(line.GetAttribute("Player_Transfers"), out Bank.Player_Transfers))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Player_Transfers' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Block_Logger":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Block_Logger entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out BlockLogger.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out BlockLogger.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Block_Logger entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Bloodmoon":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Bloodmoon.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Bloodmoon.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay"))
+                                if (!line.HasAttribute("Delay"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry in ServerToolsConfig.xml because of missing 'Delay' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Delay"))
+                                if (line.HasAttribute("Delay"))
                                 {
-                                    Bloodmoon.Delay = _line.GetAttribute("Delay");
+                                    Bloodmoon.Delay = line.GetAttribute("Delay");
                                 }
-                                if (!_line.HasAttribute("Show_On_Respawn"))
+                                if (!line.HasAttribute("Show_On_Respawn"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry in ServerToolsConfig.xml because of missing 'Show_On_Respawn' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Show_On_Respawn"), out Bloodmoon.Show_On_Respawn))
+                                if (!bool.TryParse(line.GetAttribute("Show_On_Respawn"), out Bloodmoon.Show_On_Respawn))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Show_On_Respawn' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Auto_Show"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry in ServerToolsConfig.xml because of missing 'Auto_Show' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Auto_Show"), out Bloodmoon.Auto_Show))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Auto_Show' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (Bloodmoon.IsEnabled)
@@ -516,127 +494,127 @@ namespace ServerTools
                                 }
                                 break;
                             case "Bloodmoon_Warrior":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out BloodmoonWarrior.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out BloodmoonWarrior.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Zombie_Kills"))
+                                if (!line.HasAttribute("Zombie_Kills"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry in ServerToolsConfig.xml because of missing 'Zombie_Kills' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Zombie_Kills"), out BloodmoonWarrior.Zombie_Kills))
+                                if (!int.TryParse(line.GetAttribute("Zombie_Kills"), out BloodmoonWarrior.Zombie_Kills))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Zombie_Kills' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Chance"))
+                                if (!line.HasAttribute("Chance"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry in ServerToolsConfig.xml because of missing 'Chance' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Chance"), out BloodmoonWarrior.Chance))
+                                if (!int.TryParse(line.GetAttribute("Chance"), out BloodmoonWarrior.Chance))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Chance' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Reduce_Death_Count"))
+                                if (!line.HasAttribute("Reduce_Death_Count"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry in ServerToolsConfig.xml because of missing 'Reduce_Death_Count' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Reduce_Death_Count"), out BloodmoonWarrior.Reduce_Death_Count))
+                                if (!bool.TryParse(line.GetAttribute("Reduce_Death_Count"), out BloodmoonWarrior.Reduce_Death_Count))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Reduce_Death_Count' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Reward_Count"))
+                                if (!line.HasAttribute("Reward_Count"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry in ServerToolsConfig.xml because of missing 'Reward_Count' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Reward_Count"), out BloodmoonWarrior.Reward_Count))
+                                if (!int.TryParse(line.GetAttribute("Reward_Count"), out BloodmoonWarrior.Reward_Count))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Reward_Count' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Bounties":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Bounties.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Bounties.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Minimum_Bounty"))
+                                if (!line.HasAttribute("Minimum_Bounty"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry in ServerToolsConfig.xml because of missing 'Minimum_Bounty' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Minimum_Bounty"), out Bounties.Minimum_Bounty))
+                                if (!int.TryParse(line.GetAttribute("Minimum_Bounty"), out Bounties.Minimum_Bounty))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Minimum_Bounty' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Kill_Streak"))
+                                if (!line.HasAttribute("Kill_Streak"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry in ServerToolsConfig.xml because of missing 'Kill_Streak' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Kill_Streak"), out Bounties.Kill_Streak))
+                                if (!int.TryParse(line.GetAttribute("Kill_Streak"), out Bounties.Kill_Streak))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Kill_Streak' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Bonus"))
+                                if (!line.HasAttribute("Bonus"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry in ServerToolsConfig.xml because of missing 'Bonus' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Bonus"), out Bounties.Bonus))
+                                if (!int.TryParse(line.GetAttribute("Bonus"), out Bounties.Bonus))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Bonus' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Break_Reminder":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Break_Reminder entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out BreakTime.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out BreakTime.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Break_Reminder entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Break_Time"))
+                                if (!line.HasAttribute("Break_Time"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Break_Reminder entry in ServerToolsConfig.xml because of missing 'Break_Time' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Break_Time"))
+                                if (line.HasAttribute("Break_Time"))
                                 {
-                                    BreakTime.Delay = _line.GetAttribute("Break_Time");
+                                    BreakTime.Delay = line.GetAttribute("Break_Time");
                                 }
-                                if (!_line.HasAttribute("Message"))
+                                if (!line.HasAttribute("Message"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Break_Reminder entry in ServerToolsConfig.xml because of missing 'Message' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Message"))
+                                if (line.HasAttribute("Message"))
                                 {
-                                    BreakTime.Message = _line.GetAttribute("Message");
+                                    BreakTime.Message = line.GetAttribute("Message");
                                 }
                                 if (BreakTime.IsEnabled)
                                 {
@@ -648,1274 +626,1274 @@ namespace ServerTools
                                 }
                                 break;
                             case "Chat_Color":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatColor.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out ChatColor.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Rotate"))
+                                if (!line.HasAttribute("Rotate"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color entry in ServerToolsConfig.xml because of missing 'Rotate' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Rotate"), out ChatColor.Rotate))
+                                if (!bool.TryParse(line.GetAttribute("Rotate"), out ChatColor.Rotate))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Rotate' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Custom_Color"))
+                                if (!line.HasAttribute("Custom_Color"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color entry in ServerToolsConfig.xml because of missing 'Custom_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Custom_Color"), out ChatColor.Custom_Color))
+                                if (!bool.TryParse(line.GetAttribute("Custom_Color"), out ChatColor.Custom_Color))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Custom_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Chat_Command_Log":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Log entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatCommandLog.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out ChatCommandLog.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Log entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Chat_Command_Response":
-                                if (!_line.HasAttribute("Server_Response_Name"))
+                                if (!line.HasAttribute("Server_Response_Name"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry in ServerToolsConfig.xml because of missing 'Server_Response_Name' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Main_Color"))
+                                if (!line.HasAttribute("Main_Color"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry in ServerToolsConfig.xml because of missing 'Main_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Chat_Command_Prefix1"))
+                                if (!line.HasAttribute("Chat_Command_Prefix1"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry in ServerToolsConfig.xml because of missing 'Chat_Command_Prefix1' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Chat_Command_Prefix2"))
+                                if (!line.HasAttribute("Chat_Command_Prefix2"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry in ServerToolsConfig.xml because of missing 'Chat_Command_Prefix2' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Server_Response_Name"))
+                                if (line.HasAttribute("Server_Response_Name"))
                                 {
-                                    Server_Response_Name = _line.GetAttribute("Server_Response_Name");
+                                    Server_Response_Name = line.GetAttribute("Server_Response_Name");
                                 }
-                                if (_line.HasAttribute("Main_Color"))
+                                if (line.HasAttribute("Main_Color"))
                                 {
-                                    Chat_Response_Color = _line.GetAttribute("Main_Color");
+                                    Chat_Response_Color = line.GetAttribute("Main_Color");
                                 }
-                                if (_line.HasAttribute("Chat_Command_Prefix1"))
+                                if (line.HasAttribute("Chat_Command_Prefix1"))
                                 {
-                                    ChatHook.Chat_Command_Prefix1 = _line.GetAttribute("Chat_Command_Prefix1");
+                                    ChatHook.Chat_Command_Prefix1 = line.GetAttribute("Chat_Command_Prefix1");
                                 }
-                                if (_line.HasAttribute("Chat_Command_Prefix2"))
+                                if (line.HasAttribute("Chat_Command_Prefix2"))
                                 {
-                                    ChatHook.Chat_Command_Prefix2 = _line.GetAttribute("Chat_Command_Prefix2");
+                                    ChatHook.Chat_Command_Prefix2 = line.GetAttribute("Chat_Command_Prefix2");
                                 }
                                 break;
                             case "Chat_Command_Response_Extended":
-                                if (_line.HasAttribute("Friend_Chat_Color"))
+                                if (line.HasAttribute("Friend_Chat_Color"))
                                 {
-                                    ChatHook.Friend_Chat_Color = _line.GetAttribute("Friend_Chat_Color");
+                                    ChatHook.Friend_Chat_Color = line.GetAttribute("Friend_Chat_Color");
                                 }
-                                if (_line.HasAttribute("Party_Chat_Color"))
+                                if (line.HasAttribute("Party_Chat_Color"))
                                 {
-                                    ChatHook.Party_Chat_Color = _line.GetAttribute("Party_Chat_Color");
+                                    ChatHook.Party_Chat_Color = line.GetAttribute("Party_Chat_Color");
                                 }
-                                if (!_line.HasAttribute("Passthrough"))
+                                if (!line.HasAttribute("Passthrough"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Flood_Protection entry in ServerToolsConfig.xml because of missing 'Passthrough' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Passthrough"), out ChatHook.Passthrough))
+                                if (!bool.TryParse(line.GetAttribute("Passthrough"), out ChatHook.Passthrough))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Flood_Protection entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Passthrough' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Chat_Flood_Protection":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Flood_Protection entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatHook.ChatFlood))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out ChatHook.ChatFlood))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Flood_Protection entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Max_Length"))
+                                if (!line.HasAttribute("Max_Length"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Flood_Protection entry in ServerToolsConfig.xml because of missing 'Max_Length' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Max_Length"), out ChatHook.Max_Length))
+                                if (!int.TryParse(line.GetAttribute("Max_Length"), out ChatHook.Max_Length))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Flood_Protection entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Max_Length' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Messages_Per_Min"))
+                                if (!line.HasAttribute("Messages_Per_Min"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Flood_Protection entry in ServerToolsConfig.xml because of missing 'Messages_Per_Min' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Messages_Per_Min"), out ChatHook.Messages_Per_Min))
+                                if (!int.TryParse(line.GetAttribute("Messages_Per_Min"), out ChatHook.Messages_Per_Min))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Flood_Protection entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Messages_Per_Min' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Wait_Time"))
+                                if (!line.HasAttribute("Wait_Time"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Flood_Protection entry in ServerToolsConfig.xml because of missing 'Wait_Time' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Wait_Time"), out ChatHook.Wait_Time))
+                                if (!int.TryParse(line.GetAttribute("Wait_Time"), out ChatHook.Wait_Time))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Flood_Protection entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Wait_Time' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Chat_Logger":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Logger entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatLog.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out ChatLog.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Logger entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Clan_Manager":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clan_Manager entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ClanManager.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out ClanManager.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clan_Manager entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Max_Name_Length"))
+                                if (!line.HasAttribute("Max_Name_Length"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clan_Manager entry in ServerToolsConfig.xml because of missing 'Max_Name_Length' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Max_Name_Length"), out ClanManager.Max_Name_Length))
+                                if (!int.TryParse(line.GetAttribute("Max_Name_Length"), out ClanManager.Max_Name_Length))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clan_Manager entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Max_Name_Length' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Private_Chat_Color"))
+                                if (!line.HasAttribute("Private_Chat_Color"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clan_Manager entry in ServerToolsConfig.xml because of missing 'Private_Chat_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Private_Chat_Color"))
+                                if (line.HasAttribute("Private_Chat_Color"))
                                 {
-                                    ClanManager.Private_Chat_Color = _line.GetAttribute("Private_Chat_Color");
+                                    ClanManager.Private_Chat_Color = line.GetAttribute("Private_Chat_Color");
                                 }
                                 break;
                             case "Clean_Bin":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out CleanBin.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out CleanBin.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Auction"))
+                                if (!line.HasAttribute("Auction"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin entry in ServerToolsConfig.xml because of missing 'Auction' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Auction"), out CleanBin.Auction))
+                                if (!bool.TryParse(line.GetAttribute("Auction"), out CleanBin.Auction))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Auction' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Bank"))
+                                if (!line.HasAttribute("Bank"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin entry in ServerToolsConfig.xml because of missing 'Bank' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Bank"), out CleanBin.Bank))
+                                if (!bool.TryParse(line.GetAttribute("Bank"), out CleanBin.Bank))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Bank' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Bounties"))
+                                if (!line.HasAttribute("Bounties"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin entry in ServerToolsConfig.xml because of missing 'Bounties' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Bounties"), out CleanBin.Bounties))
+                                if (!bool.TryParse(line.GetAttribute("Bounties"), out CleanBin.Bounties))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Bounties' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delays"))
+                                if (!line.HasAttribute("Delays"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin entry in ServerToolsConfig.xml because of missing 'Delays' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Delays"), out CleanBin.Delays))
+                                if (!bool.TryParse(line.GetAttribute("Delays"), out CleanBin.Delays))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Delays' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Clean_Bin_Extended1":
-                                if (!_line.HasAttribute("Homes"))
+                                if (!line.HasAttribute("Homes"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended1 entry in ServerToolsConfig.xml because of missing 'Homes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Homes"), out CleanBin.Homes))
+                                if (!bool.TryParse(line.GetAttribute("Homes"), out CleanBin.Homes))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended1 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Homes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Jail"))
+                                if (!line.HasAttribute("Jail"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended1 entry in ServerToolsConfig.xml because of missing 'Jail' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Jail"), out CleanBin.Jail))
+                                if (!bool.TryParse(line.GetAttribute("Jail"), out CleanBin.Jail))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended1 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Jail' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Lobby"))
+                                if (!line.HasAttribute("Lobby"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended1 entry in ServerToolsConfig.xml because of missing 'Lobby' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Lobby"), out CleanBin.Lobby))
+                                if (!bool.TryParse(line.GetAttribute("Lobby"), out CleanBin.Lobby))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended1 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Lobby' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Market"))
+                                if (!line.HasAttribute("Market"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended1 entry in ServerToolsConfig.xml because of missing 'Market' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Market"), out CleanBin.Market))
+                                if (!bool.TryParse(line.GetAttribute("Market"), out CleanBin.Market))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended1 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Market' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("New_Spawn_Tele"))
+                                if (!line.HasAttribute("New_Spawn_Tele"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended1 entry in ServerToolsConfig.xml because of missing 'New_Spawn_Tele' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("New_Spawn_Tele"), out CleanBin.New_Spawn_Tele))
+                                if (!bool.TryParse(line.GetAttribute("New_Spawn_Tele"), out CleanBin.New_Spawn_Tele))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended1 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'New_Spawn_Tele' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Clean_Bin_Extended2":
-                                if (!_line.HasAttribute("Poll"))
+                                if (!line.HasAttribute("Poll"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of missing 'Poll' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Poll"), out CleanBin.Poll))
+                                if (!bool.TryParse(line.GetAttribute("Poll"), out CleanBin.Poll))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Poll' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Protected_Spaces"))
+                                if (!line.HasAttribute("Protected_Spaces"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of missing 'Protected_Spaces' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Protected_Spaces"), out CleanBin.Protected_Spaces))
+                                if (!bool.TryParse(line.GetAttribute("Protected_Spaces"), out CleanBin.Protected_Spaces))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Protected_Spaces' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Vehicles"))
+                                if (!line.HasAttribute("Vehicles"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of missing 'Vehicles' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Vehicles"), out CleanBin.Vehicles))
+                                if (!bool.TryParse(line.GetAttribute("Vehicles"), out CleanBin.Vehicles))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Vehicles' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Wallet"))
+                                if (!line.HasAttribute("Wallet"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of missing 'Wallet' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Wallet"), out CleanBin.Wallet))
+                                if (!bool.TryParse(line.GetAttribute("Wallet"), out CleanBin.Wallet))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Wallet' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Waypoints"))
+                                if (!line.HasAttribute("Waypoints"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of missing 'Waypoints' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Waypoints"), out CleanBin.Waypoints))
+                                if (!bool.TryParse(line.GetAttribute("Waypoints"), out CleanBin.Waypoints))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Waypoints' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Console_Command_Log":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Console_Command_Log entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ConsoleCommandLog.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out ConsoleCommandLog.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Console_Command_Log entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Country_Ban":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Country_Ban entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out CountryBan.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out CountryBan.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Country_Ban entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Countries_Not_Allowed"))
+                                if (!line.HasAttribute("Countries_Not_Allowed"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Country_Ban entry in ServerToolsConfig.xml because of missing 'Countries_Not_Allowed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Countries_Not_Allowed"))
+                                if (line.HasAttribute("Countries_Not_Allowed"))
                                 {
-                                    CountryBan.Countries_Not_Allowed = _line.GetAttribute("Countries_Not_Allowed");
+                                    CountryBan.Countries_Not_Allowed = line.GetAttribute("Countries_Not_Allowed");
                                 }
                                 break;
                             case "Credentials":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Credentials.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Credentials.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("No_Family_Share"))
+                                if (!line.HasAttribute("No_Family_Share"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of missing 'No_Family_Share' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("No_Family_Share"), out Credentials.Family_Share))
+                                if (!bool.TryParse(line.GetAttribute("No_Family_Share"), out Credentials.Family_Share))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of invalid (True/False) value for 'No_Family_Share' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("No_Bad_Id"))
+                                if (!line.HasAttribute("No_Bad_Id"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of missing 'No_Bad_Id' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("No_Bad_Id"), out Credentials.Bad_Id))
+                                if (!bool.TryParse(line.GetAttribute("No_Bad_Id"), out Credentials.Bad_Id))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of invalid (True/False) value for 'No_Bad_Id' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("No_Internal"))
+                                if (!line.HasAttribute("No_Internal"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of missing 'No_Internal' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("No_Internal"), out Credentials.No_Internal))
+                                if (!bool.TryParse(line.GetAttribute("No_Internal"), out Credentials.No_Internal))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of invalid (True/False) value for 'No_Internal' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out Credentials.Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out Credentials.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Custom_Commands":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Custom_Commands entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out CustomCommands.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out CustomCommands.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Custom_Commands entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Damage_Detector":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out DamageDetector.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out DamageDetector.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Entity_Damage_Limit"))
+                                if (!line.HasAttribute("Entity_Damage_Limit"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Entity_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Entity_Damage_Limit"), out DamageDetector.Entity_Damage_Limit))
+                                if (!int.TryParse(line.GetAttribute("Entity_Damage_Limit"), out DamageDetector.Entity_Damage_Limit))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Entity_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Block_Damage_Limit"))
+                                if (!line.HasAttribute("Block_Damage_Limit"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Block_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Block_Damage_Limit"), out DamageDetector.Block_Damage_Limit))
+                                if (!int.TryParse(line.GetAttribute("Block_Damage_Limit"), out DamageDetector.Block_Damage_Limit))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Block_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Player_Damage_Limit"))
+                                if (!line.HasAttribute("Player_Damage_Limit"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Player_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Player_Damage_Limit"), out DamageDetector.Player_Damage_Limit))
+                                if (!int.TryParse(line.GetAttribute("Player_Damage_Limit"), out DamageDetector.Player_Damage_Limit))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Player_Damage_Limit' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out DamageDetector.Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out DamageDetector.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Damage_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Day7":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Day7 entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Day7.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Day7.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Day7 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Died":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Died entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Died.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Died.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Died entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Time"))
+                                if (!line.HasAttribute("Time"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Died entry in ServerToolsConfig.xml because of missing 'Time' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Time"), out Died.Time))
+                                if (!int.TryParse(line.GetAttribute("Time"), out Died.Time))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Died entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Time' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Died entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Died.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out Died.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Died entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Command_Cost"))
+                                if (!line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Died entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out Died.Command_Cost))
+                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out Died.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Died entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Discord_Bot":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Discord_Bot entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out DiscordBot.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out DiscordBot.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Discord_Bot entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Webhook"))
+                                if (!line.HasAttribute("Webhook"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Discord_Bot entry in ServerToolsConfig.xml because of missing 'Webhook' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Webhook"))
+                                if (line.HasAttribute("Webhook"))
                                 {
-                                    DiscordBot.Webhook = _line.GetAttribute("Webhook");
+                                    DiscordBot.Webhook = line.GetAttribute("Webhook");
                                 }
                                 break;
                             case "Discord_Bot_Extended":
-                                if (!_line.HasAttribute("Prefix"))
+                                if (!line.HasAttribute("Prefix"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Discord_Bot_Extended entry in ServerToolsConfig.xml because of missing 'Prefix' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Prefix"))
+                                if (line.HasAttribute("Prefix"))
                                 {
-                                    DiscordBot.Prefix = _line.GetAttribute("Prefix");
+                                    DiscordBot.Prefix = line.GetAttribute("Prefix");
                                 }
-                                if (!_line.HasAttribute("Prefix_Color"))
+                                if (!line.HasAttribute("Prefix_Color"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Discord_Bot_Extended entry in ServerToolsConfig.xml because of missing 'Prefix_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 else
                                 {
-                                    DiscordBot.Prefix_Color = _line.GetAttribute("Prefix_Color");
+                                    DiscordBot.Prefix_Color = line.GetAttribute("Prefix_Color");
                                 }
-                                if (!_line.HasAttribute("Name_Color"))
+                                if (!line.HasAttribute("Name_Color"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Discord_Bot_Extended entry in ServerToolsConfig.xml because of missing 'Name_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 else
                                 {
-                                    DiscordBot.Name_Color = _line.GetAttribute("Name_Color");
+                                    DiscordBot.Name_Color = line.GetAttribute("Name_Color");
                                 }
-                                if (!_line.HasAttribute("Message_Color"))
+                                if (!line.HasAttribute("Message_Color"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Discord_Bot_Extended entry in ServerToolsConfig.xml because of missing 'Message_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Message_Color"))
+                                if (line.HasAttribute("Message_Color"))
                                 {
-                                    DiscordBot.Message_Color = _line.GetAttribute("Message_Color");
+                                    DiscordBot.Message_Color = line.GetAttribute("Message_Color");
                                 }
                                 break;
                             case "Dropped_Bag_Protection":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Dropped_Bag_Protection entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out DroppedBagProtection.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out DroppedBagProtection.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Dropped_Bag_Protection entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Friend_Access"))
+                                if (!line.HasAttribute("Friend_Access"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Dropped_Bag_Protection entry in ServerToolsConfig.xml because of missing 'Friend_Access' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Friend_Access"), out DroppedBagProtection.Friend_Access))
+                                if (!bool.TryParse(line.GetAttribute("Friend_Access"), out DroppedBagProtection.Friend_Access))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Dropped_Bag_Protection entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Friend_Access' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Dupe_Log":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Dupe_Log entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out DupeLog.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out DupeLog.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Dupe_Log entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Entity_Cleanup":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out EntityCleanup.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out EntityCleanup.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Falling_Blocks"))
+                                if (!line.HasAttribute("Falling_Blocks"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of missing 'Falling_Blocks' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Falling_Blocks"), out EntityCleanup.BlockIsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Falling_Blocks"), out EntityCleanup.BlockIsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Falling_Blocks' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Falling_Tree"))
+                                if (!line.HasAttribute("Falling_Tree"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of missing 'Falling_Tree' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Falling_Tree"), out EntityCleanup.FallingTreeEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Falling_Tree"), out EntityCleanup.FallingTreeEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Falling_Tree' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Entity_Underground"))
+                                if (!line.HasAttribute("Entity_Underground"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of missing 'Entity_Underground' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Entity_Underground"), out EntityCleanup.Underground))
+                                if (!bool.TryParse(line.GetAttribute("Entity_Underground"), out EntityCleanup.Underground))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Entity_Underground' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delete_Bicycles"))
+                                if (!line.HasAttribute("Delete_Bicycles"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of missing 'Delete_Bicycles' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Delete_Bicycles"), out EntityCleanup.Bicycles))
+                                if (!bool.TryParse(line.GetAttribute("Delete_Bicycles"), out EntityCleanup.Bicycles))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Delete_Bicycles' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Entity_Cleanup_Extended":
-                                if (!_line.HasAttribute("Delete_MiniBikes"))
+                                if (!line.HasAttribute("Delete_MiniBikes"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of missing 'Delete_MiniBikes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Delete_MiniBikes"), out EntityCleanup.MiniBikes))
+                                if (!bool.TryParse(line.GetAttribute("Delete_MiniBikes"), out EntityCleanup.MiniBikes))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Delete_MiniBikes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delete_MotorBikes"))
+                                if (!line.HasAttribute("Delete_MotorBikes"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of missing 'Delete_MotorBikes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Delete_MotorBikes"), out EntityCleanup.MotorBikes))
+                                if (!bool.TryParse(line.GetAttribute("Delete_MotorBikes"), out EntityCleanup.MotorBikes))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Delete_MotorBikes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delete_Jeeps"))
+                                if (!line.HasAttribute("Delete_Jeeps"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of missing 'Delete_Jeeps' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Delete_Jeeps"), out EntityCleanup.Jeeps))
+                                if (!bool.TryParse(line.GetAttribute("Delete_Jeeps"), out EntityCleanup.Jeeps))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Delete_Jeeps' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delete_Gyros"))
+                                if (!line.HasAttribute("Delete_Gyros"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of missing 'Delete_Gyros' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Delete_Gyros"), out EntityCleanup.Gyros))
+                                if (!bool.TryParse(line.GetAttribute("Delete_Gyros"), out EntityCleanup.Gyros))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Delete_Gyros' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Exit_Command":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ExitCommand.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out ExitCommand.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("All"))
+                                if (!line.HasAttribute("All"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command entry in ServerToolsConfig.xml because of missing 'All' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("All"), out ExitCommand.All))
+                                if (!bool.TryParse(line.GetAttribute("All"), out ExitCommand.All))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command entry in ServerToolsConfig.xml because of invalid (True/False) value for 'All' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Belt"))
+                                if (!line.HasAttribute("Belt"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command entry in ServerToolsConfig.xml because of missing 'Belt' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Belt"), out ExitCommand.Belt))
+                                if (!bool.TryParse(line.GetAttribute("Belt"), out ExitCommand.Belt))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Belt' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Bag"))
+                                if (!line.HasAttribute("Bag"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command entry in ServerToolsConfig.xml because of missing 'Bag' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Bag"), out ExitCommand.Bag))
+                                if (!bool.TryParse(line.GetAttribute("Bag"), out ExitCommand.Bag))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Bag' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Equipment"))
+                                if (!line.HasAttribute("Equipment"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command entry in ServerToolsConfig.xml because of missing 'Equipment' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Equipment"), out ExitCommand.Equipment))
+                                if (!bool.TryParse(line.GetAttribute("Equipment"), out ExitCommand.Equipment))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Equipment' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Exit_Command_Extended":
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command_Extended entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out ExitCommand.Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out ExitCommand.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Exit_Time"))
+                                if (!line.HasAttribute("Exit_Time"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command_Extended entry in ServerToolsConfig.xml because of missing 'Exit_Time' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Exit_Time"), out ExitCommand.Exit_Time))
+                                if (!int.TryParse(line.GetAttribute("Exit_Time"), out ExitCommand.Exit_Time))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Exit_Command_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Exit_Time' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Falling_Blocks_Remover":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Falling_Blocks_Remover entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out FallingBlocks.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out FallingBlocks.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Falling_Blocks_Remover entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Log"))
+                                if (!line.HasAttribute("Log"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Falling_Blocks_Remover entry in ServerToolsConfig.xml because of missing 'Log' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Log"), out FallingBlocks.OutputLog))
+                                if (!bool.TryParse(line.GetAttribute("Log"), out FallingBlocks.OutputLog))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Falling_Blocks_Remover entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Log' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Max_Blocks"))
+                                if (!line.HasAttribute("Max_Blocks"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Falling_Blocks_Remover entry in ServerToolsConfig.xml because of missing 'Max_Blocks' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Max_Blocks"), out FallingBlocks.Max_Blocks))
+                                if (!int.TryParse(line.GetAttribute("Max_Blocks"), out FallingBlocks.Max_Blocks))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Falling_Blocks_Remover entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Max_Blocks' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "First_Claim_Block":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring First_Claim_Block entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out FirstClaimBlock.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out FirstClaimBlock.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring First_Claim_Block entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Flying_Detector":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out PlayerChecks.FlyEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out PlayerChecks.FlyEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out PlayerChecks.Flying_Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out PlayerChecks.Flying_Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Flags"))
+                                if (!line.HasAttribute("Flags"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of missing 'Flags' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Flags"), out PlayerChecks.Flying_Flags))
+                                if (!int.TryParse(line.GetAttribute("Flags"), out PlayerChecks.Flying_Flags))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Flags' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "FPS":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring FPS entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Fps.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Fps.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring FPS entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Set_Target"))
+                                if (!line.HasAttribute("Set_Target"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring FPS entry in ServerToolsConfig.xml because of missing 'Set_Target' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Set_Target"), out Fps.Set_Target))
+                                if (!int.TryParse(line.GetAttribute("Set_Target"), out Fps.Set_Target))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring FPS entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Set_Target' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Low_FPS"))
+                                if (!line.HasAttribute("Low_FPS"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring FPS entry in ServerToolsConfig.xml because of missing 'Low_FPS' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Low_FPS"), out Fps.Low_FPS))
+                                if (!int.TryParse(line.GetAttribute("Low_FPS"), out Fps.Low_FPS))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring FPS entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Low_FPS' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Friend_Teleport":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Friend_Teleport entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out FriendTeleport.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out FriendTeleport.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Friend_Teleport entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Friend_Teleport entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out FriendTeleport.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out FriendTeleport.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Friend_Teleport entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Command_Cost"))
+                                if (!line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Friend_Teleport entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out FriendTeleport.Command_Cost))
+                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out FriendTeleport.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Friend_Teleport entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Player_Check"))
+                                if (!line.HasAttribute("Player_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Friend_Teleport entry in ServerToolsConfig.xml because of missing 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Player_Check"), out FriendTeleport.Player_Check))
+                                if (!bool.TryParse(line.GetAttribute("Player_Check"), out FriendTeleport.Player_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Friend_Teleport entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Zombie_Check"))
+                                if (!line.HasAttribute("Zombie_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Friend_Teleport entry in ServerToolsConfig.xml because of missing 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Zombie_Check"), out FriendTeleport.Zombie_Check))
+                                if (!bool.TryParse(line.GetAttribute("Zombie_Check"), out FriendTeleport.Zombie_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Friend_Teleport entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Gamble":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gamble entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Gamble.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Gamble.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gamble entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gamble entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Gamble.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out Gamble.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gamble entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Command_Cost"))
+                                if (!line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gamble entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out Gamble.Command_Cost))
+                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out Gamble.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gamble entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Gimme":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Gimme.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Gimme.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Gimme.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out Gimme.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Zombies"))
+                                if (!line.HasAttribute("Zombies"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry in ServerToolsConfig.xml because of missing 'Zombies' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Zombies"), out Gimme.Zombies))
+                                if (!bool.TryParse(line.GetAttribute("Zombies"), out Gimme.Zombies))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Zombies' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Command_Cost"))
+                                if (!line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out Gimme.Command_Cost))
+                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out Gimme.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Godmode_Detector":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Godmode_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out PlayerChecks.GodEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out PlayerChecks.GodEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Godmode_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Godmode_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out PlayerChecks.Godmode_Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out PlayerChecks.Godmode_Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Godmode_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Hardcore":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hardcore entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Hardcore.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Hardcore.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hardcore entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Optional"))
+                                if (!line.HasAttribute("Optional"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hardcore entry in ServerToolsConfig.xml because of missing 'Optional' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Optional"), out Hardcore.Optional))
+                                if (!bool.TryParse(line.GetAttribute("Optional"), out Hardcore.Optional))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hardcore entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Optional' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Max_Deaths"))
+                                if (!line.HasAttribute("Max_Deaths"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hardcore entry in ServerToolsConfig.xml because of missing 'Max_Deaths' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Max_Deaths"), out Hardcore.Max_Deaths))
+                                if (!int.TryParse(line.GetAttribute("Max_Deaths"), out Hardcore.Max_Deaths))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hardcore entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Max_Deaths' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Max_Extra_Lives"))
+                                if (!line.HasAttribute("Max_Extra_Lives"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hardcore entry in ServerToolsConfig.xml because of missing 'Max_Extra_Lives' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Max_Extra_Lives"), out Hardcore.Max_Extra_Lives))
+                                if (!int.TryParse(line.GetAttribute("Max_Extra_Lives"), out Hardcore.Max_Extra_Lives))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hardcore entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Max_Extra_Lives' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Life_Price"))
+                                if (!line.HasAttribute("Life_Price"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hardcore entry in ServerToolsConfig.xml because of missing 'Life_Price' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Life_Price"), out Hardcore.Life_Price))
+                                if (!int.TryParse(line.GetAttribute("Life_Price"), out Hardcore.Life_Price))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hardcore entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Life_Price' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "High_Ping_Kicker":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring High_Ping_Kicker entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out HighPingKicker.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out HighPingKicker.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring High_Ping_Kicker entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Flags"))
+                                if (!line.HasAttribute("Flags"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring High_Ping_Kicker entry in ServerToolsConfig.xml because of missing 'Flags' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Flags"), out HighPingKicker.Flags))
+                                if (!int.TryParse(line.GetAttribute("Flags"), out HighPingKicker.Flags))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring High_Ping_Kicker entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Flags' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Max_Ping"))
+                                if (!line.HasAttribute("Max_Ping"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring High_Ping_Kicker entry in ServerToolsConfig.xml because of missing 'Max_Ping' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Max_Ping"), out HighPingKicker.Max_Ping))
+                                if (!int.TryParse(line.GetAttribute("Max_Ping"), out HighPingKicker.Max_Ping))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring High_Ping_Kicker entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Max_Ping' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Homes":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Homes.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Homes.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Max_Homes"))
+                                if (!line.HasAttribute("Max_Homes"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes entry in ServerToolsConfig.xml because of missing 'Max_Homes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Max_Homes"), out Homes.Max_Homes))
+                                if (!int.TryParse(line.GetAttribute("Max_Homes"), out Homes.Max_Homes))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Max_Homes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Reserved_Max_Homes"))
+                                if (!line.HasAttribute("Reserved_Max_Homes"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes entry in ServerToolsConfig.xml because of missing 'Reserved_Max_Homes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Reserved_Max_Homes"), out Homes.Reserved_Max_Homes))
+                                if (!int.TryParse(line.GetAttribute("Reserved_Max_Homes"), out Homes.Reserved_Max_Homes))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Reserved_Max_Homes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Command_Cost"))
+                                if (!line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out Homes.Command_Cost))
+                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out Homes.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Homes.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out Homes.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Homes_Extended":
-                                if (!_line.HasAttribute("Player_Check"))
+                                if (!line.HasAttribute("Player_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes_Extended entry in ServerToolsConfig.xml because of missing 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Player_Check"), out Homes.Player_Check))
+                                if (!bool.TryParse(line.GetAttribute("Player_Check"), out Homes.Player_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Zombie_Check"))
+                                if (!line.HasAttribute("Zombie_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes_Extended entry in ServerToolsConfig.xml because of missing 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Zombie_Check"), out Homes.Zombie_Check))
+                                if (!bool.TryParse(line.GetAttribute("Zombie_Check"), out Homes.Zombie_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Vehicle"))
+                                if (!line.HasAttribute("Vehicle"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes_Extended entry in ServerToolsConfig.xml because of missing 'Vehicle' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Vehicle"), out Homes.Vehicle_Check))
+                                if (!bool.TryParse(line.GetAttribute("Vehicle"), out Homes.Vehicle_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Homes_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Vehicle' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Hordes":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hordes entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Hordes.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Hordes.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hordes entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Info_Ticker":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Info_Ticker entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out InfoTicker.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out InfoTicker.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Info_Ticker entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay"))
+                                if (!line.HasAttribute("Delay"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Info_Ticker entry in ServerToolsConfig.xml because of missing 'Delay' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Delay"))
+                                if (line.HasAttribute("Delay"))
                                 {
-                                    InfoTicker.Delay = _line.GetAttribute("Delay");
+                                    InfoTicker.Delay = line.GetAttribute("Delay");
                                 }
-                                if (!_line.HasAttribute("Random"))
+                                if (!line.HasAttribute("Random"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Info_Ticker entry in ServerToolsConfig.xml because of missing 'Random' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Random"), out InfoTicker.Random))
+                                if (!bool.TryParse(line.GetAttribute("Random"), out InfoTicker.Random))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Info_Ticker entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Random' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -1930,489 +1908,489 @@ namespace ServerTools
                                 }
                                 break;
                             case "Invalid_Items":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out InvalidItems.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out InvalidItems.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Ban"))
+                                if (!line.HasAttribute("Ban"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry in ServerToolsConfig.xml because of missing 'Ban' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Ban"), out InvalidItems.Ban_Player))
+                                if (!bool.TryParse(line.GetAttribute("Ban"), out InvalidItems.Ban_Player))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Ban' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out InvalidItems.Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out InvalidItems.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Check_Storage"))
+                                if (!line.HasAttribute("Check_Storage"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry in ServerToolsConfig.xml because of missing 'Check_Storage' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Check_Storage"), out InvalidItems.Check_Storage))
+                                if (!bool.TryParse(line.GetAttribute("Check_Storage"), out InvalidItems.Check_Storage))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Check_Storage' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Invalid_Item_Stack":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Item_Stack entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out InvalidItems.Invalid_Stack))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out InvalidItems.Invalid_Stack))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Item_Stack entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Jail":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Jail entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Jail.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Jail.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Jail entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Jail_Size"))
+                                if (!line.HasAttribute("Jail_Size"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Jail entry in ServerToolsConfig.xml because of missing 'Jail_Size' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Jail_Size"), out Jail.Jail_Size))
+                                if (!int.TryParse(line.GetAttribute("Jail_Size"), out Jail.Jail_Size))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Jail entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Jail_Size' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Jail_Position"))
+                                if (!line.HasAttribute("Jail_Position"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Jail entry in ServerToolsConfig.xml because of missing 'Jail_Position' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Jail_Position"))
+                                if (line.HasAttribute("Jail_Position"))
                                 {
-                                    Jail.Jail_Position = _line.GetAttribute("Jail_Position");
+                                    Jail.Jail_Position = line.GetAttribute("Jail_Position");
                                 }
-                                if (!_line.HasAttribute("Jail_Shock"))
+                                if (!line.HasAttribute("Jail_Shock"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Jail entry in ServerToolsConfig.xml because of missing 'Jail_Shock' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Jail_Shock"), out Jail.Jail_Shock))
+                                if (!bool.TryParse(line.GetAttribute("Jail_Shock"), out Jail.Jail_Shock))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Jail entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Jail_Shock' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Kick_Vote":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out KickVote.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out KickVote.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Players_Online"))
+                                if (!line.HasAttribute("Players_Online"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry in ServerToolsConfig.xml because of missing 'Players_Online' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Players_Online"), out KickVote.Players_Online))
+                                if (!int.TryParse(line.GetAttribute("Players_Online"), out KickVote.Players_Online))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Players_Online' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Votes_Needed"))
+                                if (!line.HasAttribute("Votes_Needed"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry in ServerToolsConfig.xml because of missing 'Votes_Needed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Votes_Needed"), out KickVote.Votes_Needed))
+                                if (!int.TryParse(line.GetAttribute("Votes_Needed"), out KickVote.Votes_Needed))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Votes_Needed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Kill_Notice":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out KillNotice.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out KillNotice.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("PvP"))
+                                if (!line.HasAttribute("PvP"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of missing 'PvP' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("PvP"), out KillNotice.PvP))
+                                if (!bool.TryParse(line.GetAttribute("PvP"), out KillNotice.PvP))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of invalid (True/False) value for 'PvP' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Zombie_Kills"))
+                                if (!line.HasAttribute("Zombie_Kills"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of missing 'Zombie_Kills' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Zombie_Kills"), out KillNotice.Zombie_Kills))
+                                if (!bool.TryParse(line.GetAttribute("Zombie_Kills"), out KillNotice.Zombie_Kills))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Zombie_Kills' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Show_Level"))
+                                if (!line.HasAttribute("Show_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of missing 'Show_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Show_Level"), out KillNotice.Show_Level))
+                                if (!bool.TryParse(line.GetAttribute("Show_Level"), out KillNotice.Show_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Show_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Show_Damage"))
+                                if (!line.HasAttribute("Show_Damage"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of missing 'Show_Damage' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Show_Damage"), out KillNotice.Show_Damage))
+                                if (!bool.TryParse(line.GetAttribute("Show_Damage"), out KillNotice.Show_Damage))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Show_Damage' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Level_Up":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Level_Up entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out LevelUp.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out LevelUp.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Level_Up entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Xml_Only"))
+                                if (!line.HasAttribute("Xml_Only"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Xml_Only entry in ServerToolsConfig.xml because of missing 'Xml_Only' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Xml_Only"), out LevelUp.Xml_Only))
+                                if (!bool.TryParse(line.GetAttribute("Xml_Only"), out LevelUp.Xml_Only))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Xml_Only entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Xml_Only' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Lobby":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Lobby.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Lobby.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Return"))
+                                if (!line.HasAttribute("Return"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of missing 'Return' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Return"), out Lobby.Return))
+                                if (!bool.TryParse(line.GetAttribute("Return"), out Lobby.Return))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Return' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Lobby.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out Lobby.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Lobby_Size"))
+                                if (!line.HasAttribute("Lobby_Size"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of missing 'Lobby_Size' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Lobby_Size"), out Lobby.Lobby_Size))
+                                if (!int.TryParse(line.GetAttribute("Lobby_Size"), out Lobby.Lobby_Size))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Lobby_Size' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Lobby_Position"))
+                                if (!line.HasAttribute("Lobby_Position"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of missing 'Lobby_Position' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Lobby_Position"))
+                                if (line.HasAttribute("Lobby_Position"))
                                 {
-                                    Lobby.Lobby_Position = _line.GetAttribute("Lobby_Position");
+                                    Lobby.Lobby_Position = line.GetAttribute("Lobby_Position");
                                 }
                                 break;
                             case "Lobby_Extended":
-                                if (!_line.HasAttribute("Reserved_Only"))
+                                if (!line.HasAttribute("Reserved_Only"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of missing 'Reserved_Only' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Reserved_Only"), out Lobby.Reserved_Only))
+                                if (!bool.TryParse(line.GetAttribute("Reserved_Only"), out Lobby.Reserved_Only))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Reserved_Only' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Command_Cost"))
+                                if (!line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out Lobby.Command_Cost))
+                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out Lobby.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Player_Check"))
+                                if (!line.HasAttribute("Player_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of missing 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Player_Check"), out Lobby.Player_Check))
+                                if (!bool.TryParse(line.GetAttribute("Player_Check"), out Lobby.Player_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Zombie_Check"))
+                                if (!line.HasAttribute("Zombie_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of missing 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Zombie_Check"), out Lobby.Zombie_Check))
+                                if (!bool.TryParse(line.GetAttribute("Zombie_Check"), out Lobby.Zombie_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("PvE"))
+                                if (!line.HasAttribute("PvE"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of missing 'PvE' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("PvE"), out Lobby.PvE))
+                                if (!bool.TryParse(line.GetAttribute("PvE"), out Lobby.PvE))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry in ServerToolsConfig.xml because of invalid (True/False) value for 'PvE' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Location":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Location entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Loc.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Loc.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Location entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Login_Notice":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Login_Notice entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out LoginNotice.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out LoginNotice.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Login_Notice entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Logs":
-                                if (!_line.HasAttribute("Days_Before_Log_Delete"))
+                                if (!line.HasAttribute("Days_Before_Log_Delete"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Logs entry in ServerToolsConfig.xml because of missing 'Days_Before_Log_Delete' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Days_Before_Log_Delete"), out LoadProcess.Days_Before_Log_Delete))
+                                if (!int.TryParse(line.GetAttribute("Days_Before_Log_Delete"), out LoadProcess.Days_Before_Log_Delete))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Logs entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Days_Before_Log_Delete' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Lottery":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lottery entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Lottery.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Lottery.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lottery entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Bonus"))
+                                if (!line.HasAttribute("Bonus"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lottery entry in ServerToolsConfig.xml because of missing 'Bonus' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Bonus"), out Lottery.Bonus))
+                                if (!int.TryParse(line.GetAttribute("Bonus"), out Lottery.Bonus))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lottery entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Bonus' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Market":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Market.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Market.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Return"))
+                                if (!line.HasAttribute("Return"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of missing 'Return' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Return"), out Market.Return))
+                                if (!bool.TryParse(line.GetAttribute("Return"), out Market.Return))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Return' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Market.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out Market.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Market_Size"))
+                                if (!line.HasAttribute("Market_Size"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of missing 'Market_Size' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Market_Size"), out Market.Market_Size))
+                                if (!int.TryParse(line.GetAttribute("Market_Size"), out Market.Market_Size))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Market_Size' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Market_Position"))
+                                if (!line.HasAttribute("Market_Position"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of missing 'Market_Position' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 else
                                 {
-                                    Market.Market_Position = _line.GetAttribute("Market_Position");
+                                    Market.Market_Position = line.GetAttribute("Market_Position");
                                 }
                                 break;
                             case "Market_Extended":
-                                if (!_line.HasAttribute("Reserved_Only"))
+                                if (!line.HasAttribute("Reserved_Only"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of missing 'Reserved_Only' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Reserved_Only"), out Market.Reserved_Only))
+                                if (!bool.TryParse(line.GetAttribute("Reserved_Only"), out Market.Reserved_Only))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Reserved_Only' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Command_Cost"))
+                                if (!line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out Market.Command_Cost))
+                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out Market.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Player_Check"))
+                                if (!line.HasAttribute("Player_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of missing 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Zombie_Check"), out Market.Player_Check))
+                                if (!bool.TryParse(line.GetAttribute("Zombie_Check"), out Market.Player_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Zombie_Check"))
+                                if (!line.HasAttribute("Zombie_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of missing 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Zombie_Check"), out Market.Zombie_Check))
+                                if (!bool.TryParse(line.GetAttribute("Zombie_Check"), out Market.Zombie_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("PvE"))
+                                if (!line.HasAttribute("PvE"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of missing 'PvE' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("PvE"), out Market.PvE))
+                                if (!bool.TryParse(line.GetAttribute("PvE"), out Market.PvE))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of invalid (True/False) value for 'PvE' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Message_Color":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Message_Color entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatHook.Message_Color_Enabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out ChatHook.Message_Color_Enabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Message_Color entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Color"))
+                                if (!line.HasAttribute("Color"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Message_Color entry in ServerToolsConfig.xml because of missing 'Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 else
                                 {
-                                    ChatHook.Message_Color = _line.GetAttribute("Color");
+                                    ChatHook.Message_Color = line.GetAttribute("Color");
                                     if (!ChatHook.Message_Color.StartsWith("[") || !ChatHook.Message_Color.EndsWith("]"))
                                     {
                                         Log.Warning(string.Format("[SERVERTOOLS] Ignoring Message_Color entry in ServerToolsConfig.xml because of invalid 'Color' attribute: {0}", subChild.OuterXml));
@@ -2421,186 +2399,186 @@ namespace ServerTools
                                 }
                                 break;
                             case "Motd":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Motd.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Motd.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Show_On_Respawn"))
+                                if (!line.HasAttribute("Show_On_Respawn"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd entry in ServerToolsConfig.xml because of missing 'Show_On_Respawn' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Show_On_Respawn"), out Motd.Show_On_Respawn))
+                                if (!bool.TryParse(line.GetAttribute("Show_On_Respawn"), out Motd.Show_On_Respawn))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Show_On_Respawn' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Mute":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Mute entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Mute.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Mute.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Mute entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Block_Commands"))
+                                if (!line.HasAttribute("Block_Commands"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Mute entry in ServerToolsConfig.xml because of missing 'Block_Commands' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Block_Commands"), out Mute.Block_Commands))
+                                if (!bool.TryParse(line.GetAttribute("Block_Commands"), out Mute.Block_Commands))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Mute entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Block_Commands' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Mute_Vote":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Mute_Vote entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out MuteVote.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out MuteVote.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Mute_Vote entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Players_Online"))
+                                if (!line.HasAttribute("Players_Online"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Mute_Vote entry in ServerToolsConfig.xml because of missing 'Players_Online' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Players_Online"), out MuteVote.Players_Online))
+                                if (!int.TryParse(line.GetAttribute("Players_Online"), out MuteVote.Players_Online))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Mute_Vote entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Players_Online' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Votes_Needed"))
+                                if (!line.HasAttribute("Votes_Needed"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Mute_Vote entry in ServerToolsConfig.xml because of missing 'Votes_Needed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Votes_Needed"), out MuteVote.Votes_Needed))
+                                if (!int.TryParse(line.GetAttribute("Votes_Needed"), out MuteVote.Votes_Needed))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Mute_Vote entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Votes_Needed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "New_Player":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out NewPlayer.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out NewPlayer.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Entry_Message"))
+                                if (!line.HasAttribute("Entry_Message"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player entry in ServerToolsConfig.xml because of missing a Entry_Message attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Entry_Message"))
+                                if (line.HasAttribute("Entry_Message"))
                                 {
-                                    NewPlayer.Entry_Message = _line.GetAttribute("Entry_Message");
+                                    NewPlayer.Entry_Message = line.GetAttribute("Entry_Message");
                                 }
                                 break;
                             case "New_Player_Extended":
-                                if (!_line.HasAttribute("Block_During_Bloodmoon"))
+                                if (!line.HasAttribute("Block_During_Bloodmoon"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player_Extended entry in ServerToolsConfig.xml because of missing 'Block_During_Bloodmoon' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Block_During_Bloodmoon"), out NewPlayer.Block_During_Bloodmoon))
+                                if (!bool.TryParse(line.GetAttribute("Block_During_Bloodmoon"), out NewPlayer.Block_During_Bloodmoon))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Block_During_Bloodmoon' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "New_Player_Protection":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player_Protection entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out NewPlayerProtection.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out NewPlayerProtection.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player_Protection entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Level"))
+                                if (!line.HasAttribute("Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player_Protection entry in ServerToolsConfig.xml because of missing a Level attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Level"), out NewPlayerProtection.Level))
+                                if (!int.TryParse(line.GetAttribute("Level"), out NewPlayerProtection.Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player_Protection entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "New_Spawn_Tele":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Spawn_Tele entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out NewSpawnTele.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out NewSpawnTele.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Spawn_Tele entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("New_Spawn_Tele_Position"))
+                                if (!line.HasAttribute("New_Spawn_Tele_Position"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Spawn_Tele entry in ServerToolsConfig.xml because of missing a New_Spawn_Tele_Position attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("New_Spawn_Tele_Position"))
+                                if (line.HasAttribute("New_Spawn_Tele_Position"))
                                 {
-                                    NewSpawnTele.New_Spawn_Tele_Position = _line.GetAttribute("New_Spawn_Tele_Position");
+                                    NewSpawnTele.New_Spawn_Tele_Position = line.GetAttribute("New_Spawn_Tele_Position");
                                 }
-                                if (!_line.HasAttribute("Return"))
+                                if (!line.HasAttribute("Return"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Spawn_Tele entry in ServerToolsConfig.xml because of missing 'Return' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Return"), out NewSpawnTele.Return))
+                                if (!bool.TryParse(line.GetAttribute("Return"), out NewSpawnTele.Return))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Spawn_Tele entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Return' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Night_Alert":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Night_Alert entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out NightAlert.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out NightAlert.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Night_Alert entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay"))
+                                if (!line.HasAttribute("Delay"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Night_Alert entry in ServerToolsConfig.xml because of missing 'Delay' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Delay"))
+                                if (line.HasAttribute("Delay"))
                                 {
-                                    NightAlert.Delay = _line.GetAttribute("Delay");
+                                    NightAlert.Delay = line.GetAttribute("Delay");
                                 }
                                 if (NightAlert.IsEnabled)
                                 {
@@ -2612,97 +2590,97 @@ namespace ServerTools
                                 }
                                 break;
                             case "No_Vehicle_Pickup":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring No_Vehicle_Pickup entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out PersistentOperations.No_Vehicle_Pickup))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out PersistentOperations.No_Vehicle_Pickup))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring No_Vehicle_Pickup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Normal_Player_Color_Prefix":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Normal_Player_Color_Prefix entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatHook.Normal_Player_Color_Prefix))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out ChatHook.Normal_Player_Color_Prefix))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Normal_Player_Color_Prefix entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Prefix"))
+                                if (!line.HasAttribute("Prefix"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Normal_Player_Color_Prefix entry in ServerToolsConfig.xml because of missing 'Prefix' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 else
                                 {
-                                    ChatHook.Normal_Player_Prefix = _line.GetAttribute("Prefix");
+                                    ChatHook.Normal_Player_Prefix = line.GetAttribute("Prefix");
                                 }
-                                if (!_line.HasAttribute("Name_Color"))
+                                if (!line.HasAttribute("Name_Color"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Normal_Player_Color_Prefix entry in ServerToolsConfig.xml because of missing 'Name_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 else
                                 {
-                                    ChatHook.Normal_Player_Name_Color = _line.GetAttribute("Name_Color");
+                                    ChatHook.Normal_Player_Name_Color = line.GetAttribute("Name_Color");
                                 }
-                                if (!_line.HasAttribute("Prefix_Color"))
+                                if (!line.HasAttribute("Prefix_Color"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Normal_Player_Color_Prefix entry in ServerToolsConfig.xml because of missing 'Prefix_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 else
                                 {
-                                    ChatHook.Normal_Player_Prefix_Color = _line.GetAttribute("Prefix_Color");
+                                    ChatHook.Normal_Player_Prefix_Color = line.GetAttribute("Prefix_Color");
                                 }
                                 break;
                             case "Player_List":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_List entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out PlayerList.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out PlayerList.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_List entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Player_Logs":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Logs entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out PlayerLogs.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out PlayerLogs.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Logs entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Vehicle"))
+                                if (!line.HasAttribute("Vehicle"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Logs entry in ServerToolsConfig.xml because of missing 'Vehicle' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Vehicle"), out PlayerLogs.Vehicle))
+                                if (!bool.TryParse(line.GetAttribute("Vehicle"), out PlayerLogs.Vehicle))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Logs entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Vehicle' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Interval"))
+                                if (!line.HasAttribute("Interval"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Logs entry in ServerToolsConfig.xml because of missing 'Interval' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Interval"))
+                                if (line.HasAttribute("Interval"))
                                 {
-                                    PlayerLogs.Delay = _line.GetAttribute("Interval");
+                                    PlayerLogs.Delay = line.GetAttribute("Interval");
                                 }
                                 if (PlayerLogs.IsEnabled)
                                 {
@@ -2714,288 +2692,288 @@ namespace ServerTools
                                 }
                                 break;
                             case "Player_Stats":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out PlayerStats.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out PlayerStats.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Max_Speed"))
+                                if (!line.HasAttribute("Max_Speed"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of missing 'Max_Speed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Max_Speed"), out PlayerStats.Max_Speed))
+                                if (!int.TryParse(line.GetAttribute("Max_Speed"), out PlayerStats.Max_Speed))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Max_Speed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Health"))
+                                if (!line.HasAttribute("Health"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of missing 'Health' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Health"), out PlayerStats.Health))
+                                if (!int.TryParse(line.GetAttribute("Health"), out PlayerStats.Health))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Health' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Stamina"))
+                                if (!line.HasAttribute("Stamina"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of missing 'Stamina' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Stamina"), out PlayerStats.Stamina))
+                                if (!int.TryParse(line.GetAttribute("Stamina"), out PlayerStats.Stamina))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Stamina' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Jump_Strength"))
+                                if (!line.HasAttribute("Jump_Strength"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of missing 'Jump_Strength' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!double.TryParse(_line.GetAttribute("Jump_Strength"), out PlayerStats.Jump_Strength))
+                                if (!double.TryParse(line.GetAttribute("Jump_Strength"), out PlayerStats.Jump_Strength))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Jump_Strength' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Player_Stats_Extended":
-                                if (!_line.HasAttribute("Height"))
+                                if (!line.HasAttribute("Height"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats_Extended entry in ServerToolsConfig.xml because of missing 'Height' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!double.TryParse(_line.GetAttribute("Height"), out PlayerStats.Height))
+                                if (!double.TryParse(line.GetAttribute("Height"), out PlayerStats.Height))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Height' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats_Extended entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out PlayerStats.Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out PlayerStats.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Kick_Enabled"))
+                                if (!line.HasAttribute("Kick_Enabled"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats_Extended entry in ServerToolsConfig.xml because of missing 'Kick_Enabled' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Kick_Enabled"), out PlayerStats.Kick_Enabled))
+                                if (!bool.TryParse(line.GetAttribute("Kick_Enabled"), out PlayerStats.Kick_Enabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Kick_Enabled' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Ban_Enabled"))
+                                if (!line.HasAttribute("Ban_Enabled"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats_Extended entry in ServerToolsConfig.xml because of missing 'Ban_Enabled' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Ban_Enabled"), out PlayerStats.Ban_Enabled))
+                                if (!bool.TryParse(line.GetAttribute("Ban_Enabled"), out PlayerStats.Ban_Enabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Ban_Enabled' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "POI_Protection":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring POI_Protection entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out POIProtection.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out POIProtection.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring POI_Protection entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Bed"))
+                                if (!line.HasAttribute("Bed"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring POI_Protection entry in ServerToolsConfig.xml because of missing 'Bed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Bed"), out POIProtection.Bed))
+                                if (!bool.TryParse(line.GetAttribute("Bed"), out POIProtection.Bed))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring POI_Protection entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Bed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Claim"))
+                                if (!line.HasAttribute("Claim"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring POI_Protection entry in ServerToolsConfig.xml because of missing 'Claim' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Claim"), out POIProtection.Claim))
+                                if (!bool.TryParse(line.GetAttribute("Claim"), out POIProtection.Claim))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring POI_Protection entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Claim' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Poll":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Poll entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Poll.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Poll.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Poll entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Prayer":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Prayer.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Prayer.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Prayer.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out Prayer.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Command_Cost"))
+                                if (!line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out Prayer.Command_Cost))
+                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out Prayer.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Private_Message":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Private_Message entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Whisper.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Whisper.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Private_Message entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Protected_Spaces":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Protected_Spaces entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ProtectedSpaces.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out ProtectedSpaces.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Protected_Spaces entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Public_Waypoints":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Public_Waypoints entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Waypoints.Public_Waypoints))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Waypoints.Public_Waypoints))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Public_Waypoints entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "PvE_Violations":
-                                if (!_line.HasAttribute("Jail"))
+                                if (!line.HasAttribute("Jail"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry in ServerToolsConfig.xml because of missing 'Jail' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Jail"), out PersistentOperations.Jail_Violation))
+                                if (!int.TryParse(line.GetAttribute("Jail"), out PersistentOperations.Jail_Violation))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Jail' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Kill"))
+                                if (!line.HasAttribute("Kill"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry in ServerToolsConfig.xml because of missing 'Kill' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Kill"), out PersistentOperations.Kill_Violation))
+                                if (!int.TryParse(line.GetAttribute("Kill"), out PersistentOperations.Kill_Violation))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Kill' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Kick"))
+                                if (!line.HasAttribute("Kick"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry in ServerToolsConfig.xml because of missing 'Kick' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Kick"), out PersistentOperations.Kick_Violation))
+                                if (!int.TryParse(line.GetAttribute("Kick"), out PersistentOperations.Kick_Violation))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Kick' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Ban"))
+                                if (!line.HasAttribute("Ban"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry in ServerToolsConfig.xml because of missing 'Ban' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Ban"), out PersistentOperations.Ban_Violation))
+                                if (!int.TryParse(line.GetAttribute("Ban"), out PersistentOperations.Ban_Violation))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Ban' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Real_World_Time":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Real_World_Time entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out RealWorldTime.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out RealWorldTime.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Real_World_Time entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay"))
+                                if (!line.HasAttribute("Delay"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Real_World_Time entry in ServerToolsConfig.xml because of missing 'Delay' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Delay"))
+                                if (line.HasAttribute("Delay"))
                                 {
-                                    RealWorldTime.Delay = _line.GetAttribute("Delay");
+                                    RealWorldTime.Delay = line.GetAttribute("Delay");
                                 }
-                                if (!_line.HasAttribute("Time_Zone"))
+                                if (!line.HasAttribute("Time_Zone"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Real_World_Time entry in ServerToolsConfig.xml because of missing 'Time_Zone' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Time_Zone"))
+                                if (line.HasAttribute("Time_Zone"))
                                 {
-                                    RealWorldTime.Time_Zone = _line.GetAttribute("Time_Zone");
+                                    RealWorldTime.Time_Zone = line.GetAttribute("Time_Zone");
                                 }
-                                if (!_line.HasAttribute("Adjustment"))
+                                if (!line.HasAttribute("Adjustment"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Real_World_Time entry in ServerToolsConfig.xml because of missing 'Adjustment' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Adjustment"), out RealWorldTime.Adjustment))
+                                if (!int.TryParse(line.GetAttribute("Adjustment"), out RealWorldTime.Adjustment))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Real_World_Time entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Adjustment' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -3010,254 +2988,254 @@ namespace ServerTools
                                 }
                                 break;
                             case "Report":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Report entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Report.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Report.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Report entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Report entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Report.Delay))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out Report.Delay))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Report entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Length"))
+                                if (!line.HasAttribute("Length"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Report entry in ServerToolsConfig.xml because of missing 'Length' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Length"), out Report.Length))
+                                if (!int.TryParse(line.GetAttribute("Length"), out Report.Length))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Report entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Length' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Report entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out Report.Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out Report.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Report entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Reserved_Slots":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ReservedSlots.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out ReservedSlots.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Session_Time"))
+                                if (!line.HasAttribute("Session_Time"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry in ServerToolsConfig.xml because of missing 'Session_Time' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Session_Time"), out ReservedSlots.Session_Time))
+                                if (!int.TryParse(line.GetAttribute("Session_Time"), out ReservedSlots.Session_Time))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Session_Time' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out ReservedSlots.Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out ReservedSlots.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Reduced_Delay"))
+                                if (!line.HasAttribute("Reduced_Delay"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry in ServerToolsConfig.xml because of missing 'Reduced_Delay' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Reduced_Delay"), out ReservedSlots.Reduced_Delay))
+                                if (!bool.TryParse(line.GetAttribute("Reduced_Delay"), out ReservedSlots.Reduced_Delay))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Reduced_Delay' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Bonus_Exp"))
+                                if (!line.HasAttribute("Bonus_Exp"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry in ServerToolsConfig.xml because of missing 'Bonus_Exp' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Bonus_Exp"), out ReservedSlots.Bonus_Exp))
+                                if (!bool.TryParse(line.GetAttribute("Bonus_Exp"), out ReservedSlots.Bonus_Exp))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Bonus_Exp' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Restart_Vote":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out RestartVote.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out RestartVote.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
 
-                                if (!_line.HasAttribute("Players_Online"))
+                                if (!line.HasAttribute("Players_Online"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry in ServerToolsConfig.xml because of missing 'Players_Online' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Players_Online"), out RestartVote.Players_Online))
+                                if (!int.TryParse(line.GetAttribute("Players_Online"), out RestartVote.Players_Online))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Players_Online' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Votes_Needed"))
+                                if (!line.HasAttribute("Votes_Needed"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry in ServerToolsConfig.xml because of missing 'Votes_Needed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
 
-                                if (!int.TryParse(_line.GetAttribute("Votes_Needed"), out RestartVote.Votes_Needed))
+                                if (!int.TryParse(line.GetAttribute("Votes_Needed"), out RestartVote.Votes_Needed))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Votes_Needed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
 
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out RestartVote.Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out RestartVote.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Scout_Player":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Scout_Player entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ScoutPlayer.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out ScoutPlayer.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Scout_Player entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Scout_Player entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out ScoutPlayer.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out ScoutPlayer.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Scout_Player entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Command_Cost"))
+                                if (!line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Scout_Player entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out ScoutPlayer.Command_Cost))
+                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out ScoutPlayer.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Scout_Player entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Shop":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Shop.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Shop.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Inside_Market"))
+                                if (!line.HasAttribute("Inside_Market"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry in ServerToolsConfig.xml because of missing 'Inside_Market' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Inside_Market"), out Shop.Inside_Market))
+                                if (!bool.TryParse(line.GetAttribute("Inside_Market"), out Shop.Inside_Market))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Inside_Market' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Inside_Traders"))
+                                if (!line.HasAttribute("Inside_Traders"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry in ServerToolsConfig.xml because of missing 'Inside_Traders' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Inside_Traders"), out Shop.Inside_Traders))
+                                if (!bool.TryParse(line.GetAttribute("Inside_Traders"), out Shop.Inside_Traders))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Inside_Traders' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Shutdown":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Shutdown.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Shutdown.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Countdown"))
+                                if (!line.HasAttribute("Countdown"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry in ServerToolsConfig.xml because of missing 'Countdown' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Countdown"), out Shutdown.Countdown))
+                                if (!int.TryParse(line.GetAttribute("Countdown"), out Shutdown.Countdown))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Countdown' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Time"))
+                                if (!line.HasAttribute("Time"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry in ServerToolsConfig.xml because of missing 'Time' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Time"))
+                                if (line.HasAttribute("Time"))
                                 {
-                                    Shutdown.Time = _line.GetAttribute("Time");
+                                    Shutdown.Time = line.GetAttribute("Time");
                                 }
-                                if (!_line.HasAttribute("Alert_On_Login"))
+                                if (!line.HasAttribute("Alert_On_Login"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry in ServerToolsConfig.xml because of missing 'Alert_On_Login' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Alert_On_Login"), out Shutdown.Alert_On_Login))
+                                if (!bool.TryParse(line.GetAttribute("Alert_On_Login"), out Shutdown.Alert_On_Login))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Alert_On_Login' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Alert_Count"))
+                                if (!line.HasAttribute("Alert_Count"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry in ServerToolsConfig.xml because of missing 'Alert_Count' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Alert_Count"), out Shutdown.Alert_Count))
+                                if (!int.TryParse(line.GetAttribute("Alert_Count"), out Shutdown.Alert_Count))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Alert_Count' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -3272,486 +3250,486 @@ namespace ServerTools
                                 }
                                 break;
                             case "Shutdown_Extended":
-                                if (!_line.HasAttribute("UI_Lock"))
+                                if (!line.HasAttribute("UI_Lock"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown_Extended entry in ServerToolsConfig.xml because of missing 'UI_Lock' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("UI_Lock"), out Shutdown.UI_Lock))
+                                if (!bool.TryParse(line.GetAttribute("UI_Lock"), out Shutdown.UI_Lock))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'UI_Lock' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Sleeper_Respawn":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Sleeper_Respawn entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out SleeperRespawn.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out SleeperRespawn.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Sleeper_Respawn entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Spectator_Detector":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Spectator_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out PlayerChecks.SpectatorEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out PlayerChecks.SpectatorEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Spectator_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Spectator_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out PlayerChecks.Spectator_Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out PlayerChecks.Spectator_Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Spectator_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Starting_Items":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Starting_Items entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out StartingItems.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out StartingItems.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Starting_Items entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Stuck":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Stuck entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Stuck.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Stuck.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Stuck entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Stuck entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Stuck.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out Stuck.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Stuck entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Suicide":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Killme entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Suicide.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Suicide.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Killme entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Killme entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Suicide.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out Suicide.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Killme entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Player_Check"))
+                                if (!line.HasAttribute("Player_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Killme entry in ServerToolsConfig.xml because of missing 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Player_Check"), out Suicide.Player_Check))
+                                if (!bool.TryParse(line.GetAttribute("Player_Check"), out Suicide.Player_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Killme entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Zombie_Check"))
+                                if (!line.HasAttribute("Zombie_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Killme entry in ServerToolsConfig.xml because of missing 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Zombie_Check"), out Suicide.Zombie_Check))
+                                if (!bool.TryParse(line.GetAttribute("Zombie_Check"), out Suicide.Zombie_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Killme entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Player_Check"))
+                                if (!line.HasAttribute("Player_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Killme entry in ServerToolsConfig.xml because of missing 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Player_Check"), out Suicide.Player_Check))
+                                if (!bool.TryParse(line.GetAttribute("Player_Check"), out Suicide.Player_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Killme entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Zombie_Check"))
+                                if (!line.HasAttribute("Zombie_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Killme entry in ServerToolsConfig.xml because of missing 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Zombie_Check"), out Suicide.Zombie_Check))
+                                if (!bool.TryParse(line.GetAttribute("Zombie_Check"), out Suicide.Zombie_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Killme entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Tracking":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Tracking entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Track.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Track.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Tracking entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Travel":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Travel.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Travel.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Travel.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out Travel.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Command_Cost"))
+                                if (!line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out Travel.Command_Cost))
+                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out Travel.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Player_Check"))
+                                if (!line.HasAttribute("Player_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry in ServerToolsConfig.xml because of missing 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Player_Check"), out Travel.Player_Check))
+                                if (!bool.TryParse(line.GetAttribute("Player_Check"), out Travel.Player_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Zombie_Check"))
+                                if (!line.HasAttribute("Zombie_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry in ServerToolsConfig.xml because of missing 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Zombie_Check"), out Travel.Zombie_Check))
+                                if (!bool.TryParse(line.GetAttribute("Zombie_Check"), out Travel.Zombie_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Vehicle_Recall":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out VehicleRecall.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out VehicleRecall.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Inside_Claim"))
+                                if (!line.HasAttribute("Inside_Claim"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of missing 'Inside_Claim' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Inside_Claim"), out VehicleRecall.Inside_Claim))
+                                if (!bool.TryParse(line.GetAttribute("Inside_Claim"), out VehicleRecall.Inside_Claim))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Inside_Claim' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Distance"))
+                                if (!line.HasAttribute("Distance"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of missing 'Distance' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Distance"), out VehicleRecall.Distance))
+                                if (!int.TryParse(line.GetAttribute("Distance"), out VehicleRecall.Distance))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Distance' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out VehicleRecall.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out VehicleRecall.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Command_Cost"))
+                                if (!line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out VehicleRecall.Command_Cost))
+                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out VehicleRecall.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Vehicle_Recall_Extended":
-                                if (!_line.HasAttribute("Normal_Max"))
+                                if (!line.HasAttribute("Normal_Max"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall_Extended entry in ServerToolsConfig.xml because of missing 'Normal_Max' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Normal_Max"), out VehicleRecall.Normal_Max))
+                                if (!int.TryParse(line.GetAttribute("Normal_Max"), out VehicleRecall.Normal_Max))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Normal_Max' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Reserved_Max"))
+                                if (!line.HasAttribute("Reserved_Max"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall_Extended entry in ServerToolsConfig.xml because of missing 'Reserved_Max' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Reserved_Max"), out VehicleRecall.Reserved_Max))
+                                if (!int.TryParse(line.GetAttribute("Reserved_Max"), out VehicleRecall.Reserved_Max))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Reserved_Max' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Voting":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out VoteReward.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out VoteReward.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Your_Voting_Site"))
+                                if (!line.HasAttribute("Your_Voting_Site"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry in ServerToolsConfig.xml because of missing 'Your_Voting_Site' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Your_Voting_Site"))
+                                if (line.HasAttribute("Your_Voting_Site"))
                                 {
-                                    VoteReward.Your_Voting_Site = _line.GetAttribute("Your_Voting_Site");
+                                    VoteReward.Your_Voting_Site = line.GetAttribute("Your_Voting_Site");
                                 }
-                                if (!_line.HasAttribute("API_Key"))
+                                if (!line.HasAttribute("API_Key"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry in ServerToolsConfig.xml because of missing 'API_Key' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("API_Key"))
+                                if (line.HasAttribute("API_Key"))
                                 {
-                                    VoteReward.API_Key = _line.GetAttribute("API_Key");
+                                    VoteReward.API_Key = line.GetAttribute("API_Key");
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out VoteReward.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out VoteReward.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Voting_Extended":
-                                if (!_line.HasAttribute("Reward_Count"))
+                                if (!line.HasAttribute("Reward_Count"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of missing 'Reward_Count' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Reward_Count"), out VoteReward.Reward_Count))
+                                if (!int.TryParse(line.GetAttribute("Reward_Count"), out VoteReward.Reward_Count))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Reward_Count' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Reward_Entity"))
+                                if (!line.HasAttribute("Reward_Entity"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of missing 'Reward_Entity' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Reward_Entity"), out VoteReward.Reward_Entity))
+                                if (!bool.TryParse(line.GetAttribute("Reward_Entity"), out VoteReward.Reward_Entity))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Reward_Entity' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Entity_Id"))
+                                if (!line.HasAttribute("Entity_Id"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of missing 'Entity_Id' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Entity_Id"), out VoteReward.Entity_Id))
+                                if (!int.TryParse(line.GetAttribute("Entity_Id"), out VoteReward.Entity_Id))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Entity_Id' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Weekly_Votes"))
+                                if (!line.HasAttribute("Weekly_Votes"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of missing 'Weekly_Votes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Weekly_Votes"), out VoteReward.Weekly_Votes))
+                                if (!int.TryParse(line.GetAttribute("Weekly_Votes"), out VoteReward.Weekly_Votes))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Weekly_Votes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Wallet":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Wallet.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Wallet.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Coin_Name"))
+                                if (!line.HasAttribute("Coin_Name"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Coin_Name' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                Wallet.Coin_Name = _line.GetAttribute("Coin_Name");
-                                if (!_line.HasAttribute("PVP"))
+                                Wallet.Coin_Name = line.GetAttribute("Coin_Name");
+                                if (!line.HasAttribute("PVP"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'PVP' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("PVP"), out Wallet.PVP))
+                                if (!bool.TryParse(line.GetAttribute("PVP"), out Wallet.PVP))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (True/False) value for 'PVP' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Zombie_Kill_Value"))
+                                if (!line.HasAttribute("Zombie_Kill_Value"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Zombie_Kill_Value' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Zombie_Kill_Value"), out Wallet.Zombie_Kills))
+                                if (!int.TryParse(line.GetAttribute("Zombie_Kill_Value"), out Wallet.Zombie_Kills))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Zombie_Kill_Value' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Player_Kill_Value"))
+                                if (!line.HasAttribute("Player_Kill_Value"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Player_Kill_Value' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Player_Kill_Value"), out Wallet.Player_Kills))
+                                if (!int.TryParse(line.GetAttribute("Player_Kill_Value"), out Wallet.Player_Kills))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Player_Kill_Value' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Wallet_Extended":
-                                if (!_line.HasAttribute("Death_Penalty_Value"))
+                                if (!line.HasAttribute("Death_Penalty_Value"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet_Extended entry in ServerToolsConfig.xml because of missing 'Death_Penalty_Value' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Death_Penalty_Value"), out Wallet.Deaths))
+                                if (!int.TryParse(line.GetAttribute("Death_Penalty_Value"), out Wallet.Deaths))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Death_Penalty_Value' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Lose_On_Death"))
+                                if (!line.HasAttribute("Lose_On_Death"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Lose_On_Death' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Lose_On_Death"), out Wallet.Lose_On_Death))
+                                if (!bool.TryParse(line.GetAttribute("Lose_On_Death"), out Wallet.Lose_On_Death))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Lose_On_Death' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Bank_Transfers"))
+                                if (!line.HasAttribute("Bank_Transfers"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Bank_Transfers' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Bank_Transfers"), out Wallet.Bank_Transfers))
+                                if (!bool.TryParse(line.GetAttribute("Bank_Transfers"), out Wallet.Bank_Transfers))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Bank_Transfers' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Session_Bonus"))
+                                if (!line.HasAttribute("Session_Bonus"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Session_Bonus' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Session_Bonus"), out Wallet.Session_Bonus))
+                                if (!int.TryParse(line.GetAttribute("Session_Bonus"), out Wallet.Session_Bonus))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Session_Bonus' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Watch_List":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Watch_List entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out WatchList.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out WatchList.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Watch_List entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Watch_List entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out WatchList.Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out WatchList.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Watch_List entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay"))
+                                if (!line.HasAttribute("Delay"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Watch_List entry in ServerToolsConfig.xml because of missing 'Delay' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Delay"))
+                                if (line.HasAttribute("Delay"))
                                 {
-                                    WatchList.Delay = _line.GetAttribute("Delay");
+                                    WatchList.Delay = line.GetAttribute("Delay");
                                 }
                                 if (WatchList.IsEnabled)
                                 {
@@ -3763,233 +3741,201 @@ namespace ServerTools
                                 }
                                 break;
                             case "Waypoints":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Waypoints.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Waypoints.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Max_Waypoints"))
+                                if (!line.HasAttribute("Max_Waypoints"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry in ServerToolsConfig.xml because of missing 'Max_Waypoints' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Max_Waypoints"), out Waypoints.Max_Waypoints))
+                                if (!int.TryParse(line.GetAttribute("Max_Waypoints"), out Waypoints.Max_Waypoints))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Max_Waypoints' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Reserved_Max_Waypoints"))
+                                if (!line.HasAttribute("Reserved_Max_Waypoints"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry in ServerToolsConfig.xml because of missing 'Reserved_Max_Waypoints' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Reserved_Max_Waypoints"), out Waypoints.Reserved_Max_Waypoints))
+                                if (!int.TryParse(line.GetAttribute("Reserved_Max_Waypoints"), out Waypoints.Reserved_Max_Waypoints))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Reserved_Max_Waypoints' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Command_Cost"))
+                                if (!line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry in ServerToolsConfig.xml because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out Waypoints.Command_Cost))
+                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out Waypoints.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                if (!line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Waypoints.Delay_Between_Uses))
+                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out Waypoints.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Waypoints_Extended":
-                                if (!_line.HasAttribute("Player_Check"))
+                                if (!line.HasAttribute("Player_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of missing 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Player_Check"), out Waypoints.Player_Check))
+                                if (!bool.TryParse(line.GetAttribute("Player_Check"), out Waypoints.Player_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Zombie_Check"))
+                                if (!line.HasAttribute("Zombie_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of missing 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Zombie_Check"), out Waypoints.Zombie_Check))
+                                if (!bool.TryParse(line.GetAttribute("Zombie_Check"), out Waypoints.Zombie_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Vehicle"))
+                                if (!line.HasAttribute("Vehicle"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of missing 'Vehicle' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Vehicle"), out Waypoints.Vehicle))
+                                if (!bool.TryParse(line.GetAttribute("Vehicle"), out Waypoints.Vehicle))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Vehicle' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
-                            case "Weather_Vote":
-                                if (!_line.HasAttribute("Enable"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Weather_Vote entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out WeatherVote.IsEnabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Weather_Vote entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Players_Online"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry in ServerToolsConfig.xml because of missing 'Players_Online' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Players_Online"), out WeatherVote.Players_Online))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Players_Online' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Votes_Needed"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry in ServerToolsConfig.xml because of missing 'Votes_Needed' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Votes_Needed"), out WeatherVote.Votes_Needed))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Votes_Needed' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                break;
                             case "Web_API":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_API entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out WebAPI.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out WebAPI.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_API entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Port"))
+                                if (!line.HasAttribute("Port"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_API entry in ServerToolsConfig.xml because of missing 'Port' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Port"), out WebAPI.Port))
+                                if (!int.TryParse(line.GetAttribute("Port"), out WebAPI.Port))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_API entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Port' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Web_Panel":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_Panel entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out WebPanel.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out WebPanel.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_Panel entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "World_Radius":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring World_Radius entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out WorldRadius.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out WorldRadius.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring World_Radius entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Normal_Player"))
+                                if (!line.HasAttribute("Normal_Player"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring World_Radius entry in ServerToolsConfig.xml because of missing 'Normal_Player' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Normal_Player"), out WorldRadius.Normal_Player))
+                                if (!int.TryParse(line.GetAttribute("Normal_Player"), out WorldRadius.Normal_Player))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring World_Radius entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Normal_Player' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Reserved"))
+                                if (!line.HasAttribute("Reserved"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring World_Radius entry in ServerToolsConfig.xml because of missing 'Reserved' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Reserved"), out WorldRadius.Reserved))
+                                if (!int.TryParse(line.GetAttribute("Reserved"), out WorldRadius.Reserved))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring World_Radius entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Reserved' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Admin_Level"))
+                                if (!line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring World_Radius entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out WorldRadius.Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out WorldRadius.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring World_Radius entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
                             case "Zones":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Zones.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out Zones.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Zone_Message"))
+                                if (!line.HasAttribute("Zone_Message"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry in ServerToolsConfig.xml because of missing 'Zone_Message' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Zone_Message"), out Zones.Zone_Message))
+                                if (!bool.TryParse(line.GetAttribute("Zone_Message"), out Zones.Zone_Message))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Zone_Message' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Reminder_Delay"))
+                                if (!line.HasAttribute("Reminder_Delay"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry in ServerToolsConfig.xml because of missing 'Reminder_Delay' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (_line.HasAttribute("Reminder_Delay"))
+                                if (line.HasAttribute("Reminder_Delay"))
                                 {
-                                    Zones.Reminder_Delay = _line.GetAttribute("Reminder_Delay");
+                                    Zones.Reminder_Delay = line.GetAttribute("Reminder_Delay");
                                 }
-                                if (!_line.HasAttribute("Set_Home"))
+                                if (!line.HasAttribute("Set_Home"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry in ServerToolsConfig.xml because of missing 'Set_Home' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Set_Home"), out Zones.Set_Home))
+                                if (!bool.TryParse(line.GetAttribute("Set_Home"), out Zones.Set_Home))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Set_Home' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -4006,6 +3952,11 @@ namespace ServerTools
                         }
                     }
                 }
+            }
+            if (Upgrade)
+            {
+                WriteXml();
+                Config.UpgradeXml(xmlDoc.DocumentElement.ChildNodes[1].ChildNodes);
             }
         }
 
@@ -4031,7 +3982,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Ingame_Coin=\"{2}\" Deposit_Fee_Percent=\"{3}\" Player_Transfers=\"{4}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Ingame_Coin, Bank.Deposit_Fee_Percent, Bank.Player_Transfers));
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Logger\" Enable=\"{0}\" />", BlockLogger.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Delay=\"{1}\" Show_On_Respawn=\"{2}\" Auto_Show=\"{3}\" />", Bloodmoon.IsEnabled, Bloodmoon.Delay, Bloodmoon.Show_On_Respawn, Bloodmoon.Auto_Show));
+                sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Delay=\"{1}\" Show_On_Respawn=\"{2}\" />", Bloodmoon.IsEnabled, Bloodmoon.Delay, Bloodmoon.Show_On_Respawn));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon_Warrior\" Enable=\"{0}\" Zombie_Kills=\"{1}\" Chance=\"{2}\" Reduce_Death_Count=\"{3}\" Reward_Count=\"{4}\" />", BloodmoonWarrior.IsEnabled, BloodmoonWarrior.Zombie_Kills, BloodmoonWarrior.Chance, BloodmoonWarrior.Reduce_Death_Count, BloodmoonWarrior.Reward_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bounties\" Enable=\"{0}\" Minimum_Bounty=\"{1}\" Kill_Streak=\"{2}\" Bonus=\"{3}\" />", Bounties.IsEnabled, Bounties.Minimum_Bounty, Bounties.Kill_Streak, Bounties.Bonus));
                 sw.WriteLine(string.Format("        <Tool Name=\"Break_Reminder\" Enable=\"{0}\" Break_Time=\"{1}\" Message=\"{2}\" />", BreakTime.IsEnabled, BreakTime.Delay, BreakTime.Message));
@@ -4134,7 +4085,6 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Watch_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Delay=\"{2}\" />", WatchList.IsEnabled, WatchList.Admin_Level, WatchList.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints =\"{1}\" Reserved_Max_Waypoints=\"{2}\" Command_Cost =\"{3}\" Delay_Between_Uses=\"{4}\" />", Waypoints.IsEnabled, Waypoints.Max_Waypoints, Waypoints.Reserved_Max_Waypoints, Waypoints.Command_Cost, Waypoints.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Waypoints_Extended\" Player_Check =\"{0}\" Zombie_Check=\"{1}\" Vehicle=\"{2}\" />", Waypoints.Player_Check, Waypoints.Zombie_Check, Waypoints.Vehicle));
-                sw.WriteLine(string.Format("        <Tool Name=\"Weather_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", WeatherVote.IsEnabled, WeatherVote.Players_Online, WeatherVote.Votes_Needed));
                 sw.WriteLine(string.Format("        <Tool Name=\"Web_API\" Enable=\"{0}\" Port=\"{1}\" />", WebAPI.IsEnabled, WebAPI.Port));
                 sw.WriteLine(string.Format("        <Tool Name=\"Web_Panel\" Enable=\"{0}\" />", WebPanel.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"World_Radius\" Enable=\"{0}\" Normal_Player=\"{1}\" Reserved=\"{2}\" Admin_Level=\"{3}\" />", WorldRadius.IsEnabled, WorldRadius.Normal_Player, WorldRadius.Reserved, WorldRadius.Admin_Level));
@@ -4159,61 +4109,66 @@ namespace ServerTools
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
             LoadXml();
-            Mods.Load(false);
+            Mods.Load();
             ActiveTools.Exec(false);
         }
 
-        public static void UpgradeXml(XmlNodeList _oldRootNodes)
+        public static void UpgradeXml(XmlNodeList _oldChildNodes)
         {
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
                 if (Utils.FileExists(ConfigFilePath))
                 {
-                    XmlDocument _newXml = new XmlDocument();
+                    XmlDocument xml = new XmlDocument();
                     try
                     {
-                        _newXml.Load(ConfigFilePath);
+                        xml.Load(ConfigFilePath);
                     }
                     catch (XmlException e)
                     {
                         Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", ConfigFilePath, e.Message));
                         return;
                     }
-                    XmlNodeList _newRootNodes = _newXml.DocumentElement.ChildNodes[1].ChildNodes;
-                    for (int i = 0; i < _newRootNodes.Count; i++)
+                    XmlNodeList childNodes = xml.DocumentElement.ChildNodes[1].ChildNodes;
+                    if (childNodes != null)
                     {
-                        if (_newRootNodes[i].NodeType == XmlNodeType.Comment)
+                        for (int i = 0; i < childNodes.Count; i++)
                         {
-                            continue;
-                        }
-                        if (_newRootNodes[i].Attributes.Count > 0 && _newRootNodes[i].Attributes[0].Name == "Name")
-                        {
-                            for (int j = 0; j < _oldRootNodes.Count; j++)
+                            if (childNodes[i].NodeType != XmlNodeType.Comment)
                             {
-                                if (_oldRootNodes[j].NodeType == XmlNodeType.Comment)
+                                XmlElement line = (XmlElement)childNodes[i];
+                                if (line.HasAttributes && line.Name == "Tool")
                                 {
-                                    continue;
-                                }
-                                if (_oldRootNodes[j].Attributes.Count > 0 && _oldRootNodes[j].Attributes[0].Name == "Name" && _oldRootNodes[j].Attributes[0].Value == _newRootNodes[i].Attributes[0].Value)
-                                {
-                                    for (int k = 1; k < _newRootNodes[i].Attributes.Count; k++)
+                                    for (int j = 0; j < _oldChildNodes.Count; j++)
                                     {
-                                        for (int l = 1; l < _oldRootNodes[j].Attributes.Count; l++)
+                                        if (_oldChildNodes[j].NodeType != XmlNodeType.Comment)
                                         {
-                                            if (_newRootNodes[i].Attributes[k].Name == _oldRootNodes[j].Attributes[l].Name)
+                                            XmlElement oldLine = (XmlElement)_oldChildNodes[j];
+                                            if (oldLine.HasAttributes && oldLine.Name == "Tool" && line.Attributes[0].Value == oldLine.Attributes[0].Value)
                                             {
-                                                _newRootNodes[i].Attributes[k].Value = _oldRootNodes[j].Attributes[l].Value;
-                                                break;
+                                                for (int k = 1; k < line.Attributes.Count; k++)
+                                                {
+                                                    XmlAttribute newAttribute = line.Attributes[k];
+                                                    for (int l = 1; l < oldLine.Attributes.Count; l++)
+                                                    {
+                                                        XmlAttribute oldAttribute = oldLine.Attributes[l];
+                                                        if (newAttribute.Name == oldAttribute.Name)
+                                                        {
+                                                            newAttribute.Value = oldAttribute.Value;
+                                                            continue;
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     }
-                                    break;
                                 }
                             }
                         }
                     }
-                    _newXml.Save(ConfigFilePath);
+                    xml.Save(ConfigFilePath);
+                    Log.Out("[SERVERTOOLS] Completed updating ServerToolsConfig.xml");
                 }
             }
             catch (Exception e)
@@ -4221,6 +4176,8 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in Config.UpgradeXml: {0}", e.Message));
             }
             FileWatcher.EnableRaisingEvents = true;
+            Upgrade = false;
+            LoadXml();
         }
     }
 }

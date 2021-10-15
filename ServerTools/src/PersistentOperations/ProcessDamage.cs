@@ -21,9 +21,9 @@ namespace ServerTools
                     {
                         if (_victim is EntityPlayer)
                         {
-                            EntityPlayer _player1 = _victim as EntityPlayer;
-                            ClientInfo _cInfo1 = PersistentOperations.GetClientInfoFromEntityId(_victim.entityId);
-                            if (_cInfo1 != null)
+                            EntityPlayer player1 = _victim as EntityPlayer;
+                            ClientInfo cInfo1 = PersistentOperations.GetClientInfoFromEntityId(_victim.entityId);
+                            if (cInfo1 != null)
                             {
                                 Entity attackingEntity = PersistentOperations.GetEntity(sourceId);
                                 if (attackingEntity != null)
@@ -36,7 +36,7 @@ namespace ServerTools
                                         {
                                             if (NewPlayerProtection.IsEnabled)
                                             {
-                                                if (_player1.Progression.Level < NewPlayerProtection.Level)
+                                                if (player1.Progression.Level < NewPlayerProtection.Level)
                                                 {
                                                     Phrases.Dict.TryGetValue("NewPlayerProtection1", out string _phrase);
                                                     ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -45,39 +45,39 @@ namespace ServerTools
                                                 else if (_player2.Progression.Level < NewPlayerProtection.Level)
                                                 {
                                                     Phrases.Dict.TryGetValue("NewPlayerProtection2", out string _phrase);
-                                                    ChatHook.ChatMessage(_cInfo1, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                    ChatHook.ChatMessage(cInfo1, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                     return false;
                                                 }
                                             }
-                                            int _distance = (int)_player2.GetDistance(_player1);
+                                            int _distance = (int)_player2.GetDistance(player1);
                                             using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                             {
-                                                sw.WriteLine(string.Format("{0}: {1} \"{2}\" hit \"{3}\" with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}", DateTime.Now, cInfo2.playerId, cInfo2.playerName, _player1.EntityName, _player1.entityId, _damageSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _damageSource.AttackingItem.ItemClass.GetItemName(), _strength, _player1.position, _distance));
+                                                sw.WriteLine(string.Format("{0}: {1} \"{2}\" hit \"{3}\" with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}", DateTime.Now, cInfo2.playerId, cInfo2.playerName, player1.EntityName, player1.entityId, _damageSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _damageSource.AttackingItem.ItemClass.GetItemName(), _strength, player1.position, _distance));
                                                 sw.WriteLine();
                                                 sw.Flush();
                                                 sw.Close();
                                             }
-                                            if (DamageDetector.IsEnabled && !DamageDetector.IsValidPvP(_player1, cInfo2, _strength, _damageSource.AttackingItem))
+                                            if (DamageDetector.IsEnabled && !DamageDetector.IsValidPvP(player1, cInfo2, _strength, _damageSource.AttackingItem))
                                             {
                                                 return false;
                                             }
-                                            if (Zones.IsEnabled && (Zones.ZonePlayer.ContainsKey(_player1.entityId) || Zones.ZonePlayer.ContainsKey(_player2.entityId)) && !Zones.IsValid(_player1, cInfo2, _player2))
+                                            if (Zones.IsEnabled && PersistentOperations.Player_Killing_Mode == 3 && !Zones.IsValid(cInfo1, cInfo2))
                                             {
                                                 return false;
                                             }
-                                            if (Lobby.IsEnabled && Lobby.PvE && (Lobby.LobbyPlayers.Contains(_player1.entityId) || Lobby.LobbyPlayers.Contains(_player2.entityId)))
+                                            if (Lobby.IsEnabled && Lobby.PvE && (Lobby.LobbyPlayers.Contains(player1.entityId) || Lobby.LobbyPlayers.Contains(_player2.entityId)))
                                             {
                                                 Lobby.PvEViolation(cInfo2);
                                                 return false;
                                             }
-                                            if (Market.IsEnabled && Market.PvE && (Market.MarketPlayers.Contains(_player1.entityId) || Market.MarketPlayers.Contains(_player2.entityId)))
+                                            if (Market.IsEnabled && Market.PvE && (Market.MarketPlayers.Contains(player1.entityId) || Market.MarketPlayers.Contains(_player2.entityId)))
                                             {
                                                 Market.PvEViolation(cInfo2);
                                                 return false;
                                             }
                                             if (KillNotice.IsEnabled && KillNotice.PvP && _victim.RecordedDamage.Fatal)
                                             {
-                                                KillNotice.PlayerKilledPlayer(_cInfo1, _player1, cInfo2, _player2, _damageSource.AttackingItem, _strength);
+                                                KillNotice.PlayerKilledPlayer(cInfo1, player1, cInfo2, _player2, _damageSource.AttackingItem, _strength);
                                             }
                                             if (Wallet.IsEnabled)
                                             {
@@ -92,7 +92,7 @@ namespace ServerTools
                                             }
                                             if (Bounties.IsEnabled)
                                             {
-                                                Bounties.PlayerKilled(_player1, _player2, _cInfo1, cInfo2);
+                                                Bounties.PlayerKilled(player1, _player2, cInfo1, cInfo2);
                                             }
                                         }
                                     }

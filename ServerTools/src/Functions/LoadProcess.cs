@@ -95,6 +95,15 @@ namespace ServerTools
 
             try
             {
+                RunTimePatch.PatchAll();
+            }
+            catch (XmlException e)
+            {
+                Log.Out("[SERVERTOOLS] Failed to run the harmony injection process. Error = {0}", e.Message);
+            }
+
+            try
+            {
                 Config.Load();
             }
             catch (XmlException e)
@@ -104,20 +113,31 @@ namespace ServerTools
 
             try
             {
-                Mods.Load(true);
-            }
-            catch (XmlException e)
-            {
-                Log.Out("[SERVERTOOLS] Failed to load the tools. Restart the server and check for errors. Error = {0}", e.Message);
-            }
-
-            try
-            {
-                CommandList.LoadXml();
+                CommandList.BuildList();
+                CommandList.Load();
             }
             catch (XmlException e)
             {
                 Log.Out("[SERVERTOOLS] Failed to load the CommandList.xml. Check for errors in the file. Error = {0}", e.Message);
+            }
+
+            try
+            {
+                PersistentOperations.SetInstallFolder();
+                PersistentOperations.ThirtySeconds = true;
+            }
+            catch (XmlException e)
+            {
+                Log.Out("[SERVERTOOLS] Failed to set the persistent operations. Error = {0}", e.Message);
+            }
+
+            try
+            {
+                Mods.Load();
+            }
+            catch (XmlException e)
+            {
+                Log.Out("[SERVERTOOLS] Failed to load the tools. Restart the server and check for errors. Error = {0}", e.Message);
             }
 
             try
@@ -178,7 +198,7 @@ namespace ServerTools
                 DeleteFiles("ConsoleCommandLogs");
                 DeleteFiles("WebPanelLogs");
                 DeleteFiles("OutputLogs");
-                Log.Out(string.Format("[SERVERTOOLS] Log clean up completed"));
+                Log.Out(string.Format("[SERVERTOOLS] Xml log clean up complete"));
             }
             catch (XmlException e)
             {
@@ -194,7 +214,7 @@ namespace ServerTools
             {
                 PersistentContainer.Instance.WorldSeed = GameManager.Instance.World.Seed;
                 PersistentContainer.DataChange = true;
-                if (!CleanBin.IsEnabled)
+                if (!CleanBin.IsEnabled && PersistentContainer.Instance.Players.SteamIDs.Count > 0)
                 {
                     Log.Out("[SERVERTOOLS] Detected a new world. You have old ServerTools data saved from the last map. Run the Clean_Bin tool to remove the data of your choice");
                 }
@@ -209,15 +229,16 @@ namespace ServerTools
                 Config.LoadXml();
             }
 
+            Track.Cleanup();
+
             PersistentOperations.EntityIdList();
             PersistentOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
             CountryBan.BuildList();
             DroppedBagProtection.BuildList();
-            CommandList.BuildList();
-            CommandList.Load();
-            Track.Cleanup();
+
             ActiveTools.Exec(true);
-            RestartVote.Cycle = true;
+
+            EventSchedule.Add("ThirtyMinutes", DateTime.Now.AddMinutes(30));
             Timers.PersistentDataSave();
         }
 

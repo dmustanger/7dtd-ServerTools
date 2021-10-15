@@ -5,19 +5,11 @@ namespace ServerTools
     {
         public static bool Startup = false;
 
-        public static void Load(bool _initiating)
+        public static void Load()
         {
-            if (_initiating)
-            {
-                PersistentOperations.SetInstallFolder();
-            }
             if (!DiscordBot.TokenLoaded)
             {
                 DiscordBot.BuildToken();
-            }
-            if (!RunTimePatch.Applied)
-            {
-                RunTimePatch.PatchAll();
             }
             if (!Timers.IsRunning)
             {
@@ -245,7 +237,7 @@ namespace ServerTools
             }
             if (WebAPI.IsEnabled && !WebAPI.IsRunning)
             {
-                if (_initiating)
+                if (PersistentOperations.ThirtySeconds)
                 {
                     Timers.Delayed_Web_API();
                     Log.Out("[SERVERTOOLS] Web_API will go live in thirty seconds");

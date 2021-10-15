@@ -82,7 +82,7 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
                     UpgradeXml(childNodes);
                     return;
@@ -146,9 +146,9 @@ namespace ServerTools
 
         public static void SetDelay()
         {
-            if (EventSchedule.watchlist != Delay)
+            if (EventSchedule.watchList != Delay)
             {
-                EventSchedule.watchlist = Delay;
+                EventSchedule.watchList = Delay;
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');

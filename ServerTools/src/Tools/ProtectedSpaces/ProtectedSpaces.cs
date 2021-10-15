@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml;
 using UnityEngine;
@@ -58,7 +57,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     ProtectedList.Clear();
                     ProtectedChunks.Clear();
@@ -189,10 +188,33 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -224,10 +246,6 @@ namespace ServerTools
                             sw.WriteLine(string.Format("    <Protected Corner1=\"{0},{1}\" Corner2=\"{2},{3}\" Active=\"False\" />", ProtectedList[i][0], ProtectedList[i][1], ProtectedList[i][2], ProtectedList[i][3]));
                         }
                     }
-                }
-                else
-                {
-                    sw.WriteLine("    <!-- <Protected Corner1=\"\" Corner2=\"\" Active=\"\" /> -->");
                 }
                 sw.WriteLine("</Protected>");
                 sw.Flush();
@@ -336,43 +354,37 @@ namespace ServerTools
                     sw.WriteLine("<!-- <Protected Corner1=\"-30,-20\" Corner2=\"10,50\" Active=\"True\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Protected Corner1=\"-30,-20\"") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Protected Corner1=\"\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- <Protected Corner1=\"-30,-20\"") &&
+                            !_oldChildNodes[i].OuterXml.Contains("    <!-- <Protected Corner1=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.Name == "Protected")
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Protected")
                             {
-                                _blank = false;
-                                string _corner1 = "", _corner2 = "", _active = "";
-                                if (_line.HasAttribute("Corner1"))
+                                string corner1 = "", corner2 = "", active = "";
+                                if (line.HasAttribute("Corner1"))
                                 {
-                                    _corner1 = _line.GetAttribute("Corner1");
+                                    corner1 = line.GetAttribute("Corner1");
                                 }
-                                if (_line.HasAttribute("Corner2"))
+                                if (line.HasAttribute("Corner2"))
                                 {
-                                    _corner2 = _line.GetAttribute("Corner2");
+                                    corner2 = line.GetAttribute("Corner2");
                                 }
-                                if (_line.HasAttribute("Active"))
+                                if (line.HasAttribute("Active"))
                                 {
-                                    _active = _line.GetAttribute("Active");
+                                    active = line.GetAttribute("Active");
                                 }
-                                sw.WriteLine(string.Format("    <Protected Corner1=\"{0}\" Corner2=\"{1}\" Active=\"{2}\" />", _corner1, _corner2, _active));
+                                sw.WriteLine(string.Format("    <Protected Corner1=\"{0}\" Corner2=\"{1}\" Active=\"{2}\" />", corner1, corner2, active));
                             }
                         }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Protected Corner1=\"\" Corner2=\"\" Active=\"\" /> -->");
                     }
                     sw.WriteLine("</Protected>");
                     sw.Flush();

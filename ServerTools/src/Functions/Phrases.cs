@@ -73,7 +73,7 @@ namespace ServerTools
                     }
                 }
             }
-            if (childNodes != null && upgrade)
+            if (upgrade)
             {
                 UpgradeXml(childNodes);
                 return;
@@ -1079,6 +1079,21 @@ namespace ServerTools
                         phrase = "Auto detection has banned you for murder in a pve zone";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Zones8\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Zones9", out phrase))
+                    {
+                        phrase = "No damage. The player is inside a pve zone";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Zones9\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Zones10", out phrase))
+                    {
+                        phrase = "No damage. The player is inside a ally damage zone";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Zones10\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Zones11", out phrase))
+                    {
+                        phrase = "No damage. The player is inside a stranger damage zone";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Zones11\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************* Custom_Commands ******************** -->");
@@ -1513,6 +1528,11 @@ namespace ServerTools
                         phrase = "Unable to locate this vehicle";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall14\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("VehicleRecall15", out phrase))
+                    {
+                        phrase = "Removed {Id} from your vehicle list";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall15\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* World_Radius ********************* -->");

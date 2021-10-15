@@ -62,7 +62,6 @@ namespace ServerTools
             {
                 if (PersistentContainer.Instance != null && PersistentContainer.Instance.Track != null && PersistentContainer.Instance.Track.Count > 0)
                 {
-                    Log.Out("[SERVERTOOLS] Deleting old tracking logs");
                     List<string[]> _trackLog = PersistentContainer.Instance.Track;
                     for (int i = 0; i < _trackLog.Count; i++)
                     {
@@ -75,8 +74,8 @@ namespace ServerTools
                     }
                     PersistentContainer.Instance.Track = _trackLog;
                     PersistentContainer.DataChange = true;
+                    Log.Out("[SERVERTOOLS] Tracking log clean up complete");
                 }
-                Log.Out("[SERVERTOOLS] Tracking log clean up completed");
             }
             catch (Exception e)
             {

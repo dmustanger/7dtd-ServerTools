@@ -55,7 +55,7 @@ namespace ServerTools
             }
             bool upgrade = true;
             XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-            if (childNodes != null && childNodes.Count > 0)
+            if (childNodes != null)
             {
                 Dict.Clear();
                 for (int i = 0; i < childNodes.Count; i++)
@@ -93,8 +93,8 @@ namespace ServerTools
                                     Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MaxQuality' attribute: {0}", line.OuterXml));
                                     continue;
                                 }
-                                string _name = line.GetAttribute("Name");
-                                if (_name == "WalletCoin" || _name == "walletCoin" || _name == "walletcoin")
+                                string name = line.GetAttribute("Name");
+                                if (name == "WalletCoin" || name == "walletCoin" || name == "walletcoin")
                                 {
                                     if (Wallet.IsEnabled)
                                     {
@@ -111,23 +111,23 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    ItemValue _itemValue = ItemClass.GetItem(_name, false);
-                                    if (_itemValue.type == ItemValue.None.type)
+                                    ItemValue itemValue = ItemClass.GetItem(name, false);
+                                    if (itemValue.type == ItemValue.None.type)
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry. Name not found: {0}", _name));
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry. Name not found: {0}", name));
                                         continue;
                                     }
-                                    if (minCount > _itemValue.ItemClass.Stacknumber.Value)
+                                    if (minCount > itemValue.ItemClass.Stacknumber.Value)
                                     {
-                                        minCount = _itemValue.ItemClass.Stacknumber.Value;
+                                        minCount = itemValue.ItemClass.Stacknumber.Value;
                                     }
                                     else if (minCount < 1)
                                     {
                                         minCount = 1;
                                     }
-                                    if (maxCount > _itemValue.ItemClass.Stacknumber.Value)
+                                    if (maxCount > itemValue.ItemClass.Stacknumber.Value)
                                     {
-                                        maxCount = _itemValue.ItemClass.Stacknumber.Value;
+                                        maxCount = itemValue.ItemClass.Stacknumber.Value;
                                     }
                                     else if (maxCount < 1)
                                     {
@@ -154,12 +154,12 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        _secondary = _name;
+                                        _secondary = name;
                                     }
-                                    if (!Dict.ContainsKey(_name))
+                                    if (!Dict.ContainsKey(name))
                                     {
-                                        string[] _c = new string[] { _secondary, minCount.ToString(), maxCount.ToString(), minQuality.ToString(), maxQuality.ToString() };
-                                        Dict.Add(_name, _c);
+                                        string[] c = new string[] { _secondary, minCount.ToString(), maxCount.ToString(), minQuality.ToString(), maxQuality.ToString() };
+                                        Dict.Add(name, c);
                                     }
                                 }
                             }
@@ -167,10 +167,33 @@ namespace ServerTools
                     }
                 }
             }
-            if (childNodes != null && upgrade)
+            if (upgrade)
             {
-                UpgradeXml(childNodes);
-                return;
+                XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                XmlNode node = nodeList[0];
+                XmlElement line = (XmlElement)nodeList[0];
+                if (line != null)
+                {
+                    if (line.HasAttributes)
+                    {
+                        UpgradeXml(nodeList);
+                        return;
+                    }
+                    else
+                    {
+                        nodeList = node.ChildNodes;
+                        line = (XmlElement)nodeList[0];
+                        if (line != null)
+                        {
+                            if (line.HasAttributes)
+                            {
+                                UpgradeXml(nodeList);
+                                return;
+                            }
+                        }
+                    }
+                }
+                UpgradeXml(null);
             }
         }
 
@@ -533,56 +556,50 @@ namespace ServerTools
                     sw.WriteLine("<!-- <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"boiled water\" MinCount=\"1\" MaxCount=\"6\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Secondary name") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- Items that do") && !_oldChildNodes[i].OuterXml.StartsWith("<!-- WalletCoin can") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Item Name=\"drinkJarBoiledWater\"") && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Item Name=\"\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Secondary name") &&
+                            !_oldChildNodes[i].OuterXml.Contains("<!-- Items that do") && !_oldChildNodes[i].OuterXml.Contains("<!-- WalletCoin can") &&
+                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Item Name=\"drinkJarBoiledWater\"") && !_oldChildNodes[i].OuterXml.Contains("<!-- <Item Name=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.Name == "Item")
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Item")
                             {
-                                _blank = false;
-                                string _name = "", _secondary = "", _minCount = "", _maxCount = "", _minQuality = "", _maxQuality = "";
-                                if (_line.HasAttribute("Name"))
+                                string name = "", secondary = "", minCount = "", maxCount = "", minQuality = "", maxQuality = "";
+                                if (line.HasAttribute("Name"))
                                 {
-                                    _name = _line.GetAttribute("Name");
+                                    name = line.GetAttribute("Name");
                                 }
-                                if (_line.HasAttribute("SecondaryName"))
+                                if (line.HasAttribute("SecondaryName"))
                                 {
-                                    _secondary = _line.GetAttribute("SecondaryName");
+                                    secondary = line.GetAttribute("SecondaryName");
                                 }
-                                if (_line.HasAttribute("MinCount"))
+                                if (line.HasAttribute("MinCount"))
                                 {
-                                    _minCount = _line.GetAttribute("MinCount");
+                                    minCount = line.GetAttribute("MinCount");
                                 }
-                                if (_line.HasAttribute("MaxCount"))
+                                if (line.HasAttribute("MaxCount"))
                                 {
-                                    _maxCount = _line.GetAttribute("MaxCount");
+                                    maxCount = line.GetAttribute("MaxCount");
                                 }
-                                if (_line.HasAttribute("MinQuality"))
+                                if (line.HasAttribute("MinQuality"))
                                 {
-                                    _minQuality = _line.GetAttribute("MinQuality");
+                                    minQuality = line.GetAttribute("MinQuality");
                                 }
-                                if (_line.HasAttribute("MaxQuality"))
+                                if (line.HasAttribute("MaxQuality"))
                                 {
-                                    _maxQuality = _line.GetAttribute("MaxQuality");
+                                    maxQuality = line.GetAttribute("MaxQuality");
                                 }
-                                sw.WriteLine(string.Format("    <Item Name=\"{0}\" SecondaryName=\"{1}\" MinCount=\"{2}\" MaxCount=\"{3}\" MinQuality=\"{4}\" MaxQuality=\"{5}\" />", _name, _secondary, _minCount, _maxCount, _minQuality, _maxQuality));
+                                sw.WriteLine(string.Format("    <Item Name=\"{0}\" SecondaryName=\"{1}\" MinCount=\"{2}\" MaxCount=\"{3}\" MinQuality=\"{4}\" MaxQuality=\"{5}\" />", name, secondary, minCount, maxCount, minQuality, maxQuality));
                             }
                         }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Item Name=\"\" SecondaryName=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" /> -->");
                     }
                     sw.WriteLine("</Gimme>");
                     sw.Flush();

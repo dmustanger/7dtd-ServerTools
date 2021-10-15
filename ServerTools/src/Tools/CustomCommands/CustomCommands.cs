@@ -52,7 +52,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
@@ -98,10 +98,33 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -337,28 +360,6 @@ namespace ServerTools
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     _commands = "";
-                }
-                if (WeatherVote.IsEnabled)
-                {
-                    if (WeatherVote.Command_weathervote != "")
-                    {
-                        _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, WeatherVote.Command_weathervote);
-                    }
-                    if (WeatherVote.VoteOpen)
-                    {
-                        if (WeatherVote.Command_sun != "")
-                        {
-                            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, WeatherVote.Command_sun);
-                        }
-                        if (WeatherVote.Command_rain != "")
-                        {
-                            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, WeatherVote.Command_rain);
-                        }
-                        if (WeatherVote.Command_snow != "")
-                        {
-                            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, WeatherVote.Command_snow);
-                        }
-                    }
                 }
                 if (Auction.IsEnabled)
                 {
@@ -918,7 +919,7 @@ namespace ServerTools
         {
             TimeSpan varTime = DateTime.Now - _lastUse;
             double fractionalMinutes = varTime.TotalMinutes;
-            int _timePassed = (int)fractionalMinutes;
+            int timePassed = (int)fractionalMinutes;
             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
             {
                 if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
@@ -926,13 +927,13 @@ namespace ServerTools
                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                     if (DateTime.Now < _dt)
                     {
-                        int _newDelay = _delay / 2;
-                        TimePass(_cInfo, _message, _timePassed, _newDelay, _cost);
+                        int newDelay = _delay / 2;
+                        TimePass(_cInfo, _message, timePassed, newDelay, _cost);
                         return;
                     }
                 }
             }
-            TimePass(_cInfo, _message, _timePassed, _delay, _cost);
+            TimePass(_cInfo, _message, timePassed, _delay, _cost);
         }
 
         private static void TimePass(ClientInfo _cInfo, string _message, int _timePassed, int _delay, int _cost)
@@ -952,12 +953,12 @@ namespace ServerTools
         {
             try
             {
-                Phrases.Dict.TryGetValue("CustomCommands1", out string _phrase);
-                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                _phrase = _phrase.Replace("{CommandCustom}", _message);
-                _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase = _phrase.Replace("{TimeRemaining}", _timeLeft.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("CustomCommands1", out string phrase);
+                phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                phrase = phrase.Replace("{CommandCustom}", _message);
+                phrase = phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                phrase = phrase.Replace("{TimeRemaining}", _timeLeft.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)
             {
@@ -971,17 +972,17 @@ namespace ServerTools
             {
                 if (Wallet.IsEnabled && _cost > 0)
                 {
-                    int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
-                    if (_currentCoins >= _cost)
+                    int currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
+                    if (currentCoins >= _cost)
                     {
                         Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _cost);
                         ProcessCommand(_cInfo, _command);
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("CustomCommands3", out string _phrase);
-                        _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("CustomCommands3", out string phrase);
+                        phrase = phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
@@ -1012,28 +1013,28 @@ namespace ServerTools
                 }
                 else
                 {
-                    Dictionary<string, DateTime> _delays = new Dictionary<string, DateTime>
+                    Dictionary<string, DateTime> delays = new Dictionary<string, DateTime>
                     {
                         { _command, DateTime.Now }
                     };
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays = _delays;
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays = delays;
                 }
                 PersistentContainer.DataChange = true;
-                if (Dict.TryGetValue(_command, out string[] _commandData))
+                if (Dict.TryGetValue(_command, out string[] commandData))
                 {
-                    if (_commandData[0].Contains("^"))
+                    if (commandData[0].Contains("^"))
                     {
-                        List<string> _commands = _commandData[0].Split('^').ToList();
-                        for (int i = 0; i < _commands.Count; i++)
+                        List<string> commands = commandData[0].Split('^').ToList();
+                        for (int i = 0; i < commands.Count; i++)
                         {
-                            string _commandTrimmed = _commands[i].Trim();
-                            if (_commandTrimmed.StartsWith("{Delay}"))
+                            string commandTrimmed = commands[i].Trim();
+                            if (commandTrimmed.StartsWith("{Delay}"))
                             {
-                                string[] _commandSplit = _commandTrimmed.Split(' ');
-                                if (int.TryParse(_commandSplit[1], out int _time))
+                                string[] commandSplit = commandTrimmed.Split(' ');
+                                if (int.TryParse(commandSplit[1], out int time))
                                 {
-                                    _commands.RemoveRange(0, i + 1);
-                                    Timers.Custom_SingleUseTimer(_time, _cInfo.playerId, _commands);
+                                    commands.RemoveRange(0, i + 1);
+                                    Timers.Custom_SingleUseTimer(time, _cInfo.playerId, commands);
                                     return;
                                 }
                                 else
@@ -1043,13 +1044,13 @@ namespace ServerTools
                             }
                             else
                             {
-                                CommandExec(_cInfo, _commandTrimmed);
+                                CommandExec(_cInfo, commandTrimmed);
                             }
                         }
                     }
                     else
                     {
-                        CommandExec(_cInfo, _commandData[0]);
+                        CommandExec(_cInfo, commandData[0]);
                     }
                 }
             }
@@ -1063,19 +1064,19 @@ namespace ServerTools
         {
             try
             {
-                ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_playerId);
-                if (_cInfo != null)
+                ClientInfo cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_playerId);
+                if (cInfo != null)
                 {
                     for (int i = 0; i < _commands.Count; i++)
                     {
-                        string _commandTrimmed = _commands[i].Trim();
-                        if (_commandTrimmed.StartsWith("{Delay}"))
+                        string commandTrimmed = _commands[i].Trim();
+                        if (commandTrimmed.StartsWith("{Delay}"))
                         {
-                            string[] _commandSplit = _commandTrimmed.Split(' ');
-                            if (int.TryParse(_commandSplit[1], out int _time))
+                            string[] commandSplit = commandTrimmed.Split(' ');
+                            if (int.TryParse(commandSplit[1], out int _time))
                             {
                                 _commands.RemoveRange(0, i + 1);
-                                Timers.Custom_SingleUseTimer(_time, _cInfo.playerId, _commands);
+                                Timers.Custom_SingleUseTimer(_time, cInfo.playerId, _commands);
                                 return;
                             }
                             else
@@ -1085,7 +1086,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            CommandExec(_cInfo, _commandTrimmed);
+                            CommandExec(cInfo, commandTrimmed);
                         }
                     }
                 }
@@ -1169,55 +1170,49 @@ namespace ServerTools
                     sw.WriteLine("<!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ whisper You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Possible variables {EntityId}") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Custom Trigger=\"Example\"") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Custom Trigger=\"\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Possible variables {EntityId}") &&
+                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Custom Trigger=\"Example\"") && !_oldChildNodes[i].OuterXml.Contains("    <!-- <Custom Trigger=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && (_line.Name == "Custom" || _line.Name == "Command"))
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && (line.Name == "Custom" || line.Name == "Command"))
                             {
-                                _blank = false;
-                                string _trigger = "", _command = "", _delay = "", _hidden = "", _permission = "", _cost = "";
-                                if (_line.HasAttribute("Trigger"))
+                                string trigger = "", command = "", delay = "", hidden = "", permission = "", cost = "";
+                                if (line.HasAttribute("Trigger"))
                                 {
-                                    _trigger = _line.GetAttribute("Trigger");
+                                    trigger = line.GetAttribute("Trigger");
                                 }
-                                if (_line.HasAttribute("Command"))
+                                if (line.HasAttribute("Command"))
                                 {
-                                    _command = _line.GetAttribute("Command");
+                                    command = line.GetAttribute("Command");
                                 }
-                                if (_line.HasAttribute("DelayBetweenUses"))
+                                if (line.HasAttribute("DelayBetweenUses"))
                                 {
-                                    _delay = _line.GetAttribute("DelayBetweenUses");
+                                    delay = line.GetAttribute("DelayBetweenUses");
                                 }
-                                if (_line.HasAttribute("Hidden"))
+                                if (line.HasAttribute("Hidden"))
                                 {
-                                    _hidden = _line.GetAttribute("Hidden");
+                                    hidden = line.GetAttribute("Hidden");
                                 }
-                                if (_line.HasAttribute("Permission"))
+                                if (line.HasAttribute("Permission"))
                                 {
-                                    _permission = _line.GetAttribute("Permission");
+                                    permission = line.GetAttribute("Permission");
                                 }
-                                if (_line.HasAttribute("Cost"))
+                                if (line.HasAttribute("Cost"))
                                 {
-                                    _cost = _line.GetAttribute("Cost");
+                                    cost = line.GetAttribute("Cost");
                                 }
-                                sw.WriteLine(string.Format("    <Custom Trigger=\"{0}\" Command=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Permission=\"{4}\" Cost=\"{5}\" />", _trigger, _command, _delay, _hidden, _permission, _cost));
+                                sw.WriteLine(string.Format("    <Custom Trigger=\"{0}\" Command=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Permission=\"{4}\" Cost=\"{5}\" />", trigger, command, delay, hidden, permission, cost));
                             }
                         }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Permission=\"\" Cost=\"\" /> -->");
                     }
                     sw.WriteLine("</CustomCommands>");
                     sw.Flush();

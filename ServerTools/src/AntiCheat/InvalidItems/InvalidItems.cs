@@ -52,7 +52,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
@@ -85,10 +85,33 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -108,7 +131,6 @@ namespace ServerTools
                     sw.WriteLine("<InvalidItems>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("<!-- <Item Name=\"air\" /> -->");
-                    sw.WriteLine("<!-- <Item Name=\"terrOrePotassiumNitrate\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -117,10 +139,6 @@ namespace ServerTools
                         {
                             sw.WriteLine(string.Format("    <Item Name=\"{0}\" />", _item));
                         }
-                    }
-                    else
-                    {
-                        sw.WriteLine("    <!-- <Item Name=\"\" /> -->");
                     }
                     sw.WriteLine("</InvalidItems>");
                     sw.Flush();
@@ -482,45 +500,36 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
-                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<InvalidItems>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("<!-- <Item Name=\"air\" /> -->");
-                    sw.WriteLine("<!-- <Item Name=\"terrOrePotassiumNitrate\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Item Name=\"air\"") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Item Name=\"terrOrePotassiumNitrate\"") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Item Name=\"\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- <Item Name=\"air\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.OuterXml.Contains("Item"))
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Item")
                             {
-                                _blank = false;
-                                string _name = "";
-                                if (_line.HasAttribute("Name"))
+                                string name = "";
+                                if (line.HasAttribute("Name"))
                                 {
-                                    _name = _line.GetAttribute("Name");
+                                    name = line.GetAttribute("Name");
                                 }
-                                sw.WriteLine(string.Format("    <Item Name=\"{0}\" />", _name));
+                                sw.WriteLine(string.Format("    <Item Name=\"{0}\" />", name));
                             }
                         }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Item Name=\"\" /> -->");
                     }
                     sw.WriteLine("</InvalidItems>");
                     sw.Flush();

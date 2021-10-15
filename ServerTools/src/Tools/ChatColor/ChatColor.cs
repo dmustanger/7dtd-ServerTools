@@ -52,7 +52,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Players.Clear();
                     ExpireDate.Clear();
@@ -87,7 +87,7 @@ namespace ServerTools
                                         ColorList.Colors.TryGetValue(prefixColor, out string colorArray);
                                         prefixColor = colorArray;
                                     }
-                                    if (!Players.ContainsKey(steamId) && DateTime.Now < dt)
+                                    if (!Players.ContainsKey(steamId))
                                     {
                                         string[] c = new string[] { name, nameColor, prefix, prefixColor };
                                         Players.Add(steamId, c);
@@ -98,10 +98,33 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -129,10 +152,6 @@ namespace ServerTools
                         ExpireDate.TryGetValue(kvp.Key, out DateTime _expiry);
                         sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" NameColor=\"{2}\" Prefix=\"{3}\" PrefixColor=\"{4}\" Expires=\"{5}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3], _expiry));
                     }
-                }
-                else
-                {
-                    sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" NameColor=\"\" Prefix=\"\" PrefixColor=\"\" Expires=\"\" /> -->");
                 }
                 sw.WriteLine("</ChatColor>");
                 sw.Flush();
@@ -391,19 +410,18 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<ChatColor>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- PrefixColor and NameColor can come from the ColorList.xml -->");
+                    sw.WriteLine("<!-- NameColor and PrefixColor can come from the ColorList.xml -->");
                     sw.WriteLine("<!-- <Player SteamId=\"12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- PrefixColor and NameColor") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Player SteamId=\"12345678901234567\"") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Player SteamId=\"\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- NameColor and") &&
+                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Player SteamId=\"12345678901234567\"") && !_oldChildNodes[i].OuterXml.Contains("    <!-- <Player SteamId=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
@@ -411,7 +429,6 @@ namespace ServerTools
                             XmlElement line = (XmlElement)_oldChildNodes[i];
                             if (line.HasAttributes && line.Name == "Player")
                             {
-                                blank = false;
                                 string steamId = "", name = "", nameColor = "", prefix = "", prefixColor = "";
                                 DateTime dateTime = DateTime.Now;
                                 if (line.HasAttribute("SteamId"))
@@ -441,10 +458,6 @@ namespace ServerTools
                                 sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" NameColor=\"{2}\" Prefix=\"{3}\" PrefixColor=\"{4}\" Expires=\"{5}\" />", steamId, name, nameColor, prefix, prefixColor, dateTime));
                             }
                         }
-                    }
-                    if (blank)
-                    {
-                        sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" NameColor=\"\" Prefix=\"\" PrefixColor=\"\" Expires=\"\" /> -->");
                     }
                     sw.WriteLine("</ChatColor>");
                     sw.Flush();

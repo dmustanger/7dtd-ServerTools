@@ -53,7 +53,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Dict.Clear();
                     Dict1.Clear();
@@ -89,10 +89,33 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -317,43 +340,37 @@ namespace ServerTools
                     sw.WriteLine(string.Format("<!-- <Player SteamId=\"76561191234567891\" Name=\"Tron\" Expires=\"10/29/2050 7:30:00 AM\" /> -->"));
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Player SteamId=\"\"") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Player SteamId=\"76561191234567891\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("    <!-- <Player SteamId=\"\"") &&
+                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Player SteamId=\"76561191234567891\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.OuterXml.Contains("Player"))
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Player")
                             {
-                                _blank = false;
-                                string _steamId = "", _name = "", _expires = "";
-                                if (_line.HasAttribute("SteamId"))
+                                string steamId = "", name = "", expires = "";
+                                if (line.HasAttribute("SteamId"))
                                 {
-                                    _steamId = _line.GetAttribute("SteamId");
+                                    steamId = line.GetAttribute("SteamId");
                                 }
-                                if (_line.HasAttribute("Name"))
+                                if (line.HasAttribute("Name"))
                                 {
-                                    _name = _line.GetAttribute("Name");
+                                    name = line.GetAttribute("Name");
                                 }
-                                if (_line.HasAttribute("Expires"))
+                                if (line.HasAttribute("Expires"))
                                 {
-                                    _expires = _line.GetAttribute("Expires");
+                                    expires = line.GetAttribute("Expires");
                                 }
-                                sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" Expires=\"{2}\" />", _steamId, _name, _expires));
+                                sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Name=\"{1}\" Expires=\"{2}\" />", steamId, name, expires));
                             }
                         }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" Expires=\"\" /> -->");
                     }
                     sw.WriteLine("</ReservedSlots>");
                     sw.Flush();

@@ -56,7 +56,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Dict.Clear();
                     Items.Clear();
@@ -158,10 +158,33 @@ namespace ServerTools
                         Items = new List<string>(Dict.Keys);
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -191,10 +214,6 @@ namespace ServerTools
                         {
                             sw.WriteLine(string.Format("    <Reward ItemOrBlock=\"{0}\" MinCount=\"{1}\" MaxCount=\"{2}\" MinQuality=\"{3}\" MaxQuality=\"{4}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
                         }
-                    }
-                    else
-                    {
-                        sw.WriteLine("    <!-- <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" /> -->");
                     }
                     sw.WriteLine("</VoteRewards>");
                     sw.Flush();
@@ -602,52 +621,46 @@ namespace ServerTools
                     sw.WriteLine("<!-- <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Items that do not") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- WalletCoin can be") && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Reward ItemOrBlock=\"meleeToolTorch\"") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Reward ItemOrBlock=\"\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Items that do not") &&
+                            !_oldChildNodes[i].OuterXml.Contains("<!-- WalletCoin can be") && !_oldChildNodes[i].OuterXml.Contains("<!-- <Reward ItemOrBlock=\"meleeToolTorch\"") &&
+                            !_oldChildNodes[i].OuterXml.Contains("    <!-- <Reward ItemOrBlock=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.Name == "Reward")
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Reward")
                             {
-                                _blank = false;
-                                string _itemBlock = "", _minCount = "", _maxCount = "", _minQuality = "", _maxQuality = "";
-                                if (_line.HasAttribute("ItemOrBlock"))
+                                string itemBlock = "", minCount = "", maxCount = "", minQuality = "", maxQuality = "";
+                                if (line.HasAttribute("ItemOrBlock"))
                                 {
-                                    _itemBlock = _line.GetAttribute("ItemOrBlock");
+                                    itemBlock = line.GetAttribute("ItemOrBlock");
                                 }
-                                if (_line.HasAttribute("MinCount"))
+                                if (line.HasAttribute("MinCount"))
                                 {
-                                    _minCount = _line.GetAttribute("MinCount");
+                                    minCount = line.GetAttribute("MinCount");
                                 }
-                                if (_line.HasAttribute("MaxCount"))
+                                if (line.HasAttribute("MaxCount"))
                                 {
-                                    _maxCount = _line.GetAttribute("MaxCount");
+                                    maxCount = line.GetAttribute("MaxCount");
                                 }
-                                if (_line.HasAttribute("MinQuality"))
+                                if (line.HasAttribute("MinQuality"))
                                 {
-                                    _minQuality = _line.GetAttribute("MinQuality");
+                                    minQuality = line.GetAttribute("MinQuality");
                                 }
-                                if (_line.HasAttribute("MaxQuality"))
+                                if (line.HasAttribute("MaxQuality"))
                                 {
-                                    _maxQuality = _line.GetAttribute("MaxQuality");
+                                    maxQuality = line.GetAttribute("MaxQuality");
                                 }
-                                sw.WriteLine(string.Format("    <Reward ItemOrBlock=\"{0}\" MinCount=\"{1}\" MaxCount=\"{2}\" MinQuality=\"{3}\" MaxQuality=\"{4}\" />", _itemBlock, _minCount, _maxCount, _minQuality, _maxQuality));
+                                sw.WriteLine(string.Format("    <Reward ItemOrBlock=\"{0}\" MinCount=\"{1}\" MaxCount=\"{2}\" MinQuality=\"{3}\" MaxQuality=\"{4}\" />", itemBlock, minCount, maxCount, minQuality, maxQuality));
                             }
                         }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" /> -->");
                     }
                     sw.WriteLine("</VoteRewards>");
                     sw.Flush();

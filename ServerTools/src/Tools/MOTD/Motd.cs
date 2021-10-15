@@ -46,7 +46,7 @@ namespace ServerTools
             }
             bool upgrade = true;
             XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-            if (childNodes != null && childNodes.Count > 0)
+            if (childNodes != null)
             {
                 Dict.Clear();
                 for (int i = 0; i < childNodes.Count; i++)
@@ -73,10 +73,33 @@ namespace ServerTools
                     }
                 }
             }
-            if (childNodes != null && upgrade)
+            if (upgrade)
             {
-                UpgradeXml(childNodes);
-                return;
+                XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                XmlNode node = nodeList[0];
+                XmlElement line = (XmlElement)nodeList[0];
+                if (line != null)
+                {
+                    if (line.HasAttributes)
+                    {
+                        UpgradeXml(nodeList);
+                        return;
+                    }
+                    else
+                    {
+                        nodeList = node.ChildNodes;
+                        line = (XmlElement)nodeList[0];
+                        if (line != null)
+                        {
+                            if (line.HasAttributes)
+                            {
+                                UpgradeXml(nodeList);
+                                return;
+                            }
+                        }
+                    }
+                }
+                UpgradeXml(null);
             }
         }
 
@@ -100,10 +123,6 @@ namespace ServerTools
                         {
                             sw.WriteLine(string.Format("    <Server Message=\"{0}\" />", _message));
                         }
-                    }
-                    else
-                    {
-                        sw.WriteLine("    <!-- <Server Message=\"\" /> -->");
                     }
                     sw.WriteLine("</Motds>");
                     sw.Flush();
@@ -141,13 +160,13 @@ namespace ServerTools
             {
                 if (Dict.Count > 0)
                 {
-                    foreach (string _message in Dict)
+                    foreach (string message in Dict)
                     {
-                        string _motd = _message;
-                        _motd = _motd.Replace("{EntityId}", _cInfo.entityId.ToString());
-                        _motd = _motd.Replace("{SteamId}", _cInfo.playerId);
-                        _motd = _motd.Replace("{PlayerName}", _cInfo.playerName);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _motd + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        string motd = message;
+                        motd = motd.Replace("{EntityId}", _cInfo.entityId.ToString());
+                        motd = motd.Replace("{SteamId}", _cInfo.playerId);
+                        motd = motd.Replace("{PlayerName}", _cInfo.playerName);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + motd + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -171,36 +190,29 @@ namespace ServerTools
                     sw.WriteLine("<!-- <Server Message=\"Welcome to the server\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Possible variables") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Server Message=\"Welcome to the server\"") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Server Message=\"\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Possible variables") &&
+                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Server Message=\"Welcome to the server\"") && !_oldChildNodes[i].OuterXml.Contains("    <!-- <Server Message=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Server")
-                        {
-                            _blank = false;
-                            string _message = "";
-                            if (_line.HasAttribute("Message"))
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Server")
                             {
-                                _message = _line.GetAttribute("Message");
+                                string message = "";
+                                if (line.HasAttribute("Message"))
+                                {
+                                    message = line.GetAttribute("Message");
+                                }
+                                sw.WriteLine(string.Format("    <Server Message=\"{0}\" />", message));
                             }
-                            sw.WriteLine(string.Format("    <Server Message=\"{0}\" />", _message));
                         }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Server Message=\"\" /> -->");
                     }
                     sw.WriteLine("</Motds>");
                     sw.Flush();

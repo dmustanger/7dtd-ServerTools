@@ -54,7 +54,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
@@ -94,10 +94,33 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -126,10 +149,6 @@ namespace ServerTools
                             sw.WriteLine(string.Format("    <Waypoint Name=\"{0}\" Position=\"{1}\" Cost=\"{2}\" />", kvp.Key, kvp.Value[0], kvp.Value[1]));
                         }
                     }
-                    else
-                    {
-                        sw.WriteLine("    <!-- <Waypoint Name=\"\" Position=\"\" Cost=\"\" /> -->");
-                    }
                     sw.WriteLine("</PublicWaypoints>");
                     sw.Flush();
                     sw.Close();
@@ -157,71 +176,6 @@ namespace ServerTools
             {
                 UpdateXml();
             }
-            LoadXml();
-        }
-
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
-        {
-            try
-            {
-                FileWatcher.EnableRaisingEvents = false;
-                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
-                {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    sw.WriteLine("<PublicWaypoints>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Waypoint Name=\"Example\" Position=\"-500,20,500\" Cost=\"150\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
-                    {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Waypoint Name=\"Example\"") && 
-                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Waypoint Name=\"\""))
-                        {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
-                        }
-                    }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    bool _blank = true;
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
-                    {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
-                        {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.Name == "Waypoint")
-                        {
-                            _blank = false;
-                            string _name = "", _position = "", _cost = "";
-                            if (_line.HasAttribute("Name"))
-                            {
-                                _name = _line.GetAttribute("Name");
-                            }
-                            if (_line.HasAttribute("Position"))
-                            {
-                                _position = _line.GetAttribute("Position");
-                            }
-                            if (_line.HasAttribute("Cost"))
-                            {
-                                _cost = _line.GetAttribute("Cost");
-                            }
-                            sw.WriteLine(string.Format("    <Waypoint Name=\"{0}\" Position=\"{1}\" Cost=\"{2}\" />", _name, _position, _cost));
-                        }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Waypoint Name=\"\" Position=\"\" Cost=\"\" /> -->");
-                    }
-                    sw.WriteLine("</PublicWaypoints>");
-                    sw.Flush();
-                    sw.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Waypoints.UpgradeXml: {0}", e.Message));
-            }
-            FileWatcher.EnableRaisingEvents = true;
             LoadXml();
         }
 
@@ -758,6 +712,63 @@ namespace ServerTools
             }
         }
 
-
+        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        {
+            try
+            {
+                FileWatcher.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<PublicWaypoints>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- <Waypoint Name=\"Example\" Position=\"-500,20,500\" Cost=\"150\" /> -->");
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Waypoint Name=\"Example\"") &&
+                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Waypoint Name=\"\""))
+                        {
+                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                        }
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    {
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)_oldChildNodes[i];
+                        if (line.HasAttributes && line.Name == "Waypoint")
+                        {
+                            string name = "", position = "", cost = "";
+                            if (line.HasAttribute("Name"))
+                            {
+                                name = line.GetAttribute("Name");
+                            }
+                            if (line.HasAttribute("Position"))
+                            {
+                                position = line.GetAttribute("Position");
+                            }
+                            if (line.HasAttribute("Cost"))
+                            {
+                                cost = line.GetAttribute("Cost");
+                            }
+                            sw.WriteLine(string.Format("    <Waypoint Name=\"{0}\" Position=\"{1}\" Cost=\"{2}\" />", name, position, cost));
+                        }
+                    }
+                    sw.WriteLine("</PublicWaypoints>");
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Waypoints.UpgradeXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
+            LoadXml();
+        }
     }
 }

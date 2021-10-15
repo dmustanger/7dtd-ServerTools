@@ -4,14 +4,14 @@ namespace ServerTools
 {
     class RestartVote
     {
-        public static bool IsEnabled = false, VoteOpen = false, Cycle = false;
+        public static bool IsEnabled = false, VoteOpen = false, ThirtyMin = false;
         public static int Players_Online = 5, Votes_Needed = 3, Admin_Level = 0;
         public static string Command_restartvote = "restartvote", Command_yes = "yes";
         public static List<int> Restart = new List<int>();
 
         public static void CallForVote1(ClientInfo _cInfo)
         {
-            if (!Cycle)
+            if (!ThirtyMin)
             {
                 if (!VoteOpen)
                 {

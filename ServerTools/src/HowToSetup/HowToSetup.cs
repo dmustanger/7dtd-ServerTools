@@ -598,9 +598,9 @@ namespace ServerTools
                 sw.WriteLine("Set a numeric values for Command_Cost");
                 sw.WriteLine();
                 sw.WriteLine("Allows players to gamble Wallet currency using chat commands.");
-                sw.WriteLine("It will begin a 50/50 drawo 1 in 2 chance of winning. The player must spend the Command_Cost to enter. If they win, they can collect the winnings or bet again.");
-                sw.WriteLine("If the player wins in sequencial rounds, the winnings increase but their change of success decreases.");
-                sw.WriteLine("Their chances will reduce as they continue to win. Round 1: 1 in 2 chance. Round 2: 1 in 3. Round 3: 1 in 4. Round 4: 1 in 5.");
+                sw.WriteLine("It will begin a 50/50 draw with 1 in 2 chance of winning. The player must spend the Command_Cost to enter. If they win, they can collect the winnings or bet again.");
+                sw.WriteLine("If the player wins in sequencial rounds, the winnings increase but their chance of success decreases.");
+                sw.WriteLine("Round 1: 1 in 2 chance. Round 2: 1 in 3. Round 3: 1 in 4. Round 4: 1 in 5, and so on");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

@@ -46,7 +46,7 @@ namespace ServerTools
             }
             bool upgrade = true;
             XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-            if (childNodes != null && childNodes.Count > 0)
+            if (childNodes != null)
             {
                 Dict.Clear();
                 for (int i = 0; i < childNodes.Count; i++)
@@ -74,10 +74,33 @@ namespace ServerTools
                     }
                 }
             }
-            if (childNodes != null && upgrade)
+            if (upgrade)
             {
-                UpgradeXml(childNodes);
-                return;
+                XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                XmlNode node = nodeList[0];
+                XmlElement line = (XmlElement)nodeList[0];
+                if (line != null)
+                {
+                    if (line.HasAttributes)
+                    {
+                        UpgradeXml(nodeList);
+                        return;
+                    }
+                    else
+                    {
+                        nodeList = node.ChildNodes;
+                        line = (XmlElement)nodeList[0];
+                        if (line != null)
+                        {
+                            if (line.HasAttributes)
+                            {
+                                UpgradeXml(nodeList);
+                                return;
+                            }
+                        }
+                    }
+                }
+                UpgradeXml(null);
             }
         }
 
@@ -103,10 +126,6 @@ namespace ServerTools
                                 sw.WriteLine(string.Format("    <Player Id=\"{0}\" Message=\"{1}\" />", kvp.Key, _message));
                             }
                         }
-                    }
-                    else
-                    {
-                        sw.WriteLine("    <!-- <Player Id=\"\" Message=\"\" /> -->");
                     }
                     sw.WriteLine("</LoginNotice>");
                     sw.Flush();
@@ -160,39 +179,33 @@ namespace ServerTools
                     sw.WriteLine("<!-- <Player Id=\"76561191234567891\" Message=\"Time to kick ass and chew bubble gum\" /> -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Player Id=\"76561191234567891\"") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Zone Name=\"\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- <Player Id=\"76561191234567891\"") &&
+                            !_oldChildNodes[i].OuterXml.Contains("    <!-- <Player Id=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.Name == "Player")
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Player")
                             {
-                                _blank = false;
-                                string _id = "", _message = "";
-                                if (_line.HasAttribute("Id"))
+                                string id = "", message = "";
+                                if (line.HasAttribute("Id"))
                                 {
-                                    _id = _line.GetAttribute("Id");
+                                    id = line.GetAttribute("Id");
                                 }
-                                if (_line.HasAttribute("Message"))
+                                if (line.HasAttribute("Message"))
                                 {
-                                    _message = _line.GetAttribute("Message");
+                                    message = line.GetAttribute("Message");
                                 }
-                                sw.WriteLine(string.Format("    <Player Id=\"{0}\" Message=\"{1}\" />", _id, _message));
+                                sw.WriteLine(string.Format("    <Player Id=\"{0}\" Message=\"{1}\" />", id, message));
                             }
                         }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Player Id=\"\" Message=\"\" /> -->");
                     }
                     sw.WriteLine("</LoginNotice>");
                     sw.Flush();

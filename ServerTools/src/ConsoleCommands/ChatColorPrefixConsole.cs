@@ -22,7 +22,7 @@ namespace ServerTools
                 "  7. st-ccp list\n" +
                 "1. Turn off chat color prefix\n" +
                 "2. Turn on chat color prefix\n" +
-                "3. Adds a player to the list\n" +
+                "3. Adds a player to the list. If they already exist on the list it will replace the entry but add to the expiration time\n" +
                 "4. Edits a player's prefix and colors\n" +
                 "5. Edits a player's expiry date\n" +
                 "6. Removes a player from the list\n" +
@@ -105,59 +105,70 @@ namespace ServerTools
                             return;
                         }
                     }
-                    if (ChatColor.Players.ContainsKey(steamId))
+                    string colorTag1 = _params[2];
+                    if (ColorList.Colors.ContainsKey(_params[2]))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with id '{0} is already on the chat color prefix list. You can edit their entry or remove them first", steamId));
-                        return;
+                        ColorList.Colors.TryGetValue(_params[2], out colorTag1);
                     }
-                    else
+                    if ((colorTag1.Contains("[") && colorTag1.Contains("]")) || colorTag1 == "")
                     {
-                        string colorTag1 = _params[2];
-                        if (ColorList.Colors.ContainsKey(_params[2]))
+                        string colorTag2 = _params[4];
+                        if (ColorList.Colors.ContainsKey(_params[4]))
                         {
-                            ColorList.Colors.TryGetValue(_params[2], out colorTag1);
+                            ColorList.Colors.TryGetValue(_params[4], out colorTag2);
                         }
-                        if ((colorTag1.Contains("[") && colorTag1.Contains("]")) || colorTag1 == "")
+                        if ((colorTag2.Contains("[") && colorTag2.Contains("]")) || colorTag2 == "")
                         {
-                            string colorTag2 = _params[4];
-                            if (ColorList.Colors.ContainsKey(_params[4]))
+                            if (!double.TryParse(_params[5], out double daysToExpire))
                             {
-                                ColorList.Colors.TryGetValue(_params[4], out colorTag2);
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to add player. Invalid days to expire: '{0}'", _params[5]));
+                                return;
                             }
-                            if ((colorTag2.Contains("[") && colorTag2.Contains("]")) || colorTag2 == "")
+                            DateTime expiryDate;
+                            if (daysToExpire > 0d)
                             {
-                                if (!double.TryParse(_params[5], out double daysToExpire))
-                                {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to add player. Invalid days to expire: '{0}'", _params[5]));
-                                    return;
-                                }
-                                DateTime expiryDate;
+                                expiryDate = DateTime.Now.AddDays(daysToExpire);
+                            }
+                            else
+                            {
+                                expiryDate = DateTime.Now.AddDays(18250d);
+                            }
+                            string[] c = new string[] { playerName, colorTag1, _params[3], colorTag2 };
+                            if (ChatColor.ExpireDate.ContainsKey(steamId))
+                            {
+                                ChatColor.ExpireDate.TryGetValue(steamId, out DateTime oldDate);
                                 if (daysToExpire > 0d)
                                 {
-                                    expiryDate = DateTime.Now.AddDays(daysToExpire);
+                                    oldDate.AddDays(daysToExpire);
                                 }
                                 else
                                 {
-                                    expiryDate = DateTime.Now.AddDays(18250d);
+                                    oldDate.AddDays(18250d);
                                 }
-                                string[] c = new string[] { playerName, colorTag1, _params[3], colorTag2 };
+                                ChatColor.Players[steamId] = c;
+                                ChatColor.ExpireDate[steamId] = oldDate;
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using color '{2}' and prefix '{3}' using color '{4}'. Expiration set to '{5}'", steamId, playerName, colorTag1, _params[3], colorTag2, expiryDate.ToString()));
+                                ChatColor.UpdateXml();
+                            }
+                            else
+                            {
                                 ChatColor.Players.Add(steamId, c);
                                 ChatColor.ExpireDate.Add(steamId, expiryDate);
                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using color '{2}' and prefix '{3}' using color '{4}'. Expiration set to '{5}'", steamId, playerName, colorTag1, _params[3], colorTag2, expiryDate.ToString()));
                                 ChatColor.UpdateXml();
-                                return;
                             }
-                            else
-                            {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid prefix color: '{0}'", _params[4]));
-                                return;
-                            }
+                            return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid name color: '{0}'", _params[2]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid prefix color: '{0}'", _params[4]));
                             return;
                         }
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid name color: '{0}'", _params[2]));
+                        return;
                     }
                 }
                 else if (_params[0].ToLower().Equals("edit"))

@@ -37,7 +37,7 @@ namespace ServerTools
                 {
                     if (_player.entityId != player.Value.entityId)
                     {
-                        if (_player.partyInvites.Contains(player.Value))
+                        if (_player.partyInvites != null && _player.partyInvites.Contains(player.Value))
                         {
                             return;
                         }
@@ -56,7 +56,7 @@ namespace ServerTools
                                         if (ppd1 != null && ppd1.ACL.Contains(ppd2.PlayerId) && ppd2.ACL.Contains(ppd1.PlayerId))
                                         {
                                             EntityPlayer player2 = player.Value;
-                                            if ((player2.IsInParty() && player2.IsPartyLead() == player2 && player2.Party.MemberList.Count < Constants.cMaxPartySize) || !player2.IsInParty())
+                                            if ((player2.IsInParty() && player2.IsPartyLead() == player2 && player2.Party != null && player2.Party.MemberList.Count < Constants.cMaxPartySize) || !player2.IsInParty())
                                             {
                                                 _player.AddPartyInvite(player.Key);
                                                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePartyActions>().Setup(NetPackagePartyActions.PartyActions.SendInvite, player.Key, _player.entityId, null));

@@ -676,94 +676,6 @@ namespace ServerTools
                                 Died.Exec(_cInfo);
                                 return false;
                             }
-                            if (WeatherVote.IsEnabled && messageLowerCase == WeatherVote.Command_weathervote)
-                            {
-                                if (!WeatherVote.VoteOpen)
-                                {
-                                    WeatherVote.CallForVote(_cInfo);
-                                }
-                                else
-                                {
-                                    Phrases.Dict.TryGetValue("WeatherVote8", out string _phrase);
-                                    ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                }
-                                return false;
-                            }
-                            if (WeatherVote.IsEnabled && messageLowerCase == WeatherVote.Command_sun)
-                            {
-                                if (WeatherVote.VoteOpen)
-                                {
-                                    if (!WeatherVote.Snow.Contains(_cInfo.entityId) && !WeatherVote.Sun.Contains(_cInfo.entityId) && !WeatherVote.Rain.Contains(_cInfo.entityId))
-                                    {
-                                        WeatherVote.Sun.Add(_cInfo.entityId);
-                                        Phrases.Dict.TryGetValue("WeatherVote17", out string _phrase);
-                                        ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                    else
-                                    {
-                                        Phrases.Dict.TryGetValue("WeatherVote18", out string _phrase);
-                                        ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                }
-                                else
-                                {
-                                    Phrases.Dict.TryGetValue("WeatherVote19", out string _phrase);
-                                    _phrase = _phrase.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
-                                    _phrase = _phrase.Replace("{Command_weathervote}", WeatherVote.Command_weathervote);
-                                    ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                }
-                                return false;
-                            }
-                            if (WeatherVote.IsEnabled && messageLowerCase == WeatherVote.Command_rain)
-                            {
-                                if (WeatherVote.VoteOpen)
-                                {
-                                    if (!WeatherVote.Snow.Contains(_cInfo.entityId) && !WeatherVote.Sun.Contains(_cInfo.entityId) && !WeatherVote.Rain.Contains(_cInfo.entityId))
-                                    {
-                                        WeatherVote.Rain.Add(_cInfo.entityId);
-                                        Phrases.Dict.TryGetValue("WeatherVote20", out string _phrase);
-                                        ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                    else
-                                    {
-                                        Phrases.Dict.TryGetValue("WeatherVote18", out string _phrase);
-                                        ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                }
-                                else
-                                {
-                                    Phrases.Dict.TryGetValue("WeatherVote19", out string _phrase);
-                                    _phrase = _phrase.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
-                                    _phrase = _phrase.Replace("{Command_weathervote}", WeatherVote.Command_weathervote);
-                                    ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                }
-                                return false;
-                            }
-                            if (WeatherVote.IsEnabled && messageLowerCase == WeatherVote.Command_snow)
-                            {
-                                if (WeatherVote.VoteOpen)
-                                {
-                                    if (!WeatherVote.Snow.Contains(_cInfo.entityId) && !WeatherVote.Sun.Contains(_cInfo.entityId) && !WeatherVote.Rain.Contains(_cInfo.entityId))
-                                    {
-                                        WeatherVote.Snow.Add(_cInfo.entityId);
-                                        Phrases.Dict.TryGetValue("WeatherVote21", out string _phrase);
-                                        ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                    else
-                                    {
-                                        Phrases.Dict.TryGetValue("WeatherVote18", out string _phrase);
-                                        ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                }
-                                else
-                                {
-                                    Phrases.Dict.TryGetValue("WeatherVote19", out string _phrase);
-                                    _phrase = _phrase.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
-                                    _phrase = _phrase.Replace("{Command_weathervote}", WeatherVote.Command_weathervote);
-                                    ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                }
-                                return false;
-                            }
                             if (RestartVote.IsEnabled && messageLowerCase == RestartVote.Command_restartvote)
                             {
                                 if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen)
@@ -942,6 +854,12 @@ namespace ServerTools
                             }
                             if (VehicleRecall.IsEnabled)
                             {
+                                if (messageLowerCase.StartsWith(VehicleRecall.Command_recall_del + " "))
+                                {
+                                    _message = messageLowerCase.Replace(VehicleRecall.Command_recall_del + " ", "");
+                                    VehicleRecall.RemoveVehicle(_cInfo, _message);
+                                    return false;
+                                }
                                 if (messageLowerCase.StartsWith(VehicleRecall.Command_recall + " "))
                                 {
                                     _message = messageLowerCase.Replace(VehicleRecall.Command_recall + " ", "");
@@ -1448,7 +1366,7 @@ namespace ServerTools
                     else
                     {
                         _prefix = _prefix.Insert(0, _prefixColor);
-                        _prefix = _prefix.Insert(9, "[-]");
+                        _prefix = _prefix.Insert(_prefix.Length, "[-]");
                     }
                 }
                 if (_nameColor.StartsWith("[") && _nameColor.EndsWith("]"))
@@ -1488,7 +1406,7 @@ namespace ServerTools
                     else
                     {
                         _mainName = _mainName.Insert(0, _nameColor);
-                        _mainName = _mainName.Insert(9, "[-]");
+                        _mainName = _mainName.Insert(_mainName.Length, "[-]");
                     }
                 }
                 if (Message_Color_Enabled && Message_Color.StartsWith("[") && Message_Color.EndsWith("]"))
@@ -1515,6 +1433,10 @@ namespace ServerTools
         {
             try
             {
+                if (_message.Contains("U+") || _name.Contains("U+"))
+                {
+                    return;
+                }
                 if (_type == EChatType.Whisper)
                 {
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Whisper, _senderId, _message, _name, false, null));

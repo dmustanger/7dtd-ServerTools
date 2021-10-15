@@ -54,7 +54,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
@@ -71,20 +71,43 @@ namespace ServerTools
                                 }
                                 else if (line.HasAttribute("Name"))
                                 {
-                                    string _name = line.GetAttribute("Name");
-                                    if (!Dict.Contains(_name))
+                                    string name = line.GetAttribute("Name");
+                                    if (!Dict.Contains(name))
                                     {
-                                        Dict.Add(_name);
+                                        Dict.Add(name);
                                     }
                                 }
                             }
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -103,6 +126,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<DuplicateItemExemption>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- <Item Name=\"\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -112,14 +136,6 @@ namespace ServerTools
                             string _name = Dict[i];
                             sw.WriteLine(string.Format("    <Item Name=\"{0}\" />", _name));
                         }
-                    }
-                    else
-                    {
-                        sw.WriteLine("    <Item Name=\"sand\" />");
-                        sw.WriteLine("    <Item Name=\"dirt\" />");
-                        sw.WriteLine("    <Item Name=\"rockSmall\" />");
-                        sw.WriteLine("    <Item Name=\"yuccaFibers\" />");
-                        sw.WriteLine("    <Item Name=\"stoneAxe\" />");
                     }
                     sw.WriteLine("</DuplicateItemExemption>");
                     sw.Flush();
@@ -675,34 +691,45 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml(XmlNodeList _childNodes)
         {
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
-                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<DuplicateItemExemption>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("<!-- <Item Name=\"\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    if (_childNodes != null)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        for (int i = 0; i < _childNodes.Count; i++)
                         {
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)_oldChildNodes[i];
-                        if (_line.HasAttributes && _line.OuterXml.Contains("Weapon"))
-                        {
-                            string _name = "";
-                            if (_line.HasAttribute("Name"))
+                            if (_childNodes[i].NodeType == XmlNodeType.Comment && !_childNodes[i].OuterXml.Contains("<!-- <Item Name=\"\""))
                             {
-                                _name = _line.GetAttribute("Name");
+                                sw.WriteLine(_childNodes[i].OuterXml);
                             }
-                            sw.WriteLine(string.Format("    <Item Name=\"{0}\" />", _name));
+                        }
+                        sw.WriteLine();
+                        sw.WriteLine();
+                        for (int i = 0; i < _childNodes.Count; i++)
+                        {
+                            if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                            {
+                                XmlElement line = (XmlElement)_childNodes[i];
+                                if (line.HasAttributes && (line.Name == "Duplicate" || line.Name == "Item"))
+                                {
+                                    string name = "";
+                                    if (line.HasAttribute("Name"))
+                                    {
+                                        name = line.GetAttribute("Name");
+                                    }
+                                    sw.WriteLine(string.Format("    <Item Name=\"{0}\" />", name));
+                                }
+                            }
                         }
                     }
                     sw.WriteLine("</DuplicateItemExemption>");

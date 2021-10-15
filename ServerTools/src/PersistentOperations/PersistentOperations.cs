@@ -9,7 +9,7 @@ namespace ServerTools
 {
     class PersistentOperations
     {
-        public static bool IsRunning = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false;
+        public static bool IsRunning = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false;
         public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0;
 
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
@@ -24,34 +24,38 @@ namespace ServerTools
 
         public static void SetInstallFolder()
         {
-            string _mainDir = Directory.GetCurrentDirectory();
-            string[] _directories = Directory.GetDirectories(_mainDir);
-            if (_directories.Length > 0)
+            string mainDir = Directory.GetCurrentDirectory();
+            string[] directories = Directory.GetDirectories(mainDir);
+            if (directories.Length > 0)
             {
-                for (int i = 0; i < _directories.Length; i++)
+                for (int i = 0; i < directories.Length; i++)
                 {
-                    if (_directories[i].Contains("Mods"))
+                    if (directories[i].Contains("Mods"))
                     {
-                        string[] _childDirectories = Directory.GetDirectories(_directories[i]);
-                        if (_childDirectories.Length > 0)
+                        string[] childDirectories = Directory.GetDirectories(directories[i]);
+                        if (childDirectories.Length > 0)
                         {
-                            for (int j = 0; j < _childDirectories.Length; j++)
+                            for (int j = 0; j < childDirectories.Length; j++)
                             {
-                                if (_childDirectories[j].Contains("ServerTools"))
+                                if (childDirectories[j].Contains("ServerTools"))
                                 {
-                                    API.InstallPath = _childDirectories[j];
-                                    if (File.Exists(_childDirectories[j] + "/IP2Location.txt"))
+                                    API.InstallPath = childDirectories[j];
+                                    if (File.Exists(childDirectories[j] + "/IP2Location.txt"))
                                     {
-                                        CountryBan.FileLocation = _childDirectories[j] + "/IP2Location.txt";
+                                        CountryBan.FileLocation = childDirectories[j] + "/IP2Location.txt";
                                     }
-                                    string[] _subChildDirectories = Directory.GetDirectories(_childDirectories[j]);
-                                    if (_subChildDirectories.Length > 0)
+                                    if (File.Exists(childDirectories[j] + "/7za.exe"))
                                     {
-                                        for (int k = 0; k < _subChildDirectories.Length; k++)
+                                        AutoBackup.FileLocation = childDirectories[j] + "/7za.exe";
+                                    }
+                                    string[] subChildDirectories = Directory.GetDirectories(childDirectories[j]);
+                                    if (subChildDirectories.Length > 0)
+                                    {
+                                        for (int k = 0; k < subChildDirectories.Length; k++)
                                         {
-                                            if (_subChildDirectories[k].Contains("WebPanel"))
+                                            if (subChildDirectories[k].Contains("WebPanel"))
                                             {
-                                                WebAPI.Directory = _subChildDirectories[k] + "/";
+                                                WebAPI.Directory = subChildDirectories[k] + "/";
                                                 return;
                                             }
                                         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -45,7 +46,7 @@ namespace ServerTools
             }
             bool upgrade = true;
             XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-            if (childNodes != null && childNodes.Count > 0)
+            if (childNodes != null)
             {
                 Dict.Clear();
                 for (int i = 0; i < childNodes.Count; i++)
@@ -77,10 +78,33 @@ namespace ServerTools
                     Exec();
                 }
             }
-            if (childNodes != null && upgrade)
+            if (upgrade)
             {
-                UpgradeXml(childNodes);
-                return;
+                XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                XmlNode node = nodeList[0];
+                XmlElement line = (XmlElement)nodeList[0];
+                if (line != null)
+                {
+                    if (line.HasAttributes)
+                    {
+                        UpgradeXml(nodeList);
+                        return;
+                    }
+                    else
+                    {
+                        nodeList = node.ChildNodes;
+                        line = (XmlElement)nodeList[0];
+                        if (line != null)
+                        {
+                            if (line.HasAttributes)
+                            {
+                                UpgradeXml(nodeList);
+                                return;
+                            }
+                        }
+                    }
+                }
+                UpgradeXml(null);
             }
         }
 
@@ -105,9 +129,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    for (int i = 0; i < Commands.Count; i++)
+                    if (Commands.Count > 0)
                     {
-                        sw.WriteLine(Commands[i]);
+                        for (int i = 0; i < Commands.Count; i++)
+                        {
+                            sw.WriteLine(Commands[i]);
+                        }
                     }
                 }
                 sw.WriteLine("</CommandList>");
@@ -140,537 +167,398 @@ namespace ServerTools
             {
                 foreach (KeyValuePair<string, string> kvp in Dict)
                 {
-                    if (kvp.Key == "home")
-                    {
-                        Homes.Command_home = kvp.Value;
-                    }
-                    else if (kvp.Key == "fhome")
-                    {
-                        Homes.Command_fhome = kvp.Value;
-                    }
-                    else if (kvp.Key == "home save")
-                    {
-                        Homes.Command_save = kvp.Value;
-                    }
-                    else if (kvp.Key == "home del")
-                    {
-                        Homes.Command_delete = kvp.Value;
-                    }
-                    else if (kvp.Key == "go home")
-                    {
-                        Homes.Command_go = kvp.Value;
-                    }
-                    else if (kvp.Key == "sethome")
-                    {
-                        Homes.Command_set = kvp.Value;
-                    }
-                    else if (kvp.Key == "go way")
-                    {
-                        Waypoints.Command_go_way = kvp.Value;
-                    }
-                    else if (kvp.Key == "top3")
-                    {
-                        Hardcore.Command_top3 = kvp.Value;
-                    }
-                    else if (kvp.Key == "score")
-                    {
-                        Hardcore.Command_score = kvp.Value;
-                    }
-                    else if (kvp.Key == "buy life")
-                    {
-                        Hardcore.Command_buy_life = kvp.Value;
-                    }
-                    else if (kvp.Key == "hardcore")
-                    {
-                        Hardcore.Command_hardcore = kvp.Value;
-                    }
-                    else if (kvp.Key == "hardcore on")
-                    {
-                        Hardcore.Command_hardcore_on = kvp.Value;
-                    }
-                    else if (kvp.Key == "mute")
-                    {
-                        Mute.Command_mute = kvp.Value;
-                    }
-                    else if (kvp.Key == "unmute")
-                    {
-                        Mute.Command_unmute = kvp.Value;
-                    }
-                    else if (kvp.Key == "mutelist")
-                    {
-                        Mute.Command_mutelist = kvp.Value;
-                    }
-                    else if (kvp.Key == "commands")
-                    {
-                        CustomCommands.Command_commands = kvp.Value;
-                    }
-                    else if (kvp.Key == "day7")
-                    {
-                        Day7.Command_day7 = kvp.Value;
-                    }
-                    else if (kvp.Key == "day")
-                    {
-                        Day7.Command_day = kvp.Value;
-                    }
-                    else if (kvp.Key == "bloodmoon")
-                    {
-                        Bloodmoon.Command_bloodmoon = kvp.Value;
-                    }
-                    else if (kvp.Key == "bm")
-                    {
-                        Bloodmoon.Command_bm = kvp.Value;
-                    }
-                    else if (kvp.Key == "killme")
-                    {
-                        Suicide.Command_killme = kvp.Value;
-                    }
-                    else if (kvp.Key == "wrist")
-                    {
-                        Suicide.Command_wrist = kvp.Value;
-                    }
-                    else if (kvp.Key == "hang")
-                    {
-                        Suicide.Command_hang = kvp.Value;
-                    }
-                    else if (kvp.Key == "suicide")
-                    {
-                        Suicide.Command_suicide = kvp.Value;
-                    }
-                    else if (kvp.Key == "gimme")
-                    {
-                        Gimme.Command_gimme = kvp.Value;
-                    }
-                    else if (kvp.Key == "gimmie")
-                    {
-                        Gimme.Command_gimmie = kvp.Value;
-                    }
-                    else if (kvp.Key == "set jail")
-                    {
-                        Jail.Command_set_jail = kvp.Value;
-                    }
-                    else if (kvp.Key == "jail")
-                    {
-                        Jail.Command_jail = kvp.Value;
-                    }
-                    else if (kvp.Key == "unjail")
-                    {
-                        Jail.Command_unjail = kvp.Value;
-                    }
-                    else if (kvp.Key == "forgive")
-                    {
-                        Jail.Command_forgive = kvp.Value;
-                    }
-                    else if (kvp.Key == "setspawn")
-                    {
-                        NewSpawnTele.Command_setspawn = kvp.Value;
-                    }
-                    else if (kvp.Key == "ready")
-                    {
-                        NewSpawnTele.Command_ready = kvp.Value;
-                    }
-                    else if (kvp.Key == "trackanimal")
-                    {
-                        AnimalTracking.Command_trackanimal = kvp.Value;
-                    }
-                    else if (kvp.Key == "track")
-                    {
-                        AnimalTracking.Command_track = kvp.Value;
-                    }
-                    else if (kvp.Key == "claim")
-                    {
-                        FirstClaimBlock.Command_claim = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan add")
-                    {
-                        ClanManager.Command_add = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan del")
-                    {
-                        ClanManager.Command_delete = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan invite")
-                    {
-                        ClanManager.Command_invite = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan accept")
-                    {
-                        ClanManager.Command_accept = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan decline")
-                    {
-                        ClanManager.Command_decline = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan remove")
-                    {
-                        ClanManager.Command_remove = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan promote")
-                    {
-                        ClanManager.Command_promote = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan demote")
-                    {
-                        ClanManager.Command_demote = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan leave")
-                    {
-                        ClanManager.Command_leave = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan commands")
-                    {
-                        ClanManager.Command_commands = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan chat")
-                    {
-                        ClanManager.Command_chat = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan rename")
-                    {
-                        ClanManager.Command_rename = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan request")
-                    {
-                        ClanManager.Command_request = kvp.Value;
-                    }
-                    else if (kvp.Key == "cc")
-                    {
-                        ClanManager.Command_chat = kvp.Value;
-                    }
-                    else if (kvp.Key == "clan list")
-                    {
-                        ClanManager.Command_clan_list = kvp.Value;
-                    }
-                    else if (kvp.Key == "reward")
-                    {
-                        VoteReward.Command_reward = kvp.Value;
-                    }
-                    else if (kvp.Key == "shutdown")
-                    {
-                        Shutdown.Command_shutdown = kvp.Value;
-                    }
-                    else if (kvp.Key == "adminlist")
-                    {
-                        AdminList.Command_adminlist = kvp.Value;
-                    }
-                    else if (kvp.Key == "travel")
-                    {
-                        Travel.Command_travel = kvp.Value;
-                    }
-                    else if (kvp.Key == "marketback")
-                    {
-                        Market.Command_marketback = kvp.Value;
-                    }
-                    else if (kvp.Key == "mback")
-                    {
-                        Market.Command_mback = kvp.Value;
-                    }
-                    else if (kvp.Key == "setmarket")
-                    {
-                        Market.Command_set = kvp.Value;
-                    }
-                    else if (kvp.Key == "market")
-                    {
-                        Market.Command_market = kvp.Value;
-                    }
-                    else if (kvp.Key == "lobbyback")
-                    {
-                        Lobby.Command_lobbyback = kvp.Value;
-                    }
-                    else if (kvp.Key == "lback")
-                    {
-                        Lobby.Command_lback = kvp.Value;
-                    }
-                    else if (kvp.Key == "setlobby")
-                    {
-                        Lobby.Command_set = kvp.Value;
-                    }
-                    else if (kvp.Key == "lobby")
-                    {
-                        Lobby.Command_lobby = kvp.Value;
-                    }
-                    else if (kvp.Key == "wallet")
-                    {
-                        Wallet.Command_wallet = kvp.Value;
-                    }
-                    else if (kvp.Key == "shop")
-                    {
-                        Shop.Command_shop = kvp.Value;
-                    }
-                    else if (kvp.Key == "shop buy")
-                    {
-                        Shop.Command_shop_buy = kvp.Value;
-                    }
-                    else if (kvp.Key == "friend")
-                    {
-                        FriendTeleport.Command_friend = kvp.Value;
-                    }
-                    else if (kvp.Key == "accept")
-                    {
-                        FriendTeleport.Command_accept = kvp.Value;
-                    }
-                    else if (kvp.Key == "died")
-                    {
-                        Died.Command_died = kvp.Value;
-                    }
-                    else if (kvp.Key == "weathervote")
-                    {
-                        WeatherVote.Command_weathervote = kvp.Value;
-                    }
-                    else if (kvp.Key == "sun")
-                    {
-                        WeatherVote.Command_sun = kvp.Value;
-                    }
-                    else if (kvp.Key == "rain")
-                    {
-                        WeatherVote.Command_rain = kvp.Value;
-                    }
-                    else if (kvp.Key == "snow")
-                    {
-                        WeatherVote.Command_snow = kvp.Value;
-                    }
-                    else if (kvp.Key == "restartvote")
-                    {
-                        RestartVote.Command_restartvote = kvp.Value;
-                    }
-                    else if (kvp.Key == "mutevote")
-                    {
-                        MuteVote.Command_mutevote = kvp.Value;
-                    }
-                    else if (kvp.Key == "kickvote")
-                    {
-                        KickVote.Command_kickvote = kvp.Value;
-                    }
-                    else if (kvp.Key == "yes")
-                    {
-                        RestartVote.Command_yes = kvp.Value;
-                    }
-                    else if (kvp.Key == "reserved")
-                    {
-                        ReservedSlots.Command_reserved = kvp.Value;
-                    }
-                    else if (kvp.Key == "auction")
-                    {
-                        Auction.Command_auction = kvp.Value;
-                    }
-                    else if (kvp.Key == "auction cancel")
-                    {
-                        Auction.Command_auction_cancel = kvp.Value;
-                    }
-                    else if (kvp.Key == "auction buy")
-                    {
-                        Auction.Command_auction_buy = kvp.Value;
-                    }
-                    else if (kvp.Key == "auction sell")
-                    {
-                        Auction.Command_auction_sell = kvp.Value;
-                    }
-                    else if (kvp.Key == "fps")
-                    {
-                        Fps.Command_fps = kvp.Value;
-                    }
-                    else if (kvp.Key == "loc")
-                    {
-                        Loc.Command_loc = kvp.Value;
-                    }
-                    else if (kvp.Key == "recall")
-                    {
-                        VehicleRecall.Command_recall = kvp.Value;
-                    }
-                    else if (kvp.Key == "report")
-                    {
-                        Report.Command_report = kvp.Value;
-                    }
-                    else if (kvp.Key == "bounty")
-                    {
-                        Bounties.Command_bounty = kvp.Value;
-                    }
-                    else if (kvp.Key == "lottery")
-                    {
-                        Lottery.Command_lottery = kvp.Value;
-                    }
-                    else if (kvp.Key == "lottery enter")
-                    {
-                        Lottery.Command_lottery_enter = kvp.Value;
-                    }
-                    else if (kvp.Key == "playerlist")
-                    {
-                        PlayerList.Command_playerlist = kvp.Value;
-                    }
-                    else if (kvp.Key == "stuck")
-                    {
-                        Stuck.Command_stuck = kvp.Value;
-                    }
-                    else if (kvp.Key == "poll yes")
-                    {
-                        Poll.Command_poll_yes = kvp.Value;
-                    }
-                    else if (kvp.Key == "poll no")
-                    {
-                        Poll.Command_poll_no = kvp.Value;
-                    }
-                    else if (kvp.Key == "poll")
-                    {
-                        Poll.Command_poll = kvp.Value;
-                    }
-                    else if (kvp.Key == "bank")
-                    {
-                        Bank.Command_bank = kvp.Value;
-                    }
-                    else if (kvp.Key == "deposit")
-                    {
-                        Bank.Command_deposit = kvp.Value;
-                    }
-                    else if (kvp.Key == "withdraw")
-                    {
-                        Bank.Command_withdraw = kvp.Value;
-                    }
-                    else if (kvp.Key == "wallet deposit")
-                    {
-                        Bank.Command_wallet_deposit = kvp.Value;
-                    }
-                    else if (kvp.Key == "wallet withdraw")
-                    {
-                        Bank.Command_wallet_withdraw = kvp.Value;
-                    }
-                    else if (kvp.Key == "transfer")
-                    {
-                        Bank.Command_transfer = kvp.Value;
-                    }
-                    else if (kvp.Key == "join")
-                    {
-                        Event.Command_join = kvp.Value;
-                    }
-                    else if (kvp.Key == "infoticker")
-                    {
-                        InfoTicker.Command_infoticker = kvp.Value;
-                    }
-                    else if (kvp.Key == "session")
-                    {
-                        Session.Command_session = kvp.Value;
-                    }
-                    else if (kvp.Key == "waypoint")
-                    {
-                        Waypoints.Command_waypoint = kvp.Value;
-                    }
-                    else if (kvp.Key == "way")
-                    {
-                        Waypoints.Command_way = kvp.Value;
-                    }
-                    else if (kvp.Key == "wp")
-                    {
-                        Waypoints.Command_wp = kvp.Value;
-                    }
-                    else if (kvp.Key == "fwaypoint")
-                    {
-                        Waypoints.Command_fwaypoint = kvp.Value;
-                    }
-                    else if (kvp.Key == "fway")
-                    {
-                        Waypoints.Command_fway = kvp.Value;
-                    }
-                    else if (kvp.Key == "fwp")
-                    {
-                        Waypoints.Command_fwp = kvp.Value;
-                    }
-                    else if (kvp.Key == "waypoint save")
-                    {
-                        Waypoints.Command_waypoint_save = kvp.Value;
-                    }
-                    else if (kvp.Key == "way save")
-                    {
-                        Waypoints.Command_way_save = kvp.Value;
-                    }
-                    else if (kvp.Key == "ws")
-                    {
-                        Waypoints.Command_ws = kvp.Value;
-                    }
-                    else if (kvp.Key == "waypoint del")
-                    {
-                        Waypoints.Command_waypoint_del = kvp.Value;
-                    }
-                    else if (kvp.Key == "way del")
-                    {
-                        Waypoints.Command_way_del = kvp.Value;
-                    }
-                    else if (kvp.Key == "wd")
-                    {
-                        Waypoints.Command_wd = kvp.Value;
-                    }
-                    else if (kvp.Key == "admin")
-                    {
-                        AdminChat.Command_admin = kvp.Value;
-                    }
-                    else if (kvp.Key == "pmessage")
-                    {
-                        Whisper.Command_pmessage = kvp.Value;
-                    }
-                    else if (kvp.Key == "pm")
-                    {
-                        Whisper.Command_pm = kvp.Value;
-                    }
-                    else if (kvp.Key == "rmessage")
-                    {
-                        Whisper.Command_rmessage = kvp.Value;
-                    }
-                    else if (kvp.Key == "rm")
-                    {
-                        Whisper.Command_rm = kvp.Value;
-                    }
-                    else if (kvp.Key == "pray")
-                    {
-                        Prayer.Command_pray = kvp.Value;
-                    }
-                    else if (kvp.Key == "scoutplayer")
-                    {
-                        ScoutPlayer.Command_scoutplayer = kvp.Value;
-                    }
-                    else if (kvp.Key == "scout")
-                    {
-                        ScoutPlayer.Command_scout = kvp.Value;
-                    }
-                    else if (kvp.Key == "exit")
-                    {
-                        ExitCommand.Command_exit = kvp.Value;
-                    }
-                    else if (kvp.Key == "quit")
-                    {
-                        ExitCommand.Command_quit = kvp.Value;
-                    }
-                    else if (kvp.Key == "ccc")
-                    {
-                        ChatColor.Command_ccc = kvp.Value;
-                    }
-                    else if (kvp.Key == "ccpr")
-                    {
-                        ChatColor.Command_ccpr = kvp.Value;
-                    }
-                    else if (kvp.Key == "ccnr")
-                    {
-                        ChatColor.Command_ccnr = kvp.Value;
-                    }
-                    else if (kvp.Key == "gamble")
-                    {
-                        Gamble.Command_gamble = kvp.Value;
-                    }
-                    else if (kvp.Key == "gamble bet")
-                    {
-                        Gamble.Command_gamble_bet = kvp.Value;
-                    }
-                    else if (kvp.Key == "gamble payout")
-                    {
-                        Gamble.Command_gamble_payout = kvp.Value;
-                    }
-                    else if (kvp.Key == "party")
-                    {
-                        AutoPartyInvite.Command_party = kvp.Value;
-                    }
-                    else if (kvp.Key == "party add")
-                    {
-                        AutoPartyInvite.Command_party_add = kvp.Value;
-                    }
-                    else if (kvp.Key == "party remove")
-                    {
-                        AutoPartyInvite.Command_party_remove = kvp.Value;
+                    switch (kvp.Key)
+                    {
+                        case "home":
+                            Homes.Command_home = kvp.Value;
+                            continue;
+                        case "fhome":
+                            Homes.Command_fhome = kvp.Value;
+                            continue;
+                        case "home save":
+                            Homes.Command_save = kvp.Value;
+                            continue;
+                        case "home del":
+                            Homes.Command_delete = kvp.Value;
+                            continue;
+                        case "go home":
+                            Homes.Command_go = kvp.Value;
+                            continue;
+                        case "sethome":
+                            Homes.Command_set = kvp.Value;
+                            continue;
+                        case "go way":
+                            Waypoints.Command_go_way = kvp.Value;
+                            continue;
+                        case "top3":
+                            Hardcore.Command_top3 = kvp.Value;
+                            continue;
+                        case "score":
+                            Hardcore.Command_score = kvp.Value;
+                            continue;
+                        case "buy life":
+                            Hardcore.Command_buy_life = kvp.Value;
+                            continue;
+                        case "hardcore":
+                            Hardcore.Command_hardcore = kvp.Value;
+                            continue;
+                        case "hardcore on":
+                            Hardcore.Command_hardcore_on = kvp.Value;
+                            continue;
+                        case "mute":
+                            Mute.Command_mute = kvp.Value;
+                            continue;
+                        case "unmute":
+                            Mute.Command_unmute = kvp.Value;
+                            continue;
+                        case "mutelist":
+                            Mute.Command_mutelist = kvp.Value;
+                            continue;
+                        case "commands":
+                            CustomCommands.Command_commands = kvp.Value;
+                            continue;
+                        case "day7":
+                            Day7.Command_day7 = kvp.Value;
+                            continue;
+                        case "day":
+                            Day7.Command_day = kvp.Value;
+                            continue;
+                        case "bloodmoon":
+                            Bloodmoon.Command_bloodmoon = kvp.Value;
+                            continue;
+                        case "bm":
+                            Bloodmoon.Command_bm = kvp.Value;
+                            continue;
+                        case "killme":
+                            Suicide.Command_killme = kvp.Value;
+                            continue;
+                        case "wrist":
+                            Suicide.Command_wrist = kvp.Value;
+                            continue;
+                        case "hang":
+                            Suicide.Command_hang = kvp.Value;
+                            continue;
+                        case "suicide":
+                            Suicide.Command_suicide = kvp.Value;
+                            continue;
+                        case "gimme":
+                            Gimme.Command_gimme = kvp.Value;
+                            continue;
+                        case "gimmie":
+                            Gimme.Command_gimmie = kvp.Value;
+                            continue;
+                        case "set jail":
+                            Jail.Command_set_jail = kvp.Value;
+                            continue;
+                        case "jail":
+                            Jail.Command_jail = kvp.Value;
+                            continue;
+                        case "unjail":
+                            Jail.Command_unjail = kvp.Value;
+                            continue;
+                        case "forgive":
+                            Jail.Command_forgive = kvp.Value;
+                            continue;
+                        case "setspawn":
+                            NewSpawnTele.Command_setspawn = kvp.Value;
+                            continue;
+                        case "ready":
+                            NewSpawnTele.Command_ready = kvp.Value;
+                            continue;
+                        case "trackanimal":
+                            AnimalTracking.Command_trackanimal = kvp.Value;
+                            continue;
+                        case "track":
+                            AnimalTracking.Command_track = kvp.Value;
+                            continue;
+                        case "claim":
+                            FirstClaimBlock.Command_claim = kvp.Value;
+                            continue;
+                        case "clan add":
+                            ClanManager.Command_add = kvp.Value;
+                            continue;
+                        case "clan del":
+                            ClanManager.Command_delete = kvp.Value;
+                            continue;
+                        case "clan invite":
+                            ClanManager.Command_invite = kvp.Value;
+                            continue;
+                        case "clan accept":
+                            ClanManager.Command_accept = kvp.Value;
+                            continue;
+                        case "clan decline":
+                            ClanManager.Command_decline = kvp.Value;
+                            continue;
+                        case "clan remove":
+                            ClanManager.Command_remove = kvp.Value;
+                            continue;
+                        case "clan promote":
+                            ClanManager.Command_promote = kvp.Value;
+                            continue;
+                        case "clan demote":
+                            ClanManager.Command_demote = kvp.Value;
+                            continue;
+                        case "clan leave":
+                            ClanManager.Command_leave = kvp.Value;
+                            continue;
+                        case "clan commands":
+                            ClanManager.Command_commands = kvp.Value;
+                            continue;
+                        case "clan chat":
+                            ClanManager.Command_chat = kvp.Value;
+                            continue;
+                        case "clan rename":
+                            ClanManager.Command_rename = kvp.Value;
+                            continue;
+                        case "clan request":
+                            ClanManager.Command_request = kvp.Value;
+                            continue;
+                        case "clan cc":
+                            ClanManager.Command_cc = kvp.Value;
+                            continue;
+                        case "clan list":
+                            ClanManager.Command_clan_list = kvp.Value;
+                            continue;
+                        case "reward":
+                            VoteReward.Command_reward = kvp.Value;
+                            continue;
+                        case "shutdown":
+                            Shutdown.Command_shutdown = kvp.Value;
+                            continue;
+                        case "adminlist":
+                            VoteReward.Command_reward = kvp.Value;
+                            continue;
+                        case "travel":
+                            Travel.Command_travel = kvp.Value;
+                            continue;
+                        case "marketback":
+                            Market.Command_marketback = kvp.Value;
+                            continue;
+                        case "mback":
+                            Market.Command_mback = kvp.Value;
+                            continue;
+                        case "setmarket":
+                            Market.Command_set = kvp.Value;
+                            continue;
+                        case "market":
+                            Market.Command_market = kvp.Value;
+                            continue;
+                        case "lobbyback":
+                            Lobby.Command_lobbyback = kvp.Value;
+                            continue;
+                        case "lback":
+                            Lobby.Command_lobbyback = kvp.Value;
+                            continue;
+                        case "setlobby":
+                            Lobby.Command_set = kvp.Value;
+                            continue;
+                        case "lobby":
+                            Lobby.Command_lobby = kvp.Value;
+                            continue;
+                        case "wallet":
+                            Wallet.Command_wallet = kvp.Value;
+                            continue;
+                        case "shop":
+                            Shop.Command_shop = kvp.Value;
+                            continue;
+                        case "shop buy":
+                            Shop.Command_shop_buy = kvp.Value;
+                            continue;
+                        case "friend":
+                            FriendTeleport.Command_friend = kvp.Value;
+                            continue;
+                        case "accept":
+                            FriendTeleport.Command_accept = kvp.Value;
+                            continue;
+                        case "died":
+                            Died.Command_died = kvp.Value;
+                            continue;
+                        case "restartvote":
+                            RestartVote.Command_restartvote = kvp.Value;
+                            continue;
+                        case "mutevote":
+                            MuteVote.Command_mutevote = kvp.Value;
+                            continue;
+                        case "kickvote":
+                            KickVote.Command_kickvote = kvp.Value;
+                            continue;
+                        case "yes":
+                            RestartVote.Command_yes = kvp.Value;
+                            continue;
+                        case "reserved":
+                            ReservedSlots.Command_reserved = kvp.Value;
+                            continue;
+                        case "auction":
+                            Auction.Command_auction = kvp.Value;
+                            continue;
+                        case "auction cancel":
+                            Auction.Command_auction_cancel = kvp.Value;
+                            continue;
+                        case "auction buy":
+                            Auction.Command_auction_buy = kvp.Value;
+                            continue;
+                        case "auction sell":
+                            Auction.Command_auction_sell = kvp.Value;
+                            continue;
+                        case "fps":
+                            Fps.Command_fps = kvp.Value;
+                            continue;
+                        case "loc":
+                            Loc.Command_loc = kvp.Value;
+                            continue;
+                        case "recall":
+                            VehicleRecall.Command_recall = kvp.Value;
+                            continue;
+                        case "recall del":
+                            VehicleRecall.Command_recall_del = kvp.Value;
+                            continue;
+                        case "report":
+                            Report.Command_report = kvp.Value;
+                            continue;
+                        case "bounty":
+                            Bounties.Command_bounty = kvp.Value;
+                            continue;
+                        case "lottery":
+                            Lottery.Command_lottery = kvp.Value;
+                            continue;
+                        case "lottery enter":
+                            Lottery.Command_lottery_enter = kvp.Value;
+                            continue;
+                        case "playerlist":
+                            PlayerList.Command_playerlist = kvp.Value;
+                            continue;
+                        case "stuck":
+                            Stuck.Command_stuck = kvp.Value;
+                            continue;
+                        case "poll yes":
+                            Poll.Command_poll_yes = kvp.Value;
+                            continue;
+                        case "poll no":
+                            Poll.Command_poll_no = kvp.Value;
+                            continue;
+                        case "poll":
+                            Poll.Command_poll = kvp.Value;
+                            continue;
+                        case "bank":
+                            Bank.Command_bank = kvp.Value;
+                            continue;
+                        case "deposit":
+                            Bank.Command_deposit = kvp.Value;
+                            continue;
+                        case "withdraw":
+                            Bank.Command_withdraw = kvp.Value;
+                            continue;
+                        case "wallet deposit":
+                            Bank.Command_wallet_deposit = kvp.Value;
+                            continue;
+                        case "wallet withdraw":
+                            Bank.Command_wallet_withdraw = kvp.Value;
+                            continue;
+                        case "transfer":
+                            Bank.Command_transfer = kvp.Value;
+                            continue;
+                        case "join":
+                            Event.Command_join = kvp.Value;
+                            continue;
+                        case "infoticker":
+                            InfoTicker.Command_infoticker = kvp.Value;
+                            continue;
+                        case "session":
+                            Session.Command_session = kvp.Value;
+                            continue;
+                        case "waypoint":
+                            Waypoints.Command_waypoint = kvp.Value;
+                            continue;
+                        case "way":
+                            Waypoints.Command_way = kvp.Value;
+                            continue;
+                        case "wp":
+                            Waypoints.Command_wp = kvp.Value;
+                            continue;
+                        case "fwaypoint":
+                            Waypoints.Command_fwaypoint = kvp.Value;
+                            continue;
+                        case "fway":
+                            Waypoints.Command_fway = kvp.Value;
+                            continue;
+                        case "fwp":
+                            Waypoints.Command_fwp = kvp.Value;
+                            continue;
+                        case "waypoint save":
+                            Waypoints.Command_waypoint_save = kvp.Value;
+                            continue;
+                        case "way save":
+                            Waypoints.Command_way_save = kvp.Value;
+                            continue;
+                        case "ws":
+                            Waypoints.Command_ws = kvp.Value;
+                            continue;
+                        case "waypoint del":
+                            Waypoints.Command_waypoint_del = kvp.Value;
+                            continue;
+                        case "way del":
+                            Waypoints.Command_way_del = kvp.Value;
+                            continue;
+                        case "wd":
+                            Waypoints.Command_wd = kvp.Value;
+                            continue;
+                        case "admin":
+                            AdminChat.Command_admin = kvp.Value;
+                            continue;
+                        case "pmessage":
+                            Whisper.Command_pmessage = kvp.Value;
+                            continue;
+                        case "pm":
+                            Whisper.Command_pm = kvp.Value;
+                            continue;
+                        case "rmessage":
+                            Whisper.Command_rmessage = kvp.Value;
+                            continue;
+                        case "rm":
+                            Whisper.Command_rm = kvp.Value;
+                            continue;
+                        case "pray":
+                            Prayer.Command_pray = kvp.Value;
+                            continue;
+                        case "scoutplayer":
+                            ScoutPlayer.Command_scoutplayer = kvp.Value;
+                            continue;
+                        case "scout":
+                            ScoutPlayer.Command_scout = kvp.Value;
+                            continue;
+                        case "exit":
+                            ExitCommand.Command_exit = kvp.Value;
+                            continue;
+                        case "quit":
+                            ExitCommand.Command_quit = kvp.Value;
+                            continue;
+                        case "ccc":
+                            ChatColor.Command_ccc = kvp.Value;
+                            continue;
+                        case "ccpr":
+                            ChatColor.Command_ccpr = kvp.Value;
+                            continue;
+                        case "ccnr":
+                            ChatColor.Command_ccnr = kvp.Value;
+                            continue;
+                        case "gamble":
+                            Gamble.Command_gamble = kvp.Value;
+                            continue;
+                        case "gamble bet":
+                            Gamble.Command_gamble_bet = kvp.Value;
+                            continue;
+                        case "gamble payout":
+                            Gamble.Command_gamble_payout = kvp.Value;
+                            continue;
+                        case "party":
+                            AutoPartyInvite.Command_party = kvp.Value;
+                            continue;
+                        case "party add":
+                            AutoPartyInvite.Command_party_add = kvp.Value;
+                            continue;
+                        case "party remove":
+                            AutoPartyInvite.Command_party_remove = kvp.Value;
+                            continue;
                     }
                 }
             }
@@ -750,10 +638,6 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"friend\" Replacement=\"friend\" />");
             Commands.Add("    <Command Default=\"accept\" Replacement=\"accept\" />");
             Commands.Add("    <Command Default=\"died\" Replacement=\"died\" />");
-            Commands.Add("    <Command Default=\"weathervote\" Replacement=\"weathervote\" />");
-            Commands.Add("    <Command Default=\"sun\" Replacement=\"sun\" />");
-            Commands.Add("    <Command Default=\"rain\" Replacement=\"rain\" />");
-            Commands.Add("    <Command Default=\"snow\" Replacement=\"snow\" />");
             Commands.Add("    <Command Default=\"restartvote\" Replacement=\"restartvote\" />");
             Commands.Add("    <Command Default=\"mutevote\" Replacement=\"mutevote\" />");
             Commands.Add("    <Command Default=\"kickvote\" Replacement=\"kickvote\" />");
@@ -766,6 +650,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"fps\" Replacement=\"fps\" />");
             Commands.Add("    <Command Default=\"loc\" Replacement=\"loc\" />");
             Commands.Add("    <Command Default=\"recall\" Replacement=\"recall\" />");
+            Commands.Add("    <Command Default=\"recall del\" Replacement=\"recall del\" />");
             Commands.Add("    <Command Default=\"report\" Replacement=\"report\" />");
             Commands.Add("    <Command Default=\"bounty\" Replacement=\"bounty\" />");
             Commands.Add("    <Command Default=\"lottery\" Replacement=\"lottery\" />");
@@ -817,48 +702,53 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"party remove\" Replacement=\"party remove\" />");
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml(XmlNodeList childNodes)
         {
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
+                    List<string> commandList = Commands;
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CommandList>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("<!-- Leave the default alone. Only edit the replacement to your desired command -->");
                     sw.WriteLine("<!-- All capital letters in commands will be reduced to lowercase -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    if (childNodes != null)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- All capital letters in commands") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- Leave the default alone."))
+                        for (int i = 0; i < childNodes.Count; i++)
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
-                        }
-                    }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
-                    {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
-                        {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
-                            if (line.HasAttributes && line.OuterXml.Contains("Command"))
+                            if (childNodes[i].NodeType == XmlNodeType.Comment && !childNodes[i].OuterXml.Contains("<!-- All capital letters in commands") &&
+                                !childNodes[i].OuterXml.Contains("<!-- Leave the default alone."))
                             {
-                                string defaultCommand = "", replacement = "";
-                                if (line.HasAttribute("Default") && line.HasAttribute("Replacement"))
+                                sw.WriteLine(childNodes[i].OuterXml);
+                            }
+                        }
+                        sw.WriteLine();
+                        sw.WriteLine();
+                        for (int i = 0; i < childNodes.Count; i++)
+                        {
+                            if (childNodes[i].NodeType != XmlNodeType.Comment)
+                            {
+                                XmlElement line = (XmlElement)childNodes[i];
+                                if (line.HasAttributes && line.Name == "Command")
                                 {
-                                    defaultCommand = line.GetAttribute("Default");
-                                    replacement = line.GetAttribute("Replacement");
-                                    if (Commands.Count > 0)
+                                    string defaultCommand = "", replacement = "";
+                                    if (line.HasAttribute("Default") && line.HasAttribute("Replacement"))
                                     {
-                                        for (int j = 0; j < Commands.Count; j++)
+                                        defaultCommand = line.GetAttribute("Default");
+                                        replacement = line.GetAttribute("Replacement");
+                                        if (commandList.Count > 0)
                                         {
-                                            if (Commands[j].Contains(defaultCommand))
+                                            for (int j = 0; j < commandList.Count; j++)
                                             {
-                                                Commands.RemoveAt(j);
-                                                sw.WriteLine(string.Format("    <Command Default=\"{0}\" Replacement=\"{1}\" />", defaultCommand, replacement));
+                                                if (commandList[j].Contains(defaultCommand))
+                                                {
+                                                    commandList.RemoveAt(j);
+                                                    sw.WriteLine(string.Format("    <Command Default=\"{0}\" Replacement=\"{1}\" />", defaultCommand, replacement));
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
@@ -866,18 +756,16 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (Commands.Count > 0)
+                    if (commandList.Count > 0)
                     {
-                        for (int i = 0; i < Commands.Count; i++)
+                        for (int i = 0; i < commandList.Count; i++)
                         {
-                            sw.WriteLine(Commands);
+                            sw.WriteLine(commandList[i]);
                         }
-                        Commands.Clear();
                     }
                     sw.WriteLine("</CommandList>");
                     sw.Flush();
                     sw.Close();
-                    BuildList();
                 }
             }
             catch (Exception e)

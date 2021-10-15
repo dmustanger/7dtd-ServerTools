@@ -134,7 +134,7 @@ namespace ServerTools
                 {
                     if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
                     {
-                        EntityPlayer player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                        EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
                         if (player != null)
                         {
                             if (_respawnReason == RespawnType.EnterMultiplayer)//New player spawning. Game bug can trigger this incorrectly
@@ -221,10 +221,10 @@ namespace ServerTools
         {
             try
             {
-                if (_cInfo != null && GameManager.Instance.World != null && _type == EnumGameMessages.EntityWasKilled &&
-                    GameManager.Instance.World.Players.dict.Count > 0 && GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
+                if (_cInfo != null && GameManager.Instance.World != null && _type == EnumGameMessages.EntityWasKilled && 
+                    GameManager.Instance.World.Players.Count > 0)
                 {
-                    EntityPlayer player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
                     if (player != null)
                     {
                         if (PlayerChecks.FlyEnabled && PlayerChecks.Movement.ContainsKey(_cInfo.entityId))
@@ -235,13 +235,16 @@ namespace ServerTools
                         {
                             Died.PlayerKilled(player);
                         }
-                        if (KillNotice.IsEnabled && KillNotice.Zombie_Kills)
+                        if (KillNotice.IsEnabled && KillNotice.Zombie_Kills && string.IsNullOrEmpty(_secondaryName))
                         {
-                            KillNotice.ZombieDamage.TryGetValue(player.entityId, out int[] damage);
-                            EntityZombie zombie = PersistentOperations.GetZombie(damage[0]);
-                            if (zombie != null)
+                            if (KillNotice.ZombieDamage.ContainsKey(player.entityId))
                             {
-                                KillNotice.ZombieKilledPlayer(zombie, player, _cInfo, damage[1]);
+                                KillNotice.ZombieDamage.TryGetValue(player.entityId, out int[] damage);
+                                EntityZombie zombie = PersistentOperations.GetZombie(damage[0]);
+                                if (zombie != null)
+                                {
+                                    KillNotice.ZombieKilledPlayer(zombie, player, _cInfo, damage[1]);
+                                }
                             }
                         }
                     }

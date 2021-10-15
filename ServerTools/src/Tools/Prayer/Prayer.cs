@@ -51,7 +51,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
@@ -85,10 +85,33 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -116,10 +139,6 @@ namespace ServerTools
                         {
                             sw.WriteLine(string.Format("    <Buff Name=\"{0}\" Message=\"{1}\" />", _buff.Key, _buff.Value));
                         }
-                    }
-                    else
-                    {
-                        sw.WriteLine("    <!-- <Buff Name=\"\" Message=\"\" /> -->");
                     }
                     sw.WriteLine("</Prayer>");
                     sw.Flush();
@@ -304,31 +323,25 @@ namespace ServerTools
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && _line.Name == "Buff")
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && line.Name == "Buff")
                             {
-                                _blank = false;
-                                string _name = "", _message = "";
-                                if (_line.HasAttribute("Name"))
+                                string name = "", message = "";
+                                if (line.HasAttribute("Name"))
                                 {
-                                    _name = _line.GetAttribute("Name");
+                                    name = line.GetAttribute("Name");
                                 }
-                                if (_line.HasAttribute("Message"))
+                                if (line.HasAttribute("Message"))
                                 {
-                                    _message = _line.GetAttribute("Message");
+                                    message = line.GetAttribute("Message");
                                 }
-                                sw.WriteLine(string.Format("    <Buff Name=\"{0}\" Message=\"{1}\" />", _name, _message));
+                                sw.WriteLine(string.Format("    <Buff Name=\"{0}\" Message=\"{1}\" />", name, message));
                             }
                         }
-                    }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Buff Name=\"\" Message=\"\" /> -->");
                     }
                     sw.WriteLine("</Prayer>");
                     sw.Flush();

@@ -53,7 +53,7 @@ namespace ServerTools
                 }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null && childNodes.Count > 0)
+                if (childNodes != null)
                 {
                     Dict.Clear();
                     Categories.Clear();
@@ -131,10 +131,33 @@ namespace ServerTools
                         }
                     }
                 }
-                if (childNodes != null && upgrade)
+                if (upgrade)
                 {
-                    UpgradeXml(childNodes);
-                    return;
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            UpgradeXml(nodeList);
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    UpgradeXml(nodeList);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
@@ -163,10 +186,6 @@ namespace ServerTools
                         {
                             sw.WriteLine(string.Format("    <Item Name=\"{0}\" SecondaryName=\"{1}\" Count=\"{2}\" Quality=\"{3}\" Price=\"{4}\" Category=\"{5}\" />", Dict[i][1], Dict[i][2], Dict[i][3], Dict[i][4], Dict[i][5], Dict[i][6]));
                         }
-                    }
-                    else
-                    {
-                        sw.WriteLine("    <!-- <Item Name=\"\" SecondaryName=\"\" Count=\"\" Quality=\"\" Price=\"\" Category=\"\" /> -->");
                     }
                     sw.WriteLine("</Shop>");
                     sw.Flush();
@@ -455,56 +474,51 @@ namespace ServerTools
                     sw.WriteLine("<!-- WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option -->");
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- Secondary name is") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- WalletCoin can be") && !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Item Name=\"\""))
+                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Secondary name is") &&
+                            !_oldChildNodes[i].OuterXml.Contains("<!-- WalletCoin can be") && !_oldChildNodes[i].OuterXml.Contains("    <!-- <Item Name=\"\""))
                         {
                             sw.WriteLine(_oldChildNodes[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    bool _blank = true;
                     for (int i = 0; i < _oldChildNodes.Count; i++)
                     {
                         if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement _line = (XmlElement)_oldChildNodes[i];
-                            if (_line.HasAttributes && (_line.Name == "Shop" || _line.Name == "Item"))
+                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            if (line.HasAttributes && (line.Name == "Shop" || line.Name == "Item"))
                             {
-                                _blank = false;
-                                string _name = "", _secondaryName = "", _count = "", _quality = "", _price = "", _category = "";
-                                if (_line.HasAttribute("Name"))
+                                string name = "", secondaryName = "", count = "", quality = "", price = "", category = "";
+                                if (line.HasAttribute("Name"))
                                 {
-                                    _name = _line.GetAttribute("Name");
+                                    name = line.GetAttribute("Name");
                                 }
-                                if (_line.HasAttribute("SecondaryName"))
+                                if (line.HasAttribute("SecondaryName"))
                                 {
-                                    _secondaryName = _line.GetAttribute("SecondaryName");
+                                    secondaryName = line.GetAttribute("SecondaryName");
                                 }
-                                if (_line.HasAttribute("Count"))
+                                if (line.HasAttribute("Count"))
                                 {
-                                    _count = _line.GetAttribute("Count");
+                                    count = line.GetAttribute("Count");
                                 }
-                                if (_line.HasAttribute("Quality"))
+                                if (line.HasAttribute("Quality"))
                                 {
-                                    _quality = _line.GetAttribute("Quality");
+                                    quality = line.GetAttribute("Quality");
                                 }
-                                if (_line.HasAttribute("Price"))
+                                if (line.HasAttribute("Price"))
                                 {
-                                    _price = _line.GetAttribute("Price");
+                                    price = line.GetAttribute("Price");
                                 }
-                                if (_line.HasAttribute("Category"))
+                                if (line.HasAttribute("Category"))
                                 {
-                                    _category = _line.GetAttribute("Category");
+                                    category = line.GetAttribute("Category");
                                 }
-                                sw.WriteLine(string.Format("    <Item Name=\"{0}\" SecondaryName=\"{1}\" Count=\"{2}\" Quality=\"{3}\" Price=\"{4}\" Category=\"{5}\" />", _name, _secondaryName, _count, _quality, _price, _category));
+                                sw.WriteLine(string.Format("    <Item Name=\"{0}\" SecondaryName=\"{1}\" Count=\"{2}\" Quality=\"{3}\" Price=\"{4}\" Category=\"{5}\" />", name, secondaryName, count, quality, price, category));
                             }
                         }
                     }
-                    if (_blank)
-                    {
-                        sw.WriteLine("    <!-- <Item Name=\"\" SecondaryName=\"\" Count=\"\" Quality=\"\" Price=\"\" Category=\"\" /> -->");
-                    }
+
                     sw.WriteLine("</Shop>");
                     sw.Flush();
                     sw.Close();

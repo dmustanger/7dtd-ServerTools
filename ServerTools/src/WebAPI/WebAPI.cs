@@ -64,10 +64,10 @@ namespace ServerTools
         {
             try
             {
-                string _ip = GamePrefs.GetString(EnumGamePrefs.ServerIP);
-                if (!string.IsNullOrEmpty(_ip) && _ip != "")
+                string ip = GamePrefs.GetString(EnumGamePrefs.ServerIP);
+                if (!string.IsNullOrEmpty(ip) && ip != "")
                 {
-                    BaseAddress = _ip;
+                    BaseAddress = ip;
                     return true;
                 }
             }
@@ -358,7 +358,7 @@ namespace ServerTools
                                     postMessage = _read.ReadToEnd();
                                 }
                             }
-                            POST(_response, _uri, postMessage, _ip);
+                            POST(_response, _uri, postMessage, _ip, _request.IsLocal);
                         }
                     }
                 }
@@ -477,15 +477,15 @@ namespace ServerTools
             }
         }
 
-        private static void POST(HttpListenerResponse _response, string _uri, string _postMessage, string _ip)
+        private static void POST(HttpListenerResponse _response, string _uri, string _postMessage, string _ip, bool isLocal)
         {
             try
             {
-                if (_postMessage.Length >= 16 && (_postMessage == "DiscordHandshake" || _postMessage == "DiscordPost" || _postMessage == "DiscordUpdate" ||
-                    _postMessage == "Handshake" || _postMessage == "SignIn" || _postMessage == "SignOut" || _postMessage == "NewPass" ||
-                    _postMessage == "Console" || _postMessage == "Command" || _postMessage == "Players" || _postMessage == "Config" ||
-                    _postMessage == "SaveConfig" || _postMessage == "Kick" || _postMessage == "Ban" || _postMessage == "Mute" ||
-                    _postMessage == "Jail" || _postMessage == "Reward"))
+                if (_postMessage.Length >= 16 && (_uri == "DiscordHandshake" || _uri == "DiscordPost" || _uri == "DiscordUpdate" ||
+                    _uri == "Handshake" || _uri == "SignIn" || _uri == "SignOut" || _uri == "NewPass" ||
+                    _uri == "Console" || _uri == "Command" || _uri == "Players" || _uri == "Config" ||
+                    _uri == "SaveConfig" || _uri == "Kick" || _uri == "Ban" || _uri == "Mute" ||
+                    _uri == "Jail" || _uri == "Reward"))
                 {
                     using (_response)
                     {
@@ -1518,8 +1518,9 @@ namespace ServerTools
                         }
                     }
                 }
-                else if (!WebPanel.Ban.Contains(_ip))
+                else if (!isLocal && !WebPanel.Ban.Contains(_ip))
                 {
+                    WebPanel.Ban.Add(_ip);
                     if (WebPanel.TimeOut.ContainsKey(_ip))
                     {
                         WebPanel.TimeOut.Remove(_ip);
@@ -1528,7 +1529,6 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.WebPanelTimeoutList.Remove(_ip);
                     }
-                    WebPanel.Ban.Add(_ip);
                     if (PersistentContainer.Instance.WebPanelBanList != null)
                     {
                         PersistentContainer.Instance.WebPanelBanList.Add(_ip);

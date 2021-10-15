@@ -7,7 +7,7 @@ namespace ServerTools
     class EventSchedule
     {
         public static string autoBackup = "", autoSaveWorld = "", bloodmoon = "", breakTime = "", infoTicker = "",
-            nightAlert = "", playerLogs = "", realWorldTime = "", shutdown = "", watchlist = "", zones = "";
+            nightAlert = "", playerLogs = "", realWorldTime = "", shutdown = "", watchList = "", zones = "";
         public static Dictionary<string, DateTime> Schedule = new Dictionary<string, DateTime>();
 
         public static void Add(string _classMethod, DateTime _time)
@@ -55,6 +55,7 @@ namespace ServerTools
                         case "AutoBackup":
                             if (DateTime.Now >= entry.Value)
                             {
+                                autoBackup = "";
                                 AutoBackup.SetDelay();
                                 AutoBackup.Exec();
                             }
@@ -62,6 +63,7 @@ namespace ServerTools
                         case "AutoSaveWorld":
                             if (DateTime.Now >= entry.Value)
                             {
+                                autoSaveWorld = "";
                                 AutoSaveWorld.SetDelay();
                                 AutoSaveWorld.Save();
                             }
@@ -69,6 +71,7 @@ namespace ServerTools
                         case "Bloodmoon":
                             if (DateTime.Now >= entry.Value)
                             {
+                                bloodmoon = "";
                                 Bloodmoon.SetDelay();
                                 Bloodmoon.StatusCheck();
                             }
@@ -76,6 +79,7 @@ namespace ServerTools
                         case "BreakTime":
                             if (DateTime.Now >= entry.Value)
                             {
+                                breakTime = "";
                                 BreakTime.SetDelay();
                                 BreakTime.Exec();
                             }
@@ -83,6 +87,7 @@ namespace ServerTools
                         case "InfoTicker":
                             if (DateTime.Now >= entry.Value)
                             {
+                                infoTicker = "";
                                 InfoTicker.SetDelay();
                                 InfoTicker.Exec();
                             }
@@ -90,6 +95,7 @@ namespace ServerTools
                         case "NightAlert":
                             if (DateTime.Now >= entry.Value)
                             {
+                                nightAlert = "";
                                 NightAlert.SetDelay();
                                 NightAlert.Exec();
                             }
@@ -97,6 +103,7 @@ namespace ServerTools
                         case "PlayerLogs":
                             if (DateTime.Now >= entry.Value)
                             {
+                                playerLogs = "";
                                 PlayerLogs.SetDelay();
                                 PlayerLogs.Exec();
                             }
@@ -104,6 +111,7 @@ namespace ServerTools
                         case "RealWorldTime":
                             if (DateTime.Now >= entry.Value)
                             {
+                                realWorldTime = "";
                                 RealWorldTime.SetDelay();
                                 RealWorldTime.Exec();
                             }
@@ -115,9 +123,16 @@ namespace ServerTools
                                 Shutdown.PrepareShutdown();
                             }
                             continue;
+                        case "ThirtyMinutes":
+                            if (DateTime.Now >= entry.Value)
+                            {
+                                RestartVote.ThirtyMin = true;
+                            }
+                            continue;
                         case "Watchlist":
                             if (DateTime.Now >= entry.Value)
                             {
+                                watchList = "";
                                 WatchList.SetDelay();
                                 WatchList.Exec();
                             }
@@ -125,6 +140,7 @@ namespace ServerTools
                         case "Zones":
                             if (DateTime.Now >= entry.Value)
                             {
+                                zones = "";
                                 Zones.SetDelay();
                                 Zones.ReminderExec();
                             }
