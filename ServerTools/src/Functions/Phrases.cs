@@ -10,10 +10,11 @@ namespace ServerTools
     {
         public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
 
+        public static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+
         private static List<string> PhraseList = new List<string>();
 
         private const string file = "Phrases.xml";
-        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
@@ -1275,6 +1276,11 @@ namespace ServerTools
                         phrase = "Server moderators in game: [FF8000]";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"AdminList2\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("AdminList3", out phrase))
+                    {
+                        phrase = "No admins or moderators are online";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"AdminList3\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************ Shutdown ********************** -->");
@@ -1905,22 +1911,22 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank3", out phrase))
                     {
-                        phrase = "Deposited {Value} {Name} from the secure loot to your bank account. " + "{Percent}" + "% deposit fee was applied";
+                        phrase = "Deposited {Value} {Name} from your bag to your bank account. {Percent}% deposit fee was applied";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank4", out phrase))
                     {
-                        phrase = "Deposited {Value} {Name} from the secure loot to your bank account";
+                        phrase = "Deposited {Value} {Name} from your bag to your bank account";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank5", out phrase))
                     {
-                        phrase = "Could not find any {CoinName} in a near by secure loot";
+                        phrase = "You do not have enough {CoinName} to transfer to your bank";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank6", out phrase))
                     {
-                        phrase = "You input an invalid integer. Type {Command_Prefix1}{Command_deposit} #";
+                        phrase = "You input an invalid integer";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank6\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank7", out phrase))
@@ -1930,94 +1936,50 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank7\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank8", out phrase))
                     {
-                        phrase = "Your bag can not take all of the {CoinName}. Check on the ground by your feet";
+                        phrase = "You have received the {CoinName} from your bank. If your bag is full, check the ground at your feet";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank8\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank9", out phrase))
                     {
-                        phrase = "You have received the {CoinName} in your bag";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank9\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Bank10", out phrase))
-                    {
                         phrase = "You can only withdraw a full stack at a time. The maximum stack size is {Max}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank10\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Bank11", out phrase))
+                    if (!Dict.TryGetValue("Bank10", out phrase))
                     {
-                        phrase = "Your bank account does not have enough to withdraw that value. Bank account is currently {Total}";
+                        phrase = "You do not have this much in your bank";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank11\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Bank11", out phrase))
+                    {
+                        phrase = "Id not found. Ask for the transfer Id from the player you want to transfer to";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank11\" Message=\"{0}\" />", phrase));
+
                     if (!Dict.TryGetValue("Bank12", out phrase))
                     {
-                        phrase = "You input an invalid integer. Type {Command_Prefix1}{Command_withdraw} #";
+                        phrase = "Your command format was invalid. Type {Command_Prefix1}{Command_transfer} # #";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank12\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank13", out phrase))
                     {
-                        phrase = "Deposited {Value} {CoinName} from your wallet to your bank account." + " {Percent}" + "% fee was applied";
+                        phrase = "Transfer id not found. Request the id from the player you intend to transfer to";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank13\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank14", out phrase))
                     {
-                        phrase = "Deposited {Value} {CoinName} from your wallet to your bank account";
+                        phrase = "Could not find this player online";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank14\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank15", out phrase))
                     {
-                        phrase = "Your wallet does not have enough to deposit that value";
+                        phrase = "You have made a bank transfer of {Value} to player {PlayerName}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank15\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank16", out phrase))
                     {
-                        phrase = "You input an invalid integer. Type {Command_Prefix1}{Command_wallet_deposit} #";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank16\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Bank17", out phrase))
-                    {
-                        phrase = "You have received the {Name} from your bank. It has gone to your wallet";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank17\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Bank18", out phrase))
-                    {
-                        phrase = "Your bank account does not have enough to withdraw that value";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank18\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Bank19", out phrase))
-                    {
-                        phrase = "You input an invalid integer. Type {Command_Prefix1}{Command_wallet_withdraw} #";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank19\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Bank20", out phrase))
-                    {
-                        phrase = "You have made a bank transfer of {Value} to player {PlayerName}";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank20\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Bank21", out phrase))
-                    {
                         phrase = "You have received a bank transfer of {Value} from player {PlayerName}";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank21\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Bank22", out phrase))
-                    {
-                        phrase = "The player is offline. They must be online to transfer";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank22\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Bank23", out phrase))
-                    {
-                        phrase = "Id not found. Ask for the transfer Id from the player you want to transfer to";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank23\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Bank24", out phrase))
-                    {
-                        phrase = "You input an invalid integer. Type {Command_Prefix1}{Command_transfer} #";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank24\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Bank25", out phrase))
-                    {
-                        phrase = "You input an invalid integer";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank25\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank16\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* Exit_Command ********************* -->");
@@ -2053,12 +2015,12 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bloodmoon1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bloodmoon2", out phrase))
                     {
-                        phrase = "Next horde night is today";
+                        phrase = "Next horde night is today. It will start at {Time}:00";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bloodmoon2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bloodmoon3", out phrase))
                     {
-                        phrase = "The horde is here!";
+                        phrase = "The horde is here! Hold out until {Time}:00";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bloodmoon3\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
@@ -2508,15 +2470,6 @@ namespace ServerTools
                         phrase = "You can not teleport with a vehicle";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Teleport3\" Message=\"{0}\" />", phrase));
-                    sw.WriteLine();
-                    sw.WriteLine("    <!-- ******************************************************** -->");
-                    sw.WriteLine("    <!-- ************************ Wallet ************************ -->");
-                    sw.WriteLine("    <!-- ******************************************************** -->");
-                    if (!Dict.TryGetValue("Wallet1", out phrase))
-                    {
-                        phrase = "Your wallet contains: {Value} {CoinName}";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Wallet1\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* Weather_Vote ********************* -->");
@@ -3013,7 +2966,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Gamble4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Gamble5", out phrase))
                     {
-                        phrase = "Round {Number} won! Collect {Value} using {Command_Prefix1}{Command_gamble_payout} or double down using {Command_Prefix1}{Command_gamble_bet}";
+                        phrase = "Round {Number} won! Collect {Value} using {Command_Prefix1}{Command_gamble_payout} or increase your bet using {Command_Prefix1}{Command_gamble_bet}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Gamble5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Gamble6", out phrase))
@@ -3076,6 +3029,30 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"DroppedBagProtection1\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- *********************** Anti-Cheat ********************* -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("AntiCheat1", out phrase))
+                    {
+                        phrase = "Banned for using a speed hack";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"AntiCheat1\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("AntiCheat2", out phrase))
+                    {
+                        phrase = "Banned for using a infinite ammo hack";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"AntiCheat2\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("AntiCheat3", out phrase))
+                    {
+                        phrase = "Banned {PlayerName} for using a speed hack";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"AntiCheat3\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("AntiCheat4", out phrase))
+                    {
+                        phrase = "Bonk! Hitting your head on blocks will lose your vision";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"AntiCheat4\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("</Phrases>");
@@ -3105,6 +3082,21 @@ namespace ServerTools
                 UpdateXml();
             }
             LoadXml();
+        }
+
+        public static void ResetXml()
+        {
+            try
+            {
+                FileWatcher.EnableRaisingEvents = false;
+                Utils.FileDelete(FilePath);
+                UpdateXml();
+                FileWatcher.EnableRaisingEvents = true;
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Phrases.UpdateXml: {0}", e.Message));
+            }
         }
 
         private static void UpgradeXml(XmlNodeList _oldChildNodes)

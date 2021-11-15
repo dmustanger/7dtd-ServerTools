@@ -73,11 +73,13 @@ namespace ServerTools
             if (daysRemaining == 0 && !SkyManager.BloodMoon())
             {
                 Phrases.Dict.TryGetValue("Bloodmoon2", out string phrase);
+                phrase = phrase.Replace("{Time}", GameManager.Instance.World.DuskHour.ToString());
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else if (SkyManager.BloodMoon())
             {
                 Phrases.Dict.TryGetValue("Bloodmoon3", out string phrase);
+                phrase = phrase.Replace("{Time}", GameManager.Instance.World.DawnHour.ToString());
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else

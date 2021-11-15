@@ -12,11 +12,14 @@ namespace ServerTools
     class StartingItems
     {
         public static bool IsEnabled = false, IsRunning = false;
+
         public static Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
 
         private const string file = "StartingItems.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -143,7 +146,9 @@ namespace ServerTools
                     {
                         if (line.HasAttributes)
                         {
-                            UpgradeXml(nodeList);
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
                             return;
                         }
                         else
@@ -154,18 +159,30 @@ namespace ServerTools
                             {
                                 if (line.HasAttributes)
                                 {
-                                    UpgradeXml(nodeList);
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
                                     return;
                                 }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing StartingItems.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
-                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in StartingItems.LoadXml: {0}", e.Message));
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in StartingItems.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -179,8 +196,8 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<StartingItems>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Use WalletCoin for the Name if you want to give currency to their wallet -->");
-                    sw.WriteLine("<!-- <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" /> -->");
+                    sw.WriteLine("    <!-- Use WalletCoin for the Name if you want to give currency to their wallet -->");
+                    sw.WriteLine("    <!-- <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -189,10 +206,6 @@ namespace ServerTools
                         {
                             sw.WriteLine(string.Format("    <Item Name=\"{0}\" Count=\"{1}\" Quality=\"{2}\" />", kvp.Key, kvp.Value[0], kvp.Value[1]));
                         }
-                    }
-                    else
-                    {
-                        sw.WriteLine("    <!-- <Item Name=\"\" Count=\"\" Quality=\"\" /> -->");
                     }
                     sw.WriteLine("</StartingItems>");
                     sw.Flush();
@@ -261,7 +274,7 @@ namespace ServerTools
                             {
                                 if (Wallet.IsEnabled)
                                 {
-                                    Wallet.AddCoinsToWallet(_cInfo.playerId, _itemData[0]);
+                                    Wallet.AddCurrency(_cInfo.playerId, _itemData[0]);
                                 }
                                 else
                                 {
@@ -307,7 +320,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -317,23 +330,23 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<StartingItems>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Use WalletCoin for the Name if you want to give currency to their wallet -->");
-                    sw.WriteLine("<!-- <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- Use WalletCoin for the Name if you want to give currency to their wallet -->");
+                    sw.WriteLine("    <!-- <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Use WalletCoin for") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Item Name=\"foodCanChili\"") && !_oldChildNodes[i].OuterXml.Contains("    <!-- <Item Name=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Use WalletCoin for") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"foodCanChili\"") && !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Item")
                             {
                                 string name = "", count = "", quality = "";

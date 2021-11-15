@@ -232,7 +232,7 @@ namespace ServerTools
                                         _message = _message.Replace("{Quality}", _auctionItem.Value.quality.ToString());
                                         _message = _message.Replace("{Durability}", (100 - _auctionItem.Value.useTimes).ToString());
                                         _message = _message.Replace("{Price}", _price.ToString());
-                                        _message = _message.Replace("{Name}", Wallet.Coin_Name);
+                                        _message = _message.Replace("{Name}", Wallet.Currency_Name);
                                         SdtdConsole.Instance.Output(_message);
                                     }
                                 }

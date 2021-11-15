@@ -13,6 +13,7 @@ namespace ServerTools
         public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Reserved_Max_Waypoints = 4, Command_Cost = 0;
         public static string Command_go_way = "go way", Command_waypoint = "waypoint", Command_way = "way", Command_wp = "wp", Command_fwaypoint = "fwaypoint", Command_fway = "fway", Command_fwp = "fwp", 
             Command_waypoint_save = "waypoint save", Command_way_save = "way save", Command_ws = "ws", Command_waypoint_del = "waypoint del", Command_way_del = "way del", Command_wd = "wd";
+
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> FriendPosition = new Dictionary<int, string>();
         public static Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
@@ -20,6 +21,8 @@ namespace ServerTools
         private const string file = "Waypoints.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -103,7 +106,9 @@ namespace ServerTools
                     {
                         if (line.HasAttributes)
                         {
-                            UpgradeXml(nodeList);
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
                             return;
                         }
                         else
@@ -114,18 +119,30 @@ namespace ServerTools
                             {
                                 if (line.HasAttributes)
                                 {
-                                    UpgradeXml(nodeList);
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
                                     return;
                                 }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing Waypoints.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
-                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Waypoints.LoadXml: {0}", e.Message));
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in Waypoints.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -139,7 +156,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<PublicWaypoints>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Waypoint Name=\"Example\" Position=\"-500,20,500\" Cost=\"150\" /> -->");
+                    sw.WriteLine("    <!-- <Waypoint Name=\"Example\" Position=\"-500,20,500\" Cost=\"150\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -204,57 +221,56 @@ namespace ServerTools
         {
             try
             {
-                Dictionary<string, string> _waypoints = new Dictionary<string, string>();
+                Dictionary<string, string> waypoints = new Dictionary<string, string>();
                 if (PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints != null)
                 {
-                    _waypoints = PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints;
+                    waypoints = PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints;
                 }
-                
-                int _count = 0;
-                if (_waypoints.Count > 0)
+                int count = 0;
+                if (waypoints.Count > 0)
                 {
-                    foreach (var _waypoint in _waypoints)
+                    foreach (var waypoint in waypoints)
                     {
-                        _count += 1;
-                        if (_count <= _waypointLimit)
+                        count += 1;
+                        if (count <= _waypointLimit)
                         {
-                            Phrases.Dict.TryGetValue("Waypoints12", out string _phrase);
-                            _phrase = _phrase.Replace("{Name}", _waypoint.Key);
-                            _phrase = _phrase.Replace("{Position}", _waypoint.Value);
-                            _phrase = _phrase.Replace("{Cost}", Command_Cost.ToString());
-                            _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Waypoints12", out string phrase);
+                            phrase = phrase.Replace("{Name}", waypoint.Key);
+                            phrase = phrase.Replace("{Position}", waypoint.Value);
+                            phrase = phrase.Replace("{Cost}", Command_Cost.ToString());
+                            phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
-                    if (Public_Waypoints && PersistentContainer.Instance.Waypoints != null && PersistentContainer.Instance.Waypoints.Count > 0)
+                    if (Public_Waypoints && Dict.Count > 0)
                     {
-                        foreach (var _waypoint in _waypoints)
+                        foreach (var waypoint in Dict)
                         {
-                            Phrases.Dict.TryGetValue("Waypoints12", out string _phrase);
-                            _phrase = _phrase.Replace("{Name}", _waypoint.Key);
-                            _phrase = _phrase.Replace("{Position}", _waypoint.Value);
-                            _phrase = _phrase.Replace("{Cost}", Command_Cost.ToString());
-                            _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Waypoints12", out string phrase);
+                            phrase = phrase.Replace("{Name}", waypoint.Key);
+                            phrase = phrase.Replace("{Position}", waypoint.Value[0]);
+                            phrase = phrase.Replace("{Cost}", waypoint.Value[1]);
+                            phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
-                else if (Public_Waypoints && PersistentContainer.Instance.Waypoints != null && PersistentContainer.Instance.Waypoints.Count > 0)
+                else if (Public_Waypoints && Dict.Count > 0)
                 {
-                    foreach (var _waypoint in _waypoints)
+                    foreach (var waypoint in Dict)
                     {
-                        Phrases.Dict.TryGetValue("Waypoints12", out string _phrase);
-                        _phrase = _phrase.Replace("{Name}", _waypoint.Key);
-                        _phrase = _phrase.Replace("{Position}", _waypoint.Value);
-                        _phrase = _phrase.Replace("{Cost}", Command_Cost.ToString());
-                        _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Waypoints12", out string phrase);
+                        phrase = phrase.Replace("{Name}", waypoint.Key);
+                        phrase = phrase.Replace("{Position}", waypoint.Value[0]);
+                        phrase = phrase.Replace("{Cost}", waypoint.Value[1]);
+                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("Waypoints19", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Waypoints19", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -272,7 +288,7 @@ namespace ServerTools
                     if (Delay_Between_Uses < 1)
                     {
                         if ((PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints.ContainsKey(_waypoint)) ||
-                            (PersistentContainer.Instance.Waypoints != null && PersistentContainer.Instance.Waypoints.ContainsKey(_waypoint)))
+                            Dict.ContainsKey(_waypoint))
                         {
                             Checks(_cInfo, _waypoint, _friends);
                         }
@@ -308,7 +324,7 @@ namespace ServerTools
                         else
                         {
                             if ((PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints.ContainsKey(_waypoint)) ||
-                            (PersistentContainer.Instance.Waypoints != null && PersistentContainer.Instance.Waypoints.ContainsKey(_waypoint)))
+                            Dict.ContainsKey(_waypoint))
                             {
                                 Checks(_cInfo, _waypoint, false);
                             }
@@ -361,47 +377,47 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                if (_player != null)
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                if (player != null)
                 {
                     if (Vehicle)
                     {
-                        Entity _attachedEntity = _player.AttachedToEntity;
-                        if (_attachedEntity != null)
+                        Entity attachedEntity = player.AttachedToEntity;
+                        if (attachedEntity != null)
                         {
-                            Phrases.Dict.TryGetValue("Teleport3", out string _phrase);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Teleport3", out string phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             return;
                         }
                     }
                     if (Player_Check)
                     {
-                        if (Teleportation.PCheck(_cInfo, _player))
+                        if (Teleportation.PCheck(_cInfo, player))
                         {
                             return;
                         }
                     }
                     if (Zombie_Check)
                     {
-                        if (Teleportation.ZCheck(_cInfo, _player))
+                        if (Teleportation.ZCheck(_cInfo, player))
                         {
                             return;
                         }
                     }
-                    Vector3 _position = _player.GetPosition();
-                    int _x = (int)_position.x;
-                    int _y = (int)_position.y;
-                    int _z = (int)_position.z;
-                    Vector3i _vec3i = new Vector3i(_x, _y, _z);
+                    Vector3 position = player.GetPosition();
+                    int x = (int)position.x;
+                    int y = (int)position.y;
+                    int z = (int)position.z;
+                    Vector3i vec3i = new Vector3i(x, y, z);
                     if (PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints.ContainsKey(_waypoint))
                     {
-                        CommandCost(_cInfo, _waypoint, _position, _friends, Command_Cost);
+                        CommandCost(_cInfo, _waypoint, position, _friends, Command_Cost);
                     }
-                    else if (PersistentContainer.Instance.Waypoints != null && PersistentContainer.Instance.Waypoints.ContainsKey(_waypoint))
+                    else if (Dict.ContainsKey(_waypoint))
                     {
-                        PersistentContainer.Instance.Waypoints.TryGetValue(_waypoint, out string[] _waypointData);
-                        int.TryParse(_waypointData[2], out int _cost);
-                        CommandCost(_cInfo, _waypoint, _position, _friends, _cost);
+                        Dict.TryGetValue(_waypoint, out string[] waypointData);
+                        int.TryParse(waypointData[2], out int cost);
+                        CommandCost(_cInfo, _waypoint, position, _friends, cost);
                     }
                 }
             }
@@ -417,15 +433,15 @@ namespace ServerTools
             {
                 if (Wallet.IsEnabled && _cost >= 1)
                 {
-                    if (Wallet.GetCurrentCoins(_cInfo.playerId) >= _cost)
+                    if (Wallet.GetCurrency(_cInfo.playerId) >= _cost)
                     {
                         Exec(_cInfo, _waypoint, _position, _friends, _cost);
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("Waypoints14", out string _phrase);
-                        _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Waypoints14", out string phrase);
+                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
@@ -460,7 +476,7 @@ namespace ServerTools
                     PersistentContainer.DataChange = true;
                     if (Wallet.IsEnabled && _cost >= 1)
                     {
-                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _cost);
+                        Wallet.RemoveCurrency(_cInfo.playerId, _cost);
                     }
                 }
                 else
@@ -637,33 +653,39 @@ namespace ServerTools
                 int x = (int)_position.x;
                 int y = (int)_position.y;
                 int z = (int)_position.z;
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                for (int i = 0; i < _cInfoList.Count; i++)
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                if (player != null)
                 {
-                    ClientInfo _cInfo2 = _cInfoList[i];
-                    EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                    if (_player2 != null)
+                    List<ClientInfo> clientList = PersistentOperations.ClientList();
+                    if (clientList != null)
                     {
-                        if (_player.IsFriendsWith(_player2))
+                        for (int i = 0; i < clientList.Count; i++)
                         {
-                            if ((x - (int)_player2.position.x) * (x - (int)_player2.position.x) + (z - (int)_player2.position.z) * (z - (int)_player2.position.z) <= 10 * 10)
+                            ClientInfo cInfo2 = clientList[i];
+                            EntityPlayer player2 = GameManager.Instance.World.Players.dict[cInfo2.entityId];
+                            if (player2 != null)
                             {
-                                Phrases.Dict.TryGetValue("Waypoints16", out string _phrase);
-                                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                                _phrase = _phrase.Replace("{Command_go_way}", Command_go_way);
-                                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                Phrases.Dict.TryGetValue("Waypoints17", out _phrase);
-                                _phrase = _phrase.Replace("{PlayerName}", _cInfo2.playerName);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                if (Invite.ContainsKey(_cInfo2.entityId))
+                                if (player.IsFriendsWith(player2))
                                 {
-                                    Invite.Remove(_cInfo2.entityId);
-                                    FriendPosition.Remove(_cInfo2.entityId);
+                                    if ((x - (int)player2.position.x) * (x - (int)player2.position.x) + (z - (int)player2.position.z) * (z - (int)player2.position.z) <= 10 * 10)
+                                    {
+                                        Phrases.Dict.TryGetValue("Waypoints16", out string phrase);
+                                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                        phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                        phrase = phrase.Replace("{Command_go_way}", Command_go_way);
+                                        ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        Phrases.Dict.TryGetValue("Waypoints17", out phrase);
+                                        phrase = phrase.Replace("{PlayerName}", cInfo2.playerName);
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        if (Invite.ContainsKey(cInfo2.entityId))
+                                        {
+                                            Invite.Remove(cInfo2.entityId);
+                                            FriendPosition.Remove(cInfo2.entityId);
+                                        }
+                                        Invite.Add(cInfo2.entityId, DateTime.Now);
+                                        FriendPosition.Add(cInfo2.entityId, _destination);
+                                    }
                                 }
-                                Invite.Add(_cInfo2.entityId, DateTime.Now);
-                                FriendPosition.Add(_cInfo2.entityId, _destination);
                             }
                         }
                     }
@@ -679,19 +701,19 @@ namespace ServerTools
         {
             try
             {
-                Invite.TryGetValue(_cInfo.entityId, out DateTime _dt);
+                Invite.TryGetValue(_cInfo.entityId, out DateTime dt);
                 {
-                    TimeSpan varTime = DateTime.Now - _dt;
+                    TimeSpan varTime = DateTime.Now - dt;
                     double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed <= 2)
+                    int timepassed = (int)fractionalMinutes;
+                    if (timepassed <= 2)
                     {
-                        FriendPosition.TryGetValue(_cInfo.entityId, out string _pos);
+                        FriendPosition.TryGetValue(_cInfo.entityId, out string pos);
                         {
-                            string[] _cords = _pos.Split(',');
-                            int.TryParse(_cords[0], out int x);
-                            int.TryParse(_cords[1], out int y);
-                            int.TryParse(_cords[2], out int z);
+                            string[] cords = pos.Split(',');
+                            int.TryParse(cords[0], out int x);
+                            int.TryParse(cords[1], out int y);
+                            int.TryParse(cords[2], out int z);
                             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                             Invite.Remove(_cInfo.entityId);
                             FriendPosition.Remove(_cInfo.entityId);
@@ -712,7 +734,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -722,24 +744,24 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<PublicWaypoints>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Waypoint Name=\"Example\" Position=\"-500,20,500\" Cost=\"150\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- <Waypoint Name=\"Example\" Position=\"-500,20,500\" Cost=\"150\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Waypoint Name=\"Example\"") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Waypoint Name=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Waypoint Name=\"Example\"") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Waypoint Name=\"\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment)
                         {
                             continue;
                         }
-                        XmlElement line = (XmlElement)_oldChildNodes[i];
+                        XmlElement line = (XmlElement)OldNodeList[i];
                         if (line.HasAttributes && line.Name == "Waypoint")
                         {
                             string name = "", position = "", cost = "";

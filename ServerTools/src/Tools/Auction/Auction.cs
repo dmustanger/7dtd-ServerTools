@@ -187,7 +187,7 @@ namespace ServerTools
                                                                     {
                                                                         using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                                                         {
-                                                                            sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4}, {5} quality, {6} percent durability for {7} {8}", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _item.count, _item.itemValue.ItemClass.GetItemName(), _item.itemValue.Quality, _item.itemValue.UseTimes / _item.itemValue.MaxUseTimes * 100, _price, Wallet.Coin_Name));
+                                                                            sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4}, {5} quality, {6} percent durability for {7} {8}", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _item.count, _item.itemValue.ItemClass.GetItemName(), _item.itemValue.Quality, _item.itemValue.UseTimes / _item.itemValue.MaxUseTimes * 100, _price, Wallet.Currency_Name));
                                                                             sw.WriteLine();
                                                                             sw.Flush();
                                                                             sw.Close();
@@ -197,7 +197,7 @@ namespace ServerTools
                                                                     {
                                                                         using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                                                         {
-                                                                            sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4}, for {5} {6}", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _item.count, _item.itemValue.ItemClass.GetItemName(), _price, Wallet.Coin_Name));
+                                                                            sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4}, for {5} {6}", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _item.count, _item.itemValue.ItemClass.GetItemName(), _price, Wallet.Currency_Name));
                                                                             sw.WriteLine();
                                                                             sw.Flush();
                                                                             sw.Close();
@@ -284,7 +284,7 @@ namespace ServerTools
                                                     _phrase = _phrase.Replace("{Quality}", _item.Value.quality.ToString());
                                                     _phrase = _phrase.Replace("{Durability}", (_item.Value.useTimes / _itemValue.MaxUseTimes * 100).ToString());
                                                     _phrase = _phrase.Replace("{Price}", _price.ToString());
-                                                    _phrase = _phrase.Replace("{Coin}", Wallet.Coin_Name);
+                                                    _phrase = _phrase.Replace("{Coin}", Wallet.Currency_Name);
                                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 }
                                                 else
@@ -294,7 +294,7 @@ namespace ServerTools
                                                     _phrase = _phrase.Replace("{Count}", _item.Value.count.ToString());
                                                     _phrase = _phrase.Replace("{Item}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName());
                                                     _phrase = _phrase.Replace("{Price}", _price.ToString());
-                                                    _phrase = _phrase.Replace("{Coin}", Wallet.Coin_Name);
+                                                    _phrase = _phrase.Replace("{Coin}", Wallet.Currency_Name);
                                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 }
                                             }
@@ -329,7 +329,7 @@ namespace ServerTools
                     {
                         _auctionPrices.TryGetValue(_purchase, out _price);
                     }
-                    int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
+                    int _currentCoins = Wallet.GetCurrency(_cInfo.playerId);
                     if (_currentCoins >= _price)
                     {
                         BuyAuction(_cInfo, _purchase, _price);
@@ -339,7 +339,7 @@ namespace ServerTools
                         int _missing = _price - _currentCoins;
                         Phrases.Dict.TryGetValue("Auction7", out string _phrase);
                         _phrase = _phrase.Replace("{Value}", _missing.ToString());
-                        _phrase = _phrase.Replace("{Name}", Wallet.Coin_Name);
+                        _phrase = _phrase.Replace("{Name}", Wallet.Currency_Name);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
@@ -390,10 +390,10 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[_steamId].Auction.Remove(_purchase);
                         PersistentContainer.Instance.AuctionPrices.Remove(_purchase);
                         PersistentContainer.DataChange = true;
-                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
+                        Wallet.RemoveCurrency(_cInfo.playerId, _price);
                         float _fee = _price * ((float)Tax / 100);
                         int _adjustedPrice = _price - (int)_fee;
-                        Wallet.AddCoinsToWallet(_steamId, _adjustedPrice);
+                        Wallet.AddCurrency(_steamId, _adjustedPrice);
                         string _playerName = PersistentOperations.GetPlayerDataFileFromSteamId(_steamId).ecd.entityName;
                         using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                         {
@@ -406,7 +406,7 @@ namespace ServerTools
                         _phrase = _phrase.Replace("{Count}", _itemData.count.ToString());
                         _phrase = _phrase.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName());
                         _phrase = _phrase.Replace("{Value}", _price.ToString());
-                        _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                        _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_steamId);
                         if (_cInfo2 != null)

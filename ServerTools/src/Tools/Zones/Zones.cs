@@ -12,6 +12,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Zone_Message = false, Set_Home = false;
         public static string Reminder_Delay = "20";
+
         public static Dictionary<int, DateTime> Reminder = new Dictionary<int, DateTime>();
         public static Dictionary<int, string[]> ZonePlayer = new Dictionary<int, string[]>();
         public static List<string[]> ZoneList = new List<string[]>();
@@ -20,6 +21,8 @@ namespace ServerTools
         private const string file = "Zones.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -150,7 +153,9 @@ namespace ServerTools
                     {
                         if (line.HasAttributes)
                         {
-                            UpgradeXml(nodeList);
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
                             return;
                         }
                         else
@@ -161,18 +166,30 @@ namespace ServerTools
                             {
                                 if (line.HasAttributes)
                                 {
-                                    UpgradeXml(nodeList);
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
                                     return;
                                 }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing Zones.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
-                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.LoadXml: {0}", e.Message));
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in Zones.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -186,12 +203,12 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Zones>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Do not use decimals in the corner positions -->");
-                    sw.WriteLine("<!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
-                    sw.WriteLine("<!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
-                    sw.WriteLine("<!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
-                    sw.WriteLine("<!-- Possible variables for commands include {PlayerName}, {EntityId}, {PlayerId}, {Delay}, whisper, global -->");
-                    sw.WriteLine("<!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
+                    sw.WriteLine("    <!-- Do not use decimals in the corner positions -->");
+                    sw.WriteLine("    <!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
+                    sw.WriteLine("    <!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
+                    sw.WriteLine("    <!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
+                    sw.WriteLine("    <!-- Possible variables for commands include {PlayerName}, {EntityId}, {PlayerId}, {Delay}, whisper, global -->");
+                    sw.WriteLine("    <!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (ZoneList.Count > 0)
@@ -297,31 +314,15 @@ namespace ServerTools
         {
             try
             {
-                if (ZoneList.Count > 0)
+                for (int i = 0; i < ZoneList.Count; i++)
                 {
-                    for (int i = 0; i < ZoneList.Count; i++)
+                    string[] zone = ZoneList[i];
+                    if (InsideZone(zone, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z))
                     {
-                        string[] zone = ZoneList[i];
-                        if (InsideZone(zone, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z))
+                        if (ZonePlayer.ContainsKey(_player.entityId))
                         {
-                            if (ZonePlayer.ContainsKey(_player.entityId))
-                            {
-                                ZonePlayer.TryGetValue(_player.entityId, out string[] info);
-                                if (info != zone)
-                                {
-                                    if (Zone_Message)
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                    if (zone[6] != "")
-                                    {
-                                        ProcessCommand(_cInfo, zone[6]);
-                                    }
-                                    ZonePlayer[_player.entityId] = zone;
-                                    Reminder[_player.entityId] = DateTime.Now;
-                                }
-                            }
-                            else
+                            ZonePlayer.TryGetValue(_player.entityId, out string[] info);
+                            if (info != zone)
                             {
                                 if (Zone_Message)
                                 {
@@ -331,11 +332,24 @@ namespace ServerTools
                                 {
                                     ProcessCommand(_cInfo, zone[6]);
                                 }
-                                ZonePlayer.Add(_player.entityId, zone);
-                                Reminder.Add(_player.entityId, DateTime.Now);
+                                ZonePlayer[_player.entityId] = zone;
+                                Reminder[_player.entityId] = DateTime.Now;
                             }
-                            return;
                         }
+                        else
+                        {
+                            if (Zone_Message)
+                            {
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            }
+                            if (zone[6] != "")
+                            {
+                                ProcessCommand(_cInfo, zone[6]);
+                            }
+                            ZonePlayer.Add(_player.entityId, zone);
+                            Reminder.Add(_player.entityId, DateTime.Now);
+                        }
+                        return;
                     }
                 }
                 if (ZonePlayer.ContainsKey(_player.entityId))
@@ -349,6 +363,8 @@ namespace ServerTools
                     {
                         ProcessCommand(_cInfo, zone[7]);
                     }
+                    ZonePlayer.Remove(_player.entityId);
+                    Reminder.Remove(_player.entityId);
                 }
             }
             catch (Exception e)
@@ -688,7 +704,7 @@ namespace ServerTools
             return true;
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -698,29 +714,29 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Zones>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Do not use decimals in the corner positions -->");
-                    sw.WriteLine("<!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
-                    sw.WriteLine("<!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
-                    sw.WriteLine("<!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
-                    sw.WriteLine("<!-- Possible variables for commands include {PlayerName}, {EntityId}, {PlayerId}, {Delay}, whisper, global -->");
-                    sw.WriteLine("<!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- Do not use decimals in the corner positions -->");
+                    sw.WriteLine("    <!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
+                    sw.WriteLine("    <!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
+                    sw.WriteLine("    <!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
+                    sw.WriteLine("    <!-- Possible variables for commands include {PlayerName}, {EntityId}, {PlayerId}, {Delay}, whisper, global -->");
+                    sw.WriteLine("    <!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Do not use decimals") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- Overlapping zones:") && !_oldChildNodes[i].OuterXml.Contains("<!-- PvPvE: 0 = No Killing") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- EntryCommand and ExitCommand") && !_oldChildNodes[i].OuterXml.Contains("<!-- Possible variables for commands") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Zone Name=\"Example\"") && !_oldChildNodes[i].OuterXml.Contains("    <!-- <Zone Name=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Do not use decimals") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- Overlapping zones:") && !OldNodeList[i].OuterXml.Contains("<!-- PvPvE: 0 = No Killing") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- EntryCommand and ExitCommand") && !OldNodeList[i].OuterXml.Contains("<!-- Possible variables for commands") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Zone Name=\"Example\"") && !OldNodeList[i].OuterXml.Contains("<!-- <Zone Name=\"\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Zone")
                             {
                                 string name = "", corner1 = "", corner2 = "", circle = "", entryMessage = "", exitMessage = "", entryCommand = "",

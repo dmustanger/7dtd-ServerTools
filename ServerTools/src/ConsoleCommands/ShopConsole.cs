@@ -196,11 +196,11 @@ namespace ServerTools
                                 string[] _item = Shop.Dict[i];
                                 if (int.Parse(_item[4]) > 1)
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] # {0}: {1} {2} at {3} quality for {4} {5}", _item[0], _item[3], _item[2], _item[4], _item[5], Wallet.Coin_Name));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] # {0}: {1} {2} at {3} quality for {4} {5}", _item[0], _item[3], _item[2], _item[4], _item[5], Wallet.Currency_Name));
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] # {0}: {1} {2} for {3} {4}", _item[0], _item[3], _item[2], _item[5], Wallet.Coin_Name));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] # {0}: {1} {2} for {3} {4}", _item[0], _item[3], _item[2], _item[5], Wallet.Currency_Name));
                                 }
                             }
                         }

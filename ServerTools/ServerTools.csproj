@@ -46,7 +46,10 @@
     <Compile Include="src\AntiCheat\DupeLog\DupeLog.cs" />
     <Compile Include="src\AntiCheat\BlockChange\BlockChange.cs" />
     <Compile Include="src\AntiCheat\DamageDetector\DamageDetector.cs" />
+    <Compile Include="src\AntiCheat\InfiniteAmmo\InfiniteAmmo.cs" />
     <Compile Include="src\AntiCheat\PlayerChecks\PlayerChecks.cs" />
+    <Compile Include="src\AntiCheat\SpeedDetector\SpeedDetector.cs" />
+    <Compile Include="src\AntiCheat\XRayDetector\XRayDetector.cs" />
     <Compile Include="src\ConsoleCommands\BlockChatCommandConsole.cs" />
     <Compile Include="src\ConsoleCommands\CleanBinConsole.cs" />
     <Compile Include="src\ConsoleCommands\ClientConsoleCommandConsole.cs" />
@@ -57,10 +60,14 @@
     <Compile Include="src\ConsoleCommands\LogConsole.cs" />
     <Compile Include="src\ConsoleCommands\MazeConsole.cs" />
     <Compile Include="src\ConsoleCommands\MessageColorConsole.cs" />
+    <Compile Include="src\ConsoleCommands\PhraseResetConsole.cs" />
     <Compile Include="src\ConsoleCommands\PrivateMessageConsole.cs" />
-    <Compile Include="src\ConsoleCommands\ProtectedSpaceConsole.cs" />
+    <Compile Include="src\ConsoleCommands\ProtectedZonesConsole.cs" />
     <Compile Include="src\ConsoleCommands\PrayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\RegionResetConsole.cs" />
+    <Compile Include="src\ConsoleCommands\RemoveItemDukesConsole.cs" />
+    <Compile Include="src\ConsoleCommands\RemoveItemAdminConsole.cs" />
+    <Compile Include="src\ConsoleCommands\RunGameEventConsole.cs" />
     <Compile Include="src\ConsoleCommands\SecureDoorAccessConsole.cs" />
     <Compile Include="src\ConsoleCommands\SecureVehicleAccessConsole.cs" />
     <Compile Include="src\ConsoleCommands\SecureLootAccessConsole.cs" />
@@ -87,6 +94,7 @@
     <Compile Include="src\Tools\ConsoleCommandLog\Console_Command_Log.cs" />
     <Compile Include="src\Tools\DiscordBot\DiscordBot.cs" />
     <Compile Include="src\Tools\FallingBlocks\FallingBlocks.cs" />
+    <Compile Include="src\AntiCheat\FlyingDetector\FlyingDetector.cs" />
     <Compile Include="src\Tools\Gamble\Gamble.cs" />
     <Compile Include="src\Tools\LevelUp\LevelUp.cs" />
     <Compile Include="src\Tools\Market\Market.cs" />
@@ -94,7 +102,7 @@
     <Compile Include="src\Tools\OutputLog\OutputLog.cs" />
     <Compile Include="src\Tools\POIProtection\POIProtection.cs" />
     <Compile Include="src\Tools\Poll\Poll.cs" />
-    <Compile Include="src\Tools\ProtectedSpaces\ProtectedSpaces.cs" />
+    <Compile Include="src\Tools\ProtectedZones\ProtectedZones.cs" />
     <Compile Include="src\Tools\DeletePlayerData\DeletePlayerData.cs" />
     <Compile Include="src\Tools\RegionReset\RegionReset.cs" />
     <Compile Include="src\Tools\Session\Session.cs" />
@@ -270,7 +278,7 @@
     <Compile Include="src\Tools\StopServer\StopServer.cs" />
     <Compile Include="src\Tools\Teleportation\Teleportation.cs" />
     <Compile Include="src\Tools\VoteReward\VoteReward.cs" />
-    <Compile Include="src\Tools\Watchlist\WatchList.cs" />
+    <Compile Include="src\Tools\WatchList\WatchList.cs" />
     <Compile Include="src\Tools\Waypoints\Waypoints.cs" />
     <Compile Include="src\WebAPI\MimeType.cs" />
     <Compile Include="src\WebAPI\WebAPI.cs" />

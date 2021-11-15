@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameEvent.SequenceActions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -573,11 +574,6 @@ namespace ServerTools
                                 Lobby.Exec(_cInfo);
                                 return false;
                             }
-                            if (Wallet.IsEnabled && messageLowerCase == Wallet.Command_wallet)
-                            {
-                                Wallet.CurrentValue(_cInfo);
-                                return false;
-                            }
                             if (Shop.IsEnabled && Wallet.IsEnabled && messageLowerCase.StartsWith(Shop.Command_shop_buy + " "))
                             {
                                 _message = _message.Replace(Shop.Command_shop_buy + " ", "");
@@ -973,18 +969,6 @@ namespace ServerTools
                                 Bank.CheckLocation(_cInfo, _message, 2);
                                 return false;
                             }
-                            if (Bank.IsEnabled && Wallet.IsEnabled && Wallet.Bank_Transfers && messageLowerCase.StartsWith(Bank.Command_wallet_deposit + " "))
-                            {
-                                _message = messageLowerCase.Replace(Bank.Command_wallet_deposit + " ", "");
-                                Bank.CheckLocation(_cInfo, _message, 3);
-                                return false;
-                            }
-                            if (Bank.IsEnabled && Wallet.IsEnabled && Wallet.Bank_Transfers && messageLowerCase.StartsWith(Bank.Command_wallet_withdraw + " "))
-                            {
-                                _message = messageLowerCase.Replace(Bank.Command_wallet_withdraw + " ", "");
-                                Bank.CheckLocation(_cInfo, _message, 4);
-                                return false;
-                            }
                             if (Bank.IsEnabled && Bank.Player_Transfers && messageLowerCase.StartsWith(Bank.Command_transfer + " "))
                             {
                                 _message = messageLowerCase.Replace(Bank.Command_transfer + " ", "");
@@ -1184,14 +1168,14 @@ namespace ServerTools
                             }
                             if (Hardcore.IsEnabled && messageLowerCase == Hardcore.Command_hardcore)
                             {
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                if (_player != null)
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                                if (player != null)
                                 {
                                     if (Hardcore.Optional)
                                     {
                                         if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
                                         {
-                                            Hardcore.Check(_cInfo, _player);
+                                            Hardcore.Check(_cInfo, player);
                                         }
                                         else
                                         {
@@ -1201,7 +1185,7 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        Hardcore.Check(_cInfo, _player);
+                                        Hardcore.Check(_cInfo, player);
                                     }
                                 }
                                 return false;
@@ -1331,11 +1315,12 @@ namespace ServerTools
                     }
                     _prefix = _prefix.Insert(_prefix.Length, "[-]");
                 }
-                else if (_prefix != "" && _prefixColor.StartsWith("[") && _prefixColor.EndsWith("]"))//fix message getting color change from multi color
+                else if (_prefix != "" && _prefixColor.StartsWith("[") && _prefixColor.EndsWith("]"))
                 {
                     if (_prefixColor.Contains(","))
                     {
                         int prefixIndex = 0;
+                        int colorCount = 0;
                         string[] colors = _prefixColor.Split(',');
                         for (int i = 0; i < 14; i++)
                         {
@@ -1345,11 +1330,14 @@ namespace ServerTools
                                 {
                                     _prefix = _prefix.Insert(prefixIndex, colors[j]);
                                     prefixIndex += 9;
-                                    _prefix = _prefix.Insert(prefixIndex, "[-]");
-                                    prefixIndex += 3;
+                                    colorCount++;
                                 }
                                 else
                                 {
+                                    for (int k = 0; k < colorCount; k++)
+                                    {
+                                        _prefix = _prefix.Insert(prefixIndex, "[-]");
+                                    }
                                     break;
                                 }
                             }
@@ -1359,6 +1347,10 @@ namespace ServerTools
                             }
                             else
                             {
+                                for (int k = 0; k < colorCount; k++)
+                                {
+                                    _prefix = _prefix.Insert(prefixIndex, "[-]");
+                                }
                                 break;
                             }
                         }
@@ -1369,11 +1361,12 @@ namespace ServerTools
                         _prefix = _prefix.Insert(_prefix.Length, "[-]");
                     }
                 }
-                if (_nameColor.StartsWith("[") && _nameColor.EndsWith("]"))
+                if (_nameColor != "" && _nameColor.StartsWith("[") && _nameColor.EndsWith("]"))
                 {
                     if (_nameColor.Contains(","))
                     {
                         int nameIndex = 0;
+                        int colorCount = 0;
                         string[] colors = _nameColor.Split(',');
                         for (int i = 0; i < 14; i++)
                         {
@@ -1383,11 +1376,14 @@ namespace ServerTools
                                 {
                                     _mainName = _mainName.Insert(nameIndex, colors[j]);
                                     nameIndex += 9;
-                                    _mainName = _mainName.Insert(nameIndex, "[-]");
-                                    nameIndex += 3;
+                                    colorCount++;
                                 }
                                 else
                                 {
+                                    for (int k = 0; k < colorCount; k++)
+                                    {
+                                        _mainName = _mainName.Insert(nameIndex, "[-]");
+                                    }
                                     break;
                                 }
                             }
@@ -1397,6 +1393,10 @@ namespace ServerTools
                             }
                             else
                             {
+                                for (int k = 0; k < colorCount; k++)
+                                {
+                                    _mainName = _mainName.Insert(nameIndex, "[-]");
+                                }
                                 break;
                             }
                         }
@@ -1409,7 +1409,7 @@ namespace ServerTools
                         _mainName = _mainName.Insert(_mainName.Length, "[-]");
                     }
                 }
-                if (Message_Color_Enabled && Message_Color.StartsWith("[") && Message_Color.EndsWith("]"))
+                if (Message_Color_Enabled && Message_Color != "" && Message_Color.StartsWith("[") && Message_Color.EndsWith("]"))
                 {
                     _message = _message.Insert(0, Message_Color);
                     _message = _message.Insert(_message.Length, "[-]");

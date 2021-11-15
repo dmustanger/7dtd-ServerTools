@@ -55,7 +55,7 @@ namespace ServerTools
                 Dict.Remove("Dupe log");
                 Log.Out("Dupe log disabled");
             }
-            if (PlayerChecks.FlyEnabled)
+            if (FlyingDetector.IsEnabled)
             {
                 if (!Dict.Contains("Flying detector"))
                 {
@@ -93,6 +93,19 @@ namespace ServerTools
             {
                 Dict.Remove("Invalid items");
                 Log.Out("Invalid items disabled");
+            }
+            if (InvalidItems.IsEnabled)
+            {
+                if (!Dict.Contains("Infinite ammo"))
+                {
+                    Dict.Add("Infinite ammo");
+                    Log.Out("Infinite ammo enabled");
+                }
+            }
+            else if (Dict.Contains("Infinite ammo") && !_initiating)
+            {
+                Dict.Remove("Infinite ammo");
+                Log.Out("Infinite ammo disabled");
             }
             if (Jail.IsEnabled)
             {
@@ -133,18 +146,18 @@ namespace ServerTools
                 Dict.Remove("Player logs");
                 Log.Out("Player logs disabled");
             }
-            if (ProtectedSpaces.IsEnabled)
+            if (ProtectedZones.IsEnabled)
             {
-                if (!Dict.Contains("Protected spaces"))
+                if (!Dict.Contains("Protected zones"))
                 {
-                    Dict.Add("Protected spaces");
-                    Log.Out("Protected spaces enabled");
+                    Dict.Add("Protected zones");
+                    Log.Out("Protected zones enabled");
                 }
             }
-            else if (Dict.Contains("Protected spaces") && !_initiating)
+            else if (Dict.Contains("Protected zones") && !_initiating)
             {
-                Dict.Remove("Protected spaces");
-                Log.Out("Protected spaces disabled");
+                Dict.Remove("Protected zones");
+                Log.Out("Protected zones disabled");
             }
             if (PlayerChecks.SpectatorEnabled)
             {
@@ -158,6 +171,19 @@ namespace ServerTools
             {
                 Dict.Remove("Spectator detector");
                 Log.Out("Spectator detector disabled");
+            }
+            if (SpeedDetector.IsEnabled)
+            {
+                if (!Dict.Contains("Speed detector"))
+                {
+                    Dict.Add("Speed detector");
+                    Log.Out("Speed detector enabled");
+                }
+            }
+            else if (Dict.Contains("Speed detector") && !_initiating)
+            {
+                Dict.Remove("Speed detector");
+                Log.Out("Speed detector disabled");
             }
             if (WatchList.IsEnabled)
             {
@@ -184,6 +210,19 @@ namespace ServerTools
             {
                 Dict.Remove("World radius");
                 Log.Out("World radius disabled");
+            }
+            if (XRayDetector.IsEnabled)
+            {
+                if (!Dict.Contains("XRay"))
+                {
+                    Dict.Add("XRay");
+                    Log.Out("XRay detector enabled");
+                }
+            }
+            else if (Dict.Contains("XRay") && !_initiating)
+            {
+                Dict.Remove("XRay");
+                Log.Out("XRay detector disabled");
             }
             if (_initiating)
             {

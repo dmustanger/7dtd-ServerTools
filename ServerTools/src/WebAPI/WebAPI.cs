@@ -328,20 +328,20 @@ namespace ServerTools
                                 else
                                 {
                                     WebPanel.PageHits[_ip] = count + 1;
-                                    GET(_response, _uri, _ip);
+                                    GET(_response, _uri, _ip, _request.IsLocal);
                                     WebPanel.Writer(string.Format("Homepage request granted for IP {0}", _ip));
                                 }
                             }
                             else
                             {
                                 WebPanel.PageHits.Add(_ip, 1);
-                                GET(_response, _uri, _ip);
+                                GET(_response, _uri, _ip, _request.IsLocal);
                                 WebPanel.Writer(string.Format("Homepage request granted for IP {0}", _ip));
                             }
                         }
                         else
                         {
-                            GET(_response, _uri, _ip);
+                            GET(_response, _uri, _ip, _request.IsLocal);
                         }
                     }
                     else if (_request.HttpMethod == "POST" && (WebPanel.IsEnabled || DiscordBot.IsEnabled))
@@ -382,7 +382,7 @@ namespace ServerTools
             }
         }
 
-        private static void GET(HttpListenerResponse _response, string _uri, string _ip)
+        private static void GET(HttpListenerResponse _response, string _uri, string _ip, bool _isLocal)
         {
             try
             {
@@ -428,29 +428,9 @@ namespace ServerTools
                         }
                     }
                 }
-                else if (!WebPanel.Ban.Contains(_ip))
+                else if (!_isLocal)
                 {
-                    if (WebPanel.TimeOut.ContainsKey(_ip))
-                    {
-                        WebPanel.TimeOut.Remove(_ip);
-                    }
-                    if (PersistentContainer.Instance.WebPanelTimeoutList != null && PersistentContainer.Instance.WebPanelTimeoutList.ContainsKey(_ip))
-                    {
-                        PersistentContainer.Instance.WebPanelTimeoutList.Remove(_ip);
-                    }
-                    WebPanel.Ban.Add(_ip);
-                    if (PersistentContainer.Instance.WebPanelBanList != null)
-                    {
-                        PersistentContainer.Instance.WebPanelBanList.Add(_ip);
-                    }
-                    else
-                    {
-                        List<string> bannedIP = new List<string>();
-                        bannedIP.Add(_ip);
-                        PersistentContainer.Instance.WebPanelBanList = bannedIP;
-                    }
-                    PersistentContainer.DataChange = true;
-                    WebPanel.Writer(string.Format("Banned IP '{0}'. Detected attempting to access an invalid address", _ip));
+                    WebPanel.Writer(string.Format("Detected {0} attempting to access an invalid address {1}", _ip, _uri));
                 }
             }
             catch (Exception e)
@@ -477,7 +457,7 @@ namespace ServerTools
             }
         }
 
-        private static void POST(HttpListenerResponse _response, string _uri, string _postMessage, string _ip, bool isLocal)
+        private static void POST(HttpListenerResponse _response, string _uri, string _postMessage, string _ip, bool _isLocal)
         {
             try
             {
@@ -956,7 +936,7 @@ namespace ServerTools
                                         {
                                             POSTFollowUp.Remove(clientId);
                                             List<ClientInfo> clientList = PersistentOperations.ClientList();
-                                            if (clientList != null && clientList.Count > 0)
+                                            if (clientList != null)
                                             {
                                                 int count = 0;
                                                 for (int i = 0; i < clientList.Count; i++)
@@ -1518,29 +1498,9 @@ namespace ServerTools
                         }
                     }
                 }
-                else if (!isLocal && !WebPanel.Ban.Contains(_ip))
+                else if (!_isLocal)
                 {
-                    WebPanel.Ban.Add(_ip);
-                    if (WebPanel.TimeOut.ContainsKey(_ip))
-                    {
-                        WebPanel.TimeOut.Remove(_ip);
-                    }
-                    if (PersistentContainer.Instance.WebPanelTimeoutList != null && PersistentContainer.Instance.WebPanelTimeoutList.ContainsKey(_ip))
-                    {
-                        PersistentContainer.Instance.WebPanelTimeoutList.Remove(_ip);
-                    }
-                    if (PersistentContainer.Instance.WebPanelBanList != null)
-                    {
-                        PersistentContainer.Instance.WebPanelBanList.Add(_ip);
-                    }
-                    else
-                    {
-                        List<string> bannedIP = new List<string>();
-                        bannedIP.Add(_ip);
-                        PersistentContainer.Instance.WebPanelBanList = bannedIP;
-                    }
-                    PersistentContainer.DataChange = true;
-                    WebPanel.Writer(string.Format("Banned IP '{0}'. Detected attempting to send invalid data to the server", _ip));
+                    WebPanel.Writer(string.Format("Detected {0} attempting to access an invalid address {1}", _ip, _uri));
                 }
             }
             catch (Exception e)

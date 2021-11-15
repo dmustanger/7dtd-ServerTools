@@ -21,14 +21,14 @@ namespace ServerTools
                     {
                         using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
                         {
-                            string _line;
-                            string[] _split;
-                            while ((_line = sr.ReadLine()) != null)
+                            string line;
+                            string[] split;
+                            while ((line = sr.ReadLine()) != null)
                             {
-                                _split = _line.Split(',');
-                                long.TryParse(_split[0], out long _0);
-                                long.TryParse(_split[1], out long _1);
-                                BannedCountries.Add(new long[] { _0, _1 }, _split[2]);
+                                split = line.Split(',');
+                                long.TryParse(split[0], out long range1);
+                                long.TryParse(split[1], out long range2);
+                                BannedCountries.Add(new long[] { range1, range2 }, split[2]);
                             }
                         }
                     }

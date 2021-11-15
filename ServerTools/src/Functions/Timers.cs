@@ -5,31 +5,44 @@ namespace ServerTools
 {
     class Timers
     {
-        public static bool IsRunning = false;
+        public static bool CoreIsRunning = false, HalfSecondIsRunning = false;
         public static int StopServerMinutes = 0, eventTime = 0;
-        private static int CoreCount = 0, twoSecondTick, fiveSecondTick, tenSecondTick, twentySecondTick, oneMinTick, fiveMinTick, stopServerSeconds, eventInvitation,
+        private static int twoSecondTick, fiveSecondTick, tenSecondTick, twentySecondTick, oneMinTick, fiveMinTick, stopServerSeconds, eventInvitation,
             eventOpen, horde, kickVote, lottery, muteVote, newPlayer, restartVote;
-        private static readonly System.Timers.Timer Core = new System.Timers.Timer();
 
-        public static void TimerStart()
+        private static readonly System.Timers.Timer Core = new System.Timers.Timer();
+        private static readonly System.Timers.Timer HalfSecond = new System.Timers.Timer();
+
+        public static void CoreTimerStart()
         {
-            if (CoreCount < 1)
-            {
-                CoreCount++;
-                IsRunning = true;
-                Core.Interval = 1000;
-                Core.Start();
-                Core.Elapsed += new ElapsedEventHandler(Tick);
-            }
+            CoreIsRunning = true;
+            Core.Interval = 1000;
+            Core.Start();
+            Core.Elapsed += new ElapsedEventHandler(Tick);
         }
 
-        public static void TimerStop()
+        public static void CoreTimerStop()
         {
-            CoreCount = 0;
-            IsRunning = false;
+            CoreIsRunning = false;
             Core.Stop();
             Core.Close();
             Core.Dispose();
+        }
+
+        public static void HalfSecondTimerStart()
+        {
+            HalfSecondIsRunning = true;
+            HalfSecond.Interval = 500;
+            HalfSecond.Start();
+            HalfSecond.Elapsed += new ElapsedEventHandler(HalfSecondElapsed);
+        }
+
+        public static void HalfSecondTimerStop()
+        {
+            HalfSecondIsRunning = false;
+            HalfSecond.Stop();
+            HalfSecond.Close();
+            HalfSecond.Dispose();
         }
 
         private static void Tick(object sender, ElapsedEventArgs e)
@@ -41,6 +54,14 @@ namespace ServerTools
             oneMinTick++;
             fiveMinTick++;
             Exec();
+        }
+
+        private static void HalfSecondElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (!PlayerChecks.HalfSecondRunning)
+            {
+                PlayerChecks.HalfSecondExec();
+            }
         }
 
         public static void Custom_SingleUseTimer(int _delay, string _playerId, List<string> _commands)
@@ -58,48 +79,6 @@ namespace ServerTools
             singleUseTimer.Elapsed += (sender, e) =>
             {
                 Init1(_playerId, _commands);
-                singleUseTimer.Stop();
-                singleUseTimer.Close();
-                singleUseTimer.Dispose();
-            };
-        }
-
-        public static void Zone_SingleUseTimer(int _delay, string _playerId, List<string> _commands)
-        {
-            if (_delay > 180)
-            {
-                _delay = 180;
-            }
-            int delayAdjusted = _delay * 1000;
-            System.Timers.Timer singleUseTimer = new System.Timers.Timer(delayAdjusted)
-            {
-                AutoReset = false
-            };
-            singleUseTimer.Start();
-            singleUseTimer.Elapsed += (sender, e) =>
-            {
-                Init7(_playerId, _commands);
-                singleUseTimer.Stop();
-                singleUseTimer.Close();
-                singleUseTimer.Dispose();
-            };
-        }
-
-        public static void Level_SingleUseTimer(int _delay, string _playerId, List<string> _commands)
-        {
-            if (_delay > 180)
-            {
-                _delay = 180;
-            }
-            int delayAdjusted = _delay * 1000;
-            System.Timers.Timer singleUseTimer = new System.Timers.Timer(delayAdjusted)
-            {
-                AutoReset = false
-            };
-            singleUseTimer.Start();
-            singleUseTimer.Elapsed += (sender, e) =>
-            {
-                Init8(_playerId, _commands);
                 singleUseTimer.Stop();
                 singleUseTimer.Close();
                 singleUseTimer.Dispose();
@@ -170,16 +149,45 @@ namespace ServerTools
             };
         }
 
-        public static void PersistentDataSave()
+        public static void Zone_SingleUseTimer(int _delay, string _playerId, List<string> _commands)
         {
-            System.Timers.Timer saveDelay = new System.Timers.Timer(120000)
+            if (_delay > 180)
             {
-                AutoReset = true
+                _delay = 180;
+            }
+            int delayAdjusted = _delay * 1000;
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(delayAdjusted)
+            {
+                AutoReset = false
             };
-            saveDelay.Start();
-            saveDelay.Elapsed += (sender, e) =>
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
             {
-                PersistentContainer.Instance.Save();
+                Init7(_playerId, _commands);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void Level_SingleUseTimer(int _delay, string _playerId, List<string> _commands)
+        {
+            if (_delay > 180)
+            {
+                _delay = 180;
+            }
+            int delayAdjusted = _delay * 1000;
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(delayAdjusted)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init8(_playerId, _commands);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
             };
         }
 
@@ -199,9 +207,89 @@ namespace ServerTools
             };
         }
 
+        public static void Wallet_Add_SingleUseTimer(string _playerId, int _amount)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init2(_playerId, _amount);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void Wallet_Remove_SingleUseTimer(string _playerId, int _amount)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init10(_playerId, _amount);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void Speed_SingleUseTimer(ClientInfo _cInfo)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(2000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init12(_cInfo);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void Flying_SingleUseTimer(ClientInfo _cInfo, Vector3i _position)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(2000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init13(_cInfo, _position);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void PersistentDataSave()
+        {
+            System.Timers.Timer saveDelay = new System.Timers.Timer(120000)
+            {
+                AutoReset = true
+            };
+            saveDelay.Start();
+            saveDelay.Elapsed += (sender, e) =>
+            {
+                PersistentContainer.Instance.Save();
+            };
+        }
+
         private static void Exec()
         {
-            PersistentOperations.PlayerCheck();
+            if (Zones.IsEnabled || Lobby.IsEnabled || Market.IsEnabled)
+            {
+                PersistentOperations.CheckZone();
+            }
             if (Jail.IsEnabled)
             {
                 Jail.StatusCheck();
@@ -213,13 +301,13 @@ namespace ServerTools
             if (twoSecondTick >= 2)
             {
                 twoSecondTick = 0;
+                if (PlayerChecks.GodEnabled || PlayerChecks.SpectatorEnabled || FlyingDetector.IsEnabled || SpeedDetector.IsEnabled)
+                {
+                    PlayerChecks.TwoSecondExec();
+                }
                 if (WorldRadius.IsEnabled)
                 {
                     WorldRadius.Exec();
-                }
-                if (PlayerChecks.GodEnabled || PlayerChecks.FlyEnabled || PlayerChecks.SpectatorEnabled || PlayerChecks.WaterEnabled)
-                {
-                    PlayerChecks.Exec();
                 }
             }
             if (fiveSecondTick >= 5)
@@ -425,6 +513,11 @@ namespace ServerTools
             CustomCommands.CustomCommandDelayed(_playerId, _commands);
         }
 
+        private static void Init2(string _playerId, int _amount)
+        {
+            Wallet.AddCurrency(_playerId, _amount);
+        }
+
         private static void Init3(ClientInfo _cInfo)
         {
             StartingItems.Exec(_cInfo);
@@ -462,6 +555,21 @@ namespace ServerTools
             {
                 WebAPI.Load();
             }
+        }
+
+        private static void Init10(string _playerId, int _amount)
+        {
+            Wallet.RemoveCurrency(_playerId, _amount);
+        }
+
+        private static void Init12(ClientInfo _cInfo)
+        {
+            SpeedDetector.TimerExpired(_cInfo);
+        }
+
+        private static void Init13(ClientInfo _cInfo, Vector3i _position)
+        {
+            FlyingDetector.TimerExpired(_cInfo, _position);
         }
     }
 }

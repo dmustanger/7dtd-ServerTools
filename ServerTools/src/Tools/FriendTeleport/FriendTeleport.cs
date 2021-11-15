@@ -131,14 +131,14 @@ namespace ServerTools
         {
             if (Command_Cost >= 1)
             {
-                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+                if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
                 {
                     MessageFriend(_cInfo, _friend);
                 }
                 else
                 {
                     Phrases.Dict.TryGetValue("FriendTeleport10", out string _phrase);
-                    _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                    _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
@@ -182,14 +182,14 @@ namespace ServerTools
                 {
                     if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
-                        if (Wallet.GetCurrentCoins(_cInfo2.playerId) >= Command_Cost)
+                        if (Wallet.GetCurrency(_cInfo2.playerId) >= Command_Cost)
                         {
-                            Wallet.SubtractCoinsFromWallet(_cInfo2.playerId, Command_Cost);
+                            Wallet.RemoveCurrency(_cInfo2.playerId, Command_Cost);
                         }
                         else
                         {
                             Phrases.Dict.TryGetValue("FriendTeleport10", out string _phrase);
-                            _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                            _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                             ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             return;
                         }

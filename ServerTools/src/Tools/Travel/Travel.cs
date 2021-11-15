@@ -15,9 +15,12 @@ namespace ServerTools
 
         private static SortedDictionary<string, string[]> Dict = new SortedDictionary<string, string[]>();
         private static SortedDictionary<string, string> Destination = new SortedDictionary<string, string>();
+
         private const string file = "TravelLocations.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -35,111 +38,132 @@ namespace ServerTools
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(FilePath))
-            {
-                UpdateXml();
-            }
-            XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(FilePath);
-            }
-            catch (XmlException e)
-            {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
-                return;
-            }
-            bool upgrade = true;
-            XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-            if (childNodes != null)
-            {
-                Dict.Clear();
-                Destination.Clear();
-                for (int i = 0; i < childNodes.Count; i++)
+                if (!Utils.FileExists(FilePath))
                 {
-                    if (childNodes[i].NodeType != XmlNodeType.Comment)
-                    {
-                        XmlElement line = (XmlElement)childNodes[i];
-                        if (line.HasAttributes)
-                        {
-                            if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                            {
-                                upgrade = false;
-                                continue;
-                            }
-                            else if (line.HasAttribute("Name") && line.HasAttribute("Corner1") && line.HasAttribute("Corner2") && line.HasAttribute("Destination"))
-                            {
-                                string name = line.GetAttribute("Name");
-                                string[] corner1 = line.GetAttribute("Corner1").Split(',');
-                                string[] corner2 = line.GetAttribute("Corner2").Split(',');
-                                string destination = line.GetAttribute("Destination");
-                                int.TryParse(corner1[0], out int x1);
-                                int.TryParse(corner1[1], out int y1);
-                                int.TryParse(corner1[2], out int z1);
-                                int.TryParse(corner2[0], out int x2);
-                                int.TryParse(corner2[1], out int y2);
-                                int.TryParse(corner2[2], out int z2);
-                                if (x1 > x2)
-                                {
-                                    int alt = x2;
-                                    x2 = x1;
-                                    x1 = alt;
-                                }
-                                if (y1 > y2)
-                                {
-                                    int alt = y2;
-                                    y2 = y1;
-                                    y1 = alt;
-                                }
-                                if (y1 == y2)
-                                {
-                                    y2++;
-                                }
-                                if (z1 > z2)
-                                {
-                                    int alt = z2;
-                                    z2 = z1;
-                                    z1 = alt;
-                                }
-                                string c1 = x1 + "," + y1 + "," + z1;
-                                string c2 = x2 + "," + y2 + "," + z2;
-                                string[] box = { c1, c2, destination };
-                                if (!Dict.ContainsKey(name))
-                                {
-                                    Dict.Add(name, box);
-                                }
-                            }
-                        }
-                    }
+                    UpdateXml();
                 }
-            }
-            if (upgrade)
-            {
-                XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                XmlNode node = nodeList[0];
-                XmlElement line = (XmlElement)nodeList[0];
-                if (line != null)
+                XmlDocument xmlDoc = new XmlDocument();
+                try
                 {
-                    if (line.HasAttributes)
+                    xmlDoc.Load(FilePath);
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    return;
+                }
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null)
+                {
+                    Dict.Clear();
+                    Destination.Clear();
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        UpgradeXml(nodeList);
-                        return;
-                    }
-                    else
-                    {
-                        nodeList = node.ChildNodes;
-                        line = (XmlElement)nodeList[0];
-                        if (line != null)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
+                            XmlElement line = (XmlElement)childNodes[i];
                             if (line.HasAttributes)
                             {
-                                UpgradeXml(nodeList);
-                                return;
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
+                                {
+                                    upgrade = false;
+                                    continue;
+                                }
+                                else if (line.HasAttribute("Name") && line.HasAttribute("Corner1") && line.HasAttribute("Corner2") && line.HasAttribute("Destination"))
+                                {
+                                    string name = line.GetAttribute("Name");
+                                    string[] corner1 = line.GetAttribute("Corner1").Split(',');
+                                    string[] corner2 = line.GetAttribute("Corner2").Split(',');
+                                    string destination = line.GetAttribute("Destination");
+                                    int.TryParse(corner1[0], out int x1);
+                                    int.TryParse(corner1[1], out int y1);
+                                    int.TryParse(corner1[2], out int z1);
+                                    int.TryParse(corner2[0], out int x2);
+                                    int.TryParse(corner2[1], out int y2);
+                                    int.TryParse(corner2[2], out int z2);
+                                    if (x1 > x2)
+                                    {
+                                        int alt = x2;
+                                        x2 = x1;
+                                        x1 = alt;
+                                    }
+                                    if (y1 > y2)
+                                    {
+                                        int alt = y2;
+                                        y2 = y1;
+                                        y1 = alt;
+                                    }
+                                    if (y1 == y2)
+                                    {
+                                        y2++;
+                                    }
+                                    if (z1 > z2)
+                                    {
+                                        int alt = z2;
+                                        z2 = z1;
+                                        z1 = alt;
+                                    }
+                                    string c1 = x1 + "," + y1 + "," + z1;
+                                    string c2 = x2 + "," + y2 + "," + z2;
+                                    string[] box = { c1, c2, destination };
+                                    if (!Dict.ContainsKey(name))
+                                    {
+                                        Dict.Add(name, box);
+                                    }
+                                }
                             }
                         }
                     }
                 }
-                UpgradeXml(null);
+                if (upgrade)
+                {
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
+                                    return;
+                                }
+                            }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing Travel.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in Travel.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -153,8 +177,8 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Travel>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Location Name=\"zone1\" Corner1=\"0,100,0\" Corner2=\"10,100,10\" Destination=\"-100,-1,-100\" /> -->");
-                    sw.WriteLine("<!-- <Location Name=\"zone2\" Corner1=\"-1,100,-1\" Corner2=\"-10,100,-10\" Destination=\"100,-1,100\" /> -->");
+                    sw.WriteLine("    <!-- <Location Name=\"zone1\" Corner1=\"0,100,0\" Corner2=\"10,100,10\" Destination=\"-100,-1,-100\" /> -->");
+                    sw.WriteLine("    <!-- <Location Name=\"zone2\" Corner1=\"-1,100,-1\" Corner2=\"-10,100,-10\" Destination=\"100,-1,100\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -273,14 +297,14 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+                if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
                 {
                     Tele(_cInfo);
                 }
                 else
                 {
                     Phrases.Dict.TryGetValue("Travel4", out string _phrase);
-                    _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                    _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
@@ -294,63 +318,60 @@ namespace ServerTools
         {
             try
             {
-                if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                if (player != null)
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    if (_player != null)
+                    if (Dict.Count > 0)
                     {
-                        if (Dict.Count > 0)
+                        int x = (int)player.position.x;
+                        int y = (int)player.position.y;
+                        int z = (int)player.position.z;
+                        foreach (KeyValuePair<string, string[]> travel in Dict)
                         {
-                            int _x = (int)_player.position.x;
-                            int _y = (int)_player.position.y;
-                            int _z = (int)_player.position.z;
-                            foreach (KeyValuePair<string, string[]> _travel in Dict)
+                            string[] c1 = travel.Value[0].Split(',');
+                            int.TryParse(c1[0], out int x1);
+                            int.TryParse(c1[1], out int y1);
+                            int.TryParse(c1[2], out int z1);
+                            string[] c2 = travel.Value[1].Split(',');
+                            int.TryParse(c2[0], out int x2);
+                            int.TryParse(c2[1], out int y2);
+                            int.TryParse(c2[2], out int z2);
+                            if (x >= x1 && x <= x2 && y >= y1 && y <= y2 && z >= z1 && z <= z2)
                             {
-                                string[] _c1 = _travel.Value[0].Split(',');
-                                int.TryParse(_c1[0], out int _x1);
-                                int.TryParse(_c1[1], out int _y1);
-                                int.TryParse(_c1[2], out int _z1);
-                                string[] _c2 = _travel.Value[1].Split(',');
-                                int.TryParse(_c2[0], out int _x2);
-                                int.TryParse(_c2[1], out int _y2);
-                                int.TryParse(_c2[2], out int _z2);
-                                if (_x >= _x1 && _x <= _x2 && _y >= _y1 && _y <= _y2 && _z >= _z1 && _z <= _z2)
+                                if (Player_Check)
                                 {
-                                    if (Player_Check)
+                                    if (Teleportation.PCheck(_cInfo, player))
                                     {
-                                        if (Teleportation.PCheck(_cInfo, _player))
-                                        {
-                                            return;
-                                        }
+                                        return;
                                     }
-                                    if (Zombie_Check)
-                                    {
-                                        if (Teleportation.ZCheck(_cInfo, _player))
-                                        {
-                                            return;
-                                        }
-                                    }
-                                    string[] _destination = _travel.Value[2].Split(',');
-                                    int.TryParse(_destination[0], out int _destinationX);
-                                    int.TryParse(_destination[1], out int _destinationY);
-                                    int.TryParse(_destination[2], out int _destinationZ);
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_destinationX, _destinationY, _destinationZ), null, false));
-                                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                                    {
-                                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
-                                    }
-                                    PersistentContainer.Instance.Players[_cInfo.playerId].LastTravel = DateTime.Now;
-                                    PersistentContainer.DataChange = true;
-                                    Phrases.Dict.TryGetValue("Travel1", out string _phrase);
-                                    _phrase = _phrase.Replace("{Destination}", _travel.Value[2]);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    return;
                                 }
+                                if (Zombie_Check)
+                                {
+                                    if (Teleportation.ZCheck(_cInfo, player))
+                                    {
+                                        return;
+                                    }
+                                }
+                                string[] destination = travel.Value[2].Split(',');
+                                int.TryParse(destination[0], out int destinationX);
+                                int.TryParse(destination[1], out int destinationY);
+                                int.TryParse(destination[2], out int destinationZ);
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(destinationX, destinationY, destinationZ), null, false));
+                                if (Wallet.IsEnabled && Command_Cost >= 1)
+                                {
+                                    Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
+                                }
+                                PersistentContainer.Instance.Players[_cInfo.playerId].LastTravel = DateTime.Now;
+                                PersistentContainer.DataChange = true;
+                                Phrases.Dict.TryGetValue("Travel1", out string phrase);
+                                phrase = phrase.Replace("{Destination}", travel.Value[2]);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                return;
                             }
-                            Phrases.Dict.TryGetValue("Travel2", out string _phrase1);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            return;
                         }
+                        Phrases.Dict.TryGetValue("Travel2", out string phrase1);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        return;
                     }
                 }
             }
@@ -360,7 +381,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -370,23 +391,23 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Travel>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Location Name=\"Zone1\" Corner1=\"0,100,0\" Corner2=\"10,100,10\" Destination=\"-100,-1,-100\" /> -->");
-                    sw.WriteLine("<!-- <Location Name=\"Zone2\" Corner1=\"-1,100,-1\" Corner2=\"-10,100,-10\" Destination=\"100,-1,100\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- <Location Name=\"Zone1\" Corner1=\"0,100,0\" Corner2=\"10,100,10\" Destination=\"-100,-1,-100\" /> -->");
+                    sw.WriteLine("    <!-- <Location Name=\"Zone2\" Corner1=\"-1,100,-1\" Corner2=\"-10,100,-10\" Destination=\"100,-1,100\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- <Location Name=\"Zone1\"") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Location Name=\"Zone2\"") && !_oldChildNodes[i].OuterXml.Contains("    <!-- <Location Name=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone1\"") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone2\"") && !OldNodeList[i].OuterXml.Contains("<!-- <Location Name=\"\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Location")
                             {
                                 string name = "", c1 = "", c2 = "", destination = "";

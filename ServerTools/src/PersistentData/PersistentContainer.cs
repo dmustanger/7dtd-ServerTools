@@ -14,18 +14,18 @@ namespace ServerTools
         private static PersistentContainer instance;
         private PersistentPlayers players;
         private static bool Saving = false;
-        
+
         private Dictionary<int, int> auctionPrices;
         private Dictionary<int, int> backpacks;
         private Dictionary<int, List<int>> clientMuteList;
         private DateTime lastWeather;
+        private List<string> protectedZones;
         private string[] pollData;
         private Dictionary<string[], string> pollOld;
         private bool pollOpen;
         private Dictionary<string, bool> pollVote;
         private List<string> regionReset;
         private List<string[]> track;
-        private Dictionary<string, string[]> waypoints;
         private Dictionary<string, string[]> webPanelAuthorizedIVKeyList;
         private Dictionary<string, DateTime> webPanelAuthorizedTimeList;
         private List<string> webPanelBanList;
@@ -170,6 +170,18 @@ namespace ServerTools
             }
         }
 
+        public List<string> ProtectedZones
+        {
+            get
+            {
+                return protectedZones;
+            }
+            set
+            {
+                protectedZones = value;
+            }
+        }
+
         public string[] PollData
         {
             get
@@ -239,18 +251,6 @@ namespace ServerTools
             set
             {
                 track = value;
-            }
-        }
-
-        public Dictionary<string, string[]> Waypoints
-        {
-            get
-            {
-                return waypoints;
-            }
-            set
-            {
-                waypoints = value;
             }
         }
 

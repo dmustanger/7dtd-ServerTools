@@ -152,7 +152,7 @@ namespace ServerTools
         {
             UI_Locked = true;
             List<ClientInfo> clients = PersistentOperations.ClientList();
-            if (clients != null && clients.Count > 0)
+            if (clients != null)
             {
                 for (int i = 0; i < clients.Count; i++)
                 {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -16,129 +15,141 @@ namespace ServerTools
         {
             try
             {
-                if ((BlockLogger.IsEnabled || DamageDetector.IsEnabled || POIProtection.IsEnabled) && __instance != null && _blocksToChange != null && !string.IsNullOrEmpty(_persistentPlayerId) &&
-                    _blocksToChange != null)
+                if (__instance != null && !string.IsNullOrEmpty(_persistentPlayerId) && _blocksToChange != null)
                 {
-                    ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
-                    if (_cInfo != null)
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
+                    if (cInfo != null)
                     {
-                        World _world = __instance.World;
-                        for (int i = 0; i < _blocksToChange.Count; i++)
+                        EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                        if (player != null)
                         {
-                            BlockChangeInfo _newBlockInfo = _blocksToChange[i];//new block info
-                            BlockValue _oldBlockValue = _world.GetBlock(_newBlockInfo.pos);//old block value
-                            Block _oldBlock = _oldBlockValue.Block;
-                            if (_newBlockInfo != null && _newBlockInfo.bChangeBlockValue)//has new block value
+                            int slot = player.inventory.holdingItemIdx;
+                            ItemValue itemValue = cInfo.latestPlayerData.inventory[slot].itemValue;
+                            if (itemValue != null && InfiniteAmmo.IsEnabled && itemValue.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo, player, slot, itemValue))
                             {
-                                Block _newBlock = _newBlockInfo.blockValue.Block;
-                                if (_oldBlockValue.type == BlockValue.Air.type)//old block was air
+                                return false;
+                            }
+                            if (BlockLogger.IsEnabled || DamageDetector.IsEnabled || POIProtection.IsEnabled)
+                            {
+                                World world = __instance.World;
+                                for (int i = 0; i < _blocksToChange.Count; i++)
                                 {
-                                    if (_newBlock is BlockSleepingBag)//placed a sleeping bag
+                                    BlockChangeInfo newBlockInfo = _blocksToChange[i];//new block info
+                                    BlockValue oldBlockValue = world.GetBlock(newBlockInfo.pos);//old block value
+                                    Block oldBlock = oldBlockValue.Block;
+                                    if (newBlockInfo != null && newBlockInfo.bChangeBlockValue)//has new block value
                                     {
-                                        if (POIProtection.IsEnabled && POIProtection.Bed && _world.IsPositionWithinPOI(_newBlockInfo.pos.ToVector3(), 5))
+                                        Block newBlock = newBlockInfo.blockValue.Block;
+                                        if (oldBlockValue.type == BlockValue.Air.type)//old block was air
                                         {
-                                            GameManager.Instance.World.SetBlockRPC(_newBlockInfo.pos, BlockValue.Air);
-                                            PersistentOperations.ReturnBlock(_cInfo, _newBlock.GetBlockName(), 1);
-                                            Phrases.Dict.TryGetValue("POI1", out string _phrase);
-                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                            return false;
-                                        }
-                                    }
-                                    else if (_newBlock is BlockLandClaim)//placed a land claim
-                                    {
-                                        if (POIProtection.IsEnabled && POIProtection.Claim && _world.IsPositionWithinPOI(_newBlockInfo.pos.ToVector3(), 5))
-                                        {
-                                            GameManager.Instance.World.SetBlockRPC(_newBlockInfo.pos, BlockValue.Air);
-                                            PersistentOperations.ReturnBlock(_cInfo, _newBlock.GetBlockName(), 1);
-                                            Phrases.Dict.TryGetValue("POI2", out string _phrase);
-                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                            return false;
-                                        }
-                                    }
-                                    if (BlockLogger.IsEnabled && _newBlockInfo.blockValue.type != BlockValue.Air.type)
-                                    {
-                                        BlockLogger.PlacedBlock(_persistentPlayerId, _newBlock, _newBlockInfo.pos);
-                                    }
-                                    return true;
-                                }
-                                else if (_newBlockInfo.blockValue.type == BlockValue.Air.type)//new block is air
-                                {
-                                    if (_oldBlockValue.Block is BlockLandClaim)
-                                    {
-                                        if (!PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, _newBlockInfo.pos))
-                                        {
-                                            if (DamageDetector.IsEnabled)
+                                            if (newBlock is BlockSleepingBag)//placed a sleeping bag
                                             {
-                                                int _total = _oldBlock.MaxDamage - _oldBlockValue.damage;
-                                                if (_oldBlock.MaxDamage - _oldBlockValue.damage >= DamageDetector.Block_Damage_Limit &&
-                                                    GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                                if (POIProtection.IsEnabled && POIProtection.Bed && world.IsPositionWithinPOI(newBlockInfo.pos.ToVector3(), 5))
                                                 {
-                                                    Penalty(_total, _persistentPlayerId, _cInfo);
+                                                    GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
+                                                    PersistentOperations.ReturnBlock(cInfo, newBlock.GetBlockName(), 1);
+                                                    Phrases.Dict.TryGetValue("POI1", out string phrase);
+                                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                     return false;
                                                 }
                                             }
-                                            if (BlockLogger.IsEnabled)
+                                            else if (newBlock is BlockLandClaim)//placed a land claim
                                             {
-                                                BlockLogger.BrokeBlock(_persistentPlayerId, _oldBlock, _newBlockInfo.pos);
-                                            }
-                                        }
-                                        if (BlockLogger.IsEnabled)
-                                        {
-                                            BlockLogger.RemovedBlock(_persistentPlayerId, _oldBlock, _newBlockInfo.pos);
-                                        }
-                                    }
-                                    if (!_oldBlock.CanPickup)//old block can not be picked up
-                                    {
-                                        if (!PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, _newBlockInfo.pos))
-                                        {
-                                            if (DamageDetector.IsEnabled)
-                                            {
-                                                int _total = _oldBlock.MaxDamage - _oldBlockValue.damage;
-                                                if (_total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                                if (POIProtection.IsEnabled && POIProtection.Claim && world.IsPositionWithinPOI(newBlockInfo.pos.ToVector3(), 5))
                                                 {
-                                                    Penalty(_total, _persistentPlayerId, _cInfo);
+                                                    GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
+                                                    PersistentOperations.ReturnBlock(cInfo, newBlock.GetBlockName(), 1);
+                                                    Phrases.Dict.TryGetValue("POI2", out string _phrase);
+                                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                     return false;
                                                 }
                                             }
-                                        }
-                                        if (BlockLogger.IsEnabled)
-                                        {
-                                            BlockLogger.RemovedBlock(_persistentPlayerId, _oldBlock, _newBlockInfo.pos);
-                                        }
-                                    }
-                                }
-                                else if (_oldBlock.blockID == _newBlock.blockID)//block is the same
-                                {
-                                    if (_newBlockInfo.bChangeDamage)//block took damage
-                                    {
-                                        if (DamageDetector.IsEnabled)
-                                        {
-                                            int _total = _newBlockInfo.blockValue.damage - _oldBlockValue.damage;
-                                            if (_total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                            if (BlockLogger.IsEnabled && newBlockInfo.blockValue.type != BlockValue.Air.type)
                                             {
-                                                Penalty(_total, _persistentPlayerId, _cInfo);
-                                                return false;
+                                                BlockLogger.PlacedBlock(_persistentPlayerId, newBlock, newBlockInfo.pos);
+                                            }
+                                            return true;
+                                        }
+                                        else if (newBlockInfo.blockValue.type == BlockValue.Air.type)//new block is air
+                                        {
+                                            if (oldBlockValue.Block is BlockLandClaim)
+                                            {
+                                                if (!PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, newBlockInfo.pos))
+                                                {
+                                                    if (DamageDetector.IsEnabled)
+                                                    {
+                                                        int total = oldBlock.MaxDamage - oldBlockValue.damage;
+                                                        if (oldBlock.MaxDamage - oldBlockValue.damage >= DamageDetector.Block_Damage_Limit &&
+                                                            GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.playerId) > Admin_Level)
+                                                        {
+                                                            Penalty(total, _persistentPlayerId, cInfo);
+                                                            return false;
+                                                        }
+                                                    }
+                                                    if (BlockLogger.IsEnabled)
+                                                    {
+                                                        BlockLogger.BrokeBlock(_persistentPlayerId, oldBlock, newBlockInfo.pos);
+                                                    }
+                                                }
+                                                if (BlockLogger.IsEnabled)
+                                                {
+                                                    BlockLogger.RemovedBlock(_persistentPlayerId, oldBlock, newBlockInfo.pos);
+                                                }
+                                            }
+                                            if (!oldBlock.CanPickup)//old block can not be picked up
+                                            {
+                                                if (!PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, newBlockInfo.pos))
+                                                {
+                                                    if (DamageDetector.IsEnabled)
+                                                    {
+                                                        int total = oldBlock.MaxDamage - oldBlockValue.damage;
+                                                        if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.playerId) > Admin_Level)
+                                                        {
+                                                            Penalty(total, _persistentPlayerId, cInfo);
+                                                            return false;
+                                                        }
+                                                    }
+                                                }
+                                                if (BlockLogger.IsEnabled)
+                                                {
+                                                    BlockLogger.RemovedBlock(_persistentPlayerId, oldBlock, newBlockInfo.pos);
+                                                }
                                             }
                                         }
-                                    }
-                                }
-                                else if (_oldBlock.DowngradeBlock.Block.blockID == _newBlock.blockID)//downgraded
-                                {
-                                    if (_oldBlockValue.damage == _newBlockInfo.blockValue.damage || _newBlockInfo.blockValue.damage == 0)
-                                    {
-                                        if (BlockLogger.IsEnabled)
+                                        else if (oldBlock.blockID == newBlock.blockID)//block is the same
                                         {
-                                            BlockLogger.DowngradedBlock(_persistentPlayerId, _oldBlock, _newBlock, _newBlockInfo.pos);
+                                            if (newBlockInfo.bChangeDamage)//block took damage
+                                            {
+                                                if (DamageDetector.IsEnabled)
+                                                {
+                                                    int total = newBlockInfo.blockValue.damage - oldBlockValue.damage;
+                                                    if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.playerId) > Admin_Level)
+                                                    {
+                                                        Penalty(total, _persistentPlayerId, cInfo);
+                                                        return false;
+                                                    }
+                                                }
+                                            }
                                         }
-                                        return true;
-                                    }
-                                    if (DamageDetector.IsEnabled)
-                                    {
-                                        int _total = _oldBlock.MaxDamage - _oldBlockValue.damage + _newBlockInfo.blockValue.damage;
-                                        if (_total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.playerId) > Admin_Level)
+                                        else if (oldBlock.DowngradeBlock.Block.blockID == newBlock.blockID)//downgraded
                                         {
-                                            Penalty(_total, _persistentPlayerId, _cInfo);
-                                            return false;
+                                            if (oldBlockValue.damage == newBlockInfo.blockValue.damage || newBlockInfo.blockValue.damage == 0)
+                                            {
+                                                if (BlockLogger.IsEnabled)
+                                                {
+                                                    BlockLogger.DowngradedBlock(_persistentPlayerId, oldBlock, newBlock, newBlockInfo.pos);
+                                                }
+                                                return true;
+                                            }
+                                            if (DamageDetector.IsEnabled)
+                                            {
+                                                int total = oldBlock.MaxDamage - oldBlockValue.damage + newBlockInfo.blockValue.damage;
+                                                if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.playerId) > Admin_Level)
+                                                {
+                                                    Penalty(total, _persistentPlayerId, cInfo);
+                                                    return false;
+                                                }
+                                            }
                                         }
                                     }
                                 }

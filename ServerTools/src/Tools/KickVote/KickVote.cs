@@ -7,9 +7,12 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, VoteOpen = false;
         public static int Players_Online = 5, Votes_Needed = 3;
-        public static string Command_kickvote = "kickvote";
+
         public static List<int> Kick = new List<int>();
-        private static ClientInfo _playerKick;
+
+        public static string Command_kickvote = "kickvote";
+
+        private static ClientInfo playerKick;
 
         public static void Vote(ClientInfo _cInfo, string _player)
         {
@@ -17,43 +20,43 @@ namespace ServerTools
             {
                 if (!VoteOpen)
                 {
-                    int _playerCount = ConnectionManager.Instance.ClientCount();
-                    if (_playerCount >= Players_Online)
+                    int playerCount = ConnectionManager.Instance.ClientCount();
+                    if (playerCount >= Players_Online)
                     {
-                        if (int.TryParse(_player, out int _entityId))
+                        if (int.TryParse(_player, out int entityId))
                         {
-                            ClientInfo _playerInfo = ConnectionManager.Instance.Clients.ForEntityId(_entityId);
-                            if (_playerInfo != null)
+                            ClientInfo cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(entityId);
+                            if (cInfo2 != null)
                             {
-                                if (_playerInfo.playerId != _cInfo.playerId)
+                                if (cInfo2.playerId != _cInfo.playerId)
                                 {
-                                    _playerKick = _playerInfo;
+                                    playerKick = cInfo2;
                                     VoteOpen = true;
-                                    Phrases.Dict.TryGetValue("KickVote1", out string _phrase);
-                                    _phrase = _phrase.Replace("{PlayerName}", _playerInfo.playerName);
-                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                                    Phrases.Dict.TryGetValue("KickVote5", out _phrase);
-                                    _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                                    _phrase = _phrase.Replace("{Command_yes}", RestartVote.Command_yes);
-                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                    Phrases.Dict.TryGetValue("KickVote1", out string phrase);
+                                    phrase = phrase.Replace("{PlayerName}", cInfo2.playerName);
+                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                    Phrases.Dict.TryGetValue("KickVote5", out phrase);
+                                    phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                    phrase = phrase.Replace("{Command_yes}", RestartVote.Command_yes);
+                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                 }
                                 else
                                 {
-                                    Phrases.Dict.TryGetValue("KickVote6", out string _phrase);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("KickVote6", out string phrase);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue("KickVote2", out string _phrase);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("KickVote2", out string phrase);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("KickVote3", out string _phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("KickVote3", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -71,19 +74,19 @@ namespace ServerTools
                 {
                     if (Kick.Count >= Votes_Needed)
                     {
-                        Phrases.Dict.TryGetValue("KickVote10", out string _phrase);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _playerKick.entityId, _phrase), null);
+                        Phrases.Dict.TryGetValue("KickVote10", out string phrase);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", playerKick.entityId, phrase), null);
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("KickVote7", out string _phrase);
-                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        Phrases.Dict.TryGetValue("KickVote7", out string phrase);
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("KickVote8", out string _phrase);
-                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    Phrases.Dict.TryGetValue("KickVote8", out string phrase);
+                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
             }
             catch (Exception e)
@@ -98,29 +101,29 @@ namespace ServerTools
         {
             try
             {
-                List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
-                if (ClientInfoList != null && ClientInfoList.Count > 1)
+                List<ClientInfo> clientList = PersistentOperations.ClientList();
+                if (clientList != null)
                 {
-                    for (int i = 0; i < ClientInfoList.Count; i++)
+                    for (int i = 0; i < clientList.Count; i++)
                     {
-                        ClientInfo _cInfo2 = ClientInfoList[i];
-                        if (_cInfo2 != _cInfo)
+                        ClientInfo cInfo2 = clientList[i];
+                        if (cInfo2 != _cInfo)
                         {
-                            Phrases.Dict.TryGetValue("KickVote4", out string _phrase);
-                            _phrase = _phrase.Replace("{PlayerName}", _cInfo2.playerName);
-                            _phrase = _phrase.Replace("{Id}", _cInfo2.entityId.ToString());
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("KickVote4", out string phrase);
+                            phrase = phrase.Replace("{PlayerName}", cInfo2.playerName);
+                            phrase = phrase.Replace("{Id}", cInfo2.entityId.ToString());
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
-                    Phrases.Dict.TryGetValue("KickVote9", out string _phrase1);
-                    _phrase1 = _phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    _phrase1 = _phrase1.Replace("{Command_kickvote}", Command_kickvote);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("KickVote9", out string phrase1);
+                    phrase1 = phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    phrase1 = phrase1.Replace("{Command_kickvote}", Command_kickvote);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("KickVote11", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("KickVote11", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

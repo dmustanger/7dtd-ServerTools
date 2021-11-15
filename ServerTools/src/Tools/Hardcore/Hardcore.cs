@@ -253,9 +253,9 @@ namespace ServerTools
                                     Life_Price = 0;
                                 }
                                 int _cost = Life_Price * _extraLives++;
-                                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= _cost)
+                                if (Wallet.GetCurrency(_cInfo.playerId) >= _cost)
                                 {
-                                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _cost);
+                                    Wallet.RemoveCurrency(_cInfo.playerId, _cost);
                                     _stats[2] = (_extraLives + 1).ToString();
                                     PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats = _stats;
                                     PersistentContainer.DataChange = true;

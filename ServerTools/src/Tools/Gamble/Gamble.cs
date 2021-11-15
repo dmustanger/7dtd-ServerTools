@@ -32,7 +32,7 @@ namespace ServerTools
                     phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
                     phrase = phrase.Replace("{Command_gamble_bet}", Command_gamble_bet);
                     phrase = phrase.Replace("{Value}", Command_Cost.ToString());
-                    phrase = phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
@@ -46,11 +46,11 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.GetCurrentCoins(_cInfo.playerId) < Command_Cost)
+                if (Wallet.GetCurrency(_cInfo.playerId) < Command_Cost)
                 {
                     Phrases.Dict.TryGetValue("Gamble3", out string phrase);
                     phrase = phrase.Replace("{Value}", Command_Cost.ToString());
-                    phrase = phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }
@@ -84,7 +84,7 @@ namespace ServerTools
                         {
                             pot = new int[] { 1, 0 };
                         }
-                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                        Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
                         int gamble = Random.Next(pot[0] + 1);
                         if (gamble == 1)
                         {
@@ -147,13 +147,13 @@ namespace ServerTools
                 if (Dict.ContainsKey(_cInfo.playerId))
                 {
                     Dict.TryGetValue(_cInfo.playerId, out int[] pot);
-                    Wallet.AddCoinsToWallet(_cInfo.playerId, pot[1]);
+                    Wallet.AddCurrency(_cInfo.playerId, pot[1]);
                     Dict.Remove(_cInfo.playerId);
                     PersistentContainer.Instance.Players[_cInfo.playerId].LastGamble = DateTime.Now;
                     PersistentContainer.DataChange = true;
                     Phrases.Dict.TryGetValue("Gamble4", out string phrase);
                     phrase = phrase.Replace("{Value}", pot[1].ToString());
-                    phrase = phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else

@@ -11,6 +11,7 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, Operating = false, Reduced_Delay = false, Admin_Slot = false, Bonus_Exp = false;
         public static int Session_Time = 30, Admin_Level = 0;
         public static string Command_reserved = "reserved";
+
         public static Dictionary<string, DateTime> Dict = new Dictionary<string, DateTime>();
         public static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> Kicked = new Dictionary<string, DateTime>();
@@ -18,6 +19,8 @@ namespace ServerTools
         private static string file = "ReservedSlots.xml";
         private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -98,7 +101,9 @@ namespace ServerTools
                     {
                         if (line.HasAttributes)
                         {
-                            UpgradeXml(nodeList);
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
                             return;
                         }
                         else
@@ -109,18 +114,30 @@ namespace ServerTools
                             {
                                 if (line.HasAttributes)
                                 {
-                                    UpgradeXml(nodeList);
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
                                     return;
                                 }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing ReservedSlots.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
-                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlots.LoadXml: {0}", e.Message));
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlots.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -132,7 +149,7 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ReservedSlots>");
                 sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                sw.WriteLine(string.Format("<!-- <Player SteamId=\"76561191234567891\" Name=\"Tron\" Expires=\"10/29/2050 7:30:00 AM\" /> -->"));
+                sw.WriteLine("    <!-- <Player SteamId=\"76561191234567891\" Name=\"Tron\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
                 sw.WriteLine();
                 sw.WriteLine();
                 if (Dict.Count > 0)
@@ -225,72 +242,66 @@ namespace ServerTools
         {
             try
             {
-                List<string> _reservedKicks = new List<string>();
-                List<string> _normalKicks = new List<string>();
-                string _clientToKick = null;
-                List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                if (AdminCheck(_playerId))//admin is joining
+                List<string> reservedKicks = new List<string>();
+                List<string> normalKicks = new List<string>();
+                string clientToKick = null;
+                List<ClientInfo> clientList = PersistentOperations.ClientList();
+                if (clientList != null)
                 {
-                    if (_clientList != null && _clientList.Count > 0)
+                    if (AdminCheck(_playerId))//admin is joining
                     {
-                        for (int i = 0; i < _clientList.Count; i++)
+                        for (int i = 0; i < clientList.Count; i++)
                         {
-                            ClientInfo _cInfo2 = _clientList[i];
-                            if (_cInfo2 != null && !string.IsNullOrEmpty(_cInfo2.playerId) && _cInfo2.playerId != _playerId)
+                            ClientInfo cInfo2 = clientList[i];
+                            if (cInfo2 != null && !string.IsNullOrEmpty(cInfo2.playerId) && cInfo2.playerId != _playerId)
                             {
-                                if (!AdminCheck(_cInfo2.playerId))//not admin
+                                if (!AdminCheck(cInfo2.playerId))//not admin
                                 {
-                                    if (ReservedCheck(_cInfo2.playerId))//reserved player
+                                    if (ReservedCheck(cInfo2.playerId))//reserved player
                                     {
-                                        _reservedKicks.Add(_cInfo2.playerId);
+                                        reservedKicks.Add(cInfo2.playerId);
                                     }
                                     else
                                     {
-                                        _normalKicks.Add(_cInfo2.playerId);
+                                        normalKicks.Add(cInfo2.playerId);
                                     }
                                 }
                             }
                         }
                     }
-                }
-                else if (ReservedCheck(_playerId))//reserved player is joining
-                {
-                    if (_clientList != null && _clientList.Count > 0)
+                    else if (ReservedCheck(_playerId))//reserved player is joining
                     {
-                        for (int i = 0; i < _clientList.Count; i++)
+                        for (int i = 0; i < clientList.Count; i++)
                         {
-                            ClientInfo _cInfo2 = _clientList[i];
-                            if (_cInfo2 != null && !string.IsNullOrEmpty(_cInfo2.playerId) && _cInfo2.playerId != _playerId)
+                            ClientInfo cInfo2 = clientList[i];
+                            if (cInfo2 != null && !string.IsNullOrEmpty(cInfo2.playerId) && cInfo2.playerId != _playerId)
                             {
-                                if (!AdminCheck(_cInfo2.playerId) && !ReservedCheck(_cInfo2.playerId))
+                                if (!AdminCheck(cInfo2.playerId) && !ReservedCheck(cInfo2.playerId))
                                 {
-                                    _normalKicks.Add(_cInfo2.playerId);
+                                    normalKicks.Add(cInfo2.playerId);
                                 }
                             }
                         }
                     }
-                }
-                else//regular player is joining
-                {
-                    if (_clientList != null && _clientList.Count > 0)
+                    else//regular player is joining
                     {
-                        for (int i = 0; i < _clientList.Count; i++)
+                        for (int i = 0; i < clientList.Count; i++)
                         {
-                            ClientInfo _cInfo2 = _clientList[i];
-                            if (_cInfo2 != null && !string.IsNullOrEmpty(_cInfo2.playerId) && _cInfo2.playerId != _playerId)
+                            ClientInfo cInfo2 = clientList[i];
+                            if (cInfo2 != null && !string.IsNullOrEmpty(cInfo2.playerId) && cInfo2.playerId != _playerId)
                             {
-                                if (!AdminCheck(_cInfo2.playerId) && !ReservedCheck(_cInfo2.playerId))
+                                if (!AdminCheck(cInfo2.playerId) && !ReservedCheck(cInfo2.playerId))
                                 {
                                     if (Session_Time > 0)
                                     {
-                                        if (PersistentOperations.Session.TryGetValue(_cInfo2.playerId, out DateTime _dateTime))
+                                        if (PersistentOperations.Session.TryGetValue(cInfo2.playerId, out DateTime dateTime))
                                         {
-                                            TimeSpan varTime = DateTime.Now - _dateTime;
+                                            TimeSpan varTime = DateTime.Now - dateTime;
                                             double fractionalMinutes = varTime.TotalMinutes;
-                                            int _timepassed = (int)fractionalMinutes;
-                                            if (_timepassed >= Session_Time)
+                                            int timepassed = (int)fractionalMinutes;
+                                            if (timepassed >= Session_Time)
                                             {
-                                                _normalKicks.Add(_cInfo2.playerId);
+                                                normalKicks.Add(cInfo2.playerId);
                                             }
                                         }
                                     }
@@ -298,26 +309,26 @@ namespace ServerTools
                             }
                         }
                     }
-                }
-                if (_normalKicks != null && _normalKicks.Count > 0)
-                {
-                    _normalKicks.RandomizeList();
-                    _clientToKick = _normalKicks[0];
-                    if (Session_Time > 0)
+                    if (normalKicks.Count > 0)
                     {
-                        Kicked.Add(_clientToKick, DateTime.Now);
+                        normalKicks.RandomizeList();
+                        clientToKick = normalKicks[0];
+                        if (Session_Time > 0)
+                        {
+                            Kicked.Add(clientToKick, DateTime.Now);
+                        }
+                        Phrases.Dict.TryGetValue("Reserved1", out string phrase1);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", clientToKick, phrase1), null);
+                        return true;
                     }
-                    Phrases.Dict.TryGetValue("Reserved1", out string _phrase1);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _clientToKick, _phrase1), null);
-                    return true;
-                }
-                else if (_reservedKicks != null && _reservedKicks.Count > 0)
-                {
-                    _reservedKicks.RandomizeList();
-                    _clientToKick = _reservedKicks[0];
-                    Phrases.Dict.TryGetValue("Reserved1", out string _phrase1);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _clientToKick, _phrase1), null);
-                    return true;
+                    else if (reservedKicks.Count > 0)
+                    {
+                        reservedKicks.RandomizeList();
+                        clientToKick = reservedKicks[0];
+                        Phrases.Dict.TryGetValue("Reserved1", out string phrase1);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", clientToKick, phrase1), null);
+                        return true;
+                    }
                 }
             }
             catch (Exception e)
@@ -327,7 +338,7 @@ namespace ServerTools
             return false;
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -337,22 +348,22 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<ReservedSlots>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine(string.Format("<!-- <Player SteamId=\"76561191234567891\" Name=\"Tron\" Expires=\"10/29/2050 7:30:00 AM\" /> -->"));
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- <Player SteamId=\"76561191234567891\" Name=\"Tron\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("    <!-- <Player SteamId=\"\"") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Player SteamId=\"76561191234567891\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Player SteamId=\"\"") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Player SteamId=\"76561191234567891\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Player")
                             {
                                 string steamId = "", name = "", expires = "";

@@ -28,15 +28,18 @@ public class @AdminsConsole : ConsoleCmdAbstract
     {
         try
         {
-            string _message = string.Join(" ", _params.ToArray());
-            List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-            for (int i = 0; i < _cInfoList.Count; i++)
+            string message = string.Join(" ", _params.ToArray());
+            List<ClientInfo> cInfoList = PersistentOperations.ClientList();
+            if (cInfoList != null)
             {
-                ClientInfo _cInfo = _cInfoList[i];
-                if (GameManager.Instance.adminTools.IsAdmin(_cInfo))
+                for (int i = 0; i < cInfoList.Count; i++)
                 {
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, _cInfo.playerName, EChatType.Whisper, null);
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Message sent to {0}", _cInfo.playerName));
+                    ClientInfo cInfo = cInfoList[i];
+                    if (GameManager.Instance.adminTools.IsAdmin(cInfo))
+                    {
+                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + message + "[-]", -1, cInfo.playerName, EChatType.Whisper, null);
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Message sent to {0}", cInfo.playerName));
+                    }
                 }
             }
         }

@@ -9,13 +9,16 @@ namespace ServerTools
 
         public static void SendAdmins(ClientInfo _sender, string _message)
         {
-            List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-            for (int i = 0; i < _cInfoList.Count; i++)
+            List<ClientInfo> clientList = PersistentOperations.ClientList();
+            if (clientList != null)
             {
-                ClientInfo _cInfo = _cInfoList[i];
-                if (_cInfo != null && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= ChatHook.Mod_Level && _sender.playerId != _cInfo.playerId)
+                for (int i = 0; i < clientList.Count; i++)
                 {
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper, null);
+                    ClientInfo cInfo = clientList[i];
+                    if (cInfo != null && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo) <= ChatHook.Mod_Level && _sender.playerId != cInfo.playerId)
+                    {
+                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _message + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper, null);
+                    }
                 }
             }
         }

@@ -74,33 +74,36 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("all"))
                 {
-                    bool _negative = false;
+                    bool negative = false;
                     if (_params[1].Contains("-"))
                     {
                         _params[1].Replace("-", "");
-                        _negative = true;
+                        negative = true;
                     }
-                    if (!int.TryParse(_params[1], out int _adjustCoins))
+                    if (!int.TryParse(_params[1], out int adjustCoins))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not adjust wallet. Value {0} is invalid", _params[1]));
                     }
                     else
                     {
-                        List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                        for (int i = 0; i < _cInfoList.Count; i++)
+                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        if (clientList != null)
                         {
-                            ClientInfo _cInfo = _cInfoList[i];
-                            if (_cInfo != null)
+                            for (int i = 0; i < clientList.Count; i++)
                             {
-                                if (_negative)
+                                ClientInfo cInfo = clientList[i];
+                                if (cInfo != null)
                                 {
-                                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _adjustCoins);
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Subtracted {0} {1} from player id {2} wallet", _params[1], Wallet.Coin_Name, _params[0]));
-                                }
-                                else
-                                {
-                                    Wallet.AddCoinsToWallet(_cInfo.playerId, _adjustCoins);
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added {0} {1} to player id {2} wallet", _params[1], Wallet.Coin_Name, _params[0]));
+                                    if (negative)
+                                    {
+                                        Wallet.RemoveCurrency(cInfo.playerId, adjustCoins);
+                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Subtracted {0} {1} from player id {2} wallet", _params[1], Wallet.Currency_Name, _params[0]));
+                                    }
+                                    else
+                                    {
+                                        Wallet.AddCurrency(cInfo.playerId, adjustCoins);
+                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added {0} {1} to player id {2} wallet", _params[1], Wallet.Currency_Name, _params[0]));
+                                    }
                                 }
                             }
                         }
@@ -110,7 +113,7 @@ namespace ServerTools
                 {
                     if (_params[0].Length < 1 || _params[0].Length > 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not adjust wallet: Invalid Id {0}", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not adjust wallet: Invalid id {0}", _params[0]));
                         return;
                     }
                     if (_params[1].Length < 1 || _params[1].Length > 5)
@@ -118,13 +121,13 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not adjust wallet. Value {0} is invalid", _params[1]));
                         return;
                     }
-                    bool _negative = false;
+                    bool negative = false;
                     if (_params[1].Contains("-"))
                     {
                         _params[1].Replace("-", "");
-                        _negative = true;
+                        negative = true;
                     }
-                    if (!int.TryParse(_params[1], out int _adjustCoins))
+                    if (!int.TryParse(_params[1], out int adjustCoins))
                     {
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not adjust wallet. Value {0} is invalid", _params[1]));
                     }
@@ -134,15 +137,15 @@ namespace ServerTools
                         if (p != null)
                         {
                             
-                            if (_negative)
+                            if (negative)
                             {
-                                Wallet.SubtractCoinsFromWallet(_params[0], _adjustCoins);
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Subtracted {0} {1} from wallet {2}", _params[1], Wallet.Coin_Name, _params[0]));
+                                Wallet.RemoveCurrency(_params[0], adjustCoins);
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Subtracted {0} {1} from wallet {2}", _params[1], Wallet.Currency_Name, _params[0]));
                             }
                             else
                             {
-                                Wallet.AddCoinsToWallet(_params[0], _adjustCoins);
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added {0} {1} to wallet {2}", _params[1], Wallet.Coin_Name, _params[0]));
+                                Wallet.AddCurrency(_params[0], adjustCoins);
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added {0} {1} to wallet {2}", _params[1], Wallet.Currency_Name, _params[0]));
                             }
                         }
                         else
@@ -158,13 +161,13 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not check wallet value: Invalid Id {0}", _params[0]));
                         return;
                     }
-                    int _currentWallet = Wallet.GetCurrentCoins(_params[0]);
-                    string _playerName = PersistentContainer.Instance.Players[_params[0]].PlayerName;
-                    if (string.IsNullOrEmpty(_playerName))
+                    int currentWallet = Wallet.GetCurrency(_params[0]);
+                    string playerName = PersistentContainer.Instance.Players[_params[0]].PlayerName;
+                    if (string.IsNullOrEmpty(playerName))
                     {
-                        _playerName = "Unknown";
+                        playerName = "Unknown";
                     }
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with id {0}, named {1}, has a wallet value of: {2}", _params[0], _playerName, _currentWallet));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with id {0}, named {1}, has a wallet value of: {2}", _params[0], playerName, currentWallet));
                 }
                 else
                 {

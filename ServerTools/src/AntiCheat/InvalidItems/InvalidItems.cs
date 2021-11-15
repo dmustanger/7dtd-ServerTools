@@ -12,12 +12,15 @@ namespace ServerTools
         public static int Admin_Level = 0, Days_Before_Log_Delete = 5;
 
         private static readonly List<string> Dict = new List<string>();
+
         private static readonly Dictionary<int, int> Flags = new Dictionary<int, int>();
         private static readonly string file = "InvalidItems.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static readonly string DetectionFile = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static readonly string DetectionFilepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, DetectionFile);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -94,7 +97,9 @@ namespace ServerTools
                     {
                         if (line.HasAttributes)
                         {
-                            UpgradeXml(nodeList);
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
                             return;
                         }
                         else
@@ -105,18 +110,30 @@ namespace ServerTools
                             {
                                 if (line.HasAttributes)
                                 {
-                                    UpgradeXml(nodeList);
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
                                     return;
                                 }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing InvalidItems.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
-                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItems.LoadXml: {0}", e.Message));
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItems.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -130,7 +147,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<InvalidItems>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Item Name=\"air\" /> -->");
+                    sw.WriteLine("    <!-- <Item Name=\"air\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -180,45 +197,45 @@ namespace ServerTools
                     {
                         for (int i = 0; i < _playerDataFile.inventory.Length; i++)
                         {
-                            ItemStack _itemStack = _playerDataFile.inventory[i];
-                            ItemValue _itemValue = _itemStack.itemValue;
-                            int _count = _playerDataFile.inventory[i].count;
-                            if (_count > 0 && _itemValue != null && !_itemValue.Equals(ItemValue.None))
+                            ItemStack itemStack = _playerDataFile.inventory[i];
+                            ItemValue itemValue = itemStack.itemValue;
+                            int count = _playerDataFile.inventory[i].count;
+                            if (count > 0 && itemValue != null && !itemValue.Equals(ItemValue.None))
                             {
-                                string _name = ItemClass.list[_itemValue.type].Name;
+                                string name = ItemClass.list[itemValue.type].Name;
                                 if (Invalid_Stack)
                                 {
-                                    int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
-                                    if (_count > _maxAllowed)
+                                    int maxAllowed = ItemClass.list[itemValue.type].Stacknumber.Value;
+                                    if (count > maxAllowed)
                                     {
-                                        MaxStack(_cInfo, _name, _count, _maxAllowed);
+                                        MaxStack(_cInfo, name, count, maxAllowed);
                                     }
                                 }
-                                if (IsEnabled && Dict.Contains(_name))
+                                if (IsEnabled && Dict.Contains(name))
                                 {
                                     if (Ban_Player)
                                     {
-                                        Ban(_cInfo, _name);
+                                        Ban(_cInfo, name);
                                     }
                                     else
                                     {
                                         if (Flags.ContainsKey(_cInfo.entityId))
                                         {
-                                            if (Flags.TryGetValue(_cInfo.entityId, out int _value))
+                                            if (Flags.TryGetValue(_cInfo.entityId, out int value))
                                             {
-                                                if (_value == 2)
+                                                if (value == 2)
                                                 {
-                                                    Flag3(_cInfo, _name);
+                                                    Flag3(_cInfo, name);
                                                 }
                                                 else
                                                 {
-                                                    Flag2(_cInfo, _name);
+                                                    Flag2(_cInfo, name);
                                                 }
                                             }
                                         }
                                         else
                                         {
-                                            Flag1(_cInfo, _name);
+                                            Flag1(_cInfo, name);
                                         }
                                     }
                                     return;
@@ -227,45 +244,45 @@ namespace ServerTools
                         }
                         for (int i = 0; i < _playerDataFile.bag.Length; i++)
                         {
-                            ItemStack _itemStack = _playerDataFile.bag[i];
-                            ItemValue _itemValue = _itemStack.itemValue;
-                            int _count = _playerDataFile.bag[i].count;
-                            if (_count > 0 && _itemValue != null && !_itemValue.Equals(ItemValue.None))
+                            ItemStack itemStack = _playerDataFile.bag[i];
+                            ItemValue itemValue = itemStack.itemValue;
+                            int count = _playerDataFile.bag[i].count;
+                            if (count > 0 && itemValue != null && !itemValue.Equals(ItemValue.None))
                             {
-                                string _name = ItemClass.list[_itemValue.type].Name;
+                                string name = ItemClass.list[itemValue.type].Name;
                                 if (Invalid_Stack)
                                 {
-                                    int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
-                                    if (_count > _maxAllowed)
+                                    int maxAllowed = ItemClass.list[itemValue.type].Stacknumber.Value;
+                                    if (count > maxAllowed)
                                     {
-                                        MaxStack(_cInfo, _name, _count, _maxAllowed);
+                                        MaxStack(_cInfo, name, count, maxAllowed);
                                     }
                                 }
-                                if (IsEnabled && Dict.Contains(_name))
+                                if (IsEnabled && Dict.Contains(name))
                                 {
                                     if (Ban_Player)
                                     {
-                                        Ban(_cInfo, _name);
+                                        Ban(_cInfo, name);
                                     }
                                     else
                                     {
                                         if (Flags.ContainsKey(_cInfo.entityId))
                                         {
-                                            if (Flags.TryGetValue(_cInfo.entityId, out int _value))
+                                            if (Flags.TryGetValue(_cInfo.entityId, out int value))
                                             {
-                                                if (_value == 2)
+                                                if (value == 2)
                                                 {
-                                                    Flag3(_cInfo, _name);
+                                                    Flag3(_cInfo, name);
                                                 }
                                                 else
                                                 {
-                                                    Flag2(_cInfo, _name);
+                                                    Flag2(_cInfo, name);
                                                 }
                                             }
                                         }
                                         else
                                         {
-                                            Flag1(_cInfo, _name);
+                                            Flag1(_cInfo, name);
                                         }
                                     }
                                     return;
@@ -276,35 +293,35 @@ namespace ServerTools
                         {
                             for (int i = 0; i < _playerDataFile.equipment.GetSlotCount(); i++)
                             {
-                                ItemValue _itemValue = _playerDataFile.equipment.GetSlotItem(i);
-                                if (_itemValue != null && !_itemValue.Equals(ItemValue.None))
+                                ItemValue itemValue = _playerDataFile.equipment.GetSlotItem(i);
+                                if (itemValue != null && !itemValue.Equals(ItemValue.None))
                                 {
-                                    string _name = ItemClass.list[_itemValue.type].Name;
-                                    if (Dict.Contains(_name))
+                                    string name = ItemClass.list[itemValue.type].Name;
+                                    if (Dict.Contains(name))
                                     {
                                         if (Ban_Player)
                                         {
-                                            Ban(_cInfo, _name);
+                                            Ban(_cInfo, name);
                                         }
                                         else
                                         {
                                             if (Flags.ContainsKey(_cInfo.entityId))
                                             {
-                                                if (Flags.TryGetValue(_cInfo.entityId, out int _value))
+                                                if (Flags.TryGetValue(_cInfo.entityId, out int value))
                                                 {
-                                                    if (_value == 2)
+                                                    if (value == 2)
                                                     {
-                                                        Flag3(_cInfo, _name);
+                                                        Flag3(_cInfo, name);
                                                     }
                                                     else
                                                     {
-                                                        Flag2(_cInfo, _name);
+                                                        Flag2(_cInfo, name);
                                                     }
                                                 }
                                             }
                                             else
                                             {
-                                                Flag1(_cInfo, _name);
+                                                Flag1(_cInfo, name);
                                             }
                                         }
                                         return;
@@ -495,7 +512,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -505,21 +522,21 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<InvalidItems>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Item Name=\"air\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- <Item Name=\"air\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- <Item Name=\"air\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"air\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Item")
                             {
                                 string name = "";

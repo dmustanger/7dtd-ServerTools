@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 public static class Injections
 {
@@ -275,7 +276,7 @@ public static class Injections
         return true;
     }
 
-    public static bool GameManager_OpenTileEntityAllowed_Prefix(ref bool __result, int _entityIdThatOpenedIt, TileEntity _te)
+    public static bool GameManager_OpenTileEntityAllowed_Prefix(ref bool __result, ref bool __state, int _entityIdThatOpenedIt, TileEntity _te)
     {
         try
         {
@@ -313,6 +314,10 @@ public static class Injections
                 if (_te is TileEntityWorkstation || _te is TileEntityLootContainer || _te is TileEntitySecureLootContainer
                 || _te is TileEntityVendingMachine || _te is TileEntityTrader)
                 {
+                    if (_te is TileEntityTrader)
+                    {
+                        __state = true;
+                    }
                     ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
                     if (cInfo != null)
                     {
@@ -327,6 +332,26 @@ public static class Injections
         catch (Exception e)
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_OpenTileEntityAllowed_Prefix: {0}", e.Message));
+        }
+        return true;
+    }
+
+    public static bool GameManager_OpenTileEntityAllowed_Postfix(bool __state, int _entityIdThatOpenedIt)
+    {
+        try
+        {
+            if (__state)
+            {
+                ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
+                if (cInfo != null)
+                {
+                    cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close trader", true));
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_OpenTileEntityAllowed_Postfix: {0}", e.Message));
         }
         return true;
     }
@@ -360,16 +385,29 @@ public static class Injections
         return true;
     }
 
-    public static void ChunkCluster_AddChunkSync_Postfix(bool __result, Chunk _chunk)
+    public static void ChunkCluster_AddChunkSync_Postfix(Chunk _chunk)
     {
         try
         {
-            if (__result && ProtectedSpaces.IsEnabled)
+            if (ProtectedZones.IsEnabled && _chunk != null)
             {
-                if (!ProtectedSpaces.ProcessedChunks.Contains(_chunk))
+                Vector3i vector = _chunk.ChunkPos;
+                string vectorString = _chunk.ChunkPos.ToString();
+                if (ProtectedZones.AddProtection.Contains(vectorString))
                 {
-                    ProtectedSpaces.ProcessedChunks.Add(_chunk);
-                    ProtectedSpaces.Process();
+                    Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(vector);
+                    if (chunk != null)
+                    {
+                        ProtectedZones.Add(chunk, vector, vectorString);
+                    }
+                }
+                else if (ProtectedZones.RemoveProtection.Contains(vectorString))
+                {
+                    Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(vector);
+                    if (chunk != null)
+                    {
+                        ProtectedZones.Remove(chunk, vector, vectorString);
+                    }
                 }
             }
         }
@@ -385,23 +423,24 @@ public static class Injections
         {
             if (DroppedBagProtection.IsEnabled && _entity != null && _entity is EntityBackpack)
             {
-                EntityBackpack backpack = _entity as EntityBackpack;
-                List<ClientInfo> clients = PersistentOperations.ClientList();
-                if (clients != null && clients.Count > 0)
+                
+                List<ClientInfo> clientList = PersistentOperations.ClientList();
+                if (clientList != null)
                 {
-                    for (int i = 0; i < clients.Count; i++)
+                    for (int i = 0; i < clientList.Count; i++)
                     {
-                        if (clients[i].latestPlayerData.droppedBackpackPosition == new Vector3i(backpack.position))
+                        ClientInfo cInfo = clientList[i];
+                        if (cInfo.latestPlayerData != null && cInfo.latestPlayerData.droppedBackpackPosition != null && cInfo.latestPlayerData.droppedBackpackPosition == new Vector3i(_entity.position))
                         {
-                            if (!DroppedBagProtection.Backpacks.ContainsKey(backpack.entityId))
+                            if (!DroppedBagProtection.Backpacks.ContainsKey(_entity.entityId))
                             {
-                                DroppedBagProtection.Backpacks.Add(backpack.entityId, clients[i].entityId);
-                                PersistentContainer.Instance.Backpacks.Add(backpack.entityId, clients[i].entityId);
+                                DroppedBagProtection.Backpacks.Add(_entity.entityId, cInfo.entityId);
+                                PersistentContainer.Instance.Backpacks.Add(_entity.entityId, cInfo.entityId);
                             }
                             else
                             {
-                                DroppedBagProtection.Backpacks[backpack.entityId] = clients[i].entityId;
-                                PersistentContainer.Instance.Backpacks[backpack.entityId] = clients[i].entityId;
+                                DroppedBagProtection.Backpacks[_entity.entityId] = cInfo.entityId;
+                                PersistentContainer.Instance.Backpacks[_entity.entityId] = cInfo.entityId;
                             }
                             PersistentContainer.DataChange = true;
                             return;
@@ -415,4 +454,68 @@ public static class Injections
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.World_SpawnEntityInWorld_Postfix: {0}", e.Message));
         }
     }
+
+    public static void EntityAlive_OnReloadEnd_Postfix(EntityAlive __instance)
+    {
+        try
+        {
+            if (InfiniteAmmo.IsEnabled && InfiniteAmmo.Dict.ContainsKey(__instance.entityId))
+            {
+                InfiniteAmmo.Dict.Remove(__instance.entityId);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.EntityAlive_OnReloadEnd_Postfix: {0}", e.Message));
+        }
+    }
+
+    public static void GameManager_PlayerSpawnedInWorld_Postfix(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos, int _entityId)
+    {
+        try
+        {
+            if (SpeedDetector.Flags.ContainsKey(_cInfo.entityId))
+            {
+                SpeedDetector.Flags.Remove(_cInfo.entityId);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_PlayerSpawnedInWorld_Postfix: {0}", e.Message));
+        }
+    }
+
+    public static void EntityAlive_SetDead_Postfix(EntityAlive __instance)
+    {
+        try
+        {
+            if (__instance is EntityPlayer)
+            {
+                API.PlayerDied(__instance);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.EntityAlive_SetDead_Postfix: {0}", e.Message));
+        }
+    }
+
+    public static void NetPackagePlayerInventory_ProcessPackage_Postfix(NetPackagePlayerInventory __instance)
+    {
+        try
+        {
+            if (__instance.Sender != null && Wallet.UpdateRequired.ContainsKey(__instance.Sender.entityId))
+            {
+                ClientInfo cInfo = __instance.Sender;
+                Wallet.UpdateRequired.TryGetValue(cInfo.entityId, out int value);
+                Wallet.UpdateRequired.Remove(cInfo.entityId);
+                Wallet.AddCurrency(cInfo.playerId, value);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackagePlayerInventory_ProcessPackage_Postfix: {0}", e.Message));
+        }
+    }
+    
 }

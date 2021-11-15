@@ -9,25 +9,25 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
-            if (ClientInfoList != null && ClientInfoList.Count > 1)
+            List<ClientInfo> clientList = PersistentOperations.ClientList();
+            if (clientList != null)
             {
-                for (int i = 0; i < ClientInfoList.Count; i++)
+                for (int i = 0; i < clientList.Count; i++)
                 {
-                    ClientInfo _cInfo1 = ClientInfoList[i];
-                    if (_cInfo.entityId != _cInfo1.entityId)
+                    ClientInfo cInfo2 = clientList[i];
+                    if (_cInfo.entityId != cInfo2.entityId)
                     {
-                        Phrases.Dict.TryGetValue("PlayerList1", out string _phrase);
-                        _phrase = _phrase.Replace("{PlayerName}", _cInfo1.playerName);
-                        _phrase = _phrase.Replace("{EntityId}", _cInfo1.entityId.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("PlayerList1", out string phrase);
+                        phrase = phrase.Replace("{PlayerName}", cInfo2.playerName);
+                        phrase = phrase.Replace("{EntityId}", cInfo2.entityId.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                Phrases.Dict.TryGetValue("PlayerList2", out string _phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("PlayerList2", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

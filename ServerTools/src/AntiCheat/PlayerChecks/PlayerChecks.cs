@@ -2,220 +2,103 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using UnityEngine;
 
 namespace ServerTools
 {
     class PlayerChecks
     {
-        public static bool GodEnabled = false, FlyEnabled = false, SpectatorEnabled = false, WaterEnabled = false;
-        public static int Flying_Admin_Level = 0, Godmode_Admin_Level, Spectator_Admin_Level, Flying_Flags = 4;
-        public static Dictionary<int, int> Flag = new Dictionary<int, int>();
-        public static Dictionary<int, Vector3i> Movement = new Dictionary<int, Vector3i>();
+        public static bool GodEnabled = false, SpectatorEnabled = false, HalfSecondRunning = false;
+        public static int Godmode_Admin_Level = 0, Spectator_Admin_Level = 0;
 
-        public static void Exec()
+        public static Dictionary<int, Vector3> TwoSecondMovement = new Dictionary<int, Vector3>();
+
+        private static string file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static string filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, file);
+
+        public static void TwoSecondExec()
         {
             try
             {
-                if (GameManager.Instance.World != null && GameManager.Instance.World.Players.Count > 0 && GameManager.Instance.World.Players.dict.Count > 0)
+                List<ClientInfo> clientList = PersistentOperations.ClientList();
+                if (clientList != null)
                 {
-                    List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                    if (_cInfoList != null && _cInfoList.Count > 0)
+                    for (int i = 0; i < clientList.Count; i++)
                     {
-                        for (int i = 0; i < _cInfoList.Count; i++)
+                        ClientInfo cInfo = clientList[i];
+                        if (cInfo != null && cInfo.playerId != null)
                         {
-                            ClientInfo _cInfo = _cInfoList[i];
-                            if (_cInfo != null && _cInfo.playerId != null)
+                            EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                            if (player != null)
                             {
-                                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                                if (_player != null)
+                                int userPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo);
+                                if (SpectatorEnabled && userPermissionLevel > Spectator_Admin_Level)
                                 {
-                                    int _userPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo);
-                                    if (SpectatorEnabled && _userPermissionLevel > Spectator_Admin_Level)
+                                    if (player.IsSpectator)
                                     {
-                                        if (_player.IsSpectator)
+                                        Phrases.Dict.TryGetValue("Spectator2", out string phrase);
+                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", cInfo.playerId, phrase), null);
+                                        using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                         {
-                                            Phrases.Dict.TryGetValue("Spectator2", out string _phrase);
-                                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase), null);
-                                            string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                            string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
-                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
-                                            {
-                                                sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, using spectator mode @ {2} {3} {4}", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                sw.WriteLine();
-                                                sw.Flush();
-                                                sw.Close();
-                                            }
-                                            Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, using spectator mode @ {2} {3} {4}", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
-                                            Phrases.Dict.TryGetValue("Spectator1", out _phrase);
-                                            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                            sw.WriteLine(string.Format("Detected \"'{0}'\" with steam id '{1}' using spectator mode @ {2}", cInfo.playerName, cInfo.playerId, new Vector3i(player.position)));
+                                            sw.WriteLine();
+                                            sw.Flush();
+                                            sw.Close();
+                                        }
+                                        Log.Warning("[SERVERTOOLS] Detected '{0}' with steam id '{1}' using spectator mode @ {2}", cInfo.playerName, cInfo.playerId, new Vector3i(player.position));
+                                        Phrases.Dict.TryGetValue("Spectator1", out phrase);
+                                        phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
+                                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                        continue;
+                                    }
+                                }
+                                if (GodEnabled && userPermissionLevel > Godmode_Admin_Level)
+                                {
+                                    if (player.Buffs.HasBuff("god"))
+                                    {
+                                        Phrases.Dict.TryGetValue("Godemode2", out string phrase);
+                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", cInfo.playerId, phrase), null);
+                                        using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
+                                        {
+                                            sw.WriteLine(string.Format("Detected '{0}' with steam id '{1}' using godmode @ {2}", cInfo.playerName, cInfo.playerId, new Vector3i (player.position)));
+                                            sw.WriteLine();
+                                            sw.Flush();
+                                            sw.Close();
+                                        }
+                                        Log.Warning("[SERVERTOOLS] Detected \"'{0}'\" with steam id '{1}' using godmode @ {2}", cInfo.playerName, cInfo.playerId, new Vector3i(player.position));
+                                        Phrases.Dict.TryGetValue("Godemode1", out phrase);
+                                        phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
+                                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                        continue;
+                                    }
+                                }
+                                if (TwoSecondMovement.ContainsKey(cInfo.entityId))
+                                {
+                                    TwoSecondMovement.TryGetValue(cInfo.entityId, out Vector3 oldPosition);
+                                    if (oldPosition != player.position)
+                                    {
+                                        TwoSecondMovement[cInfo.entityId] = player.position;
+                                        if (oldPosition.y - player.position.y >= 4)
+                                        {
+                                            TwoSecondMovement.Remove(cInfo.entityId);
                                             continue;
                                         }
-                                    }
-                                    if (GodEnabled && _userPermissionLevel > Godmode_Admin_Level)
-                                    {
-                                        if (_player.Buffs.HasBuff("god"))
+                                        if (SpeedDetector.IsEnabled && userPermissionLevel > SpeedDetector.Speed_Admin_Level && SpeedDetector.TravelTooFar(oldPosition, player.position))
                                         {
-                                            Phrases.Dict.TryGetValue("Godemode2", out string _phrase);
-                                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase), null);
-                                            string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                            string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
-                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
-                                            {
-                                                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, using godmode @ {2} {3} {4}", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                sw.WriteLine();
-                                                sw.Flush();
-                                                sw.Close();
-                                            }
-                                            Log.Warning("[SERVERTOOLS] Detected \"{0}\", Steam id {1}, using godmode @ {2} {3} {4}", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
-                                            Phrases.Dict.TryGetValue("Godemode1", out _phrase);
-                                            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                                            continue;
+                                            SpeedDetector.Detected(cInfo);
                                         }
-                                    }
-                                    if (FlyEnabled && _userPermissionLevel > Flying_Admin_Level)
-                                    {
-                                        if (_player.IsSpawned() && _player.IsAlive())
+                                        if (FlyingDetector.IsEnabled && userPermissionLevel > FlyingDetector.Flying_Admin_Level)
                                         {
-                                            if (_player.isSwimming)
+                                            if (FlyingDetector.IsFlying(player.position))
                                             {
-                                                BlockValue _block = GameManager.Instance.World.GetBlock(new Vector3i(_player.position));
-                                                if (_block.Block.blockMaterial.IsLiquid)
-                                                {
-                                                    continue;
-                                                }
-                                            }
-                                            if (_player.AttachedToEntity != null)
-                                            {
-                                                Entity _entity = GameManager.Instance.World.GetEntity(_player.AttachedToEntity.entityId);
-                                                if (_entity != null)
-                                                {
-                                                    float _distance = _player.GetDistance(_player.AttachedToEntity);
-                                                    if (_distance <= 5)
-                                                    {
-                                                        continue;
-                                                    }
-                                                }
-                                            }
-                                            if (Movement.ContainsKey(_cInfo.entityId))
-                                            {
-                                                Movement.TryGetValue(_cInfo.entityId, out Vector3i position);
-                                                Movement[_cInfo.entityId] = new Vector3i(_player.position);
-                                                if (position.y - _player.position.y >= 4)
-                                                {
-                                                    if (Flag.ContainsKey(_cInfo.entityId))
-                                                    {
-                                                        Flag.Remove(_cInfo.entityId);
-                                                    }
-                                                    continue;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                Movement.Add(_cInfo.entityId, new Vector3i(_player.position));
-                                            }
-                                            if (AirCheck(_player.position.x, _player.position.y, _player.position.z) || GroundCheck(_player.position.x, _player.position.y, _player.position.z))
-                                            {
-                                                List<EntityPlayer> _playerList = PersistentOperations.PlayerList();
-                                                for (int j = 0; j < _playerList.Count; j++)
-                                                {
-                                                    if (_playerList[j].entityId != _player.entityId)
-                                                    {
-                                                        float _distance = _player.GetDistance(_playerList[j]);
-                                                        if (_distance <= 2)
-                                                        {
-                                                            continue;
-                                                        }
-                                                    }
-                                                }
-                                                if (Flag.ContainsKey(_cInfo.entityId))
-                                                {
-                                                    Flag.TryGetValue(_cInfo.entityId, out int _flags);
-                                                    _flags++;
-                                                    if (_flags >= Flying_Flags)
-                                                    {
-                                                        Flag.Remove(_cInfo.entityId);
-                                                        Phrases.Dict.TryGetValue("Flying2", out string _phrase);
-                                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase), null);
-                                                        string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                                        string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
-                                                        using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
-                                                        {
-                                                            sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying @ {2} {3} {4}", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                            sw.WriteLine();
-                                                            sw.Flush();
-                                                            sw.Close();
-                                                        }
-                                                        Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying @ {2} {3} {4}. Steam Id has been banned", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
-                                                        Phrases.Dict.TryGetValue("Flying1", out _phrase);
-                                                        _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                                                        continue;
-                                                    }
-                                                    else
-                                                    {
-                                                        Flag[_cInfo.entityId] = _flags;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    Flag.Add(_cInfo.entityId, 1);
-                                                }
-                                            }
-                                            else if (Flag.ContainsKey(_cInfo.entityId))
-                                            {
-                                                Flag.Remove(_cInfo.entityId);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (Movement.ContainsKey(_cInfo.entityId))
-                                            {
-                                                Movement.TryGetValue(_cInfo.entityId, out Vector3i position);
-                                                if (position != new Vector3i(_player.position))
-                                                {
-                                                    if (Flag.ContainsKey(_cInfo.entityId))
-                                                    {
-                                                        Flag.TryGetValue(_cInfo.entityId, out int _flags);
-                                                        _flags++;
-                                                        if (_flags >= Flying_Flags)
-                                                        {
-                                                            Flag.Remove(_cInfo.entityId);
-                                                            Phrases.Dict.TryGetValue("Flying2", out string _phrase);
-                                                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase), null);
-                                                            string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                                            string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
-                                                            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
-                                                            {
-                                                                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying @ {2} {3} {4}", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                                sw.WriteLine();
-                                                                sw.Flush();
-                                                                sw.Close();
-                                                            }
-                                                            Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying @ {2} {3} {4}. Steam Id has been banned", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
-                                                            Phrases.Dict.TryGetValue("Flying1", out _phrase);
-                                                            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                                                            continue;
-                                                        }
-                                                        else
-                                                        {
-                                                            Flag[_cInfo.entityId] = _flags;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        Flag.Add(_cInfo.entityId, 1);
-                                                    }
-                                                }
-                                            }
-                                            else if (Flag.ContainsKey(_cInfo.entityId))
-                                            {
-                                                Flag.Remove(_cInfo.entityId);
+                                                FlyingDetector.Detected(cInfo, player);
                                             }
                                         }
                                     }
+                                }
+                                else
+                                {
+                                    TwoSecondMovement.Add(cInfo.entityId, player.position);
                                 }
                             }
                         }
@@ -224,61 +107,48 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PlayerChecks.Exec: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PlayerChecks.TwoSecondExec: {0}", e.Message));
             }
         }
 
-        private static bool AirCheck(float x, float y, float z)
+        public static void HalfSecondExec()
         {
-            for (float k = y - 2.5f; k <= (y + 2f); k++)
+            try
             {
-                for (float i = x - 2f; i <= (x + 2f); i++)
+                HalfSecondRunning = true;
+                List<ClientInfo> clientList = PersistentOperations.ClientList();
+                if (clientList != null)
                 {
-                    for (float j = z - 2f; j <= (z + 2f); j++)
+                    for (int i = 0; i < clientList.Count; i++)
                     {
-                        BlockValue _block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
-                        if (_block.type != BlockValue.Air.type)
+                        ClientInfo cInfo = clientList[i];
+                        if (cInfo != null && cInfo.playerId != null)
                         {
-                            return false;
+                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo) > XRayDetector.Admin_Level)
+                            {
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                                if (player != null)
+                                {
+                                    if (player.AttachedToEntity != null)
+                                    {
+                                        Entity entity = GameManager.Instance.World.GetEntity(player.AttachedToEntity.entityId);
+                                        if (entity != null && entity.AttachedToEntity == player)
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                    XRayDetector.IsInsideBlocks(cInfo, player);
+                                }
+                            }
                         }
                     }
                 }
             }
-            for (float k = y - 2f; k <= y; k++)
+            catch (Exception e)
             {
-                for (float i = x - 4f; i <= (x + 4f); i++)
-                {
-                    for (float j = z - 4f; j <= (z + 4f); j++)
-                    {
-                        BlockValue _block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
-                        if (_block.Block.GetBlockName().Contains("MetalPillar"))
-                        {
-                            return false;
-                        }
-                    }
-                }
+                Log.Out(string.Format("[SERVERTOOLS] Error in PlayerChecks.HalfSecondExec: {0}", e.Message));
             }
-            return true;
-        }
-
-        private static bool GroundCheck(float x, float y, float z)
-        {
-            for (float k = y - 2f; k <= (y + 2f); k++)
-            {
-                for (float i = x - 2f; i <= (x + 2f); i++)
-                {
-                    for (float j = z - 2f; j <= (z + 2f); j++)
-                    {
-                        BlockValue _block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
-                        if (_block.type == BlockValue.Air.type || !Block.list[_block.type].shape.IsTerrain() ||
-                            _block.Block is BlockDoor || _block.Block is BlockDoorSecure || _block.Block is BlockDrawBridge)
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
+            HalfSecondRunning = false;
         }
     }
 }

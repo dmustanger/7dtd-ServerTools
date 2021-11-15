@@ -1,0 +1,49 @@
+<configs>
+
+<append xpath="/gameevents">
+	
+	<action_sequence name="action_admin">
+	
+		<action class="RemoveItems">
+			<property name="items_location" value="Both" />
+			<property name="remove_item_tag" value="admin" />
+		</action>
+		
+		<action class="PlaySound">
+			<property name="sound" value="open_vending" />
+			<property name="inside_head" value="true" />
+		</action>
+		
+	</action_sequence>
+	
+	<action_sequence name="action_dukes">
+	
+		<action class="RemoveItems">
+			<property name="items_location" value="Both" />
+			<property name="remove_item_tag" value="dukes" />
+		</action>
+		
+		<action class="PlaySound">
+			<property name="sound" value="close_cash_register" />
+			<property name="inside_head" value="true" />
+		</action>
+		
+	</action_sequence>
+	
+	<action_sequence name="action_currency">
+	
+		<action class="RemoveItems">
+			<property name="items_location" value="Backpack" />
+			<property name="remove_item_tag" value="currency" />
+		</action>
+		
+		<action class="PlaySound">
+			<property name="sound" value="ui_trader_purchase" />
+			<property name="inside_head" value="true" />
+		</action>
+		
+	</action_sequence>
+	
+</append>
+
+</configs>

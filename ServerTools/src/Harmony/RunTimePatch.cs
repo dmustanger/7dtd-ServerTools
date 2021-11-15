@@ -232,6 +232,22 @@ namespace ServerTools
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
+                original = AccessTools.Method(typeof(GameManager), "OpenTileEntityAllowed");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.OpenTileEntityAllowed method was not found"));
+                }
+                else
+                {
+                    MethodInfo postfix = typeof(Injections).GetMethod("GameManager_OpenTileEntityAllowed_Postfix");
+                    if (postfix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_OpenTileEntityAllowed.postfix"));
+                        return;
+                    }
+                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                }
+
                 original = AccessTools.Method(typeof(EntityAlive), "OnEntityDeath");
                 if (original == null)
                 {
@@ -275,6 +291,70 @@ namespace ServerTools
                     if (postfix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: World_SpawnEntityInWorld.postfix"));
+                        return;
+                    }
+                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                }
+
+                original = AccessTools.Method(typeof(EntityAlive), "OnReloadEnd");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.OnReloadEnd method was not found"));
+                }
+                else
+                {
+                    MethodInfo postfix = typeof(Injections).GetMethod("EntityAlive_OnReloadEnd_Postfix");
+                    if (postfix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_OnReloadEnd.postfix"));
+                        return;
+                    }
+                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                }
+
+                original = AccessTools.Method(typeof(GameManager), "PlayerSpawnedInWorld");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.PlayerSpawnedInWorld method was not found"));
+                }
+                else
+                {
+                    MethodInfo postfix = typeof(Injections).GetMethod("GameManager_PlayerSpawnedInWorld_Postfix");
+                    if (postfix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_PlayerSpawnedInWorld.postfix"));
+                        return;
+                    }
+                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                }
+
+                original = AccessTools.Method(typeof(EntityAlive), "SetDead");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.SetDead method was not found"));
+                }
+                else
+                {
+                    MethodInfo postfix = typeof(Injections).GetMethod("EntityAlive_SetDead_Postfix");
+                    if (postfix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_SetDead.postfix"));
+                        return;
+                    }
+                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                }
+
+                original = AccessTools.Method(typeof(NetPackagePlayerInventory), "ProcessPackage");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerInventory.ProcessPackage method was not found"));
+                }
+                else
+                {
+                    MethodInfo postfix = typeof(Injections).GetMethod("NetPackagePlayerInventory_ProcessPackage_Postfix");
+                    if (postfix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerInventory_ProcessPackage.postfix"));
                         return;
                     }
                     harmony.Patch(original, null, new HarmonyMethod(postfix));

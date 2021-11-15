@@ -79,7 +79,7 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
+            int _currentCoins = Wallet.GetCurrency(_cInfo.playerId);
             if (_currentCoins >= Command_Cost)
             {
                 TeleportPlayer(_cInfo);
@@ -87,7 +87,7 @@ namespace ServerTools
             else
             {
                 Phrases.Dict.TryGetValue("Died3", out string _phrase);
-                _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
@@ -126,7 +126,7 @@ namespace ServerTools
                             LastDeathPos.Remove(_cInfo.entityId);
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
-                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                                Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
                             }
                             PersistentContainer.Instance.Players[_cInfo.playerId].LastDied = DateTime.Now;
                         }

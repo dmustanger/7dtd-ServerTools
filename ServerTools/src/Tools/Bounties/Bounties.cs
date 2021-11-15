@@ -11,6 +11,7 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static int Minimum_Bounty = 5, Kill_Streak = 0, Bonus = 25;
         public static string Command_bounty = "bounty";
+
         public static Dictionary<int, int> KillStreak = new Dictionary<int, int>();
 
         private static readonly string file = string.Format("Bounty_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
@@ -18,29 +19,29 @@ namespace ServerTools
 
         public static void BountyList(ClientInfo _cInfo)
         {
-            List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
-            for (int i = 0; i < ClientInfoList.Count; i++)
+            List<ClientInfo> clientList = ConnectionManager.Instance.Clients.List.ToList();
+            for (int i = 0; i < clientList.Count; i++)
             {
-                ClientInfo _cInfo2 = ClientInfoList[i];
-                if (_cInfo2 != null)
+                ClientInfo cInfo2 = clientList[i];
+                if (cInfo2 != null)
                 {
-                    int _currentbounty = PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty;
-                    if (_currentbounty > 0)
+                    int currentbounty = PersistentContainer.Instance.Players[cInfo2.playerId].Bounty;
+                    if (currentbounty > 0)
                     {
-                        Phrases.Dict.TryGetValue("bounties8", out string _phrase);
-                        _phrase = _phrase.Replace("{PlayerName}", _cInfo2.playerName);
-                        _phrase = _phrase.Replace("{EntityId}", _cInfo2.entityId.ToString());
-                        _phrase = _phrase.Replace("{CurrentBounty}", _currentbounty.ToString());
-                        _phrase = _phrase.Replace("{Minimum}", Minimum_Bounty.ToString());
-                        _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("bounties8", out string phrase);
+                        phrase = phrase.Replace("{PlayerName}", cInfo2.playerName);
+                        phrase = phrase.Replace("{EntityId}", cInfo2.entityId.ToString());
+                        phrase = phrase.Replace("{CurrentBounty}", currentbounty.ToString());
+                        phrase = phrase.Replace("{Minimum}", Minimum_Bounty.ToString());
+                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
-            Phrases.Dict.TryGetValue("bounties7", out string _phrase1);
-            _phrase1 = _phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-            _phrase1 = _phrase1.Replace("{Command_bounty}", Command_bounty);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue("bounties7", out string phrase1);
+            phrase1 = phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+            phrase1 = phrase1.Replace("{Command_bounty}", Command_bounty);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void NewBounty(ClientInfo _cInfo, string _message)
@@ -61,10 +62,10 @@ namespace ServerTools
                                 {
                                     _bounty = Minimum_Bounty;
                                 }
-                                int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
+                                int _currentCoins = Wallet.GetCurrency(_cInfo.playerId);
                                 if (_currentCoins >= _bounty)
                                 {
-                                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _bounty);
+                                    Wallet.RemoveCurrency(_cInfo.playerId, _bounty);
                                     int _currentbounty = PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty;
                                     PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _currentbounty + _bounty;
                                     PersistentContainer.DataChange = true;
@@ -102,10 +103,10 @@ namespace ServerTools
                         ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_id);
                         if (_cInfo2 != null)
                         {
-                            int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
+                            int _currentCoins = Wallet.GetCurrency(_cInfo.playerId);
                             if (_currentCoins >= Minimum_Bounty)
                             {
-                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Minimum_Bounty);
+                                Wallet.RemoveCurrency(_cInfo.playerId, Minimum_Bounty);
                                 int _currentbounty = PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty;
                                 PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _currentbounty + Minimum_Bounty;
                                 PersistentContainer.DataChange = true;
@@ -280,16 +281,19 @@ namespace ServerTools
 
         public static void ConsoleBountyList()
         {
-            List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
-            for (int i = 0; i < ClientInfoList.Count; i++)
+            List<ClientInfo> clientList = PersistentOperations.ClientList();
+            if (clientList != null)
             {
-                ClientInfo _cInfo = ClientInfoList[i];
-                if (_cInfo != null)
+                for (int i = 0; i < clientList.Count; i++)
                 {
-                    int _currentbounty = PersistentContainer.Instance.Players[_cInfo.playerId].Bounty;
-                    if (_currentbounty > 0)
+                    ClientInfo cInfo = clientList[i];
+                    if (cInfo != null)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Entity Id: {0} Name: {1} Current bounty: {2}", _cInfo.entityId, _cInfo.playerName, _currentbounty));
+                        int currentbounty = PersistentContainer.Instance.Players[cInfo.playerId].Bounty;
+                        if (currentbounty > 0)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Entity Id: {0} Name: {1} Current bounty: {2}", cInfo.entityId, cInfo.playerName, currentbounty));
+                        }
                     }
                 }
             }

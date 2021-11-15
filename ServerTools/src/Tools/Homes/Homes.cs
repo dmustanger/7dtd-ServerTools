@@ -58,7 +58,7 @@ namespace ServerTools
                             _phrase = _phrase.Replace("{Name}", _home.Key);
                             _phrase = _phrase.Replace("{Position}", _home.Value);
                             _phrase = _phrase.Replace("{Cost}", Command_Cost.ToString());
-                            _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                            _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
@@ -213,14 +213,14 @@ namespace ServerTools
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+                    if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
                     {
                         Exec(_cInfo, _homeName, _position, _friends);
                     }
                     else
                     {
                         Phrases.Dict.TryGetValue("Homes6", out string _phrase);
-                        _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                        _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
@@ -256,7 +256,7 @@ namespace ServerTools
                         PersistentContainer.DataChange = true;
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                            Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
                         }
                     }
                     else
@@ -317,8 +317,8 @@ namespace ServerTools
             {
                 if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                 {
-                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                    if (DateTime.Now < _dt)
+                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime dt);
+                    if (DateTime.Now < dt)
                     {
                         SaveHome(_cInfo, _home, Reserved_Max_Homes);
                         return;
@@ -338,22 +338,22 @@ namespace ServerTools
             {
                 if (string.IsNullOrWhiteSpace(_homeName))
                 {
-                    Phrases.Dict.TryGetValue("Homes11", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Homes11", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }
                 if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes != null && PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Count > 0)
                 {
                     if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Count < _homeTotal)
                     {
-                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                        if (_player != null)
+                        EntityPlayer player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                        if (player != null)
                         {
-                            Vector3 _position = _player.GetPosition();
-                            int _x = (int)_position.x;
-                            int _y = (int)_position.y;
-                            int _z = (int)_position.z;
-                            string _wposition = _x + "," + _y + "," + _z;
+                            Vector3 position = player.GetPosition();
+                            int x = (int)position.x;
+                            int y = (int)position.y;
+                            int z = (int)position.z;
+                            string _wposition = x + "," + y + "," + z;
                             if (!PersistentContainer.Instance.Players[_cInfo.playerId].Homes.ContainsKey(_homeName))
                             {
                                 PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Add(_homeName, _wposition);
@@ -379,29 +379,29 @@ namespace ServerTools
                 }
                 else if (_homeTotal > 0)
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    if (_player != null)
+                    EntityPlayer player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                    if (player != null)
                     {
-                        Dictionary<string, string> _homes = new Dictionary<string, string>();
-                        Vector3 _position = _player.GetPosition();
-                        int _x = (int)_position.x;
-                        int _y = (int)_position.y;
-                        int _z = (int)_position.z;
-                        string _wposition = _x + "," + _y + "," + _z;
-                        _homes.Add(_homeName, _wposition);
-                        PersistentContainer.Instance.Players[_cInfo.playerId].Homes = _homes;
+                        Dictionary<string, string> homes = new Dictionary<string, string>();
+                        Vector3 position = player.GetPosition();
+                        int x = (int)position.x;
+                        int y = (int)position.y;
+                        int z = (int)position.z;
+                        string wposition = x + "," + y + "," + z;
+                        homes.Add(_homeName, wposition);
+                        PersistentContainer.Instance.Players[_cInfo.playerId].Homes = homes;
                         PersistentContainer.DataChange = true;
-                        Phrases.Dict.TryGetValue("Homes12", out string _phrase);
-                        _phrase = _phrase.Replace("{Name}", _homeName);
-                        _phrase = _phrase.Replace("{Position}", _wposition);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Homes12", out string phrase);
+                        phrase = phrase.Replace("{Name}", _homeName);
+                        phrase = phrase.Replace("{Position}", wposition);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("Homes11", out string _phrase);
-                    _phrase = _phrase.Replace("{Value}", _homeTotal.ToString());
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Homes11", out string phrase);
+                    phrase = phrase.Replace("{Value}", _homeTotal.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -418,14 +418,14 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Remove(_homeName);
                     PersistentContainer.DataChange = true;
-                    Phrases.Dict.TryGetValue("Homes13", out string _phrase);
-                    _phrase = _phrase.Replace("{Name}", _homeName);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Homes13", out string phrase);
+                    phrase = phrase.Replace("{Name}", _homeName);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("Homes7", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Homes7", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -441,33 +441,39 @@ namespace ServerTools
                 int x = (int)_position.x;
                 int y = (int)_position.y;
                 int z = (int)_position.z;
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                for (int i = 0; i < _cInfoList.Count; i++)
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                if (player != null)
                 {
-                    ClientInfo _cInfo2 = _cInfoList[i];
-                    EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                    if (_player2 != null)
+                    List<ClientInfo> clientList = PersistentOperations.ClientList();
+                    if (clientList != null)
                     {
-                        if (_player.IsFriendsWith(_player2))
+                        for (int i = 0; i < clientList.Count; i++)
                         {
-                            if ((x - (int)_player2.position.x) * (x - (int)_player2.position.x) + (z - (int)_player2.position.z) * (z - (int)_player2.position.z) <= 10 * 10)
+                            ClientInfo cInfo2 = clientList[i];
+                            EntityPlayer player2 = GameManager.Instance.World.Players.dict[cInfo2.entityId];
+                            if (player2 != null)
                             {
-                                Phrases.Dict.TryGetValue("Homes14", out string _phrase);
-                                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                                _phrase = _phrase.Replace("{Command_go}", Command_go);
-                                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                Phrases.Dict.TryGetValue("Homes15", out _phrase);
-                                _phrase = _phrase.Replace("{PlayerName}", _cInfo2.playerName);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                if (Invite.ContainsKey(_cInfo2.entityId))
+                                if (player.IsFriendsWith(player2))
                                 {
-                                    Invite.Remove(_cInfo2.entityId);
-                                    FriendPosition.Remove(_cInfo2.entityId);
+                                    if ((x - (int)player2.position.x) * (x - (int)player2.position.x) + (z - (int)player2.position.z) * (z - (int)player2.position.z) <= 20 * 20)
+                                    {
+                                        Phrases.Dict.TryGetValue("Homes14", out string phrase);
+                                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                        phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                        phrase = phrase.Replace("{Command_go}", Command_go);
+                                        ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        Phrases.Dict.TryGetValue("Homes15", out phrase);
+                                        phrase = phrase.Replace("{PlayerName}", cInfo2.playerName);
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        if (Invite.ContainsKey(cInfo2.entityId))
+                                        {
+                                            Invite.Remove(cInfo2.entityId);
+                                            FriendPosition.Remove(cInfo2.entityId);
+                                        }
+                                        Invite.Add(cInfo2.entityId, DateTime.Now);
+                                        FriendPosition.Add(cInfo2.entityId, _destination);
+                                    }
                                 }
-                                Invite.Add(_cInfo2.entityId, DateTime.Now);
-                                FriendPosition.Add(_cInfo2.entityId, _destination);
                             }
                         }
                     }
@@ -483,20 +489,20 @@ namespace ServerTools
         {
             try
             {
-                Invite.TryGetValue(_cInfo.entityId, out DateTime _dt);
+                Invite.TryGetValue(_cInfo.entityId, out DateTime dt);
                 {
-                    TimeSpan varTime = DateTime.Now - _dt;
+                    TimeSpan varTime = DateTime.Now - dt;
                     double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed <= 2)
+                    int timepassed = (int)fractionalMinutes;
+                    if (timepassed <= 2)
                     {
-                        FriendPosition.TryGetValue(_cInfo.entityId, out string _pos);
+                        FriendPosition.TryGetValue(_cInfo.entityId, out string pos);
                         {
-                            string[] _cords = _pos.Split(',');
-                            int.TryParse(_cords[0], out int _x);
-                            int.TryParse(_cords[1], out int _y);
-                            int.TryParse(_cords[2], out int _z);
-                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                            string[] cords = pos.Split(',');
+                            int.TryParse(cords[0], out int x);
+                            int.TryParse(cords[1], out int y);
+                            int.TryParse(cords[2], out int z);
+                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                             Invite.Remove(_cInfo.entityId);
                             FriendPosition.Remove(_cInfo.entityId);
                         }
@@ -505,8 +511,8 @@ namespace ServerTools
                     {
                         Invite.Remove(_cInfo.entityId);
                         FriendPosition.Remove(_cInfo.entityId);
-                        Phrases.Dict.TryGetValue("Homes16", out string _phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Homes16", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }

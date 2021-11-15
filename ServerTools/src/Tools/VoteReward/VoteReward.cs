@@ -15,12 +15,16 @@ namespace ServerTools
         public static string Your_Voting_Site = "https://7daystodie-servers.com/server/12345", API_Key = "xxxxxxxx", Command_reward = "reward";
         
         private static bool PosFound = false;
+
         private static Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
         private static List<string> Items = new List<string>();
+
         private const string file = "VoteReward.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static readonly System.Random Random = new System.Random();
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -167,7 +171,9 @@ namespace ServerTools
                     {
                         if (line.HasAttributes)
                         {
-                            UpgradeXml(nodeList);
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
                             return;
                         }
                         else
@@ -178,18 +184,30 @@ namespace ServerTools
                             {
                                 if (line.HasAttributes)
                                 {
-                                    UpgradeXml(nodeList);
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
                                     return;
                                 }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing VoteReward.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
-                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in VoteReward.LoadXml: {0}", e.Message));
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in VoteReward.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -203,9 +221,9 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<VoteRewards>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
-                    sw.WriteLine("<!-- WalletCoin can be used as the item name -->");
-                    sw.WriteLine("<!-- <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
+                    sw.WriteLine("    <!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
+                    sw.WriteLine("    <!-- WalletCoin can be used as the item name -->");
+                    sw.WriteLine("    <!-- <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -252,8 +270,8 @@ namespace ServerTools
                 if (!Reward_Entity && Dict.Count == 0)
                 {
                     Log.Out(string.Format("[SERVERTOOLS] No items available for reward. Check for an error in the VoteReward.xml file"));
-                    Phrases.Dict.TryGetValue("VoteReward2", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("VoteReward2", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }
                 if (Delay_Between_Uses == 0)
@@ -262,23 +280,23 @@ namespace ServerTools
                 }
                 else
                 {
-                    DateTime _lastVoteReward = PersistentContainer.Instance.Players[_cInfo.playerId].LastVote;
-                    TimeSpan varTime = DateTime.Now - _lastVoteReward;
+                    DateTime lastVoteReward = PersistentContainer.Instance.Players[_cInfo.playerId].LastVote;
+                    TimeSpan varTime = DateTime.Now - lastVoteReward;
                     double fractionalHours = varTime.TotalHours;
-                    int _timepassed = (int)fractionalHours;
-                    if (_timepassed >= Delay_Between_Uses)
+                    int timepassed = (int)fractionalHours;
+                    if (timepassed >= Delay_Between_Uses)
                     {
                         CheckSite(_cInfo);
                     }
                     else
                     {
-                        int _timeleft = Delay_Between_Uses - _timepassed;
-                        Phrases.Dict.TryGetValue("VoteReward1", out string _phrase);
-                        _phrase = _phrase.Replace("{DelayBetweenRewards}", Delay_Between_Uses.ToString());
-                        _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
-                        _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                        _phrase = _phrase.Replace("{Command_reward}", Command_reward);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        int timeleft = Delay_Between_Uses - timepassed;
+                        Phrases.Dict.TryGetValue("VoteReward1", out string phrase);
+                        phrase = phrase.Replace("{DelayBetweenRewards}", Delay_Between_Uses.ToString());
+                        phrase = phrase.Replace("{TimeRemaining}", timeleft.ToString());
+                        phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                        phrase = phrase.Replace("{Command_reward}", Command_reward);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -339,10 +357,10 @@ namespace ServerTools
 
         private static void NoVote(ClientInfo _cInfo)
         {
-            Phrases.Dict.TryGetValue("VoteReward4", out string _phrase);
-            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-            _phrase = _phrase.Replace("{VoteSite}", Your_Voting_Site);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue("VoteReward4", out string phrase);
+            phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+            phrase = phrase.Replace("{VoteSite}", Your_Voting_Site);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void ItemOrBlockCounter(ClientInfo _cInfo, int _counter)
@@ -359,65 +377,65 @@ namespace ServerTools
                 {
                     if (Weekly_Votes > 1)
                     {
-                        DateTime _lastVoteWeek;
+                        DateTime lastVoteWeek;
                         if (PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek != null)
                         {
-                            _lastVoteWeek = PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek;
+                            lastVoteWeek = PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek;
                         }
                         else
                         {
-                            _lastVoteWeek = DateTime.Now;
+                            lastVoteWeek = DateTime.Now;
                         }
-                        TimeSpan varTime = DateTime.Now - _lastVoteWeek;
+                        TimeSpan varTime = DateTime.Now - lastVoteWeek;
                         double fractionalDays = varTime.TotalDays;
-                        int _timepassed = (int)fractionalDays;
-                        if (_timepassed < 7)
+                        int timepassed = (int)fractionalDays;
+                        if (timepassed < 7)
                         {
-                            int _voteWeekCount = PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount;
-                            if (_voteWeekCount + 1 == Weekly_Votes)
+                            int voteWeekCount = PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount;
+                            if (voteWeekCount + 1 == Weekly_Votes)
                             {
                                 PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
                                 PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
                                 ItemOrBlockRandom(_cInfo);
-                                Phrases.Dict.TryGetValue("VoteReward5", out string _phrase);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("VoteReward5", out string phrase);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                             else
                             {
-                                PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = _voteWeekCount + 1;
-                                int _remainingVotes = Weekly_Votes - _voteWeekCount + 1;
-                                DateTime _date2 = _lastVoteWeek.AddDays(7);
-                                Phrases.Dict.TryGetValue("VoteReward6", out string _phrase);
-                                _phrase = _phrase.Replace("{Value}", _voteWeekCount + 1.ToString());
-                                _phrase = _phrase.Replace("{Date}", _lastVoteWeek.ToString());
-                                _phrase = _phrase.Replace("{Value2}", _remainingVotes.ToString());
-                                _phrase = _phrase.Replace("{Date2}", _date2.ToString());
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = voteWeekCount + 1;
+                                int remainingVotes = Weekly_Votes - voteWeekCount + 1;
+                                DateTime date2 = lastVoteWeek.AddDays(7);
+                                Phrases.Dict.TryGetValue("VoteReward6", out string phrase);
+                                phrase = phrase.Replace("{Value}", voteWeekCount + 1.ToString());
+                                phrase = phrase.Replace("{Date}", lastVoteWeek.ToString());
+                                phrase = phrase.Replace("{Value2}", remainingVotes.ToString());
+                                phrase = phrase.Replace("{Date2}", date2.ToString());
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         else
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
                             PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                            int _remainingVotes = Weekly_Votes - 1;
-                            DateTime _date2 = DateTime.Now.AddDays(7);
-                            Phrases.Dict.TryGetValue("VoteReward6", out string _phrase);
-                            _phrase = _phrase.Replace("{Value}", 1.ToString());
-                            _phrase = _phrase.Replace("{Date}", _lastVoteWeek.ToString());
-                            _phrase = _phrase.Replace("{Value2}", _remainingVotes.ToString());
-                            _phrase = _phrase.Replace("{Date2}", _date2.ToString());
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            int remainingVotes = Weekly_Votes - 1;
+                            DateTime date2 = DateTime.Now.AddDays(7);
+                            Phrases.Dict.TryGetValue("VoteReward6", out string phrase);
+                            phrase = phrase.Replace("{Value}", 1.ToString());
+                            phrase = phrase.Replace("{Date}", lastVoteWeek.ToString());
+                            phrase = phrase.Replace("{Value2}", remainingVotes.ToString());
+                            phrase = phrase.Replace("{Date2}", date2.ToString());
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                         PersistentContainer.DataChange = true;
                     }
-                    Phrases.Dict.TryGetValue("VoteReward7", out string _phrase1);
-                    _phrase1 = _phrase1.Replace("{Value}", Delay_Between_Uses.ToString());
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    Phrases.Dict.TryGetValue("VoteReward8", out _phrase1);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    Phrases.Dict.TryGetValue("VoteReward11", out _phrase1);
-                    _phrase1 = _phrase1.Replace("{PlayerName}", _cInfo.playerName);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    Phrases.Dict.TryGetValue("VoteReward7", out string phrase1);
+                    phrase1 = phrase1.Replace("{Value}", Delay_Between_Uses.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("VoteReward8", out phrase1);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("VoteReward11", out phrase1);
+                    phrase1 = phrase1.Replace("{PlayerName}", _cInfo.playerName);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
             }
             catch (Exception e)
@@ -430,27 +448,27 @@ namespace ServerTools
         {
             try
             {
-                string _randomItem = Items.RandomObject();
-                if (Dict.TryGetValue(_randomItem, out int[] _itemData))
+                string randomItem = Items.RandomObject();
+                if (Dict.TryGetValue(randomItem, out int[] itemData))
                 {
-                    int _count = Random.Next(_itemData[0], _itemData[1] + 1);
-                    if (_randomItem == "WalletCoin")
+                    int count = Random.Next(itemData[0], itemData[1] + 1);
+                    if (randomItem == "WalletCoin")
                     {
                         if (Wallet.IsEnabled)
                         {
-                            Wallet.AddCoinsToWallet(_cInfo.playerId, _count);
+                            Wallet.AddCurrency(_cInfo.playerId, count);
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue("VoteReward12", out string _phrase);
-                            Log.Out(string.Format("[SERVERTOOLS] {0}", _phrase));
+                            Phrases.Dict.TryGetValue("VoteReward12", out string phrase);
+                            Log.Out(string.Format("[SERVERTOOLS] {0}", phrase));
                         }
                     }
                     else
                     {
-                        int _quality = Random.Next(_itemData[2], _itemData[3] + 1);
-                        ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_randomItem).type, _quality, _quality, false, null, 1);
-                        Give(_cInfo, _itemValue, _count);
+                        int quality = Random.Next(itemData[2], itemData[3] + 1);
+                        ItemValue _itemValue = new ItemValue(ItemClass.GetItem(randomItem).type, quality, quality, false, null, 1);
+                        Give(_cInfo, _itemValue, count);
                     }
                 }
             }
@@ -464,8 +482,8 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                if (_player.IsSpawned())
+                EntityPlayer player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                if (player.IsSpawned())
                 {
                     World world = GameManager.Instance.World;
                     var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
@@ -496,14 +514,14 @@ namespace ServerTools
                 Entityspawn(_cInfo);
                 if (Weekly_Votes > 0)
                 {
-                    DateTime _lastVoteWeek = PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek;
-                    TimeSpan varTime = DateTime.Now - _lastVoteWeek;
+                    DateTime lastVoteWeek = PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek;
+                    TimeSpan varTime = DateTime.Now - lastVoteWeek;
                     double fractionalDays = varTime.TotalDays;
-                    int _timepassed = (int)fractionalDays;
-                    if (_timepassed < 7)
+                    int timepassed = (int)fractionalDays;
+                    if (timepassed < 7)
                     {
-                        int _voteWeekCount = PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount;
-                        if (_voteWeekCount + 1 == Weekly_Votes)
+                        int voteWeekCount = PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount;
+                        if (voteWeekCount + 1 == Weekly_Votes)
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
                             PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
@@ -513,35 +531,35 @@ namespace ServerTools
                         }
                         else
                         {
-                            PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = _voteWeekCount + 1;
-                            int _remainingVotes = Weekly_Votes - _voteWeekCount + 1;
-                            DateTime _date2 = _lastVoteWeek.AddDays(7);
-                            Phrases.Dict.TryGetValue("VoteReward6", out string _phrase);
-                            _phrase = _phrase.Replace("{Value}", _voteWeekCount + 1.ToString());
-                            _phrase = _phrase.Replace("{Date}", _lastVoteWeek.ToString());
-                            _phrase = _phrase.Replace("{Value2}", _remainingVotes.ToString());
-                            _phrase = _phrase.Replace("{Date2}", _date2.ToString());
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = voteWeekCount + 1;
+                            int remainingVotes = Weekly_Votes - voteWeekCount + 1;
+                            DateTime date2 = lastVoteWeek.AddDays(7);
+                            Phrases.Dict.TryGetValue("VoteReward6", out string phrase);
+                            phrase = phrase.Replace("{Value}", voteWeekCount + 1.ToString());
+                            phrase = phrase.Replace("{Date}", lastVoteWeek.ToString());
+                            phrase = phrase.Replace("{Value2}", remainingVotes.ToString());
+                            phrase = phrase.Replace("{Date2}", date2.ToString());
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                        int _remainingVotes = Weekly_Votes - 1;
-                        DateTime _date2 = DateTime.Now.AddDays(7);
-                        Phrases.Dict.TryGetValue("VoteReward6", out string _phrase);
-                        _phrase = _phrase.Replace("{Value}", 1.ToString());
-                        _phrase = _phrase.Replace("{Date}", _lastVoteWeek.ToString());
-                        _phrase = _phrase.Replace("{Value2}", _remainingVotes.ToString());
-                        _phrase = _phrase.Replace("{Date2}", _date2.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        int remainingVotes = Weekly_Votes - 1;
+                        DateTime date2 = DateTime.Now.AddDays(7);
+                        Phrases.Dict.TryGetValue("VoteReward6", out string phrase);
+                        phrase = phrase.Replace("{Value}", 1.ToString());
+                        phrase = phrase.Replace("{Date}", lastVoteWeek.ToString());
+                        phrase = phrase.Replace("{Value2}", remainingVotes.ToString());
+                        phrase = phrase.Replace("{Date2}", date2.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     PersistentContainer.DataChange = true;
                 }
-                Phrases.Dict.TryGetValue("VoteReward7", out string _phrase1);
-                _phrase1 = _phrase1.Replace("{Value}", Delay_Between_Uses.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("VoteReward7", out string phrase1);
+                phrase1 = phrase1.Replace("{Value}", Delay_Between_Uses.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)
             {
@@ -553,10 +571,10 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                if (_player.IsSpawned())
+                EntityPlayer player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                if (player.IsSpawned())
                 {
-                    Vector3 pos = _player.GetPosition();
+                    Vector3 pos = player.GetPosition();
                     float x = pos.x;
                     float y = pos.y;
                     float z = pos.z;
@@ -579,12 +597,12 @@ namespace ServerTools
                             }
                             if (Entity_Id == counter)
                             {
-                                Entity entity = EntityFactory.CreateEntity(i, new Vector3((float)_x, (float)_y, (float)_z));
+                                Entity entity = EntityFactory.CreateEntity(i, new Vector3((float)x, (float)y, (float)z));
                                 GameManager.Instance.World.SpawnEntityInWorld(entity);
-                                Log.Out(string.Format("[SERVERTOOLS] Spawned an entity reward {0} at {1} x, {2} y, {3} z for {4}", eClass.entityClassName, _x, _y, _z, _cInfo.playerName));
-                                Phrases.Dict.TryGetValue("VoteReward9", out string _phrase);
-                                _phrase = _phrase.Replace("{EntityName}", eClass.entityClassName);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Log.Out(string.Format("[SERVERTOOLS] Spawned an entity reward {0} at {1} x, {2} y, {3} z for {4}", eClass.entityClassName, x, y, z, _cInfo.playerName));
+                                Phrases.Dict.TryGetValue("VoteReward9", out string phrase);
+                                phrase = phrase.Replace("{EntityName}", eClass.entityClassName);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                             counter++;
                         }
@@ -595,8 +613,8 @@ namespace ServerTools
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("VoteReward10", out string _phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("VoteReward10", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -606,7 +624,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -616,25 +634,25 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<VoteRewards>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
-                    sw.WriteLine("<!-- WalletCoin can be used as the item name -->");
-                    sw.WriteLine("<!-- <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
+                    sw.WriteLine("    <!-- WalletCoin can be used as the item name -->");
+                    sw.WriteLine("    <!-- <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Items that do not") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- WalletCoin can be") && !_oldChildNodes[i].OuterXml.Contains("<!-- <Reward ItemOrBlock=\"meleeToolTorch\"") &&
-                            !_oldChildNodes[i].OuterXml.Contains("    <!-- <Reward ItemOrBlock=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Items that do not") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- WalletCoin can be") && !OldNodeList[i].OuterXml.Contains("<!-- <Reward ItemOrBlock=\"meleeToolTorch\"") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Reward ItemOrBlock=\"\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Reward")
                             {
                                 string itemBlock = "", minCount = "", maxCount = "", minQuality = "", maxQuality = "";

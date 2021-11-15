@@ -79,26 +79,26 @@ namespace ServerTools
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No client info found. Join the server as a client before using this command"));
                             return;
                         }
-                        EntityPlayer _player = PersistentOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.playerId);
-                        if (_player != null)
+                        EntityPlayer player = PersistentOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.playerId);
+                        if (player != null)
                         {
-                            int _x = (int)_player.position.x;
-                            int _y = (int)_player.position.y;
-                            int _z = (int)_player.position.z;
-                            string _position = _x + "," + _y + "," + _z;
-                            string _name = _params[1];
-                            string _cost = _params[2];
+                            int x = (int)player.position.x;
+                            int y = (int)player.position.y;
+                            int z = (int)player.position.z;
+                            string position = x + "," + y + "," + z;
+                            string name = _params[1];
+                            string cost = _params[2];
                             if (int.TryParse(_params[2], out int _commandCost))
                             {
                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid command cost: {0}", _params[2]));
                                 return;
                             }
-                            string[] _waypoint = { _position, _cost };
-                            if (!Waypoints.Dict.ContainsKey(_name))
+                            string[] waypoint = { position, cost };
+                            if (!Waypoints.Dict.ContainsKey(name))
                             {
-                                Waypoints.Dict.Add(_name, _waypoint);
+                                Waypoints.Dict.Add(name, waypoint);
                                 Waypoints.UpdateXml();
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added public waypoint named {0} at position {1}. Cost set to {2}", _name, _position, _cost));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added public waypoint named {0} at position {1}. Cost set to {2}", name, position, cost));
                                 return;
                             }
                             else
@@ -110,23 +110,23 @@ namespace ServerTools
                     }
                     else if (_params.Count == 6)
                     {
-                        string _name = _params[1];
-                        int.TryParse(_params[2], out int _x);
-                        int.TryParse(_params[3], out int _y);
-                        int.TryParse(_params[4], out int _z);
-                        string _position = _x + "," + _y + "," + _z;
-                        string _cost = _params[5];
-                        if (int.TryParse(_params[5], out int _commandCost))
+                        string name = _params[1];
+                        int.TryParse(_params[2], out int x);
+                        int.TryParse(_params[3], out int y);
+                        int.TryParse(_params[4], out int z);
+                        string position = x + "," + y + "," + z;
+                        string cost = _params[5];
+                        if (int.TryParse(_params[5], out int commandCost))
                         {
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid command cost: {0}", _params[5]));
                             return;
                         }
-                        string[] _waypoint = { _position, _cost };
-                        if (!Waypoints.Dict.ContainsKey(_name))
+                        string[] waypoint = { position, cost };
+                        if (!Waypoints.Dict.ContainsKey(name))
                         {
-                            Waypoints.Dict.Add(_name, _waypoint);
+                            Waypoints.Dict.Add(name, waypoint);
                             Waypoints.UpdateXml();
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added public waypoint named {0} at position {1}. Cost set to {2}", _name, _position, _cost));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added public waypoint named {0} at position {1}. Cost set to {2}", name, position, cost));
                             return;
                         }
                         else
@@ -138,17 +138,17 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("del"))
                 {
-                    string _name = _params[1];
-                    if (Waypoints.Dict.ContainsKey(_name))
+                    string name = _params[1];
+                    if (Waypoints.Dict.ContainsKey(name))
                     {
-                        Waypoints.Dict.Remove(_name);
+                        Waypoints.Dict.Remove(name);
                         Waypoints.UpdateXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Delete waypoint named {0}", _name));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Delete waypoint named {0}", name));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to delete waypoint named {0}. Waypoint not found", _name));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to delete waypoint named {0}. Waypoint not found", name));
                         return;
                     }
                 }
@@ -158,7 +158,7 @@ namespace ServerTools
                     {
                         foreach (var _waypoint in Waypoints.Dict)
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Waypoint named '{0}' @ position {1} for the cost of {2} {3}", _waypoint.Key, _waypoint.Value[0], _waypoint.Value[1], Wallet.Coin_Name));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Waypoint named '{0}' @ position {1} for the cost of {2} {3}", _waypoint.Key, _waypoint.Value[0], _waypoint.Value[1], Wallet.Currency_Name));
                         }
                         return;
                     }

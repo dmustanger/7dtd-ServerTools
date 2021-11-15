@@ -60,106 +60,108 @@ namespace ServerTools
                 else
                 {
                     World world = GameManager.Instance.World;
-                    int _itemCount = 1;
-                    if (_params.Count > 2 && int.TryParse(_params[2], out int _count))
+                    int itemCount = 1;
+                    if (_params.Count > 2 && int.TryParse(_params[2], out int count))
                     {
-                        if (_count > 0 && _count < 1000000)
+                        if (count > 0 && count < 1000000)
                         {
-                            _itemCount = _count;
+                            itemCount = count;
                         }
                     }
-                    int _min = 1;
-                    int _max = 1;
-                    if (_params.Count > 3 && int.TryParse(_params[3], out int _itemQuality))
+                    int min = 1;
+                    int max = 1;
+                    if (_params.Count > 3 && int.TryParse(_params[3], out int itemQuality))
                     {
-                        if (_itemQuality > 0 && _itemQuality < 7)
+                        if (itemQuality > 0 && itemQuality < 7)
                         {
-                            _min = _itemQuality;
-                            _max = _itemQuality;
+                            min = itemQuality;
+                            max = itemQuality;
                         }
                     }
-                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, _min, _max, true, null);
-                    if (_itemValue != null)
+                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, min, max, true, null);
+                    if (itemValue != null)
                     {
-                        if (_params.Count > 4 && float.TryParse(_params[4], out float _durability))
+                        if (_params.Count > 4 && float.TryParse(_params[4], out float durability))
                         {
-                            if (_durability > 0 && _durability < 101)
+                            if (durability > 0 && durability < 101)
                             {
-                                float _newDurability = _itemValue.MaxUseTimes - (_durability / 100 * _itemValue.MaxUseTimes);
-                                _itemValue.UseTimes = _newDurability;
+                                float newDurability = itemValue.MaxUseTimes - (durability / 100 * itemValue.MaxUseTimes);
+                                itemValue.UseTimes = newDurability;
                             }
                         }
                         if (_params[0].ToLower() == "all")
                         {
-                            List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                            if (_cInfoList != null && _cInfoList.Count > 0)
+                            List<ClientInfo> cInfoList = PersistentOperations.ClientList();
+                            if (cInfoList != null)
                             {
-                                for (int i = 0; i < _cInfoList.Count; i++)
+                                for (int i = 0; i < cInfoList.Count; i++)
                                 {
-                                    ClientInfo _cInfo = _cInfoList[i];
-                                    if (_cInfo != null && world.Players.dict.ContainsKey(_cInfo.entityId))
+                                    ClientInfo cInfo = cInfoList[i];
+                                    if (cInfo != null)
                                     {
-                                        EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                                        if (_player != null && _player.IsSpawned() && !_player.IsDead())
+                                        EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                                        if (player != null && player.IsSpawned() && !player.IsDead())
                                         {
-                                            var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                                            EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                                             {
                                                 entityClass = EntityClass.FromString("item"),
                                                 id = EntityFactory.nextEntityID++,
-                                                itemStack = new ItemStack(_itemValue, _itemCount),
-                                                pos = world.Players.dict[_cInfo.entityId].position,
+                                                itemStack = new ItemStack(itemValue, itemCount),
+                                                pos = world.Players.dict[cInfo.entityId].position,
                                                 rot = new Vector3(20f, 0f, 20f),
                                                 lifetime = 60f,
-                                                belongsPlayerId = _cInfo.entityId
+                                                belongsPlayerId = cInfo.entityId
                                             });
                                             world.SpawnEntityInWorld(entityItem);
-                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gave {0} to {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
-                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
                                             world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                                            Phrases.Dict.TryGetValue("GiveItem1", out string _phrase);
-                                            _phrase = _phrase.Replace("{Value}", _itemCount.ToString());
-                                            _phrase = _phrase.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                            Phrases.Dict.TryGetValue("GiveItem1", out string phrase);
+                                            phrase = phrase.Replace("{Value}", itemCount.ToString());
+                                            phrase = phrase.Replace("{ItemName}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
+                                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
-                                    }
-                                    else
-                                    {
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd Id {0} has not spawned. Unable to give item", _cInfo.playerId));
+                                        else
+                                        {
+                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} has not spawned or is dead. Unable to give item at this time", cInfo.playerId));
+                                        }
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
-                            if (_cInfo != null && world.Players.dict.ContainsKey(_cInfo.entityId))
+                            ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
+                            if (cInfo != null)
                             {
-                                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                                if (_player != null && _player.IsSpawned())
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                                if (player != null && player.IsSpawned() && !player.IsDead())
                                 {
                                     var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                                     {
                                         entityClass = EntityClass.FromString("item"),
                                         id = EntityFactory.nextEntityID++,
-                                        itemStack = new ItemStack(_itemValue, _itemCount),
-                                        pos = world.Players.dict[_cInfo.entityId].position,
+                                        itemStack = new ItemStack(itemValue, itemCount),
+                                        pos = world.Players.dict[cInfo.entityId].position,
                                         rot = new Vector3(20f, 0f, 20f),
                                         lifetime = 60f,
-                                        belongsPlayerId = _cInfo.entityId
+                                        belongsPlayerId = cInfo.entityId
                                     });
                                     world.SpawnEntityInWorld(entityItem);
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gave {0} to {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                                    cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
                                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                                     Phrases.Dict.TryGetValue("GiveItem1", out string _phrase);
-                                    _phrase = _phrase.Replace("{Value}", _itemCount.ToString());
-                                    _phrase = _phrase.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    _phrase = _phrase.Replace("{Value}", itemCount.ToString());
+                                    _phrase = _phrase.Replace("{ItemName}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
+                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                                else
+                                {
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} has not spawned or is dead. Unable to give item at this time", _params[0]));
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} is not logged on or loaded in yet", _params[0]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} not found", _params[0]));
                             }
                         }
                     }

@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "19.6.5";
+        public const string Version = "19.6.6";
         public static bool Upgrade = false;
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
@@ -397,10 +397,13 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(line.GetAttribute("Enable"), out Bank.IsEnabled))
+                                if (!PersistentOperations.No_Currency)
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
+                                    if (!bool.TryParse(line.GetAttribute("Enable"), out Bank.IsEnabled))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                        continue;
+                                    }
                                 }
                                 if (!line.HasAttribute("Inside_Claim"))
                                 {
@@ -411,15 +414,6 @@ namespace ServerTools
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Inside_Claim' attribute: {0}", subChild.OuterXml));
                                     continue;
-                                }
-                                if (!line.HasAttribute("Ingame_Coin"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of missing 'Ingame_Coin' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (line.HasAttribute("Ingame_Coin"))
-                                {
-                                    Bank.Ingame_Coin = line.GetAttribute("Ingame_Coin");
                                 }
                                 if (!line.HasAttribute("Deposit_Fee_Percent"))
                                 {
@@ -1482,7 +1476,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(line.GetAttribute("Enable"), out PlayerChecks.FlyEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out FlyingDetector.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -1492,7 +1486,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out PlayerChecks.Flying_Admin_Level))
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out FlyingDetector.Flying_Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -1502,7 +1496,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of missing 'Flags' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(line.GetAttribute("Flags"), out PlayerChecks.Flying_Flags))
+                                if (!int.TryParse(line.GetAttribute("Flags"), out FlyingDetector.Total_Flags))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Flags' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -1865,6 +1859,18 @@ namespace ServerTools
                                 if (!bool.TryParse(line.GetAttribute("Enable"), out Hordes.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hordes entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
+                            case "Infinite_Ammo":
+                                if (!line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Infinite_Ammo entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out InfiniteAmmo.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Infinite_Ammo entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -2873,15 +2879,15 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            case "Protected_Spaces":
+                            case "Protected_Zones":
                                 if (!line.HasAttribute("Enable"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Protected_Spaces entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Protected_Zones entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(line.GetAttribute("Enable"), out ProtectedSpaces.IsEnabled))
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out ProtectedZones.IsEnabled))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Protected_Spaces entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Protected_Zones entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -3295,6 +3301,38 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "Speed_Detector":
+                                if (!line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Speed_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out SpeedDetector.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Speed_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!line.HasAttribute("Admin_Level"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Speed_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out SpeedDetector.Speed_Admin_Level))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Speed_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!line.HasAttribute("Flags"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Speed_Detector entry in ServerToolsConfig.xml because of missing 'Flags' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(line.GetAttribute("Flags"), out SpeedDetector.Total_Flags))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Speed_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Flags' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "Starting_Items":
                                 if (!line.HasAttribute("Enable"))
                                 {
@@ -3617,17 +3655,14 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(line.GetAttribute("Enable"), out Wallet.IsEnabled))
+                                if (!PersistentOperations.No_Currency)
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
+                                    if (!bool.TryParse(line.GetAttribute("Enable"), out Wallet.IsEnabled))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                        continue;
+                                    }
                                 }
-                                if (!line.HasAttribute("Coin_Name"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Coin_Name' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                Wallet.Coin_Name = line.GetAttribute("Coin_Name");
                                 if (!line.HasAttribute("PVP"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'PVP' attribute: {0}", subChild.OuterXml));
@@ -3638,46 +3673,24 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (True/False) value for 'PVP' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!line.HasAttribute("Zombie_Kill_Value"))
+                                if (!line.HasAttribute("Zombie_Kill"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Zombie_Kill_Value' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Zombie_Kill' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(line.GetAttribute("Zombie_Kill_Value"), out Wallet.Zombie_Kills))
+                                if (!int.TryParse(line.GetAttribute("Zombie_Kill"), out Wallet.Zombie_Kill))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Zombie_Kill_Value' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Zombie_Kill' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!line.HasAttribute("Player_Kill_Value"))
+                                if (!line.HasAttribute("Player_Kill"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Player_Kill_Value' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Player_Kill' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(line.GetAttribute("Player_Kill_Value"), out Wallet.Player_Kills))
+                                if (!int.TryParse(line.GetAttribute("Player_Kill"), out Wallet.Player_Kill))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Player_Kill_Value' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                break;
-                            case "Wallet_Extended":
-                                if (!line.HasAttribute("Death_Penalty_Value"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet_Extended entry in ServerToolsConfig.xml because of missing 'Death_Penalty_Value' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(line.GetAttribute("Death_Penalty_Value"), out Wallet.Deaths))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Death_Penalty_Value' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!line.HasAttribute("Lose_On_Death"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Lose_On_Death' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(line.GetAttribute("Lose_On_Death"), out Wallet.Lose_On_Death))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Lose_On_Death' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Player_Kill' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!line.HasAttribute("Bank_Transfers"))
@@ -3690,14 +3703,26 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Bank_Transfers' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                break;
+                            case "Wallet_Extended":
                                 if (!line.HasAttribute("Session_Bonus"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of missing 'Session_Bonus' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet_Extended entry in ServerToolsConfig.xml because of missing 'Session_Bonus' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!int.TryParse(line.GetAttribute("Session_Bonus"), out Wallet.Session_Bonus))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Session_Bonus' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Session_Bonus' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!line.HasAttribute("Currency_Name"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet_Extended entry in ServerToolsConfig.xml because of missing 'Currency_Name' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (line.HasAttribute("Currency_Name"))
+                                {
+                                    Wallet.Currency_Name = line.GetAttribute("Currency_Name");
                                     continue;
                                 }
                                 break;
@@ -3823,6 +3848,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Vehicle' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!line.HasAttribute("Public_Waypoints"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of missing 'Public_Waypoints' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(line.GetAttribute("Public_Waypoints"), out Waypoints.Public_Waypoints))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Public_Waypoints' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "Web_API":
                                 if (!line.HasAttribute("Enable"))
@@ -3897,6 +3932,28 @@ namespace ServerTools
                                 if (!int.TryParse(line.GetAttribute("Admin_Level"), out WorldRadius.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring World_Radius entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
+                            case "XRay_Detector":
+                                if (!line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out XRayDetector.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!line.HasAttribute("Admin_Level"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out XRayDetector.Admin_Level))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -3980,7 +4037,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Party_Invite\" Enable=\"{0}\" />", AutoPartyInvite.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Save_World\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" />", AutoSaveWorld.IsEnabled, AutoSaveWorld.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name));
-                sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Ingame_Coin=\"{2}\" Deposit_Fee_Percent=\"{3}\" Player_Transfers=\"{4}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Ingame_Coin, Bank.Deposit_Fee_Percent, Bank.Player_Transfers));
+                sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Deposit_Fee_Percent=\"{2}\" Player_Transfers=\"{3}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Deposit_Fee_Percent, Bank.Player_Transfers));
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Logger\" Enable=\"{0}\" />", BlockLogger.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Delay=\"{1}\" Show_On_Respawn=\"{2}\" />", Bloodmoon.IsEnabled, Bloodmoon.Delay, Bloodmoon.Show_On_Respawn));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon_Warrior\" Enable=\"{0}\" Zombie_Kills=\"{1}\" Chance=\"{2}\" Reduce_Death_Count=\"{3}\" Reward_Count=\"{4}\" />", BloodmoonWarrior.IsEnabled, BloodmoonWarrior.Zombie_Kills, BloodmoonWarrior.Chance, BloodmoonWarrior.Reduce_Death_Count, BloodmoonWarrior.Reward_Count));
@@ -4013,7 +4070,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Exit_Command_Extended\" Admin_Level=\"{0}\" Exit_Time=\"{1}\" />", ExitCommand.Admin_Level, ExitCommand.Exit_Time));
                 sw.WriteLine(string.Format("        <Tool Name=\"Falling_Blocks_Remover\" Enable=\"{0}\" Log=\"{1}\" Max_Blocks=\"{2}\" />", FallingBlocks.IsEnabled, FallingBlocks.OutputLog, FallingBlocks.Max_Blocks));
                 sw.WriteLine(string.Format("        <Tool Name=\"First_Claim_Block\" Enable=\"{0}\" />", FirstClaimBlock.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Flying_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", PlayerChecks.FlyEnabled, PlayerChecks.Flying_Admin_Level, PlayerChecks.Flying_Flags));
+                sw.WriteLine(string.Format("        <Tool Name=\"Flying_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", FlyingDetector.IsEnabled, FlyingDetector.Flying_Admin_Level, FlyingDetector.Total_Flags));
                 sw.WriteLine(string.Format("        <Tool Name=\"FPS\" Enable=\"{0}\" Set_Target=\"{1}\" Low_FPS=\"{2}\" />", Fps.IsEnabled, Fps.Set_Target, Fps.Low_FPS));
                 sw.WriteLine(string.Format("        <Tool Name=\"Friend_Teleport\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" Player_Check=\"{3}\" Zombie_Check=\"{4}\" />", FriendTeleport.IsEnabled, FriendTeleport.Delay_Between_Uses, FriendTeleport.Command_Cost, FriendTeleport.Player_Check, FriendTeleport.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Gamble\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", Gamble.IsEnabled, Gamble.Delay_Between_Uses, Gamble.Command_Cost));
@@ -4024,6 +4081,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Homes\" Enable=\"{0}\" Max_Homes =\"{1}\" Reserved_Max_Homes=\"{2}\" Command_Cost =\"{3}\" Delay_Between_Uses=\"{4}\" />", Homes.IsEnabled, Homes.Max_Homes, Homes.Reserved_Max_Homes, Homes.Command_Cost, Homes.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Homes_Extended\" Player_Check =\"{0}\" Zombie_Check=\"{1}\" Vehicle=\"{2}\" />", Homes.Player_Check, Homes.Zombie_Check, Homes.Vehicle_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Hordes\" Enable=\"{0}\" />", Hordes.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Infinite_Ammo\" Enable=\"{0}\" />", InfiniteAmmo.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Info_Ticker\" Enable=\"{0}\" Delay=\"{1}\" Random=\"{2}\" />", InfoTicker.IsEnabled, InfoTicker.Delay, InfoTicker.Random));
                 sw.WriteLine(string.Format("        <Tool Name=\"Invalid_Items\" Enable=\"{0}\" Ban=\"{1}\" Admin_Level=\"{2}\" Check_Storage=\"{3}\" />", InvalidItems.IsEnabled, InvalidItems.Ban_Player, InvalidItems.Admin_Level, InvalidItems.Check_Storage));
                 sw.WriteLine(string.Format("        <Tool Name=\"Invalid_Item_Stack\" Enable=\"{0}\" />", InvalidItems.Invalid_Stack));
@@ -4058,7 +4116,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Poll\" Enable=\"{0}\" />", Poll.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Prayer\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", Prayer.IsEnabled, Prayer.Delay_Between_Uses, Prayer.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Private_Message\" Enable=\"{0}\" />", Whisper.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Protected_Spaces\" Enable=\"{0}\" />", ProtectedSpaces.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Protected_Zones\" Enable=\"{0}\" />", ProtectedZones.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Public_Waypoints\" Enable=\"{0}\" />", Waypoints.Public_Waypoints));
                 sw.WriteLine(string.Format("        <Tool Name=\"PvE_Violations\" Jail=\"{0}\" Kill=\"{1}\" Kick=\"{2}\" Ban=\"{3}\" />", PersistentOperations.Jail_Violation, PersistentOperations.Kill_Violation, PersistentOperations.Kick_Violation, PersistentOperations.Ban_Violation));
                 sw.WriteLine(string.Format("        <Tool Name=\"Real_World_Time\" Enable=\"{0}\" Delay=\"{1}\" Time_Zone=\"{2}\" Adjustment=\"{3}\" />", RealWorldTime.IsEnabled, RealWorldTime.Delay, RealWorldTime.Time_Zone, RealWorldTime.Adjustment));
@@ -4071,6 +4129,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Shutdown_Extended\" UI_Lock=\"{0}\" />", Shutdown.UI_Lock));
                 sw.WriteLine(string.Format("        <Tool Name=\"Sleeper_Respawn\" Enable=\"{0}\" />", SleeperRespawn.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Spectator_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" />", PlayerChecks.SpectatorEnabled, PlayerChecks.Spectator_Admin_Level));
+                sw.WriteLine(string.Format("        <Tool Name=\"Speed_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", SpeedDetector.IsEnabled, SpeedDetector.Speed_Admin_Level, SpeedDetector.Total_Flags));
                 sw.WriteLine(string.Format("        <Tool Name=\"Starting_Items\" Enable=\"{0}\" />", StartingItems.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Stuck\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" />", Stuck.IsEnabled, Stuck.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Suicide\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Player_Check=\"{2}\" Zombie_Check=\"{3}\" />", Suicide.IsEnabled, Suicide.Delay_Between_Uses, Suicide.Player_Check, Suicide.Zombie_Check));
@@ -4080,14 +4139,15 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Recall_Extended\" Normal_Max=\"{0}\" Reserved_Max=\"{1}\" />", VehicleRecall.Normal_Max, VehicleRecall.Reserved_Max));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Your_Voting_Site=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" />", VoteReward.IsEnabled, VoteReward.Your_Voting_Site, VoteReward.API_Key, VoteReward.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting_Extended\" Reward_Count=\"{0}\" Reward_Entity=\"{1}\" Entity_Id=\"{2}\" Weekly_Votes=\"{3}\" />", VoteReward.Reward_Count, VoteReward.Reward_Entity, VoteReward.Entity_Id, VoteReward.Weekly_Votes));
-                sw.WriteLine(string.Format("        <Tool Name=\"Wallet\" Enable=\"{0}\" Coin_Name=\"{1}\" PVP=\"{2}\" Zombie_Kill_Value=\"{3}\" Player_Kill_Value=\"{4}\" />", Wallet.IsEnabled, Wallet.Coin_Name, Wallet.PVP, Wallet.Zombie_Kills, Wallet.Player_Kills));
-                sw.WriteLine(string.Format("        <Tool Name=\"Wallet_Extended\" Death_Penalty_Value=\"{0}\" Lose_On_Death=\"{1}\" Bank_Transfers=\"{2}\" Session_Bonus=\"{3}\" />", Wallet.Deaths, Wallet.Lose_On_Death, Wallet.Bank_Transfers, Wallet.Session_Bonus));
+                sw.WriteLine(string.Format("        <Tool Name=\"Wallet\" Enable=\"{0}\" PVP=\"{1}\" Zombie_Kill=\"{2}\" Player_Kill=\"{3}\" Bank_Transfers=\"{4}\" />", Wallet.IsEnabled, Wallet.PVP, Wallet.Zombie_Kill, Wallet.Player_Kill, Wallet.Bank_Transfers));
+                sw.WriteLine(string.Format("        <Tool Name=\"Wallet_Extended\" Session_Bonus=\"{0}\" Currency_Name=\"{1}\" />", Wallet.Session_Bonus, Wallet.Currency_Name));
                 sw.WriteLine(string.Format("        <Tool Name=\"Watch_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Delay=\"{2}\" />", WatchList.IsEnabled, WatchList.Admin_Level, WatchList.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints =\"{1}\" Reserved_Max_Waypoints=\"{2}\" Command_Cost =\"{3}\" Delay_Between_Uses=\"{4}\" />", Waypoints.IsEnabled, Waypoints.Max_Waypoints, Waypoints.Reserved_Max_Waypoints, Waypoints.Command_Cost, Waypoints.Delay_Between_Uses));
-                sw.WriteLine(string.Format("        <Tool Name=\"Waypoints_Extended\" Player_Check =\"{0}\" Zombie_Check=\"{1}\" Vehicle=\"{2}\" />", Waypoints.Player_Check, Waypoints.Zombie_Check, Waypoints.Vehicle));
+                sw.WriteLine(string.Format("        <Tool Name=\"Waypoints_Extended\" Player_Check =\"{0}\" Zombie_Check=\"{1}\" Vehicle=\"{2}\" Public_Waypoints=\"{3}\" />", Waypoints.Player_Check, Waypoints.Zombie_Check, Waypoints.Vehicle, Waypoints.Public_Waypoints));
                 sw.WriteLine(string.Format("        <Tool Name=\"Web_API\" Enable=\"{0}\" Port=\"{1}\" />", WebAPI.IsEnabled, WebAPI.Port));
                 sw.WriteLine(string.Format("        <Tool Name=\"Web_Panel\" Enable=\"{0}\" />", WebPanel.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"World_Radius\" Enable=\"{0}\" Normal_Player=\"{1}\" Reserved=\"{2}\" Admin_Level=\"{3}\" />", WorldRadius.IsEnabled, WorldRadius.Normal_Player, WorldRadius.Reserved, WorldRadius.Admin_Level));
+                sw.WriteLine(string.Format("        <Tool Name=\"XRay_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" />", XRayDetector.IsEnabled, XRayDetector.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Zones\" Enable=\"{0}\" Zone_Message=\"{1}\" Reminder_Delay=\"{2}\" Set_Home=\"{3}\"  />", Zones.IsEnabled, Zones.Zone_Message, Zones.Reminder_Delay, Zones.Set_Home));
                 sw.WriteLine("    </Tools>");
                 sw.WriteLine("</ServerTools>");

@@ -10,13 +10,17 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Random = false;
         public static string Command_infoticker = "infoticker", Delay = "60";
+
         public static List<string> ExemptionList = new List<string>();
 
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();
         private static List<string> MsgList = new List<string>();
+
         private const string file = "InfoTicker.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -93,7 +97,9 @@ namespace ServerTools
                     {
                         if (line.HasAttributes)
                         {
-                            UpgradeXml(nodeList);
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
                             return;
                         }
                         else
@@ -104,18 +110,30 @@ namespace ServerTools
                             {
                                 if (line.HasAttributes)
                                 {
-                                    UpgradeXml(nodeList);
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
                                     return;
                                 }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing CommandList.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
-                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InfoTicker.LoadXml: {0}", e.Message));
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in InfoTicker.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -134,10 +152,9 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<InfoTicker>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Possible variables {EntityId}, {SteamId}, {PlayerName} -->");
-                    sw.WriteLine("<!-- <Ticker Message=\"Have a suggestion or complaint? Post on our forums or discord and let us know\" /> -->");
-                    sw.WriteLine("<!-- <Ticker Message=\"Type /gimme once an hour for a free gift!\" /> -->");
-                    sw.WriteLine("<!-- <Ticker Message=\"Type /commands for a list of the chat commands\" /> -->");
+                    sw.WriteLine("    <!-- Possible variables {EntityId}, {SteamId}, {PlayerName} -->");
+                    sw.WriteLine("    <!-- <Ticker Message=\"Have a suggestion or complaint? Post on our forums or discord and let us know\" /> -->");
+                    sw.WriteLine("    <!-- <Ticker Message=\"Type /commands for a list of the chat commands\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -249,21 +266,21 @@ namespace ServerTools
                     if (Random)
                     {
                         MsgList.RandomizeList();
-                        string _message = MsgList[0];
-                        List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                        if (_cInfoList != null && _cInfoList.Count > 0)
+                        string message = MsgList[0];
+                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        if (clientList != null)
                         {
-                            for (int i = 0; i < _cInfoList.Count; i++)
+                            for (int i = 0; i < clientList.Count; i++)
                             {
-                                ClientInfo _cInfo = _cInfoList[i];
-                                if (_cInfo != null)
+                                ClientInfo cInfo = clientList[i];
+                                if (cInfo != null)
                                 {
-                                    if (!ExemptionList.Contains(_cInfo.playerId))
+                                    if (!ExemptionList.Contains(cInfo.playerId))
                                     {
-                                        _message = _message.Replace("{EntityId}", _cInfo.entityId.ToString());
-                                        _message = _message.Replace("{SteamId}", _cInfo.playerId);
-                                        _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        message = message.Replace("{EntityId}", cInfo.entityId.ToString());
+                                        message = message.Replace("{SteamId}", cInfo.playerId);
+                                        message = message.Replace("{PlayerName}", cInfo.playerName);
+                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                             }
@@ -276,21 +293,21 @@ namespace ServerTools
                     }
                     else
                     {
-                        string _message = MsgList[0];
-                        List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                        if (_cInfoList != null && _cInfoList.Count > 0)
+                        string message = MsgList[0];
+                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        if (clientList != null)
                         {
-                            for (int i = 0; i < _cInfoList.Count; i++)
+                            for (int i = 0; i < clientList.Count; i++)
                             {
-                                ClientInfo _cInfo = _cInfoList[i];
-                                if (_cInfo != null)
+                                ClientInfo cInfo = clientList[i];
+                                if (cInfo != null)
                                 {
-                                    if (!ExemptionList.Contains(_cInfo.playerId))
+                                    if (!ExemptionList.Contains(cInfo.playerId))
                                     {
-                                        _message = _message.Replace("{EntityId}", _cInfo.entityId.ToString());
-                                        _message = _message.Replace("{SteamId}", _cInfo.playerId);
-                                        _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        message = message.Replace("{EntityId}", cInfo.entityId.ToString());
+                                        message = message.Replace("{SteamId}", cInfo.playerId);
+                                        message = message.Replace("{PlayerName}", cInfo.playerName);
+                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                             }
@@ -309,7 +326,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -319,28 +336,27 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<InfoTicker>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Possible variables {EntityId}, {SteamId}, {PlayerName} -->");
-                    sw.WriteLine("<!-- <Ticker Message=\"Have a suggestion or complaint? Post on our forums or discord and let us know\" /> -->");
-                    sw.WriteLine("<!-- <Ticker Message=\"Type /gimme once an hour for a free gift!\" /> -->");
-                    sw.WriteLine("<!-- <Ticker Message=\"Type /commands for a list of the chat commands\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- Possible variables {EntityId}, {SteamId}, {PlayerName} -->");
+                    sw.WriteLine("    <!-- <Ticker Message=\"Have a suggestion or complaint? Post on our forums or discord and let us know\" /> -->");
+                    sw.WriteLine("    <!-- <Ticker Message=\"Type /commands for a list of the chat commands\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Possible variables") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Ticker Message=\"Have a suggestion") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Ticker Message=\"Type /gimme") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Ticker Message=\"Type /commands") && 
-                            !_oldChildNodes[i].OuterXml.Contains("    <!-- <Ticker Message=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Possible variables") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Have a suggestion") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Type /gimme") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Type /commands") && 
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Ticker")
                             {
                                 string message = "";

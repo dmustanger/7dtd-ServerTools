@@ -11,12 +11,15 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false;
         public static string Command_pray = "pray";
         public static int Delay_Between_Uses = 30, Command_Cost = 10;
+
         public static Dictionary<string, string> Dict = new Dictionary<string, string>();
 
         private const string file = "Prayer.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static readonly Random Random = new Random();
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -94,7 +97,9 @@ namespace ServerTools
                     {
                         if (line.HasAttributes)
                         {
-                            UpgradeXml(nodeList);
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
                             return;
                         }
                         else
@@ -105,18 +110,30 @@ namespace ServerTools
                             {
                                 if (line.HasAttributes)
                                 {
-                                    UpgradeXml(nodeList);
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
                                     return;
                                 }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing Prayer.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
-                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Prayer.LoadXml: {0}", e.Message));
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in Prayer.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -130,7 +147,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Prayer>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Buff Name=\"buffPerkCharismaticNature\" Message=\"Your charisma has blossomed through your prayer\" /> -->");
+                    sw.WriteLine("    <!-- <Buff Name=\"buffPerkCharismaticNature\" Message=\"Your charisma has blossomed through your prayer\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -187,28 +204,28 @@ namespace ServerTools
                 }
                 else
                 {
-                    DateTime _lastPrayer = DateTime.Now;
+                    DateTime lastPrayer = DateTime.Now;
                     if (PersistentContainer.Instance.Players[_cInfo.playerId].LastPrayer != null)
                     {
-                        _lastPrayer = PersistentContainer.Instance.Players[_cInfo.playerId].LastPrayer;
+                        lastPrayer = PersistentContainer.Instance.Players[_cInfo.playerId].LastPrayer;
                     }
-                    TimeSpan varTime = DateTime.Now - _lastPrayer;
+                    TimeSpan varTime = DateTime.Now - lastPrayer;
                     double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
+                    int timepassed = (int)fractionalMinutes;
                     if (ReservedSlots.IsEnabled)
                     {
                         if (ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                            if (DateTime.Now < _dt)
+                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime dt);
+                            if (DateTime.Now < dt)
                             {
-                                int _delay = Delay_Between_Uses / 2;
-                                Time(_cInfo, _timepassed, _delay);
+                                int delay = Delay_Between_Uses / 2;
+                                Time(_cInfo, timepassed, delay);
                                 return;
                             }
                         }
                     }
-                    Time(_cInfo, _timepassed, Delay_Between_Uses);
+                    Time(_cInfo, timepassed, Delay_Between_Uses);
                 }
             }
             catch (Exception e)
@@ -234,10 +251,10 @@ namespace ServerTools
                 }
                 else
                 {
-                    int _timeleft = _delay - _timepassed;
+                    int timeleft = _delay - _timepassed;
                     Phrases.Dict.TryGetValue("Prayer1", out string _phrase);
                     _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
-                    _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
+                    _phrase = _phrase.Replace("{TimeRemaining}", timeleft.ToString());
                     _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
                     _phrase = _phrase.Replace("{Command_pray}", Command_pray);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -255,15 +272,15 @@ namespace ServerTools
             {
                 if (Wallet.IsEnabled && Command_Cost > 0)
                 {
-                    if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+                    if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
                     {
                         SetBuff(_cInfo);
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("Prayer2", out string _phrase);
-                        _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Prayer2", out string phrase);
+                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
@@ -285,12 +302,12 @@ namespace ServerTools
                 {
                     List<string> Keys = new List<string>(Dict.Keys);
                     string randomKey = Keys[Random.Next(Dict.Count)];
-                    string _message = Dict[randomKey];
+                    string message = Dict[randomKey];
                     SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.playerId, randomKey), null);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
-                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                        Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
                     }
                     PersistentContainer.Instance.Players[_cInfo.playerId].LastPrayer = DateTime.Now;
                     PersistentContainer.DataChange = true;
@@ -302,7 +319,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -312,22 +329,22 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Prayer>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Buff Name=\"buffPerkCharismaticNature\" Message=\"Your charisma has blossomed through your prayer\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- <Buff Name=\"buffPerkCharismaticNature\" Message=\"Your charisma has blossomed through your prayer\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Buff Name=\"buffPerkCharismaticNature\"") &&
-                            !_oldChildNodes[i].OuterXml.StartsWith("    <!-- <Buff Name=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.StartsWith("    <!-- <Buff Name=\"buffPerkCharismaticNature\"") &&
+                            !OldNodeList[i].OuterXml.StartsWith("    <!-- <Buff Name=\"\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Buff")
                             {
                                 string name = "", message = "";

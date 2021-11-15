@@ -14,10 +14,13 @@ namespace ServerTools
         public static string Command_gimme = "gimme", Command_gimmie = "gimmie", Zombie_Id = "4,9,11";
 
         private static Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
+
         private const string file = "Gimme.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static readonly System.Random Random = new System.Random();
+
+        private static XmlNodeList OldNodeList;
 
         private static List<string> List
         {
@@ -39,161 +42,182 @@ namespace ServerTools
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(FilePath))
-            {
-                UpdateXml();
-            }
-            XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(FilePath);
-            }
-            catch (XmlException e)
-            {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
-                return;
-            }
-            bool upgrade = true;
-            XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-            if (childNodes != null)
-            {
-                Dict.Clear();
-                for (int i = 0; i < childNodes.Count; i++)
+                if (!Utils.FileExists(FilePath))
                 {
-                    if (childNodes[i].NodeType != XmlNodeType.Comment)
+                    UpdateXml();
+                }
+                XmlDocument xmlDoc = new XmlDocument();
+                try
+                {
+                    xmlDoc.Load(FilePath);
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    return;
+                }
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null)
+                {
+                    Dict.Clear();
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        XmlElement line = (XmlElement)childNodes[i];
-                        if (line.HasAttributes)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                upgrade = false;
-                                continue;
-                            }
-                            else if (line.HasAttribute("Name") && line.HasAttribute("SecondaryName") && line.HasAttribute("MinCount") && line.HasAttribute("MaxCount") &&
-                                line.HasAttribute("MinQuality") && line.HasAttribute("MaxQuality"))
-                            {
-                                if (!int.TryParse(line.GetAttribute("MinCount"), out int minCount))
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MinCount' attribute: {0}", line.OuterXml));
+                                    upgrade = false;
                                     continue;
                                 }
-                                if (!int.TryParse(line.GetAttribute("MaxCount"), out int maxCount))
+                                else if (line.HasAttribute("Name") && line.HasAttribute("SecondaryName") && line.HasAttribute("MinCount") && line.HasAttribute("MaxCount") &&
+                                    line.HasAttribute("MinQuality") && line.HasAttribute("MaxQuality"))
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MaxCount' attribute: {0}", line.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(line.GetAttribute("MinQuality"), out int minQuality))
-                                {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MinQuality' attribute: {0}", line.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(line.GetAttribute("MaxQuality"), out int maxQuality))
-                                {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MaxQuality' attribute: {0}", line.OuterXml));
-                                    continue;
-                                }
-                                string name = line.GetAttribute("Name");
-                                if (name == "WalletCoin" || name == "walletCoin" || name == "walletcoin")
-                                {
-                                    if (Wallet.IsEnabled)
+                                    if (!int.TryParse(line.GetAttribute("MinCount"), out int minCount))
                                     {
-                                        if (minCount < 1)
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MinCount' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!int.TryParse(line.GetAttribute("MaxCount"), out int maxCount))
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MaxCount' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!int.TryParse(line.GetAttribute("MinQuality"), out int minQuality))
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MinQuality' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!int.TryParse(line.GetAttribute("MaxQuality"), out int maxQuality))
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MaxQuality' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    string name = line.GetAttribute("Name");
+                                    if (name.ToLower() == "walletcoin")
+                                    {
+                                        if (Wallet.IsEnabled)
                                         {
-                                            minCount = 1;
+                                            if (minCount < 1)
+                                            {
+                                                minCount = 1;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry. Wallet tool is not enabled: {0}", line.OuterXml));
+                                            continue;
                                         }
                                     }
                                     else
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry. Wallet tool is not enabled: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                }
-                                else
-                                {
-                                    ItemValue itemValue = ItemClass.GetItem(name, false);
-                                    if (itemValue.type == ItemValue.None.type)
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry. Name not found: {0}", name));
-                                        continue;
-                                    }
-                                    if (minCount > itemValue.ItemClass.Stacknumber.Value)
-                                    {
-                                        minCount = itemValue.ItemClass.Stacknumber.Value;
-                                    }
-                                    else if (minCount < 1)
-                                    {
-                                        minCount = 1;
-                                    }
-                                    if (maxCount > itemValue.ItemClass.Stacknumber.Value)
-                                    {
-                                        maxCount = itemValue.ItemClass.Stacknumber.Value;
-                                    }
-                                    else if (maxCount < 1)
-                                    {
-                                        maxCount = 1;
-                                    }
-                                    int exchange;
-                                    if (minCount > maxCount)
-                                    {
-                                        exchange = maxCount;
-                                        maxCount = minCount;
-                                        minCount = exchange;
-                                    }
-                                    if (minQuality > maxQuality)
-                                    {
-                                        exchange = maxQuality;
-                                        maxQuality = minQuality;
-                                        minQuality = exchange;
-                                    }
+                                        if (!PersistentOperations.IsValidItem(name))
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry. Name not found: {0}", name));
+                                            continue;
+                                        }
+                                        ItemValue itemValue = ItemClass.GetItem(name, false);
+                                        if (minCount > itemValue.ItemClass.Stacknumber.Value)
+                                        {
+                                            minCount = itemValue.ItemClass.Stacknumber.Value;
+                                        }
+                                        else if (minCount < 1)
+                                        {
+                                            minCount = 1;
+                                        }
+                                        if (maxCount > itemValue.ItemClass.Stacknumber.Value)
+                                        {
+                                            maxCount = itemValue.ItemClass.Stacknumber.Value;
+                                        }
+                                        else if (maxCount < 1)
+                                        {
+                                            maxCount = 1;
+                                        }
+                                        int exchange;
+                                        if (minCount > maxCount)
+                                        {
+                                            exchange = maxCount;
+                                            maxCount = minCount;
+                                            minCount = exchange;
+                                        }
+                                        if (minQuality > maxQuality)
+                                        {
+                                            exchange = maxQuality;
+                                            maxQuality = minQuality;
+                                            minQuality = exchange;
+                                        }
 
-                                    string _secondary;
-                                    if (line.HasAttribute("SecondaryName"))
-                                    {
-                                        _secondary = line.GetAttribute("SecondaryName");
-                                    }
-                                    else
-                                    {
-                                        _secondary = name;
-                                    }
-                                    if (!Dict.ContainsKey(name))
-                                    {
-                                        string[] c = new string[] { _secondary, minCount.ToString(), maxCount.ToString(), minQuality.ToString(), maxQuality.ToString() };
-                                        Dict.Add(name, c);
+                                        string secondary;
+                                        if (line.HasAttribute("SecondaryName"))
+                                        {
+                                            secondary = line.GetAttribute("SecondaryName");
+                                        }
+                                        else
+                                        {
+                                            secondary = name;
+                                        }
+                                        if (!Dict.ContainsKey(name))
+                                        {
+                                            string[] c = new string[] { secondary, minCount.ToString(), maxCount.ToString(), minQuality.ToString(), maxQuality.ToString() };
+                                            Dict.Add(name, c);
+                                        }
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+                if (upgrade)
+                {
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
+                                    return;
+                                }
+                            }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing Gimme.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
                 }
             }
-            if (upgrade)
+            catch (Exception e)
             {
-                XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                XmlNode node = nodeList[0];
-                XmlElement line = (XmlElement)nodeList[0];
-                if (line != null)
+                if (e.Message == "Specified cast is not valid.")
                 {
-                    if (line.HasAttributes)
-                    {
-                        UpgradeXml(nodeList);
-                        return;
-                    }
-                    else
-                    {
-                        nodeList = node.ChildNodes;
-                        line = (XmlElement)nodeList[0];
-                        if (line != null)
-                        {
-                            if (line.HasAttributes)
-                            {
-                                UpgradeXml(nodeList);
-                                return;
-                            }
-                        }
-                    }
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
                 }
-                UpgradeXml(null);
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in Gimme.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -207,10 +231,10 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Gimme>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Secondary name is what will show in chat instead of the item name -->");
-                    sw.WriteLine("<!-- Items that do not require a quality should be set to 1 for both min and max -->");
-                    sw.WriteLine("<!-- WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option -->");
-                    sw.WriteLine("<!-- <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"boiled water\" MinCount=\"1\" MaxCount=\"6\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
+                    sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
+                    sw.WriteLine("    <!-- Items that do not require a quality should be set to 1 for both min and max -->");
+                    sw.WriteLine("    <!-- WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option -->");
+                    sw.WriteLine("    <!-- <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"boiled water\" MinCount=\"1\" MaxCount=\"6\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -219,10 +243,6 @@ namespace ServerTools
                         {
                             sw.WriteLine(string.Format("    <Item Name=\"{0}\" SecondaryName=\"{1}\" MinCount=\"{2}\" MaxCount=\"{3}\" MinQuality=\"{4}\" MaxQuality=\"{5}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3], kvp.Value[4]));
                         }
-                    }
-                    else
-                    {
-                        sw.WriteLine("    <!-- <Item Name=\"\" SecondaryName=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" /> -->");
                     }
                     sw.WriteLine("</Gimme>");
                     sw.Flush();
@@ -273,14 +293,14 @@ namespace ServerTools
                     }
                     else
                     {
-                        DateTime _lastgimme = DateTime.Now;
+                        DateTime lastgimme = DateTime.Now;
                         if (PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme != null)
                         {
-                            _lastgimme = PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme;
+                            lastgimme = PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme;
                         }
-                        TimeSpan varTime = DateTime.Now - _lastgimme;
+                        TimeSpan varTime = DateTime.Now - lastgimme;
                         double fractionalMinutes = varTime.TotalMinutes;
-                        int _timepassed = (int)fractionalMinutes;
+                        int timepassed = (int)fractionalMinutes;
                         if (ReservedSlots.IsEnabled)
                         {
                             if (ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
@@ -288,13 +308,13 @@ namespace ServerTools
                                 ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                                 if (DateTime.Now < _dt)
                                 {
-                                    int _delay = Delay_Between_Uses / 2;
-                                    Time(_cInfo, _timepassed, _delay);
+                                    int delay = Delay_Between_Uses / 2;
+                                    Time(_cInfo, timepassed, delay);
                                     return;
                                 }
                             }
                         }
-                        Time(_cInfo, _timepassed, Delay_Between_Uses);
+                        Time(_cInfo, timepassed, Delay_Between_Uses);
                     }
                 }
             }
@@ -342,14 +362,14 @@ namespace ServerTools
             {
                 if (Wallet.IsEnabled && Command_Cost > 0)
                 {
-                    if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+                    if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
                     {
                         ZCheck(_cInfo);
                     }
                     else
                     {
                         Phrases.Dict.TryGetValue("Gimme3", out string _phrase);
-                        _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                        _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
@@ -404,23 +424,23 @@ namespace ServerTools
                         {
                             int.TryParse(item[1], out int minCount);
                             int.TryParse(item[2], out int maxCount);
-                            int _count = Random.Next(minCount, maxCount + 1);
+                            int count = Random.Next(minCount, maxCount + 1);
                             if (Command_Cost >= 1)
                             {
-                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                                Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
                             }
-                            Wallet.AddCoinsToWallet(_cInfo.playerId, _count);
+                            Wallet.AddCurrency(_cInfo.playerId, count);
                             PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
                             PersistentContainer.DataChange = true;
                             Phrases.Dict.TryGetValue("Gimme2", out string _phrase);
-                            _phrase = _phrase.Replace("{ItemCount}", _count.ToString());
+                            _phrase = _phrase.Replace("{ItemCount}", count.ToString());
                             if (item[0] != "")
                             {
                                 _phrase = _phrase.Replace("{ItemName}", item[0]);
                             }
                             else
                             {
-                                _phrase = _phrase.Replace("{ItemName}", Wallet.Coin_Name);
+                                _phrase = _phrase.Replace("{ItemName}", Wallet.Currency_Name);
                             }
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
@@ -437,7 +457,7 @@ namespace ServerTools
                         int.TryParse(item[3], out int minQuality);
                         int.TryParse(item[4], out int maxQuality);
                         int count = Random.Next(minCount, maxCount + 1);
-                        int quality = Random.Next(minCount, maxCount + 1);
+                        int quality = Random.Next(minQuality, maxQuality + 1);
                         ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type, quality, quality, false, null);
                         World world = GameManager.Instance.World;
                         EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
@@ -455,7 +475,7 @@ namespace ServerTools
                         world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                            Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
                         }
                         PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
                         PersistentContainer.DataChange = true;
@@ -487,21 +507,21 @@ namespace ServerTools
                 {
                     if (Zombie_Id.Contains(","))
                     {
-                        string[] _zombieIds = Zombie_Id.Split(',');
-                        int _count = Random.Next(1, _zombieIds.Length + 1);
-                        string _zId = _zombieIds[_count];
-                        if (int.TryParse(_zId, out int _zombieId))
+                        string[] zombieIds = Zombie_Id.Split(',');
+                        int count = Random.Next(1, zombieIds.Length + 1);
+                        string zId = zombieIds[count];
+                        if (int.TryParse(zId, out int zombieId))
                         {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ {1}", _cInfo.playerId, _zombieId), null);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ {1}", _cInfo.playerId, zombieId), null);
                             Log.Out(string.Format("[SERVERTOOLS] Spawned an entity for {0}'s gimme", _cInfo.playerName));
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
-                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                                Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
                             }
                             PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
                             PersistentContainer.DataChange = true;
-                            Phrases.Dict.TryGetValue("Gimme4", out string _phrase);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Gimme4", out string phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {
@@ -516,7 +536,7 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Spawned an entity for {0}'s gimme", _cInfo.playerName));
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
-                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                                Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
                             }
                             PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
                             PersistentContainer.DataChange = true;
@@ -540,7 +560,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -550,26 +570,26 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Gimme>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Secondary name is what will show in chat instead of the item name -->");
-                    sw.WriteLine("<!-- Items that do not require a quality should be set to 1 for both min and max -->");
-                    sw.WriteLine("<!-- WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option -->");
-                    sw.WriteLine("<!-- <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"boiled water\" MinCount=\"1\" MaxCount=\"6\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
+                    sw.WriteLine("    <!-- Items that do not require a quality should be set to 1 for both min and max -->");
+                    sw.WriteLine("    <!-- WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option -->");
+                    sw.WriteLine("    <!-- <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"boiled water\" MinCount=\"1\" MaxCount=\"6\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Secondary name") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- Items that do") && !_oldChildNodes[i].OuterXml.Contains("<!-- WalletCoin can") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Item Name=\"drinkJarBoiledWater\"") && !_oldChildNodes[i].OuterXml.Contains("<!-- <Item Name=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Secondary name") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- Items that do") && !OldNodeList[i].OuterXml.Contains("<!-- WalletCoin can") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"drinkJarBoiledWater\"") && !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Item")
                             {
                                 string name = "", secondary = "", minCount = "", maxCount = "", minQuality = "", maxQuality = "";

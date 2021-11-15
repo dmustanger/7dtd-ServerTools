@@ -9,8 +9,11 @@ namespace ServerTools
 {
     class PersistentOperations
     {
-        public static bool IsRunning = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false;
+        public static bool ZoneRunning = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false, No_Currency = false;
         public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0;
+        public static string Currency_Item;
+        public static FastTags Shotgun = FastTags.Parse("shotgun");
+        public static FastTags Falling = FastTags.Parse("falling");
 
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static Dictionary<int, int> EntityId = new Dictionary<int, int>();
@@ -68,46 +71,41 @@ namespace ServerTools
             }
         }
 
-        public static void PlayerCheck()
+        public static void CheckZone()
         {
             try
             {
-                if (!IsRunning)
+                if (!ZoneRunning)
                 {
-                    IsRunning = true;
-                    List<ClientInfo> _cInfoList = ClientList();
-                    if (_cInfoList != null && _cInfoList.Count > 0)
+                    ZoneRunning = true;
+                    List<ClientInfo> clientList = ClientList();
+                    if (clientList != null)
                     {
-                        for (int i = 0; i < _cInfoList.Count; i++)
+                        for (int i = 0; i < clientList.Count; i++)
                         {
-                            ClientInfo _cInfo = _cInfoList[i];
-                            if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId > 0)
+                            ClientInfo cInfo = clientList[i];
+                            if (cInfo != null && !string.IsNullOrEmpty(cInfo.playerId) && cInfo.entityId > 0)
                             {
-                                EntityPlayer _player = GetEntityPlayer(_cInfo.playerId);
-                                if (_player != null)
+                                EntityPlayer player = GetEntityPlayer(cInfo.playerId);
+                                if (player != null)
                                 {
-                                    if (!_player.IsDead())
+                                    if (!player.IsDead())
                                     {
-                                        if (_player.IsSpawned() && _player.IsAlive() && !Teleportation.Teleporting.Contains(_cInfo.entityId))
+                                        if (player.IsSpawned())
                                         {
-                                            if (Zones.IsEnabled)
+                                            if (Zones.IsEnabled && Zones.ZoneList.Count > 0)
                                             {
-                                                Zones.ZoneCheck(_cInfo, _player);
+                                                Zones.ZoneCheck(cInfo, player);
                                             }
-                                            if (Lobby.IsEnabled && Lobby.LobbyPlayers.Contains(_cInfo.entityId))
+                                            if (Lobby.IsEnabled && Lobby.LobbyPlayers.Contains(cInfo.entityId))
                                             {
-                                                Lobby.LobbyCheck(_cInfo, _player);
+                                                Lobby.InsideLobby(cInfo, player);
                                             }
-                                            if (Market.IsEnabled && Market.MarketPlayers.Contains(_cInfo.entityId))
+                                            if (Market.IsEnabled && Market.MarketPlayers.Contains(cInfo.entityId))
                                             {
-                                                Market.MarketCheck(_cInfo, _player);
+                                                Market.InsideMarket(cInfo, player);
                                             }
                                         }
-                                    }
-                                    else if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.WarriorList.Contains(_cInfo.playerId))
-                                    {
-                                        BloodmoonWarrior.WarriorList.Remove(_cInfo.playerId);
-                                        BloodmoonWarrior.KilledZombies.Remove(_cInfo.playerId);
                                     }
                                 }
                             }
@@ -117,9 +115,9 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.PlayerCheck: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.CheckZone: {0}", e.Message));
             }
-            IsRunning = false;
+            ZoneRunning = false;
         }
 
         public static void SessionTime(ClientInfo _cInfo)
@@ -134,8 +132,8 @@ namespace ServerTools
         {
             try
             {
-                World _world = GameManager.Instance.World;
-                if (GameUtils.IsBloodMoonTime(_world.GetWorldTime(), (_world.DuskHour, _world.DawnHour), GameStats.GetInt(EnumGameStats.BloodMoonDay)))
+                World world = GameManager.Instance.World;
+                if (GameUtils.IsBloodMoonTime(world.GetWorldTime(), (world.DuskHour, world.DawnHour), GameStats.GetInt(EnumGameStats.BloodMoonDay)))
                 {
                     return true;
                 }
@@ -151,9 +149,9 @@ namespace ServerTools
         {
             try
             {
-                float _duskTime = SkyManager.GetDuskTime();
-                float _timeInMinutes = SkyManager.GetTimeOfDayAsMinutes();
-                if (!SkyManager.BloodMoon() && _timeInMinutes > _duskTime && !GameManager.Instance.World.IsDark())
+                float duskTime = SkyManager.GetDuskTime();
+                float timeInMinutes = SkyManager.GetTimeOfDayAsMinutes();
+                if (!SkyManager.BloodMoon() && timeInMinutes > duskTime && !GameManager.Instance.World.IsDark())
                 {
                     return true;
                 }
@@ -168,20 +166,20 @@ namespace ServerTools
 
         public static List<ClientInfo> ClientList()
         {
-            List<ClientInfo> _clientList = ConnectionManager.Instance.Clients.List.ToList();
-            if (_clientList != null)
+            if (ConnectionManager.Instance.Clients != null && ConnectionManager.Instance.Clients.Count > 0)
             {
-                return _clientList;
+                List<ClientInfo> clientList = ConnectionManager.Instance.Clients.List.ToList();
+                return clientList;
             }
             return null;
         }
 
         public static ClientInfo GetClientInfoFromSteamId(string _playerId)
         {
-            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_playerId);
-            if (_cInfo != null)
+            ClientInfo cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_playerId);
+            if (cInfo != null)
             {
-                return _cInfo;
+                return cInfo;
             }
             return null;
         }
@@ -321,28 +319,6 @@ namespace ServerTools
                 }
             }
             return null;
-        }
-
-        public static void SetSpawnPointNearClaim(ClientInfo _cInfo, EntityPlayer _entityPlayer)
-        {
-            if (_cInfo != null)
-            {
-                PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_cInfo.playerId);
-                if (_persistentPlayerData != null && _persistentPlayerData.LPBlocks != null && _persistentPlayerData.LPBlocks.Count > 0)
-                {
-                    if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out int _x, out int _y, out int _z, new UnityEngine.Vector3(50f, 50f, 50f), true, false))
-                    {
-                        _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
-                    }
-                    else
-                    {
-                        if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(500f, 70f, 500f), true, false))
-                        {
-                            _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
-                        }
-                    }
-                }
-            }
         }
 
         public static void RemoveAllClaims(string _playerId)
@@ -508,119 +484,49 @@ namespace ServerTools
             return false;
         }
 
-        public static List<EntityPlayer> PlayersWithin100Blocks(int _x, int _z)
-        {
-            List<EntityPlayer> _players = new List<EntityPlayer>();
-            List<EntityPlayer> _playerList = PlayerList();
-            for (int i = 0; i < _playerList.Count; i++)
-            {
-                EntityPlayer _player = _playerList[i];
-                if (!_player.IsDead() && _player.Spawned)
-                {
-                    if ((_x - _player.position.x) * (_x - _player.position.x) + (_z - _player.position.z) * (_z - _player.position.z) <= 100 * 100)
-                    {
-                        _players.Add(_player);
-                    }
-                }
-            }
-            if (_players.Count > 0)
-            {
-                return _players;
-            }
-            return null;
-        }
-
-        public static List<EntityPlayer> PlayersWithin200Blocks(int _x, int _z)
-        {
-            List<EntityPlayer> _players = new List<EntityPlayer>();
-            List<EntityPlayer> _playerList = PlayerList();
-            for (int i = 0; i < _playerList.Count; i++)
-            {
-                EntityPlayer _player = _playerList[i];
-                if (!_player.IsDead() && _player.Spawned)
-                {
-                    if ((_x - _player.position.x) * (_x - _player.position.x) + (_z - _player.position.z) * (_z - _player.position.z) <= 200 * 200)
-                    {
-                        _players.Add(_player);
-                    }
-                }
-            }
-            if (_players.Count > 0)
-            {
-                return _players;
-            }
-            return null;
-        }
-
-        public static List<ClientInfo> ClientsWithin200Blocks(int _x, int _z)
-        {
-            List<ClientInfo> _clients = new List<ClientInfo>();
-            List<ClientInfo> _clientList = ClientList();
-            for (int i = 0; i < _clientList.Count; i++)
-            {
-                ClientInfo _cInfo = _clientList[i];
-                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                if (_player != null)
-                {
-                    if (!_player.IsDead() && _player.Spawned)
-                    {
-                        if ((_x - _player.position.x) * (_x - _player.position.x) + (_z - _player.position.z) * (_z - _player.position.z) <= 200 * 200)
-                        {
-                            _clients.Add(_cInfo);
-                        }
-                    }
-                }
-            }
-            if (_clients.Count > 0)
-            {
-                return _clients;
-            }
-            return null;
-        }
-
         public static void ClearChunkProtection(ClientInfo _cInfo)
         {
             try
             {
-                List<Chunk> _chunkList = new List<Chunk>();
-                EntityPlayer _player = GetEntityPlayer(_cInfo.playerId);
-                if (_player != null)
+                List<Chunk> chunkList = new List<Chunk>();
+                EntityPlayer player = GetEntityPlayer(_cInfo.playerId);
+                if (player != null)
                 {
-                    Vector3 _position = _player.position;
-                    int _x = (int)_position.x, _z = (int)_position.z;
-                    if (GameManager.Instance.World.IsChunkAreaLoaded(_x, 1, _z))
+                    Vector3 position = player.position;
+                    int x = (int)position.x, z = (int)position.z;
+                    if (GameManager.Instance.World.IsChunkAreaLoaded(x, 1, z))
                     {
-                        Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_x, 1, _z);
-                        if (!_chunkList.Contains(_chunk))
+                        Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(x, 1, z);
+                        if (!chunkList.Contains(chunk))
                         {
-                            _chunkList.Add(_chunk);
+                            chunkList.Add(chunk);
                         }
-                        Bounds bounds = _chunk.GetAABB();
+                        Bounds bounds = chunk.GetAABB();
                         for (int i = (int)bounds.min.x; i < (int)bounds.max.x; i++)
                         {
                             for (int j = (int)bounds.min.z; j < (int)bounds.max.z; j++)
                             {
-                                _x = i - (int)bounds.min.x;
-                                _z = j - (int)bounds.min.z;
-                                _chunk.SetTraderArea(_x, _z, false);
+                                x = i - (int)bounds.min.x;
+                                z = j - (int)bounds.min.z;
+                                chunk.SetTraderArea(x, z, false);
                             }
                         }
                     }
                 }
-                if (_chunkList.Count > 0)
+                if (chunkList.Count > 0)
                 {
-                    for (int k = 0; k < _chunkList.Count; k++)
+                    for (int k = 0; k < chunkList.Count; k++)
                     {
-                        Chunk _chunk = _chunkList[k];
-                        List<ClientInfo> _clientList = ClientList();
-                        if (_clientList != null && _clientList.Count > 0)
+                        Chunk chunk = chunkList[k];
+                        List<ClientInfo> clientList = ClientList();
+                        if (clientList != null)
                         {
-                            for (int l = 0; l < _clientList.Count; l++)
+                            for (int l = 0; l < clientList.Count; l++)
                             {
-                                ClientInfo _cInfo2 = _clientList[l];
-                                if (_cInfo2 != null)
+                                ClientInfo cInfo2 = clientList[l];
+                                if (cInfo2 != null)
                                 {
-                                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+                                    cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(chunk, true));
                                 }
                             }
                         }
@@ -651,29 +557,29 @@ namespace ServerTools
 
         public static void ReturnBlock(ClientInfo _cInfo, string _blockName, int _quantity)
         {
-            EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-            if (_player != null && _player.IsSpawned() && !_player.IsDead())
+            EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+            if (player != null && player.IsSpawned() && !player.IsDead())
             {
-                World _world = GameManager.Instance.World;
-                ItemValue _itemValue = ItemClass.GetItem(_blockName, false);
-                if (_itemValue != null)
+                World world = GameManager.Instance.World;
+                ItemValue itemValue = ItemClass.GetItem(_blockName, false);
+                if (itemValue != null)
                 {
                     var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                     {
                         entityClass = EntityClass.FromString("item"),
                         id = EntityFactory.nextEntityID++,
-                        itemStack = new ItemStack(_itemValue, _quantity),
-                        pos = _world.Players.dict[_cInfo.entityId].position,
+                        itemStack = new ItemStack(itemValue, _quantity),
+                        pos = world.Players.dict[_cInfo.entityId].position,
                         rot = new Vector3(20f, 0f, 20f),
                         lifetime = 60f,
                         belongsPlayerId = _cInfo.entityId
                     });
-                    _world.SpawnEntityInWorld(entityItem);
+                    world.SpawnEntityInWorld(entityItem);
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                    _world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                     Phrases.Dict.TryGetValue("GiveItem1", out string _phrase);
                     _phrase = _phrase.Replace("{Value}", _quantity.ToString());
-                    _phrase = _phrase.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                    _phrase = _phrase.Replace("{ItemName}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
@@ -693,6 +599,16 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.GetEntityPlayers: {0}", e.Message));
             }
             return null;
+        }
+
+        public static bool IsValidItem(string itemName)
+        {
+            ItemValue itemValue = ItemClass.GetItem(itemName, false);
+            if (itemValue.type != ItemValue.None.type)
+            {
+                return true;
+            }
+            return false;
         }
 
         public static string CreatePassword(int _length)
@@ -719,11 +635,11 @@ namespace ServerTools
             {
                 if (IPAddress.TryParse(ipAddress, out IPAddress _ip))
                 {
-                    byte[] _bytes = _ip.MapToIPv4().GetAddressBytes();
-                    return 16777216L * _bytes[0] +
-                        65536 * _bytes[1] +
-                        256 * _bytes[2] +
-                        _bytes[3]
+                    byte[] bytes = _ip.MapToIPv4().GetAddressBytes();
+                    return 16777216L * bytes[0] +
+                        65536 * bytes[1] +
+                        256 * bytes[2] +
+                        bytes[3]
                         ;
                 }
             }
@@ -732,6 +648,25 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.ConvertIPToLong: {0}", e.Message));
             }
             return 0;
+        }
+
+        public static void GetCurrencyName()
+        {
+            List<ItemClass> itemClassCurrency = ItemClass.GetItemsWithTag(FastTags.Parse("currency"));
+            if (itemClassCurrency != null && itemClassCurrency.Count > 0)
+            {
+                Currency_Item = itemClassCurrency[0].Name;
+                Log.Out(string.Format("[SERVERTOOLS] Wallet and Bank tool set to utilize item named {0}", Currency_Item));
+            }
+            else
+            {
+                No_Currency = true;
+                Wallet.IsEnabled = false;
+                Bank.IsEnabled = false;
+                Config.WriteXml();
+                Config.LoadXml();
+                Log.Out(string.Format("[SERVERTOOLS] Unable to find an item with the tag 'currency' in the item list. Wallet and Bank tool are disabled"));
+            }
         }
 
         public static void Jail(ClientInfo _cInfoKiller)

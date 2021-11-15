@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -12,9 +11,12 @@ namespace ServerTools
         public static Dictionary<string, string> Dict = new Dictionary<string, string>();
 
         private static List<string> Commands = new List<string>();
+
         private const string file = "CommandList.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -30,81 +32,102 @@ namespace ServerTools
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(FilePath))
-            {
-                UpdateXml();
-            }
-            XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(FilePath);
-            }
-            catch (XmlException e)
-            {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
-                return;
-            }
-            bool upgrade = true;
-            XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-            if (childNodes != null)
-            {
-                Dict.Clear();
-                for (int i = 0; i < childNodes.Count; i++)
+                if (!Utils.FileExists(FilePath))
                 {
-                    if (childNodes[i].NodeType != XmlNodeType.Comment)
+                    UpdateXml();
+                }
+                XmlDocument xmlDoc = new XmlDocument();
+                try
+                {
+                    xmlDoc.Load(FilePath);
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    return;
+                }
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null)
+                {
+                    Dict.Clear();
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        XmlElement line = (XmlElement)childNodes[i];
-                        if (line.HasAttributes)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                upgrade = false;
-                                continue;
-                            }
-                            else if (line.HasAttribute("Default") && line.HasAttribute("Replacement"))
-                            {
-                                string _default = line.GetAttribute("Default");
-                                string replacement = line.GetAttribute("Replacement").ToLower();
-                                if (!Dict.ContainsKey(_default))
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    Dict.Add(_default, replacement);
+                                    upgrade = false;
+                                    continue;
+                                }
+                                else if (line.HasAttribute("Default") && line.HasAttribute("Replacement"))
+                                {
+                                    string _default = line.GetAttribute("Default");
+                                    string replacement = line.GetAttribute("Replacement").ToLower();
+                                    if (!Dict.ContainsKey(_default))
+                                    {
+                                        Dict.Add(_default, replacement);
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                if (Dict.Count > 0)
-                {
-                    Exec();
-                }
-            }
-            if (upgrade)
-            {
-                XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                XmlNode node = nodeList[0];
-                XmlElement line = (XmlElement)nodeList[0];
-                if (line != null)
-                {
-                    if (line.HasAttributes)
+                    if (Dict.Count > 0)
                     {
-                        UpgradeXml(nodeList);
-                        return;
+                        Exec();
                     }
-                    else
+                }
+                if (upgrade)
+                {
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
                     {
-                        nodeList = node.ChildNodes;
-                        line = (XmlElement)nodeList[0];
-                        if (line != null)
+                        if (line.HasAttributes)
                         {
-                            if (line.HasAttributes)
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
                             {
-                                UpgradeXml(nodeList);
-                                return;
+                                if (line.HasAttributes)
+                                {
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
+                                    return;
+                                }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing CommandList.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
                 }
-                UpgradeXml(null);
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in CommandList.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -116,8 +139,8 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<CommandList>");
                 sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                sw.WriteLine("<!-- Leave the default alone. Only edit the replacement to your desired command -->");
-                sw.WriteLine("<!-- All capital letters in commands will be reduced to lowercase -->");
+                sw.WriteLine("    <!-- Leave the default alone. Only edit the replacement to your desired command -->");
+                sw.WriteLine("    <!-- All capital letters in commands will be reduced to lowercase -->");
                 sw.WriteLine();
                 sw.WriteLine();
                 if (Dict.Count > 0)
@@ -326,7 +349,7 @@ namespace ServerTools
                             Shutdown.Command_shutdown = kvp.Value;
                             continue;
                         case "adminlist":
-                            VoteReward.Command_reward = kvp.Value;
+                            AdminList.Command_adminlist = kvp.Value;
                             continue;
                         case "travel":
                             Travel.Command_travel = kvp.Value;
@@ -447,12 +470,6 @@ namespace ServerTools
                             continue;
                         case "withdraw":
                             Bank.Command_withdraw = kvp.Value;
-                            continue;
-                        case "wallet deposit":
-                            Bank.Command_wallet_deposit = kvp.Value;
-                            continue;
-                        case "wallet withdraw":
-                            Bank.Command_wallet_withdraw = kvp.Value;
                             continue;
                         case "transfer":
                             Bank.Command_transfer = kvp.Value;
@@ -702,7 +719,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"party remove\" Replacement=\"party remove\" />");
         }
 
-        private static void UpgradeXml(XmlNodeList childNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -713,25 +730,25 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CommandList>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Leave the default alone. Only edit the replacement to your desired command -->");
-                    sw.WriteLine("<!-- All capital letters in commands will be reduced to lowercase -->");
-                    if (childNodes != null)
+                    sw.WriteLine("    <!-- Leave the default alone. Only edit the replacement to your desired command -->");
+                    sw.WriteLine("    <!-- All capital letters in commands will be reduced to lowercase -->");
+                    if (OldNodeList != null)
                     {
-                        for (int i = 0; i < childNodes.Count; i++)
+                        for (int i = 0; i < OldNodeList.Count; i++)
                         {
-                            if (childNodes[i].NodeType == XmlNodeType.Comment && !childNodes[i].OuterXml.Contains("<!-- All capital letters in commands") &&
-                                !childNodes[i].OuterXml.Contains("<!-- Leave the default alone."))
+                            if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("    <!-- All capital letters in commands") &&
+                                !OldNodeList[i].OuterXml.Contains("    <!-- Leave the default alone."))
                             {
-                                sw.WriteLine(childNodes[i].OuterXml);
+                                sw.WriteLine(OldNodeList[i].OuterXml);
                             }
                         }
                         sw.WriteLine();
                         sw.WriteLine();
-                        for (int i = 0; i < childNodes.Count; i++)
+                        for (int i = 0; i < OldNodeList.Count; i++)
                         {
-                            if (childNodes[i].NodeType != XmlNodeType.Comment)
+                            if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                             {
-                                XmlElement line = (XmlElement)childNodes[i];
+                                XmlElement line = (XmlElement)OldNodeList[i];
                                 if (line.HasAttributes && line.Name == "Command")
                                 {
                                     string defaultCommand = "", replacement = "";

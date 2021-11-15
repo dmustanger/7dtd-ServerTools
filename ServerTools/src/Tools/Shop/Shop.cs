@@ -12,12 +12,15 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, Inside_Market = false, Inside_Traders = false;
         public static int Delay_Between_Uses = 60;
         public static string Command_shop = "shop", Command_shop_buy = "shop buy";
+
         public static List<string[]> Dict = new List<string[]>();
         public static List<string> Categories = new List<string>();
 
         private const string file = "Shop.xml";
         private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -140,7 +143,9 @@ namespace ServerTools
                     {
                         if (line.HasAttributes)
                         {
-                            UpgradeXml(nodeList);
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
                             return;
                         }
                         else
@@ -151,18 +156,30 @@ namespace ServerTools
                             {
                                 if (line.HasAttributes)
                                 {
-                                    UpgradeXml(nodeList);
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
                                     return;
                                 }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing Shop.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
-                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Shop.LoadXml: {0}", e.Message));
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in Shop.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -176,8 +193,8 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Shop>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Secondary name is what will show in chat instead of the item name -->");
-                    sw.WriteLine("<!-- WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option -->");
+                    sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
+                    sw.WriteLine("    <!-- WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -356,7 +373,7 @@ namespace ServerTools
                                 _phrase = _phrase.Replace("{Item}", _itemData[2]);
                                 _phrase = _phrase.Replace("{Quality}", _itemData[4]);
                                 _phrase = _phrase.Replace("{Price}", _itemData[5]);
-                                _phrase = _phrase.Replace("{Name}", Wallet.Coin_Name);
+                                _phrase = _phrase.Replace("{Name}", Wallet.Currency_Name);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                             else
@@ -366,7 +383,7 @@ namespace ServerTools
                                 _phrase = _phrase.Replace("{Count}", _itemData[3]);
                                 _phrase = _phrase.Replace("{Item}", _itemData[2]);
                                 _phrase = _phrase.Replace("{Price}", _itemData[5]);
-                                _phrase = _phrase.Replace("{Name}", Wallet.Coin_Name);
+                                _phrase = _phrase.Replace("{Name}", Wallet.Currency_Name);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
@@ -395,7 +412,7 @@ namespace ServerTools
                     string[] _itemData = Dict[i];
                     if (int.Parse(_itemData[0]) == _item)
                     {
-                        int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
+                        int _currentCoins = Wallet.GetCurrency(_cInfo.playerId);
                         int _cost = int.Parse(_itemData[5]) * _count;
                         if (_currentCoins >= _cost)
                         {
@@ -405,7 +422,7 @@ namespace ServerTools
                         else
                         {
                             Phrases.Dict.TryGetValue("Shop5", out string _phrase);
-                            _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                            _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                             _phrase = _phrase.Replace("{Value}", _currentCoins.ToString());
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
@@ -440,7 +457,7 @@ namespace ServerTools
                 world.SpawnEntityInWorld(entityItem);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
+                Wallet.RemoveCurrency(_cInfo.playerId, _price);
                 Log.Out(string.Format("Sold {0} to {1} {2} through the shop", _itemValue.ItemClass.Name, _cInfo.playerId, _cInfo.playerName));
                 Phrases.Dict.TryGetValue("Shop16", out string _phrase);
                 _phrase = _phrase.Replace("{Count}", _count.ToString());
@@ -460,7 +477,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -470,23 +487,23 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Shop>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Secondary name is what will show in chat instead of the item name -->");
-                    sw.WriteLine("<!-- WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
+                    sw.WriteLine("    <!-- WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Secondary name is") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- WalletCoin can be") && !_oldChildNodes[i].OuterXml.Contains("    <!-- <Item Name=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Secondary name is") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- WalletCoin can be") && !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && (line.Name == "Shop" || line.Name == "Item"))
                             {
                                 string name = "", secondaryName = "", count = "", quality = "", price = "", category = "";

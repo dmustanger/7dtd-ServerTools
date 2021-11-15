@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ServerTools
 {
-    class FlyingConsole : ConsoleCmdAbstract
+    class FlyingDetectorConsole : ConsoleCmdAbstract
     {
         public override string GetDescription()
         {
@@ -32,9 +32,9 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (PlayerChecks.FlyEnabled)
+                    if (FlyingDetector.IsEnabled)
                     {
-                        PlayerChecks.FlyEnabled = false;
+                        FlyingDetector.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Flying has been set to off"));
@@ -48,9 +48,9 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (!PlayerChecks.FlyEnabled)
+                    if (!FlyingDetector.IsEnabled)
                     {
-                        PlayerChecks.FlyEnabled = true;
+                        FlyingDetector.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Flying has been set to on"));

@@ -11,47 +11,44 @@ namespace ServerTools
         {
             if (GameManager.Instance.World.Players.dict.Count > 0)
             {
-                List<string[]> _track = new List<string[]>();
+                List<string[]> track = new List<string[]>();
                 if (PersistentContainer.Instance.Track != null)
                 {
-                    _track = PersistentContainer.Instance.Track;
+                    track = PersistentContainer.Instance.Track;
                 }
-                List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                if (_cInfoList != null && _cInfoList.Count > 0)
+                List<ClientInfo> clientList = PersistentOperations.ClientList();
+                if (clientList != null)
                 {
-                    for (int i = 0; i < _cInfoList.Count; i++)
+                    for (int i = 0; i < clientList.Count; i++)
                     {
-                        ClientInfo _cInfo = _cInfoList[i];
-                        if (_cInfo != null && _cInfo.playerId != null)
+                        ClientInfo cInfo = clientList[i];
+                        if (cInfo != null && cInfo.playerId != null)
                         {
-                            if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
+                            EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                            if (player != null && player.IsSpawned() && !player.IsDead())
                             {
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                if (_player != null && _player.IsSpawned())
+                                string pos = (int)player.position.x + "," + (int)player.position.y + "," + (int)player.position.z;
+                                string holdingItem = player.inventory.holdingItem.Name;
+                                if (!string.IsNullOrEmpty(player.inventory.holdingItem.Name))
                                 {
-                                    string _pos = (int)_player.position.x + "," + (int)_player.position.y + "," + (int)_player.position.z;
-                                    string _holdingItem = _player.inventory.holdingItem.Name;
-                                    if (!string.IsNullOrEmpty(_player.inventory.holdingItem.Name))
+                                    ItemValue itemValue = ItemClass.GetItem(holdingItem, true);
+                                    if (itemValue.type != ItemValue.None.type)
                                     {
-                                        ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
-                                        if (_itemValue.type != ItemValue.None.type)
-                                        {
-                                            _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name;
-                                        }
-                                        string[] _newData = { DateTime.Now.ToString(), _pos, _cInfo.playerId, _player.EntityName, _holdingItem };
-                                        _track.Add(_newData);
+                                        holdingItem = itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name;
                                     }
-                                    else
-                                    {
-                                        string[] _newData = { DateTime.Now.ToString(), _pos, _cInfo.playerId, _player.EntityName, "nothing" };
-                                        _track.Add(_newData);
-                                    }
+                                    string[] newData = { DateTime.Now.ToString(), pos, cInfo.playerId, player.EntityName, holdingItem };
+                                    track.Add(newData);
+                                }
+                                else
+                                {
+                                    string[] newData = { DateTime.Now.ToString(), pos, cInfo.playerId, player.EntityName, "nothing" };
+                                    track.Add(newData);
                                 }
                             }
                         }
                     }
                 }
-                PersistentContainer.Instance.Track = _track;
+                PersistentContainer.Instance.Track = track;
                 PersistentContainer.DataChange = true;
             }
         }

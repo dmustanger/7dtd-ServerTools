@@ -25,8 +25,9 @@ namespace ServerTools
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static readonly string DetectionFile = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static readonly string DetectionFilepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, DetectionFile);
-        
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -98,7 +99,9 @@ namespace ServerTools
                     {
                         if (line.HasAttributes)
                         {
-                            UpgradeXml(nodeList);
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
                             return;
                         }
                         else
@@ -109,18 +112,30 @@ namespace ServerTools
                             {
                                 if (line.HasAttributes)
                                 {
-                                    UpgradeXml(nodeList);
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
                                     return;
                                 }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing Credentials.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
-                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CredentialCheck.LoadXml: {0}", e.Message));
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in CredentialCheck.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -134,7 +149,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<FamilyShareAccount>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Player SteamId=\"\" Name=\"\" /> -->");
+                    sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     foreach (KeyValuePair<string, string> key in Dict)
@@ -242,7 +257,7 @@ namespace ServerTools
             return true;
         }
 
-        private static void UpgradeXml(XmlNodeList _childNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -252,23 +267,23 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<FamilyShareAccount>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Player SteamId=\"\" Name=\"\" /> -->");
-                    if (_childNodes != null)
+                    sw.WriteLine("    <!-- <Player SteamId=\"\" Name=\"\" /> -->");
+                    if (OldNodeList != null)
                     {
-                        for (int i = 0; i < _childNodes.Count; i++)
+                        for (int i = 0; i < OldNodeList.Count; i++)
                         {
-                            if (_childNodes[i].NodeType == XmlNodeType.Comment && !_childNodes[i].OuterXml.Contains("<!-- <Player SteamId=\"\""))
+                            if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Player SteamId=\"\""))
                             {
-                                sw.WriteLine(_childNodes[i].OuterXml);
+                                sw.WriteLine(OldNodeList[i].OuterXml);
                             }
                         }
                         sw.WriteLine();
                         sw.WriteLine();
-                        for (int i = 0; i < _childNodes.Count; i++)
+                        for (int i = 0; i < OldNodeList.Count; i++)
                         {
-                            if (_childNodes[i].NodeType != XmlNodeType.Comment)
+                            if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                             {
-                                XmlElement line = (XmlElement)_childNodes[i];
+                                XmlElement line = (XmlElement)OldNodeList[i];
                                 if (line.HasAttributes && line.Name == "Player")
                                 {
                                     string steamId = "", name = "";

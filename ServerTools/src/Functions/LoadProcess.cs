@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static int Days_Before_Log_Delete = 5;
 
-        public static void Load(bool _initiating)
+        public static void Load()
         {
             try
             {
@@ -105,6 +105,7 @@ namespace ServerTools
             try
             {
                 Config.Load();
+                Log.Out("[SERVERTOOLS] Running ServerTools v.{0}", Config.Version);
             }
             catch (XmlException e)
             {
@@ -124,6 +125,9 @@ namespace ServerTools
             try
             {
                 PersistentOperations.SetInstallFolder();
+                PersistentOperations.GetCurrencyName();
+                PersistentOperations.EntityIdList();
+                PersistentOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
                 PersistentOperations.ThirtySeconds = true;
             }
             catch (XmlException e)
@@ -231,8 +235,6 @@ namespace ServerTools
 
             Track.Cleanup();
 
-            PersistentOperations.EntityIdList();
-            PersistentOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
             CountryBan.BuildList();
             DroppedBagProtection.BuildList();
 

@@ -17,21 +17,21 @@ namespace ServerTools
 
         public static void Check(ClientInfo _cInfo, string _message)
         {
-            DateTime _lastLog = PersistentContainer.Instance.Players[_cInfo.playerId].LastLog;
-            TimeSpan varTime = DateTime.Now - _lastLog;
+            DateTime lastLog = PersistentContainer.Instance.Players[_cInfo.playerId].LastLog;
+            TimeSpan varTime = DateTime.Now - lastLog;
             double fractionalMinutes = varTime.TotalMinutes;
-            int _timepassed = (int)fractionalMinutes;
-            if (_timepassed >= Delay)
+            int timepassed = (int)fractionalMinutes;
+            if (timepassed >= Delay)
             {
                 Exec(_cInfo, _message);
             }
             else
             {
-                int _timeleft = Delay - _timepassed;
-                Phrases.Dict.TryGetValue("Report1", out string _phrase);
-                _phrase = _phrase.Replace("{DelayBetweenUses}", Delay.ToString());
-                _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                int timeleft = Delay - timepassed;
+                Phrases.Dict.TryGetValue("Report1", out string phrase);
+                phrase = phrase.Replace("{DelayBetweenUses}", Delay.ToString());
+                phrase = phrase.Replace("{TimeRemaining}", timeleft.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -39,25 +39,25 @@ namespace ServerTools
         {
             if (_message.Length > Length)
             {
-                Phrases.Dict.TryGetValue("Report4", out string _phrase);
-                _phrase = _phrase.Replace("{Length}", Length.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Report4", out string phrase);
+                phrase = phrase.Replace("{Length}", Length.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
             Vector3 _pos = GameManager.Instance.World.Players.dict[_cInfo.entityId].position;
-            List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
-            if (ClientInfoList != null && ClientInfoList.Count > 0)
+            List<ClientInfo> clientList = PersistentOperations.ClientList();
+            if (clientList != null)
             {
-                for (int i = 0; i < ClientInfoList.Count; i++)
+                for (int i = 0; i < clientList.Count; i++)
                 {
-                    ClientInfo _cInfoAdmin = ClientInfoList[i];
-                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfoAdmin) <= Admin_Level)
+                    ClientInfo cInfoAdmin = clientList[i];
+                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfoAdmin) <= Admin_Level)
                     {
-                        Phrases.Dict.TryGetValue("Report2", out string _phrase);
-                        _phrase = _phrase.Replace("{Position}", _pos.ToString());
-                        _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                        _phrase = _phrase.Replace("{Message}", _message);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Report2", out string phrase);
+                        phrase = phrase.Replace("{Position}", _pos.ToString());
+                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                        phrase = phrase.Replace("{Message}", _message);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -70,8 +70,8 @@ namespace ServerTools
             }
             PersistentContainer.Instance.Players[_cInfo.playerId].LastLog = DateTime.Now;
             PersistentContainer.DataChange = true;
-            Phrases.Dict.TryGetValue("Report5", out string _phrase1);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue("Report5", out string phrase1);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             Log.Out(string.Format("[SERVERTOOLS] Report sent by player {0} {1} and saved to the report logs", _cInfo.playerName, _cInfo.playerId));
         }
     }

@@ -123,14 +123,14 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo, Entity _player, int _vehicleId)
         {
-            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+            if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
             {
                 TeleVehicle(_cInfo, _player, _vehicleId);
             }
             else
             {
                 Phrases.Dict.TryGetValue("VehicleRecall5", out string _phrase);
-                _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
@@ -231,7 +231,7 @@ namespace ServerTools
                 {
                     if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
-                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                        Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
                     }
                     int _delay = Delay_Between_Uses;
                     Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_x, _y, _z);

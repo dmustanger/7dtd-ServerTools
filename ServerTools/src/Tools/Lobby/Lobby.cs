@@ -112,14 +112,14 @@ namespace ServerTools
 
         private static void CommandCost(ClientInfo _cInfo)
         {
-            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+            if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
             {
                 LobbyTele(_cInfo);
             }
             else
             {
                 Phrases.Dict.TryGetValue("Lobby4", out string _phrase244);
-                _phrase244 = _phrase244.Replace("{CoinName}", Wallet.Coin_Name);
+                _phrase244 = _phrase244.Replace("{CoinName}", Wallet.Currency_Name);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase244 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
@@ -177,7 +177,7 @@ namespace ServerTools
                                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                                     if (Wallet.IsEnabled && Command_Cost >= 1)
                                     {
-                                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                                        Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
                                     }
                                     PersistentContainer.Instance.Players[_cInfo.playerId].LastLobby = DateTime.Now;
                                     PersistentContainer.DataChange = true;
@@ -233,7 +233,7 @@ namespace ServerTools
             }
         }
 
-        public static void LobbyCheck(ClientInfo _cInfo, EntityAlive _player)
+        public static void InsideLobby(ClientInfo _cInfo, EntityAlive _player)
         {
             if (!InsideLobby(_player.position.x, _player.position.z))
             {

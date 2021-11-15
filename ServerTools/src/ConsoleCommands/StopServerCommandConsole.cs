@@ -48,17 +48,18 @@ namespace ServerTools
                         Lottery.ShuttingDown = false;
                         if (ExitCommand.IsEnabled)
                         {
-                            List<ClientInfo> clients = PersistentOperations.ClientList();
-                            if (clients != null && clients.Count > 0)
+                            List<ClientInfo> clientList = PersistentOperations.ClientList();
+                            if (clientList != null)
                             {
-                                for (int i = 0; i < clients.Count; i++)
+                                for (int i = 0; i < clientList.Count; i++)
                                 {
-                                    if (!ExitCommand.Players.ContainsKey(clients[i].entityId) && GameManager.Instance.adminTools.GetUserPermissionLevel(clients[i]) > ExitCommand.Admin_Level)
+                                    ClientInfo cInfo = clientList[i];
+                                    if (!ExitCommand.Players.ContainsKey(cInfo.entityId) && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo) > ExitCommand.Admin_Level)
                                     {
-                                        EntityPlayer player = GameManager.Instance.World.Players.dict[clients[i].entityId];
+                                        EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
                                         if (player != null)
                                         {
-                                            ExitCommand.Players.Add(clients[i].entityId, player.position);
+                                            ExitCommand.Players.Add(cInfo.entityId, player.position);
                                         }
                                     }
                                 }

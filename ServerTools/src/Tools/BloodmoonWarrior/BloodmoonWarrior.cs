@@ -10,15 +10,19 @@ namespace ServerTools
     class BloodmoonWarrior
     {
         public static bool IsEnabled = false, IsRunning = false, BloodmoonStarted = false, Reduce_Death_Count = false;
-        public static int Zombie_Kills = 10, Chance = 50, Reward_Count = 1;
+        public static int Zombie_Kills = 10, Chance = 50, Reward_Count = 1, Level_Required = 10;
+
         public static List<string> WarriorList = new List<string>();
         public static Dictionary<string, int> KilledZombies = new Dictionary<string, int>();
 
+        private static readonly Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
+
         private const string file = "BloodmoonWarrior.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static readonly Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
         private static readonly System.Random Random = new System.Random();
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         private static List<string> List
         {
@@ -97,12 +101,40 @@ namespace ServerTools
                                         continue;
                                     }
                                     string name = line.GetAttribute("Name");
-                                    ItemClass _class = ItemClass.GetItemClass(name, true);
-                                    Block _block = Block.GetBlockByName(name, true);
-                                    if (_class == null && _block == null)
+                                    if (!PersistentOperations.IsValidItem(name))
                                     {
                                         Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry. Item name not found: {0}", name));
                                         continue;
+                                    }
+                                    ItemValue itemValue = ItemClass.GetItem(name, false);
+                                    if (minCount > itemValue.ItemClass.Stacknumber.Value)
+                                    {
+                                        minCount = itemValue.ItemClass.Stacknumber.Value;
+                                    }
+                                    else if (minCount < 1)
+                                    {
+                                        minCount = 1;
+                                    }
+                                    if (maxCount > itemValue.ItemClass.Stacknumber.Value)
+                                    {
+                                        maxCount = itemValue.ItemClass.Stacknumber.Value;
+                                    }
+                                    else if (maxCount < 1)
+                                    {
+                                        maxCount = 1;
+                                    }
+                                    int exchange;
+                                    if (minCount > maxCount)
+                                    {
+                                        exchange = maxCount;
+                                        maxCount = minCount;
+                                        minCount = exchange;
+                                    }
+                                    if (minQuality > maxQuality)
+                                    {
+                                        exchange = maxQuality;
+                                        maxQuality = minQuality;
+                                        minQuality = exchange;
                                     }
                                     string secondaryname;
                                     if (line.HasAttribute("SecondaryName"))
@@ -132,7 +164,9 @@ namespace ServerTools
                     {
                         if (line.HasAttributes)
                         {
-                            UpgradeXml(nodeList);
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
                             return;
                         }
                         else
@@ -143,18 +177,30 @@ namespace ServerTools
                             {
                                 if (line.HasAttributes)
                                 {
-                                    UpgradeXml(nodeList);
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
                                     return;
                                 }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing BloodmoonWarrior.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
-                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.LoadXml: {0}", e.Message));
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -217,25 +263,22 @@ namespace ServerTools
                     if (PersistentOperations.IsBloodmoon())
                     {
                         BloodmoonStarted = true;
-                        List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                        if (_cInfoList != null)
+                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        if (clientList != null)
                         {
-                            for (int i = 0; i < _cInfoList.Count; i++)
+                            for (int i = 0; i < clientList.Count; i++)
                             {
-                                ClientInfo _cInfo = _cInfoList[i];
-                                if (_cInfo != null)
+                                ClientInfo cInfo = clientList[i];
+                                if (cInfo != null)
                                 {
-                                    if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
+                                    EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                                    if (player != null && player.IsSpawned() && player.IsAlive() && player.Died > 0 && player.Progression.GetLevel() >= 10 && Random.Next(0, 100) < Chance)
                                     {
-                                        EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                                        if (_player != null && _player.IsSpawned() && _player.IsAlive() && _player.Died > 0 && _player.Progression.GetLevel() >= 10 && Random.Next(0, 100) < Chance)
-                                        {
-                                            WarriorList.Add(_cInfo.playerId);
-                                            KilledZombies.Add(_cInfo.playerId, 0);
-                                            Phrases.Dict.TryGetValue("BloodmoonWarrior1", out string _phrase);
-                                            _phrase = _phrase.Replace("{Count}", Zombie_Kills.ToString());
-                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                        }
+                                        WarriorList.Add(cInfo.playerId);
+                                        KilledZombies.Add(cInfo.playerId, 0);
+                                        Phrases.Dict.TryGetValue("BloodmoonWarrior1", out string phrase);
+                                        phrase = phrase.Replace("{Count}", Zombie_Kills.ToString());
+                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                             }
@@ -347,7 +390,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -357,22 +400,22 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<BloodmoonWarrior>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Item Name=\"gunPistolExample\" SecondaryName=\"pistol\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"3\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- <Item Name=\"gunPistolExample\" SecondaryName=\"pistol\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"3\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Item Name=\"gunPistolExample\"") && 
-                            !_oldChildNodes[i].OuterXml.StartsWith("<!-- <Item Name=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.StartsWith("<!-- <Item Name=\"gunPistolExample\"") && 
+                            !OldNodeList[i].OuterXml.StartsWith("<!-- <Item Name=\"\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Item")
                             {
                                 string name = "", secondaryName = "", minCount = "", maxCount = "", minQuality = "", maxQuality = "";

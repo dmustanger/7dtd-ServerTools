@@ -11,9 +11,17 @@ namespace ServerTools
             {
                 DiscordBot.BuildToken();
             }
-            if (!Timers.IsRunning)
+            if (!Timers.CoreIsRunning)
             {
-                Timers.TimerStart();
+                Timers.CoreTimerStart();
+            }
+            if (XRayDetector.IsEnabled && !Timers.HalfSecondIsRunning)
+            {
+                Timers.HalfSecondTimerStart();
+            }
+            if (!XRayDetector.IsEnabled && Timers.HalfSecondIsRunning)
+            {
+                Timers.HalfSecondTimerStop();
             }
             if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen)
             {
@@ -210,13 +218,13 @@ namespace ServerTools
             {
                 LevelUp.Load();
             }
-            if (ProtectedSpaces.IsRunning && !ProtectedSpaces.IsEnabled)
+            if (ProtectedZones.IsRunning && !ProtectedZones.IsEnabled)
             {
-                ProtectedSpaces.Unload();
+                ProtectedZones.Unload();
             }
-            else if (!ProtectedSpaces.IsRunning && ProtectedSpaces.IsEnabled)
+            else if (!ProtectedZones.IsRunning && ProtectedZones.IsEnabled)
             {
-                ProtectedSpaces.Load();
+                ProtectedZones.Load();
             }
             if (ClanManager.IsEnabled)
             {

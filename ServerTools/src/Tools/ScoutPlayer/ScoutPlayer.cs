@@ -74,14 +74,14 @@ namespace ServerTools
         {
             if (Wallet.IsEnabled && Command_Cost > 0)
             {
-                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+                if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
                 {
                     StartScouting(_cInfo);
                 }
                 else
                 {
                     Phrases.Dict.TryGetValue("ScoutPlayer2", out string _phrase);
-                    _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                    _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }

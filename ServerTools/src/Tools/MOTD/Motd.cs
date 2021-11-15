@@ -9,11 +9,14 @@ namespace ServerTools
     public class Motd
     {
         public static bool IsEnabled = false, IsRunning = false, Show_On_Respawn = false;
+
         public static List<string> Dict = new List<string>();
 
         private const string file = "Motd.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -30,76 +33,97 @@ namespace ServerTools
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(FilePath))
-            {
-                UpdateXml();
-            }
-            XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(FilePath);
-            }
-            catch (XmlException e)
-            {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
-                return;
-            }
-            bool upgrade = true;
-            XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-            if (childNodes != null)
-            {
-                Dict.Clear();
-                for (int i = 0; i < childNodes.Count; i++)
+                if (!Utils.FileExists(FilePath))
                 {
-                    if (childNodes[i].NodeType != XmlNodeType.Comment)
+                    UpdateXml();
+                }
+                XmlDocument xmlDoc = new XmlDocument();
+                try
+                {
+                    xmlDoc.Load(FilePath);
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    return;
+                }
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null)
+                {
+                    Dict.Clear();
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        XmlElement line = (XmlElement)childNodes[i];
-                        if (line.HasAttributes)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
                             {
-                                upgrade = false;
-                                continue;
-                            }
-                            if (line.HasAttribute("Message"))
-                            {
-                                string message = line.GetAttribute("Message");
-                                if (!Dict.Contains(message))
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                                 {
-                                    Dict.Add(message);
+                                    upgrade = false;
+                                    continue;
+                                }
+                                if (line.HasAttribute("Message"))
+                                {
+                                    string message = line.GetAttribute("Message");
+                                    if (!Dict.Contains(message))
+                                    {
+                                        Dict.Add(message);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-            if (upgrade)
-            {
-                XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                XmlNode node = nodeList[0];
-                XmlElement line = (XmlElement)nodeList[0];
-                if (line != null)
+                if (upgrade)
                 {
-                    if (line.HasAttributes)
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
                     {
-                        UpgradeXml(nodeList);
-                        return;
-                    }
-                    else
-                    {
-                        nodeList = node.ChildNodes;
-                        line = (XmlElement)nodeList[0];
-                        if (line != null)
+                        if (line.HasAttributes)
                         {
-                            if (line.HasAttributes)
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
                             {
-                                UpgradeXml(nodeList);
-                                return;
+                                if (line.HasAttributes)
+                                {
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
+                                    return;
+                                }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing Motd.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
                 }
-                UpgradeXml(null);
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in Motd.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -113,8 +137,8 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Motds>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Possible variables {EntityId} {SteamId} {PlayerName} -->");
-                    sw.WriteLine("<!-- <Server Message=\"Welcome to the server\" /> -->");
+                    sw.WriteLine("    <!-- Possible variables {EntityId} {SteamId} {PlayerName} -->");
+                    sw.WriteLine("    <!-- <Server Message=\"Welcome to the server\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -176,7 +200,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -186,23 +210,23 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Motds>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Possible variables {EntityId} {SteamId} {PlayerName} -->");
-                    sw.WriteLine("<!-- <Server Message=\"Welcome to the server\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- Possible variables {EntityId} {SteamId} {PlayerName} -->");
+                    sw.WriteLine("    <!-- <Server Message=\"Welcome to the server\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Possible variables") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Server Message=\"Welcome to the server\"") && !_oldChildNodes[i].OuterXml.Contains("    <!-- <Server Message=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Possible variables") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Server Message=\"Welcome to the server\"") && !OldNodeList[i].OuterXml.Contains("<!-- <Server Message=\"\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Server")
                             {
                                 string message = "";

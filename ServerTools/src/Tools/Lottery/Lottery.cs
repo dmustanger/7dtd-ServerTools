@@ -16,7 +16,7 @@ namespace ServerTools
                 int _value = LottoValue * LottoEntries.Count;
                 Phrases.Dict.TryGetValue("Lottery2", out string _phrase);
                 _phrase = _phrase.Replace("{Value}", _value.ToString());
-                _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                 _phrase = _phrase.Replace("{BuyIn}", LottoValue.ToString());
                 _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
                 _phrase = _phrase.Replace("{Command_lottery_enter}", Command_lottery_enter);
@@ -40,7 +40,7 @@ namespace ServerTools
                     int _winnings = LottoValue * LottoEntries.Count;
                     Phrases.Dict.TryGetValue("Lottery2", out string _phrase);
                     _phrase = _phrase.Replace("{Value}", _winnings.ToString());
-                    _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                    _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                     _phrase = _phrase.Replace("{BuyIn}", LottoValue.ToString());
                     _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
                     _phrase = _phrase.Replace("{Command_lottery_enter}", Command_lottery_enter);
@@ -52,19 +52,19 @@ namespace ServerTools
                     {
                         if (_lottoValue > 0)
                         {
-                            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= _lottoValue)
+                            if (Wallet.GetCurrency(_cInfo.playerId) >= _lottoValue)
                             {
                                 OpenLotto = true;
                                 LottoValue = _lottoValue;
                                 LottoEntries.Add(_cInfo);
-                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, LottoValue);
+                                Wallet.RemoveCurrency(_cInfo.playerId, LottoValue);
                                 Phrases.Dict.TryGetValue("Lottery4", out string _phrase);
                                 _phrase = _phrase.Replace("{Value}", _lottoValue.ToString());
-                                _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                                _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 Phrases.Dict.TryGetValue("Lottery5", out _phrase);
                                 _phrase = _phrase.Replace("{Value}", LottoValue.ToString());
-                                _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                                _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                                 _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
                                 _phrase = _phrase.Replace("{Command_lottery_enter}", Command_lottery_enter);
                                 ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
@@ -72,7 +72,7 @@ namespace ServerTools
                             else
                             {
                                 Phrases.Dict.TryGetValue("Lottery6", out string _phrase);
-                                _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                                _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
@@ -95,12 +95,12 @@ namespace ServerTools
         {
             if (OpenLotto)
             {
-                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= LottoValue)
+                if (Wallet.GetCurrency(_cInfo.playerId) >= LottoValue)
                 {
                     if (!LottoEntries.Contains(_cInfo))
                     {
                         LottoEntries.Add(_cInfo);
-                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, LottoValue);
+                        Wallet.RemoveCurrency(_cInfo.playerId, LottoValue);
                         Phrases.Dict.TryGetValue("Lottery7", out string _phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         if (LottoEntries.Count == 10)
@@ -117,7 +117,7 @@ namespace ServerTools
                 else
                 {
                     Phrases.Dict.TryGetValue("Lottery6", out string _phrase);
-                    _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                    _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
@@ -147,11 +147,11 @@ namespace ServerTools
             OpenLotto = false;
             LottoValue = 0;
             LottoEntries.Clear();
-            Wallet.AddCoinsToWallet(_winner.playerId, _winnings);
+            Wallet.AddCurrency(_winner.playerId, _winnings);
             Phrases.Dict.TryGetValue("Lottery10", out string _phrase);
             _phrase = _phrase.Replace("{PlayerName}", _winner.playerName);
             _phrase = _phrase.Replace("{Value}", _winnings.ToString());
-            _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+            _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
             ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 

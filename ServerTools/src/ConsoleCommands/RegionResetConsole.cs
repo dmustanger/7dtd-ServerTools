@@ -53,32 +53,29 @@ namespace ServerTools
                         SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid user data. Unable to retrieve your position in game");
                         return;
                     }
-                    if (GameManager.Instance.World.Players.dict.ContainsKey(_senderInfo.RemoteClientInfo.entityId))
+                    EntityPlayer player = GameManager.Instance.World.Players.dict[_senderInfo.RemoteClientInfo.entityId];
+                    if (player != null)
                     {
-                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_senderInfo.RemoteClientInfo.entityId];
-                        if (_player != null)
+                        double regionX, regionZ;
+                        if (player.position.x < 0)
                         {
-                            double _regionX, _regionZ;
-                            if (_player.position.x < 0)
-                            {
-                                _regionX = Math.Truncate(_player.position.x / 512) - 1;
-                            }
-                            else
-                            {
-                                _regionX = Math.Truncate(_player.position.x / 512);
-                            }
-                            if (_player.position.z < 0)
-                            {
-                                _regionZ = Math.Truncate(_player.position.z / 512) - 1;
-                            }
-                            else
-                            {
-                                _regionZ = Math.Truncate(_player.position.z / 512);
-                            }
-                            string _region = _regionX + "." + _regionZ;
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You are standing in region: {0}", _region));
-                            return;
+                            regionX = Math.Truncate(player.position.x / 512) - 1;
                         }
+                        else
+                        {
+                            regionX = Math.Truncate(player.position.x / 512);
+                        }
+                        if (player.position.z < 0)
+                        {
+                            regionZ = Math.Truncate(player.position.z / 512) - 1;
+                        }
+                        else
+                        {
+                            regionZ = Math.Truncate(player.position.z / 512);
+                        }
+                        string region = regionX + "." + regionZ;
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You are standing in region: {0}", region));
+                        return;
                     }
                     else
                     {
@@ -95,40 +92,37 @@ namespace ServerTools
                             SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid user data. Unable to retrieve your position in game");
                             return;
                         }
-                        if (GameManager.Instance.World.Players.dict.ContainsKey(_senderInfo.RemoteClientInfo.entityId))
+                        EntityPlayer player = GameManager.Instance.World.Players.dict[_senderInfo.RemoteClientInfo.entityId];
+                        if (player != null)
                         {
-                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_senderInfo.RemoteClientInfo.entityId];
-                            if (_player != null)
+                            double regionX, regionZ;
+                            if (player.position.x < 0)
                             {
-                                double _regionX, _regionZ;
-                                if (_player.position.x < 0)
-                                {
-                                    _regionX = Math.Truncate(_player.position.x / 512) - 1;
-                                }
-                                else
-                                {
-                                    _regionX = Math.Truncate(_player.position.x / 512);
-                                }
-                                if (_player.position.z < 0)
-                                {
-                                    _regionZ = Math.Truncate(_player.position.z / 512) - 1;
-                                }
-                                else
-                                {
-                                    _regionZ = Math.Truncate(_player.position.z / 512);
-                                }
-                                string _region = _regionX + "." + _regionZ;
-                                if (!RegionReset.Regions.Contains(_region))
-                                {
-                                    RegionReset.Regions.Add(_region);
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} has been added to the reset list. It will be wiped out on server shutdown", _region));
-                                    return;
-                                }
-                                else
-                                {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} is already on the reset list", _region));
-                                    return;
-                                }
+                                regionX = Math.Truncate(player.position.x / 512) - 1;
+                            }
+                            else
+                            {
+                                regionX = Math.Truncate(player.position.x / 512);
+                            }
+                            if (player.position.z < 0)
+                            {
+                                regionZ = Math.Truncate(player.position.z / 512) - 1;
+                            }
+                            else
+                            {
+                                regionZ = Math.Truncate(player.position.z / 512);
+                            }
+                            string region = regionX + "." + regionZ;
+                            if (!RegionReset.Regions.Contains(region))
+                            {
+                                RegionReset.Regions.Add(region);
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} has been added to the reset list. It will be wiped out on server shutdown", region));
+                                return;
+                            }
+                            else
+                            {
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} is already on the reset list", region));
+                                return;
                             }
                         }
                         else
@@ -141,10 +135,10 @@ namespace ServerTools
                     {
                         if (_params[1].Contains("."))
                         {
-                            string[] _region = _params[1].Split('.');
-                            if (int.TryParse(_region[0], out int _regionX))
+                            string[] region = _params[1].Split('.');
+                            if (int.TryParse(region[0], out int regionX))
                             {
-                                if (int.TryParse(_region[1], out int _regionZ))
+                                if (int.TryParse(region[1], out int regionZ))
                                 {
                                     if (!RegionReset.Regions.Contains(_params[1]))
                                     {
@@ -178,37 +172,37 @@ namespace ServerTools
                     }
                     else
                     {
-                        if (float.TryParse(_params[1], out float _regionX))
+                        if (float.TryParse(_params[1], out float regionX))
                         {
-                            if (float.TryParse(_params[2], out float _regionZ))
+                            if (float.TryParse(_params[2], out float regionZ))
                             {
-                                double _x, _z;
-                                if (_regionX < 0)
+                                double x, z;
+                                if (regionX < 0)
                                 {
-                                    _x = Math.Truncate(_regionX / 512) - 1;
+                                    x = Math.Truncate(regionX / 512) - 1;
                                 }
                                 else
                                 {
-                                    _x = Math.Truncate(_regionX / 512);
+                                    x = Math.Truncate(regionX / 512);
                                 }
-                                if (_regionZ < 0)
+                                if (regionZ < 0)
                                 {
-                                    _z = Math.Truncate(_regionZ / 512) - 1;
+                                    z = Math.Truncate(regionZ / 512) - 1;
                                 }
                                 else
                                 {
-                                    _z = Math.Truncate(_regionZ / 512);
+                                    z = Math.Truncate(regionZ / 512);
                                 }
-                                string _region = _x + "." + _z;
-                                if (!RegionReset.Regions.Contains(_region))
+                                string region = x + "." + z;
+                                if (!RegionReset.Regions.Contains(region))
                                 {
-                                    RegionReset.Regions.Add(_region);
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} has been added to the reset list. It will be wiped out on server shutdown", _region));
+                                    RegionReset.Regions.Add(region);
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} has been added to the reset list. It will be wiped out on server shutdown", region));
                                     return;
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} is already on the reset list", _region));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} is already on the reset list", region));
                                     return;
                                 }
                             }

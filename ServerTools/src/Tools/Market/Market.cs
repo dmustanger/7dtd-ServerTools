@@ -105,14 +105,14 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo)
         {
-            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+            if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
             {
                 MarketTele(_cInfo);
             }
             else
             {
                 Phrases.Dict.TryGetValue("Market9", out string _phrase);
-                _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
+                _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
@@ -169,7 +169,7 @@ namespace ServerTools
                                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                                     if (Wallet.IsEnabled && Command_Cost >= 1)
                                     {
-                                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                                        Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
                                     }
                                     PersistentContainer.Instance.Players[_cInfo.playerId].LastMarket = DateTime.Now;
                                     PersistentContainer.DataChange = true;
@@ -226,7 +226,7 @@ namespace ServerTools
             }
         }
 
-        public static void MarketCheck(ClientInfo _cInfo, EntityAlive _player)
+        public static void InsideMarket(ClientInfo _cInfo, EntityAlive _player)
         {
             if (!InsideMarket(_player.position.x, _player.position.z))
             {
@@ -235,19 +235,19 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
                     PersistentContainer.DataChange = true;
-                    Phrases.Dict.TryGetValue("Market5", out string _phrase);
-                    _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    _phrase = _phrase.Replace("{Command_marketback}", Command_marketback);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Market5", out string phrase);
+                    phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    phrase = phrase.Replace("{Command_marketback}", Command_marketback);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
 
         public static bool InsideMarket(float _x, float _z)
         {
-            string[] _cords = Market_Position.Split(',').ToArray();
-            int.TryParse(_cords[0], out int x);
-            int.TryParse(_cords[2], out int z);
+            string[] cords = Market_Position.Split(',').ToArray();
+            int.TryParse(cords[0], out int x);
+            int.TryParse(cords[2], out int z);
             if ((x - _x) * (x - _x) + (z - _z) * (z - _z) <= Market_Size * Market_Size)
             {
                 return true;

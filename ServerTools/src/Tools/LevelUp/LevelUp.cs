@@ -10,12 +10,16 @@ namespace ServerTools
     class LevelUp
     {
         public static bool IsEnabled = false, IsRunning = false, Xml_Only = false;
+
         public static Dictionary<int, int> PlayerLevels = new Dictionary<int, int>();
 
         private static Dictionary<int, string> Dict = new Dictionary<int, string>();
+
         private const string file = "LevelUp.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -91,7 +95,9 @@ namespace ServerTools
                     {
                         if (line.HasAttributes)
                         {
-                            UpgradeXml(nodeList);
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
                             return;
                         }
                         else
@@ -102,18 +108,30 @@ namespace ServerTools
                             {
                                 if (line.HasAttributes)
                                 {
-                                    UpgradeXml(nodeList);
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
                                     return;
                                 }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing LevelUp.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
-                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in LevelUp.LoadXml: {0}", e.Message));
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in LevelUp.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -127,22 +145,17 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Levels>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Command triggers console commands. Use ^ to separate multiple commands -->");
-                    sw.WriteLine("<!-- Possible variables for commands include whisper, global, {PlayerName}, {EntityId}, {PlayerId}, {Delay} -->");
-                    sw.WriteLine("<!-- <Level Required=\"300\" Command=\"global MAX LEVEL! Congratulations {PlayerName}!\" /> -->");
+                    sw.WriteLine("    <!-- Command triggers console commands. Use ^ to separate multiple commands -->");
+                    sw.WriteLine("    <!-- Possible variables for commands include whisper, global, {PlayerName}, {EntityId}, {PlayerId}, {Delay} -->");
+                    sw.WriteLine("    <!-- <Level Required=\"300\" Command=\"global MAX LEVEL! Congratulations {PlayerName}!\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
-
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<int, string> kvp in Dict)
                         {
                             sw.WriteLine(string.Format("    <Level Required=\"{0}\" Command=\"{1}\"  />", kvp.Key, kvp.Value));
                         }
-                    }
-                    else
-                    {
-                        sw.WriteLine("    <!-- <Level Required=\"\" Command=\"\" /> -->");
                     }
                     sw.WriteLine("</Levels>");
                     sw.Flush();
@@ -341,7 +354,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -351,25 +364,25 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Levels>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- Command triggers console commands. Use ^ to separate multiple commands -->");
-                    sw.WriteLine("<!-- Possible variables for commands include whisper, global, {PlayerName}, {EntityId}, {PlayerId}, {Delay} -->");
-                    sw.WriteLine("<!-- <Level Required=\"300\" Command=\"global MAX LEVEL! Congratulations {PlayerName}!\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- Command triggers console commands. Use ^ to separate multiple commands -->");
+                    sw.WriteLine("    <!-- Possible variables for commands include whisper, global, {PlayerName}, {EntityId}, {PlayerId}, {Delay} -->");
+                    sw.WriteLine("    <!-- <Level Required=\"300\" Command=\"global MAX LEVEL! Congratulations {PlayerName}!\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- Command triggers console") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- Possible variables") && !_oldChildNodes[i].OuterXml.Contains("<!-- <Level Required=\"300\"") &&
-                            !_oldChildNodes[i].OuterXml.Contains("    <!-- <Level Required=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Command triggers console") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- Possible variables") && !OldNodeList[i].OuterXml.Contains("<!-- <Level Required=\"300\"") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Level Required=\"\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Level")
                             {
                                 string level = "", command = "";

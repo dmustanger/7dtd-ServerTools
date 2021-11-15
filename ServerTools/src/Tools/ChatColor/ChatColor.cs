@@ -11,12 +11,15 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Rotate = false, Custom_Color = false;
         public static string Command_ccpr = "ccpr", Command_ccnr = "ccnr", Command_ccc = "ccc";
+
         public static Dictionary<string, string[]> Players = new Dictionary<string, string[]>();
         public static Dictionary<string, DateTime> ExpireDate = new Dictionary<string, DateTime>();
 
         private const string file = "ChatColor.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -107,7 +110,9 @@ namespace ServerTools
                     {
                         if (line.HasAttributes)
                         {
-                            UpgradeXml(nodeList);
+                            OldNodeList = nodeList;
+                            Utils.FileDelete(FilePath);
+                            UpgradeXml();
                             return;
                         }
                         else
@@ -118,18 +123,30 @@ namespace ServerTools
                             {
                                 if (line.HasAttributes)
                                 {
-                                    UpgradeXml(nodeList);
+                                    OldNodeList = nodeList;
+                                    Utils.FileDelete(FilePath);
+                                    UpgradeXml();
                                     return;
                                 }
                             }
+                            Utils.FileDelete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing ChatColor.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
                     }
-                    UpgradeXml(null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ChatColor.LoadXml: {0}", e.Message));
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    Utils.FileDelete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in ChatColor.LoadXml: {0}", e.Message));
+                }
             }
         }
 
@@ -141,8 +158,8 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ChatColor>");
                 sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                sw.WriteLine("<!-- NameColor and PrefixColor can come from the ColorList.xml -->");
-                sw.WriteLine("<!-- <Player SteamId=\"12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
+                sw.WriteLine("    <!-- NameColor and PrefixColor can come from the ColorList.xml -->");
+                sw.WriteLine("    <!-- <Player SteamId=\"12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
                 sw.WriteLine();
                 sw.WriteLine();
                 if (Players.Count > 0)
@@ -400,7 +417,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList _oldChildNodes)
+        private static void UpgradeXml()
         {
             try
             {
@@ -410,23 +427,23 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<ChatColor>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- NameColor and PrefixColor can come from the ColorList.xml -->");
-                    sw.WriteLine("<!-- <Player SteamId=\"12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    sw.WriteLine("    <!-- NameColor and PrefixColor can come from the ColorList.xml -->");
+                    sw.WriteLine("    <!-- <Player SteamId=\"12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType == XmlNodeType.Comment && !_oldChildNodes[i].OuterXml.Contains("<!-- NameColor and") &&
-                            !_oldChildNodes[i].OuterXml.Contains("<!-- <Player SteamId=\"12345678901234567\"") && !_oldChildNodes[i].OuterXml.Contains("    <!-- <Player SteamId=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- NameColor and") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Player SteamId=\"12345678901234567\"") && !OldNodeList[i].OuterXml.Contains("<!-- <Player SteamId=\"\""))
                         {
-                            sw.WriteLine(_oldChildNodes[i].OuterXml);
+                            sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < _oldChildNodes.Count; i++)
+                    for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (_oldChildNodes[i].NodeType != XmlNodeType.Comment)
+                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)_oldChildNodes[i];
+                            XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Player")
                             {
                                 string steamId = "", name = "", nameColor = "", prefix = "", prefixColor = "";

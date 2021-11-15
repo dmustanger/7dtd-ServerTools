@@ -1,5 +1,52 @@
 ﻿CHANGELOG
 
+19.6.6
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+-Added XRay_Detector tool. Detects players looking underground and
+turns their screen black. This is also a great prevention for players seeing
+underground while flying
+-Added Infinite_Ammo tool. Detects players using an infinite ammo hack
+-Added Speed_Detector tool. Detects players travelling too fast
+-Added console command st-RunGameEvent. Runs a game event from the 
+default gameevents.xml on the target player
+-Added console command st-RemoveItemDukes. Removes all items tagged dukes
+from a player's inventory and backpack while online
+-Added console command st-RemoveItemAdmin. Removes all items tagged admin
+from a player's inventory and backpack while online
+-Fixed Public_Waypoints option missing from Waypoints_Extended
+-Fixed CommandList.xml bug causing command /reward and /adminlist to not 
+function correctly
+-Fixed Gimme tool not applying the quality range to items from the xml
+-Fixed UI getting stuck from trader interaction during shutdown when the 
+UI lock is engaged
+-Fixed angle/direction calculation for Animal_Tracking
+-Fixed Zones repeating the exit process
+-Fixed chat based tools not functioning as intended with multi colors when
+the target contained '['
+-Fixed st-ClientConsoleCommand responding with invalid param count
+-Fixed Xml load process causing a invalid cast error when using old
+files that did not have a version listed. The file will delete and reload
+-Updated Protected_Zones to remove remaining protection after manual
+manipulation of the xml
+-Changed Web_Panel to not ban invalid address requests and instead
+log the event and dismiss the request
+-Changed Protected_Spaces tool name to Protected_Zones. The xml was
+changed to ProtectedZones.xml. Copy and paste your old spaces entries in 
+to the new file. Then you can delete your old file
+-Updated Wallet and Bank system to use casinoCoins for direct exchange.
+To use a custom item, change the target in the xpath file items.xml
+located in the Config folder supplied with the installation files
+-Updated Wallet to Bank deposit to no longer require a chest
+-Updated HowtoSetup.txt
+-Updated anti-cheat detection
+-Updated Country_Ban database
+-Updated Maze generator to reduce block spawn time
+-Removed option Lose_On_Death from Wallet tool
+-Removed option Ingame_Coin from Bank tool
+-Removed phrase Wallet1
+
 19.6.5
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

@@ -93,16 +93,16 @@ namespace ServerTools
         {
             try
             {
-                int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
-                if (_currentCoins >= Command_Cost)
+                int currentCoins = Wallet.GetCurrency(_cInfo.playerId);
+                if (currentCoins >= Command_Cost)
                 {
                     GiveAnimals(_cInfo);
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("AnimalTracking2", out string _phrase);
-                    _phrase = _phrase.Replace("{CoinName}", Wallet.Coin_Name);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("AnimalTracking2", out string phrase);
+                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -164,7 +164,7 @@ namespace ServerTools
                                 {
                                     if (Wallet.IsEnabled && Command_Cost >= 1)
                                     {
-                                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                                        Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
                                     }
                                     PersistentContainer.Instance.Players[_cInfo.playerId].LastAnimal = DateTime.Now;
                                     PersistentContainer.DataChange = true;
@@ -187,13 +187,13 @@ namespace ServerTools
             }
         }
 
-        public static bool SpawnAnimal(ClientInfo _cInfo, EntityPlayer entityPlayer, int _radius, int _animalId)
+        public static bool SpawnAnimal(ClientInfo _cInfo, EntityPlayer _entityPlayer, int _radius, int _animalId)
         {
             PersistentOperations.EntityId.TryGetValue(_animalId, out int entityId);
-            bool posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(entityPlayer.position, 15, out int x, out int y, out int z, new Vector3(_radius, _radius, _radius), true);
+            bool posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_entityPlayer.position, 15, out int x, out int y, out int z, new Vector3(_radius, _radius, _radius), true);
             if (!posFound)
             {
-                posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(entityPlayer.position, 15, out x, out y, out z, new Vector3(_radius + 5, _radius + 50, _radius + 5), true);
+                posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_entityPlayer.position, 15, out x, out y, out z, new Vector3(_radius + 10, _radius + 50, _radius + 10), true);
             }
             if (posFound)
             {
@@ -201,7 +201,7 @@ namespace ServerTools
                 GameManager.Instance.World.SpawnEntityInWorld(entity);
                 Phrases.Dict.TryGetValue("AnimalTracking3", out string phrase);
                 phrase = phrase.Replace("{Radius}", _radius.ToString());
-                float angle = Vector3.Angle(entityPlayer.position, new Vector3(x, y, z));
+                float angle = Vector2.Angle(_entityPlayer.position, new Vector2(x, z));
                 if (angle >= 0 && angle < 45)
                 {
                     phrase = phrase.Replace("{Direction}", "North");
