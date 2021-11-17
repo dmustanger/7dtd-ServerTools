@@ -84,6 +84,7 @@
     <Compile Include="src\Serialize\ItemStackSerializable.cs" />
     <Compile Include="src\Tools\AutoBackup\AutoBackup.cs" />
     <Compile Include="src\Tools\AutoPartyInvite\AutoPartyInvite.cs" />
+    <Compile Include="src\Tools\BotResponse\BotResponse.cs" />
     <Compile Include="src\Tools\DroppedBagProtection\DroppedBagProtection.cs" />
     <Compile Include="src\Tools\Bank\Bank.cs" />
     <Compile Include="src\Tools\BlockLogger\BlockLogger.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="src\AntiCheat\TeleportCheck\TeleportCheck.cs" />
     <Compile Include="src\Tools\SleeperRespawn\SleeperRespawn.cs" />
     <Compile Include="src\Tools\WebPanel\WebPanel.cs" />
+    <Compile Include="src\Tools\WorkstationLock\WorkstationLock.cs" />
     <Compile Include="src\Tools\WorldRadius\WorldRadius.cs" />
     <Compile Include="src\AntiCheat\PlayerStats\PlayerStats.cs" />
     <Compile Include="src\AntiCheat\PlayerLogs\PlayerLogs.cs" />

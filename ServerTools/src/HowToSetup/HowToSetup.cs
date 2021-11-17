@@ -13,7 +13,7 @@ namespace ServerTools
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine("This was drafted for version 19.6.6");
+                sw.WriteLine("This was drafted for version 19.6.7");
                 sw.WriteLine();
                 sw.WriteLine("If you find mistakes or the file is out of date, let the dev team know.");
                 sw.WriteLine();
@@ -185,6 +185,15 @@ namespace ServerTools
                 sw.WriteLine("Set the potential items players can be rewarded by adding or removing them from BloodmoonWarrior.xml.");
                 sw.WriteLine("If Reduce_Death_Count is set to true, their death count will reduce by one if successful. They will always receive one item from the list.");
                 sw.WriteLine("Players can not log out or disconnect during the event or they will fail. There is no penalty for failure.");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine("<Tool Name=\"Bot_Response\" />");
+                sw.WriteLine();
+                sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine();
+                sw.WriteLine("Creates a BotResponse.xml to customize bot responses.");
+                sw.WriteLine("Set the message that must be typed in to chat to trigger an auto response from the bot by adding it to the BotResponse.xml.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -599,7 +608,7 @@ namespace ServerTools
                 sw.WriteLine("Allows players to gamble Wallet currency using chat commands.");
                 sw.WriteLine("It will begin a 50/50 draw with 1 in 2 chance of winning. The player must spend the Command_Cost to enter. If they win, they can collect the winnings or bet again.");
                 sw.WriteLine("If the player wins in sequencial rounds, the winnings increase but their chance of success decreases.");
-                sw.WriteLine("Round 1: 1 in 2 chance. Round 2: 1 in 3. Round 3: 1 in 4. Round 4: 1 in 5, and so on");
+                sw.WriteLine("Round 1: 1 in 2 chance. Round 2: 1 in 3. Round 3: 1 in 4. Round 4: 1 in 5, and so on.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -607,17 +616,17 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set a numeric value for Delay_Between_Uses");
+                sw.WriteLine("Set True or False for Zombies");
+                sw.WriteLine("Set a numeric value for Zombie_Id");
                 sw.WriteLine("Set a numeric values for Command_Cost");
-                sw.WriteLine("Set True or False for Player_Check");
-                sw.WriteLine("Set True or False for Zombie_Check");
                 sw.WriteLine();
-                sw.WriteLine("Enabling will create a Gimme.xml in your main installation folder in a ServerTools folder");
+                sw.WriteLine("Enabling will create a Gimme.xml in your main installation folder in a ServerTools folder.");
                 sw.WriteLine("Players can type /gimme to initiate a free item from the gimme list.");
                 sw.WriteLine("The gimme.xml contains a list of all the items a player can receive from using /gimme.");
                 sw.WriteLine("A delay can be set with Delay_Between_Uses so players must wait that period of time before using /gimme again.");
+                sw.WriteLine("Zombies will control whether a zombie can be spawned instead of an item from the list. Chances are 1 in 8.");
+                sw.WriteLine("Zombie_Id controls which zombie can potentially be spawned instead of an item.");
                 sw.WriteLine("Command cost controls how much must be in a player's wallet to use the command.");
-                sw.WriteLine("Player_Check controls whether the player can be close to another player before using this command.");
-                sw.WriteLine("Zombie_Check controls whether the player can be close to a zombie and targeted by them before using this command.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -1277,9 +1286,9 @@ namespace ServerTools
                 sw.WriteLine("Set a numeric value for Admin_Level");
                 sw.WriteLine("Set a numeric value for Flags");
                 sw.WriteLine();
-                sw.WriteLine("Automatically detects players using spectator mode without authorization.");
-                sw.WriteLine("Admins lower or equal to tier Admin_Level are immune to the spectator check.");
-                sw.WriteLine("Set the numer of flags required to trigger the detection. This helps with lag and latency triggering false positives");
+                sw.WriteLine("Automatically detects players moving at speeds exceeding that of a flying admin.");
+                sw.WriteLine("Admins lower or equal to tier Admin_Level are immune to the speed detection.");
+                sw.WriteLine("Set the number of flags required to trigger the detection. This helps with lag and latency triggering false positives.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -1496,6 +1505,15 @@ namespace ServerTools
                 sw.WriteLine("Clients can monitor a player list with kick, ban, mute, jail and reward options available.");
                 sw.WriteLine("Clients can alter the ServerToolsConfig.xml");
                 sw.WriteLine("Clients can run console commands and monitor the output log.");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine("<Tool Name=\"Workstation_Lock\" />");
+                sw.WriteLine();
+                sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine();
+                sw.WriteLine("While enabled, players can only access a workstation inside of a claimed space if they are the owner or allied with the claim owner.");
+                sw.WriteLine("This does not effect admin set at tier 0 permission.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

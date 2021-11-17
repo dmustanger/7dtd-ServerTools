@@ -43,7 +43,7 @@ namespace ServerTools
                                                 {
                                                     return false;
                                                 }
-                                                if (_damageSource.AttackingItem.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo2, player2, slot, itemValue))
+                                                if (InfiniteAmmo.IsEnabled && _damageSource.AttackingItem.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo2, player2, slot, itemValue))
                                                 {
                                                     return false;
                                                 }
@@ -141,7 +141,7 @@ namespace ServerTools
                                         {
                                             return false;
                                         }
-                                        if (_damageSource.AttackingItem.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo, player, slot, itemValue))
+                                        if (InfiniteAmmo.IsEnabled && _damageSource.AttackingItem.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo, player, slot, itemValue))
                                         {
                                             return false;
                                         }
@@ -203,7 +203,7 @@ namespace ServerTools
                                     {
                                         return false;
                                     }
-                                    if (itemValue.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo, player, slot, itemValue))
+                                    if (InfiniteAmmo.IsEnabled && itemValue.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo, player, slot, itemValue))
                                     {
                                         return false;
                                     }

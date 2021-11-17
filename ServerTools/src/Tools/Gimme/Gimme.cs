@@ -512,7 +512,7 @@ namespace ServerTools
                         string zId = zombieIds[count];
                         if (int.TryParse(zId, out int zombieId))
                         {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ {1}", _cInfo.playerId, zombieId), null);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("st-ser {0} r.15 {1}", _cInfo.playerId, zombieId), null);
                             Log.Out(string.Format("[SERVERTOOLS] Spawned an entity for {0}'s gimme", _cInfo.playerName));
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
@@ -532,7 +532,7 @@ namespace ServerTools
                     {
                         if (int.TryParse(Zombie_Id, out int _zombieId))
                         {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ {1}", _cInfo.playerId, _zombieId), null);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("st-ser {0} r.15 {1}", _cInfo.playerId, _zombieId), null);
                             Log.Out(string.Format("[SERVERTOOLS] Spawned an entity for {0}'s gimme", _cInfo.playerName));
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {

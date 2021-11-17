@@ -40,13 +40,13 @@ namespace ServerTools
                                 blockPosition.y--;
                                 if (world.GetBlock(blockPosition).Block.IsCollideMovement)
                                 {
-                                    Detected(_cInfo, _player);
+                                    Detected(_cInfo);
                                     return;
                                 }
                             }
                             else
                             {
-                                Detected(_cInfo, _player);
+                                Detected(_cInfo);
                                 return;
                             }
                         }
@@ -56,7 +56,7 @@ namespace ServerTools
                         Vector3i parentPos = block.multiBlockPos.GetParentPos(blockPosition, blockValue);
                         if (BlockDoor.IsDoorOpen(world.GetBlock(parentPos).meta) && blockPosition.y == parentPos.y)
                         {
-                            Detected(_cInfo, _player);
+                            Detected(_cInfo);
                             return;
                         }
                     }
@@ -67,13 +67,13 @@ namespace ServerTools
                             blockPosition.y--;
                             if (world.GetBlock(blockPosition).Block.IsCollideMovement)
                             {
-                                Detected(_cInfo, _player);
+                                Detected(_cInfo);
                                 return;
                             }
                         }
                         else
                         {
-                            Detected(_cInfo, _player);
+                            Detected(_cInfo);
                             return;
                         }
                     }
@@ -86,13 +86,13 @@ namespace ServerTools
             }
         }
 
-        private static void Detected(ClientInfo _cInfo, EntityPlayer _player)
+        private static void Detected(ClientInfo _cInfo)
         {
             if (!BlackScreen.Contains(_cInfo.entityId))
             {
                 BlackScreen.Add(_cInfo.entityId);
                 _cInfo.SendPackage(new NetPackageConsoleCmdClient().Setup("ScreenEffect FadeToBlack 1 0", true));
-                Phrases.Dict.TryGetValue("AntoCheat4", out string phrase);
+                Phrases.Dict.TryGetValue("AntiCheat4", out string phrase);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }

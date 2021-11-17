@@ -444,6 +444,19 @@ namespace ServerTools
                 Dict.Remove("Bloodmoon warrior");
                 Log.Out("Bloodmoon warrior disabled");
             }
+            if (BotResponse.IsEnabled)
+            {
+                if (!Dict.Contains("Bot response"))
+                {
+                    Dict.Add("Bot response");
+                    Log.Out("Bot response enabled");
+                }
+            }
+            else if (Dict.Contains("Bot response") && !_initiating)
+            {
+                Dict.Remove("Bot response");
+                Log.Out("Bot response disabled");
+            }
             if (Bounties.IsEnabled)
             {
                 if (!Dict.Contains("Bounties"))
@@ -1275,6 +1288,19 @@ namespace ServerTools
             {
                 Dict.Remove("Web panel");
                 Log.Out("Web panel disabled");
+            }
+            if (WorkstationLock.IsEnabled)
+            {
+                if (!Dict.Contains("Workstation lock"))
+                {
+                    Dict.Add("Workstation lock");
+                    Log.Out("Workstation lock enabled");
+                }
+            }
+            else if (Dict.Contains("Workstation lock") && !_initiating)
+            {
+                Dict.Remove("Workstation lock");
+                Log.Out("Workstation lock disabled");
             }
             if (Zones.IsEnabled)
             {

@@ -218,6 +218,14 @@ namespace ServerTools
             {
                 LevelUp.Load();
             }
+            if (BotResponse.IsRunning && !BotResponse.IsEnabled)
+            {
+                BotResponse.Unload();
+            }
+            else if (!BotResponse.IsRunning && BotResponse.IsEnabled)
+            {
+                BotResponse.Load();
+            }
             if (ProtectedZones.IsRunning && !ProtectedZones.IsEnabled)
             {
                 ProtectedZones.Unload();

@@ -10,7 +10,11 @@ namespace ServerTools
 
         public static bool Exec(ClientInfo _cInfo, EntityPlayer _player, int slot, ItemValue _itemValue)
         {
-            if (!Dict.ContainsKey(_cInfo.entityId))
+            if (_itemValue.ItemClass.DisplayType == "rangedRepairTool" || _itemValue.ItemClass.DisplayType == "rangedBow" || _itemValue.ItemClass.DisplayType == "adminRanged")
+            {
+                return false;
+            }
+            else if (!Dict.ContainsKey(_cInfo.entityId))
             {
                 int rayCount = (int)EffectManager.GetValue(PassiveEffects.RoundRayCount, _itemValue, 1f, _player, null, default(FastTags), false, true);
                 Dict.Add(_cInfo.entityId, new int[] { slot, _itemValue.ItemClass.Id, _cInfo.latestPlayerData.inventory[slot].itemValue.Meta * rayCount - 1 });

@@ -87,7 +87,7 @@ namespace ServerTools
                                         {
                                             SpeedDetector.Detected(cInfo);
                                         }
-                                        if (FlyingDetector.IsEnabled && userPermissionLevel > FlyingDetector.Flying_Admin_Level)
+                                        if (FlyingDetector.IsEnabled && userPermissionLevel > FlyingDetector.Flying_Admin_Level && cInfo.ping < 350)
                                         {
                                             if (FlyingDetector.IsFlying(player.position))
                                             {
@@ -129,14 +129,6 @@ namespace ServerTools
                                 EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
                                 if (player != null)
                                 {
-                                    if (player.AttachedToEntity != null)
-                                    {
-                                        Entity entity = GameManager.Instance.World.GetEntity(player.AttachedToEntity.entityId);
-                                        if (entity != null && entity.AttachedToEntity == player)
-                                        {
-                                            continue;
-                                        }
-                                    }
                                     XRayDetector.IsInsideBlocks(cInfo, player);
                                 }
                             }

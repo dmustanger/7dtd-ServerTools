@@ -3053,6 +3053,15 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"AntiCheat4\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ******************** Workstation_Lock ****************** -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("WorkstationLock1", out phrase))
+                    {
+                        phrase = "Workstation is locked";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"WorkstationLock1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("</Phrases>");

@@ -1,5 +1,21 @@
 ﻿CHANGELOG
 
+19.6.7
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+-Added Workstation_Lock tool. Workstations inside of a claimed space can
+only be accessed by the claim owner and their allies
+-Added Bot_Response tool. Create a list of chat messages that will trigger
+specific responses automatically
+-Added Zombie_Id option to Gimme tool. Set which zombie can spawn from 
+using the /gimme command
+-Fixed Gimme tool not spawning an entity
+-Fixed Infinite_Ammo running when not enabled directly
+-Fixed Infinite_Ammo misregistering launcher type weapons as guns
+-Updated HowtoSetup.txt
+-Updated all UI locks to no longer work on admin with permission tier 0
+
 19.6.6
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

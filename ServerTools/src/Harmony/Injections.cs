@@ -280,52 +280,62 @@ public static class Injections
     {
         try
         {
-            if (DroppedBagProtection.IsEnabled)
+            ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
+            if (cInfo != null)
             {
-                if (_te is TileEntityLootContainer)
+                if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo) > 0)
                 {
-                    TileEntityLootContainer lootContainer = _te as TileEntityLootContainer;
-                    if (lootContainer.bPlayerBackpack)
+                    if (DroppedBagProtection.IsEnabled)
                     {
-                        if (!DroppedBagProtection.IsAllowed(_entityIdThatOpenedIt, lootContainer))
+                        if (_te is TileEntityLootContainer)
                         {
-                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
-                            if (cInfo != null)
+                            TileEntityLootContainer lootContainer = _te as TileEntityLootContainer;
+                            if (lootContainer.bPlayerBackpack)
                             {
-                                Phrases.Dict.TryGetValue("DroppedBagProtection1", out string _phrase);
-                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                if (!DroppedBagProtection.IsAllowed(_entityIdThatOpenedIt, lootContainer))
+                                {
+
+                                    Phrases.Dict.TryGetValue("DroppedBagProtection1", out string phrase);
+                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    __result = false;
+                                    return false;
+                                }
                             }
+                        }
+                    }
+                    if (Shutdown.UI_Locked)
+                    {
+                        if (_te is TileEntityLootContainer)
+                        {
+                            TileEntityLootContainer lootContainer = _te as TileEntityLootContainer;
+                            if (lootContainer.bPlayerBackpack)
+                            {
+                                return true;
+                            }
+                        }
+                        if (_te is TileEntityWorkstation || _te is TileEntityLootContainer || _te is TileEntitySecureLootContainer
+                        || _te is TileEntityVendingMachine || _te is TileEntityTrader)
+                        {
+                            if (_te is TileEntityTrader)
+                            {
+                                __state = true;
+                            }
+                            Phrases.Dict.TryGetValue("Shutdown3", out string phrase);
+                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             __result = false;
                             return false;
                         }
                     }
-                }
-            }
-            if (Shutdown.UI_Locked)
-            {
-                if (_te is TileEntityLootContainer)
-                {
-                    TileEntityLootContainer lootContainer = _te as TileEntityLootContainer;
-                    if (lootContainer.bPlayerBackpack)
+                    if (WorkstationLock.IsEnabled && _te is TileEntityWorkstation)
                     {
-                        return true;
+                        if (!PersistentOperations.ClaimedByAllyOrSelf(cInfo.playerId, _te.localChunkPos) && !PersistentOperations.ClaimedByNone(cInfo.playerId, _te.localChunkPos))
+                        {
+                            Phrases.Dict.TryGetValue("WorkstationLock1", out string phrase);
+                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            __result = false;
+                            return false;
+                        }
                     }
-                }
-                if (_te is TileEntityWorkstation || _te is TileEntityLootContainer || _te is TileEntitySecureLootContainer
-                || _te is TileEntityVendingMachine || _te is TileEntityTrader)
-                {
-                    if (_te is TileEntityTrader)
-                    {
-                        __state = true;
-                    }
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
-                    if (cInfo != null)
-                    {
-                        Phrases.Dict.TryGetValue("Shutdown3", out string _phrase);
-                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                    __result = false;
-                    return false;
                 }
             }
         }
@@ -517,5 +527,4 @@ public static class Injections
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackagePlayerInventory_ProcessPackage_Postfix: {0}", e.Message));
         }
     }
-    
 }

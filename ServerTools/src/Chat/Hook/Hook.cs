@@ -1194,14 +1194,14 @@ namespace ServerTools
                             {
                                 if (ExitCommand.Players.ContainsKey(_cInfo.entityId))
                                 {
-                                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                    if (_player != null)
+                                    EntityPlayer player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                    if (player != null)
                                     {
-                                        ExitCommand.Players[_cInfo.entityId] = _player.position;
+                                        ExitCommand.Players[_cInfo.entityId] = player.position;
                                         Timers.ExitWithCommand(_cInfo.entityId, ExitCommand.Exit_Time);
-                                        Phrases.Dict.TryGetValue("ExitCommand4", out string _phrase);
-                                        _phrase = _phrase.Replace("{Time}", ExitCommand.Exit_Time.ToString());
-                                        ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        Phrases.Dict.TryGetValue("ExitCommand4", out string phrase);
+                                        phrase = phrase.Replace("{Time}", ExitCommand.Exit_Time.ToString());
+                                        ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                                 else if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= ExitCommand.Admin_Level)
@@ -1484,6 +1484,17 @@ namespace ServerTools
                     if (_type == EChatType.Global)
                     {
                         GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, _message, _name, false, _recipientEntityIds);
+                        if (BotResponse.IsEnabled)
+                        {
+                            foreach (var response in BotResponse.Dict)
+                            {
+                                if (response.Key.Contains(_message.ToLower()))
+                                {
+                                    GameManager.Instance.ChatMessageServer(null, EChatType.Global, -1, response.Value, Config.Server_Response_Name, false, null);
+                                    break;
+                                }
+                            }
+                        }
                     }
                     else if (_type == EChatType.Friends)
                     {
