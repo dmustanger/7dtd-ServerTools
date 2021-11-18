@@ -1319,18 +1319,35 @@ namespace ServerTools
                 {
                     if (_prefixColor.Contains(","))
                     {
+                        bool complete = false;
                         int prefixIndex = 0;
                         int colorCount = 0;
+                        string lastColor = "";
                         string[] colors = _prefixColor.Split(',');
-                        for (int i = 0; i < 14; i++)
+                        for (int i = 0; i < 20; i++)
                         {
+                            if (complete)
+                            {
+                                break;
+                            }
                             for (int j = 0; j < colors.Length; j++)
                             {
                                 if (prefixIndex < _prefix.Length)
                                 {
-                                    _prefix = _prefix.Insert(prefixIndex, colors[j]);
-                                    prefixIndex += 9;
-                                    colorCount++;
+                                    if (_prefix[prefixIndex] != ' ')
+                                    {
+                                        if (lastColor != colors[j])
+                                        {
+                                            _prefix = _prefix.Insert(prefixIndex, colors[j]);
+                                            prefixIndex += 9;
+                                            colorCount++;
+                                            lastColor = colors[j];
+                                        }
+                                        else
+                                        {
+                                            prefixIndex += 1;
+                                        }
+                                    }
                                 }
                                 else
                                 {
@@ -1338,20 +1355,25 @@ namespace ServerTools
                                     {
                                         _prefix = _prefix.Insert(prefixIndex, "[-]");
                                     }
+                                    complete = true;
                                     break;
                                 }
                             }
-                            if (prefixIndex < _prefix.Length)
+                            if (!complete)
                             {
-                                colors.Reverse();
-                            }
-                            else
-                            {
-                                for (int k = 0; k < colorCount; k++)
+                                if (prefixIndex < _prefix.Length)
                                 {
-                                    _prefix = _prefix.Insert(prefixIndex, "[-]");
+                                    colors.Reverse();
                                 }
-                                break;
+                                else
+                                {
+                                    for (int k = 0; k < colorCount; k++)
+                                    {
+                                        _prefix = _prefix.Insert(prefixIndex, "[-]");
+                                    }
+                                    complete = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -1365,18 +1387,39 @@ namespace ServerTools
                 {
                     if (_nameColor.Contains(","))
                     {
+                        bool complete = false;
                         int nameIndex = 0;
                         int colorCount = 0;
+                        string lastColor = "";
                         string[] colors = _nameColor.Split(',');
-                        for (int i = 0; i < 14; i++)
+                        for (int i = 0; i < 20; i++)
                         {
+                            if (complete)
+                            {
+                                break;
+                            }
                             for (int j = 0; j < colors.Length; j++)
                             {
                                 if (nameIndex < _mainName.Length)
                                 {
-                                    _mainName = _mainName.Insert(nameIndex, colors[j]);
-                                    nameIndex += 9;
-                                    colorCount++;
+                                    if (_mainName[nameIndex] != ' ')
+                                    {
+                                        if (lastColor != colors[j])
+                                        {
+                                            _prefix = _prefix.Insert(nameIndex, colors[j]);
+                                            nameIndex += 9;
+                                            colorCount++;
+                                            lastColor = colors[j];
+                                        }
+                                        else
+                                        {
+                                            nameIndex += 1;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        nameIndex += 1;
+                                    }
                                 }
                                 else
                                 {
@@ -1384,24 +1427,27 @@ namespace ServerTools
                                     {
                                         _mainName = _mainName.Insert(nameIndex, "[-]");
                                     }
+                                    complete = true;
                                     break;
                                 }
                             }
-                            if (nameIndex < _mainName.Length)
+                            if (!complete)
                             {
-                                colors.Reverse();
-                            }
-                            else
-                            {
-                                for (int k = 0; k < colorCount; k++)
+                                if (nameIndex < _mainName.Length)
                                 {
-                                    _mainName = _mainName.Insert(nameIndex, "[-]");
+                                    colors.Reverse();
                                 }
-                                break;
+                                else
+                                {
+                                    for (int k = 0; k < colorCount; k++)
+                                    {
+                                        _mainName = _mainName.Insert(nameIndex, "[-]");
+                                    }
+                                    complete = true;
+                                    break;
+                                }
                             }
                         }
-
-
                     }
                     else
                     {

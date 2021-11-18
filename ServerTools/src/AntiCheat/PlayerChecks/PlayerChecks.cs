@@ -89,6 +89,18 @@ namespace ServerTools
                                         }
                                         if (FlyingDetector.IsEnabled && userPermissionLevel > FlyingDetector.Flying_Admin_Level && cInfo.ping < 350)
                                         {
+                                            if (player.AttachedToEntity != null)
+                                            {
+                                                Entity entity = GameManager.Instance.World.GetEntity(player.AttachedToEntity.entityId);
+                                                if (entity != null)
+                                                {
+                                                    float distance = player.GetDistance(player.AttachedToEntity);
+                                                    if (distance <= 5)
+                                                    {
+                                                        continue;
+                                                    }
+                                                }
+                                            }
                                             if (FlyingDetector.IsFlying(player.position))
                                             {
                                                 FlyingDetector.Detected(cInfo, player);

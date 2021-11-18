@@ -60,21 +60,25 @@ namespace ServerTools
                             return;
                         }
                     }
-                    else if (block.shape.GetName().ToLower().Contains("cube"))
+                    else
                     {
-                        if (!_player.IsCrouching)
+                        string shape = block.shape.GetName().ToLower();
+                        if (shape.Contains("cube") && (!shape.Contains("quarter") || !shape.Contains("half")))
                         {
-                            blockPosition.y--;
-                            if (world.GetBlock(blockPosition).Block.IsCollideMovement)
+                            if (!_player.IsCrouching)
+                            {
+                                blockPosition.y--;
+                                if (world.GetBlock(blockPosition).Block.IsCollideMovement)
+                                {
+                                    Detected(_cInfo);
+                                    return;
+                                }
+                            }
+                            else
                             {
                                 Detected(_cInfo);
                                 return;
                             }
-                        }
-                        else
-                        {
-                            Detected(_cInfo);
-                            return;
                         }
                     }
                 }

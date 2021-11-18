@@ -1,5 +1,16 @@
 ﻿CHANGELOG
 
+19.6.8
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+-Fixed Chat_Color going crazy if the number of color tags out number the
+length of the prefix or name they are being applied to
+-Fixed Flight_Detector not checking for a vehicle in use
+-Fixed XRay_Detector triggering false positives with half and quarter block
+-Updated Chat_Color to detect if a color tag is already applied in a 
+multi colored prefix or name to reduce log clutter
+
 19.6.7
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions
