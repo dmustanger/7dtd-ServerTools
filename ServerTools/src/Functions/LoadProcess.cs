@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Xml;
 
 namespace ServerTools
@@ -222,6 +224,15 @@ namespace ServerTools
                 {
                     Log.Out("[SERVERTOOLS] Detected a new world. You have old ServerTools data saved from the last map. Run the Clean_Bin tool to remove the data of your choice");
                 }
+            }
+
+            if (PersistentContainer.Instance.Connections == null)
+            {
+                Dictionary<string, byte[]> connections = new Dictionary<string, byte[]>();
+                PersistentContainer.Instance.Connections = connections;
+                Dictionary<string, DateTime> timeOuts = new Dictionary<string, DateTime>();
+                PersistentContainer.Instance.ConnectionTimeOut = timeOuts;
+                PersistentContainer.DataChange = true;
             }
 
             if (CleanBin.IsEnabled)

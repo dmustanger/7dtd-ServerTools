@@ -7,10 +7,7 @@ namespace ServerTools
 
         public static void Load()
         {
-            if (!DiscordBot.TokenLoaded)
-            {
-                DiscordBot.BuildToken();
-            }
+            DiscordBot.BuildToken();
             if (!Timers.CoreIsRunning)
             {
                 Timers.CoreTimerStart();

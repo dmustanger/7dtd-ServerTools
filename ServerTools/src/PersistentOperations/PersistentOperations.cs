@@ -186,10 +186,10 @@ namespace ServerTools
 
         public static ClientInfo GetClientInfoFromEntityId(int _playerId)
         {
-            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_playerId);
-            if (_cInfo != null)
+            ClientInfo cInfo = ConnectionManager.Instance.Clients.ForEntityId(_playerId);
+            if (cInfo != null)
             {
-                return _cInfo;
+                return cInfo;
             }
             return null;
         }
@@ -205,15 +205,15 @@ namespace ServerTools
 
         public static EntityPlayer GetEntityPlayer(string _playerId)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
-            if (_persistentPlayerData != null)
+            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
+            if (persistentPlayerData != null)
             {
-                if (GameManager.Instance.World.Players.dict.ContainsKey(_persistentPlayerData.EntityId))
+                if (GameManager.Instance.World.Players.dict.ContainsKey(persistentPlayerData.EntityId))
                 {
-                    EntityPlayer _entityPlayer = GameManager.Instance.World.Players.dict[_persistentPlayerData.EntityId];
-                    if (_entityPlayer != null)
+                    EntityPlayer entityPlayer = GameManager.Instance.World.Players.dict[persistentPlayerData.EntityId];
+                    if (entityPlayer != null)
                     {
-                        return _entityPlayer;
+                        return entityPlayer;
                     }
                 }
             }
@@ -222,15 +222,15 @@ namespace ServerTools
 
         public static EntityAlive GetPlayerAlive(string _playerId)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
-            if (_persistentPlayerData != null)
+            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
+            if (persistentPlayerData != null)
             {
-                if (GameManager.Instance.World.Players.dict.ContainsKey(_persistentPlayerData.EntityId))
+                if (GameManager.Instance.World.Players.dict.ContainsKey(persistentPlayerData.EntityId))
                 {
-                    EntityAlive _entityAlive = (EntityAlive)GetEntity(_persistentPlayerData.EntityId);
-                    if (_entityAlive != null)
+                    EntityAlive entityAlive = (EntityAlive)GetEntity(persistentPlayerData.EntityId);
+                    if (entityAlive != null)
                     {
-                        return _entityAlive;
+                        return entityAlive;
                     }
                 }
             }
@@ -259,10 +259,10 @@ namespace ServerTools
 
         public static PersistentPlayerList GetPersistentPlayerList()
         {
-            PersistentPlayerList _persistentPlayerList = GameManager.Instance.persistentPlayers;
-            if (_persistentPlayerList != null)
+            PersistentPlayerList persistentPlayerList = GameManager.Instance.persistentPlayers;
+            if (persistentPlayerList != null)
             {
-                return _persistentPlayerList;
+                return persistentPlayerList;
             }
             return null;
         }
@@ -283,13 +283,13 @@ namespace ServerTools
 
         public static PersistentPlayerData GetPersistentPlayerDataFromEntityId(int _entityId)
         {
-            PersistentPlayerList _persistentPlayerList = GameManager.Instance.persistentPlayers;
-            if (_persistentPlayerList != null)
+            PersistentPlayerList persistentPlayerList = GameManager.Instance.persistentPlayers;
+            if (persistentPlayerList != null)
             {
-                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_entityId);
-                if (_persistentPlayerData != null)
+                PersistentPlayerData persistentPlayerData = persistentPlayerList.GetPlayerDataFromEntityID(_entityId);
+                if (persistentPlayerData != null)
                 {
-                    return _persistentPlayerData;
+                    return persistentPlayerData;
                 }
             }
             return null;
@@ -297,25 +297,25 @@ namespace ServerTools
 
         public static PlayerDataFile GetPlayerDataFileFromSteamId(string _playerId)
         {
-            PlayerDataFile _playerDatafile = new PlayerDataFile();
-            _playerDatafile.Load(GameUtils.GetPlayerDataDir(), _playerId.Trim());
-            if (_playerDatafile != null)
+            PlayerDataFile playerDatafile = new PlayerDataFile();
+            playerDatafile.Load(GameUtils.GetPlayerDataDir(), _playerId.Trim());
+            if (playerDatafile != null)
             {
-                return _playerDatafile;
+                return playerDatafile;
             }
             return null;
         }
 
         public static PlayerDataFile GetPlayerDataFileFromEntityId(int _entityId)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromEntityId(_entityId);
-            if (_persistentPlayerData != null)
+            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromEntityId(_entityId);
+            if (persistentPlayerData != null)
             {
-                PlayerDataFile _playerDatafile = new PlayerDataFile();
-                _playerDatafile.Load(GameUtils.GetPlayerDataDir(), _persistentPlayerData.PlayerId.Trim());
-                if (_playerDatafile != null)
+                PlayerDataFile playerDatafile = new PlayerDataFile();
+                playerDatafile.Load(GameUtils.GetPlayerDataDir(), persistentPlayerData.PlayerId.Trim());
+                if (playerDatafile != null)
                 {
-                    return _playerDatafile;
+                    return playerDatafile;
                 }
             }
             return null;
@@ -323,27 +323,27 @@ namespace ServerTools
 
         public static void RemoveAllClaims(string _playerId)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
-            if (_persistentPlayerData != null)
+            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
+            if (persistentPlayerData != null)
             {
-                List<Vector3i> landProtectionBlocks = _persistentPlayerData.LPBlocks;
+                List<Vector3i> landProtectionBlocks = persistentPlayerData.LPBlocks;
                 if (landProtectionBlocks != null)
                 {
                     for (int i = 0; i < landProtectionBlocks.Count; i++)
                     {
-                        Vector3i _position = landProtectionBlocks[i];
+                        Vector3i position = landProtectionBlocks[i];
                         World world = GameManager.Instance.World;
-                        BlockValue _blockValue = world.GetBlock(_position);
-                        Block _block = _blockValue.Block;
-                        if (_block != null && _block is BlockLandClaim)
+                        BlockValue blockValue = world.GetBlock(position);
+                        Block block = blockValue.Block;
+                        if (block != null && block is BlockLandClaim)
                         {
-                            world.SetBlockRPC(0, _position, BlockValue.Air);
-                            ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.LandClaim, _position.ToVector3()), false, -1, -1, -1, -1);
-                            world.ObjectOnMapRemove(EnumMapObjectType.LandClaim, _position.ToVector3());
-                            LandClaimBoundsHelper.RemoveBoundsHelper(_position.ToVector3());
+                            world.SetBlockRPC(0, position, BlockValue.Air);
+                            ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.LandClaim, position.ToVector3()), false, -1, -1, -1, -1);
+                            world.ObjectOnMapRemove(EnumMapObjectType.LandClaim, position.ToVector3());
+                            LandClaimBoundsHelper.RemoveBoundsHelper(position.ToVector3());
                         }
-                        GameManager.Instance.persistentPlayers.m_lpBlockMap.Remove(_position);
-                        _persistentPlayerData.LPBlocks.Remove(_position);
+                        GameManager.Instance.persistentPlayers.m_lpBlockMap.Remove(position);
+                        persistentPlayerData.LPBlocks.Remove(position);
                     }
                     SavePersistentPlayerDataXML();
                 }
@@ -352,13 +352,13 @@ namespace ServerTools
 
         public static void RemoveOneClaim(string _playerId, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
-            if (_persistentPlayerData != null)
+            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
+            if (persistentPlayerData != null)
             {
                 World world = GameManager.Instance.World;
-                BlockValue _blockValue = world.GetBlock(_position);
-                Block _block = _blockValue.Block;
-                if (_block != null && _block is BlockLandClaim)
+                BlockValue blockValue = world.GetBlock(_position);
+                Block block = blockValue.Block;
+                if (block != null && block is BlockLandClaim)
                 {
                     world.SetBlockRPC(0, _position, BlockValue.Air);
                     ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.LandClaim, _position.ToVector3()), false, -1, -1, -1, -1);
@@ -366,19 +366,19 @@ namespace ServerTools
                     LandClaimBoundsHelper.RemoveBoundsHelper(_position.ToVector3());
                 }
                 GameManager.Instance.persistentPlayers.m_lpBlockMap.Remove(_position);
-                _persistentPlayerData.LPBlocks.Remove(_position);
+                persistentPlayerData.LPBlocks.Remove(_position);
                 SavePersistentPlayerDataXML();
             }
         }
 
         public static void RemovePersistentPlayerData(string _playerId)
         {
-            PersistentPlayerList _persistentPlayerList = GetPersistentPlayerList();
-            if (_persistentPlayerList != null)
+            PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
+            if (persistentPlayerList != null)
             {
-                if (_persistentPlayerList.Players.ContainsKey(_playerId))
+                if (persistentPlayerList.Players.ContainsKey(_playerId))
                 {
-                    _persistentPlayerList.Players.Remove(_playerId);
+                    persistentPlayerList.Players.Remove(_playerId);
                     SavePersistentPlayerDataXML();
                 }
             }
@@ -386,23 +386,23 @@ namespace ServerTools
 
         public static void RemoveAllACL(string _playerId)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
-            if (_persistentPlayerData != null)
+            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
+            if (persistentPlayerData != null)
             {
-                PersistentPlayerList _persistentPlayerList = GetPersistentPlayerList();
-                foreach (KeyValuePair<string, PersistentPlayerData> _persistentPlayerData2 in _persistentPlayerList.Players)
+                PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
+                foreach (KeyValuePair<string, PersistentPlayerData> persistentPlayerData2 in persistentPlayerList.Players)
                 {
-                    if (_persistentPlayerData2.Key != _persistentPlayerData.PlayerId)
+                    if (persistentPlayerData2.Key != persistentPlayerData.PlayerId)
                     {
-                        if (_persistentPlayerData2.Value.ACL != null && _persistentPlayerData2.Value.ACL.Contains(_persistentPlayerData.PlayerId))
+                        if (persistentPlayerData2.Value.ACL != null && persistentPlayerData2.Value.ACL.Contains(persistentPlayerData.PlayerId))
                         {
-                            _persistentPlayerData2.Value.RemovePlayerFromACL(_persistentPlayerData.PlayerId);
-                            _persistentPlayerData2.Value.Dispatch(_persistentPlayerData, EnumPersistentPlayerDataReason.ACL_Removed);
+                            persistentPlayerData2.Value.RemovePlayerFromACL(persistentPlayerData.PlayerId);
+                            persistentPlayerData2.Value.Dispatch(persistentPlayerData, EnumPersistentPlayerDataReason.ACL_Removed);
                         }
-                        if (_persistentPlayerData.ACL != null && _persistentPlayerData.ACL.Contains(_persistentPlayerData2.Value.PlayerId))
+                        if (persistentPlayerData.ACL != null && persistentPlayerData.ACL.Contains(persistentPlayerData2.Value.PlayerId))
                         {
-                            _persistentPlayerData.RemovePlayerFromACL(_persistentPlayerData2.Key);
-                            _persistentPlayerData.Dispatch(_persistentPlayerData2.Value, EnumPersistentPlayerDataReason.ACL_Removed);
+                            persistentPlayerData.RemovePlayerFromACL(persistentPlayerData2.Key);
+                            persistentPlayerData.Dispatch(persistentPlayerData2.Value, EnumPersistentPlayerDataReason.ACL_Removed);
                         }
                     }
                 }
@@ -413,10 +413,10 @@ namespace ServerTools
         public static void SavePlayerDataFile(string _playerId, PlayerDataFile _playerDataFile)
         {
             _playerDataFile.Save(GameUtils.GetPlayerDataDir(), _playerId.Trim());
-            ClientInfo _cInfo = GetClientInfoFromSteamId(_playerId);
-            if (_cInfo != null)
+            ClientInfo cInfo = GetClientInfoFromSteamId(_playerId);
+            if (cInfo != null)
             {
-                ModEvents.SavePlayerData.Invoke(_cInfo, _playerDataFile);
+                ModEvents.SavePlayerData.Invoke(cInfo, _playerDataFile);
             }
         }
 
@@ -430,11 +430,11 @@ namespace ServerTools
 
         public static bool ClaimedBySelf(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_id);
-            if (_persistentPlayerData != null)
+            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromSteamId(_id);
+            if (persistentPlayerData != null)
             {
-                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
-                if (_owner == EnumLandClaimOwner.Self)
+                EnumLandClaimOwner owner = GameManager.Instance.World.GetLandClaimOwner(_position, persistentPlayerData);
+                if (owner == EnumLandClaimOwner.Self)
                 {
                     return true;
                 }
@@ -444,11 +444,11 @@ namespace ServerTools
 
         public static bool ClaimedByAlly(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_id);
-            if (_persistentPlayerData != null)
+            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromSteamId(_id);
+            if (persistentPlayerData != null)
             {
-                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
-                if (_owner == EnumLandClaimOwner.Ally)
+                EnumLandClaimOwner owner = GameManager.Instance.World.GetLandClaimOwner(_position, persistentPlayerData);
+                if (owner == EnumLandClaimOwner.Ally)
                 {
                     return true;
                 }
@@ -458,11 +458,11 @@ namespace ServerTools
 
         public static bool ClaimedByNone(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_id);
-            if (_persistentPlayerData != null)
+            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromSteamId(_id);
+            if (persistentPlayerData != null)
             {
-                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
-                if (_owner == EnumLandClaimOwner.None)
+                EnumLandClaimOwner owner = GameManager.Instance.World.GetLandClaimOwner(_position, persistentPlayerData);
+                if (owner == EnumLandClaimOwner.None)
                 {
                     return true;
                 }
@@ -472,11 +472,11 @@ namespace ServerTools
 
         public static bool ClaimedByAllyOrSelf(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_id);
-            if (_persistentPlayerData != null)
+            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromSteamId(_id);
+            if (persistentPlayerData != null)
             {
-                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
-                if (_owner == EnumLandClaimOwner.Ally || _owner == EnumLandClaimOwner.Self)
+                EnumLandClaimOwner owner = GameManager.Instance.World.GetLandClaimOwner(_position, persistentPlayerData);
+                if (owner == EnumLandClaimOwner.Ally || owner == EnumLandClaimOwner.Self)
                 {
                     return true;
                 }
@@ -543,13 +543,13 @@ namespace ServerTools
         {
             if (EntityClass.list.Dict != null && EntityClass.list.Dict.Count > 0)
             {
-                int _count = 1;
-                foreach (KeyValuePair<int, EntityClass> _entityClass in EntityClass.list.Dict)
+                int count = 1;
+                foreach (KeyValuePair<int, EntityClass> entityClass in EntityClass.list.Dict)
                 {
-                    if (_entityClass.Value.bAllowUserInstantiate)
+                    if (entityClass.Value.bAllowUserInstantiate)
                     {
-                        EntityId.Add(_count, _entityClass.Key);
-                        _count++;
+                        EntityId.Add(count, entityClass.Key);
+                        count++;
                     }
                 }
             }
@@ -613,29 +613,29 @@ namespace ServerTools
 
         public static string CreatePassword(int _length)
         {
-            string _pass = "";
+            string pass = String.Empty;
             try
             {
-                System.Random _rnd = new System.Random();
+                System.Random rnd = new System.Random();
                 for (int i = 0; i < _length; i++)
                 {
-                    _pass += AlphaNumSet.ElementAt(_rnd.Next(0, 62));
+                    pass += AlphaNumSet.ElementAt(rnd.Next(0, 62));
                 }
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.SetPassword: {0}", e.Message));
             }
-            return _pass;
+            return pass;
         }
 
         public static long ConvertIPToLong(string ipAddress)
         {
             try
             {
-                if (IPAddress.TryParse(ipAddress, out IPAddress _ip))
+                if (IPAddress.TryParse(ipAddress, out IPAddress ip))
                 {
-                    byte[] bytes = _ip.MapToIPv4().GetAddressBytes();
+                    byte[] bytes = ip.MapToIPv4().GetAddressBytes();
                     return 16777216L * bytes[0] +
                         65536 * bytes[1] +
                         256 * bytes[2] +
@@ -672,35 +672,35 @@ namespace ServerTools
         public static void Jail(ClientInfo _cInfoKiller)
         {
             SdtdConsole.Instance.ExecuteSync(string.Format("st-Jail add {0} 120", _cInfoKiller.playerId), null);
-            Phrases.Dict.TryGetValue("Jail1", out string _phrase);
-            _phrase = _phrase.Replace("{PlayerName}", _cInfoKiller.playerName);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            Phrases.Dict.TryGetValue("Jail1", out string phrase);
+            phrase = phrase.Replace("{PlayerName}", _cInfoKiller.playerName);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
         public static void Kill(ClientInfo _cInfo)
         {
             SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), null);
-            Phrases.Dict.TryGetValue("Zones4", out string _phrase);
-            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            Phrases.Dict.TryGetValue("Zones4", out string phrase);
+            phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
         public static void Kick(ClientInfo _cInfo)
         {
-            Phrases.Dict.TryGetValue("Zones6", out string _phrase);
-            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase), null);
-            Phrases.Dict.TryGetValue("Zones5", out _phrase);
-            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            Phrases.Dict.TryGetValue("Zones6", out string phrase);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, phrase), null);
+            Phrases.Dict.TryGetValue("Zones5", out phrase);
+            phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
         public static void Ban(ClientInfo _cInfo)
         {
-            Phrases.Dict.TryGetValue("Zones8", out string _phrase);
-            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase), null);
-            Phrases.Dict.TryGetValue("Zones7", out _phrase);
-            _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            Phrases.Dict.TryGetValue("Zones8", out string phrase);
+            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, phrase), null);
+            Phrases.Dict.TryGetValue("Zones7", out phrase);
+            phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
     }
 }

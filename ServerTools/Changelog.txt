@@ -1,5 +1,17 @@
 ﻿CHANGELOG
 
+19.6.9
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+-Added Reserved option to CustomCommand.xml. If set to true, the command
+will only be accessible to players on the ReservedSlots.xml
+-Fixed console command st-Waypoints misreading the cost as invalid
+-Fixed Public_Waypoints not functioning as intended
+-Updated Web_API to match changes for Discordian and the Web_Panel that 
+will allow exotic characters to be sent across chat and command interface
+-Removed /wallet command from /commands response
+
 19.6.8
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

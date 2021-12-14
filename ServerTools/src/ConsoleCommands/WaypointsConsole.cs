@@ -88,7 +88,7 @@ namespace ServerTools
                             string position = x + "," + y + "," + z;
                             string name = _params[1];
                             string cost = _params[2];
-                            if (int.TryParse(_params[2], out int _commandCost))
+                            if (!int.TryParse(_params[2], out int _commandCost))
                             {
                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid command cost: {0}", _params[2]));
                                 return;
@@ -116,7 +116,7 @@ namespace ServerTools
                         int.TryParse(_params[4], out int z);
                         string position = x + "," + y + "," + z;
                         string cost = _params[5];
-                        if (int.TryParse(_params[5], out int commandCost))
+                        if (!int.TryParse(_params[5], out int commandCost))
                         {
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid command cost: {0}", _params[5]));
                             return;

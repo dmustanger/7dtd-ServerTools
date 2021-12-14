@@ -24,35 +24,36 @@ namespace ServerTools
             {
                 if (!Utils.FileExists(FilePath))
                 {
-                    WebAPI.AESProvider.BlockSize = 128;
-                    WebAPI.AESProvider.KeySize = 256;
-                    WebAPI.AESProvider.Mode = CipherMode.CBC;
-                    WebAPI.AESProvider.Padding = PaddingMode.PKCS7;
-                    WebAPI.AESProvider.GenerateKey();
-                    TokenBytes = WebAPI.AESProvider.Key;
-                    TokenKey = Convert.ToBase64String(WebAPI.AESProvider.Key);
+                    using (Aes aes = Aes.Create())
+                    {
+                        aes.BlockSize = 128;
+                        aes.KeySize = 256;
+                        aes.Mode = CipherMode.CBC;
+                        aes.Padding = PaddingMode.PKCS7;
+                        aes.GenerateKey();
+                        TokenBytes = aes.Key;
+                        TokenKey = Convert.ToBase64String(aes.Key);
+                    }
                     using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                     {
                         sw.WriteLine(TokenKey);
-                        sw.Close();
-                        sw.Dispose();
                     }
                     TokenLoaded = true;
                     Log.Out("[SERVERTOOLS] Created and loaded security token for the discord bot");
                 }
-                else
+                else if (!TokenLoaded)
                 {
-                    using (FileStream fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.None))
+                    using (FileStream fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
                         {
-                            string _token = sr.ReadToEnd().RemoveLineBreaks().Trim();
-                            TokenBytes = Convert.FromBase64String(_token);
-                            TokenKey = _token;
-                            TokenLoaded = true;
-                            Log.Out("[SERVERTOOLS] Loaded security token for the discord bot");
+                            string token = sr.ReadToEnd().RemoveLineBreaks().Trim();
+                            TokenBytes = Convert.FromBase64String(token);
+                            TokenKey = Convert.ToBase64String(TokenBytes);
                         }
                     }
+                    TokenLoaded = true;
+                    Log.Out("[SERVERTOOLS] Loaded security token for the discord bot");
                 }
             }
             catch (Exception e)
@@ -65,11 +66,11 @@ namespace ServerTools
         {
             try
             {
-                using (WebClient _client = new WebClient())
+                using (WebClient client = new WebClient())
                 {
-                    _client.Headers[HttpRequestHeader.ContentType] = "application/json";
-                    _client.UploadString(Webhook, "{\"content\":\"" + Queue[0].Replace("\"", "") + "\"}");
-                    _client.Dispose();
+                    client.Headers[HttpRequestHeader.ContentType] = "application/json";
+                    client.UploadString(Webhook, "{\"content\":\"" + Queue[0].Replace("\"", "") + "\"}");
+                    client.Dispose();
                 }
             }
             catch (Exception e)

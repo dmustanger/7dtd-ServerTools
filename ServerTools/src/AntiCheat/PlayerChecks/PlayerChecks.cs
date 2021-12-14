@@ -83,24 +83,21 @@ namespace ServerTools
                                             TwoSecondMovement.Remove(cInfo.entityId);
                                             continue;
                                         }
+                                        if (player.AttachedToEntity != null && player.AttachedToEntity is EntityVehicle)
+                                        {
+                                            Entity entity = GameManager.Instance.World.GetEntity(player.AttachedToEntity.entityId);
+                                            if (entity != null && entity is EntityVehicle)
+                                            {
+                                                continue;
+                                            }
+                                        }
                                         if (SpeedDetector.IsEnabled && userPermissionLevel > SpeedDetector.Speed_Admin_Level && SpeedDetector.TravelTooFar(oldPosition, player.position))
                                         {
                                             SpeedDetector.Detected(cInfo);
                                         }
                                         if (FlyingDetector.IsEnabled && userPermissionLevel > FlyingDetector.Flying_Admin_Level && cInfo.ping < 350)
                                         {
-                                            if (player.AttachedToEntity != null)
-                                            {
-                                                Entity entity = GameManager.Instance.World.GetEntity(player.AttachedToEntity.entityId);
-                                                if (entity != null)
-                                                {
-                                                    float distance = player.GetDistance(player.AttachedToEntity);
-                                                    if (distance <= 5)
-                                                    {
-                                                        continue;
-                                                    }
-                                                }
-                                            }
+                                            
                                             if (FlyingDetector.IsFlying(player.position))
                                             {
                                                 FlyingDetector.Detected(cInfo, player);

@@ -383,7 +383,7 @@ namespace ServerTools
                     if (Vehicle)
                     {
                         Entity attachedEntity = player.AttachedToEntity;
-                        if (attachedEntity != null)
+                        if (attachedEntity != null && attachedEntity is EntityVehicle)
                         {
                             Phrases.Dict.TryGetValue("Teleport3", out string phrase);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -416,7 +416,7 @@ namespace ServerTools
                     else if (Dict.ContainsKey(_waypoint))
                     {
                         Dict.TryGetValue(_waypoint, out string[] waypointData);
-                        int.TryParse(waypointData[2], out int cost);
+                        int.TryParse(waypointData[1], out int cost);
                         CommandCost(_cInfo, _waypoint, position, _friends, cost);
                     }
                 }
@@ -461,17 +461,36 @@ namespace ServerTools
             {
                 if (PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints.ContainsKey(_waypoint))
                 {
-                    Dictionary<string, string> _waypoints = PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints;
-                    _waypoints.TryGetValue(_waypoint, out string _waypointPos);
-                    string[] _cords = _waypointPos.Split(',');
-                    int.TryParse(_cords[0], out int _x);
-                    int.TryParse(_cords[1], out int _y);
-                    int.TryParse(_cords[2], out int _z);
+                    Dictionary<string, string> waypoints = PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints;
+                    waypoints.TryGetValue(_waypoint, out string waypointPos);
+                    string[] cords = waypointPos.Split(',');
+                    int.TryParse(cords[0], out int x);
+                    int.TryParse(cords[1], out int y);
+                    int.TryParse(cords[2], out int z);
                     if (_friends)
                     {
-                        FriendInvite(_cInfo, _position, _waypointPos);
+                        FriendInvite(_cInfo, _position, waypointPos);
                     }
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                    PersistentContainer.Instance.Players[_cInfo.playerId].LastWaypoint = DateTime.Now;
+                    PersistentContainer.DataChange = true;
+                    if (Wallet.IsEnabled && _cost >= 1)
+                    {
+                        Wallet.RemoveCurrency(_cInfo.playerId, _cost);
+                    }
+                }
+                else if (Dict.ContainsKey(_waypoint))
+                {
+                    Dict.TryGetValue(_waypoint, out string[] waypointData);
+                    string[] cords = waypointData[0].Split(',');
+                    int.TryParse(cords[0], out int x);
+                    int.TryParse(cords[1], out int y);
+                    int.TryParse(cords[2], out int z);
+                    if (_friends)
+                    {
+                        FriendInvite(_cInfo, _position, waypointData[0]);
+                    }
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                     PersistentContainer.Instance.Players[_cInfo.playerId].LastWaypoint = DateTime.Now;
                     PersistentContainer.DataChange = true;
                     if (Wallet.IsEnabled && _cost >= 1)
@@ -481,8 +500,8 @@ namespace ServerTools
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("Waypoints4", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Waypoints4", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

@@ -865,7 +865,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Waypoints3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Waypoints4", out phrase))
                     {
-                        phrase = "This waypoint was not found on your list";
+                        phrase = "That waypoint name was not found";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Waypoints4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Waypoints5", out phrase))
@@ -875,7 +875,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Waypoints5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Waypoints6", out phrase))
                     {
-                        phrase = "This is not a valid waypoint";
+                        phrase = "";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Waypoints6\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Waypoints7", out phrase))

@@ -18,6 +18,8 @@ namespace ServerTools
         private Dictionary<int, int> auctionPrices;
         private Dictionary<int, int> backpacks;
         private Dictionary<int, List<int>> clientMuteList;
+        private Dictionary<string, byte[]> connections;
+        private Dictionary<string, DateTime> connectionTimeOut;
         private DateTime lastWeather;
         private List<string> protectedZones;
         private string[] pollData;
@@ -155,6 +157,30 @@ namespace ServerTools
             set
             {
                 clientMuteList = value;
+            }
+        }
+
+        public Dictionary<string, byte[]> Connections
+        {
+            get
+            {
+                return connections;
+            }
+            set
+            {
+                connections = value;
+            }
+        }
+
+        public Dictionary<string, DateTime> ConnectionTimeOut
+        {
+            get
+            {
+                return connectionTimeOut;
+            }
+            set
+            {
+                connectionTimeOut = value;
             }
         }
 
