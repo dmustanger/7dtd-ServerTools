@@ -25,10 +25,10 @@ namespace ServerTools
                     {
                         if (int.TryParse(_player, out int entityId))
                         {
-                            ClientInfo cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(entityId);
+                            ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromEntityId(entityId);
                             if (cInfo2 != null)
                             {
-                                if (cInfo2.playerId != _cInfo.playerId)
+                                if (cInfo2.CrossplatformId.CombinedString != _cInfo.CrossplatformId.CombinedString)
                                 {
                                     playerKick = cInfo2;
                                     VoteOpen = true;
@@ -75,7 +75,7 @@ namespace ServerTools
                     if (Kick.Count >= Votes_Needed)
                     {
                         Phrases.Dict.TryGetValue("KickVote10", out string phrase);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", playerKick.entityId, phrase), null);
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", playerKick.entityId, phrase), null);
                     }
                     else
                     {

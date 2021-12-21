@@ -18,9 +18,9 @@ namespace ServerTools
             return "Usage:\n" +
                    "  1. st-zns off\n" +
                    "  2. st-zns on\n" +
-                   "  3. st-zns new <name>\n" +
+                   "  3. st-zns new <Name>\n" +
                    "  4. st-zns list\n" +
-                   "  5. st-zns delete <number>\n" +
+                   "  5. st-zns delete <Number>\n" +
                    "  6. st-zns save\n" +
                    "  7. st-zns back\n" +
                    "  8. st-zns forward\n" +
@@ -53,12 +53,12 @@ namespace ServerTools
                             Zones.IsEnabled = false;
                             Config.WriteXml();
                             Config.LoadXml();
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Zones has been set to off"));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Zones has been set to off"));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Zones is already off"));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Zones is already off"));
                             return;
                         }
                     }
@@ -69,12 +69,12 @@ namespace ServerTools
                             Zones.IsEnabled = true;
                             Config.WriteXml();
                             Config.LoadXml();
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Zones has been set to on"));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Zones has been set to on"));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Zones is already on"));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Zones is already on"));
                             return;
                         }
                     }
@@ -97,9 +97,9 @@ namespace ServerTools
                         string _name = string.Join(" ", _params);
                         _newZone[0] = _name;
                         Zones.ZoneSetup.Add(_cInfo.entityId, _newZone);
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Started a new zone setup. Zone name set to {0}", _newZone[0]));
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Stand at the first corner of the zone and type zns save"));
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] If you would like a circle, stand in the middle of the circle and type zns circle"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Started a new zone setup. Zone name set to {0}", _newZone[0]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Stand at the first corner of the zone and type zns save"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] If you would like a circle, stand in the middle of the circle and type zns circle"));
                     }
                     else if (_params[0].ToLower().Equals("list"))
                     {
@@ -110,25 +110,25 @@ namespace ServerTools
                                 string[] _zone = Zones.ZoneList[i];
                                 if (_zone != null)
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("Zone number {0}:", i));
-                                    SdtdConsole.Instance.Output(string.Format("Name = {0}", _zone[0]));
-                                    SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _zone[1]));
-                                    SdtdConsole.Instance.Output(string.Format("Corner 2 = {0}", _zone[2]));
-                                    SdtdConsole.Instance.Output(string.Format("Circle = {0}", _zone[3]));
-                                    SdtdConsole.Instance.Output(string.Format("Entry message = {0}", _zone[4]));
-                                    SdtdConsole.Instance.Output(string.Format("Exit message = {0}", _zone[5]));
-                                    SdtdConsole.Instance.Output(string.Format("Entry Command = {0}", _zone[6]));
-                                    SdtdConsole.Instance.Output(string.Format("Exit Command = {0}", _zone[7]));
-                                    SdtdConsole.Instance.Output(string.Format("Reminder Notice = {0}", _zone[8]));
-                                    SdtdConsole.Instance.Output(string.Format("PvPvE = {0}", _zone[9]));
-                                    SdtdConsole.Instance.Output(string.Format("No zombie = {0}", _zone[10]));
-                                    SdtdConsole.Instance.Output(string.Format(""));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Zone number {0}:", i));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Name = {0}", _zone[0]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 1 = {0}", _zone[1]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 2 = {0}", _zone[2]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Circle = {0}", _zone[3]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry message = {0}", _zone[4]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit message = {0}", _zone[5]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry Command = {0}", _zone[6]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit Command = {0}", _zone[7]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Reminder Notice = {0}", _zone[8]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("PvPvE = {0}", _zone[9]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("No zombie = {0}", _zone[10]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format(""));
                                 }
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] There are no zones setup"));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no zones setup"));
                         }
                     }
                     else if (_params[0].ToLower().Equals("delete"))
@@ -141,24 +141,24 @@ namespace ServerTools
                                 {
                                     Zones.ZoneList.RemoveAt(_number);
                                     Zones.UpdateXml();
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed zone entry number {0} from the list", _number));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed zone entry number {0} from the list", _number));
                                     return;
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Could not delete number {0} from the list. Entry not found", _number));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Could not delete number {0} from the list. Entry not found", _number));
                                     return;
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid format or non numeric entry. Type zns delete <number> from the list of zones"));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid format or non numeric entry. Type zns delete <number> from the list of zones"));
                                 return;
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] There are no zones setup"));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no zones setup"));
                             return;
                         }
                     }
@@ -179,8 +179,8 @@ namespace ServerTools
                                 _newZone[3] = "true";
                                 Zones.ZoneSetup[_cInfo.entityId] = _newZone;
                                 SetupStage[_cInfo.entityId] = 2;
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Circle center point = {0}", _newZone[1]));
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns circle 'number' to set the amount of blocks from center the zone will reach"));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Circle center point = {0}", _newZone[1]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns circle 'number' to set the amount of blocks from center the zone will reach"));
                             }
                             else if (_stage == 2)
                             {
@@ -192,22 +192,22 @@ namespace ServerTools
                                         _newZone[2] = _radius.ToString();
                                         Zones.ZoneSetup[_cInfo.entityId] = _newZone;
                                         SetupStage[_cInfo.entityId] = 3;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Saved the circular zone radius to {0} blocks", _newZone[2]));
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This is the message players receive upon entering the zone"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Saved the circular zone radius to {0} blocks", _newZone[2]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This is the message players receive upon entering the zone"));
                                     }
                                     else
                                     {
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid radius for circlular zone, try again"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid radius for circlular zone, try again"));
                                     }
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] This zone is not setup as a circle, go back by typing zns back"));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] This zone is not setup as a circle, go back by typing zns back"));
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Start a new zone setup or go back to the circle setup if you need to change it by typing zns back."));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Start a new zone setup or go back to the circle setup if you need to change it by typing zns back."));
                             }
                         }
                     }
@@ -229,8 +229,8 @@ namespace ServerTools
                                     _newZone[3] = "false";
                                     Zones.ZoneSetup[_cInfo.entityId] = _newZone;
                                     SetupStage[_cInfo.entityId] = 2;
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Corner 1 = {0}", _newZone[1]));
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Stand in the opposite corner of the zone and type zns save"));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Corner 1 = {0}", _newZone[1]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Stand in the opposite corner of the zone and type zns save"));
                                     break;
                                 case 2:
                                     _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -245,8 +245,8 @@ namespace ServerTools
                                     _newZone[2] = _x + "," + _y + "," + _z;
                                     Zones.ZoneSetup[_cInfo.entityId] = _newZone;
                                     SetupStage[_cInfo.entityId] = 3;
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Corner 2 = {0}", _newZone[2]));
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This is the message players receive upon entering the zone"));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Corner 2 = {0}", _newZone[2]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This is the message players receive upon entering the zone"));
                                     break;
                                 case 3:
                                     _params.RemoveAt(0);
@@ -254,8 +254,8 @@ namespace ServerTools
                                     _newZone[4] = _entryMessage;
                                     Zones.ZoneSetup[_cInfo.entityId] = _newZone;
                                     SetupStage[_cInfo.entityId] = 4;
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Entry message = \"{0}\"", _newZone[4]));
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This is the message players receive upon exiting the zone"));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Entry message = \"{0}\"", _newZone[4]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This is the message players receive upon exiting the zone"));
                                     break;
                                 case 4:
                                     _params.RemoveAt(0);
@@ -263,8 +263,8 @@ namespace ServerTools
                                     _newZone[5] = _exitMessage;
                                     Zones.ZoneSetup[_cInfo.entityId] = _newZone;
                                     SetupStage[_cInfo.entityId] = 5;
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Exit message = \"{0}\"", _newZone[5]));
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"command\". This is the console command that will occur when a player enters this zone"));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Exit message = \"{0}\"", _newZone[5]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"command\". This is the console command that will occur when a player enters this zone"));
                                     break;
                                 case 5:
                                     _params.RemoveAt(0);
@@ -276,8 +276,8 @@ namespace ServerTools
                                     _newZone[6] = _entryCommand;
                                     Zones.ZoneSetup[_cInfo.entityId] = _newZone;
                                     SetupStage[_cInfo.entityId] = 6;
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Entry command = \"{0}\"", _newZone[6]));
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"command\". This is the console command that will occur when a player exits this zone"));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Entry command = \"{0}\"", _newZone[6]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"command\". This is the console command that will occur when a player exits this zone"));
                                     break;
                                 case 6:
                                     _params.RemoveAt(0);
@@ -289,8 +289,8 @@ namespace ServerTools
                                     _newZone[7] = _exitCommand;
                                     Zones.ZoneSetup[_cInfo.entityId] = _newZone;
                                     SetupStage[_cInfo.entityId] = 7;
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Exit command = \"{0}\"", _newZone[7]));
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This will set the message players receive if they stay in this zone long enough"));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Exit command = \"{0}\"", _newZone[7]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This will set the message players receive if they stay in this zone long enough"));
                                     break;
                                 case 7:
                                     _params.RemoveAt(0);
@@ -298,9 +298,9 @@ namespace ServerTools
                                     _newZone[8] = _reminder;
                                     Zones.ZoneSetup[_cInfo.entityId] = _newZone;
                                     SetupStage[_cInfo.entityId] = 8;
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Reminder message = \"{0}\"", _newZone[8]));
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save '0 to 3'. This will set PvPvE to a specific player killing mode"));
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone"));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Reminder message = \"{0}\"", _newZone[8]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save '0 to 3'. This will set PvPvE to a specific player killing mode"));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone"));
                                     break;
                                 case 8:
                                     if (int.TryParse(_params[1], out int _playerKillingMode))
@@ -308,13 +308,13 @@ namespace ServerTools
                                         _newZone[9] = _playerKillingMode.ToString();
                                         Zones.ZoneSetup[_cInfo.entityId] = _newZone;
                                         SetupStage[_cInfo.entityId] = 9;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Zone PvPvE = {0}", _newZone[9]));
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save 'true or false'. This will set no zombie to true or false"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Zone PvPvE = {0}", _newZone[9]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save 'true or false'. This will set no zombie to true or false"));
                                     }
                                     else
                                     {
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Incorrect format. Type zns save '0 to 3'"));
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Incorrect format. Type zns save '0 to 3'"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone"));
                                     }
                                     break;
                                 case 9:
@@ -330,25 +330,25 @@ namespace ServerTools
                                         }
                                         Zones.ZoneSetup[_cInfo.entityId] = _newZone;
                                         SetupStage[_cInfo.entityId] = 10;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No zombie = {0}", _newZone[10]));
-                                        SdtdConsole.Instance.Output("");
-                                        SdtdConsole.Instance.Output(string.Format("Zone Review:"));
-                                        SdtdConsole.Instance.Output(string.Format("Name = {0}", _newZone[0]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
-                                        SdtdConsole.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
-                                        SdtdConsole.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry Command = {0}", _newZone[6]));
-                                        SdtdConsole.Instance.Output(string.Format("Exit Command = {0}", _newZone[7]));
-                                        SdtdConsole.Instance.Output(string.Format("Reminder notice = {0}", _newZone[8]));
-                                        SdtdConsole.Instance.Output(string.Format("PvPvE = {0}", _newZone[9]));
-                                        SdtdConsole.Instance.Output(string.Format("No zombie = {0}", _newZone[10]));
-                                        SdtdConsole.Instance.Output(string.Format("Type zns save. This will complete the setup"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] No zombie = {0}", _newZone[10]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("");
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Zone Review:"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Name = {0}", _newZone[0]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry Command = {0}", _newZone[6]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit Command = {0}", _newZone[7]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Reminder notice = {0}", _newZone[8]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("PvPvE = {0}", _newZone[9]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("No zombie = {0}", _newZone[10]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Type zns save. This will complete the setup"));
                                     }
                                     else
                                     {
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Incorrect format. Type zns save 'true or false'"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Incorrect format. Type zns save 'true or false'"));
                                     }
                                     break;
                                 case 10:
@@ -356,11 +356,11 @@ namespace ServerTools
                                     {
                                         Zones.ZoneList.Add(_newZone);
                                         Zones.UpdateXml();
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] New zone setup has been completed"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] New zone setup has been completed"));
                                     }
                                     else
                                     {
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] This zone is already setup. Setup a new zone by typing zns new"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] This zone is already setup. Setup a new zone by typing zns new"));
                                     }
                                     Zones.ZoneSetup.Remove(_cInfo.entityId);
                                     SetupStage.Remove(_cInfo.entityId);
@@ -376,123 +376,123 @@ namespace ServerTools
                                 switch (_stage)
                                 {
                                     case 1:
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Name = {0}", _newZone[0]));
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Stand at the first corner of the zone and type zns save"));
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] If you would like a circle, stand in the middle of the circle and type zns circle"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Name = {0}", _newZone[0]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Stand at the first corner of the zone and type zns save"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] If you would like a circle, stand in the middle of the circle and type zns circle"));
                                         break;
                                     case 2:
                                         SetupStage[_cInfo.entityId] = 1;
                                         if (_newZone[3].ToLower() == "true")
                                         {
-                                            SdtdConsole.Instance.Output(string.Format("Name = {0}", _newZone[0]));
-                                            SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
-                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Stand at the furthest point from the center and type zns circle"));
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Name = {0}", _newZone[0]));
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Stand at the furthest point from the center and type zns circle"));
                                         }
                                         else
                                         {
-                                            SdtdConsole.Instance.Output(string.Format("Name = {0}", _newZone[0]));
-                                            SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
-                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Corner 1 is saved. Stand in the opposite corner of the zone and type zns save"));
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Name = {0}", _newZone[0]));
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Corner 1 is saved. Stand in the opposite corner of the zone and type zns save"));
                                         }
                                         break;
                                     case 3:
                                         SetupStage[_cInfo.entityId] = 2;
-                                        SdtdConsole.Instance.Output(string.Format("Name = {0}", _newZone[0]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
-                                        SdtdConsole.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This is the message players receive upon entering the zone"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Name = {0}", _newZone[0]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This is the message players receive upon entering the zone"));
                                         break;
                                     case 4:
                                         SetupStage[_cInfo.entityId] = 3;
-                                        SdtdConsole.Instance.Output(string.Format("Name = {0}", _newZone[0]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
-                                        SdtdConsole.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This is the message players receive upon exiting the zone"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Name = {0}", _newZone[0]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This is the message players receive upon exiting the zone"));
                                         break;
                                     case 5:
                                         SetupStage[_cInfo.entityId] = 4;
-                                        SdtdConsole.Instance.Output(string.Format("Name = {0}", _newZone[0]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
-                                        SdtdConsole.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
-                                        SdtdConsole.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"command\". This is the console command that will occur when a player enters this zone"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Name = {0}", _newZone[0]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"command\". This is the console command that will occur when a player enters this zone"));
                                         break;
                                     case 6:
                                         SetupStage[_cInfo.entityId] = 5;
-                                        SdtdConsole.Instance.Output(string.Format("Name = {0}", _newZone[0]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
-                                        SdtdConsole.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
-                                        SdtdConsole.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry Command = {0}", _newZone[6]));
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"command\". This is the console command that will occur when a player exits this zone"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Name = {0}", _newZone[0]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry Command = {0}", _newZone[6]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"command\". This is the console command that will occur when a player exits this zone"));
                                         break;
                                     case 7:
                                         SetupStage[_cInfo.entityId] = 6;
-                                        SdtdConsole.Instance.Output(string.Format("Name = {0}", _newZone[0]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
-                                        SdtdConsole.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
-                                        SdtdConsole.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry Command = {0}", _newZone[6]));
-                                        SdtdConsole.Instance.Output(string.Format("Exit Command = {0}", _newZone[7]));
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This will set the message players receive if they stay in this zone long enough"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Name = {0}", _newZone[0]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry Command = {0}", _newZone[6]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit Command = {0}", _newZone[7]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save \"message\". This will set the message players receive if they stay in this zone long enough"));
                                         break;
                                     case 8:
                                         SetupStage[_cInfo.entityId] = 7;
-                                        SdtdConsole.Instance.Output(string.Format("Name = {0}", _newZone[0]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
-                                        SdtdConsole.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
-                                        SdtdConsole.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry Command = {0}", _newZone[6]));
-                                        SdtdConsole.Instance.Output(string.Format("Exit Command = {0}", _newZone[7]));
-                                        SdtdConsole.Instance.Output(string.Format("Reminder notice = {0}", _newZone[8]));
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save '0 to 3'. This will set PvPvE to a specific player killing mode"));
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Name = {0}", _newZone[0]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry Command = {0}", _newZone[6]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit Command = {0}", _newZone[7]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Reminder notice = {0}", _newZone[8]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save '0 to 3'. This will set PvPvE to a specific player killing mode"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone"));
                                         break;
                                     case 9:
                                         SetupStage[_cInfo.entityId] = 8;
-                                        SdtdConsole.Instance.Output(string.Format("Name = {0}", _newZone[0]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
-                                        SdtdConsole.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
-                                        SdtdConsole.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry Command = {0}", _newZone[6]));
-                                        SdtdConsole.Instance.Output(string.Format("Exit Command = {0}", _newZone[7]));
-                                        SdtdConsole.Instance.Output(string.Format("Reminder notice = {0}", _newZone[8]));
-                                        SdtdConsole.Instance.Output(string.Format("PvPvE = {0}", _newZone[9]));
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Type zns save 'true or false'. This will set no zombie to true or false"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Name = {0}", _newZone[0]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry Command = {0}", _newZone[6]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit Command = {0}", _newZone[7]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Reminder notice = {0}", _newZone[8]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("PvPvE = {0}", _newZone[9]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Type zns save 'true or false'. This will set no zombie to true or false"));
                                         break;
                                     case 10:
                                         SetupStage[_cInfo.entityId] = 9;
-                                        SdtdConsole.Instance.Output(string.Format("Name = {0}", _newZone[0]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
-                                        SdtdConsole.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
-                                        SdtdConsole.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
-                                        SdtdConsole.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
-                                        SdtdConsole.Instance.Output(string.Format("Entry Command = {0}", _newZone[6]));
-                                        SdtdConsole.Instance.Output(string.Format("Exit Command = {0}", _newZone[7]));
-                                        SdtdConsole.Instance.Output(string.Format("Reminder notice = {0}", _newZone[8]));
-                                        SdtdConsole.Instance.Output(string.Format("PvPvE = {0}", _newZone[9]));
-                                        SdtdConsole.Instance.Output(string.Format("No zombie = {0}", _newZone[10]));
-                                        SdtdConsole.Instance.Output(string.Format("Type zns save. This will complete the setup"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Name = {0}", _newZone[0]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 1 = {0}", _newZone[1]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Corner 2 = {0}", _newZone[2]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Circle = {0}", _newZone[3]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry message = {0}", _newZone[4]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit message = {0}", _newZone[5]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entry Command = {0}", _newZone[6]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Exit Command = {0}", _newZone[7]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Reminder notice = {0}", _newZone[8]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("PvPvE = {0}", _newZone[9]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("No zombie = {0}", _newZone[10]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Type zns save. This will complete the setup"));
                                         break;
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have not started the setup of a new zone. Type zns new 'name' to begin setting up a new zone"));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have not started the setup of a new zone. Type zns new 'name' to begin setting up a new zone"));
                             }
                         }
                         else if (_params[0].ToLower().Equals("forward"))
@@ -503,12 +503,12 @@ namespace ServerTools
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have not started the setup of a new zone. Type zns new 'name' to begin setting up a new zone"));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have not started the setup of a new zone. Type zns new 'name' to begin setting up a new zone"));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                         }
                     }
                 }

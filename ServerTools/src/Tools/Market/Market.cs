@@ -14,34 +14,37 @@ namespace ServerTools
 
         public static void Set(ClientInfo _cInfo)
         {
-            string[] _command = { Command_set };
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo))
+            string[] command = { Command_set };
+            if (!GameManager.Instance.adminTools.CommandAllowedFor(command, _cInfo))
             {
-                Phrases.Dict.TryGetValue("Market7", out string _phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market7", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                Vector3 _position = _player.GetPosition();
-                int x = (int)_position.x;
-                int y = (int)_position.y;
-                int z = (int)_position.z;
-                string _mposition = x + "," + y + "," + z;
-                Market_Position = _mposition;
-                Config.WriteXml();
-                Phrases.Dict.TryGetValue("Market6", out string _phrase);
-                _phrase = _phrase.Replace("{MarketPosition}", Market_Position);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                if (player != null)
+                {
+                    Vector3 position = player.GetPosition();
+                    int x = (int)position.x;
+                    int y = (int)position.y;
+                    int z = (int)position.z;
+                    string mposition = x + "," + y + "," + z;
+                    Market_Position = mposition;
+                    Config.WriteXml();
+                    Phrases.Dict.TryGetValue("Market6", out string phrase);
+                    phrase = phrase.Replace("{MarketPosition}", Market_Position);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                }
             }
         }
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (Reserved_Only && ReservedSlots.IsEnabled && !ReservedSlots.ReservedCheck(_cInfo.playerId))
+            if (Reserved_Only && ReservedSlots.IsEnabled && !ReservedSlots.ReservedCheck(_cInfo))
             {
-                Phrases.Dict.TryGetValue("Market8", out string _phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market8", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
             if (Delay_Between_Uses < 1)
@@ -57,20 +60,32 @@ namespace ServerTools
             }
             else
             {
-                DateTime _lastMarket = PersistentContainer.Instance.Players[_cInfo.playerId].LastMarket;
-                TimeSpan varTime = DateTime.Now - _lastMarket;
+                DateTime lastMarket = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastMarket;
+
+                TimeSpan varTime = DateTime.Now - lastMarket;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;
                 if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                 {
-                    if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                    if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                     {
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                        if (DateTime.Now < _dt)
+                        if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                         {
-                            int _delay = Delay_Between_Uses / 2;
-                            Time(_cInfo, _timepassed, _delay);
-                            return;
+                            if (DateTime.Now < dt)
+                            {
+                                int delay = Delay_Between_Uses / 2;
+                                Time(_cInfo, _timepassed, delay);
+                                return;
+                            }
+                        }
+                        else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                        {
+                            if (DateTime.Now < dt)
+                            {
+                                int delay = Delay_Between_Uses / 2;
+                                Time(_cInfo, _timepassed, delay);
+                                return;
+                            }
                         }
                     }
                 }
@@ -93,27 +108,27 @@ namespace ServerTools
             }
             else
             {
-                int _timeleft = _delay - _timepassed;
-                Phrases.Dict.TryGetValue("Market1", out string _phrase);
-                _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                _phrase = _phrase.Replace("{Command_market}", Command_market);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                int timeleft = _delay - _timepassed;
+                Phrases.Dict.TryGetValue("Market1", out string phrase);
+                phrase = phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                phrase = phrase.Replace("{TimeRemaining}", timeleft.ToString());
+                phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                phrase = phrase.Replace("{Command_market}", Command_market);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
         public static void CommandCost(ClientInfo _cInfo)
         {
-            if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
+            if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
             {
                 MarketTele(_cInfo);
             }
             else
             {
-                Phrases.Dict.TryGetValue("Market9", out string _phrase);
-                _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market9", out string phrase);
+                phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -121,21 +136,21 @@ namespace ServerTools
         {
             if (Market_Position != "0,0,0" || Market_Position != "0 0 0" || Market_Position != "")
             {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                if (_player != null)
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                if (player != null)
                 {
                     if (!MarketPlayers.Contains(_cInfo.entityId))
                     {
                         if (Player_Check)
                         {
-                            if (Teleportation.PCheck(_cInfo, _player))
+                            if (Teleportation.PCheck(_cInfo, player))
                             {
                                 return;
                             }
                         }
                         if (Zombie_Check)
                         {
-                            if (Teleportation.ZCheck(_cInfo, _player))
+                            if (Teleportation.ZCheck(_cInfo, player))
                             {
                                 return;
                             }
@@ -146,13 +161,13 @@ namespace ServerTools
                         }
                         if (Return)
                         {
-                            Vector3 _position = _player.GetPosition();
-                            int x = (int)_position.x;
-                            int y = (int)_position.y;
-                            int z = (int)_position.z;
-                            string _mposition = x + "," + y + "," + z;
+                            Vector3 position = player.GetPosition();
+                            int x = (int)position.x;
+                            int y = (int)position.y;
+                            int z = (int)position.z;
+                            string mposition = x + "," + y + "," + z;
                             MarketPlayers.Add(_cInfo.entityId);
-                            PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = _mposition;
+                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].MarketReturnPos = mposition;
                             PersistentContainer.DataChange = true;
                             Phrases.Dict.TryGetValue("Market2", out string _phrase);
                             _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
@@ -160,18 +175,18 @@ namespace ServerTools
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                         string[] _cords = Market_Position.Split(',').ToArray();
-                        if (int.TryParse(_cords[0], out int _x))
+                        if (int.TryParse(_cords[0], out int i))
                         {
-                            if (int.TryParse(_cords[1], out int _y))
+                            if (int.TryParse(_cords[1], out int j))
                             {
-                                if (int.TryParse(_cords[2], out int _z))
+                                if (int.TryParse(_cords[2], out int k))
                                 {
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(i, j, k), null, false));
                                     if (Wallet.IsEnabled && Command_Cost >= 1)
                                     {
-                                        Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
+                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                                     }
-                                    PersistentContainer.Instance.Players[_cInfo.playerId].LastMarket = DateTime.Now;
+                                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastMarket = DateTime.Now;
                                     PersistentContainer.DataChange = true;
                                 }
                             }
@@ -179,15 +194,15 @@ namespace ServerTools
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("Market11", out string _phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Market11", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                Phrases.Dict.TryGetValue("Market4", out string _phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market4", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -195,34 +210,34 @@ namespace ServerTools
         {
             if (MarketPlayers.Contains(_cInfo.entityId))
             {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                if (_player != null)
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                if (player != null)
                 {
-                    string _lastPos = PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos;
-                    if (_lastPos != "")
+                    string lastPos = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].MarketReturnPos;
+                    if (lastPos != "")
                     {
-                        string[] _returnCoords = _lastPos.Split(',');
-                        int.TryParse(_returnCoords[0], out int x);
-                        int.TryParse(_returnCoords[1], out int y);
-                        int.TryParse(_returnCoords[2], out int z);
+                        string[] returnCoords = lastPos.Split(',');
+                        int.TryParse(returnCoords[0], out int x);
+                        int.TryParse(returnCoords[1], out int y);
+                        int.TryParse(returnCoords[2], out int z);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                         MarketPlayers.Remove(_cInfo.entityId);
-                        PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].MarketReturnPos = "";
                         PersistentContainer.DataChange = true;
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("Market5", out string _phrase);
-                        _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                        _phrase = _phrase.Replace("{Command_marketback}", Command_marketback);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Market5", out string phrase);
+                        phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                        phrase = phrase.Replace("{Command_marketback}", Command_marketback);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                Phrases.Dict.TryGetValue("Market3", out string _phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market3", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -233,7 +248,7 @@ namespace ServerTools
                 MarketPlayers.Remove(_cInfo.entityId);
                 if (Return)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].MarketReturnPos = "";
                     PersistentContainer.DataChange = true;
                     Phrases.Dict.TryGetValue("Market5", out string phrase);
                     phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
@@ -259,8 +274,8 @@ namespace ServerTools
         {
             try
             {
-                Phrases.Dict.TryGetValue("Market10", out string _phrase);
-                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Market10", out string phrase);
+                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 if (PersistentOperations.PvEViolations.ContainsKey(_cInfo2.entityId))
                 {
                     PersistentOperations.PvEViolations.TryGetValue(_cInfo2.entityId, out int _violations);

@@ -892,7 +892,7 @@ namespace ServerTools
                                                             {
                                                                 ClientInfo cInfo = new ClientInfo
                                                                 {
-                                                                    playerId = "-Web_Panel- " + IVKey[0],
+                                                                    playerName = "-Web_Panel- " + IVKey[0],
                                                                     entityId = -1
                                                                 };
                                                                 List<string> cmdReponse = SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(command, cInfo);
@@ -961,22 +961,22 @@ namespace ServerTools
                                                                 ClientInfo cInfo = clientList[i];
                                                                 if (cInfo != null)
                                                                 {
-                                                                    EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                                                                    EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                                                                     if (player != null && player.Progression != null)
                                                                     {
                                                                         if (cInfo.playerName.Contains("☼") || cInfo.playerName.Contains("§") || cInfo.playerName.Contains("/"))
                                                                         {
-                                                                            responseMessage += cInfo.playerId + "/" + cInfo.entityId + "§" + "<Invalid Chars>" + "§"
+                                                                            responseMessage += cInfo.PlatformId.CombinedString + "/" + cInfo.entityId + "§" + "<Invalid Chars>" + "§"
                                                                                 + player.Health + "/" + (int)player.Stamina + "§" + player.Progression.Level + "§"
                                                                                 + (int)player.position.x + "," + (int)player.position.y + "," + (int)player.position.z;
                                                                         }
                                                                         else
                                                                         {
-                                                                            responseMessage += cInfo.playerId + "/" + cInfo.entityId + "§" + cInfo.playerName + "§"
+                                                                            responseMessage += cInfo.PlatformId.CombinedString + "/" + cInfo.entityId + "§" + cInfo.playerName + "§"
                                                                                 + player.Health + "/" + (int)player.Stamina + "§" + player.Progression.Level + "§"
                                                                                 + (int)player.position.x + "," + (int)player.position.y + "," + (int)player.position.z;
                                                                         }
-                                                                        if (Mute.IsEnabled && Mute.Mutes.Contains(cInfo.playerId))
+                                                                        if (Mute.IsEnabled && Mute.Mutes.Contains(cInfo.CrossplatformId.CombinedString))
                                                                         {
                                                                             responseMessage += "§" + "True";
                                                                         }
@@ -984,7 +984,7 @@ namespace ServerTools
                                                                         {
                                                                             responseMessage += "§" + "False";
                                                                         }
-                                                                        if (Jail.IsEnabled && Jail.Jailed.Contains(cInfo.playerId))
+                                                                        if (Jail.IsEnabled && Jail.Jailed.Contains(cInfo.CrossplatformId.CombinedString))
                                                                         {
                                                                             responseMessage += "/" + "True" + "☼";
                                                                         }
@@ -1157,11 +1157,11 @@ namespace ServerTools
                                                             string newIv = PersistentOperations.CreatePassword(16);
                                                             AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
                                                             responseMessage += newIv;
-                                                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromSteamId(commandSplit[1]);
+                                                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
                                                             if (cInfo != null)
                                                             {
-                                                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0}", cInfo.playerId), null);
-                                                                WebPanel.Writer(string.Format("Client {0} at IP {1} has kicked {2}", clientId, _ip, cInfo.playerId));
+                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0}", cInfo.CrossplatformId.CombinedString), null);
+                                                                WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has kicked '{2}' '{3}'", clientId, _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString));
                                                                 _response.StatusCode = 200;
                                                             }
                                                             else
@@ -1198,26 +1198,20 @@ namespace ServerTools
                                                             string newIv = PersistentOperations.CreatePassword(16);
                                                             AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
                                                             responseMessage += newIv;
-                                                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromSteamId(commandSplit[1]);
+                                                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
                                                             if (cInfo != null)
                                                             {
-                                                                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 year", cInfo.playerId), null);
-                                                                WebPanel.Writer(string.Format("Client {0} at IP {1} has banned id {2} named {3}", IVKey[0], _ip, cInfo.playerId, cInfo.playerName));
+                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 year", cInfo.CrossplatformId.CombinedString), null);
+                                                                WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has banned id '{2}' '{3}' named '{4}'", IVKey[0], _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                                                 _response.StatusCode = 200;
                                                             }
                                                             else
                                                             {
-                                                                PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromSteamId(commandSplit[1]);
-                                                                if (pdf != null)
+                                                                PersistentPlayerData ppd = PersistentOperations.GetPersistentPlayerDataFromId(commandSplit[1]);
+                                                                if (ppd != null)
                                                                 {
-                                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 year", pdf.ecd.belongsPlayerId), null);
-                                                                    WebPanel.Writer(string.Format("Client {0} at IP {1} has banned id {2} named {3}", IVKey[0], _ip, pdf.ecd.belongsPlayerId, pdf.ecd.entityName));
-                                                                    _response.StatusCode = 406;
-                                                                }
-                                                                else
-                                                                {
-                                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 year", commandSplit[1]), null);
-                                                                    WebPanel.Writer(string.Format("Client {0} at IP {1} has banned id {2}", IVKey[0], _ip, commandSplit[1]));
+                                                                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 year", ppd.UserIdentifier.CombinedString), null);
+                                                                    WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has banned id '{2}' named '{3}'", IVKey[0], _ip, ppd.UserIdentifier.CombinedString, ppd.PlayerName));
                                                                     _response.StatusCode = 406;
                                                                 }
                                                             }
@@ -1253,23 +1247,23 @@ namespace ServerTools
                                                             responseMessage += newIv;
                                                             if (Mute.IsEnabled)
                                                             {
-                                                                ClientInfo cInfo = PersistentOperations.GetClientInfoFromSteamId(commandSplit[1]);
+                                                                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
                                                                 if (cInfo != null)
                                                                 {
-                                                                    if (Mute.Mutes.Contains(cInfo.playerId))
+                                                                    if (Mute.Mutes.Contains(cInfo.CrossplatformId.CombinedString))
                                                                     {
-                                                                        Mute.Mutes.Remove(cInfo.playerId);
-                                                                        PersistentContainer.Instance.Players[cInfo.playerId].MuteTime = 0;
-                                                                        WebPanel.Writer(string.Format("Client {0} at IP {1} has unmuted id {2} named {3}", IVKey[0], _ip, cInfo.playerId, cInfo.playerName));
+                                                                        Mute.Mutes.Remove(cInfo.CrossplatformId.CombinedString);
+                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteTime = 0;
+                                                                        WebPanel.Writer(string.Format("Client {0} at IP {1} has unmuted id {2} named {3}", IVKey[0], _ip, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                                                         _response.StatusCode = 202;
                                                                     }
                                                                     else
                                                                     {
-                                                                        Mute.Mutes.Add(cInfo.playerId);
-                                                                        PersistentContainer.Instance.Players[cInfo.playerId].MuteTime = -1;
-                                                                        PersistentContainer.Instance.Players[cInfo.playerId].MuteName = cInfo.playerName;
-                                                                        PersistentContainer.Instance.Players[cInfo.playerId].MuteDate = DateTime.Now;
-                                                                        WebPanel.Writer(string.Format("Client {0} at IP {1} has muted id {2} named {3}", IVKey[0], _ip, cInfo.playerId, cInfo.playerName));
+                                                                        Mute.Mutes.Add(cInfo.CrossplatformId.CombinedString);
+                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteTime = -1;
+                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteName = cInfo.playerName;
+                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteDate = DateTime.Now;
+                                                                        WebPanel.Writer(string.Format("Client {0} at IP {1} has muted id {2} named {3}", IVKey[0], _ip, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                                                         _response.StatusCode = 200;
                                                                     }
                                                                     PersistentContainer.DataChange = true;
@@ -1331,34 +1325,34 @@ namespace ServerTools
                                                             responseMessage += newIv;
                                                             if (Jail.IsEnabled)
                                                             {
-                                                                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(commandSplit[1]);
-                                                                if (_cInfo != null)
+                                                                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
+                                                                if (cInfo != null)
                                                                 {
-                                                                    if (Jail.Jailed.Contains(_cInfo.playerId))
+                                                                    if (Jail.Jailed.Contains(cInfo.CrossplatformId.CombinedString))
                                                                     {
-                                                                        EntityPlayer player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                                                        EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];
                                                                         if (player != null)
                                                                         {
                                                                             EntityBedrollPositionList position = player.SpawnPoints;
-                                                                            Jail.Jailed.Remove(_cInfo.playerId);
-                                                                            PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = 0;
+                                                                            Jail.Jailed.Remove(cInfo.CrossplatformId.CombinedString);
+                                                                            PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailTime = 0;
                                                                             PersistentContainer.DataChange = true;
                                                                             if (position != null && position.Count > 0)
                                                                             {
-                                                                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(position[0].x, -1, position[0].z), null, false));
+                                                                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(position[0].x, -1, position[0].z), null, false));
                                                                             }
                                                                             else
                                                                             {
                                                                                 Vector3[] pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                                                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(pos[0].x, -1, pos[0].z), null, false));
+                                                                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(pos[0].x, -1, pos[0].z), null, false));
                                                                             }
-                                                                            WebPanel.Writer(string.Format("Client {0} at IP {1} has unjailed {2} named {3}", IVKey[0], _ip, _cInfo.playerId, _cInfo.playerName));
+                                                                            WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has unjailed '{2}' '{3}' named '{4}'", IVKey[0], _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                                                             _response.StatusCode = 200;
                                                                         }
                                                                     }
                                                                     else if (Jail.Jail_Position != "")
                                                                     {
-                                                                        EntityPlayer player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                                                        EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];
                                                                         if (player != null && player.IsSpawned())
                                                                         {
                                                                             if (Jail.Jail_Position.Contains(","))
@@ -1367,15 +1361,15 @@ namespace ServerTools
                                                                                 int.TryParse(cords[0], out int _x);
                                                                                 int.TryParse(cords[1], out int _y);
                                                                                 int.TryParse(cords[2], out int _z);
-                                                                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                                                                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                                                                             }
                                                                         }
-                                                                        Jail.Jailed.Add(_cInfo.playerId);
-                                                                        PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = -1;
-                                                                        PersistentContainer.Instance.Players[_cInfo.playerId].JailName = _cInfo.playerName;
-                                                                        PersistentContainer.Instance.Players[_cInfo.playerId].JailDate = DateTime.Now;
+                                                                        Jail.Jailed.Add(cInfo.CrossplatformId.CombinedString);
+                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailTime = -1;
+                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailName = cInfo.playerName;
+                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailDate = DateTime.Now;
                                                                         PersistentContainer.DataChange = true;
-                                                                        WebPanel.Writer(string.Format("Client {0} at IP {1} has jailed {2} named {3}", IVKey[0], _ip, _cInfo.playerId, _cInfo.playerName));
+                                                                        WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has jailed '{2}' '{3}' named '{4}'", IVKey[0], _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                                                         _response.StatusCode = 200;
                                                                     }
                                                                     else
@@ -1444,11 +1438,11 @@ namespace ServerTools
                                                             responseMessage += _newIv;
                                                             if (VoteReward.IsEnabled)
                                                             {
-                                                                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(commandSplit[1]);
-                                                                if (_cInfo != null)
+                                                                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
+                                                                if (cInfo != null)
                                                                 {
-                                                                    VoteReward.ItemOrBlockCounter(_cInfo, VoteReward.Reward_Count);
-                                                                    WebPanel.Writer(string.Format("Client {0} at IP {1} has rewarded {2} named {3}", IVKey[0], _ip, _cInfo.playerId, _cInfo.playerName));
+                                                                    VoteReward.ItemOrBlockCounter(cInfo, VoteReward.Reward_Count);
+                                                                    WebPanel.Writer(string.Format("Client {0} at IP {1} has rewarded {2} named {3}", IVKey[0], _ip, cInfo.PlatformId.CombinedString, cInfo.playerName));
                                                                 }
                                                                 else
                                                                 {

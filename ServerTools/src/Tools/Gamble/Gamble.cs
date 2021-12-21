@@ -15,9 +15,9 @@ namespace ServerTools
         {
             try
             {
-                if (Dict.ContainsKey(_cInfo.playerId))
+                if (Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
-                    Dict.TryGetValue(_cInfo.playerId, out int[] pot);
+                    Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out int[] pot);
                     Phrases.Dict.TryGetValue("Gamble1", out string phrase);
                     phrase = phrase.Replace("{Value1}", pot[0].ToString());
                     phrase = phrase.Replace("{Value2}", pot[1].ToString());
@@ -46,7 +46,7 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.GetCurrency(_cInfo.playerId) < Command_Cost)
+                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) < Command_Cost)
                 {
                     Phrases.Dict.TryGetValue("Gamble3", out string phrase);
                     phrase = phrase.Replace("{Value}", Command_Cost.ToString());
@@ -57,34 +57,43 @@ namespace ServerTools
                 else
                 {
                     DateTime lastgamble = new DateTime();
-                    if (PersistentContainer.Instance.Players[_cInfo.playerId].LastGamble != null)
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGamble != null)
                     {
-                        lastgamble = PersistentContainer.Instance.Players[_cInfo.playerId].LastGamble;
+                        lastgamble = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGamble;
                     }
                     TimeSpan varTime = DateTime.Now - lastgamble;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int timepassed = (int)fractionalMinutes;
                     int delay = Delay_Between_Uses;
-                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                     {
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                        if (DateTime.Now < _dt)
+                        if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.ReadablePlatformUserIdentifier, out DateTime dt))
                         {
-                            delay = Delay_Between_Uses / 2;
+                            if (DateTime.Now < dt)
+                            {
+                                delay = Delay_Between_Uses / 2;
+                            }
+                        }
+                        else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.ReadablePlatformUserIdentifier, out dt))
+                        {
+                            if (DateTime.Now < dt)
+                            {
+                                delay = Delay_Between_Uses / 2;
+                            }
                         }
                     }
                     if (timepassed >= delay)
                     {
                         int[] pot;
-                        if (Dict.ContainsKey(_cInfo.playerId))
+                        if (Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                         {
-                            Dict.TryGetValue(_cInfo.playerId, out pot);
+                            Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out pot);
                         }
                         else
                         {
                             pot = new int[] { 1, 0 };
                         }
-                        Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                         int gamble = Random.Next(pot[0] + 1);
                         if (gamble == 1)
                         {
@@ -93,13 +102,13 @@ namespace ServerTools
                             {
                                 winnings = pot[1] * 2;
                             }
-                            if (!Dict.ContainsKey(_cInfo.playerId))
+                            if (!Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                             {
-                                Dict.Add(_cInfo.playerId, new int[] { pot[0] + 1, winnings });
+                                Dict.Add(_cInfo.CrossplatformId.CombinedString, new int[] { pot[0] + 1, winnings });
                             }
                             else
                             {
-                                Dict[_cInfo.playerId] = new int[] { pot[0] + 1, winnings };
+                                Dict[_cInfo.CrossplatformId.CombinedString] = new int[] { pot[0] + 1, winnings };
                             }
                             Phrases.Dict.TryGetValue("Gamble5", out string phrase);
                             phrase = phrase.Replace("{Number}", pot[0].ToString());
@@ -111,11 +120,11 @@ namespace ServerTools
                         }
                         else
                         {
-                            if (Dict.ContainsKey(_cInfo.playerId))
+                            if (Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                             {
-                                Dict.Remove(_cInfo.playerId);
+                                Dict.Remove(_cInfo.CrossplatformId.CombinedString);
                             }
-                            PersistentContainer.Instance.Players[_cInfo.playerId].LastGamble = DateTime.Now;
+                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGamble = DateTime.Now;
                             PersistentContainer.DataChange = true;
                             Phrases.Dict.TryGetValue("Gamble6", out string phrase);
                             phrase = phrase.Replace("{Number}", pot[0].ToString());
@@ -144,12 +153,12 @@ namespace ServerTools
         {
             try
             {
-                if (Dict.ContainsKey(_cInfo.playerId))
+                if (Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
-                    Dict.TryGetValue(_cInfo.playerId, out int[] pot);
-                    Wallet.AddCurrency(_cInfo.playerId, pot[1]);
-                    Dict.Remove(_cInfo.playerId);
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastGamble = DateTime.Now;
+                    Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out int[] pot);
+                    Wallet.AddCurrency(_cInfo.CrossplatformId.CombinedString, pot[1]);
+                    Dict.Remove(_cInfo.CrossplatformId.CombinedString);
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGamble = DateTime.Now;
                     PersistentContainer.DataChange = true;
                     Phrases.Dict.TryGetValue("Gamble4", out string phrase);
                     phrase = phrase.Replace("{Value}", pot[1].ToString());

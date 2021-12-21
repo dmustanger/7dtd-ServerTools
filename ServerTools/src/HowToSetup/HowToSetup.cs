@@ -13,7 +13,7 @@ namespace ServerTools
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine("This was drafted for version 19.6.7");
+                sw.WriteLine("This was drafted for version 20.0.0");
                 sw.WriteLine();
                 sw.WriteLine("If you find mistakes or the file is out of date, let the dev team know.");
                 sw.WriteLine();
@@ -361,29 +361,12 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"Credentials\" />");
-                sw.WriteLine();
-                sw.WriteLine("Set True or False for Enable");
-                sw.WriteLine("Set True or False for No_Family_Share");
-                sw.WriteLine("Set True or False for No_Bad_Id");
-                sw.WriteLine("Set True or False for No_Internal");
-                sw.WriteLine("Set a numeric value for Admin_Level");
-                sw.WriteLine();
-                sw.WriteLine("No family share will stop players from joining your server if their id do not match between steamId and ownerId. Many hackers use this to prevent their main accounts");
-                sw.WriteLine("from being banned.");
-                sw.WriteLine("No_Bad_Id checks for steam Id and owner Id to be 17 numbers in length and to start with 7656119 as all steam id are like this.");
-                sw.WriteLine("No_Internal checks for an ip that is an internal address such as 192.168.*.* . This is commonly done to prevent their own ip from getting banned. It will kick");
-                sw.WriteLine("an administrator or server owner if they are playing on a server they are networked to.");
-                sw.WriteLine("Admins will be skipped if they are the right permission level.");
-                sw.WriteLine();
-                sw.WriteLine();
-                sw.WriteLine();
                 sw.WriteLine("<Tool Name=\"Custom_Commands\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine();
                 sw.WriteLine("Enabling will create a CustomCommands.xml in your main installation folder in a ServerTools folder");
-                sw.WriteLine("Allows custom commands to be used via chat. Example: The player can type /tpmarket and it runs \"tele {SteamId} 0 -1 5\" based on the response the admin has setup.");
+                sw.WriteLine("Allows custom commands to be used via chat. Example: The player can type /tpmarket and it runs \"tele {EOS} 0 -1 5\" based on the response the admin has setup.");
                 sw.WriteLine("Separate command response with a ^. Example: tele {EntityId} 10 -1 50 ^ whisper You are now in the market.");
                 sw.WriteLine("A delay in the operation of the response can be done with {Delay} #. Example: tele {EntityId} 10 -1 50 ^ {Delay} 3 ^ whisper {PlayerName} you are now in the market.");
                 sw.WriteLine("Delays between command use are available for the first twenty entries in the list only.");
@@ -852,8 +835,8 @@ namespace ServerTools
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine();
                 sw.WriteLine("Enabling will create a file named LoginNotice.xml in your main installation folder in a ServerTools folder");
-                sw.WriteLine("Add players steam id under the id and whatever message of your choice for message.");
-                sw.WriteLine("If the player matching the listed id enters the game, the message will be displayed to all players.");
+                sw.WriteLine("Add players Id to the id field and whatever message of your choice in the xml file.");
+                sw.WriteLine("If the player matching the listed Id enters the game, the message will be displayed to all players.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

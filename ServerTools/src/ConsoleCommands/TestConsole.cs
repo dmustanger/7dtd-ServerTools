@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "test" };
+            return new string[] { "st-Test", "test" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -28,7 +28,7 @@ namespace ServerTools
             {
                 if (GameManager.Instance.World == null)
                 {
-                    SdtdConsole.Instance.Output("[SERVERTOOLS] The world is not loaded. Unable to run command");
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] The world is not loaded. Unable to run command");
                     return;
                 }
                 

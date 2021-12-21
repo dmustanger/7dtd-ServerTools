@@ -26,9 +26,9 @@ namespace ServerTools
                     for (int i = 0; i < clientList.Count; i++)
                     {
                         ClientInfo cInfo = clientList[i];
-                        if (cInfo != null && cInfo.playerId != null)
+                        if (cInfo != null)
                         {
-                            EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                            EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                             if (player != null)
                             {
                                 int userPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo);
@@ -37,15 +37,15 @@ namespace ServerTools
                                     if (player.IsSpectator)
                                     {
                                         Phrases.Dict.TryGetValue("Spectator2", out string phrase);
-                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", cInfo.playerId, phrase), null);
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
                                         using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                         {
-                                            sw.WriteLine(string.Format("Detected \"'{0}'\" with steam id '{1}' using spectator mode @ {2}", cInfo.playerName, cInfo.playerId, new Vector3i(player.position)));
+                                            sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' using spectator mode @ '{2}'", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, player.position));
                                             sw.WriteLine();
                                             sw.Flush();
                                             sw.Close();
                                         }
-                                        Log.Warning("[SERVERTOOLS] Detected '{0}' with steam id '{1}' using spectator mode @ {2}", cInfo.playerName, cInfo.playerId, new Vector3i(player.position));
+                                        Log.Warning(string.Format("[SERVERTOOLS] Detected id '{0}' '{1}' named '{2}' using spectator mode @ '{2}'", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, player.position));
                                         Phrases.Dict.TryGetValue("Spectator1", out phrase);
                                         phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
                                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
@@ -57,15 +57,15 @@ namespace ServerTools
                                     if (player.Buffs.HasBuff("god"))
                                     {
                                         Phrases.Dict.TryGetValue("Godemode2", out string phrase);
-                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", cInfo.playerId, phrase), null);
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
                                         using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                         {
-                                            sw.WriteLine(string.Format("Detected '{0}' with steam id '{1}' using godmode @ {2}", cInfo.playerName, cInfo.playerId, new Vector3i (player.position)));
+                                            sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' using god mode @ '{2}'", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, player.position));
                                             sw.WriteLine();
                                             sw.Flush();
                                             sw.Close();
                                         }
-                                        Log.Warning("[SERVERTOOLS] Detected \"'{0}'\" with steam id '{1}' using godmode @ {2}", cInfo.playerName, cInfo.playerId, new Vector3i(player.position));
+                                        Log.Warning(string.Format("[SERVERTOOLS] Detected id '{0}' '{1}' named '{2}' using god mode @ '{2}'", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, player.position));
                                         Phrases.Dict.TryGetValue("Godemode1", out phrase);
                                         phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
                                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
@@ -131,11 +131,11 @@ namespace ServerTools
                     for (int i = 0; i < clientList.Count; i++)
                     {
                         ClientInfo cInfo = clientList[i];
-                        if (cInfo != null && cInfo.playerId != null)
+                        if (cInfo != null)
                         {
                             if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo) > XRayDetector.Admin_Level)
                             {
-                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                                 if (player != null)
                                 {
                                     XRayDetector.IsInsideBlocks(cInfo, player);

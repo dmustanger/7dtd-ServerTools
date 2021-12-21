@@ -6,12 +6,10 @@ namespace ServerTools
 {
     class TeleportCheck
     {
-        public static bool IsEnabled = false;
+        public static bool IsEnabled = false, Kill_Enabled = false, Jail_Enabled = false, Kick_Enabled = false, Ban_Enabled = false;
         public static int Admin_Level = 0;
-        public static bool Kill_Enabled = false;
-        public static bool Jail_Enabled = false;
-        public static bool Kick_Enabled = false;
-        public static bool Ban_Enabled = false;
+        public static string file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        public static string filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, file);
 
         public static void TeleportCheckValid(ClientInfo _cInfo)
         {
@@ -25,28 +23,27 @@ namespace ServerTools
         {
             if (Jail_Enabled)
             {
-                SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfo.playerId), null);
+                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("jail add {0}", _cInfo.CrossplatformId.CombinedString), null);
 
             }
             if (Kill_Enabled)
             {
-                SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), null);
+                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.CrossplatformId.CombinedString), null);
 
             }
             if (Kick_Enabled)
             {
-                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for teleporting.\"", _cInfo.playerId), null);
+                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for teleporting\"", _cInfo.CrossplatformId.CombinedString), null);
 
             }
             if (Ban_Enabled)
             {
-                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for teleporting\"", _cInfo.playerId), null);
+                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for teleporting\"", _cInfo.CrossplatformId.CombinedString), null);
             }
-            string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-            string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
-            using (StreamWriter sw = new StreamWriter(_filepath, true, Encoding.UTF8))
+            
+            using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
             {
-                sw.WriteLine(string.Format("Detected {0} Steam Id {1}, teleporting without permission.", _cInfo.playerName, _cInfo.playerId, _cInfo.entityId));
+                sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' teleporting without permission", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _cInfo.entityId));
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();

@@ -15,9 +15,9 @@ namespace ServerTools
             return "Usage:\n" +
                    "  1. st-rs off\n" +
                    "  2. st-rs on\n" +
-                   "  3. st-rs add <steamId/entityId/playerName> <daysToExpire>\n" +
-                   "  4. st-rs edit <steamId/entityId/playerName> <daysToExpire>\n" +
-                   "  5. st-rs remove <steamId/entityId/playerName>\n" +
+                   "  3. st-rs add <EOS/EntityId/PlayerName> <DaysToExpire>\n" +
+                   "  4. st-rs edit <EOS/EntityId/PlayerName> <DaysToExpire>\n" +
+                   "  5. st-rs remove <EOS/EntityId/PlayerName>\n" +
                    "  6. st-rs list\n" +
                    "1. Turn off reserved slots\n" +
                    "2. Turn on reserved slots\n" +
@@ -38,7 +38,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 || _params.Count > 3)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -48,12 +48,12 @@ namespace ServerTools
                         ReservedSlots.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Reserved slots has been set to off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Reserved slots has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Reserved slots is already off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Reserved slots is already off"));
                         return;
                     }
                 }
@@ -64,12 +64,12 @@ namespace ServerTools
                         ReservedSlots.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Reserved slots has been set to on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Reserved slots has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Reserved slots is already on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Reserved slots is already on"));
                         return;
                     }
                 }
@@ -77,38 +77,38 @@ namespace ServerTools
                 {
                     if (_params.Count != 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
                         return;
                     }
-                    string steamId = "", playerName = "";
-                    ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    string id = "", playerName = "";
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
-                        steamId = cInfo.playerId;
+                        id = cInfo.CrossplatformId.CombinedString;
                         playerName = cInfo.playerName;
                     }
                     else
                     {
-                        PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_params[1]);
-                        if (pdf != null)
+                        PersistentPlayerData ppd = PersistentOperations.GetPersistentPlayerDataFromId(_params[1]);
+                        if (ppd != null)
                         {
-                            steamId = _params[1];
-                            playerName = pdf.ecd.entityName;
+                            id = ppd.UserIdentifier.CombinedString;
+                            playerName = ppd.PlayerName;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player {0} online or offline. Use steam id for offline player", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate '{0}' online or offline. Use EOS id for offline player", _params[1]));
                             return;
                         }
                     }
-                    if (ReservedSlots.Dict.ContainsKey(steamId))
+                    if (ReservedSlots.Dict.ContainsKey(id))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add player id {0}. This id is already on the reserved slots list", steamId));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not add id '{0}'. Id is already on the reserved slots list", id));
                         return;
                     }
                     if (!double.TryParse(_params[2], out double daysToExpire))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid days to expire: {0}", _params[2]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid days to expire '{0}'", _params[2]));
                         return;
                     }
                     DateTime expireDate;
@@ -120,48 +120,48 @@ namespace ServerTools
                     {
                         expireDate = DateTime.Now.AddDays(18250d);
                     }
-                    ReservedSlots.Dict.Add(steamId, expireDate);
-                    ReservedSlots.Dict1.Add(steamId, playerName);
+                    ReservedSlots.Dict.Add(id, expireDate);
+                    ReservedSlots.Dict1.Add(id, playerName);
                     ReservedSlots.UpdateXml();
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id {0} named {1} with expiry '{2}' to the reserved slots list", steamId, playerName, expireDate.ToString()));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added id '{0}' named '{1}' with expiry '{2}' to the reserved slots list", id, playerName, expireDate.ToString()));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("edit"))
                 {
                     if (_params.Count != 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
                         return;
                     }
-                    string steamId = "", playerName = "";
-                    ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    string id = "", playerName = "";
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
-                        steamId = cInfo.playerId;
+                        id = cInfo.CrossplatformId.CombinedString;
                         playerName = cInfo.playerName;
                     }
-                    else
+                    else if (_params[1].Contains("_"))
                     {
-                        PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_params[1]);
-                        if (pdf != null)
+                        PersistentPlayerData ppd = PersistentOperations.GetPersistentPlayerDataFromId(_params[1]);
+                        if (ppd != null)
                         {
-                            steamId = _params[1];
-                            playerName = pdf.ecd.entityName;
+                            id = ppd.UserIdentifier.CombinedString;
+                            playerName = ppd.PlayerName;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player {0} online or offline. Use steam id for offline player", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate '{0}' online or offline. Use EOS id for offline players", _params[1]));
                             return;
                         }
                     }
-                    if (!ReservedSlots.Dict.ContainsKey(steamId))
+                    if (!ReservedSlots.Dict.ContainsKey(id))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not edit player id {0}. This id is not on the reserved slots list", steamId));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not edit id '{0}'. This id is not on the reserved slots list", id));
                         return;
                     }
                     if (!double.TryParse(_params[2], out double daysToExpire))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid days to expire: {0}", _params[2]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid days to expire '{0}'", _params[2]));
                         return;
                     }
                     DateTime expireDate;
@@ -173,40 +173,44 @@ namespace ServerTools
                     {
                         expireDate = DateTime.Now.AddDays(18250d);
                     }
-                    ReservedSlots.Dict[steamId] = expireDate;
-                    ReservedSlots.Dict1[steamId] = playerName;
+                    ReservedSlots.Dict[id] = expireDate;
+                    ReservedSlots.Dict1[id] = playerName;
                     ReservedSlots.UpdateXml();
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Edited player id {0} named {1} to expiry '{2}' on the reserved slots list", steamId, playerName, expireDate.ToString()));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Edited id '{0}' named '{1}' to expiry '{2}' on the reserved slots list", id, playerName, expireDate.ToString()));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("remove"))
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
-                    string steamId = "";
-                    ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    string id = "";
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
-                        steamId = cInfo.playerId;
+                        id = cInfo.CrossplatformId.CombinedString;
                     }
-                    else
+                    else if (_params[1].Contains("_"))
                     {
-                        steamId = _params[1];
+                        PersistentPlayerData ppd = PersistentOperations.GetPersistentPlayerDataFromId(_params[1]);
+                        if (ppd != null)
+                        {
+                            id = ppd.UserIdentifier.CombinedString;
+                        }
                     }
-                    if (ReservedSlots.Dict.ContainsKey(steamId))
+                    if (ReservedSlots.Dict.ContainsKey(id))
                     {
-                        ReservedSlots.Dict.Remove(steamId);
-                        ReservedSlots.Dict1.Remove(steamId);
+                        ReservedSlots.Dict.Remove(id);
+                        ReservedSlots.Dict1.Remove(id);
                         ReservedSlots.UpdateXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed player id {0} from the reserved slots list", steamId));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed id '{0}' from the reserved slots list", id));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to remove player id {0}. Id was not on the reserved slots list", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to remove id '{0}'. Id was not on the reserved slots list", _params[1]));
                         return;
                     }
                 }
@@ -214,12 +218,12 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (ReservedSlots.Dict.Count == 0)
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] There are no players on the Reserved slots list");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There are no players on the Reserved slots list");
                         return;
                     }
                     else
@@ -228,14 +232,14 @@ namespace ServerTools
                         {
                             if (ReservedSlots.Dict1.TryGetValue(key.Key, out string name))
                             {
-                                SdtdConsole.Instance.Output(string.Format("Player id {0} named {1} expires '{2}'", key.Key, name, key.Value));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Id '{0}' named '{1}' expires '{2}'", key.Key, name, key.Value));
                             }
                         }
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

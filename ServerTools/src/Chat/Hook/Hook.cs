@@ -1,5 +1,4 @@
-﻿using GameEvent.SequenceActions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,7 +20,7 @@ namespace ServerTools
             {
                 if (!string.IsNullOrEmpty(_message) && _cInfo != null && _mainName != Config.Server_Response_Name)
                 {
-                    if (Mute.IsEnabled && Mute.Mutes.Contains(_cInfo.playerId))
+                    if (Mute.IsEnabled && Mute.Mutes.Contains(_cInfo.PlatformId.CombinedString) || Mute.Mutes.Contains(_cInfo.CrossplatformId.CombinedString))
                     {
                         if (Mute.Block_Commands && (_message.StartsWith(Chat_Command_Prefix1) || _message.StartsWith(Chat_Command_Prefix2)))
                         {
@@ -75,7 +74,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (!Jail.IsEnabled || !Jail.Jailed.Contains(_cInfo.playerId))
+                    if (!Jail.IsEnabled || !Jail.Jailed.Contains(_cInfo.CrossplatformId.CombinedString))
                     {
                         if (_message.StartsWith(" "))
                         {
@@ -101,14 +100,14 @@ namespace ServerTools
                                 }
                                 else if (Messages_Per_Min > 1)
                                 {
-                                    if (ChatFloodLock.ContainsKey(_cInfo.playerId))
+                                    if (ChatFloodLock.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                                     {
-                                        ChatFloodLock.TryGetValue(_cInfo.playerId, out DateTime _lockTime);
+                                        ChatFloodLock.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime _lockTime);
                                         TimeSpan varTime = DateTime.Now - _lockTime;
                                         double fractionalSeconds = varTime.TotalSeconds;
                                         if ((int)fractionalSeconds >= Wait_Time)
                                         {
-                                            ChatFloodLock.Remove(_cInfo.playerId);
+                                            ChatFloodLock.Remove(_cInfo.CrossplatformId.CombinedString);
                                         }
                                         else
                                         {
@@ -117,64 +116,83 @@ namespace ServerTools
                                             return false;
                                         }
                                     }
-                                    if (ChatFloodCount.ContainsKey(_cInfo.playerId))
+                                    if (ChatFloodCount.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                                     {
-                                        ChatFloodCount.TryGetValue(_cInfo.playerId, out int _count);
-                                        ChatFloodTime.TryGetValue(_cInfo.playerId, out DateTime _chatTime);
+                                        ChatFloodCount.TryGetValue(_cInfo.CrossplatformId.CombinedString, out int _count);
+                                        ChatFloodTime.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime _chatTime);
                                         TimeSpan varTime = DateTime.Now - _chatTime;
                                         double fractionalSeconds = varTime.TotalSeconds;
                                         if ((int)fractionalSeconds >= 60)
                                         {
-                                            ChatFloodCount[_cInfo.playerId] = 1;
-                                            ChatFloodTime[_cInfo.playerId] = DateTime.Now;
+                                            ChatFloodCount[_cInfo.CrossplatformId.CombinedString] = 1;
+                                            ChatFloodTime[_cInfo.CrossplatformId.CombinedString] = DateTime.Now;
                                         }
                                         else
                                         {
                                             if (_count + 1 == Messages_Per_Min)
                                             {
-                                                ChatFloodCount.Remove(_cInfo.playerId);
-                                                ChatFloodTime.Remove(_cInfo.playerId);
-                                                ChatFloodLock.Add(_cInfo.playerId, DateTime.Now);
+                                                ChatFloodCount.Remove(_cInfo.CrossplatformId.CombinedString);
+                                                ChatFloodTime.Remove(_cInfo.CrossplatformId.CombinedString);
+                                                ChatFloodLock.Add(_cInfo.CrossplatformId.CombinedString, DateTime.Now);
                                                 Phrases.Dict.TryGetValue("ChatFloodProtection1", out string _phrase);
                                                 ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 return false;
                                             }
                                             else
                                             {
-                                                ChatFloodCount[_cInfo.playerId] = _count + 1;
+                                                ChatFloodCount[_cInfo.CrossplatformId.CombinedString] = _count + 1;
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        ChatFloodCount.Add(_cInfo.playerId, 1);
-                                        ChatFloodTime.Add(_cInfo.playerId, DateTime.Now);
+                                        ChatFloodCount.Add(_cInfo.CrossplatformId.CombinedString, 1);
+                                        ChatFloodTime.Add(_cInfo.CrossplatformId.CombinedString, DateTime.Now);
                                     }
                                 }
                             }
-                            if (ChatColor.IsEnabled && ChatColor.Players.ContainsKey(_cInfo.playerId))
+                            if (ChatColor.IsEnabled && (ChatColor.Players.ContainsKey(_cInfo.PlatformId.CombinedString) || ChatColor.Players.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
                             {
-                                ChatColor.ExpireDate.TryGetValue(_cInfo.playerId, out DateTime dt);
-                                if (DateTime.Now < dt)
+                                if (ChatColor.ExpireDate.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                                 {
-                                    ChatColor.Players.TryGetValue(_cInfo.playerId, out string[] colorPrefix);
-                                    if (ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.playerId))
+                                    if (DateTime.Now < dt)
                                     {
-                                        string clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
-                                        PrepMessage(_cInfo, _message, _senderId, _mainName, colorPrefix[1], clanName, colorPrefix[3], _type, _recipientEntityIds);
+                                        ChatColor.Players.TryGetValue(_cInfo.PlatformId.CombinedString, out string[] colorPrefix);
+                                        if (ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.CrossplatformId.CombinedString))
+                                        {
+                                            string clanName = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
+                                            PrepMessage(_cInfo, _message, _senderId, _mainName, colorPrefix[1], clanName, colorPrefix[3], _type, _recipientEntityIds);
+                                        }
+                                        else
+                                        {
+                                            PrepMessage(_cInfo, _message, _senderId, _mainName, colorPrefix[1], colorPrefix[2], colorPrefix[3], _type, _recipientEntityIds);
+                                        }
+                                        return false;
                                     }
-                                    else
+                                }
+                                else if (ChatColor.ExpireDate.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                                {
+                                    if (DateTime.Now < dt)
                                     {
-                                        PrepMessage(_cInfo, _message, _senderId, _mainName, colorPrefix[1], colorPrefix[2], colorPrefix[3], _type, _recipientEntityIds);
+                                        ChatColor.Players.TryGetValue(_cInfo.CrossplatformId.CombinedString, out string[] colorPrefix);
+                                        if (ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.CrossplatformId.CombinedString))
+                                        {
+                                            string clanName = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
+                                            PrepMessage(_cInfo, _message, _senderId, _mainName, colorPrefix[1], clanName, colorPrefix[3], _type, _recipientEntityIds);
+                                        }
+                                        else
+                                        {
+                                            PrepMessage(_cInfo, _message, _senderId, _mainName, colorPrefix[1], colorPrefix[2], colorPrefix[3], _type, _recipientEntityIds);
+                                        }
+                                        return false;
                                     }
-                                    return false;
                                 }
                             }
-                            else if (ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.playerId))
+                            else if (ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.CrossplatformId.CombinedString))
                             {
-                                if (!string.IsNullOrEmpty(PersistentContainer.Instance.Players[_cInfo.playerId].ClanName))
+                                if (!string.IsNullOrEmpty(PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName))
                                 {
-                                    string clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
+                                    string clanName = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
                                     if (Normal_Player_Color_Prefix)
                                     {
                                         PrepMessage(_cInfo, _message, _senderId, _mainName, Normal_Player_Name_Color, clanName, Normal_Player_Prefix_Color, _type, _recipientEntityIds);
@@ -478,7 +496,7 @@ namespace ServerTools
                                     _phrase = _phrase.Replace("{Command_cc}", ClanManager.Command_cc);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
-                                else if (messageLowerCase == ClanManager.Command_chat || messageLowerCase == ClanManager.Command_cc && ClanManager.ClanMember.Contains(_cInfo.playerId))
+                                else if (messageLowerCase == ClanManager.Command_chat || messageLowerCase == ClanManager.Command_cc && ClanManager.ClanMember.Contains(_cInfo.CrossplatformId.CombinedString))
                                 {
                                     if (messageLowerCase.StartsWith(ClanManager.Command_chat))
                                     {
@@ -618,9 +636,9 @@ namespace ServerTools
                             if (FriendTeleport.IsEnabled && messageLowerCase.StartsWith(FriendTeleport.Command_friend + " "))
                             {
                                 DateTime _date = DateTime.Now;
-                                if (PersistentContainer.Instance.Players[_cInfo.playerId].LastFriendTele != null)
+                                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastFriendTele != null)
                                 {
-                                    _date = PersistentContainer.Instance.Players[_cInfo.playerId].LastFriendTele;
+                                    _date = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastFriendTele;
                                 }
                                 TimeSpan varTime = DateTime.Now - _date;
                                 double fractionalMinutes = varTime.TotalMinutes;
@@ -642,17 +660,27 @@ namespace ServerTools
                                 FriendTeleport.Dict1.TryGetValue(_cInfo.entityId, out DateTime _dict1Value);
                                 TimeSpan varTime = DateTime.Now - _dict1Value;
                                 double fractionalSeconds = varTime.TotalSeconds;
-                                int _timepassed = (int)fractionalSeconds;
-                                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                int timepassed = (int)fractionalSeconds;
+                                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                                 {
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                                    if (DateTime.Now < _dt)
+                                    if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                                     {
-                                        int _newTime = _timepassed / 2;
-                                        _timepassed = _newTime;
+                                        if (DateTime.Now < dt)
+                                        {
+                                            int newTime = timepassed / 2;
+                                            timepassed = newTime;
+                                        }
+                                    }
+                                    else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                                    {
+                                        if (DateTime.Now < dt)
+                                        {
+                                            int newTime = timepassed / 2;
+                                            timepassed = newTime;
+                                        }
                                     }
                                 }
-                                if (_timepassed <= 120)
+                                if (timepassed <= 120)
                                 {
                                     FriendTeleport.TeleFriend(_cInfo, _dictValue);
                                     FriendTeleport.Dict.Remove(_cInfo.entityId);
@@ -982,15 +1010,15 @@ namespace ServerTools
                             }
                             if (InfoTicker.IsEnabled && messageLowerCase == InfoTicker.Command_infoticker)
                             {
-                                if (!InfoTicker.ExemptionList.Contains(_cInfo.playerId))
+                                if (!InfoTicker.ExemptionList.Contains(_cInfo.CrossplatformId.CombinedString))
                                 {
-                                    InfoTicker.ExemptionList.Add(_cInfo.playerId);
+                                    InfoTicker.ExemptionList.Add(_cInfo.CrossplatformId.CombinedString);
                                     Phrases.Dict.TryGetValue("InfoTicker1", out string _phrase);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else
                                 {
-                                    InfoTicker.ExemptionList.Remove(_cInfo.playerId);
+                                    InfoTicker.ExemptionList.Remove(_cInfo.CrossplatformId.CombinedString);
                                     Phrases.Dict.TryGetValue("InfoTicker2", out string _phrase);
                                     ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -1132,16 +1160,16 @@ namespace ServerTools
                             {
                                 if (Hardcore.Optional)
                                 {
-                                    if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
+                                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreEnabled)
                                     {
                                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                                         if (_player != null)
                                         {
-                                            int _deaths = XUiM_Player.GetDeaths(_player);
-                                            int _lifeTime = (int)_player.lifetime;
-                                            string[] _harcorestats = { _cInfo.playerName, _player.Score.ToString(), _lifeTime.ToString(), _deaths.ToString(), "0" };
-                                            PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats = _harcorestats;
-                                            PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled = true;
+                                            int deaths = XUiM_Player.GetDeaths(_player);
+                                            int lifeTime = (int)_player.lifetime;
+                                            string[] harcorestats = { _cInfo.playerName, _player.Score.ToString(), lifeTime.ToString(), deaths.ToString(), "0" };
+                                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats = harcorestats;
+                                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreEnabled = true;
                                             PersistentContainer.DataChange = true;
                                             Phrases.Dict.TryGetValue("Hardcore11", out string _phrase);
                                             _phrase = _phrase.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
@@ -1168,12 +1196,12 @@ namespace ServerTools
                             }
                             if (Hardcore.IsEnabled && messageLowerCase == Hardcore.Command_hardcore)
                             {
-                                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                                 if (player != null)
                                 {
                                     if (Hardcore.Optional)
                                     {
-                                        if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
+                                        if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreEnabled)
                                         {
                                             Hardcore.Check(_cInfo, player);
                                         }
@@ -1194,7 +1222,7 @@ namespace ServerTools
                             {
                                 if (ExitCommand.Players.ContainsKey(_cInfo.entityId))
                                 {
-                                    EntityPlayer player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                                     if (player != null)
                                     {
                                         ExitCommand.Players[_cInfo.entityId] = player.position;
@@ -1212,12 +1240,12 @@ namespace ServerTools
                             }
                             if (ChatColor.IsEnabled)
                             {
-                                if (messageLowerCase == ChatColor.Command_ccc && ChatColor.Players.ContainsKey(_cInfo.playerId))
+                                if (messageLowerCase == ChatColor.Command_ccc && (ChatColor.Players.ContainsKey(_cInfo.PlatformId.CombinedString) || ChatColor.Players.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
                                 {
                                     ChatColor.ShowColorAndExpiry(_cInfo);
                                     return false;
                                 }
-                                else if (ChatColor.Custom_Color && messageLowerCase.StartsWith(ChatColor.Command_ccpr + " ") == ChatColor.Players.ContainsKey(_cInfo.playerId))
+                                else if (ChatColor.Custom_Color && messageLowerCase.StartsWith(ChatColor.Command_ccpr + " ") && (ChatColor.Players.ContainsKey(_cInfo.PlatformId.CombinedString) || ChatColor.Players.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
                                 {
                                     messageLowerCase = messageLowerCase.Replace(ChatColor.Command_ccpr + " ", "");
                                     ChatColor.SetPrefixColor(_cInfo, messageLowerCase);
@@ -1228,13 +1256,13 @@ namespace ServerTools
                                     ChatColor.RotatePrefixColor(_cInfo);
                                     return false;
                                 }
-                                else if (ChatColor.Custom_Color && messageLowerCase.StartsWith(ChatColor.Command_ccnr + " ") == ChatColor.Players.ContainsKey(_cInfo.playerId))
+                                else if (ChatColor.Custom_Color && messageLowerCase.StartsWith(ChatColor.Command_ccnr + " ") && (ChatColor.Players.ContainsKey(_cInfo.PlatformId.CombinedString) || ChatColor.Players.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
                                 {
                                     messageLowerCase = messageLowerCase.Replace(ChatColor.Command_ccnr + " ", "");
                                     ChatColor.SetNameColor(_cInfo, messageLowerCase);
                                     return false;
                                 }
-                                else if (ChatColor.Rotate && messageLowerCase == ChatColor.Command_ccnr && ChatColor.Players.ContainsKey(_cInfo.playerId))
+                                else if (ChatColor.Rotate && messageLowerCase == ChatColor.Command_ccnr && (ChatColor.Players.ContainsKey(_cInfo.PlatformId.CombinedString) || ChatColor.Players.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
                                 {
                                     ChatColor.RotateNameColor(_cInfo);
                                     return false;
@@ -1406,7 +1434,7 @@ namespace ServerTools
                                     {
                                         if (lastColor != colors[j])
                                         {
-                                            _prefix = _prefix.Insert(nameIndex, colors[j]);
+                                            _mainName = _mainName.Insert(nameIndex, colors[j]);
                                             nameIndex += 9;
                                             colorCount++;
                                             lastColor = colors[j];

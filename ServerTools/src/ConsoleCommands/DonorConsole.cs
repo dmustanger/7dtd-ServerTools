@@ -13,15 +13,15 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. st-don add <steamId/entityId/playerName> <nameColor> <prefix> <prefixColor> <daysToExpire>\n" +
-                "  2. st-don add <steamId/entityId/playerName> <daysToExpire>\n" +
-                "  3. st-don edit <steamId/entityId/playerName> <daysToExpire>\n" +
-                "  4. st-don remove <steamId/entityId/playerName>\n" +
-                "1. Adds a player to the reserved slots list and chat color list. If they already exist on the lists it will replace the entry but add to the expiration time\n" +
-                "2. Adds a player to the reserved slots list and chat color list but with no colors or prefix. If they already exist on the lists it will replace the entry but add to the expiration time\n" +
+                "  1. st-don add <Id/EOS/EntityId/PlayerName> <NameColor> <Prefix> <PrefixColor> <DaysToExpire>\n" +
+                "  2. st-don add <Id/EOS/EntityId/PlayerName> <DaysToExpire>\n" +
+                "  3. st-don edit <Id/EOS/EntityId/PlayerName> <DaysToExpire>\n" +
+                "  4. st-don remove <Id/EOS/EntityId/PlayerName>\n" +
+                "1. Add a player to the reserved slots list and chat color list. If they already exist on the lists it will replace the entry but add to the expiration time\n" +
+                "2. Add a player to the reserved slots list and chat color list but with no colors or prefix. If they already exist on the lists it will replace the entry but add to the expiration time\n" +
                 "3. Edit a player's expiry date\n" +
                 "4. Remove a player from the reserved slots and chat color lists\n" +
-                "*Note*     Using the entity id or player name to add a player will only work if they are online. Use their steam id when offline" +
+                "*Note*     Using the entity id or player name to add a player will only work if they are online. Use their Id or EOS when offline" +
                 "*Note*     The colors must be entered as 6 digit HTML color codes or colors from the ColorList.xml. Example [FF0000] or [FFFF00],[FFCC00] or Red";
         }
         public override string[] GetCommands()
@@ -34,38 +34,42 @@ namespace ServerTools
             {
                 if (_params.Count != 2 && _params.Count != 3 && _params.Count != 6)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, 3 or 6, found '{0}'", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, 3 or 6, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("add"))
                 {
-                    string steamId = "", playerName = "";
+                    string id = "", playerName = "";
                     ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     if (cInfo != null)
                     {
-                        steamId = cInfo.playerId;
+                        id = cInfo.CrossplatformId.CombinedString;
                         playerName = cInfo.playerName;
                     }
-                    else
+                    else if (_params[1].Contains("EOS_"))
                     {
-                        PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_params[1]);
-                        if (pdf != null)
+                        PersistentPlayerData ppd = PersistentOperations.GetPersistentPlayerDataFromId(_params[1]);
+                        if (ppd != null)
                         {
-                            steamId = _params[1];
-                            playerName = pdf.ecd.entityName;
-
+                            id = ppd.UserIdentifier.CombinedString;
+                            playerName = ppd.PlayerName;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online or offline. Use steam id for offline player", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player data for '{0}'", _params[1]));
                             return;
                         }
+                    }
+                    else
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid id '{0}'. Use their EOS id when offline", _params[1]));
+                        return;
                     }
                     if (_params.Count == 3)
                     {
                         if (!double.TryParse(_params[2], out double daysToExpire))
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to add player. Invalid days to expire: '{0}'", _params[2]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to add player. Invalid days to expire '{0}'", _params[2]));
                             return;
                         }
                         DateTime expiryDate;
@@ -80,9 +84,9 @@ namespace ServerTools
                         if (ChatColor.IsEnabled)
                         {
                             string[] c = new string[] { playerName, "", "", "" };
-                            if (ChatColor.ExpireDate.ContainsKey(steamId))
+                            if (ChatColor.ExpireDate.ContainsKey(id))
                             {
-                                ChatColor.ExpireDate.TryGetValue(steamId, out DateTime oldDate);
+                                ChatColor.ExpireDate.TryGetValue(id, out DateTime oldDate);
                                 if (daysToExpire > 0d)
                                 {
                                     oldDate.AddDays(daysToExpire);
@@ -91,28 +95,28 @@ namespace ServerTools
                                 {
                                     oldDate.AddDays(18250d);
                                 }
-                                ChatColor.Players[steamId] = c;
-                                ChatColor.ExpireDate[steamId] = oldDate;
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using no colors or prefix. Expiration set to '{2}' on the chat color list", steamId, playerName, expiryDate.ToString()));
+                                ChatColor.Players[id] = c;
+                                ChatColor.ExpireDate[id] = oldDate;
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added id '{0}' named '{1}' using no colors or prefix. Expiration set to '{2}' on the chat color list", id, playerName, expiryDate.ToString()));
                                 ChatColor.UpdateXml();
                             }
                             else
                             {
-                                ChatColor.Players.Add(steamId, c);
-                                ChatColor.ExpireDate.Add(steamId, expiryDate);
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using no colors or prefix. Expiration set to '{2}' on the chat color list", steamId, playerName, expiryDate.ToString()));
+                                ChatColor.Players.Add(id, c);
+                                ChatColor.ExpireDate.Add(id, expiryDate);
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added id '{0}' named '{1}' using no colors or prefix. Expiration set to '{2}' on the chat color list", id, playerName, expiryDate.ToString()));
                                 ChatColor.UpdateXml();
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] Chat color is not enabled. Unable to add player to list");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Chat color is not enabled. Unable to add player to list");
                         }
                         if (ReservedSlots.IsEnabled)
                         {
-                            if (ReservedSlots.Dict.ContainsKey(steamId))
+                            if (ReservedSlots.Dict.ContainsKey(id))
                             {
-                                ReservedSlots.Dict.TryGetValue(steamId, out DateTime oldDate);
+                                ReservedSlots.Dict.TryGetValue(id, out DateTime oldDate);
                                 if (daysToExpire > 0d)
                                 {
                                     oldDate.AddDays(daysToExpire);
@@ -121,29 +125,29 @@ namespace ServerTools
                                 {
                                     oldDate.AddDays(18250d);
                                 }
-                                ReservedSlots.Dict[steamId] = oldDate;
-                                ReservedSlots.Dict1[steamId] = playerName;
+                                ReservedSlots.Dict[id] = oldDate;
+                                ReservedSlots.Dict1[id] = playerName;
                                 ReservedSlots.UpdateXml();
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}'. Expiration set to '{2}' on the reserved list", steamId, playerName, expiryDate.ToString()));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added id '{0}' with name '{1}'. Expiration set to '{2}' on the reserved list", id, playerName, expiryDate.ToString()));
                             }
                             else
                             {
-                                ReservedSlots.Dict.Add(steamId, expiryDate);
-                                ReservedSlots.Dict1.Add(steamId, playerName);
+                                ReservedSlots.Dict.Add(id, expiryDate);
+                                ReservedSlots.Dict1.Add(id, playerName);
                                 ReservedSlots.UpdateXml();
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}'. Expiration set to '{2}' on the reserved list", steamId, playerName, expiryDate.ToString()));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added id '{0}' with name '{1}'. Expiration set to '{2}' on the reserved list", id, playerName, expiryDate.ToString()));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] Reserved slots is not enabled. Unable to add player to list");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Reserved slots is not enabled. Unable to add player to list");
                         }
                     }
                     else if (_params.Count == 6)
                     {
                         if (!double.TryParse(_params[5], out double daysToExpire))
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to add player. Invalid days to expire: '{0}'", _params[5]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid days to expire '{0}'", _params[5]));
                             return;
                         }
                         DateTime expiryDate;
@@ -186,9 +190,9 @@ namespace ServerTools
                                 }
                             }
                             string[] c = new string[] { playerName, colorTag1, _params[3], colorTag2 };
-                            if (ChatColor.ExpireDate.ContainsKey(steamId))
+                            if (ChatColor.ExpireDate.ContainsKey(id))
                             {
-                                ChatColor.ExpireDate.TryGetValue(steamId, out DateTime oldDate);
+                                ChatColor.ExpireDate.TryGetValue(id, out DateTime oldDate);
                                 if (daysToExpire > 0d)
                                 {
                                     oldDate.AddDays(daysToExpire);
@@ -197,28 +201,28 @@ namespace ServerTools
                                 {
                                     oldDate.AddDays(18250d);
                                 }
-                                ChatColor.Players[steamId] = c;
-                                ChatColor.ExpireDate[steamId] = oldDate;
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using color '{2}' and prefix '{3}' using color '{4}'. Expiration set to '{5}' on the chat color list", steamId, playerName, colorTag1, _params[3], colorTag2, expiryDate.ToString()));
+                                ChatColor.Players[id] = c;
+                                ChatColor.ExpireDate[id] = oldDate;
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using color '{2}' and prefix '{3}' using color '{4}'. Expiration set to '{5}' on the chat color list", id, playerName, colorTag1, _params[3], colorTag2, expiryDate.ToString()));
                                 ChatColor.UpdateXml();
                             }
                             else
                             {
-                                ChatColor.Players.Add(steamId, c);
-                                ChatColor.ExpireDate.Add(steamId, expiryDate);
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using color '{2}' and prefix '{3}' using color '{4}'. Expiration set to '{5}' on the chat color list", steamId, playerName, colorTag1, _params[3], colorTag2, expiryDate.ToString()));
+                                ChatColor.Players.Add(id, c);
+                                ChatColor.ExpireDate.Add(id, expiryDate);
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using color '{2}' and prefix '{3}' using color '{4}'. Expiration set to '{5}' on the chat color list", id, playerName, colorTag1, _params[3], colorTag2, expiryDate.ToString()));
                                 ChatColor.UpdateXml();
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] Chat color is not enabled. Unable to add player to list");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Chat color is not enabled. Unable to add player to list");
                         }
                         if (ReservedSlots.IsEnabled)
                         {
-                            if (ReservedSlots.Dict.ContainsKey(steamId))
+                            if (ReservedSlots.Dict.ContainsKey(id))
                             {
-                                ReservedSlots.Dict.TryGetValue(steamId, out DateTime oldDate);
+                                ReservedSlots.Dict.TryGetValue(id, out DateTime oldDate);
                                 if (daysToExpire > 0d)
                                 {
                                     oldDate.AddDays(daysToExpire);
@@ -227,27 +231,27 @@ namespace ServerTools
                                 {
                                     oldDate.AddDays(18250d);
                                 }
-                                ReservedSlots.Dict[steamId] = oldDate;
-                                ReservedSlots.Dict1[steamId] = playerName;
+                                ReservedSlots.Dict[id] = oldDate;
+                                ReservedSlots.Dict1[id] = playerName;
                                 ReservedSlots.UpdateXml();
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}'. Expiration set to '{2}' on the reserved list", steamId, playerName, expiryDate.ToString()));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}'. Expiration set to '{2}' on the reserved list", id, playerName, expiryDate.ToString()));
                             }
                             else
                             {
-                                ReservedSlots.Dict.Add(steamId, expiryDate);
-                                ReservedSlots.Dict1.Add(steamId, playerName);
+                                ReservedSlots.Dict.Add(id, expiryDate);
+                                ReservedSlots.Dict1.Add(id, playerName);
                                 ReservedSlots.UpdateXml();
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}'. Expiration set to '{2}' on the reserved list", steamId, playerName, expiryDate.ToString()));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}'. Expiration set to '{2}' on the reserved list", id, playerName, expiryDate.ToString()));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] Reserved slots is not enabled. Unable to add player to list");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Reserved slots is not enabled. Unable to add player to list");
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or 6, found '{0}'", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or 6, found '{0}'", _params.Count));
                         return;
                     }
                 }
@@ -255,14 +259,14 @@ namespace ServerTools
                 {
                     if (_params.Count != 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
                         return;
                     }
                     string steamId = "";
                     ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     if (cInfo != null)
                     {
-                        steamId = cInfo.playerId;
+                        steamId = cInfo.PlatformId.ReadablePlatformUserIdentifier;
                     }
                     else
                     {
@@ -270,7 +274,7 @@ namespace ServerTools
                     }
                     if (!double.TryParse(_params[2], out double daysToExpire))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to edit player. Invalid days to expire: '{0}'", _params[2]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to edit player. Invalid days to expire: '{0}'", _params[2]));
                         return;
                     }
                     DateTime expiryDate;
@@ -286,13 +290,13 @@ namespace ServerTools
                     {
                         ChatColor.ExpireDate[steamId] = expiryDate;
                         ChatColor.UpdateXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Edited player id '{0}'. Expiry set to '{1}' on the reserved slots list", steamId, expiryDate));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Edited player id '{0}'. Expiry set to '{1}' on the reserved slots list", steamId, expiryDate));
                     }
                     if (ReservedSlots.Dict.ContainsKey(steamId))
                     {
                         ReservedSlots.Dict[steamId] = expiryDate;
                         ReservedSlots.UpdateXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Edited player id '{0}'. Expiry set to '{1}' on the reserved slots list", steamId, expiryDate));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Edited player id '{0}'. Expiry set to '{1}' on the reserved slots list", steamId, expiryDate));
                     }
                     return;
                 }
@@ -300,14 +304,14 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     string steamId = "";
                     ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     if (cInfo != null)
                     {
-                        steamId = cInfo.playerId;
+                        steamId = cInfo.PlatformId.ReadablePlatformUserIdentifier;
                     }
                     else
                     {
@@ -317,18 +321,18 @@ namespace ServerTools
                     {
                         ChatColor.Players.Remove(steamId);
                         ChatColor.ExpireDate.Remove(steamId);
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed player id '{0}' from the chat color prefix list", steamId));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed player id '{0}' from the chat color prefix list", steamId));
                     }
                     if (ReservedSlots.Dict.ContainsKey(steamId))
                     {
                         ReservedSlots.Dict.Remove(steamId);
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed player id '{0}' from the reserved slots list", steamId));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed player id '{0}' from the reserved slots list", steamId));
                     }
                     return;
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

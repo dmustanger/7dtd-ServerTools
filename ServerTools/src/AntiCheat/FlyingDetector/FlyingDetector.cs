@@ -93,15 +93,15 @@ namespace ServerTools
                 {
                     Flags.Remove(_cInfo.entityId);
                     Phrases.Dict.TryGetValue("Flying2", out string phrase);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, phrase), null);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                     {
-                        sw.WriteLine(string.Format("Detected '{0}' with steam id '{1}' flying @ {2}", _cInfo.playerName, _cInfo.playerId, _position));
+                        sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' flying @ {3}", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _position));
                         sw.WriteLine();
                         sw.Flush();
                         sw.Close();
                     }
-                    Log.Warning("[SERVERTOOLS] Detected '{0}' with steam Id '{1}' flying @ {2}. Steam id has been banned", _cInfo.playerName, _cInfo.playerId, _position);
+                    Log.Warning("[SERVERTOOLS] Detected id '{0}' '{1}' named '{2}' flying @ '{3}'. They have been banned", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _position);
                     Phrases.Dict.TryGetValue("Flying1", out phrase);
                     phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
                     ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);

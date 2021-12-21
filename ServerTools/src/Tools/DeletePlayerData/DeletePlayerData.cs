@@ -11,9 +11,9 @@ namespace ServerTools
         {
             if (GameUtils.WorldTimeToMinutes(GameManager.Instance.World.GetWorldTime()) == 0)
             {
-                if (PersistentContainer.Instance.Players.SteamIDs != null && PersistentContainer.Instance.Players.SteamIDs.Count > 0)
+                if (PersistentContainer.Instance.Players.IDs != null && PersistentContainer.Instance.Players.IDs.Count > 0)
                 {
-                    List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
+                    List<string> playerlist = PersistentContainer.Instance.Players.IDs;
                     for (int i = 0; i < playerlist.Count; i++)
                     {
                         string _steamId = playerlist[i];

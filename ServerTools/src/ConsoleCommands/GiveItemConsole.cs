@@ -15,10 +15,10 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. st-gi <SteamId/EntityId> <Item> <Count> <Quality> <Durability>\n" +
-                "  2. st-gi <SteamId/EntityId> <Item> <Count> <Quality>\n" +
-                "  3. st-gi <SteamId/EntityId> <Item> <Count>\n" +
-                "  4. st-gi <SteamId/EntityId> <Item>\n" +
+                "  1. st-gi <EOS/EntityId/PlayerName> <Item> <Count> <Quality> <Durability>\n" +
+                "  2. st-gi <EOS/EntityId/PlayerName> <Item> <Count> <Quality>\n" +
+                "  3. st-gi <EOS/EntityId/PlayerName> <Item> <Count>\n" +
+                "  4. st-gi <EOS/EntityId/PlayerName> <Item>\n" +
                 "  5. st-gi all <Item> <Count> <Quality> <Durability>\n " +
                 "  6. st-gi all <Item> <Count> <Quality>\n " +
                 "  7. st-gi all <Item> <Count>\n " +
@@ -44,17 +44,17 @@ namespace ServerTools
             {
                 if (_params.Count < 2 && _params.Count > 5)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 to 5, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 to 5, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].Length < 3 || _params[0].Length > 17)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not give item: Invalid id {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not give item: Invalid id {0}", _params[0]));
                     return;
                 }
                 if (_params[1].Length < 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not give item: Invalid name {0}", _params[1]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not give item: Invalid name {0}", _params[1]));
                     return;
                 }
                 else
@@ -99,7 +99,7 @@ namespace ServerTools
                                     ClientInfo cInfo = cInfoList[i];
                                     if (cInfo != null)
                                     {
-                                        EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                                        EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                                         if (player != null && player.IsSpawned() && !player.IsDead())
                                         {
                                             EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
@@ -122,7 +122,7 @@ namespace ServerTools
                                         }
                                         else
                                         {
-                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} has not spawned or is dead. Unable to give item at this time", cInfo.playerId));
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} has not spawned or is dead. Unable to give item at this time", cInfo.PlatformId.ReadablePlatformUserIdentifier));
                                         }
                                     }
                                 }
@@ -133,7 +133,7 @@ namespace ServerTools
                             ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
                             if (cInfo != null)
                             {
-                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                                 if (player != null && player.IsSpawned() && !player.IsDead())
                                 {
                                     var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
@@ -156,18 +156,18 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} has not spawned or is dead. Unable to give item at this time", _params[0]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} has not spawned or is dead. Unable to give item at this time", _params[0]));
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} not found", _params[0]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} not found", _params[0]));
                             }
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find item {0}", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find item {0}", _params[1]));
                         return;
                     }
                 }

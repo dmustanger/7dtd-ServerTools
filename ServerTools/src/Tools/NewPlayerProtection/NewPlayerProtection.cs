@@ -19,7 +19,7 @@ namespace ServerTools
                     if (cInfo != null)
                     {
                         _entityAlive.SetCVar("medicalRegHealthAmount", _dmResponse.Strength);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} buffHealHealth", cInfo.playerId), null);
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} buffHealHealth", cInfo.CrossplatformId.CombinedString), null);
                     }
                 }
             }

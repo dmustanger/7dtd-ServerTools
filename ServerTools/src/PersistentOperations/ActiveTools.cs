@@ -16,19 +16,6 @@ namespace ServerTools
                 Log.Out("[SERVERTOOLS] Anti-Cheat tools:");
                 Log.Out("-------------------------------");
             }
-            if (Credentials.IsEnabled)
-            {
-                if (!Dict.Contains("Credentials"))
-                {
-                    Dict.Add("Credentials");
-                    Log.Out("Credentials enabled");
-                }
-            }
-            else if (Dict.Contains("Credentials") && !_initiating)
-            {
-                Dict.Remove("Credentials");
-                Log.Out("Credentials disabled");
-            }
             if (DamageDetector.IsEnabled)
             {
                 if (!Dict.Contains("Damage detector"))

@@ -38,7 +38,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -82,46 +82,24 @@ namespace ServerTools
                                         continue;
                                     }
                                     string item = line.GetAttribute("Name");
-                                    if (item == "WalletCoin" || item == "walletCoin" || item == "walletcoin")
+                                    ItemValue itemValue = ItemClass.GetItem(item, false);
+                                    if (itemValue.type == ItemValue.None.type)
                                     {
-                                        if (Wallet.IsEnabled)
-                                        {
-                                            if (count < 1)
-                                            {
-                                                count = 1;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Wallet tool is not enabled: {0}", line.OuterXml));
-                                            continue;
-                                        }
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Item not found: {0}", item));
+                                        continue;
                                     }
-                                    else
+                                    if (count > itemValue.ItemClass.Stacknumber.Value)
                                     {
-                                        ItemValue itemValue = ItemClass.GetItem(item, false);
-                                        if (itemValue.type == ItemValue.None.type)
-                                        {
-                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Item not found: {0}", item));
-                                            continue;
-                                        }
-                                        if (count > itemValue.ItemClass.Stacknumber.Value)
-                                        {
-                                            count = itemValue.ItemClass.Stacknumber.Value;
-                                            Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} was set above the max stack value. It has been reduced to the maximum of {1}", item, count));
-                                        }
-                                        if (Dict.ContainsKey(item))
-                                        {
-                                            Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} has a duplicate entry", item));
-                                        }
-                                        if (count > itemValue.ItemClass.Stacknumber.Value)
-                                        {
-                                            count = itemValue.ItemClass.Stacknumber.Value;
-                                        }
-                                        else if (count < 1)
-                                        {
-                                            count = 1;
-                                        }
+                                        count = itemValue.ItemClass.Stacknumber.Value;
+                                        Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} was set above the max stack value. It has been reduced to the maximum of {1}", item, count));
+                                    }
+                                    if (count > itemValue.ItemClass.Stacknumber.Value)
+                                    {
+                                        count = itemValue.ItemClass.Stacknumber.Value;
+                                    }
+                                    else if (count < 1)
+                                    {
+                                        count = 1;
                                     }
                                     if (quality < 1)
                                     {
@@ -147,7 +125,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -160,12 +138,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing StartingItems.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -176,7 +154,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -196,7 +174,6 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<StartingItems>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Use WalletCoin for the Name if you want to give currency to their wallet -->");
                     sw.WriteLine("    <!-- <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
@@ -230,7 +207,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -241,13 +218,13 @@ namespace ServerTools
         {
             if (Dict.Count > 0)
             {
-                if (!PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems)
+                if (!PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].StartingItems)
                 {
                     SpawnItems(_cInfo);
                 }
                 else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Starting items have already been spawned for player {0} with steam id {1}", _cInfo.playerName, _cInfo.playerId));
+                    Log.Out(string.Format("[SERVERTOOLS] Starting items have already been spawned for player named '{0}' with Id '{1}' '{2}'", _cInfo.playerName, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString));
                 }
             }
             else
@@ -262,56 +239,40 @@ namespace ServerTools
             {
                 if (Dict.Count > 0)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems = true;
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].StartingItems = true;
                     World world = GameManager.Instance.World;
                     List<string> _itemList = Dict.Keys.ToList();
                     for (int i = 0; i < _itemList.Count; i++)
                     {
-                        string _item = _itemList[i];
-                        if (Dict.TryGetValue(_item, out int[] _itemData))
+                        string item = _itemList[i];
+                        if (Dict.TryGetValue(item, out int[] _itemData))
                         {
-                            if (_item == "WalletCoin" || _item == "walletCoin" || _item == "walletcoin")
+                            ItemValue _itemValue = new ItemValue(ItemClass.GetItem(item, false).type, false);
+                            if (_itemValue.HasQuality)
                             {
-                                if (Wallet.IsEnabled)
-                                {
-                                    Wallet.AddCurrency(_cInfo.playerId, _itemData[0]);
-                                }
-                                else
-                                {
-                                    Phrases.Dict.TryGetValue("VoteReward12", out string _phrase);
-                                    Log.Out(string.Format("[SERVERTOOLS] {0}", _phrase));
-                                }
+                                _itemValue.Quality = _itemData[1];
                             }
-                            else
+                            EntityItem entityItem = new EntityItem();
+                            entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                             {
-                                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
-                                if (_itemValue.HasQuality)
-                                {
-                                    _itemValue.Quality = _itemData[1];
-                                }
-                                EntityItem entityItem = new EntityItem();
-                                entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                                {
-                                    entityClass = EntityClass.FromString("item"),
-                                    id = EntityFactory.nextEntityID++,
-                                    itemStack = new ItemStack(_itemValue, _itemData[0]),
-                                    pos = world.Players.dict[_cInfo.entityId].position,
-                                    rot = new Vector3(20f, 0f, 20f),
-                                    lifetime = 60f,
-                                    belongsPlayerId = _cInfo.entityId
-                                });
-                                world.SpawnEntityInWorld(entityItem);
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                                Thread.Sleep(TimeSpan.FromSeconds(1));
-                            }
+                                entityClass = EntityClass.FromString("item"),
+                                id = EntityFactory.nextEntityID++,
+                                itemStack = new ItemStack(_itemValue, _itemData[0]),
+                                pos = world.Players.dict[_cInfo.entityId].position,
+                                rot = new Vector3(20f, 0f, 20f),
+                                lifetime = 60f,
+                                belongsPlayerId = _cInfo.entityId
+                            });
+                            world.SpawnEntityInWorld(entityItem);
+                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                            world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                            Thread.Sleep(TimeSpan.FromSeconds(1));
                         }
                     }
                     PersistentContainer.DataChange = true;
-                    Log.Out(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
-                    Phrases.Dict.TryGetValue("StartingItems1", out string _phrase1);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Log.Out(string.Format("[SERVERTOOLS] Player named '{0}' with Id '{1}' '{2}' received their starting items", _cInfo.playerName, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString));
+                    Phrases.Dict.TryGetValue("StartingItems1", out string phrase1);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -330,12 +291,11 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<StartingItems>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Use WalletCoin for the Name if you want to give currency to their wallet -->");
                     sw.WriteLine("    <!-- <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Use WalletCoin for") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"foodCanChili\"") && !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"foodCanChili\"") && 
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\""))
                         {
                             sw.WriteLine(OldNodeList[i].OuterXml);
                         }

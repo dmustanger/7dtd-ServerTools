@@ -44,7 +44,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -182,7 +182,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -195,12 +195,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing Gimme.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -211,7 +211,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -233,7 +233,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 1 for both min and max -->");
-                    sw.WriteLine("    <!-- WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option -->");
                     sw.WriteLine("    <!-- <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"boiled water\" MinCount=\"1\" MaxCount=\"6\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
@@ -267,7 +266,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -294,23 +293,34 @@ namespace ServerTools
                     else
                     {
                         DateTime lastgimme = DateTime.Now;
-                        if (PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme != null)
+                        if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme != null)
                         {
-                            lastgimme = PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme;
+                            lastgimme = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme;
                         }
                         TimeSpan varTime = DateTime.Now - lastgimme;
                         double fractionalMinutes = varTime.TotalMinutes;
                         int timepassed = (int)fractionalMinutes;
                         if (ReservedSlots.IsEnabled)
                         {
-                            if (ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            if (ReservedSlots.Reduced_Delay && (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
                             {
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                                 {
-                                    int delay = Delay_Between_Uses / 2;
-                                    Time(_cInfo, timepassed, delay);
-                                    return;
+                                    if (DateTime.Now < dt)
+                                    {
+                                        int delay = Delay_Between_Uses / 2;
+                                        Time(_cInfo, timepassed, delay);
+                                        return;
+                                    }
+                                }
+                                else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                                {
+                                    if (DateTime.Now < dt)
+                                    {
+                                        int delay = Delay_Between_Uses / 2;
+                                        Time(_cInfo, timepassed, delay);
+                                        return;
+                                    }
                                 }
                             }
                         }
@@ -341,13 +351,13 @@ namespace ServerTools
                 }
                 else
                 {
-                    int _timeleft = _delay - _timepassed;
-                    Phrases.Dict.TryGetValue("Gimme1", out string _phrase);
-                    _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
-                    _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
-                    _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    _phrase = _phrase.Replace("{Command_gimme}", Command_gimme);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    int timeleft = _delay - _timepassed;
+                    Phrases.Dict.TryGetValue("Gimme1", out string phrase);
+                    phrase = phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                    phrase = phrase.Replace("{TimeRemaining}", timeleft.ToString());
+                    phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    phrase = phrase.Replace("{Command_gimme}", Command_gimme);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -362,15 +372,15 @@ namespace ServerTools
             {
                 if (Wallet.IsEnabled && Command_Cost > 0)
                 {
-                    if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
+                    if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
                     {
                         ZCheck(_cInfo);
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("Gimme3", out string _phrase);
-                        _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Gimme3", out string phrase);
+                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
@@ -418,7 +428,7 @@ namespace ServerTools
                 string randomItem = List.RandomObject();
                 if (Dict.TryGetValue(randomItem, out string[] item))
                 {
-                    if (randomItem.ToLower() == "walletcoin")
+                    if (randomItem.ToLower() == "currency")
                     {
                         if (Wallet.IsEnabled)
                         {
@@ -427,10 +437,10 @@ namespace ServerTools
                             int count = Random.Next(minCount, maxCount + 1);
                             if (Command_Cost >= 1)
                             {
-                                Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                             }
-                            Wallet.AddCurrency(_cInfo.playerId, count);
-                            PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                            Wallet.AddCurrency(_cInfo.CrossplatformId.CombinedString, count);
+                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
                             PersistentContainer.DataChange = true;
                             Phrases.Dict.TryGetValue("Gimme2", out string _phrase);
                             _phrase = _phrase.Replace("{ItemCount}", count.ToString());
@@ -475,9 +485,9 @@ namespace ServerTools
                         world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                         }
-                        PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
                         PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue("Gimme2", out string _phrase);
                         _phrase = _phrase.Replace("{ItemCount}", count.ToString());
@@ -512,13 +522,13 @@ namespace ServerTools
                         string zId = zombieIds[count];
                         if (int.TryParse(zId, out int zombieId))
                         {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("st-ser {0} r.15 {1}", _cInfo.playerId, zombieId), null);
-                            Log.Out(string.Format("[SERVERTOOLS] Spawned an entity for {0}'s gimme", _cInfo.playerName));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("st-Ser {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, zombieId), null);
+                            Log.Out(string.Format("[SERVERTOOLS] Gimme result spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
-                                Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                             }
-                            PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
                             PersistentContainer.DataChange = true;
                             Phrases.Dict.TryGetValue("Gimme4", out string phrase);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -532,13 +542,13 @@ namespace ServerTools
                     {
                         if (int.TryParse(Zombie_Id, out int _zombieId))
                         {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("st-ser {0} r.15 {1}", _cInfo.playerId, _zombieId), null);
-                            Log.Out(string.Format("[SERVERTOOLS] Spawned an entity for {0}'s gimme", _cInfo.playerName));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("st-Ser {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, _zombieId), null);
+                            Log.Out(string.Format("[SERVERTOOLS] Gimme result spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
-                                Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                             }
-                            PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
                             PersistentContainer.DataChange = true;
                             Phrases.Dict.TryGetValue("Gimme4", out string _phrase);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -572,13 +582,12 @@ namespace ServerTools
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 1 for both min and max -->");
-                    sw.WriteLine("    <!-- WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option -->");
                     sw.WriteLine("    <!-- <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"boiled water\" MinCount=\"1\" MaxCount=\"6\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Secondary name") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- Items that do") && !OldNodeList[i].OuterXml.Contains("<!-- WalletCoin can") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"drinkJarBoiledWater\"") && !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\""))
+                            !OldNodeList[i].OuterXml.Contains("<!-- Items that do") && !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"drinkJarBoiledWater\"") && 
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\""))
                         {
                             sw.WriteLine(OldNodeList[i].OuterXml);
                         }

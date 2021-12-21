@@ -141,14 +141,6 @@ namespace ServerTools
             {
                 HighPingKicker.Load();
             }
-            if (Credentials.IsRunning && !Credentials.IsEnabled)
-            {
-                Credentials.Unload();
-            }
-            if (!Credentials.IsRunning && Credentials.IsEnabled)
-            {
-                Credentials.Load();
-            }
             if (CustomCommands.IsRunning && !CustomCommands.IsEnabled)
             {
                 CustomCommands.Unload();

@@ -58,7 +58,7 @@ namespace ServerTools
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
-                        EventSchedule.Add("RealWorldTime", DateTime.Now.AddSeconds(delay));
+                        EventSchedule.Add("RealWorldTime", DateTime.Now.AddMinutes(delay));
                     }
                     else
                     {

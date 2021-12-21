@@ -10,7 +10,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Vehicle = false;
         public static int Days_Before_Log_Delete = 5;
-        public static string Delay = "60";
+        public static string Delay = "120";
 
         private static readonly string file = string.Format("PlayerLog_{0}.xml", DateTime.Today.ToString("M-d-yyyy"));
         private static readonly string FilePath = string.Format("{0}/Logs/PlayerLogs/{1}", API.ConfigPath, file);
@@ -81,7 +81,7 @@ namespace ServerTools
             {
                 if (GameManager.Instance.World != null && GameManager.Instance.World.Players.Count > 0)
                 {
-                    if (!Utils.FileExists(FilePath))
+                    if (!File.Exists(FilePath))
                     {
                         using (StreamWriter sw = new StreamWriter(FilePath, true, Encoding.UTF8))
                         {
@@ -90,7 +90,7 @@ namespace ServerTools
                             sw.Close();
                         }
                     }
-                    if (Utils.FileExists(FilePath))
+                    if (File.Exists(FilePath))
                     {
                         XmlDocument xmlDoc = new XmlDocument();
                         try
@@ -117,10 +117,10 @@ namespace ServerTools
                                     if (playerDataFile != null)
                                     {
                                         XmlNode playerNode = null;
-                                        XmlNodeList playerNodeList = xmlDoc.GetElementsByTagName("Player", "SteamId " + cInfo.playerId);
+                                        XmlNodeList playerNodeList = xmlDoc.GetElementsByTagName("Player", "Id " + cInfo.CrossplatformId.CombinedString);
                                         if (playerNodeList == null || playerNodeList.Count == 0)
                                         {
-                                            playerNode = xmlDoc.CreateNode(XmlNodeType.Element, "Player", "SteamId " + cInfo.playerId);
+                                            playerNode = xmlDoc.CreateNode(XmlNodeType.Element, "Player", "Id " + cInfo.CrossplatformId.CombinedString);
                                             xmlDoc.DocumentElement.AppendChild(playerNode);
                                         }
                                         else

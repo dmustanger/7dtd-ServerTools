@@ -14,7 +14,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. st-tup <EntityId/SteamId>\n" +
+                   "  1. st-tup <EntityId/PlayerName/EOS>\n" +
                    "1. Teleports you under the target player\n";
         }
 
@@ -29,38 +29,38 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params.Count == 1)
                 {
-                    ClientInfo _cInfo = _senderInfo.RemoteClientInfo;
-                    ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_params[0]);
-                    if (_cInfo2 != null)
+                    ClientInfo cInfo = _senderInfo.RemoteClientInfo;
+                    ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_params[0]);
+                    if (cInfo2 != null)
                     {
-                        EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                        if ((int)_player2.position.y < 13)
+                        EntityPlayer player2 = PersistentOperations.GetEntityPlayer(cInfo2.entityId);
+                        if ((int)player2.position.y < 13)
                         {
-                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player2.position.x, 0, (int)_player2.position.z), null, false));
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Teleport successful"));
+                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)player2.position.x, 0, (int)player2.position.z), null, false));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Teleport successful"));
                             return;
                         }
                         else
                         {
-                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player2.position.x, (int)_player2.position.y - 10, (int)_player2.position.z), null, false));
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Teleport successful"));
+                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)player2.position.x, (int)player2.position.y - 10, (int)player2.position.z), null, false));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Teleport successful"));
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player id {0} not found", _params[0]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' not found", _params[0]));
                         return;
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                     return;
                 }
             }

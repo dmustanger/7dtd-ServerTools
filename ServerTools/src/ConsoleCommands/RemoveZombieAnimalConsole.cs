@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ServerTools
 {
-    class RemoveEntConsole : ConsoleCmdAbstract
+    class RemoveZombieAnimalConsole : ConsoleCmdAbstract
     {
         public override string GetDescription()
         {
@@ -29,25 +29,24 @@ namespace ServerTools
                 List<Entity> Entities = GameManager.Instance.World.Entities.list;
                 for (int i = 0; i < Entities.Count; i++)
                 {
-                    Entity _entity = Entities[i];
-                    if (_entity != null)
+                    Entity entity = Entities[i];
+                    if (entity != null)
                     {
-                        if (!_entity.IsClientControlled() && !_entity.IsDead())
+                        if (!entity.IsClientControlled() && !entity.IsDead())
                         {
-                            EntityType _type = _entity.entityType;
-                            if (_type == EntityType.Animal || _type == EntityType.Zombie)
+                            if (entity.entityType == EntityType.Animal || entity.entityType == EntityType.Zombie)
                             {
-                                GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
                             }
                         }
                     }
                 }
-                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] All current zombies and animals have been removed from the map"));
-                Log.Out(string.Format("[SERVERTOOLS] Console command KillEnt has been run. All current zombies and animals have been removed from the map."));
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] All current zombies and animals have been removed from the map"));
+                Log.Out(string.Format("[SERVERTOOLS] Console command st-RemoveZombieAnimals has been run. All current zombies and animals have been removed from the map."));
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in KillEntConsole.Execute: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in RemoveZombieAnimalConsole.Execute: {0}", e.Message));
             }
         }
     }

@@ -180,7 +180,7 @@ namespace ServerTools
             {
                 try
                 {
-                    SdtdConsole.Instance.ExecuteSync(string.Format("sleeperreset"), null);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("sleeperreset"), null);
                 }
                 catch (XmlException e)
                 {
@@ -220,7 +220,7 @@ namespace ServerTools
             {
                 PersistentContainer.Instance.WorldSeed = GameManager.Instance.World.Seed;
                 PersistentContainer.DataChange = true;
-                if (!CleanBin.IsEnabled && PersistentContainer.Instance.Players.SteamIDs.Count > 0)
+                if (!CleanBin.IsEnabled && PersistentContainer.Instance.Players.IDs.Count > 0)
                 {
                     Log.Out("[SERVERTOOLS] Detected a new world. You have old ServerTools data saved from the last map. Run the Clean_Bin tool to remove the data of your choice");
                 }

@@ -18,7 +18,7 @@ namespace ServerTools
                 {
                     using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                     {
-                        sw.WriteLine(string.Format("{0}: {1} {2} {3}, executed command '{4}' in the console.", DateTime.Now, _cInfo.playerId, _cInfo.ip, _cInfo.playerName, _cmd));
+                        sw.WriteLine(string.Format("{0}: '{1}' '{2}' with IP '{3}' named '{4}' executed command '{5}' in the console", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.ip, _cInfo.playerName, _cmd));
                         sw.WriteLine();
                         sw.Flush();
                         sw.Close();
@@ -28,7 +28,7 @@ namespace ServerTools
                 {
                     using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                     {
-                        sw.WriteLine(string.Format("{0}: {1} {2}, executed command '{3}' in the console.", DateTime.Now, _cInfo.playerId, _cInfo.ip, _cmd));
+                        sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' executed command '{4}' in the console", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.ip, _cmd));
                         sw.WriteLine();
                         sw.Flush();
                         sw.Close();
@@ -38,7 +38,7 @@ namespace ServerTools
                 {
                     using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                     {
-                        sw.WriteLine(string.Format("{0}: {1}, executed command '{2}' in the console.", DateTime.Now, _cInfo.playerId, _cmd));
+                        sw.WriteLine(string.Format("{0}: '{1}' '{2}' executed command '{3}' in the console", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cmd));
                         sw.WriteLine();
                         sw.Flush();
                         sw.Close();

@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public Dictionary<string, PersistentPlayer> Players = new Dictionary<string, PersistentPlayer>();
 
-        public List<string> SteamIDs
+        public List<string> IDs
         {
             get
             {
@@ -16,31 +16,27 @@ namespace ServerTools
             }
         }
 
-        public PersistentPlayer this[string steamId]
+        public PersistentPlayer this[string id]
         {
             get
             {
-                if (string.IsNullOrEmpty(steamId))
+                if (!string.IsNullOrEmpty(id))
                 {
-                    return null;
-                }
-                else if (Players.ContainsKey(steamId))
-                {
-                    return Players[steamId];
-                }
-                else
-                {
-                    if (steamId != null && steamId.Length == 17 && steamId.StartsWith("7656119"))
+                    if (Players.ContainsKey(id))
                     {
-                        PersistentPlayer p = new PersistentPlayer(steamId);
-                        Players.Add(steamId, p);
-                        return p;
+                        return Players[id];
                     }
-                    else
+                    else if (id.Contains("_"))
                     {
-                        return null;
+                        if (ConsoleHelper.ParseParamPartialNameOrId(id, out PlatformUserIdentifierAbs platformUserIdentifierAbs, out ClientInfo clientInfo, true) == 1 && platformUserIdentifierAbs != null)
+                        {
+                            PersistentPlayer p = new PersistentPlayer(id);
+                            Players.Add(id, p);
+                            return p;
+                        }
                     }
                 }
+                return null;
             }
         }
     }

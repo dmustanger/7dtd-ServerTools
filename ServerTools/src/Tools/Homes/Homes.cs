@@ -17,15 +17,25 @@ namespace ServerTools
         {
             try
             {
-                if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes != null && PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Count > 0)
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.Count > 0)
                 {
-                    if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                    if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                     {
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                        if (DateTime.Now < _dt)
+                        if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                         {
-                            ListResult(_cInfo, Reserved_Max_Homes);
-                            return;
+                            if (DateTime.Now < dt)
+                            {
+                                ListResult(_cInfo, Reserved_Max_Homes);
+                                return;
+                            }
+                        }
+                        else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                        {
+                            if (DateTime.Now < dt)
+                            {
+                                ListResult(_cInfo, Reserved_Max_Homes);
+                                return;
+                            }
                         }
                     }
                 }
@@ -42,9 +52,9 @@ namespace ServerTools
             try
             {
                 Dictionary<string, string> homes = new Dictionary<string, string>();
-                if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes != null)
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes != null)
                 {
-                    homes = PersistentContainer.Instance.Players[_cInfo.playerId].Homes;
+                    homes = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes;
                 }
                 int count = 0;
                 if (homes.Count > 0)
@@ -79,11 +89,11 @@ namespace ServerTools
         {
             try
             {
-                if (!Event.Teams.ContainsKey(_cInfo.playerId))
+                if (!Event.Teams.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
                     if (Delay_Between_Uses < 1)
                     {
-                        if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes != null && PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Count > 0)
+                        if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.Count > 0)
                         {
                             Checks(_cInfo, _home, _friends);
                         }
@@ -95,22 +105,33 @@ namespace ServerTools
                     }
                     else
                     {
-                        if (PersistentContainer.Instance.Players[_cInfo.playerId].LastHome != null)
+                        if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastHome != null)
                         {
-                            DateTime lastWaypoint = PersistentContainer.Instance.Players[_cInfo.playerId].LastHome;
+                            DateTime lastWaypoint = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastHome;
                             TimeSpan varTime = DateTime.Now - lastWaypoint;
                             double fractionalMinutes = varTime.TotalMinutes;
                             int timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                                 {
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime dt);
-                                    if (DateTime.Now < dt)
+                                    if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                                     {
-                                        int delay = Delay_Between_Uses / 2;
-                                        Time(_cInfo, _home, timepassed, delay, _friends);
-                                        return;
+                                        if (DateTime.Now < dt)
+                                        {
+                                            int delay = Delay_Between_Uses / 2;
+                                            Time(_cInfo, _home, timepassed, delay, _friends);
+                                            return;
+                                        }
+                                    }
+                                    else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                                    {
+                                        if (DateTime.Now < dt)
+                                        {
+                                            int delay = Delay_Between_Uses / 2;
+                                            Time(_cInfo, _home, timepassed, delay, _friends);
+                                            return;
+                                        }
                                     }
                                 }
                             }
@@ -118,15 +139,8 @@ namespace ServerTools
                         }
                         else
                         {
-                            if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes != null && PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Count > 0)
-                            {
-                                Checks(_cInfo, _home, false);
-                            }
-                            else
-                            {
-                                Phrases.Dict.TryGetValue("Homes1", out string phrase);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            }
+                            Phrases.Dict.TryGetValue("Homes1", out string phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -171,7 +185,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (Vehicle_Check)
@@ -213,7 +227,7 @@ namespace ServerTools
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
+                    if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
                     {
                         Exec(_cInfo, _homeName, _position, _friends);
                     }
@@ -239,9 +253,9 @@ namespace ServerTools
         {
             try
             {
-                if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes != null && PersistentContainer.Instance.Players[_cInfo.playerId].Homes.ContainsKey(_homeName))
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.ContainsKey(_homeName))
                 {
-                    if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes.TryGetValue(_homeName, out string homePos))
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.TryGetValue(_homeName, out string homePos))
                     {
                         string[] cords = homePos.Split(',');
                         int.TryParse(cords[0], out int x);
@@ -252,11 +266,11 @@ namespace ServerTools
                             FriendInvite(_cInfo, _position, homePos);
                         }
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                        PersistentContainer.Instance.Players[_cInfo.playerId].LastHome = DateTime.Now;
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastHome = DateTime.Now;
                         PersistentContainer.DataChange = true;
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                         }
                     }
                     else
@@ -281,13 +295,13 @@ namespace ServerTools
         {
             try
             {
-                if (!Event.Teams.ContainsKey(_cInfo.playerId))
+                if (!Event.Teams.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
-                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
                         Vector3 position = player.GetPosition();
-                        if (PersistentOperations.ClaimedByAllyOrSelf(_cInfo.playerId, new Vector3i(position.x, position.y, position.z)))
+                        if (PersistentOperations.ClaimedByAllyOrSelf(_cInfo.CrossplatformId, new Vector3i(position.x, position.y, position.z)))
                         {
                             ReservedCheck(_cInfo, _home);
                         }
@@ -314,13 +328,23 @@ namespace ServerTools
         {
             try
             {
-                if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
-                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime dt);
-                    if (DateTime.Now < dt)
+                    if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                     {
-                        SaveHome(_cInfo, _home, Reserved_Max_Homes);
-                        return;
+                        if (DateTime.Now < dt)
+                        {
+                            SaveHome(_cInfo, _home, Reserved_Max_Homes);
+                            return;
+                        }
+                    }
+                    else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                    {
+                        if (DateTime.Now < dt)
+                        {
+                            SaveHome(_cInfo, _home, Reserved_Max_Homes);
+                            return;
+                        }
                     }
                 }
                 SaveHome(_cInfo, _home, Max_Homes);
@@ -341,11 +365,11 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }
-                if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes != null && PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Count > 0)
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.Count > 0)
                 {
-                    if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Count < _homeTotal)
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.Count < _homeTotal)
                     {
-                        EntityPlayer player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                        EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                         if (player != null)
                         {
                             Vector3 position = player.GetPosition();
@@ -353,19 +377,19 @@ namespace ServerTools
                             int y = (int)position.y;
                             int z = (int)position.z;
                             string wposition = x + "," + y + "," + z;
-                            if (!PersistentContainer.Instance.Players[_cInfo.playerId].Homes.ContainsKey(_homeName))
+                            if (!PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.ContainsKey(_homeName))
                             {
-                                PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Add(_homeName, wposition);
+                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.Add(_homeName, wposition);
                                 PersistentContainer.DataChange = true;
-                                Phrases.Dict.TryGetValue("Homes9", out string _phrase);
-                                _phrase = _phrase.Replace("{Name}", _homeName);
-                                _phrase = _phrase.Replace("{Position}", wposition);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Homes9", out string phrase);
+                                phrase = phrase.Replace("{Name}", _homeName);
+                                phrase = phrase.Replace("{Position}", wposition);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue("Homes10", out string _phrase);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Homes10", out string phrase);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
@@ -378,7 +402,7 @@ namespace ServerTools
                 }
                 else if (_homeTotal > 0)
                 {
-                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
                         Dictionary<string, string> homes = new Dictionary<string, string>();
@@ -388,7 +412,7 @@ namespace ServerTools
                         int z = (int)position.z;
                         string wposition = x + "," + y + "," + z;
                         homes.Add(_homeName, wposition);
-                        PersistentContainer.Instance.Players[_cInfo.playerId].Homes = homes;
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes = homes;
                         PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue("Homes12", out string phrase);
                         phrase = phrase.Replace("{Name}", _homeName);
@@ -413,9 +437,9 @@ namespace ServerTools
         {
             try
             {
-                if (PersistentContainer.Instance.Players[_cInfo.playerId].Homes != null && PersistentContainer.Instance.Players[_cInfo.playerId].Homes.ContainsKey(_homeName))
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.ContainsKey(_homeName))
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].Homes.Remove(_homeName);
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.Remove(_homeName);
                     PersistentContainer.DataChange = true;
                     Phrases.Dict.TryGetValue("Homes13", out string phrase);
                     phrase = phrase.Replace("{Name}", _homeName);
@@ -440,7 +464,7 @@ namespace ServerTools
                 int x = (int)_position.x;
                 int y = (int)_position.y;
                 int z = (int)_position.z;
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     List<ClientInfo> clientList = PersistentOperations.ClientList();
@@ -449,7 +473,7 @@ namespace ServerTools
                         for (int i = 0; i < clientList.Count; i++)
                         {
                             ClientInfo cInfo2 = clientList[i];
-                            EntityPlayer player2 = PersistentOperations.GetEntityPlayer(cInfo2.playerId);
+                            EntityPlayer player2 = PersistentOperations.GetEntityPlayer(cInfo2.entityId);
                             if (player2 != null)
                             {
                                 if (player.IsFriendsWith(player2))

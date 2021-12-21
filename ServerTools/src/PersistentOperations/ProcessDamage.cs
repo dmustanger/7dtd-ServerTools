@@ -84,12 +84,12 @@ namespace ServerTools
                                             float distance = player2.GetDistance(player1);
                                             using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                             {
-                                                sw.WriteLine(string.Format("{0}: '{1}' named '{2}' hit '{3}' named '{4}' using '{5}' for '{6}' damage @ '{7}' total distance '{8}'", DateTime.Now, cInfo2.playerId, cInfo2.playerName, cInfo1.playerId, cInfo1.playerName, _damageSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _damageSource.AttackingItem.ItemClass.GetItemName(), _strength, player1.position, distance));
+                                                sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' hit '{4}' '{5}' named '{6}' using '{7}' for '{8}' damage @ '{9}' total distance '{10}'", DateTime.Now, cInfo2.PlatformId.CombinedString, cInfo2.CrossplatformId.CombinedString, cInfo2.playerName, cInfo1.PlatformId.CombinedString, cInfo1.CrossplatformId.CombinedString, cInfo1.playerName, _damageSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _damageSource.AttackingItem.ItemClass.GetItemName(), _strength, player1.position, distance));
                                                 sw.WriteLine();
                                                 sw.Flush();
                                                 sw.Close();
                                             }
-                                            if (_victim.RecordedDamage.Fatal || _strength >= _victim.Health && lastEntityKilled != _victim.entityId)
+                                            if ((_victim.RecordedDamage.Fatal || _strength >= _victim.Health) && lastEntityKilled != _victim.entityId)
                                             {
                                                 lastEntityKilled = _victim.entityId;
                                                 if (KillNotice.IsEnabled && KillNotice.PvP)
@@ -102,7 +102,7 @@ namespace ServerTools
                                                 }
                                                 if (Wallet.IsEnabled && Wallet.PVP && Wallet.Player_Kill > 0)
                                                 {
-                                                    Wallet.AddCurrency(cInfo2.playerId, Wallet.Player_Kill);
+                                                    Wallet.AddCurrency(cInfo2.CrossplatformId.CombinedString, Wallet.Player_Kill);
                                                 }
                                             }
                                         }
@@ -130,7 +130,7 @@ namespace ServerTools
                             ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(sourceId);
                             if (cInfo != null)
                             {
-                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                                 if (player != null)
                                 {
                                     if (_damageSource.AttackingItem != null)
@@ -148,16 +148,16 @@ namespace ServerTools
                                         if ((_victim.RecordedDamage.Fatal || _strength >= _victim.Health) && Wallet.IsEnabled && Wallet.Zombie_Kill > 0 && lastEntityKilled != _victim.entityId)
                                         {
                                             lastEntityKilled = _victim.entityId;
-                                            Wallet.AddCurrency(cInfo.playerId, Wallet.Zombie_Kill);
-                                            if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.BloodmoonStarted && BloodmoonWarrior.WarriorList.Contains(cInfo.playerId))
+                                            Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, Wallet.Zombie_Kill);
+                                            if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.BloodmoonStarted && BloodmoonWarrior.WarriorList.Contains(cInfo.entityId))
                                             {
-                                                if (BloodmoonWarrior.KilledZombies.TryGetValue(cInfo.playerId, out int killedZ))
+                                                if (BloodmoonWarrior.KilledZombies.TryGetValue(cInfo.entityId, out int killedZ))
                                                 {
-                                                    BloodmoonWarrior.KilledZombies[cInfo.playerId] += 1;
+                                                    BloodmoonWarrior.KilledZombies[cInfo.entityId] += 1;
                                                 }
                                                 else
                                                 {
-                                                    BloodmoonWarrior.KilledZombies.Add(cInfo.playerId, 1);
+                                                    BloodmoonWarrior.KilledZombies.Add(cInfo.entityId, 1);
                                                 }
                                             }
                                         }
@@ -181,7 +181,7 @@ namespace ServerTools
                                     int distance = (int)player.GetDistance(_victim);
                                     using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                     {
-                                        sw.WriteLine(string.Format("{0}: {1} \"{2}\" hit \"{3}\" with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}", DateTime.Now, cInfo.playerId, cInfo.playerName, _victim.EntityName, _victim.entityId, _damageSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _damageSource.AttackingItem.ItemClass.GetItemName(), _strength, _victim.position, distance));
+                                        sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' hit '{4}' named '{5}' using '{6}' for '{7}' damage @ '{8}' total distance '{9}'", DateTime.Now, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, _victim.entityId, _victim.EntityName, _damageSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _damageSource.AttackingItem.ItemClass.GetItemName(), _strength, _victim.position, distance));
                                         sw.WriteLine();
                                         sw.Flush();
                                         sw.Close();
@@ -194,7 +194,7 @@ namespace ServerTools
                             ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(sourceId);
                             if (cInfo != null)
                             {
-                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                                 if (player != null && _damageSource.AttackingItem != null)
                                 {
                                     int slot = player.inventory.holdingItemIdx;

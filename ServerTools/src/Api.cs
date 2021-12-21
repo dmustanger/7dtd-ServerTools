@@ -12,7 +12,7 @@ namespace ServerTools
         public static string InstallPath = "";
         public static List<string> Verified = new List<string>();
 
-        public void InitMod()
+        public void InitMod(Mod _modInstance)
         {
             ModEvents.GameAwake.RegisterHandler(GameAwake);
             ModEvents.GameStartDone.RegisterHandler(GameStartDone);
@@ -71,34 +71,34 @@ namespace ServerTools
         {
             try
             {
-                if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId))
+                if (_cInfo != null && _cInfo.CrossplatformId != null)
                 {
-                    if (!string.IsNullOrEmpty(_cInfo.ip))
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Player {0} connected from IP: {1}", _cInfo.playerId, _cInfo.ip));
-                    }
-                    else
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Player {0} connected", _cInfo.playerId));
-                    }
                     if (Shutdown.NoEntry)
                     {
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Server is shutting down. Rejoin when it restarts\"", _cInfo.playerId), null);
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"Server is shutting down. Rejoin when it restarts\"", _cInfo.CrossplatformId.CombinedString), null);
                     }
                     if (NewPlayer.Block_During_Bloodmoon && PersistentOperations.IsBloodmoon())
                     {
-                        PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_cInfo.playerId);
-                        if (_pdf != null)
+                        PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromUId(_cInfo.CrossplatformId);
+                        if (pdf != null)
                         {
-                            if (_pdf.totalTimePlayed < 5)
+                            if (pdf.totalTimePlayed < 5)
                             {
-                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.playerId), null);
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.CrossplatformId.CombinedString), null);
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.playerId), null);
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.CrossplatformId.CombinedString), null);
                         }
+                    }
+                    if (!string.IsNullOrEmpty(_cInfo.ip))
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Player connected with ID '{0}' '{1}' and IP '{2}' named '{3}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.ip, _cInfo.playerName));
+                    }
+                    else
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Player connected with ID '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                     }
                 }
             }
@@ -113,14 +113,9 @@ namespace ServerTools
         {
             if (_cInfo != null)
             {
-                if (Credentials.IsEnabled && !Credentials.AccCheck(_cInfo))
-                {
-                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"Auto detection has banned you for false credentials. Contact an admin if this is a mistake\"", _cInfo.playerId), null);
-                    return;
-                }
                 if (CountryBan.IsEnabled && CountryBan.IsCountryBanned(_cInfo))
                 {
-                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"Auto detection has banned you for country IP region\"", _cInfo.playerId), null);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"Auto detection has banned you for country IP region\"", _cInfo.CrossplatformId.CombinedString), null);
                     return;
                 }
             }
@@ -130,16 +125,23 @@ namespace ServerTools
         {
             try
             {
-                if (_cInfo != null && _cInfo.playerId != null)
+                if (_cInfo != null)
                 {
-                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                    string id = _cInfo.CrossplatformId.CombinedString;
+                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
-                        if (_respawnReason == RespawnType.EnterMultiplayer)//New player spawning. Game bug can trigger this incorrectly
+                        if (_respawnReason == RespawnType.NewGame)
+                        {
+                        }
+                        else if (_respawnReason == RespawnType.LoadedGame)
+                        {
+                        }
+                        else if (_respawnReason == RespawnType.EnterMultiplayer)
                         {
                             PersistentOperations.SessionTime(_cInfo);
-                            PersistentContainer.Instance.Players[_cInfo.playerId].PlayerName = _cInfo.playerName;
-                            PersistentContainer.Instance.Players[_cInfo.playerId].LastJoined = DateTime.Now;
+                            PersistentContainer.Instance.Players[id].PlayerName = _cInfo.playerName;
+                            PersistentContainer.Instance.Players[id].LastJoined = DateTime.Now;
                             PersistentContainer.DataChange = true;
                             if (player.AttachedToEntity != null)
                             {
@@ -154,11 +156,11 @@ namespace ServerTools
                                 OldPlayerJoined(_cInfo, player);
                             }
                         }
-                        else if (_respawnReason == RespawnType.JoinMultiplayer)//Old player spawning
+                        else if (_respawnReason == RespawnType.JoinMultiplayer)
                         {
                             PersistentOperations.SessionTime(_cInfo);
-                            PersistentContainer.Instance.Players[_cInfo.playerId].PlayerName = _cInfo.playerName;
-                            PersistentContainer.Instance.Players[_cInfo.playerId].LastJoined = DateTime.Now;
+                            PersistentContainer.Instance.Players[id].PlayerName = _cInfo.playerName;
+                            PersistentContainer.Instance.Players[id].LastJoined = DateTime.Now;
                             PersistentContainer.DataChange = true;
                             if (player.AttachedToEntity != null)
                             {
@@ -179,7 +181,7 @@ namespace ServerTools
                             }
                             //Log.Out(string.Format("[SERVERTOOLS] Test 2"));
                         }
-                        else if (_respawnReason == RespawnType.Died)//Player died, respawning
+                        else if (_respawnReason == RespawnType.Died)
                         {
                             if (player.AttachedToEntity != null)
                             {
@@ -229,7 +231,7 @@ namespace ServerTools
             {
                 if (_cInfo != null && _type == EnumGameMessages.EntityWasKilled)
                 {
-                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
                         if (KillNotice.IsEnabled && KillNotice.Zombie_Kills && string.IsNullOrEmpty(_secondaryName))
@@ -290,100 +292,94 @@ namespace ServerTools
             {
                 if (_cInfo != null)
                 {
-                    if (!string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId != -1)
+                    string id = _cInfo.CrossplatformId.CombinedString;
+                    Log.Out(string.Format("[SERVERTOOLS] Player with id '{0}' '{1}' disconnected", _cInfo.PlatformId.CombinedString, id));
+                    if (ExitCommand.IsEnabled && ExitCommand.Players.ContainsKey(_cInfo.entityId) && !_bShutdown)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Player {0} disconnected", _cInfo.playerId));
-                        if (ExitCommand.IsEnabled && ExitCommand.Players.ContainsKey(_cInfo.entityId) && !_bShutdown)
+                        Timers.ExitWithoutCommand(_cInfo, _cInfo.ip);
+                    }
+                    if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
+                    {
+                        FriendTeleport.Dict.Remove(_cInfo.entityId);
+                        FriendTeleport.Dict1.Remove(_cInfo.entityId);
+                    }
+                    if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
+                    {
+                        FriendTeleport.Dict.Remove(_cInfo.entityId);
+                    }
+                    if (FriendTeleport.Dict1.ContainsKey(_cInfo.entityId))
+                    {
+                        FriendTeleport.Dict1.Remove(_cInfo.entityId);
+                    }
+                    if (Wallet.IsEnabled && Wallet.Session_Bonus > 0)
+                    {
+                        if (PersistentOperations.Session.TryGetValue(id, out DateTime time))
                         {
-                            Timers.ExitWithoutCommand(_cInfo, _cInfo.ip);
-                        }
-                        if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
-                        {
-                            FriendTeleport.Dict.Remove(_cInfo.entityId);
-                            FriendTeleport.Dict1.Remove(_cInfo.entityId);
-                        }
-                        if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
-                        {
-                            FriendTeleport.Dict.Remove(_cInfo.entityId);
-                        }
-                        if (FriendTeleport.Dict1.ContainsKey(_cInfo.entityId))
-                        {
-                            FriendTeleport.Dict1.Remove(_cInfo.entityId);
-                        }
-                        if (Wallet.IsEnabled && Wallet.Session_Bonus > 0)
-                        {
-                            if (PersistentOperations.Session.TryGetValue(_cInfo.playerId, out DateTime time))
+                            TimeSpan varTime = DateTime.Now - time;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            int timepassed = (int)fractionalMinutes;
+                            if (timepassed > 60)
                             {
-                                TimeSpan varTime = DateTime.Now - time;
-                                double fractionalMinutes = varTime.TotalMinutes;
-                                int timepassed = (int)fractionalMinutes;
-                                if (timepassed > 60)
+                                int sessionBonus = timepassed / 60 * Wallet.Session_Bonus;
+                                if (sessionBonus > 0)
                                 {
-                                    int sessionBonus = timepassed / 60 * Wallet.Session_Bonus;
-                                    if (sessionBonus > 0)
-                                    {
-                                        Wallet.AddCurrency(_cInfo.playerId, sessionBonus);
-                                    }
+                                    Wallet.AddCurrency(id, sessionBonus);
                                 }
-                                int timePlayed = PersistentContainer.Instance.Players[_cInfo.playerId].TotalTimePlayed;
-                                PersistentContainer.Instance.Players[_cInfo.playerId].TotalTimePlayed = timePlayed + timepassed;
-                                PersistentContainer.DataChange = true;
                             }
-                        }
-                        if (Bank.TransferId.ContainsKey(_cInfo.playerId))
-                        {
-                            Bank.TransferId.Remove(_cInfo.playerId);
-                        }
-                        if (Zones.ZonePlayer.ContainsKey(_cInfo.entityId))
-                        {
-                            Zones.ZonePlayer.Remove(_cInfo.entityId);
-                        }
-                        if (Zones.Reminder.ContainsKey(_cInfo.entityId))
-                        {
-                            Zones.Reminder.Remove(_cInfo.entityId);
-                        }
-                        if (BloodmoonWarrior.WarriorList.Contains(_cInfo.playerId))
-                        {
-                            BloodmoonWarrior.WarriorList.Remove(_cInfo.playerId);
-                            BloodmoonWarrior.KilledZombies.Remove(_cInfo.playerId);
-                        }
-                        if (Teleportation.Teleporting.Contains(_cInfo.entityId))
-                        {
-                            Teleportation.Teleporting.Remove(_cInfo.entityId);
-                        }
-                        if (LevelUp.PlayerLevels.ContainsKey(_cInfo.entityId))
-                        {
-                            LevelUp.PlayerLevels.Remove(_cInfo.entityId);
-                        }
-                        if (KillNotice.ZombieDamage.ContainsKey(_cInfo.entityId))
-                        {
-                            KillNotice.ZombieDamage.Remove(_cInfo.entityId);
-                        }
-                        if (InfiniteAmmo.Dict.ContainsKey(_cInfo.entityId))
-                        {
-                            InfiniteAmmo.Dict.Remove(_cInfo.entityId);
-                        }
-                        if (PersistentOperations.NewPlayerQue.Contains(_cInfo))
-                        {
-                            PersistentOperations.NewPlayerQue.Remove(_cInfo);
-                        }
-                        if (PersistentOperations.BlockChatCommands.Contains(_cInfo))
-                        {
-                            PersistentOperations.BlockChatCommands.Remove(_cInfo);
-                        }
-                        if (PersistentOperations.Session.ContainsKey(_cInfo.playerId))
-                        {
-                            PersistentOperations.Session.Remove(_cInfo.playerId);
+                            int timePlayed = PersistentContainer.Instance.Players[id].TotalTimePlayed;
+                            PersistentContainer.Instance.Players[id].TotalTimePlayed = timePlayed + timepassed;
+                            PersistentContainer.DataChange = true;
                         }
                     }
-                    else
+                    if (Bank.TransferId.ContainsKey(id))
                     {
-                        Log.Out("[SERVERTOOLS] Player disconnected");
+                        Bank.TransferId.Remove(id);
+                    }
+                    if (Zones.ZonePlayer.ContainsKey(_cInfo.entityId))
+                    {
+                        Zones.ZonePlayer.Remove(_cInfo.entityId);
+                    }
+                    if (Zones.Reminder.ContainsKey(_cInfo.entityId))
+                    {
+                        Zones.Reminder.Remove(_cInfo.entityId);
+                    }
+                    if (BloodmoonWarrior.WarriorList.Contains(_cInfo.entityId))
+                    {
+                        BloodmoonWarrior.WarriorList.Remove(_cInfo.entityId);
+                        BloodmoonWarrior.KilledZombies.Remove(_cInfo.entityId);
+                    }
+                    if (Teleportation.Teleporting.Contains(_cInfo.entityId))
+                    {
+                        Teleportation.Teleporting.Remove(_cInfo.entityId);
+                    }
+                    if (LevelUp.PlayerLevels.ContainsKey(_cInfo.entityId))
+                    {
+                        LevelUp.PlayerLevels.Remove(_cInfo.entityId);
+                    }
+                    if (KillNotice.ZombieDamage.ContainsKey(_cInfo.entityId))
+                    {
+                        KillNotice.ZombieDamage.Remove(_cInfo.entityId);
+                    }
+                    if (InfiniteAmmo.Dict.ContainsKey(_cInfo.entityId))
+                    {
+                        InfiniteAmmo.Dict.Remove(_cInfo.entityId);
+                    }
+                    if (PersistentOperations.NewPlayerQue.Contains(_cInfo))
+                    {
+                        PersistentOperations.NewPlayerQue.Remove(_cInfo);
+                    }
+                    if (PersistentOperations.BlockChatCommands.Contains(_cInfo))
+                    {
+                        PersistentOperations.BlockChatCommands.Remove(_cInfo);
+                    }
+                    if (PersistentOperations.Session.ContainsKey(id))
+                    {
+                        PersistentOperations.Session.Remove(id);
                     }
                 }
                 else
                 {
-                    Log.Out("[SERVERTOOLS] Amorphous blob with no client information disconnected");
+                    Log.Out("[SERVERTOOLS] Player disconnected");
                 }
             }
             catch (Exception e)
@@ -392,23 +388,11 @@ namespace ServerTools
             }
         }
 
-        //private static void EntityKilled(Entity _entity1, Entity _entity2)
-        //{
-        //    try
-        //    {
-        //        
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Log.Out(string.Format("[SERVERTOOLS] Error in API.EntityKilled: {0}", e.Message));
-        //    }
-        //}
-
         public static void NewPlayerExec(ClientInfo _cInfo)
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (player.IsSpawned() && player.IsAlive())
@@ -443,6 +427,7 @@ namespace ServerTools
         {
             try
             {
+                string id = _cInfo.CrossplatformId.CombinedString;
                 if (NewPlayer.IsEnabled)
                 {
                     NewPlayer.Exec(_cInfo);
@@ -459,7 +444,7 @@ namespace ServerTools
                 {
                     ExitCommand.AlertPlayer(_cInfo);
                 }
-                if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && !PersistentContainer.Instance.PollVote.ContainsKey(_cInfo.playerId))
+                if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && !PersistentContainer.Instance.PollVote.ContainsKey(id))
                 {
                     Poll.Message(_cInfo);
                 }
@@ -467,21 +452,20 @@ namespace ServerTools
                 {
                     if (Hardcore.Optional)
                     {
-                        if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
+                        if (PersistentContainer.Instance.Players[id].HardcoreEnabled)
                         {
                             Hardcore.Check(_cInfo, _player);
                         }
                     }
-                    else if (!PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
+                    else if (!PersistentContainer.Instance.Players[id].HardcoreEnabled)
                     {
                         string[] hardcoreStats = { _cInfo.playerName, XUiM_Player.GetDeaths(_player).ToString(), "0" };
-                        PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats = hardcoreStats;
-                        PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled = true;
+                        PersistentContainer.Instance.Players[id].HardcoreStats = hardcoreStats;
+                        PersistentContainer.Instance.Players[id].HardcoreEnabled = true;
+                        PersistentContainer.DataChange = true;
                         Hardcore.Check(_cInfo, _player);
                     }
                 }
-                PersistentContainer.Instance.Players[_cInfo.playerId].OldPlayer = true;
-                PersistentContainer.DataChange = true;
             }
             catch (Exception e)
             {
@@ -493,25 +477,26 @@ namespace ServerTools
         {
             try
             {
-                if (Hardcore.IsEnabled && PersistentContainer.Instance.Players[_cInfo.playerId] != null)
+                string id = _cInfo.CrossplatformId.CombinedString;
+                if (Hardcore.IsEnabled && PersistentContainer.Instance.Players[id] != null)
                 {
                     if (Hardcore.Optional)
                     {
-                        if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
+                        if (PersistentContainer.Instance.Players[id].HardcoreEnabled)
                         {
                             Hardcore.Check(_cInfo, _player);
                         }
                     }
-                    else if (!PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
+                    else if (!PersistentContainer.Instance.Players[id].HardcoreEnabled)
                     {
                         string[] hardcoreStats = { _cInfo.playerName, XUiM_Player.GetDeaths(_player).ToString(), "0" };
-                        PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats = hardcoreStats;
-                        PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled = true;
+                        PersistentContainer.Instance.Players[id].HardcoreStats = hardcoreStats;
+                        PersistentContainer.Instance.Players[id].HardcoreEnabled = true;
                         PersistentContainer.DataChange = true;
                         Hardcore.Check(_cInfo, _player);
                     }
                 }
-                if (LoginNotice.IsEnabled && LoginNotice.Dict.ContainsKey(_cInfo.playerId))
+                if (LoginNotice.IsEnabled && LoginNotice.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || LoginNotice.Dict.ContainsKey(id))
                 {
                     LoginNotice.PlayerNotice(_cInfo);
                 }
@@ -531,13 +516,13 @@ namespace ServerTools
                 {
                     ExitCommand.AlertPlayer(_cInfo);
                 }
-                if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && !PersistentContainer.Instance.PollVote.ContainsKey(_cInfo.playerId))
+                if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen && !PersistentContainer.Instance.PollVote.ContainsKey(id))
                 {
                     Poll.Message(_cInfo);
                 }
-                if (ClanManager.IsEnabled && PersistentContainer.Instance.Players[_cInfo.playerId] != null)
+                if (ClanManager.IsEnabled && PersistentContainer.Instance.Players[id] != null)
                 {
-                    Dictionary<string, string> clanRequests = PersistentContainer.Instance.Players[_cInfo.playerId].ClanRequestToJoin;
+                    Dictionary<string, string> clanRequests = PersistentContainer.Instance.Players[id].ClanRequestToJoin;
                     if (clanRequests != null && clanRequests.Count > 0)
                     {
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "New clan requests from:[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -547,19 +532,19 @@ namespace ServerTools
                         }
                     }
                 }
-                if (Event.Open && Event.Teams.ContainsKey(_cInfo.playerId) && PersistentContainer.Instance.Players[_cInfo.playerId] != null && PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn)
+                if (Event.Open && Event.Teams.ContainsKey(id) && PersistentContainer.Instance.Players[id] != null && PersistentContainer.Instance.Players[id].EventSpawn)
                 {
                     Event.Spawn(_cInfo);
                 }
-                else if (PersistentContainer.Instance.Players[_cInfo.playerId] != null && PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn)
+                else if (PersistentContainer.Instance.Players[id] != null && PersistentContainer.Instance.Players[id].EventSpawn)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn = false;
+                    PersistentContainer.Instance.Players[id].EventSpawn = false;
                     PersistentContainer.DataChange = true;
                 }
-                if (PersistentContainer.Instance.Players[_cInfo.playerId] != null && PersistentContainer.Instance.Players[_cInfo.playerId].PlayerWallet > 0)
+                if (PersistentContainer.Instance.Players[id] != null && PersistentContainer.Instance.Players[id].PlayerWallet > 0)
                 {
-                    Wallet.AddCurrency(_cInfo.playerId, PersistentContainer.Instance.Players[_cInfo.playerId].PlayerWallet);
-                    PersistentContainer.Instance.Players[_cInfo.playerId].PlayerWallet = 0;
+                    Wallet.AddCurrency(id, PersistentContainer.Instance.Players[id].PlayerWallet);
+                    PersistentContainer.Instance.Players[id].PlayerWallet = 0;
                     PersistentContainer.DataChange = true;
                 }
             }
@@ -574,6 +559,7 @@ namespace ServerTools
             ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(__instance.entityId);
             if (cInfo != null)
             {
+                string id = cInfo.CrossplatformId.CombinedString;
                 if (__instance.AttachedToEntity != null)
                 {
                     __instance.Detach();
@@ -590,15 +576,15 @@ namespace ServerTools
                 {
                     Bloodmoon.Exec(cInfo);
                 }
-                if (Event.Open && Event.Teams.ContainsKey(cInfo.playerId))
+                if (Event.Open && Event.Teams.ContainsKey(id))
                 {
                     Event.Respawn(cInfo);
                 }
-                if (PersistentContainer.Instance.Players[cInfo.playerId].EventOver)
+                if (PersistentContainer.Instance.Players[id].EventOver)
                 {
                     Event.EventOver(cInfo);
                 }
-                if (Hardcore.IsEnabled && PersistentContainer.Instance.Players[cInfo.playerId].HardcoreEnabled)
+                if (Hardcore.IsEnabled && PersistentContainer.Instance.Players[id].HardcoreEnabled)
                 {
                     Hardcore.Check(cInfo, (EntityPlayer)__instance);
                 }

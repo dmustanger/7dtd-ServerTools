@@ -49,9 +49,9 @@ namespace ServerTools
         {
             try
             {
-                if (_cInfo.playerId != null && _cInfo.ip != null)
+                if (_cInfo.PlatformId.ReadablePlatformUserIdentifier != null && _cInfo.ip != null)
                 {
-                    if (PersistentContainer.Instance.Players.Players.ContainsKey(_cInfo.playerId) && PersistentContainer.Instance.Players[_cInfo.playerId].CountryBanImmune)
+                    if (PersistentContainer.Instance.Players.Players.ContainsKey(_cInfo.CrossplatformId.CombinedString) && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CountryBanImmune)
                     {
                         return false;
                     }

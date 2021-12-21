@@ -40,7 +40,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -144,7 +144,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -157,12 +157,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing Shop.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -173,7 +173,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -194,7 +194,6 @@ namespace ServerTools
                     sw.WriteLine("<Shop>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
-                    sw.WriteLine("    <!-- WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -227,7 +226,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -240,7 +239,7 @@ namespace ServerTools
             {
                 if (Dict.Count > 0)
                 {
-                    EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                    EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                     if (_player != null)
                     {
                         if (Inside_Market && Inside_Traders)
@@ -412,7 +411,7 @@ namespace ServerTools
                     string[] _itemData = Dict[i];
                     if (int.Parse(_itemData[0]) == _item)
                     {
-                        int _currentCoins = Wallet.GetCurrency(_cInfo.playerId);
+                        int _currentCoins = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                         int _cost = int.Parse(_itemData[5]) * _count;
                         if (_currentCoins >= _cost)
                         {
@@ -457,8 +456,8 @@ namespace ServerTools
                 world.SpawnEntityInWorld(entityItem);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                Wallet.RemoveCurrency(_cInfo.playerId, _price);
-                Log.Out(string.Format("Sold {0} to {1} {2} through the shop", _itemValue.ItemClass.Name, _cInfo.playerId, _cInfo.playerName));
+                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price);
+                Log.Out(string.Format("Sold '{0}' to '{1}' '{2}' named '{3}' through the shop", _itemValue.ItemClass.Name, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                 Phrases.Dict.TryGetValue("Shop16", out string _phrase);
                 _phrase = _phrase.Replace("{Count}", _count.ToString());
                 if (_secondaryName != "")
@@ -488,11 +487,10 @@ namespace ServerTools
                     sw.WriteLine("<Shop>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
-                    sw.WriteLine("    <!-- WalletCoin can be used as the item name. Secondary name should be set to your Wallet Coin_Name option -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Secondary name is") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- WalletCoin can be") && !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Secondary name is") && 
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\""))
                         {
                             sw.WriteLine(OldNodeList[i].OuterXml);
                         }

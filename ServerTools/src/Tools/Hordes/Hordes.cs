@@ -8,7 +8,7 @@ namespace ServerTools
 
         public static void Exec()
         {
-            if (!SkyManager.BloodMoon())
+            if (!GameManager.Instance.World.aiDirector.BloodMoonComponent.BloodMoonActive)
             {
                 int _playerCount = ConnectionManager.Instance.ClientCount();
                 if (_playerCount > 5)

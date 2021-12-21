@@ -7,17 +7,17 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools] - Enable or disable set home.";
+            return "[ServerTools] - Enable or disable set home";
         }
         public override string GetHelp()
         {
             return "Usage:\n" +
                    "  1. st-hom off\n" +
                    "  2. st-hom on\n" +
-                   "  3. st-hom reset <steamId/entityId>\n" +
+                   "  3. st-hom reset <EOS/EntityId/PlayerName>\n" +
                    "1. Turn off set home\n" +
                    "2. Turn on set home\n" +
-                   "3. Reset the delay of the player's /home1 and /home2 command delays\n";
+                   "3. Reset the delay of a player's home tool\n";
         }
         public override string[] GetCommands()
         {
@@ -29,7 +29,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 || _params.Count > 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -39,12 +39,12 @@ namespace ServerTools
                         Homes.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes has been set to off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Homes has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes is already off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Homes is already off"));
                         return;
                     }
                 }
@@ -55,12 +55,12 @@ namespace ServerTools
                         Homes.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes has been set to on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Homes has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes is already on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Homes is already on"));
                         return;
                     }
                 }
@@ -68,29 +68,33 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}.", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
-                    if (_params[1].Length < 1 || _params[1].Length > 17)
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                    if (cInfo != null)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not reset Id: Invalid Id {0}", _params[1]));
-                        return;
+                        if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
+                        {
+                            PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].LastHome = DateTime.Now.AddYears(-1);
+                            PersistentContainer.DataChange = true;
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Home tool delay reset for '{0}'", _params[1]));
+                        }
                     }
-                    PersistentPlayer p = PersistentContainer.Instance.Players[_params[1]];
-                    if (p != null)
+                    else if (PersistentContainer.Instance.Players[_params[1]] != null)
                     {
                         PersistentContainer.Instance.Players[_params[1]].LastHome = DateTime.Now.AddYears(-1);
                         PersistentContainer.DataChange = true;
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes delay reset for {0}.", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Home tool delay reset for '{0}'", _params[1]));
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with id {0} does not have a Homes delay to reset.", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with EOS id '{0}' does not have a Home tool delay to reset", _params[1]));
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

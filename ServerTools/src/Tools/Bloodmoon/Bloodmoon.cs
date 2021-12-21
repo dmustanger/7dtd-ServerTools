@@ -70,13 +70,13 @@ namespace ServerTools
         public static void Exec(ClientInfo _cInfo)
         {
             int daysRemaining = Day7.DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
-            if (daysRemaining == 0 && !SkyManager.BloodMoon())
+            if (daysRemaining == 0 && !PersistentOperations.IsBloodmoon())
             {
                 Phrases.Dict.TryGetValue("Bloodmoon2", out string phrase);
                 phrase = phrase.Replace("{Time}", GameManager.Instance.World.DuskHour.ToString());
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
-            else if (SkyManager.BloodMoon())
+            else if (PersistentOperations.IsBloodmoon())
             {
                 Phrases.Dict.TryGetValue("Bloodmoon3", out string phrase);
                 phrase = phrase.Replace("{Time}", GameManager.Instance.World.DawnHour.ToString());
@@ -103,6 +103,7 @@ namespace ServerTools
                 else if (PersistentOperations.IsBloodmoon())
                 {
                     Phrases.Dict.TryGetValue("Bloodmoon3", out string phrase);
+                    phrase = phrase.Replace("{Time}", GameManager.Instance.World.DawnHour.ToString());
                     ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
                 else

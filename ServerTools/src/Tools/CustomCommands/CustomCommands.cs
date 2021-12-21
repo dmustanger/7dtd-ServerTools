@@ -39,7 +39,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -116,7 +116,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -129,12 +129,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing CustomCommands.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -145,7 +145,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                     Log.Out(string.Format("[SERVERTOOLS] CustomCommands.xml has been created for version {0}", Config.Version));
                 }
@@ -166,9 +166,9 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Possible variables {EntityId}, {SteamId}, {PlayerName}, {Delay}, {RandomPlayerId}, whisper, global -->");
+                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, whisper, global -->");
                     sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ whisper You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Permission=\"false\" Cost=\"0\" /> -->");
-                    sw.WriteLine("    <!-- <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Reserved=\"\" Permission=\"\" Cost=\"\" /> -->");
+                    sw.WriteLine("    <!-- <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Reserved=\"false\" Permission=\"\" Cost=\"\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -201,7 +201,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -294,7 +294,7 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     _commands = "";
                 }
-                if (ClanManager.IsEnabled && !ClanManager.ClanMember.Contains(_cInfo.playerId))
+                if (ClanManager.IsEnabled && !ClanManager.ClanMember.Contains(_cInfo.PlatformId.ReadablePlatformUserIdentifier))
                 {
                     if (ClanManager.Command_request != "")
                     {
@@ -668,7 +668,7 @@ namespace ServerTools
                         {
                             _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_score);
                         }
-                        if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
+                        if (PersistentContainer.Instance.Players[_cInfo.PlatformId.ReadablePlatformUserIdentifier].HardcoreEnabled)
                         {
                             if (Hardcore.Command_hardcore != "")
                             {
@@ -696,7 +696,7 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     _commands = "";
                 }
-                if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.ReadablePlatformUserIdentifier))
                 {
                     if (ReservedSlots.Command_reserved != "")
                     {
@@ -746,7 +746,7 @@ namespace ServerTools
                 {
                     _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, ExitCommand.Command_exit);
                 }
-                if (ChatColor.IsEnabled && ChatColor.Players.ContainsKey(_cInfo.playerId))
+                if (ChatColor.IsEnabled && ChatColor.Players.ContainsKey(_cInfo.PlatformId.ReadablePlatformUserIdentifier))
                 {
                     if (ChatColor.Command_ccc != "")
                     {
@@ -872,9 +872,9 @@ namespace ServerTools
                     {
                         return; 
                     }
-                    if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_command))
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomCommandDelays.ContainsKey(_command))
                     {
-                        DateTime lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_command];
+                        DateTime lastUse = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomCommandDelays[_command];
                         Delay(_cInfo, _command, delay, cost, lastUse);
                     }
                     else
@@ -920,14 +920,25 @@ namespace ServerTools
             int timePassed = (int)fractionalMinutes;
             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
             {
-                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
-                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                    if (DateTime.Now < _dt)
+                    if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                     {
-                        int newDelay = _delay / 2;
-                        TimePass(_cInfo, _message, timePassed, newDelay, _cost);
-                        return;
+                        if (DateTime.Now < dt)
+                        {
+                            int newDelay = _delay / 2;
+                            TimePass(_cInfo, _message, timePassed, newDelay, _cost);
+                            return;
+                        }
+                    }
+                    else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                    {
+                        if (DateTime.Now < dt)
+                        {
+                            int newDelay = _delay / 2;
+                            TimePass(_cInfo, _message, timePassed, newDelay, _cost);
+                            return;
+                        }
                     }
                 }
             }
@@ -970,10 +981,10 @@ namespace ServerTools
             {
                 if (Wallet.IsEnabled && _cost > 0)
                 {
-                    int currentCoins = Wallet.GetCurrency(_cInfo.playerId);
+                    int currentCoins = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                     if (currentCoins >= _cost)
                     {
-                        Wallet.RemoveCurrency(_cInfo.playerId, _cost);
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
                         ProcessCommand(_cInfo, _command);
                     }
                     else
@@ -998,15 +1009,15 @@ namespace ServerTools
         {
             try
             {
-                if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.Count > 0)
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomCommandDelays.Count > 0)
                 {
-                    if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_command))
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomCommandDelays.ContainsKey(_command))
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_command] = DateTime.Now;
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomCommandDelays[_command] = DateTime.Now;
                     }
                     else
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.Add(_command, DateTime.Now);
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomCommandDelays.Add(_command, DateTime.Now);
                     }
                 }
                 else
@@ -1015,7 +1026,7 @@ namespace ServerTools
                     {
                         { _command, DateTime.Now }
                     };
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays = delays;
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomCommandDelays = delays;
                 }
                 PersistentContainer.DataChange = true;
                 if (Dict.TryGetValue(_command, out string[] commandData))
@@ -1032,7 +1043,7 @@ namespace ServerTools
                                 if (int.TryParse(commandSplit[1], out int time))
                                 {
                                     commands.RemoveRange(0, i + 1);
-                                    Timers.Custom_SingleUseTimer(time, _cInfo.playerId, commands);
+                                    Timers.Custom_SingleUseTimer(time, _cInfo.CrossplatformId.CombinedString, commands);
                                     return;
                                 }
                                 else
@@ -1062,7 +1073,7 @@ namespace ServerTools
         {
             try
             {
-                ClientInfo cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_playerId);
+                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_playerId);
                 if (cInfo != null)
                 {
                     for (int i = 0; i < _commands.Count; i++)
@@ -1074,7 +1085,7 @@ namespace ServerTools
                             if (int.TryParse(commandSplit[1], out int _time))
                             {
                                 _commands.RemoveRange(0, i + 1);
-                                Timers.Custom_SingleUseTimer(_time, cInfo.playerId, _commands);
+                                Timers.Custom_SingleUseTimer(_time, cInfo.CrossplatformId.CombinedString, _commands);
                                 return;
                             }
                             else
@@ -1105,15 +1116,19 @@ namespace ServerTools
                     {
                         _command = _command.Replace("{EntityId}", _cInfo.entityId.ToString());
                     }
-                    if (_command.Contains("{SteamId}"))
+                    if (_command.Contains("{Id}"))
                     {
-                        _command = _command.Replace("{SteamId}", _cInfo.playerId);
+                        _command = _command.Replace("{Id}", _cInfo.PlatformId.CombinedString);
+                    }
+                    if (_command.Contains("{EOS}"))
+                    {
+                        _command = _command.Replace("{EOS}", _cInfo.CrossplatformId.CombinedString);
                     }
                     if (_command.Contains("{PlayerName}"))
                     {
                         _command = _command.Replace("{PlayerName}", _cInfo.playerName);
                     }
-                    if (_command.Contains("{RandomPlayerId}"))
+                    if (_command.Contains("{RandomId}"))
                     {
                         List<ClientInfo> clientList = PersistentOperations.ClientList();
                         if (clientList != null)
@@ -1121,7 +1136,19 @@ namespace ServerTools
                             ClientInfo cInfo2 = clientList.ElementAt(Random.Next(clientList.Count));
                             if (cInfo2 != null)
                             {
-                                _command = _command.Replace("{RandomPlayerId}", cInfo2.playerId);
+                                _command = _command.Replace("{RandomId}", cInfo2.PlatformId.CombinedString);
+                            }
+                        }
+                    }
+                    if (_command.Contains("{RandomEOS}"))
+                    {
+                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        if (clientList != null)
+                        {
+                            ClientInfo cInfo2 = clientList.ElementAt(Random.Next(clientList.Count));
+                            if (cInfo2 != null)
+                            {
+                                _command = _command.Replace("{RandomEOS}", cInfo2.CrossplatformId.CombinedString);
                             }
                         }
                     }
@@ -1140,11 +1167,11 @@ namespace ServerTools
                     {
                         _command = commandLower.Replace("tele ", "teleportplayer ");
                         _command = commandLower.Replace("tp ", "teleportplayer ");
-                        SdtdConsole.Instance.ExecuteSync(_command, null);
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
                     }
                     else
                     {
-                        SdtdConsole.Instance.ExecuteSync(_command, null);
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
                     }
                 }
             }
@@ -1164,7 +1191,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Possible variables {EntityId}, {SteamId}, {PlayerName}, {Delay}, {RandomPlayerId}, whisper, global -->");
+                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, whisper, global -->");
                     sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ whisper You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Permission=\"false\" Cost=\"0\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
@@ -1196,21 +1223,41 @@ namespace ServerTools
                                 {
                                     delay = line.GetAttribute("DelayBetweenUses");
                                 }
+                                else
+                                {
+                                    delay = "0";
+                                }
                                 if (line.HasAttribute("Hidden"))
                                 {
                                     hidden = line.GetAttribute("Hidden");
+                                }
+                                else
+                                {
+                                    hidden = "false";
                                 }
                                 if (line.HasAttribute("Reserved"))
                                 {
                                     reserved = line.GetAttribute("Reserved");
                                 }
+                                else
+                                {
+                                    reserved = "false";
+                                }
                                 if (line.HasAttribute("Permission"))
                                 {
                                     permission = line.GetAttribute("Permission");
                                 }
+                                else
+                                {
+                                    permission = "false";
+                                }
                                 if (line.HasAttribute("Cost"))
                                 {
                                     cost = line.GetAttribute("Cost");
+                                }
+                                else
+                                {
+                                    cost = "0";
                                 }
                                 sw.WriteLine(string.Format("    <Custom Trigger=\"{0}\" Command=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Reserved=\"{4}\" Permission=\"{5}\" Cost=\"{6}\" />", trigger, command, delay, hidden, reserved, permission, cost));
                             }

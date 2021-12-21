@@ -28,36 +28,36 @@ namespace ServerTools
             {
                 if (_params.Count != 2 && _params.Count != 4)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, 4, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, 4, found {0}", _params.Count));
                     return;
                 }
                 if (_params.Count == 2)
                 {
                     if (!int.TryParse(_params[0], out int _entityId1))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack id value: {0}", _entityId1));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack id value: {0}", _entityId1));
                         return;
                     }
                     if (!int.TryParse(_params[1], out int _entityId2))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack id value: {0}", _entityId2));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack id value: {0}", _entityId2));
                         return;
                     }
                     Entity Entity1 = GameManager.Instance.World.Entities.dict[_entityId1];
                     if (Entity1 == null)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Backpack not found: {0}", _entityId1));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Backpack not found: {0}", _entityId1));
                         return;
                     }
                     if (Entity1.IsClientControlled())
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Backpack with id {0} can not be a player. Use a different command for teleporting players", _entityId1));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Backpack with id {0} can not be a player. Use a different command for teleporting players", _entityId1));
                         return;
                     }
                     Entity Entity2 = GameManager.Instance.World.Players.dict[_entityId2];
                     if (Entity2 == null)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Entity not found: {0}", _entityId2));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Entity not found: {0}", _entityId2));
                         return;
                     }
                     string _name = EntityClass.list[Entity1.entityClass].entityClassName;
@@ -77,7 +77,7 @@ namespace ServerTools
                                         entity.belongsPlayerId = Entity1.belongsPlayerId;
                                         entity.lootContainer.items = _items;
                                         GameManager.Instance.World.SpawnEntityInWorld(entity);
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Spawned a new backpack to {0} {1} {2} with the old backpack loot", Entity2.position.x, Entity2.position.y, Entity2.position.z));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Spawned a new backpack to {0} {1} {2} with the old backpack loot", Entity2.position.x, Entity2.position.y, Entity2.position.z));
                                         return;
                                     }
                                 }
@@ -89,33 +89,33 @@ namespace ServerTools
                 {
                     if (!int.TryParse(_params[0], out int _entityId))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack id value: {0}", _entityId));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack id value: {0}", _entityId));
                         return;
                     }
-                    Entity Entity = GameManager.Instance.World.Entities.dict[_entityId];
+                    Entity Entity = PersistentOperations.GetEntity(_entityId);
                     if (Entity == null)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack. Backpack not found: {0}", _entityId));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack. Backpack not found: {0}", _entityId));
                         return;
                     }
                     if (Entity.IsClientControlled())
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Backpack with id {0} can not be a player. Use a different command for teleporting players", _entityId));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Backpack with id {0} can not be a player. Use a different command for teleporting players", _entityId));
                         return;
                     }
                     if (!float.TryParse(_params[1], out float _x))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack value: {0}", _x));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack value: {0}", _x));
                         return;
                     }
                     if (!float.TryParse(_params[2], out float _y))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack value: {0}", _y));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack value: {0}", _y));
                         return;
                     }
                     if (!float.TryParse(_params[3], out float _z))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack value: {0}", _z));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack value: {0}", _z));
                         return;
                     }
                     string _name = EntityClass.list[Entity.entityClass].entityClassName;
@@ -135,7 +135,7 @@ namespace ServerTools
                                         entity.belongsPlayerId = Entity.belongsPlayerId;
                                         entity.lootContainer.items = _items;
                                         GameManager.Instance.World.SpawnEntityInWorld(entity);
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Spawned a new backpack to {0} {1} {2} with the old backpack loot", _x, _y, _z));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Spawned a new backpack to {0} {1} {2} with the old backpack loot", _x, _y, _z));
                                         return;
                                     }
                                 }

@@ -43,14 +43,14 @@ namespace ServerTools
             {
                 if (_params.Count > 3)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 0 to 3, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 0 to 3, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params.Count == 0)
                 {
                     if (_senderInfo.RemoteClientInfo == null)
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid user data. Unable to retrieve your position in game");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Invalid user data. Unable to retrieve your position in game");
                         return;
                     }
                     EntityPlayer player = GameManager.Instance.World.Players.dict[_senderInfo.RemoteClientInfo.entityId];
@@ -74,12 +74,12 @@ namespace ServerTools
                             regionZ = Math.Truncate(player.position.z / 512);
                         }
                         string region = regionX + "." + regionZ;
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You are standing in region: {0}", region));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You are standing in region: {0}", region));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid user data. Unable to retrieve your position in game");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Invalid user data. Unable to retrieve your position in game");
                         return;
                     }
                 }
@@ -89,7 +89,7 @@ namespace ServerTools
                     {
                         if (_senderInfo.RemoteClientInfo == null)
                         {
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid user data. Unable to retrieve your position in game");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Invalid user data. Unable to retrieve your position in game");
                             return;
                         }
                         EntityPlayer player = GameManager.Instance.World.Players.dict[_senderInfo.RemoteClientInfo.entityId];
@@ -116,18 +116,18 @@ namespace ServerTools
                             if (!RegionReset.Regions.Contains(region))
                             {
                                 RegionReset.Regions.Add(region);
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} has been added to the reset list. It will be wiped out on server shutdown", region));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Region '{0}' has been added to the reset list. It will be wiped out on server shutdown", region));
                                 return;
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} is already on the reset list", region));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Region '{0}' is already on the reset list", region));
                                 return;
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid user data. Unable to retrieve your position in game");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Invalid user data. Unable to retrieve your position in game");
                             return;
                         }
                     }
@@ -143,30 +143,30 @@ namespace ServerTools
                                     if (!RegionReset.Regions.Contains(_params[1]))
                                     {
                                         RegionReset.Regions.Add(_params[1]);
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} has been added to the reset list. It will be wiped out on server shutdown", _params[1]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Region '{0}' has been added to the reset list. It will be wiped out on server shutdown", _params[1]));
                                         return;
                                     }
                                     else
                                     {
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} is already on the reset list", _params[1]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Region '{0}' is already on the reset list", _params[1]));
                                         return;
                                     }
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid region format: {0}", _params[1]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid region format '{0}'", _params[1]));
                                     return;
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid region format: {0}", _params[1]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid region format '{0}'", _params[1]));
                                 return;
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid region format: {0}", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid region format '{0}'", _params[1]));
                             return;
                         }
                     }
@@ -197,24 +197,24 @@ namespace ServerTools
                                 if (!RegionReset.Regions.Contains(region))
                                 {
                                     RegionReset.Regions.Add(region);
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} has been added to the reset list. It will be wiped out on server shutdown", region));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Region '{0}' has been added to the reset list. It will be wiped out on server shutdown", region));
                                     return;
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0} is already on the reset list", region));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Region '{0}' is already on the reset list", region));
                                     return;
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid region format: {0} {1}", _params[1], _params[2]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid region format '{0}' '{1}'", _params[1], _params[2]));
                                 return;
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid region format: {0} {1}", _params[1], _params[2]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid region format '{0}' '{1}'", _params[1], _params[2]));
                             return;
                         }
                     }
@@ -224,12 +224,12 @@ namespace ServerTools
                     if (RegionReset.Regions.Count > 0)
                     {
                         RegionReset.Regions.Clear();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region reset list has been cancelled and cleared"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Region reset list has been cancelled and cleared"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] There are no regions on the reset list");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There are no regions on the reset list");
                         return;
                     }
                 }
@@ -239,12 +239,12 @@ namespace ServerTools
                     {
                         for (int i = 0; i < RegionReset.Regions.Count; i++)
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Region: {0}", RegionReset.Regions[i]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Region '{0}'", RegionReset.Regions[i]));
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] There are no regions on the reset list");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There are no regions on the reset list");
                         return;
                     }
                 }

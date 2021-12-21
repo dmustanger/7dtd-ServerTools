@@ -11,59 +11,47 @@ namespace ServerTools
         private static readonly string file = string.Format("BlockLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         public static string Filepath = string.Format("{0}/Logs/BlockLogs/{1}", API.ConfigPath, file);
 
-        public static void PlacedBlock(string _persistentPlayerId, Block _newBlock, Vector3i _position)
+        public static void PlacedBlock(ClientInfo _cInfo, Block _newBlock, Vector3i _position)
         {
-            EntityPlayer _player = PersistentOperations.GetEntityPlayer(_persistentPlayerId);
-            if (_player != null)
+            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
             {
-                using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
-                {
-                    sw.WriteLine(string.Format("{0}: Player named {1} with steam id {2} placed {3} @ {4}", DateTime.Now, _player.EntityName, _persistentPlayerId, _newBlock.GetBlockName(), _position));
-                    sw.WriteLine();
-                    sw.Flush();
-                    sw.Close();
-                }
+                sw.WriteLine(string.Format("{0}: Id '{1}' '{2}' named '{3}' placed '{4}' @ '{5}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _newBlock.GetBlockName(), _position));
+                sw.WriteLine();
+                sw.Flush();
+                sw.Close();
             }
         }
 
-        public static void RemovedBlock(string _persistentPlayerId, Block _oldBlock, Vector3i _position)
+        public static void RemovedBlock(ClientInfo _cInfo, Block _oldBlock, Vector3i _position)
         {
-            EntityPlayer _player = PersistentOperations.GetEntityPlayer(_persistentPlayerId);
-            if (_player != null)
+            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
             {
-                using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
-                {
-                    sw.WriteLine(string.Format("{0}: Player named {1} with steam id {2} removed {3} @ {4}", DateTime.Now, _player.EntityName, _persistentPlayerId, _oldBlock.GetBlockName(), _position));
-                    sw.WriteLine();
-                    sw.Flush();
-                    sw.Close();
-                }
+                sw.WriteLine(string.Format("{0}: Id '{1}' '{2}' named '{3}' removed '{4}' @ '{5}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _oldBlock.GetBlockName(), _position));
+                sw.WriteLine();
+                sw.Flush();
+                sw.Close();
             }
         }
 
-        public static void DowngradedBlock(string _persistentPlayerId, Block _oldBlock, Block _newBlock, Vector3i _position)
+        public static void DowngradedBlock(ClientInfo _cInfo, Block _oldBlock, Block _newBlock, Vector3i _position)
         {
-            EntityPlayer _player = PersistentOperations.GetEntityPlayer(_persistentPlayerId);
-            if (_player != null)
+            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
             {
-                using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
-                {
-                    sw.WriteLine(string.Format("{0}: Player named {1} with steam id {2} downgraded {3} @ {4} to {5}", DateTime.Now, _player.EntityName, _persistentPlayerId, _oldBlock.GetBlockName(), _position, _newBlock.GetBlockName()));
-                    sw.WriteLine();
-                    sw.Flush();
-                    sw.Close();
-                }
+                sw.WriteLine(string.Format("{0}: Id '{1}' '{2}' named '{3}' downgraded '{4}' @ '{5}' to '{6}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _oldBlock.GetBlockName(), _position, _newBlock.GetBlockName()));
+                sw.WriteLine();
+                sw.Flush();
+                sw.Close();
             }
         }
 
-        public static void BrokeBlock(string _persistentPlayerId, Block _oldBlock, Vector3i _position)
+        public static void BrokeBlock(ClientInfo _cInfo, Block _oldBlock, Vector3i _position)
         {
-            EntityPlayer _player = PersistentOperations.GetEntityPlayer(_persistentPlayerId);
+            EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
             if (_player != null)
             {
                 using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                 {
-                    sw.WriteLine(string.Format("{0}: Player named {1} with steam id {2} broke {3} @ {4}", DateTime.Now, _player.EntityName, _persistentPlayerId, _oldBlock.GetBlockName(), _position));
+                    sw.WriteLine(string.Format("{0}: Id '{1}' '{2}' named '{3}' broke '{4}' @ '{5}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _oldBlock.GetBlockName(), _position));
                     sw.WriteLine();
                     sw.Flush();
                     sw.Close();

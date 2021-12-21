@@ -15,14 +15,14 @@ namespace ServerTools
             return "Usage:\n" +
                    "  1. st-wl off\n" +
                    "  2. st-wl on\n" +
-                   "  3. st-wl add <steamID> <reason>\n" +
-                   "  4. st-wl remove <steamID>\n" +
+                   "  3. st-wl add <EOS> <Reason>\n" +
+                   "  4. st-wl remove <EOS>\n" +
                    "  5. st-wl list\n" +
                    "1. Turn off watch list\n" +
                    "2. Turn on watch list\n" +
-                   "3. Adds a steam id and name to the watch list\n" +
-                   "4. Removes a steam id from the watch list\n" +
-                   "5. Lists all steam id that are on the watch list";
+                   "3. Adds an Id to the watch list\n" +
+                   "4. Removes an Id from the watch list\n" +
+                   "5. Lists all Id on the watch list";
         }
 
         public override string[] GetCommands()
@@ -36,7 +36,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -46,12 +46,12 @@ namespace ServerTools
                         WatchList.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list has been set to off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Watch list has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list is already off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Watch list is already off"));
                         return;
                     }
                 }
@@ -62,12 +62,12 @@ namespace ServerTools
                         WatchList.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list has been set to on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Watch list has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list is already on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Watch list is already on"));
                         return;
                     }
                 }
@@ -75,63 +75,72 @@ namespace ServerTools
                 {
                     if (_params.Count != 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found {0}.", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
                         return;
                     }
-                    if (_params[1].Length != 17)
+                    if (_params[1].Contains("_"))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add SteamId: Invalid SteamId {0}", _params[1]));
-                        return;
-                    }
-                    if (WatchList.Dict.ContainsKey(_params[1]))
-                    {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add SteamId. {0} is already in the Watchlist.", _params[1]));
-                        return;
-                    }
-                    if (_params.Count == 3)
-                    {
+                        if (WatchList.Dict.ContainsKey(_params[1]))
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not add '{0}'. Id is already in the watchlist", _params[1]));
+                            return;
+                        }
                         WatchList.Dict.Add(_params[1], _params[2]);
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added SteamId {0} with the reason {1} the Watchlist.", _params[1], _params[2]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added Id '{0}' with the reason '{1}' to the watchlist", _params[1], _params[2]));
+                        WatchList.UpdateXml();
                     }
-                    WatchList.UpdateXml();
+                    else
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id '{0}'", _params[1]));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("remove"))
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
-                    if (!WatchList.Dict.ContainsKey(_params[1]))
+                    if (_params[1].Contains("_"))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] SteamId {0} was not found", _params[1]));
+                        if (!WatchList.Dict.ContainsKey(_params[1]))
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' was not found on the list", _params[1]));
+                            return;
+                        }
+                        WatchList.Dict.Remove(_params[1]);
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed Id '{0}' from the watchlist", _params[1]));
+                        WatchList.UpdateXml();
                         return;
                     }
-                    WatchList.Dict.Remove(_params[1]);
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed SteamId {0} from the Watchlist", _params[1]));
-                    WatchList.UpdateXml();
+                    else
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id '{0}'", _params[1]));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("list"))
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (WatchList.Dict.Count < 1)
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] There are no steamIds on the Watchlist");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There are no Id on the watchlist");
                         return;
                     }
                     foreach (KeyValuePair<string, string> _key in WatchList.Dict)
                     {
                         string _output = string.Format("{0} {1}", _key.Key, _key.Value);
-                        SdtdConsole.Instance.Output(_output);
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(_output);
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

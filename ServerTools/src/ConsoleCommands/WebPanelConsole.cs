@@ -16,9 +16,9 @@ namespace ServerTools
             return "Usage:\n" +
                    "  1. st-web off\n" +
                    "  2. st-web on\n" +
-                   "  3. st-web add <clientId>\n" +
-                   "  4. st-web remove <clientId>\n" +
-                   "  5. st-web reset <clientId>\n" +
+                   "  3. st-web add <ClientId>\n" +
+                   "  4. st-web remove <ClientId>\n" +
+                   "  5. st-web reset <ClientId>\n" +
                    "  6. st-web reset all\n" +
                    "  7. st-web timeout add <IP>\n" +
                    "  8. st-web timeout remove <IP>\n" +
@@ -53,7 +53,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 || _params.Count > 3)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -63,12 +63,12 @@ namespace ServerTools
                         WebAPI.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Web panel has been set to off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Web panel has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Web panel is already off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Web panel is already off"));
                         return;
                     }
                 }
@@ -79,12 +79,12 @@ namespace ServerTools
                         WebAPI.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Web panel has been set to on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Web panel has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Web panel is already on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Web panel is already on"));
                         return;
                     }
                 }
@@ -92,12 +92,12 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 2, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     else if (_params[1].Length < 6 || _params[1].Length > 30)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Client id must be 6 - 30 characters in length, found {0}", _params[1].Length));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Client id must be 6 - 30 characters in length, found '{0}'", _params[1].Length));
                         return;
                     }
                     else
@@ -109,7 +109,7 @@ namespace ServerTools
                         }
                         PersistentContainer.Instance.Players[_params[1]].WebPass = password;
                         PersistentContainer.DataChange = true;
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added {0} to the web panel client list. Their password is {1}", _params[1], password));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added '{0}' to the web panel client list. Their password is '{1}'", _params[1], password));
                         return;
                     }
                 }
@@ -117,12 +117,12 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 2, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     else if (_params[1].Length < 6 || _params[1].Length > 30)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Client id must be 6 - 30 characters in length, found {0}", _params[1].Length));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Client id must be 6 - 30 characters in length, found '{0}'", _params[1].Length));
                         return;
                     }
                     else
@@ -131,11 +131,11 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[_params[1]].WebPass = "";
                             PersistentContainer.DataChange = true;
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed {0} from the web panel client list", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed '{0}' from the web panel client list", _params[1]));
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0} is not on the web panel client list", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] '{0}' is not on the web panel client list", _params[1]));
                         }
                         return;
                     }
@@ -144,12 +144,12 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 2, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     else if (_params[1].Length < 6 || _params[1].Length > 30)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Client id must be 6 - 30 characters in length, found {0}", _params[1].Length));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Client id must be 6 - 30 characters in length, found '{0}'", _params[1].Length));
                         return;
                     }
                     else
@@ -159,12 +159,12 @@ namespace ServerTools
                             string password = PersistentOperations.CreatePassword(16);
                             PersistentContainer.Instance.Players[_params[1]].WebPass = password;
                             PersistentContainer.DataChange = true;
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Client {0} has been reset. Their password is {1}", _params[1], password));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Client '{0}' has been reset. Their password is '{1}'", _params[1], password));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0} is not on the web panel client list", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] '{0}' is not on the web panel client list", _params[1]));
                             return;
                         }
                     }
@@ -184,20 +184,20 @@ namespace ServerTools
                             PersistentContainer.Instance.WebPanelTimeoutList.Clear();
                             PersistentContainer.DataChange = true;
                         }
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Web panel has been reset of all session data. Clients must relog"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Web panel has been reset of all session data. Clients must relog"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Web API is not enabled. There is no web panel data to clear"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Web API is not enabled. There is no web panel data to clear"));
                         return;
                     }
                 }
                 else if (_params[0].ToLower().Equals("timeout"))
                 {
-                    if (_params.Count != 3)
+                    if (_params.Count != 2 && _params.Count != 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 3, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or 3, found '{0}'", _params.Count));
                         return;
                     }
                     else if (_params[1].ToLower() == "add")
@@ -217,12 +217,12 @@ namespace ServerTools
                                 PersistentContainer.Instance.WebPanelTimeoutList = timeouts;
                             }
                             PersistentContainer.DataChange = true;
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] IP {0} has been added to the timeout list", ip));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] IP '{0}' has been added to the timeout list", ip));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add IP {0}. It is already on the timeout list", ip));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not add IP '{0}'. It is already on the timeout list", ip));
                             return;
                         }
                     }
@@ -234,25 +234,25 @@ namespace ServerTools
                             WebPanel.TimeOut.Remove(ip);
                             PersistentContainer.Instance.WebPanelTimeoutList.Remove(ip);
                             PersistentContainer.DataChange = true;
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] IP {0} has been removed from the timeout list", ip));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] IP '{0}' has been removed from the timeout list", ip));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not remove IP {0}. It is not on the timeout list", ip));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not remove IP '{0}'. It is not on the timeout list", ip));
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[1]));
                     }
                 }
                 else if (_params[0].ToLower().Equals("ban"))
                 {
-                    if (_params.Count != 3)
+                    if (_params.Count != 2 && _params.Count != 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 3, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or 3, found '{0}'", _params.Count));
                         return;
                     }
                     else if (_params[1].ToLower() == "add")
@@ -272,12 +272,12 @@ namespace ServerTools
                                 PersistentContainer.Instance.WebPanelBanList = bans;
                             }
                             PersistentContainer.DataChange = true;
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] IP {0} has been added to the ban list", ip));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] IP '{0}' has been added to the ban list", ip));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add IP {0}. It is already on the ban list", ip));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not add IP '{0}'. It is already on the ban list", ip));
                             return;
                         }
                     }
@@ -292,63 +292,63 @@ namespace ServerTools
                                 PersistentContainer.Instance.WebPanelBanList.Remove(ip);
                                 PersistentContainer.DataChange = true;
                             }
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] IP {0} has been removed from the ban list", ip));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] IP '{0}' has been removed from the ban list", ip));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not remove IP {0}. It is not on the ban list", ip));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not remove IP '{0}'. It is not on the ban list", ip));
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[1]));
                     }
                 }
                 else if (_params[0].ToLower().Equals("list"))
                 {
-                    List<string> _steamId = PersistentContainer.Instance.Players.SteamIDs;
+                    List<string> _steamId = PersistentContainer.Instance.Players.IDs;
                     if (_steamId != null && _steamId.Count > 0)
                     {
                         for (int i = 0; i < _steamId.Count; i++)
                         {
                             if (!string.IsNullOrWhiteSpace(PersistentContainer.Instance.Players[_steamId[i]].WebPass))
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Client id = {0}", _steamId[i]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Client id '{0}'", _steamId[i]));
                             }
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] There are no clients on the web panel list"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no clients on the web panel list"));
                     }
                     if (WebPanel.TimeOut.Count > 0)
                     {
                         foreach (var timeout in WebPanel.TimeOut)
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Timed out IP = {0}. Lasts until = {1}", timeout.Key, timeout.Value.AddMinutes(10)));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Timed out IP '{0}'. Lasts until '{1}'", timeout.Key, timeout.Value.AddMinutes(10)));
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] There are no timed out ip address"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no timed out ip address"));
                     }
                     if (WebPanel.Ban.Count > 0)
                     {
                         for (int i = 0; i < WebPanel.Ban.Count; i++)
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Banned IP = {0}", WebPanel.Ban[i]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Banned IP '{0}'", WebPanel.Ban[i]));
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] There are no banned ip address"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no banned ip address"));
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

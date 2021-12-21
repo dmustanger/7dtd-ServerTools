@@ -22,10 +22,10 @@ namespace ServerTools
                     for (int i = 0; i < clientList.Count; i++)
                     {
                         ClientInfo cInfo = clientList[i];
-                        if (cInfo != null && cInfo.playerId != null)
+                        if (cInfo != null)
                         {
-                            EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
-                            if (player != null && player.IsSpawned() && !player.IsDead())
+                            EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                            if (player != null && player.IsSpawned())
                             {
                                 string pos = (int)player.position.x + "," + (int)player.position.y + "," + (int)player.position.z;
                                 string holdingItem = player.inventory.holdingItem.Name;
@@ -36,12 +36,12 @@ namespace ServerTools
                                     {
                                         holdingItem = itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name;
                                     }
-                                    string[] newData = { DateTime.Now.ToString(), pos, cInfo.playerId, player.EntityName, holdingItem };
+                                    string[] newData = { DateTime.Now.ToString(), pos, cInfo.CrossplatformId.CombinedString, player.EntityName, holdingItem };
                                     track.Add(newData);
                                 }
                                 else
                                 {
-                                    string[] newData = { DateTime.Now.ToString(), pos, cInfo.playerId, player.EntityName, "nothing" };
+                                    string[] newData = { DateTime.Now.ToString(), pos, cInfo.CrossplatformId.CombinedString, player.EntityName, "nothing" };
                                     track.Add(newData);
                                 }
                             }

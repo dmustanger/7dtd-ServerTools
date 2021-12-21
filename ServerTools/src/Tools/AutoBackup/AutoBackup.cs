@@ -11,7 +11,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false;
         public static int Backup_Count = 5, Compression_Level = 0;
-        public static string FileLocation = "", Destination = "", SaveDirectory = GameUtils.GetSaveGameDir(), Delay = "240";
+        public static string FileLocation = "", Destination = "", SaveDirectory = GameIO.GetSaveGameDir(), Delay = "240";
         private static Thread th;
 
         public static void SetDelay()

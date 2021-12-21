@@ -28,7 +28,7 @@ namespace ServerTools
             try
             {
                 DeletePlayerData.Exec();
-                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] All save data from ServerTools.bin has been deleted"));
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] All save data from ServerTools.bin has been deleted"));
             }
             catch (Exception e)
             {

@@ -40,7 +40,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -128,7 +128,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -141,12 +141,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing Travel.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -157,7 +157,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -211,7 +211,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -235,24 +235,35 @@ namespace ServerTools
                 }
                 else
                 {
-                    DateTime _lastTravel = PersistentContainer.Instance.Players[_cInfo.playerId].LastTravel;
-                    TimeSpan varTime = DateTime.Now - _lastTravel;
+                    DateTime lastTravel = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastTravel;
+                    TimeSpan varTime = DateTime.Now - lastTravel;
                     double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
+                    int timepassed = (int)fractionalMinutes;
                     if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                     {
-                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                         {
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                            if (DateTime.Now < _dt)
+                            if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                             {
-                                int _delay = Delay_Between_Uses / 2;
-                                Time(_cInfo, _timepassed, _delay);
-                                return;
+                                if (DateTime.Now < dt)
+                                {
+                                    int delay = Delay_Between_Uses / 2;
+                                    Time(_cInfo, timepassed, delay);
+                                    return;
+                                }
+                            }
+                            else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                            {
+                                if (DateTime.Now < dt)
+                                {
+                                    int delay = Delay_Between_Uses / 2;
+                                    Time(_cInfo, timepassed, delay);
+                                    return;
+                                }
                             }
                         }
                     }
-                    Time(_cInfo, _timepassed, Delay_Between_Uses);
+                    Time(_cInfo, timepassed, Delay_Between_Uses);
                 }
             }
             catch (Exception e)
@@ -278,13 +289,13 @@ namespace ServerTools
                 }
                 else
                 {
-                    int _timeleft = _delay - _timepassed;
-                    Phrases.Dict.TryGetValue("Travel3", out string _phrase);
-                    _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
-                    _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
-                    _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    _phrase = _phrase.Replace("{Command_travel}", Command_travel);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    int timeleft = _delay - _timepassed;
+                    Phrases.Dict.TryGetValue("Travel3", out string phrase);
+                    phrase = phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                    phrase = phrase.Replace("{TimeRemaining}", timeleft.ToString());
+                    phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    phrase = phrase.Replace("{Command_travel}", Command_travel);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -297,15 +308,15 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
+                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
                 {
                     Tele(_cInfo);
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("Travel4", out string _phrase);
-                    _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Travel4", out string phrase);
+                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -318,7 +329,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (Dict.Count > 0)
@@ -359,9 +370,9 @@ namespace ServerTools
                                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(destinationX, destinationY, destinationZ), null, false));
                                 if (Wallet.IsEnabled && Command_Cost >= 1)
                                 {
-                                    Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
+                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                                 }
-                                PersistentContainer.Instance.Players[_cInfo.playerId].LastTravel = DateTime.Now;
+                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastTravel = DateTime.Now;
                                 PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue("Travel1", out string phrase);
                                 phrase = phrase.Replace("{Destination}", travel.Value[2]);

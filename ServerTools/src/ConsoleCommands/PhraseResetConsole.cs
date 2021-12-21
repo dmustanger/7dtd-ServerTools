@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ServerTools
 {
@@ -27,15 +28,15 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(Phrases.FilePath))
+                if (!File.Exists(Phrases.FilePath))
                 {
                     Phrases.ResetXml();
-                    SdtdConsole.Instance.Output("[SERVERTOOLS] Phrase file has been reset to default");
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Phrase file has been reset to default");
                     return;
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output("[SERVERTOOLS] Phrase file was not found. Unable to reset");
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Phrase file was not found. Unable to reset");
                     return;
                 }
             }

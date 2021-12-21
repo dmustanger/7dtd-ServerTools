@@ -36,7 +36,7 @@ namespace ServerTools
 
         public static void AddPlayer(ClientInfo _cInfo)
         {
-            if (!Teams.ContainsKey(_cInfo.playerId))
+            if (!Teams.ContainsKey(_cInfo.CrossplatformId.CombinedString))
             {
                 if (Teams.Count >= PlayerCount)
                 {
@@ -44,24 +44,24 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                if (_player != null)
+                EntityPlayer player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                if (player != null)
                 {
-                    Vector3 _position = _player.GetPosition();
+                    Vector3 _position = player.GetPosition();
                     int x = (int)_position.x;
                     int y = (int)_position.y;
                     int z = (int)_position.z;
-                    string _sposition = x + "," + y + "," + z;
-                    PersistentContainer.Instance.Players[_cInfo.playerId].EventReturnPosition = _sposition;
+                    string sposition = x + "," + y + "," + z;
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].EventReturnPosition = sposition;
                     PersistentContainer.DataChange = true;
-                    Phrases.Dict.TryGetValue("Event4", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Event4", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
-                EventCommandsConsole.Setup.TryGetValue(Operator, out List<string> _setup);
-                Teams.Add(_cInfo.playerId, TeamSetup);
-                Phrases.Dict.TryGetValue("Event5", out string _phrase1);
-                _phrase1 = _phrase1.Replace("{Value}", TeamSetup.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                EventCommandsConsole.Setup.TryGetValue(Operator, out List<string> setup);
+                Teams.Add(_cInfo.CrossplatformId.CombinedString, TeamSetup);
+                Phrases.Dict.TryGetValue("Event5", out string phrase1);
+                phrase1 = phrase1.Replace("{Value}", TeamSetup.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 TeamSetup--;
                 if (TeamSetup == 0)
                 {
@@ -70,31 +70,31 @@ namespace ServerTools
                 if (Teams.Count == PlayerCount)
                 {
                     Invited = false;
-                    foreach (var _teamPlayer in Teams)
+                    foreach (var teamPlayer in Teams)
                     {
-                        ClientInfo _eventClientInfo = ConnectionManager.Instance.Clients.ForPlayerId(_teamPlayer.Key);
-                        if (_eventClientInfo != null)
+                        ClientInfo eventClientInfo = PersistentOperations.GetClientInfoFromNameOrId(teamPlayer.Key);
+                        if (eventClientInfo != null)
                         {
-                            EntityPlayer _eventPlayer = GameManager.Instance.World.Players.dict[_eventClientInfo.entityId];
-                            if (_eventPlayer != null && _eventPlayer.IsAlive())
+                            EntityPlayer eventPlayer = GameManager.Instance.World.Players.dict[eventClientInfo.entityId];
+                            if (eventPlayer != null && eventPlayer.IsAlive())
                             {
-                                Teams.TryGetValue(_teamPlayer.Key, out int _teamNumber);
-                                string _spawnPosition = _setup[_teamNumber + 4];
-                                string[] _cords = _spawnPosition.Split(',');
-                                int.TryParse(_cords[0], out int _x);
-                                int.TryParse(_cords[1], out int _y);
-                                int.TryParse(_cords[2], out int _z);
-                                _eventClientInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                                Teams.TryGetValue(teamPlayer.Key, out int _teamNumber);
+                                string spawnPosition = setup[_teamNumber + 4];
+                                string[] cords = spawnPosition.Split(',');
+                                int.TryParse(cords[0], out int x);
+                                int.TryParse(cords[1], out int y);
+                                int.TryParse(cords[2], out int z);
+                                eventClientInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                             }
                             else
                             {
-                                PersistentContainer.Instance.Players[_eventClientInfo.playerId].EventSpawn = true;
+                                PersistentContainer.Instance.Players[eventClientInfo.CrossplatformId.CombinedString].EventSpawn = true;
                                 PersistentContainer.DataChange = true;
                             }
                         }
                         else
                         {
-                            PersistentContainer.Instance.Players[_eventClientInfo.playerId].EventSpawn = true;
+                            PersistentContainer.Instance.Players[eventClientInfo.CrossplatformId.CombinedString].EventSpawn = true;
                             PersistentContainer.DataChange = true;
                         }
                     }
@@ -145,30 +145,29 @@ namespace ServerTools
 
         public static void EndEvent()
         {
-            foreach (var _eventPlayer in Teams)
+            foreach (var eventPlayer in Teams)
             {
-                ClientInfo _eventClientInfo = ConnectionManager.Instance.Clients.ForPlayerId(_eventPlayer.Key);
-                if (_eventClientInfo != null)
+                ClientInfo eventClientInfo = PersistentOperations.GetClientInfoFromNameOrId(eventPlayer.Key);
+                if (eventClientInfo != null)
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_eventClientInfo.entityId];
-                    if (_player.IsSpawned())
+                    EntityPlayer player = GameManager.Instance.World.Players.dict[eventClientInfo.entityId];
+                    if (player.IsSpawned())
                     {
-                        string _returnPosition = PersistentContainer.Instance.Players[_eventClientInfo.playerId].EventReturnPosition;
-                        string[] _cords = _returnPosition.Split(',');
-                        int.TryParse(_cords[0], out int _x);
-                        int.TryParse(_cords[1], out int _y);
-                        int.TryParse(_cords[2], out int _z);
-                        _eventClientInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
-                        Teams.Remove(_eventPlayer.Key);
+                        string returnPosition = PersistentContainer.Instance.Players[eventClientInfo.CrossplatformId.CombinedString].EventReturnPosition;
+                        string[] cords = returnPosition.Split(',');
+                        int.TryParse(cords[0], out int x);
+                        int.TryParse(cords[1], out int y);
+                        int.TryParse(cords[2], out int z);
+                        eventClientInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                        Teams.Remove(eventPlayer.Key);
                     }
                 }
                 else
                 {
-                    PersistentContainer.Instance.Players[_eventPlayer.Key].EventOver = true;
-                    Teams.Remove(_eventPlayer.Key);
+                    PersistentContainer.Instance.Players[eventPlayer.Key].EventOver = true;
+                    Teams.Remove(eventPlayer.Key);
                 }
             }
-            ClientInfo _cInfo = ConnectionManager.Instance.Clients.GetForPlayerName(Operator);
             Open = false;
             Teams.Clear();
             Operator = "";
@@ -177,60 +176,60 @@ namespace ServerTools
             PlayerCount = 0;
             TeamSetup = 0;
             Time = 0;
-            Phrases.Dict.TryGetValue("Event13", out string _phrase783);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase783 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            Phrases.Dict.TryGetValue("Event13", out string phrase);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
         public static void EventOver(ClientInfo _cInfo)
         {
-            string _returnPosition = PersistentContainer.Instance.Players[_cInfo.playerId].EventReturnPosition;
-            string[] _cords = _returnPosition.Split(',');
-            int.TryParse(_cords[0], out int _x);
-            int.TryParse(_cords[1], out int _y);
-            int.TryParse(_cords[2], out int _z);
-            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
-            Phrases.Dict.TryGetValue("Event14", out string _phrase);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            string returnPosition = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].EventReturnPosition;
+            string[] cords = returnPosition.Split(',');
+            int.TryParse(cords[0], out int x);
+            int.TryParse(cords[1], out int y);
+            int.TryParse(cords[2], out int z);
+            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+            Phrases.Dict.TryGetValue("Event14", out string phrase);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void Spawn(ClientInfo _cInfo)
         {
-            if (Teams.TryGetValue(_cInfo.playerId, out int _team))
+            if (Teams.TryGetValue(_cInfo.CrossplatformId.CombinedString, out int _team))
             {
                 if (EventCommandsConsole.Setup.TryGetValue(Operator, out List<string> _setup))
                 {
-                    string _spawnPosition = _setup[_team + 4];
-                    string[] _cords = _spawnPosition.Split(',');
-                    int.TryParse(_cords[0], out int _x);
-                    int.TryParse(_cords[1], out int _y);
-                    int.TryParse(_cords[2], out int _z);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
-                    PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn = false;
-                    Phrases.Dict.TryGetValue("Event15", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    string spawnPosition = _setup[_team + 4];
+                    string[] cords = spawnPosition.Split(',');
+                    int.TryParse(cords[0], out int x);
+                    int.TryParse(cords[1], out int y);
+                    int.TryParse(cords[2], out int z);
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].EventSpawn = false;
+                    Phrases.Dict.TryGetValue("Event15", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn = false;
-                Phrases.Dict.TryGetValue("Event16", out string _phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].EventSpawn = false;
+                Phrases.Dict.TryGetValue("Event16", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
         public static void Respawn(ClientInfo _cInfo)
         {
-            if (Teams.TryGetValue(_cInfo.playerId, out int _team))
+            if (Teams.TryGetValue(_cInfo.CrossplatformId.CombinedString, out int _team))
             {
                 if (EventCommandsConsole.Setup.TryGetValue(Operator, out List<string> _setup))
                 {
                     _setup.RemoveRange(0, 4 + _team);
-                    string _respawnPosition = _setup[_team - 1];
-                    string[] _cords = _respawnPosition.Split(',');
-                    int.TryParse(_cords[0], out int _x);
-                    int.TryParse(_cords[1], out int _y);
-                    int.TryParse(_cords[2], out int _z);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                    string respawnPosition = _setup[_team - 1];
+                    string[] cords = respawnPosition.Split(',');
+                    int.TryParse(cords[0], out int x);
+                    int.TryParse(cords[1], out int y);
+                    int.TryParse(cords[2], out int z);
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                 }
             }
         }

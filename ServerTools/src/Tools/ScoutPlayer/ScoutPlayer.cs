@@ -24,24 +24,38 @@ namespace ServerTools
             }
             else
             {
-                DateTime _lastScout = PersistentContainer.Instance.Players[_cInfo.playerId].LastScout;
-                TimeSpan varTime = DateTime.Now - _lastScout;
+                DateTime lastScout = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastScout;
+                TimeSpan varTime = DateTime.Now - lastScout;
                 double fractionalMinutes = varTime.TotalMinutes;
-                int _timepassed = (int)fractionalMinutes;
+                int timepassed = (int)fractionalMinutes;
                 if (ReservedSlots.IsEnabled)
                 {
-                    if (ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                    if (ReservedSlots.Reduced_Delay)
                     {
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                        if (DateTime.Now < _dt)
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                         {
-                            int _delay = Delay_Between_Uses / 2;
-                            Time(_cInfo, _timepassed, _delay);
-                            return;
+                            if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
+                            {
+                                if (DateTime.Now < dt)
+                                {
+                                    int delay = Delay_Between_Uses / 2;
+                                    Time(_cInfo, timepassed, delay);
+                                    return;
+                                }
+                            }
+                            else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                            {
+                                if (DateTime.Now < dt)
+                                {
+                                    int delay = Delay_Between_Uses / 2;
+                                    Time(_cInfo, timepassed, delay);
+                                    return;
+                                }
+                            }
                         }
                     }
                 }
-                Time(_cInfo, _timepassed, Delay_Between_Uses);
+                Time(_cInfo, timepassed, Delay_Between_Uses);
             }
         }
 
@@ -60,13 +74,13 @@ namespace ServerTools
             }
             else
             {
-                int _timeleft = _delay - _timepassed;
-                Phrases.Dict.TryGetValue("ScoutPlayer1", out string _phrase);
-                _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                _phrase = _phrase.Replace("{Command_scoutplayer}", Command_scoutplayer);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                int timeleft = _delay - _timepassed;
+                Phrases.Dict.TryGetValue("ScoutPlayer1", out string phrase);
+                phrase = phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                phrase = phrase.Replace("{TimeRemaining}", timeleft.ToString());
+                phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                phrase = phrase.Replace("{Command_scoutplayer}", Command_scoutplayer);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -74,15 +88,15 @@ namespace ServerTools
         {
             if (Wallet.IsEnabled && Command_Cost > 0)
             {
-                if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
+                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
                 {
                     StartScouting(_cInfo);
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("ScoutPlayer2", out string _phrase);
-                    _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("ScoutPlayer2", out string phrase);
+                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -100,23 +114,23 @@ namespace ServerTools
                 EntityAlive _player2 = EntityPlayerList[i];
                 if (_player2 != null && _player2.entityId != _cInfo.entityId && _player2.Spawned && !world.Players.dict[_cInfo.entityId].IsFriendsWith(world.Players.dict[_player2.entityId]))
                 {
-                    float distanceSq = world.Players.dict[_player2.entityId].GetDistanceSq(world.Players.dict[_cInfo.entityId].position);
+                    float distanceSq = world.Players.dict[_player2.entityId].GetDistanceSq((_player2 as EntityPlayer).position);
                     if (distanceSq <= 200f * 200f)
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].LastScout = DateTime.Now;
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastScout = DateTime.Now;
                         PersistentContainer.DataChange = true;
                         int _distance = (int)distanceSq;
-                        Phrases.Dict.TryGetValue("ScoutPlayer3", out string _phrase);
-                        _phrase = _phrase.Replace("{Value}", _distance.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("ScoutPlayer3", out string phrase);
+                        phrase = phrase.Replace("{Value}", _distance.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         return;
                     }
                 }
             }
-            PersistentContainer.Instance.Players[_cInfo.playerId].LastScout = DateTime.Now;
+            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastScout = DateTime.Now;
             PersistentContainer.DataChange = true;
-            Phrases.Dict.TryGetValue("ScoutPlayer4", out string _phrase1);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue("ScoutPlayer4", out string phrase1);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
     }
 }

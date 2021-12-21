@@ -43,7 +43,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -154,7 +154,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -167,12 +167,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing Zones.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -183,7 +183,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -207,7 +207,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
                     sw.WriteLine("    <!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
                     sw.WriteLine("    <!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
-                    sw.WriteLine("    <!-- Possible variables for commands include {PlayerName}, {EntityId}, {PlayerId}, {Delay}, whisper, global -->");
+                    sw.WriteLine("    <!-- Possible variables for commands include {PlayerName}, {EntityId}, {Id}, {EOS}, {Delay}, whisper, global -->");
                     sw.WriteLine("    <!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
@@ -243,7 +243,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -324,7 +324,9 @@ namespace ServerTools
                             ZonePlayer.TryGetValue(_player.entityId, out string[] info);
                             if (info != zone)
                             {
-                                if (Zone_Message)
+                                ZonePlayer[_player.entityId] = zone;
+                                Reminder[_player.entityId] = DateTime.Now;
+                                if (Zone_Message && zone[4] != "")
                                 {
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -332,13 +334,13 @@ namespace ServerTools
                                 {
                                     ProcessCommand(_cInfo, zone[6]);
                                 }
-                                ZonePlayer[_player.entityId] = zone;
-                                Reminder[_player.entityId] = DateTime.Now;
                             }
                         }
                         else
                         {
-                            if (Zone_Message)
+                            ZonePlayer.Add(_player.entityId, zone);
+                            Reminder.Add(_player.entityId, DateTime.Now);
+                            if (Zone_Message && zone[4] != "")
                             {
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
@@ -346,8 +348,6 @@ namespace ServerTools
                             {
                                 ProcessCommand(_cInfo, zone[6]);
                             }
-                            ZonePlayer.Add(_player.entityId, zone);
-                            Reminder.Add(_player.entityId, DateTime.Now);
                         }
                         return;
                     }
@@ -355,6 +355,8 @@ namespace ServerTools
                 if (ZonePlayer.ContainsKey(_player.entityId))
                 {
                     ZonePlayer.TryGetValue(_player.entityId, out string[] zone);
+                    ZonePlayer.Remove(_player.entityId);
+                    Reminder.Remove(_player.entityId);
                     if (Zone_Message && zone[5] != "")
                     {
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + zone[5] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -363,8 +365,6 @@ namespace ServerTools
                     {
                         ProcessCommand(_cInfo, zone[7]);
                     }
-                    ZonePlayer.Remove(_player.entityId);
-                    Reminder.Remove(_player.entityId);
                 }
             }
             catch (Exception e)
@@ -389,7 +389,7 @@ namespace ServerTools
                             if (int.TryParse(_commandSplit[1], out int _time))
                             {
                                 _commands.RemoveRange(0, i + 1);
-                                Timers.Zone_SingleUseTimer(_time, _cInfo.playerId, _commands);
+                                Timers.Zone_SingleUseTimer(_time, _cInfo.CrossplatformId.CombinedString, _commands);
                                 return;
                             }
                             else
@@ -418,8 +418,8 @@ namespace ServerTools
         {
             try
             {
-                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_playerId);
-                if (_cInfo != null)
+                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_playerId);
+                if (cInfo != null)
                 {
                     for (int i = 0; i < _commands.Count; i++)
                     {
@@ -430,7 +430,7 @@ namespace ServerTools
                             if (int.TryParse(_commandSplit[1], out int _time))
                             {
                                 _commands.RemoveRange(0, i + 1);
-                                Timers.Zone_SingleUseTimer(_time, _cInfo.playerId, _commands);
+                                Timers.Zone_SingleUseTimer(_time, cInfo.CrossplatformId.CombinedString, _commands);
                                 return;
                             }
                             else
@@ -440,7 +440,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            Command(_cInfo, _commandTrimmed);
+                            Command(cInfo, _commandTrimmed);
                         }
                     }
                 }
@@ -456,7 +456,8 @@ namespace ServerTools
             try
             {
                 _command = _command.Replace("{EntityId}", _cInfo.entityId.ToString());
-                _command = _command.Replace("{SteamId}", _cInfo.playerId);
+                _command = _command.Replace("{Id}", _cInfo.PlatformId.CombinedString);
+                _command = _command.Replace("{EOS}", _cInfo.CrossplatformId.CombinedString);
                 _command = _command.Replace("{PlayerName}", _cInfo.playerName);
                 if (_command.ToLower().StartsWith("global "))
                 {
@@ -470,18 +471,7 @@ namespace ServerTools
                     _command = _command.Replace("whisper ", "");
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
-                else if (_command.StartsWith("tele ") || _command.StartsWith("tp ") || _command.StartsWith("teleportplayer "))
-                {
-                    if (IsEnabled && ZonePlayer.ContainsKey(_cInfo.entityId))
-                    {
-                        ZonePlayer.Remove(_cInfo.entityId);
-                    }
-                    SdtdConsole.Instance.ExecuteSync(_command, null);
-                }
-                else
-                {
-                    SdtdConsole.Instance.ExecuteSync(_command, null);
-                }
+                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
             }
             catch (Exception e)
             {
@@ -658,9 +648,9 @@ namespace ServerTools
                         }
                         else if (zone1[9] == "1")
                         {
-                            PersistentPlayerData ppd1 = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo1.playerId);
-                            PersistentPlayerData ppd2 = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo2.playerId);
-                            if ((ppd1 != null && ppd1.ACL != null && !ppd1.ACL.Contains(_cInfo2.playerId)) || (ppd2 != null && ppd2.ACL != null && !ppd2.ACL.Contains(_cInfo1.playerId)))
+                            PersistentPlayerData ppd1 = PersistentOperations.GetPersistentPlayerDataFromId(_cInfo1.CrossplatformId.CombinedString);
+                            PersistentPlayerData ppd2 = PersistentOperations.GetPersistentPlayerDataFromId(_cInfo2.CrossplatformId.CombinedString);
+                            if ((ppd1 != null && ppd1.ACL != null && !ppd1.ACL.Contains(_cInfo2.CrossplatformId)) || (ppd2 != null && ppd2.ACL != null && !ppd2.ACL.Contains(_cInfo1.CrossplatformId)))
                             {
                                 Phrases.Dict.TryGetValue("Zones10", out string phrase);
                                 ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -669,9 +659,9 @@ namespace ServerTools
                         }
                         else if (zone1[9] == "2")
                         {
-                            PersistentPlayerData ppd1 = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo1.playerId);
-                            PersistentPlayerData ppd2 = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo2.playerId);
-                            if ((ppd1 != null && ppd1.ACL != null && ppd1.ACL.Contains(_cInfo2.playerId)) || (ppd2 != null && ppd2.ACL != null && ppd2.ACL.Contains(_cInfo1.playerId)))
+                            PersistentPlayerData ppd1 = PersistentOperations.GetPersistentPlayerDataFromId(_cInfo1.CrossplatformId.CombinedString);
+                            PersistentPlayerData ppd2 = PersistentOperations.GetPersistentPlayerDataFromId(_cInfo2.CrossplatformId.CombinedString);
+                            if ((ppd1 != null && ppd1.ACL != null && ppd1.ACL.Contains(_cInfo2.CrossplatformId)) || (ppd2 != null && ppd2.ACL != null && ppd2.ACL.Contains(_cInfo1.CrossplatformId)))
                             {
                                 Phrases.Dict.TryGetValue("Zones11", out string phrase);
                                 ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -718,7 +708,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
                     sw.WriteLine("    <!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
                     sw.WriteLine("    <!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
-                    sw.WriteLine("    <!-- Possible variables for commands include {PlayerName}, {EntityId}, {PlayerId}, {Delay}, whisper, global -->");
+                    sw.WriteLine("    <!-- Possible variables for commands include {PlayerName}, {EntityId}, {Id}, {EOS}, {Delay}, whisper, global -->");
                     sw.WriteLine("    <!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {

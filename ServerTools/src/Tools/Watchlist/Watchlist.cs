@@ -37,7 +37,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -92,7 +92,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -105,12 +105,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing WatchList.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -121,7 +121,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -141,14 +141,14 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Watchlist>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Player SteamId=\"12345678909876543\" Reason=\"Suspected cheating\" / -->");
+                    sw.WriteLine("    <!-- Player Id=\"12345678909876543\" Reason=\"Suspected cheating\" / -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, string> kvp in Dict)
                         {
-                            sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Reason=\"{1}\" />", kvp.Key, kvp.Value));
+                            sw.WriteLine(string.Format("    <Player Id=\"{0}\" Reason=\"{1}\" />", kvp.Key, kvp.Value));
                         }
                     }
                     sw.WriteLine("</Watchlist>");
@@ -174,7 +174,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -252,7 +252,7 @@ namespace ServerTools
                     for (int i = 0; i < clientList.Count; i++)
                     {
                         ClientInfo cInfo = clientList[i];
-                        if (Dict.ContainsKey(cInfo.playerId))
+                        if (Dict.ContainsKey(cInfo.PlatformId.CombinedString) || Dict.ContainsKey(cInfo.CrossplatformId.CombinedString))
                         {
                             players.Add(cInfo);
                         }
@@ -267,7 +267,7 @@ namespace ServerTools
                                 for (int j = 0; j < players.Count; j++)
                                 {
                                     Phrases.Dict.TryGetValue("Watchlist1", out string phrase);
-                                    if (Dict.TryGetValue(players[i].playerId, out string reason))
+                                    if (Dict.TryGetValue(players[i].PlatformId.ReadablePlatformUserIdentifier, out string reason))
                                     {
                                         phrase = phrase.Replace("{PlayerName}", players[i].playerName);
                                         phrase = phrase.Replace("{Reason}", reason);
@@ -296,10 +296,12 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Watchlist>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Player SteamId=\"12345678909876543\" Reason=\"Suspected cheating.\" / -->");
+                    sw.WriteLine("    <!-- Player Id=\"Steam_12345678909876543\" Reason=\"Suspected cheating.\" / -->");
+                    sw.WriteLine("    <!-- Player Id=\"EOS_1a3b5c7a9b1c3a5b7c9a1b3c5a7b9c1a3\" Reason=\"Cheaters R Assho\" / -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Player SteamId=\"12345678909876543\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Player Id=\"Steam_12345678909876543\"") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- Player Id=\"EOS_1a3b5c7a9b1c3a5b7c9a1b3c5a7b9c1a3\""))
                         {
                             sw.WriteLine(OldNodeList[i].OuterXml);
                         }
@@ -315,16 +317,24 @@ namespace ServerTools
                         XmlElement line = (XmlElement)OldNodeList[i];
                         if (line.HasAttributes && line.Name == "Player")
                         {
-                            string steamId = "", reason = "";
+                            string id = "", reason = "";
                             if (line.HasAttribute("SteamId"))
                             {
-                                steamId = line.GetAttribute("SteamId");
+                                id = line.GetAttribute("SteamId");
+                            }
+                            else if (line.HasAttribute("Id"))
+                            {
+                                id = line.GetAttribute("Id");
+                                if (!id.Contains("Steam_"))
+                                {
+                                    id.Insert(0, "Steam_");
+                                }
                             }
                             if (line.HasAttribute("Reason"))
                             {
                                 reason = line.GetAttribute("Reason");
                             }
-                            sw.WriteLine(string.Format("    <Player SteamId=\"{0}\" Reason=\"{1}\" />", steamId, reason));
+                            sw.WriteLine(string.Format("    <Player Id=\"{0}\" Reason=\"{1}\" />", id, reason));
                         }
                     }
                     sw.WriteLine("</Watchlist>");

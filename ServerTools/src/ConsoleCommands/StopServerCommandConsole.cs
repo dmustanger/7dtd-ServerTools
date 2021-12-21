@@ -14,8 +14,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. st-ss <minutes>\n" +
-                "  2. st-ss cancel\n" +
+                "  1. st-StopServer <Minutes>\n" +
+                "  2. st-StopServer cancel\n" +
                 "1. Starts a shutdown process with a countdown for the specified time\n" +
                 "2. Cancels the shutdown\n";
         }
@@ -31,14 +31,14 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0] == "cancel")
                 {
                     if (!Shutdown.ShuttingDown)
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver is not running");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Stopserver is not running");
                     }
                     else
                     {
@@ -56,7 +56,7 @@ namespace ServerTools
                                     ClientInfo cInfo = clientList[i];
                                     if (!ExitCommand.Players.ContainsKey(cInfo.entityId) && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo) > ExitCommand.Admin_Level)
                                     {
-                                        EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                                        EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                                         if (player != null)
                                         {
                                             ExitCommand.Players.Add(cInfo.entityId, player.position);
@@ -68,11 +68,11 @@ namespace ServerTools
                         if (Shutdown.IsEnabled)
                         {
                             Shutdown.SetDelay();
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled and the next shutdown has been reset");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled and the next shutdown has been reset");
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled");
                         }
                     }
                 }
@@ -80,13 +80,13 @@ namespace ServerTools
                 {
                     if (Shutdown.ShuttingDown)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Server is already set to shutdown. Cancel it if you wish to set a new countdown"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Server is already set to shutdown. Cancel it if you wish to set a new countdown"));
                     }
                     else
                     {
                         if (!int.TryParse(_params[0], out StopServer.Delay))
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid time specified: {0}", _params[0]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid time specified '{0}'", _params[0]));
                         }
                         else
                         {

@@ -39,7 +39,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -98,7 +98,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -111,12 +111,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing InvalidItems.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -127,7 +127,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -180,7 +180,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -348,16 +348,16 @@ namespace ServerTools
             {
                 using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
                 {
-                    sw.WriteLine(string.Format("Detected \"{0}\", Steam Id {1}, with invalid stack: {2} {3}. Warned the player.", _cInfo.playerName, _cInfo.playerId, _name, _count));
+                    sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' with an invalid stack of '{3}' '{4}'. Player has been warned", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _cInfo.PlatformId.CombinedString, _count, _name));
                     sw.WriteLine();
                     sw.Flush();
                     sw.Close();
                 }
-                Phrases.Dict.TryGetValue("InvalidItem1", out string _phrase1);
-                _phrase1 = _phrase1.Replace("{ItemName}", _name);
-                _phrase1 = _phrase1.Replace("{ItemCount}", _count.ToString());
-                _phrase1 = _phrase1.Replace("{MaxPerStack}", _maxAllowed.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("InvalidItem1", out string phrase1);
+                phrase1 = phrase1.Replace("{ItemName}", _name);
+                phrase1 = phrase1.Replace("{ItemCount}", _count.ToString());
+                phrase1 = phrase1.Replace("{MaxPerStack}", _maxAllowed.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)
             {
@@ -369,13 +369,13 @@ namespace ServerTools
         {
             try
             {
-                Phrases.Dict.TryGetValue("InvalidItem4", out string _phrase);
-                _phrase = _phrase.Replace("{ItemName}", _name);
-                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.entityId, _phrase), null);
-                Phrases.Dict.TryGetValue("InvalidItem2", out _phrase);
-                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase = _phrase.Replace("{ItemName}", _name);
-                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                Phrases.Dict.TryGetValue("InvalidItem4", out string phrase);
+                phrase = phrase.Replace("{ItemName}", _name);
+                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.entityId, phrase), null);
+                Phrases.Dict.TryGetValue("InvalidItem2", out phrase);
+                phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                phrase = phrase.Replace("{ItemName}", _name);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
             catch (Exception e)
             {
@@ -390,15 +390,15 @@ namespace ServerTools
                 Flags.Add(_cInfo.entityId, 1);
                 using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
                 {
-                    sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
+                    sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' with invalid item '{3}'. Warning has been given to drop it", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _name));
                     sw.WriteLine();
                     sw.Flush();
                     sw.Close();
                 }
-                Phrases.Dict.TryGetValue("InvalidItem5", out string _phrase);
-                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase = _phrase.Replace("{ItemName}", _name);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("InvalidItem5", out string phrase);
+                phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                phrase = phrase.Replace("{ItemName}", _name);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)
             {
@@ -413,15 +413,15 @@ namespace ServerTools
                 Flags[_cInfo.entityId] = 2;
                 using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
                 {
-                    sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Final warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
+                    sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' with invalid item '{3}'. Final warning was given to drop it", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _name));
                     sw.WriteLine();
                     sw.Flush();
                     sw.Close();
                 }
-                Phrases.Dict.TryGetValue("InvalidItem6", out string _phrase);
-                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase = _phrase.Replace("{ItemName}", _name);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("InvalidItem6", out string phrase);
+                phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                phrase = phrase.Replace("{ItemName}", _name);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)
             {
@@ -433,20 +433,20 @@ namespace ServerTools
         {
             try
             {
-                Phrases.Dict.TryGetValue("InvalidItem4", out string _phrase4);
-                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase4), null);
+                Phrases.Dict.TryGetValue("InvalidItem4", out string phrase);
+                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, phrase), null);
                 using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
                 {
-                    sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Kicked the player.", _cInfo.playerName, _cInfo.playerId, _name));
+                    sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' with invalid item '{3}'. The player has been kicked", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _name));
                     sw.WriteLine();
                     sw.Flush();
                     sw.Close();
                 }
                 Flags.Remove(_cInfo.entityId);
-                Phrases.Dict.TryGetValue("InvalidItem3", out string _phrase);
-                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase = _phrase.Replace("{ItemName}", _name);
-                ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                Phrases.Dict.TryGetValue("InvalidItem3", out phrase);
+                phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                phrase = phrase.Replace("{ItemName}", _name);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
             catch (Exception e)
             {
@@ -490,12 +490,12 @@ namespace ServerTools
                                                 Vector3i _chestPos = SecureLoot.localChunkPos;
                                                 using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
                                                 {
-                                                    sw.WriteLine("[SERVERTOOLS] Removed {0} {1}, from a secure loot located at {2} {3} {4}, owned by {5}", _item.count, _itemName, _chestPos.x, _chestPos.y, _chestPos.z, SecureLoot.GetOwner());
+                                                    sw.WriteLine("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", _item.count, _itemName, _chestPos, SecureLoot.GetOwner().CombinedString);
                                                     sw.WriteLine();
                                                     sw.Flush();
                                                     sw.Close();
                                                 }
-                                                Log.Out(string.Format("[SERVERTOOLS] Removed {0} {1}, from a secure loot located at {2} {3} {4}, owned by {5}", _item.count, _itemName, _chestPos.x, _chestPos.y, _chestPos.z, SecureLoot.GetOwner()));
+                                                Log.Out(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", _item.count, _itemName, _chestPos, SecureLoot.GetOwner().CombinedString));
                                             }
                                         }
                                         slotNumber++;

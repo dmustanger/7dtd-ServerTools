@@ -35,7 +35,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -88,7 +88,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -101,12 +101,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing Motd.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -117,7 +117,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -137,7 +137,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Motds>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Possible variables {EntityId} {SteamId} {PlayerName} -->");
+                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName} -->");
                     sw.WriteLine("    <!-- <Server Message=\"Welcome to the server\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
@@ -171,7 +171,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -188,7 +188,8 @@ namespace ServerTools
                     {
                         string motd = message;
                         motd = motd.Replace("{EntityId}", _cInfo.entityId.ToString());
-                        motd = motd.Replace("{SteamId}", _cInfo.playerId);
+                        motd = motd.Replace("{Id}", _cInfo.PlatformId.CombinedString);
+                        motd = motd.Replace("{EOS}", _cInfo.CrossplatformId.CombinedString);
                         motd = motd.Replace("{PlayerName}", _cInfo.playerName);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + motd + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -210,7 +211,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Motds>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Possible variables {EntityId} {SteamId} {PlayerName} -->");
+                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName} -->");
                     sw.WriteLine("    <!-- <Server Message=\"Welcome to the server\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {

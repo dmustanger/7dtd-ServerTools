@@ -20,9 +20,9 @@ namespace ServerTools
 
         public static void MuteList()
         {
-            for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+            for (int i = 0; i < PersistentContainer.Instance.Players.IDs.Count; i++)
             {
-                string _id = PersistentContainer.Instance.Players.SteamIDs[i];
+                string _id = PersistentContainer.Instance.Players.IDs[i];
                 PersistentPlayer p = PersistentContainer.Instance.Players[_id];
                 {
                     int _muteTime = p.MuteTime;
@@ -60,54 +60,54 @@ namespace ServerTools
                 _playerEntityId = _playerEntityId.Replace(Command_mute + " ", "");
                 if (!string.IsNullOrEmpty(_playerEntityId))
                 {
-                    if (int.TryParse(_playerEntityId, out int _id))
+                    if (int.TryParse(_playerEntityId, out int id))
                     {
-                        ClientInfo _PlayertoMute = ConsoleHelper.ParseParamIdOrName(_playerEntityId);
-                        if (_PlayertoMute == null)
+                        ClientInfo playerToMute = PersistentOperations.GetClientInfoFromEntityId(id);
+                        if (playerToMute == null)
                         {
-                            Phrases.Dict.TryGetValue("Mute1", out string _phrase);
-                            _phrase = _phrase.Replace("{PlayerName}", _playerEntityId);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Mute1", out string phrase);
+                            phrase = phrase.Replace("{PlayerName}", _playerEntityId);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             return;
                         }
-                        if (PrivateMutes.ContainsKey(_id))
+                        if (PrivateMutes.ContainsKey(id))
                         {
-                            PrivateMutes.TryGetValue(_id, out List<int> _muted);
-                            if (!_muted.Contains(_cInfo.entityId))
+                            PrivateMutes.TryGetValue(id, out List<int> muted);
+                            if (!muted.Contains(_cInfo.entityId))
                             {
-                                _muted.Add(_cInfo.entityId);
-                                PrivateMutes[_id] = _muted;
+                                muted.Add(_cInfo.entityId);
+                                PrivateMutes[id] = muted;
                                 PersistentContainer.Instance.ClientMuteList = PrivateMutes;
                                 PersistentContainer.DataChange = true;
-                                Phrases.Dict.TryGetValue("Mute2", out string _phrase);
-                                _phrase = _phrase.Replace("{PlayerName}", _PlayertoMute.playerName);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Mute2", out string phrase);
+                                phrase = phrase.Replace("{PlayerName}", playerToMute.playerName);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue("Mute3", out string _phrase);
-                                _phrase = _phrase.Replace("{PlayerName}", _PlayertoMute.playerName);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Mute3", out string phrase);
+                                phrase = phrase.Replace("{PlayerName}", playerToMute.playerName);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
 
                         }
                         else
                         {
-                            List<int> _muted = new List<int>();
-                            _muted.Add(_cInfo.entityId);
-                            PrivateMutes.Add(_id, _muted);
+                            List<int> muted = new List<int>();
+                            muted.Add(_cInfo.entityId);
+                            PrivateMutes.Add(id, muted);
                             PersistentContainer.Instance.ClientMuteList = PrivateMutes;
                             PersistentContainer.DataChange = true;
-                            Phrases.Dict.TryGetValue("Mute2", out string _phrase);
-                            _phrase = _phrase.Replace("{PlayerName}", _PlayertoMute.playerName);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Mute2", out string phrase);
+                            phrase = phrase.Replace("{PlayerName}", playerToMute.playerName);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("Mute8", out string _phrase);
-                        _phrase = _phrase.Replace("{EntityId}", _id.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Mute8", out string phrase);
+                        phrase = phrase.Replace("{EntityId}", id.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -124,56 +124,56 @@ namespace ServerTools
                 _playerEntityId = _playerEntityId.Replace(Command_unmute + " ", "");
                 if (!string.IsNullOrEmpty(_playerEntityId))
                 {
-                    if (int.TryParse(_playerEntityId, out int _id))
+                    if (int.TryParse(_playerEntityId, out int id))
                     {
-                        if (PrivateMutes.ContainsKey(_id))
+                        if (PrivateMutes.ContainsKey(id))
                         {
-                            PrivateMutes.TryGetValue(_id, out List<int> _muted);
-                            if (_muted.Contains(_cInfo.entityId))
+                            PrivateMutes.TryGetValue(id, out List<int> muted);
+                            if (muted.Contains(_cInfo.entityId))
                             {
-                                _muted.Remove(_cInfo.entityId);
-                                if (_muted.Count > 0)
+                                muted.Remove(_cInfo.entityId);
+                                if (muted.Count > 0)
                                 {
-                                    PrivateMutes[_id] = _muted;
+                                    PrivateMutes[id] = muted;
                                 }
                                 else
                                 {
-                                    PrivateMutes.Remove(_id);
+                                    PrivateMutes.Remove(id);
                                 }
                                 PersistentContainer.Instance.ClientMuteList = PrivateMutes;
                                 PersistentContainer.DataChange = true;
-                                PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromEntityId(_id);
-                                if (_pdf != null)
+                                PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromEntityId(id);
+                                if (pdf != null)
                                 {
-                                    Phrases.Dict.TryGetValue("Mute4", out string _phrase);
-                                    _phrase = _phrase.Replace("{PlayerName}", _pdf.ecd.entityName);
-                                    _phrase = _phrase.Replace("{EntityId}", _id.ToString());
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Mute4", out string phrase);
+                                    phrase = phrase.Replace("{PlayerName}", pdf.ecd.entityName);
+                                    phrase = phrase.Replace("{EntityId}", id.ToString());
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else
                                 {
-                                    Phrases.Dict.TryGetValue("Mute5", out string _phrase);
-                                    _phrase = _phrase.Replace("{EntityId}", _id.ToString());
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Mute5", out string phrase);
+                                    phrase = phrase.Replace("{EntityId}", id.ToString());
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue("Mute6", out string _phrase);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Mute6", out string phrase);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue("Mute6", out string _phrase);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Mute6", out string phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("Mute8", out string _phrase);
-                        _phrase = _phrase.Replace("{EntityId}", _id.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Mute8", out string phrase);
+                        phrase = phrase.Replace("{EntityId}", id.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -187,23 +187,23 @@ namespace ServerTools
         {
             if (PrivateMutes.Count > 0)
             {
-                foreach (var _mute in PrivateMutes)
+                foreach (var mute in PrivateMutes)
                 {
-                    if (_mute.Value.Contains(_cInfo.entityId))
+                    if (mute.Value.Contains(_cInfo.entityId))
                     {
-                        PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromEntityId(_mute.Key);
-                        if (_pdf != null)
+                        PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromEntityId(mute.Key);
+                        if (pdf != null)
                         {
-                            Phrases.Dict.TryGetValue("Mute9", out string _phrase);
-                            _phrase = _phrase.Replace("{PlayerName}", _pdf.ecd.entityName);
-                            _phrase = _phrase.Replace("{EntityId}", _mute.Key.ToString());
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Mute9", out string phrase);
+                            phrase = phrase.Replace("{PlayerName}", pdf.ecd.entityName);
+                            phrase = phrase.Replace("{EntityId}", mute.Key.ToString());
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue("Mute7", out string _phrase);
-                            _phrase = _phrase.Replace("{EntityId}", _mute.Key.ToString());
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Mute7", out string phrase);
+                            phrase = phrase.Replace("{EntityId}", mute.Key.ToString());
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -216,18 +216,18 @@ namespace ServerTools
             {
                 for (int i = 0; i < Mutes.Count; i++)
                 {
-                    string _id = Mutes[i];
-                    int _muteTime = PersistentContainer.Instance.Players[_id].MuteTime;
-                    if (_muteTime > 0)
+                    string id = Mutes[i];
+                    int muteTime = PersistentContainer.Instance.Players[id].MuteTime;
+                    if (muteTime > 0)
                     {
-                        DateTime _muteDate = PersistentContainer.Instance.Players[_id].MuteDate;
-                        TimeSpan varTime = DateTime.Now - _muteDate;
+                        DateTime muteDate = PersistentContainer.Instance.Players[id].MuteDate;
+                        TimeSpan varTime = DateTime.Now - muteDate;
                         double fractionalMinutes = varTime.TotalMinutes;
-                        int _timepassed = (int)fractionalMinutes;
-                        if (_timepassed >= _muteTime)
+                        int timepassed = (int)fractionalMinutes;
+                        if (timepassed >= muteTime)
                         {
-                            Mutes.Remove(_id);
-                            PersistentContainer.Instance.Players[_id].MuteTime = 0;
+                            Mutes.Remove(id);
+                            PersistentContainer.Instance.Players[id].MuteTime = 0;
                             PersistentContainer.DataChange = true;
                         }
                     }

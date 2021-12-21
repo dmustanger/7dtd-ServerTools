@@ -10,10 +10,10 @@ namespace ServerTools
 
         public static void Party(ClientInfo _cInfo)
         {
-            if (PersistentContainer.Instance.Players[_cInfo.playerId].AutoPartyInvite != null &&
-                PersistentContainer.Instance.Players[_cInfo.playerId].AutoPartyInvite.Count > 0)
+            if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite != null &&
+                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite.Count > 0)
             {
-                List<string[]> autoInvites = PersistentContainer.Instance.Players[_cInfo.playerId].AutoPartyInvite;
+                List<string[]> autoInvites = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite;
                 for (int i = 0; i < autoInvites.Count; i++)
                 {
                     Phrases.Dict.TryGetValue("AutoPartyInvite1", out string phrase);
@@ -44,16 +44,16 @@ namespace ServerTools
                         PersistentPlayerData ppd2 = PersistentOperations.GetPersistentPlayerDataFromEntityId(player.Key);
                         if (ppd2 != null)
                         {
-                            if (PersistentContainer.Instance.Players[ppd2.PlayerId].AutoPartyInvite != null &&
-                                PersistentContainer.Instance.Players[ppd2.PlayerId].AutoPartyInvite.Count > 0)
+                            if (PersistentContainer.Instance.Players[ppd2.UserIdentifier.CombinedString].AutoPartyInvite != null &&
+                                PersistentContainer.Instance.Players[ppd2.UserIdentifier.CombinedString].AutoPartyInvite.Count > 0)
                             {
-                                List<string[]> autoInvites = PersistentContainer.Instance.Players[ppd2.PlayerId].AutoPartyInvite;
+                                List<string[]> autoInvites = PersistentContainer.Instance.Players[ppd2.UserIdentifier.ToString()].AutoPartyInvite;
                                 for (int i = 0; i < autoInvites.Count; i++)
                                 {
                                     if (autoInvites[i][0] == _cInfo.entityId.ToString())
                                     {
                                         PersistentPlayerData ppd1 = PersistentOperations.GetPersistentPlayerDataFromEntityId(_player.entityId);
-                                        if (ppd1 != null && ppd1.ACL.Contains(ppd2.PlayerId) && ppd2.ACL.Contains(ppd1.PlayerId))
+                                        if (ppd1 != null && ppd1.ACL.Contains(ppd2.UserIdentifier) && ppd2.ACL.Contains(ppd1.UserIdentifier))
                                         {
                                             EntityPlayer player2 = player.Value;
                                             if ((player2.IsInParty() && player2.IsPartyLead() == player2 && player2.Party != null && player2.Party.MemberList.Count < Constants.cMaxPartySize) || !player2.IsInParty())
@@ -80,9 +80,9 @@ namespace ServerTools
             ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromEntityId(entityId);
             if (cInfo2 != null)
             {
-                if (PersistentContainer.Instance.Players[_cInfo.playerId].AutoPartyInvite != null && PersistentContainer.Instance.Players[_cInfo.playerId].AutoPartyInvite.Count > 0)
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite.Count > 0)
                 {
-                    List<string[]> autoInvites = PersistentContainer.Instance.Players[_cInfo.playerId].AutoPartyInvite;
+                    List<string[]> autoInvites = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite;
                     for (int i = 0; i < autoInvites.Count; i++)
                     {
                         if (autoInvites[i][0] == cInfo2.entityId.ToString())
@@ -92,8 +92,8 @@ namespace ServerTools
                             return;
                         }
                     }
-                    autoInvites.Add(new string[] { cInfo2.playerId.ToString(), cInfo2.playerName });
-                    PersistentContainer.Instance.Players[_cInfo.playerId].AutoPartyInvite = autoInvites;
+                    autoInvites.Add(new string[] { cInfo2.CrossplatformId.CombinedString, cInfo2.playerName });
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite = autoInvites;
                     PersistentContainer.DataChange = true;
                     Phrases.Dict.TryGetValue("AutoPartyInvite4", out string phrase1);
                     phrase1 = phrase1.Replace("{Value}", cInfo2.entityId.ToString());
@@ -104,7 +104,7 @@ namespace ServerTools
                 {
                     List<string[]> autoInvites = new List<string[]>();
                     autoInvites.Add(new string[] { cInfo2.entityId.ToString(), cInfo2.playerName });
-                    PersistentContainer.Instance.Players[_cInfo.playerId].AutoPartyInvite = autoInvites;
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite = autoInvites;
                     PersistentContainer.DataChange = true;
                     Phrases.Dict.TryGetValue("AutoPartyInvite4", out string phrase);
                     phrase = phrase.Replace("{Value}", cInfo2.entityId.ToString());
@@ -116,15 +116,15 @@ namespace ServerTools
 
         public static void Remove(ClientInfo _cInfo, string _target)
         {
-            if (PersistentContainer.Instance.Players[_cInfo.playerId].AutoPartyInvite != null &&
-                PersistentContainer.Instance.Players[_cInfo.playerId].AutoPartyInvite.Count > 0)
+            if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite != null &&
+                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite.Count > 0)
             {
-                List<string[]> autoInvites = PersistentContainer.Instance.Players[_cInfo.playerId].AutoPartyInvite;
+                List<string[]> autoInvites = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite;
                 for (int i = 0; i < autoInvites.Count; i++)
                 {
                     if (autoInvites[i][0] == _target)
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].AutoPartyInvite.RemoveAt(i);
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite.RemoveAt(i);
                         PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue("AutoPartyInvite5", out string phrase);
                         phrase = phrase.Replace("{Value}", autoInvites[i][0]);

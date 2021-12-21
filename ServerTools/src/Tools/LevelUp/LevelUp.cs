@@ -38,7 +38,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -96,7 +96,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -109,12 +109,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing LevelUp.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -125,7 +125,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -146,7 +146,7 @@ namespace ServerTools
                     sw.WriteLine("<Levels>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Command triggers console commands. Use ^ to separate multiple commands -->");
-                    sw.WriteLine("    <!-- Possible variables for commands include whisper, global, {PlayerName}, {EntityId}, {PlayerId}, {Delay} -->");
+                    sw.WriteLine("    <!-- Possible variables for commands include whisper, global, {PlayerName}, {Id}, {EOS}, {PlayerId}, {Delay} -->");
                     sw.WriteLine("    <!-- <Level Required=\"300\" Command=\"global MAX LEVEL! Congratulations {PlayerName}!\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
@@ -180,7 +180,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -191,7 +191,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (PlayerLevels.ContainsKey(player.entityId))
@@ -254,7 +254,7 @@ namespace ServerTools
                             if (int.TryParse(_commandSplit[1], out int _time))
                             {
                                 _commands.RemoveRange(0, i + 1);
-                                Timers.Level_SingleUseTimer(_time, _cInfo.playerId, _commands);
+                                Timers.Level_SingleUseTimer(_time, _cInfo.CrossplatformId.CombinedString, _commands);
                                 return;
                             }
                             else
@@ -283,8 +283,8 @@ namespace ServerTools
         {
             try
             {
-                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_playerId);
-                if (_cInfo != null)
+                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_playerId);
+                if (cInfo != null)
                 {
                     for (int i = 0; i < _commands.Count; i++)
                     {
@@ -295,7 +295,7 @@ namespace ServerTools
                             if (int.TryParse(_commandSplit[1], out int _time))
                             {
                                 _commands.RemoveRange(0, i + 1);
-                                Timers.Level_SingleUseTimer(_time, _cInfo.playerId, _commands);
+                                Timers.Level_SingleUseTimer(_time, cInfo.CrossplatformId.CombinedString, _commands);
                                 return;
                             }
                             else
@@ -305,7 +305,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            Command(_cInfo, _commandTrimmed);
+                            Command(cInfo, _commandTrimmed);
                         }
                     }
                 }
@@ -321,7 +321,8 @@ namespace ServerTools
             try
             {
                 _command = _command.Replace("{EntityId}", _cInfo.entityId.ToString());
-                _command = _command.Replace("{SteamId}", _cInfo.playerId);
+                _command = _command.Replace("{Id}", _cInfo.PlatformId.CombinedString);
+                _command = _command.Replace("{EOS}", _cInfo.CrossplatformId.CombinedString);
                 _command = _command.Replace("{PlayerName}", _cInfo.playerName);
                 if (_command.ToLower().StartsWith("global "))
                 {
@@ -341,11 +342,11 @@ namespace ServerTools
                     {
                         Zones.ZonePlayer.Remove(_cInfo.entityId);
                     }
-                    SdtdConsole.Instance.ExecuteSync(_command, null);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
                 }
                 else
                 {
-                    SdtdConsole.Instance.ExecuteSync(_command, null);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
                 }
             }
             catch (Exception e)
@@ -365,7 +366,7 @@ namespace ServerTools
                     sw.WriteLine("<Levels>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Command triggers console commands. Use ^ to separate multiple commands -->");
-                    sw.WriteLine("    <!-- Possible variables for commands include whisper, global, {PlayerName}, {EntityId}, {PlayerId}, {Delay} -->");
+                    sw.WriteLine("    <!-- Possible variables for commands include whisper, global, {PlayerName}, {Id}, {EOS}, {PlayerId}, {Delay} -->");
                     sw.WriteLine("    <!-- <Level Required=\"300\" Command=\"global MAX LEVEL! Congratulations {PlayerName}!\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {

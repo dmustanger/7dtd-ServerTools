@@ -17,7 +17,7 @@ namespace ServerTools
         {
             try
             {
-                Logger.Main.LogCallbacks += LogAction;
+                Log.LogCallbacks += LogAction;
             }
             catch (Exception e)
             {
@@ -29,7 +29,7 @@ namespace ServerTools
         {
             try
             {
-                Logger.Main.LogCallbacks -= LogAction;
+                Log.LogCallbacks -= LogAction;
             }
             catch (Exception e)
             {

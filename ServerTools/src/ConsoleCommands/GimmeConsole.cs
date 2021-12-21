@@ -15,7 +15,7 @@ namespace ServerTools
                    "  1. st-gim off\n" +
                    "  2. st-gim on\n" +
                    "  3. st-gim reset all\n" +
-                   "  3. st-gim reset <steamId/entityId/playerName>\n" +
+                   "  3. st-gim reset <EOS/entityId/playerName>\n" +
                    "1. Turn off gimme\n" +
                    "2. Turn on gimme\n" +
                    "3. Reset the delay of all players\n" +
@@ -31,7 +31,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 || _params.Count > 2)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -41,12 +41,12 @@ namespace ServerTools
                         Gimme.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gimme has been set to off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Gimme has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gimme is already off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Gimme is already off"));
                         return;
                     }
                 }
@@ -57,12 +57,12 @@ namespace ServerTools
                         Gimme.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gimme has been set to on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Gimme has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gimme is already on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Gimme is already on"));
                         return;
                     }
                 }
@@ -70,46 +70,42 @@ namespace ServerTools
                 {
                     if (_params[1].ToLower().Equals("all"))
                     {
-                        if (PersistentContainer.Instance.Players.SteamIDs.Count > 0)
+                        if (PersistentContainer.Instance.Players.IDs.Count > 0)
                         {
-                            for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+                            for (int i = 0; i < PersistentContainer.Instance.Players.IDs.Count; i++)
                             {
-                                string _id = PersistentContainer.Instance.Players.SteamIDs[i];
-                                PersistentPlayer p = PersistentContainer.Instance.Players[_id];
+                                string id = PersistentContainer.Instance.Players.IDs[i];
+                                PersistentPlayer p = PersistentContainer.Instance.Players[id];
                                 {
-                                    PersistentContainer.Instance.Players[_id].LastGimme = DateTime.Now.AddYears(-1);
+                                    PersistentContainer.Instance.Players[id].LastGimme = DateTime.Now.AddYears(-1);
                                 }
                             }
                             PersistentContainer.DataChange = true;
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] Gimme delay reset for all players.");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Gimme delay reset for all players");
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] No players to reset.");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] No players to reset");
                         }
                     }
                     else
                     {
-                        if (PersistentContainer.Instance != null)
+                        if (PersistentContainer.Instance.Players[_params[1]] != null)
                         {
-                            PersistentPlayer p = PersistentContainer.Instance.Players[_params[1]];
-                            if (p != null)
-                            {
-                                PersistentContainer.Instance.Players[_params[1]].LastGimme = DateTime.Now.AddYears(-1);
-                                PersistentContainer.DataChange = true;
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gimme delay reset for {0}.", _params[1]));
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not reset player. Invalid Id {0}.", _params[1]));
-                                return;
-                            }
+                            PersistentContainer.Instance.Players[_params[1]].LastGimme = DateTime.Now.AddYears(-1);
+                            PersistentContainer.DataChange = true;
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Gimme tool delay has been reset for '{0}'", _params[1]));
+                        }
+                        else
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not reset the delay on Gimme tool. Invalid id '{0}'", _params[1]));
+                            return;
                         }
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

@@ -24,24 +24,35 @@ namespace ServerTools
             }
             else
             {
-                DateTime _lastStuck = PersistentContainer.Instance.Players[_cInfo.playerId].LastStuck;
-                TimeSpan varTime = DateTime.Now - _lastStuck;
+                DateTime lastStuck = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastStuck;
+                TimeSpan varTime = DateTime.Now - lastStuck;
                 double fractionalMinutes = varTime.TotalMinutes;
-                int _timepassed = (int)fractionalMinutes;
+                int timepassed = (int)fractionalMinutes;
                 if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                 {
-                    if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                    if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                     {
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                        if (DateTime.Now < _dt)
+                        if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                         {
-                            int _delay = Delay_Between_Uses / 2;
-                            Time(_cInfo, _timepassed, _delay);
-                            return;
+                            if (DateTime.Now < dt)
+                            {
+                                int delay = Delay_Between_Uses / 2;
+                                Time(_cInfo, timepassed, delay);
+                                return;
+                            }
+                        }
+                        else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                        {
+                            if (DateTime.Now < dt)
+                            {
+                                int delay = Delay_Between_Uses / 2;
+                                Time(_cInfo, timepassed, delay);
+                                return;
+                            }
                         }
                     }
                 }
-                Time(_cInfo, _timepassed, Delay_Between_Uses);
+                Time(_cInfo, timepassed, Delay_Between_Uses);
             }
         }
 
@@ -65,32 +76,34 @@ namespace ServerTools
 
         public static void CheckLP(ClientInfo _cInfo)
         {
-            World world = GameManager.Instance.World;
-            EntityPlayer _player = world.Players.dict[_cInfo.entityId];
-            Vector3 _position = _player.GetPosition();
-            int x = (int)_position.x;
-            int y = (int)_position.y;
-            int z = (int)_position.z;
-            Vector3i _vec3i = new Vector3i(x, y, z);
-            PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
-            PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
-            EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
-            if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally || _owner == EnumLandClaimOwner.None)
+            EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+            if (player != null)
             {
-                if (CheckStuck(_position.x, _position.y, _position.z))
+                Vector3 position = player.GetPosition();
+                int x = (int)position.x;
+                int y = (int)position.y;
+                int z = (int)position.z;
+                Vector3i vector = new Vector3i(x, y, z);
+                PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
+                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(player.entityId);
+                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(vector, _persistentPlayerData);
+                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally || _owner == EnumLandClaimOwner.None)
                 {
-                    TeleToSurface(_cInfo, _player);
+                    if (CheckStuck(position.x, position.y, position.z))
+                    {
+                        TeleToSurface(_cInfo, player);
+                    }
+                    else
+                    {
+                        Phrases.Dict.TryGetValue("Stuck4", out string _phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("Stuck4", out string _phrase);
+                    Phrases.Dict.TryGetValue("Stuck2", out string _phrase);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
-            }
-            else
-            {
-                Phrases.Dict.TryGetValue("Stuck2", out string _phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -117,7 +130,7 @@ namespace ServerTools
         public static void TeleToSurface(ClientInfo _cInfo, EntityPlayer _player)
         {
             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player.position.x, -1, (int)_player.position.z), null, false));
-            PersistentContainer.Instance.Players[_cInfo.playerId].LastStuck = DateTime.Now;
+            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastStuck = DateTime.Now;
             PersistentContainer.DataChange = true;
             Phrases.Dict.TryGetValue("Stuck3", out string _phrase);
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

@@ -16,8 +16,8 @@ namespace ServerTools
             return "Usage:\n" +
                 "  1. st-jl off\n" +
                 "  2. st-jl on\n" +
-                "  3. st-jl add <steamId/entityId> <time>\n" +
-                "  4. st-jl remove <steamId>" +
+                "  3. st-jl add <EOS/EntityId/PlayerName> <Time>\n" +
+                "  4. st-jl remove <EOS/EntityId/PlayerName>" +
                 "  5. st-jl list\n" +
                 "1. Turn off jail\n" +
                 "2. Turn on jail\n" +
@@ -36,7 +36,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 || _params.Count > 3)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found {0}.", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found {0}.", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -46,12 +46,12 @@ namespace ServerTools
                         Jail.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jail has been set to off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Jail has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jail is already off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Jail is already off"));
                         return;
                     }
                 }
@@ -62,12 +62,12 @@ namespace ServerTools
                         Jail.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jail has been set to on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Jail has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jail is already on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Jail is already on"));
                         return;
                     }
                 }
@@ -75,66 +75,61 @@ namespace ServerTools
                 {
                     if (_params.Count != 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found {0}", _params.Count));
-                        return;
-                    }
-                    if (_params[1].Length < 3 || _params[1].Length > 17)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id: Invalid Id {0}", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found {0}", _params.Count));
                         return;
                     }
                     if (Jail.Jailed.Contains(_params[1]))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id. {0} is already in the Jail list", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id. {0} is already in the Jail list", _params[1]));
                         return;
                     }
-                    if (!int.TryParse(_params[2], out int _jailTime))
+                    if (!int.TryParse(_params[2], out int jailTime))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jail time is not valid: {0}", _params[2]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Jail time is not valid '{0}'", _params[2]));
                         return;
                     }
                     if (Jail.Jail_Position == "0,0,0" || Jail.Jail_Position == "0 0 0" || Jail.Jail_Position == "")
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not put a player in jail: Jail position has not been set"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not put a player in jail. The jail position has not been set"));
                         return;
                     }
                     else
                     {
-                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                        if (_cInfo != null)
+                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                        if (cInfo != null)
                         {
-                            if (Jail.Jailed.Contains(_cInfo.playerId))
+                            if (Jail.Jailed.Contains(cInfo.CrossplatformId.CombinedString))
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with Id {0} is already in jail", _params[1]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with Id '{0}' is already in jail", _params[1]));
                                 return;
                             }
                             else
                             {
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                if (_player != null && _player.IsSpawned())
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                                if (player != null && player.IsSpawned())
                                 {
-                                    string[] _cords = Jail.Jail_Position.Split(',');
-                                    int.TryParse(_cords[0], out int x);
-                                    int.TryParse(_cords[1], out int y);
-                                    int.TryParse(_cords[2], out int z);
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                                    string[] cords = Jail.Jail_Position.Split(',');
+                                    int.TryParse(cords[0], out int x);
+                                    int.TryParse(cords[1], out int y);
+                                    int.TryParse(cords[2], out int z);
+                                    cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                                 }
-                                Jail.Jailed.Add(_cInfo.playerId);
-                                PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = _jailTime;
-                                PersistentContainer.Instance.Players[_cInfo.playerId].JailName = _cInfo.playerName;
-                                PersistentContainer.Instance.Players[_cInfo.playerId].JailDate = DateTime.Now;
+                                Jail.Jailed.Add(cInfo.CrossplatformId.CombinedString);
+                                PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailTime = jailTime;
+                                PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailName = cInfo.playerName;
+                                PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailDate = DateTime.Now;
                                 PersistentContainer.DataChange = true;
-                                if (_jailTime > 0)
+                                if (jailTime > 0)
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have put {0} in jail for {1} minutes", _cInfo.playerName, _jailTime));
-                                    Phrases.Dict.TryGetValue("Jail1", out string _phrase);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have put '{0}' named '{1}' in jail for '{2}' minutes", cInfo.CrossplatformId.CombinedString, cInfo.playerName, jailTime));
+                                    Phrases.Dict.TryGetValue("Jail1", out string phrase);
+                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
-                                if (_jailTime == -1)
+                                if (jailTime == -1)
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have put {0} in jail for life", _cInfo.playerName));
-                                    Phrases.Dict.TryGetValue("Jail1", out string _phrase);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have put '{0}' named '{1}' in jail forever", cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                                    Phrases.Dict.TryGetValue("Jail1", out string phrase);
+                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }
@@ -142,13 +137,21 @@ namespace ServerTools
                         {
                             if (PersistentContainer.Instance.Players[_params[1]] != null)
                             {
-                                Jail.Jailed.Add(_cInfo.playerId);
-                                PersistentContainer.Instance.Players[_params[1]].JailTime = _jailTime;
-                                PersistentContainer.Instance.Players[_params[1]].JailName = _cInfo.playerName;
-                                PersistentContainer.Instance.Players[_params[1]].JailDate = DateTime.Now;
-                                PersistentContainer.DataChange = true;
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with Id {0} can not be found online but has been set for jail", _params[1]));
-                                return;
+                                if (_params[1].Contains("_"))
+                                {
+                                    Jail.Jailed.Add(_params[1]);
+                                    PersistentContainer.Instance.Players[_params[1]].JailTime = jailTime;
+                                    PersistentContainer.Instance.Players[_params[1]].JailName = cInfo.playerName;
+                                    PersistentContainer.Instance.Players[_params[1]].JailDate = DateTime.Now;
+                                    PersistentContainer.DataChange = true;
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with Id '{0}' can not be found online but has been set for jail", _params[1]));
+                                    return;
+                                }
+                                else
+                                {
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id '{0}' ", _params[1]));
+                                    return;
+                                }
                             }
                         }
                     }
@@ -157,49 +160,59 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
-                        return;
-                    }
-                    if (_params[1].Length != 17)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not remove player Id: Invalid steam Id {0}", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     else
                     {
                         if (!Jail.Jailed.Contains(_params[1]))
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with steam Id {0} is not in jail", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with Id '{0}' is not in jail", _params[1]));
                             return;
                         }
                         else
                         {
-                            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_params[1]);
-                            if (_cInfo != null)
+                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                            if (cInfo != null)
                             {
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                if (_player != null)
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                                if (player != null)
                                 {
-                                    EntityBedrollPositionList _position = _player.SpawnPoints;
-                                    Jail.Jailed.Remove(_cInfo.playerId);
-                                    PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = 0;
+                                    EntityBedrollPositionList position = player.SpawnPoints;
+                                    Jail.Jailed.Remove(cInfo.CrossplatformId.CombinedString);
+                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailTime = 0;
                                     PersistentContainer.DataChange = true;
-                                    if (_position != null && _position.Count > 0)
+                                    if (position != null && position.Count > 0)
                                     {
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_position[0].x, -1, _position[0].z), null, false));
+                                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(position[0].x, -1, position[0].z), null, false));
                                     }
                                     else
                                     {
-                                        Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, -1, _pos[0].z), null, false));
+                                        Vector3[] pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
+                                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(pos[0].x, -1, pos[0].z), null, false));
                                     }
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have released a player with steam id {0} from jail", _params[1]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have released Id '{0}' from jail", _params[1]));
                                     return;
                                 }
                             }
                             else
                             {
-
+                                if (PersistentContainer.Instance.Players[_params[1]] != null)
+                                {
+                                    if (_params[1].Contains("_"))
+                                    {
+                                        Jail.Jailed.Remove(_params[1]);
+                                        PersistentContainer.Instance.Players[_params[1]].JailTime = 0;
+                                        PersistentContainer.DataChange = true;
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with Id '{0}' can not be found online but has been set for jail", _params[1]));
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id '{0}' ", _params[1]));
+                                        return;
+                                    }
+                                }
                             }
                         }
                     }
@@ -208,40 +221,40 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}.", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (Jail.Jailed.Count == 0)
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] There are no Ids on the Jail list.");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There are no Id on the jail list");
                         return;
                     }
                     else
                     {
                         for (int i = 0; i < Jail.Jailed.Count; i++)
                         {
-                            string _id = Jail.Jailed[i];
-                            int _jailTime = PersistentContainer.Instance.Players[_id].JailTime;
-                            string _jailName = PersistentContainer.Instance.Players[_id].JailName;
-                            if (_jailTime > 0)
+                            string id = Jail.Jailed[i];
+                            int jailTime = PersistentContainer.Instance.Players[id].JailTime;
+                            string jailName = PersistentContainer.Instance.Players[id].JailName;
+                            if (jailTime > 0)
                             {
-                                DateTime _jailDate = PersistentContainer.Instance.Players[_id].JailDate;
-                                TimeSpan varTime = DateTime.Now - _jailDate;
+                                DateTime jailDate = PersistentContainer.Instance.Players[id].JailDate;
+                                TimeSpan varTime = DateTime.Now - jailDate;
                                 double fractionalMinutes = varTime.TotalMinutes;
-                                int _timepassed = (int)fractionalMinutes;
-                                int _timeleft = _jailTime - _timepassed;
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jailed player: steam Id {0} named {1} for {2} more minutes.", _id, _jailName, _timeleft));
+                                int timepassed = (int)fractionalMinutes;
+                                int timeleft = jailTime - timepassed;
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' named '{1}' is jailed for {2} more minutes", id, jailName, timeleft));
                             }
-                            else if (_jailTime == -1)
+                            else if (jailTime == -1)
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jailed player: steam Id {0} named {1} forever.", _id, _jailName));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' named '{1}' is jailed forever", id, jailName));
                             }
                         }
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

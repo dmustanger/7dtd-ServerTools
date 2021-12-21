@@ -35,7 +35,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     if (Badwords.IsEnabled)
@@ -43,12 +43,12 @@ namespace ServerTools
                         Badwords.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bad word filter has been set to off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Bad word filter has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bad word filter is already off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Bad word filter is already off"));
                         return;
                     }
                 }
@@ -56,7 +56,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     if (!Badwords.IsEnabled)
@@ -64,12 +64,12 @@ namespace ServerTools
                         Badwords.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bad word filter has been set to on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Bad word filter has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bad word filter is already on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Bad word filter is already on"));
                         return;
                     }
                 }
@@ -77,7 +77,7 @@ namespace ServerTools
                 {
                     if (_params.Count < 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected more than 2, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected more than 2, found {0}", _params.Count));
                         return;
                     }
                     _params.RemoveAt(0);
@@ -85,12 +85,12 @@ namespace ServerTools
                     if (Badwords.Dict.Contains(_word))
                     {
                         Badwords.Dict.Add(_word);
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added bad word to the list: {0}", _word));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added bad word to the list: {0}", _word));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] Could not add entry. Bad word already found");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Could not add entry. Bad word already found");
                         return;
                     }
                 }
@@ -98,7 +98,7 @@ namespace ServerTools
                 {
                     if (_params.Count < 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected more than 2, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected more than 2, found {0}", _params.Count));
                         return;
                     }
                     _params.RemoveAt(0);
@@ -106,12 +106,12 @@ namespace ServerTools
                     if (Badwords.Dict.Contains(_word))
                     {
                         Badwords.Dict.Remove(_word);
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed bad word from the list: {0}", _word));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed bad word from the list: {0}", _word));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] Could not remove entry. Bad word not found");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Could not remove entry. Bad word not found");
                         return;
                     }
                 }
@@ -119,26 +119,26 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     if (Badwords.Dict.Count > 0)
                     {
                         for (int i = 0; i < Badwords.Dict.Count; i++)
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bad word: {0}", Badwords.Dict[i]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Bad word: {0}", Badwords.Dict[i]));
                         }
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] No entries were found on the bad word filter list");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] No entries were found on the bad word filter list");
                         return;
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

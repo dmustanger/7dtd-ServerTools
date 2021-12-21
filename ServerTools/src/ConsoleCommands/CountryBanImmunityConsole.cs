@@ -7,19 +7,19 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools] - Add, remove and view steam ids on the country ban immunity list.";
+            return "[ServerTools] - Add, remove and view player on the country ban immunity list";
         }
 
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. st-cbi add <steamId/entityId/playerName>\n" +
-                   "  2. st-cbi remove <steamId/entityId/playerName>\n" +
+                   "  1. st-cbi add <EOS/EntityId/PlayerName>\n" +
+                   "  2. st-cbi remove <EOS/EntityId/PlayerName>\n" +
                    "  3. st-cbi list\n" +
-                   "1. Adds a steam ID to the Country Ban Immunity list\n" +
-                   "2. Removes a steam ID from the Country Ban Immunity list\n" +
-                   "3. Lists all steam IDs that have Country Ban Immunity" +
-                   "4. *Note* You can use the player id or name if they are online otherwise use their steam Id";
+                   "1. Adds a player to the country ban immunity list\n" +
+                   "2. Removes a player from the country ban immunity list\n" +
+                   "3. Shows all entry on the country ban immunity list" +
+                   "4. *Note* You can use the entity id, player name or eos id if they are online, otherwise use their eos id";
         }
 
         public override string[] GetCommands()
@@ -35,19 +35,27 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}.", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-                    ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_params[1]);
-                    if (_cInfo != null)
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                    if (cInfo != null)
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CountryBanImmune = true;
+                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].CountryBanImmune = true;
                         PersistentContainer.DataChange = true;
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added Id {0} to the Country Ban Immunity list.", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added id '{0}' to the country ban immunity list", cInfo.CrossplatformId.CombinedString));
+                        return;
+                    }
+                    else if (_params[1].Contains("EOS_"))
+                    {
+                        PersistentContainer.Instance.Players[_params[1]].CountryBanImmune = true;
+                        PersistentContainer.DataChange = true;
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added id '{0}' to the country ban immunity list", _params[1]));
+                        return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id: Invalid Id {0}", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid id or player name '{0}'", _params[1]));
                         return;
                     }
                 }
@@ -55,19 +63,39 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
-                    ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_params[1]);
-                    if (_cInfo != null)
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                    if (cInfo != null)
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CountryBanImmune = false;
-                        PersistentContainer.DataChange = true;
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed Id {0} from the Country Ban Immunity list.", _params[1]));
+                        if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].CountryBanImmune)
+                        {
+                            PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].CountryBanImmune = false;
+                            PersistentContainer.DataChange = true;
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed id '{0}' from the country ban immunity list", _params[1]));
+                        }
+                        else
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' is not on the country ban immunity list. Unable to remove", _params[1]));
+                        }
+                    }
+                    else if (_params[1].Contains("EOS_"))
+                    {
+                        if (PersistentContainer.Instance.Players[_params[1]].CountryBanImmune)
+                        {
+                            PersistentContainer.Instance.Players[_params[1]].CountryBanImmune = false;
+                            PersistentContainer.DataChange = true;
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed id '{0}' from the country ban immunity list", _params[1]));
+                        }
+                        else
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' is not on the country ban immunity list. Unable to remove", _params[1]));
+                        }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not remove Id: Invalid Id {0}", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid id or player name '{0}'", _params[1]));
                         return;
                     }
                 }
@@ -75,23 +103,23 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}.", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
-                    List<string> _persistentPlayers = PersistentContainer.Instance.Players.SteamIDs;
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Country Ban Immune List:"));
-                    for (int i = 0; i < _persistentPlayers.Count; i++)
+                    List<string> persistentPlayers = PersistentContainer.Instance.Players.IDs;
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Country Ban Immune List:"));
+                    for (int i = 0; i < persistentPlayers.Count; i++)
                     {
-                        string _persistentPlayer = _persistentPlayers[i];
-                        if (PersistentContainer.Instance.Players[_persistentPlayer].HardcoreEnabled)
+                        string persistentPlayer = persistentPlayers[i];
+                        if (PersistentContainer.Instance.Players[persistentPlayer].CountryBanImmune)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Id: {0}", _persistentPlayer));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Id '{0}'", persistentPlayer));
                         }
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

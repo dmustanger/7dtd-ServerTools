@@ -76,7 +76,7 @@ namespace ServerTools
                 EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(10));
                 if (Event.Open && !Event.OperatorWarned)
                 {
-                    ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(Event.Operator);
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(Event.Operator);
                     if (cInfo != null)
                     {
                         Event.OperatorWarned = true;
@@ -135,8 +135,8 @@ namespace ServerTools
             Phrases.Dict.TryGetValue("StopServer1", out phrase);
             phrase = phrase.Replace("{Value}", 1.ToString());
             Alert(phrase, 1);
-            SdtdConsole.Instance.ExecuteSync("saveworld", null);
-            SdtdConsole.Instance.ExecuteSync("mem clean", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync("saveworld", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync("mem clean", null);
             if (VehicleManager.Instance != null)
             {
                 VehicleManager.Instance.Update();
@@ -169,7 +169,7 @@ namespace ServerTools
         {
             PersistentContainer.Instance.Save();
             Phrases.Dict.TryGetValue("StopServer3", out string _phrase);
-            SdtdConsole.Instance.ExecuteSync(string.Format("kickall \"{0}\"", _phrase), null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kickall \"{0}\"", _phrase), null);
         }
 
         public static void Alert(string _message, int _count)
@@ -184,14 +184,14 @@ namespace ServerTools
         public static void Close()
         {
             Log.Out("[SERVERTOOLS] Running shutdown");
-            SdtdConsole.Instance.ExecuteSync("shutdown", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync("shutdown", null);
         }
 
         public static void NextShutdown(ClientInfo _cInfo)
         {
             try
             {
-                if (_cInfo != null && _cInfo.playerId != null)
+                if (_cInfo != null && _cInfo.CrossplatformId.CombinedString != null)
                 {
                     EventSchedule.Schedule.TryGetValue("Shutdown", out DateTime timeLeft);
                     TimeSpan varTime = timeLeft - DateTime.Now;

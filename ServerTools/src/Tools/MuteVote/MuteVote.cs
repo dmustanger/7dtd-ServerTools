@@ -7,10 +7,9 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, VoteOpen = false;
         public static int Players_Online = 5, Votes_Needed = 3;
+        public static string Command_mutevote = "mutevote";
 
         public static List<int> Votes = new List<int>();
-
-        public static string Command_mutevote = "mutevote";
 
         private static ClientInfo playerMute;
 
@@ -22,10 +21,10 @@ namespace ServerTools
                 {
                     if (int.TryParse(_player, out int entityId))
                     {
-                        ClientInfo cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(entityId);
+                        ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromEntityId(entityId);
                         if (cInfo2 != null)
                         {
-                            if (Mute.Mutes.Contains(cInfo2.playerId))
+                            if (Mute.Mutes.Contains(cInfo2.CrossplatformId.CombinedString))
                             {
                                 Phrases.Dict.TryGetValue("MuteVote5", out string phrase);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -58,19 +57,19 @@ namespace ServerTools
 
         public static void ProcessMuteVote()
         {
-            if (MuteVote.Votes.Count >= Votes_Needed)
+            if (Votes.Count >= Votes_Needed)
             {
-                Mute.Mutes.Add(playerMute.playerId);
-                PersistentContainer.Instance.Players[playerMute.playerId].MuteTime = 60;
-                PersistentContainer.Instance.Players[playerMute.playerId].MuteName = playerMute.playerName;
-                PersistentContainer.Instance.Players[playerMute.playerId].MuteDate = DateTime.Now;
+                Mute.Mutes.Add(playerMute.CrossplatformId.CombinedString);
+                PersistentContainer.Instance.Players[playerMute.CrossplatformId.CombinedString].MuteTime = 60;
+                PersistentContainer.Instance.Players[playerMute.CrossplatformId.CombinedString].MuteName = playerMute.playerName;
+                PersistentContainer.Instance.Players[playerMute.CrossplatformId.CombinedString].MuteDate = DateTime.Now;
                 PersistentContainer.DataChange = true;
                 Phrases.Dict.TryGetValue("MuteVote3", out string phrase);
                 phrase = phrase.Replace("{PlayerName}", playerMute.playerName);
                 ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
             playerMute = null;
-            MuteVote.Votes.Clear();
+            Votes.Clear();
         }
 
         public static void List(ClientInfo _cInfo)

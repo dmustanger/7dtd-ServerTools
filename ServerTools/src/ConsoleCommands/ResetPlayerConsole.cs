@@ -13,7 +13,7 @@ namespace ServerTools
 
         public override string GetHelp()
         {
-            return "Usage: st-rpp <steamId/entityId>";
+            return "Usage: st-rpp <EOS/EntityId/PlayerName>";
         }
 
         public override string[] GetCommands()
@@ -27,22 +27,22 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
-                ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
-                if (_cInfo != null)
+                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[0]);
+                if (cInfo != null)
                 {
-                    Phrases.Dict.TryGetValue("ResetPlayer1", out string _phrase);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase), null);
-                    GameManager.Instance.World.aiDirector.RemoveEntity(PersistentOperations.GetEntityPlayer(_cInfo.playerId));
+                    Phrases.Dict.TryGetValue("ResetPlayer1", out string phrase);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
+                    GameManager.Instance.World.aiDirector.RemoveEntity(PersistentOperations.GetEntityPlayer(cInfo.entityId));
                     GC.Collect();
                     MemoryPools.Cleanup();
-                    ResetProfileExec(_cInfo.playerId);
+                    ResetProfileExec(cInfo.CrossplatformId.CombinedString);
                 }
-                else if (_params[0].Length == 17)
+                else if (_params[0].Contains("_"))
                 {
-                    if (PersistentOperations.GetPersistentPlayerDataFromSteamId(_params[0]) != null)
+                    if (PersistentOperations.GetPersistentPlayerDataFromId(_params[0]) != null)
                     {
                         GC.Collect();
                         MemoryPools.Cleanup();
@@ -50,13 +50,12 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Unable to find player data for id: {0}", _params[0]));
+                        Log.Out(string.Format("[SERVERTOOLS] Unable to find player data for id '{0}'", _params[0]));
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player id {0} is not a valid length. Offline players require using their 17 digit steam id", _params[0]));
-                    return;
+                    Log.Out(string.Format("[SERVERTOOLS] Unable to find player data for id '{0}'", _params[0]));
                 }
             }
             catch (Exception e)
@@ -90,23 +89,23 @@ namespace ServerTools
         {
             try
             {
-                string _filepath = string.Format("{0}/Player/{1}.map", GameUtils.GetSaveGameDir(), _id);
-                string _filepath1 = string.Format("{0}/Player/{1}.ttp", GameUtils.GetSaveGameDir(), _id);
-                if (!File.Exists(_filepath))
+                string filepath1 = string.Format("{0}/Player/{1}.map", GameIO.GetSaveGameDir(), _id);
+                string filepath2 = string.Format("{0}/Player/{1}.ttp", GameIO.GetSaveGameDir(), _id);
+                if (!File.Exists(filepath1))
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Could not find file {0}.map", _id));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Could not find file {0}.map", _id));
                 }
                 else
                 {
-                    File.Delete(_filepath);
+                    File.Delete(filepath1);
                 }
-                if (!File.Exists(_filepath1))
+                if (!File.Exists(filepath2))
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Could not find file {0}.ttp", _id));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Could not find file {0}.ttp", _id));
                 }
                 else
                 {
-                    File.Delete(_filepath1);
+                    File.Delete(filepath2);
                 }
             }
             catch (Exception e)
@@ -181,7 +180,7 @@ namespace ServerTools
                 }
                 Phrases.Dict.TryGetValue("ResetPlayer2", out string _phrase);
                 _phrase = _phrase.Replace("{SteamId}", _id);
-                SdtdConsole.Instance.Output(string.Format("{0}", _phrase));
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("{0}", _phrase));
             }
             catch (Exception e)
             {

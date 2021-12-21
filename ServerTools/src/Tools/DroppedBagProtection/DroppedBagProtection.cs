@@ -34,7 +34,7 @@ namespace ServerTools
                     PersistentPlayerData ppdOwner = PersistentOperations.GetPersistentPlayerDataFromEntityId(ownerId);
                     if (ppdAccess != null && ppdOwner != null)
                     {
-                        if (ppdAccess.ACL.Contains(ppdOwner.PlayerId) && ppdOwner.ACL.Contains(ppdAccess.PlayerId))
+                        if (ppdAccess.ACL.Contains(ppdAccess.UserIdentifier) && ppdOwner.ACL.Contains(ppdOwner.UserIdentifier))
                         {
                             Backpacks.Remove(lootContainer.entityId);
                             PersistentContainer.Instance.Backpacks.Remove(lootContainer.entityId);

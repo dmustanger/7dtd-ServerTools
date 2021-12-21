@@ -30,28 +30,39 @@ namespace ServerTools
                 }
                 else
                 {
-                    DateTime _lastAnimals = DateTime.Now;
-                    if (PersistentContainer.Instance.Players[_cInfo.playerId].LastAnimal != null)
+                    DateTime lastAnimals = DateTime.Now;
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastAnimal != null)
                     {
-                        _lastAnimals = PersistentContainer.Instance.Players[_cInfo.playerId].LastAnimal;
+                        lastAnimals = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastAnimal;
                     }
-                    TimeSpan varTime = DateTime.Now - _lastAnimals;
+                    TimeSpan varTime = DateTime.Now - lastAnimals;
                     double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
+                    int timepassed = (int)fractionalMinutes;
                     if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                     {
-                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                         {
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                            if (DateTime.Now < _dt)
+                            if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                             {
-                                int _delay = Delay_Between_Uses / 2;
-                                Time(_cInfo, _timepassed, _delay);
-                                return;
+                                if (DateTime.Now < dt)
+                                {
+                                    int delay = Delay_Between_Uses / 2;
+                                    Time(_cInfo, timepassed, delay);
+                                    return;
+                                }
+                            }
+                            else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                            {
+                                if (DateTime.Now < dt)
+                                {
+                                    int delay = Delay_Between_Uses / 2;
+                                    Time(_cInfo, timepassed, delay);
+                                    return;
+                                }
                             }
                         }
                     }
-                    Time(_cInfo, _timepassed, Delay_Between_Uses);
+                    Time(_cInfo, timepassed, Delay_Between_Uses);
                 }
             }
             catch (Exception e)
@@ -77,10 +88,10 @@ namespace ServerTools
                 }
                 else
                 {
-                    int _timeleft = _delay - _timepassed;
-                    Phrases.Dict.TryGetValue("AnimalTracking1", out string _phrase);
-                    _phrase = _phrase.Replace("{TimeRemaining}", _timeleft.ToString());
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    int timeleft = _delay - _timepassed;
+                    Phrases.Dict.TryGetValue("AnimalTracking1", out string phrase);
+                    phrase = phrase.Replace("{TimeRemaining}", timeleft.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -93,7 +104,7 @@ namespace ServerTools
         {
             try
             {
-                int currentCoins = Wallet.GetCurrency(_cInfo.playerId);
+                int currentCoins = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 if (currentCoins >= Command_Cost)
                 {
                     GiveAnimals(_cInfo);
@@ -157,16 +168,16 @@ namespace ServerTools
                         }
                         if (randomId == counter)
                         {
-                            EntityPlayer entityPlayer = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                            EntityPlayer entityPlayer = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                             if (entityPlayer != null)
                             {
                                 if (SpawnAnimal(_cInfo, entityPlayer, nextRadius, randomId))
                                 {
                                     if (Wallet.IsEnabled && Command_Cost >= 1)
                                     {
-                                        Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
+                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                                     }
-                                    PersistentContainer.Instance.Players[_cInfo.playerId].LastAnimal = DateTime.Now;
+                                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastAnimal = DateTime.Now;
                                     PersistentContainer.DataChange = true;
                                     break;
                                 }
@@ -177,8 +188,8 @@ namespace ServerTools
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("AnimalTracking4", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("AnimalTracking4", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

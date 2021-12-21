@@ -25,7 +25,7 @@ namespace ServerTools
                 ClientInfo cInfo2 = clientList[i];
                 if (cInfo2 != null)
                 {
-                    int currentbounty = PersistentContainer.Instance.Players[cInfo2.playerId].Bounty;
+                    int currentbounty = PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].Bounty;
                     if (currentbounty > 0)
                     {
                         Phrases.Dict.TryGetValue("bounties8", out string phrase);
@@ -50,49 +50,49 @@ namespace ServerTools
             {
                 if (_message.Contains(" "))
                 {
-                    string[] _idAndBounty = _message.Split(' ').ToArray();
-                    if (int.TryParse(_idAndBounty[0], out int _id))
+                    string[] idAndBounty = _message.Split(' ').ToArray();
+                    if (int.TryParse(idAndBounty[0], out int id))
                     {
-                        if (int.TryParse(_idAndBounty[1], out int _bounty))
+                        if (int.TryParse(idAndBounty[1], out int bounty))
                         {
-                            ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_id);
-                            if (_cInfo2 != null)
+                            ClientInfo cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(id);
+                            if (cInfo2 != null)
                             {
-                                if (_bounty < Minimum_Bounty)
+                                if (bounty < Minimum_Bounty)
                                 {
-                                    _bounty = Minimum_Bounty;
+                                    bounty = Minimum_Bounty;
                                 }
-                                int _currentCoins = Wallet.GetCurrency(_cInfo.playerId);
-                                if (_currentCoins >= _bounty)
+                                int currentCoins = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                                if (currentCoins >= bounty)
                                 {
-                                    Wallet.RemoveCurrency(_cInfo.playerId, _bounty);
-                                    int _currentbounty = PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty;
-                                    PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _currentbounty + _bounty;
+                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, bounty);
+                                    int _currentbounty = PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].Bounty;
+                                    PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].Bounty = _currentbounty + bounty;
                                     PersistentContainer.DataChange = true;
                                     using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                     {
-                                        sw.WriteLine(string.Format("{0}: {1} {2} added {3} bounty to {4} {5}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bounty, _cInfo2.playerId, _cInfo2.playerName));
+                                        sw.WriteLine(string.Format("{0}: '{1}' named '{2}' added '{3}' bounty to '{4}' '{5}' named '{6}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, bounty, cInfo2.PlatformId.CombinedString, cInfo2.CrossplatformId.CombinedString, cInfo2.playerName));
                                         sw.WriteLine();
                                         sw.Flush();
                                         sw.Close();
                                     }
-                                    Phrases.Dict.TryGetValue("bounties5", out string _phrase);
-                                    _phrase = _phrase.Replace("{Value}", _bounty.ToString());
-                                    _phrase = _phrase.Replace("{PlayerName}", _cInfo2.playerName);
-                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                    Phrases.Dict.TryGetValue("bounties5", out string phrase);
+                                    phrase = phrase.Replace("{Value}", bounty.ToString());
+                                    phrase = phrase.Replace("{PlayerName}", cInfo2.playerName);
+                                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                 }
                                 else
                                 {
-                                    Phrases.Dict.TryGetValue("bounties4", out string _phrase);
-                                    _phrase = _phrase.Replace("{Value}", _bounty.ToString());
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("bounties4", out string phrase);
+                                    phrase = phrase.Replace("{Value}", bounty.ToString());
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue("bounties6", out string _phrase);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("bounties6", out string phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -100,33 +100,33 @@ namespace ServerTools
                 {
                     if (int.TryParse(_message, out int _id))
                     {
-                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_id);
-                        if (_cInfo2 != null)
+                        ClientInfo cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_id);
+                        if (cInfo2 != null)
                         {
-                            int _currentCoins = Wallet.GetCurrency(_cInfo.playerId);
-                            if (_currentCoins >= Minimum_Bounty)
+                            int currentCoins = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                            if (currentCoins >= Minimum_Bounty)
                             {
-                                Wallet.RemoveCurrency(_cInfo.playerId, Minimum_Bounty);
-                                int _currentbounty = PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty;
-                                PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _currentbounty + Minimum_Bounty;
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Minimum_Bounty);
+                                int _currentbounty = PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].Bounty;
+                                PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].Bounty = _currentbounty + Minimum_Bounty;
                                 PersistentContainer.DataChange = true;
                                 using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                 {
-                                    sw.WriteLine(string.Format("{0}: {1} {2} added {3} bounty to {4} {5}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, Minimum_Bounty, _cInfo2.playerId, _cInfo2.playerName));
+                                    sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' added '{4}' bounty to '{5}' '{6}' named '{7}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, Minimum_Bounty, cInfo2.PlatformId.CombinedString, cInfo2.CrossplatformId.CombinedString, cInfo2.playerName));
                                     sw.WriteLine();
                                     sw.Flush();
                                     sw.Close();
                                 }
-                                Phrases.Dict.TryGetValue("bounties5", out string _phrase);
-                                _phrase = _phrase.Replace("{Value}", Minimum_Bounty.ToString());
-                                _phrase = _phrase.Replace("{PlayerName}", _cInfo2.playerName);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("bounties5", out string phrase);
+                                phrase = phrase.Replace("{Value}", Minimum_Bounty.ToString());
+                                phrase = phrase.Replace("{PlayerName}", cInfo2.playerName);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue("bounties4", out string _phrase);
-                                _phrase = _phrase.Replace("{Value}", Minimum_Bounty.ToString());
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("bounties4", out string phrase);
+                                phrase = phrase.Replace("{Value}", Minimum_Bounty.ToString());
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
@@ -142,11 +142,11 @@ namespace ServerTools
         {
             try
             {
-                if (_cInfo1.playerId != null && _player1 != null && _player2 != null && _cInfo2.playerId != null)
+                if (_cInfo1.CrossplatformId != null && _player1 != null && _player2 != null && _cInfo2.CrossplatformId != null)
                 {
-                    PersistentPlayerData _ppd1 = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo1.playerId);
-                    PersistentPlayerData _ppd2 = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo2.playerId);
-                    if (_ppd1.ACL != null && !_ppd1.ACL.Contains(_cInfo2.playerId) && _ppd2.ACL != null && !_ppd2.ACL.Contains(_cInfo1.playerId))
+                    PersistentPlayerData _ppd1 = PersistentOperations.GetPersistentPlayerDataFromId(_cInfo1.CrossplatformId.CombinedString);
+                    PersistentPlayerData _ppd2 = PersistentOperations.GetPersistentPlayerDataFromId(_cInfo2.CrossplatformId.CombinedString);
+                    if (_ppd1.ACL != null && !_ppd1.ACL.Contains(_cInfo2.InternalId) && _ppd2.ACL != null && !_ppd2.ACL.Contains(_cInfo1.InternalId))
                     {
                         if (_player1.Party != null && !_player1.Party.ContainsMember(_player2) && _player2.Party != null && !_player2.Party.ContainsMember(_player1))
                         {
@@ -169,69 +169,69 @@ namespace ServerTools
         {
             try
             {
-                int _victimBounty = PersistentContainer.Instance.Players[_cInfo1.playerId].Bounty;
-                int _victimBountyHunter = PersistentContainer.Instance.Players[_cInfo1.playerId].BountyHunter; //victim kill streak
-                if (_victimBounty > 0)
+                int victimBounty = PersistentContainer.Instance.Players[_cInfo1.CrossplatformId.CombinedString].Bounty;
+                int victimBountyHunter = PersistentContainer.Instance.Players[_cInfo1.CrossplatformId.CombinedString].BountyHunter; //victim kill streak
+                if (victimBounty > 0)
                 {
-                    int _killerWallet = PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet;
-                    int _killerBounty = PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty;
-                    int _killerBountyHunter = PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter; //killer kill streak
+                    int killerWallet = PersistentContainer.Instance.Players[_cInfo2.CrossplatformId.CombinedString].PlayerWallet;
+                    int killerBounty = PersistentContainer.Instance.Players[_cInfo2.CrossplatformId.CombinedString].Bounty;
+                    int killerBountyHunter = PersistentContainer.Instance.Players[_cInfo2.CrossplatformId.CombinedString].BountyHunter; //killer kill streak
                     if (Kill_Streak > 0)
                     {
-                        int _newKillerBountyHunter = _killerBountyHunter + 1;
-                        if (_newKillerBountyHunter >= Kill_Streak)
+                        int newKillerBountyHunter = killerBountyHunter + 1;
+                        if (newKillerBountyHunter >= Kill_Streak)
                         {
-                            PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBounty + Bonus;
-                            PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter = _newKillerBountyHunter;
-                            PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _killerBounty + Bonus;
+                            PersistentContainer.Instance.Players[_cInfo2.CrossplatformId.CombinedString].PlayerWallet = killerWallet + victimBounty + Bonus;
+                            PersistentContainer.Instance.Players[_cInfo2.CrossplatformId.CombinedString].BountyHunter = newKillerBountyHunter;
+                            PersistentContainer.Instance.Players[_cInfo2.CrossplatformId.CombinedString].Bounty = killerBounty + Bonus;
                             PersistentContainer.DataChange = true;
                             using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                             {
-                                sw.WriteLine(string.Format("{0}: {1} {2} has collected the bounty on {3} {4}.", DateTime.Now, _cInfo2.playerId, _cInfo2.playerName, _cInfo2.playerId, _cInfo2.playerName));
+                                sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' has collected the bounty on '{4}' '{5}' named '{6}'", DateTime.Now, _cInfo2.PlatformId.CombinedString, _cInfo2.CrossplatformId.CombinedString, _cInfo2.playerName, _cInfo1.PlatformId.CombinedString, _cInfo1.CrossplatformId.CombinedString, _cInfo1.playerName));
                                 sw.WriteLine();
-                                sw.WriteLine(string.Format("{0}: {1} {2} has collected {3} bounties without dying. Their kill streak and bounty have increased.", DateTime.Now, _cInfo2.playerId, _cInfo2.playerName, _newKillerBountyHunter));
+                                sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' has collected '{4}' bounties without dying. Their kill streak and bounty have increased", DateTime.Now, _cInfo2.PlatformId.CombinedString, _cInfo2.CrossplatformId.CombinedString, _cInfo2.playerName, newKillerBountyHunter));
                                 sw.WriteLine();
                                 sw.Flush();
                                 sw.Close();
                             }
-                            Phrases.Dict.TryGetValue("bounties1", out string _phrase);
-                            _phrase = _phrase.Replace("{PlayerName}", _cInfo2.playerName);
-                            _phrase = _phrase.Replace("{Value}", _newKillerBountyHunter.ToString());
-                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                            Phrases.Dict.TryGetValue("bounties1", out string phrase);
+                            phrase = phrase.Replace("{PlayerName}", _cInfo2.playerName);
+                            phrase = phrase.Replace("{Value}", newKillerBountyHunter.ToString());
+                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         }
-                        else if (_killerBountyHunter + 1 < Kill_Streak)
+                        else if (killerBountyHunter + 1 < Kill_Streak)
                         {
-                            PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBounty;
-                            PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter = _newKillerBountyHunter;
+                            PersistentContainer.Instance.Players[_cInfo2.CrossplatformId.CombinedString].PlayerWallet = killerWallet + victimBounty;
+                            PersistentContainer.Instance.Players[_cInfo2.CrossplatformId.CombinedString].BountyHunter = newKillerBountyHunter;
                             PersistentContainer.DataChange = true;
                         }
-                        if (_victimBountyHunter >= Kill_Streak)
+                        if (victimBountyHunter >= Kill_Streak)
                         {
-                            Phrases.Dict.TryGetValue("bounties2", out string _phrase);
-                            _phrase = _phrase.Replace("{Victim}", _cInfo1.playerName);
-                            _phrase = _phrase.Replace("{Killer}", _cInfo2.playerName);
-                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                            Phrases.Dict.TryGetValue("bounties2", out string phrase);
+                            phrase = phrase.Replace("{Victim}", _cInfo1.playerName);
+                            phrase = phrase.Replace("{Killer}", _cInfo2.playerName);
+                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         }
                     }
                     else
                     {
-                        PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBounty;
+                        PersistentContainer.Instance.Players[_cInfo2.CrossplatformId.CombinedString].PlayerWallet = killerWallet + victimBounty;
                         PersistentContainer.DataChange = true;
                         using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                         {
-                            sw.WriteLine(string.Format("{0}: {1} {2} has collected the bounty on {3} {4}.", DateTime.Now, _cInfo2.playerId, _cInfo2.playerName, _cInfo2.playerId, _cInfo2.playerName));
+                            sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' has collected the bounty on '{4}' '{5}' named '{6}'", DateTime.Now, _cInfo2.PlatformId.CombinedString, _cInfo2.CrossplatformId.CombinedString, _cInfo2.playerName, _cInfo1.PlatformId.CombinedString, _cInfo1.CrossplatformId.CombinedString, _cInfo1.playerName));
                             sw.WriteLine();
                             sw.Flush();
                             sw.Close();
                         }
                     }
-                    PersistentContainer.Instance.Players[_cInfo1.playerId].Bounty = 0;
-                    PersistentContainer.Instance.Players[_cInfo1.playerId].BountyHunter = 0;
+                    PersistentContainer.Instance.Players[_cInfo1.CrossplatformId.CombinedString].Bounty = 0;
+                    PersistentContainer.Instance.Players[_cInfo1.CrossplatformId.CombinedString].BountyHunter = 0;
                     PersistentContainer.DataChange = true;
-                    Phrases.Dict.TryGetValue("bounties3", out string _phrase1);
-                    _phrase1 = _phrase1.Replace("{Victim}", _cInfo1.playerName);
-                    _phrase1 = _phrase1.Replace("{Killer}", _cInfo2.playerName);
-                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    Phrases.Dict.TryGetValue("bounties3", out string phrase1);
+                    phrase1 = phrase1.Replace("{Victim}", _cInfo1.playerName);
+                    phrase1 = phrase1.Replace("{Killer}", _cInfo2.playerName);
+                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
             }
             catch (Exception e)
@@ -242,28 +242,28 @@ namespace ServerTools
 
         public static void ConsoleEdit(string _id, int _value)
         {
-            int _oldBounty = PersistentContainer.Instance.Players[_id].Bounty;
+            int oldBounty = PersistentContainer.Instance.Players[_id].Bounty;
             if (_value > 0)
             {
-                int _newBounty = _oldBounty + _value;
-                PersistentContainer.Instance.Players[_id].Bounty = _newBounty;
+                int newBounty = oldBounty + _value;
+                PersistentContainer.Instance.Players[_id].Bounty = newBounty;
                 PersistentContainer.DataChange = true;
-                SdtdConsole.Instance.Output(string.Format("Bounty edit was successful for {0}. The new value is set to {1}", _id, _newBounty));
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Bounty edit was successful for '{0}'. The new value is set to '{1}'", _id, newBounty));
             }
             else
             {
-                int _newBounty = _oldBounty - _value;
-                if (_newBounty < 0)
+                int newBounty = oldBounty - _value;
+                if (newBounty < 0)
                 {
                     PersistentContainer.Instance.Players[_id].Bounty = 0;
                     PersistentContainer.DataChange = true;
-                    SdtdConsole.Instance.Output(string.Format("Bounty edit was successful for {0}. The new value is {1}", _id, 0));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Bounty edit was successful for '{0}'. The new value is '{1}'", _id, 0));
                 }
                 else
                 {
-                    PersistentContainer.Instance.Players[_id].Bounty = _newBounty;
+                    PersistentContainer.Instance.Players[_id].Bounty = newBounty;
                     PersistentContainer.DataChange = true;
-                    SdtdConsole.Instance.Output(string.Format("Bounty edit was successful for {0}. The new value is {1}", _id, _newBounty));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Bounty edit was successful for '{0}'. The new value is '{1}'", _id, newBounty));
                 }
             }
         }
@@ -275,7 +275,7 @@ namespace ServerTools
             {
                 p.Bounty = 0;
                 PersistentContainer.DataChange = true;
-                SdtdConsole.Instance.Output(string.Format("Bounty was removed successfully for {0}", _id));
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Bounty was removed successfully for '{0}'", _id));
             }
         }
 
@@ -289,10 +289,10 @@ namespace ServerTools
                     ClientInfo cInfo = clientList[i];
                     if (cInfo != null)
                     {
-                        int currentbounty = PersistentContainer.Instance.Players[cInfo.playerId].Bounty;
+                        int currentbounty = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bounty;
                         if (currentbounty > 0)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Entity Id: {0} Name: {1} Current bounty: {2}", cInfo.entityId, cInfo.playerName, currentbounty));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entity Id: '{0}' named '{1}'. Bounty total '{2}'", cInfo.entityId, cInfo.playerName, currentbounty));
                         }
                     }
                 }

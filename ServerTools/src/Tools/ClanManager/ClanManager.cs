@@ -57,9 +57,9 @@ namespace ServerTools
         {
             try
             {
-                for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+                for (int i = 0; i < PersistentContainer.Instance.Players.IDs.Count; i++)
                 {
-                    string _id = PersistentContainer.Instance.Players.SteamIDs[i];
+                    string _id = PersistentContainer.Instance.Players.IDs[i];
                     PersistentPlayer p = PersistentContainer.Instance.Players[_id];
                     {
                         if (p != null && p.ClanName != null)
@@ -95,17 +95,17 @@ namespace ServerTools
                 }
                 else
                 {
-                    bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner;
+                    bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOwner;
                     if (_clanOwner)
                     {
-                        string _clan = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
+                        string _clan = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
                         Phrases.Dict.TryGetValue("Clan1", out string _phrase);
                         _phrase = _phrase.Replace("{ClanName}", _clan.ToString());
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
-                        string _clan = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
+                        string _clan = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
                         if (!string.IsNullOrEmpty(_clan))
                         {
                             Phrases.Dict.TryGetValue("Clan3", out string _phrase);
@@ -122,11 +122,11 @@ namespace ServerTools
                             }
                             else
                             {
-                                ClanMember.Add(_cInfo.playerId);
-                                Clans.Add(_cInfo.playerId, _clanName);
-                                PersistentContainer.Instance.Players[_cInfo.playerId].ClanName = _clanName;
-                                PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner = true;
-                                PersistentContainer.Instance.Players[_cInfo.playerId].ClanOfficer = true;
+                                ClanMember.Add(_cInfo.CrossplatformId.CombinedString);
+                                Clans.Add(_cInfo.CrossplatformId.CombinedString, _clanName);
+                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName = _clanName;
+                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOwner = true;
+                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOfficer = true;
                                 PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue("Clan4", out string _phrase);
                                 _phrase = _phrase.Replace("{ClanName}", _clan.ToString());
@@ -146,7 +146,7 @@ namespace ServerTools
         {
             try
             {
-                bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner;
+                bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOwner;
                 if (!_clanOwner)
                 {
                     Phrases.Dict.TryGetValue("Clan5", out string _phrase);
@@ -154,14 +154,14 @@ namespace ServerTools
                 }
                 else
                 {
-                    string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
-                    PersistentContainer.Instance.Players[_cInfo.playerId].ClanName = "";
-                    PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner = false;
-                    PersistentContainer.Instance.Players[_cInfo.playerId].ClanOfficer = false;
-                    PersistentContainer.Instance.Players[_cInfo.playerId].ClanRequestToJoin = null;
-                    for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+                    string _clanName = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName = "";
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOwner = false;
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOfficer = false;
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanRequestToJoin = null;
+                    for (int i = 0; i < PersistentContainer.Instance.Players.IDs.Count; i++)
                     {
-                        string _id = PersistentContainer.Instance.Players.SteamIDs[i];
+                        string _id = PersistentContainer.Instance.Players.IDs[i];
                         PersistentPlayer p = PersistentContainer.Instance.Players[_id];
                         {
                             if (p.ClanName != null && p.ClanName == _clanName)
@@ -169,12 +169,12 @@ namespace ServerTools
                                 p.ClanName = "";
                                 p.ClanOfficer = false;
                                 ClanMember.Remove(_id);
-                                ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_id);
-                                if (_cInfo2 != null && _cInfo != _cInfo2)
+                                ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_id);
+                                if (cInfo2 != null && _cInfo != cInfo2)
                                 {
-                                    Phrases.Dict.TryGetValue("Clan21", out string _phrase1);
-                                    _phrase1 = _phrase1.Replace("{ClanName}", _clanName);
-                                    ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Clan21", out string phrase1);
+                                    phrase1 = phrase1.Replace("{ClanName}", _clanName);
+                                    ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else if (p.ClanInvite != null && p.ClanInvite == _clanName)
@@ -184,8 +184,8 @@ namespace ServerTools
                         }
                     }
                     PersistentContainer.DataChange = true;
-                    ClanMember.Remove(_cInfo.playerId);
-                    Clans.Remove(_cInfo.playerId);
+                    ClanMember.Remove(_cInfo.CrossplatformId.CombinedString);
+                    Clans.Remove(_cInfo.CrossplatformId.CombinedString);
                     Phrases.Dict.TryGetValue("Clan6", out string _phrase);
                     _phrase = _phrase.Replace("{ClanName}", _clanName);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -209,29 +209,29 @@ namespace ServerTools
                 }
                 else
                 {
-                    bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner;
+                    bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOwner;
                     if (_clanOwner)
                     {
                         if (!Clans.ContainsValue(_clanName))
                         {
-                            string _oldClanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
+                            string _oldClanName = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
                             for (int i = 0; i < ClanMember.Count; i++)
                             {
                                 string _clanMember = ClanMember[i];
                                 if (PersistentContainer.Instance.Players[_clanMember].ClanName == _oldClanName)
                                 {
                                     PersistentContainer.Instance.Players[_clanMember].ClanName = _clanName;
-                                    ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clanMember);
-                                    if (_cInfo2 != null && _cInfo != _cInfo2)
+                                    ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clanMember);
+                                    if (cInfo2 != null && _cInfo != cInfo2)
                                     {
-                                        Phrases.Dict.TryGetValue("Clan31", out string _phrase1);
-                                        _phrase1 = _phrase1.Replace("{ClanName}", _clanName);
-                                        ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        Phrases.Dict.TryGetValue("Clan31", out string phrase1);
+                                        phrase1 = phrase1.Replace("{ClanName}", _clanName);
+                                        ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                             }
                             PersistentContainer.DataChange = true;
-                            Clans[_cInfo.playerId] = _clanName;
+                            Clans[_cInfo.CrossplatformId.CombinedString] = _clanName;
                             Phrases.Dict.TryGetValue("Clan30", out string _phrase);
                             _phrase = _phrase.Replace("{ClanName}", _clanName);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -260,7 +260,7 @@ namespace ServerTools
         {
             try
             {
-                bool _clanOfficer = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOfficer;
+                bool _clanOfficer = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOfficer;
                 if (!_clanOfficer)
                 {
                     Phrases.Dict.TryGetValue("Clan7", out string _phrase);
@@ -278,7 +278,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        string _newMemberClanName = PersistentContainer.Instance.Players[_newMember.playerId].ClanName;
+                        string _newMemberClanName = PersistentContainer.Instance.Players[_newMember.CrossplatformId.CombinedString].ClanName;
                         if (_newMemberClanName != null && _newMemberClanName.Length > 0)
                         {
                             Phrases.Dict.TryGetValue("Clan9", out string _phrase);
@@ -288,7 +288,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            string _clanInvite = PersistentContainer.Instance.Players[_newMember.playerId].ClanInvite;
+                            string _clanInvite = PersistentContainer.Instance.Players[_newMember.CrossplatformId.CombinedString].ClanInvite;
                             if (_clanInvite != null && _clanInvite.Length > 0)
                             {
                                 Phrases.Dict.TryGetValue("Clan10", out string _phrase);
@@ -297,8 +297,8 @@ namespace ServerTools
                             }
                             else
                             {
-                                string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
-                                PersistentContainer.Instance.Players[_newMember.playerId].ClanInvite = _clanName;
+                                string _clanName = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
+                                PersistentContainer.Instance.Players[_newMember.CrossplatformId.CombinedString].ClanInvite = _clanName;
                                 PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue("Clan11", out string _phrase);
                                 _phrase = _phrase.Replace("{ClanName}", _clanName);
@@ -325,10 +325,10 @@ namespace ServerTools
         {
             try
             {
-                bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner;
+                bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOwner;
                 if (!_clanOwner)
                 {
-                    string _clanInvite = PersistentContainer.Instance.Players[_cInfo.playerId].ClanInvite;
+                    string _clanInvite = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanInvite;
                     if (string.IsNullOrEmpty(_clanInvite))
                     {
                         Phrases.Dict.TryGetValue("Clan13", out string _phrase);
@@ -336,9 +336,9 @@ namespace ServerTools
                     }
                     else
                     {
-                        ClanMember.Add(_cInfo.playerId);
-                        PersistentContainer.Instance.Players[_cInfo.playerId].ClanInvite = "";
-                        PersistentContainer.Instance.Players[_cInfo.playerId].ClanName = _clanInvite;
+                        ClanMember.Add(_cInfo.CrossplatformId.CombinedString);
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanInvite = "";
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName = _clanInvite;
                         PersistentContainer.DataChange = true;
                         for (int i = 0; i < ClanMember.Count; i++)
                         {
@@ -346,12 +346,12 @@ namespace ServerTools
                             string _clanName = PersistentContainer.Instance.Players[_clanMember].ClanName;
                             if (!string.IsNullOrEmpty(_clanName) && _clanName == _clanInvite)
                             {
-                                ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clanMember);
-                                if (_cInfo2 != null)
+                                ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clanMember);
+                                if (cInfo2 != null)
                                 {
-                                    Phrases.Dict.TryGetValue("Clan29", out string _phrase);
-                                    _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                    ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Clan29", out string phrase);
+                                    phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                    ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }
@@ -359,16 +359,16 @@ namespace ServerTools
                 }
                 else
                 {
-                    Dictionary<string, string> _clanRequests = PersistentContainer.Instance.Players[_cInfo.playerId].ClanRequestToJoin;
+                    Dictionary<string, string> _clanRequests = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanRequestToJoin;
                     if (_clanRequests != null && _clanRequests.Count > 0)
                     {
                         KeyValuePair<string, string> _request = _clanRequests.First();
                         _clanRequests.Remove(_request.Key);
-                        string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
+                        string _clanName = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
                         string _clanName1 = PersistentContainer.Instance.Players[_request.Key].ClanName;
                         if (!string.IsNullOrEmpty(_clanName1))
                         {
-                            PersistentContainer.Instance.Players[_cInfo.playerId].ClanRequestToJoin = _clanRequests;
+                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanRequestToJoin = _clanRequests;
                             Phrases.Dict.TryGetValue("Clan37", out string _phrase);
                             _phrase = _phrase.Replace("{PlayerName}", _request.Value);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -377,7 +377,7 @@ namespace ServerTools
                         ClanMember.Add(_request.Key);
                         PersistentContainer.Instance.Players[_request.Key].ClanInvite = "";
                         PersistentContainer.Instance.Players[_request.Key].ClanName = _clanName;
-                        PersistentContainer.Instance.Players[_cInfo.playerId].ClanRequestToJoin = _clanRequests;
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanRequestToJoin = _clanRequests;
                         PersistentContainer.DataChange = true;
                         for (int i = 0; i < ClanMember.Count; i++)
                         {
@@ -385,12 +385,12 @@ namespace ServerTools
                             string _clanName2 = PersistentContainer.Instance.Players[_clanMember].ClanName;
                             if (!string.IsNullOrEmpty(_clanName2) && _clanName2 == _clanName)
                             {
-                                ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clanMember);
-                                if (_cInfo2 != null)
+                                ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clanMember);
+                                if (cInfo2 != null)
                                 {
-                                    Phrases.Dict.TryGetValue("Clan29", out string _phrase);
-                                    _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                    ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Clan29", out string phrase);
+                                    phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                    ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }
@@ -422,10 +422,10 @@ namespace ServerTools
         {
             try
             {
-                bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner;
+                bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOwner;
                 if (!_clanOwner)
                 {
-                    string _clanInvite = PersistentContainer.Instance.Players[_cInfo.playerId].ClanInvite;
+                    string _clanInvite = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanInvite;
                     if (string.IsNullOrEmpty(_clanInvite))
                     {
                         Phrases.Dict.TryGetValue("Clan13", out string _phrase);
@@ -433,7 +433,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].ClanInvite = "";
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanInvite = "";
                         PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue("Clan16", out string _phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -443,7 +443,7 @@ namespace ServerTools
                             string _clanName = PersistentContainer.Instance.Players[_clanMember].ClanName;
                             if (string.IsNullOrEmpty(_clanName) && _clanName == _clanInvite)
                             {
-                                ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clanMember);
+                                ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clanMember);
                                 if (_cInfo2 != null)
                                 {
                                     Phrases.Dict.TryGetValue("Clan15", out _phrase);
@@ -456,12 +456,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    Dictionary<string, string> _clanRequests = PersistentContainer.Instance.Players[_cInfo.playerId].ClanRequestToJoin;
+                    Dictionary<string, string> _clanRequests = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanRequestToJoin;
                     if (_clanRequests != null && _clanRequests.Count > 0)
                     {
                         KeyValuePair<string, string> _request = _clanRequests.First();
                         _clanRequests.Remove(_request.Key);
-                        PersistentContainer.Instance.Players[_cInfo.playerId].ClanRequestToJoin = _clanRequests;
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanRequestToJoin = _clanRequests;
                         PersistentContainer.DataChange = true;
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "Removed the request to join the group by player " + _request.Value + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         if (_clanRequests.Count > 0)
@@ -492,7 +492,7 @@ namespace ServerTools
         {
             try
             {
-                bool _clanOfficer = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOfficer;
+                bool _clanOfficer = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOfficer;
                 if (!_clanOfficer)
                 {
                     Phrases.Dict.TryGetValue("Clan7", out string _phrase);
@@ -510,8 +510,8 @@ namespace ServerTools
                     }
                     else
                     {
-                        string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
-                        string _clanName2 = PersistentContainer.Instance.Players[_PlayertoRemove.playerId].ClanName;
+                        string _clanName = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
+                        string _clanName2 = PersistentContainer.Instance.Players[_PlayertoRemove.CrossplatformId.CombinedString].ClanName;
                         if (_clanName2 == null || _clanName != _clanName2)
                         {
                             Phrases.Dict.TryGetValue("Clan16", out string _phrase);
@@ -520,8 +520,8 @@ namespace ServerTools
                         }
                         else
                         {
-                            bool _clanOfficer2 = PersistentContainer.Instance.Players[_PlayertoRemove.playerId].ClanOfficer;
-                            bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner;
+                            bool _clanOfficer2 = PersistentContainer.Instance.Players[_PlayertoRemove.CrossplatformId.CombinedString].ClanOfficer;
+                            bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOwner;
                             if (_clanOfficer2 && !_clanOwner)
                             {
                                 Phrases.Dict.TryGetValue("Clan18", out string _phrase);
@@ -529,9 +529,9 @@ namespace ServerTools
                             }
                             else
                             {
-                                ClanMember.Remove(_PlayertoRemove.playerId);
-                                PersistentContainer.Instance.Players[_PlayertoRemove.playerId].ClanName = "";
-                                PersistentContainer.Instance.Players[_PlayertoRemove.playerId].ClanOfficer = false;
+                                ClanMember.Remove(_PlayertoRemove.CrossplatformId.CombinedString);
+                                PersistentContainer.Instance.Players[_PlayertoRemove.CrossplatformId.CombinedString].ClanName = "";
+                                PersistentContainer.Instance.Players[_PlayertoRemove.CrossplatformId.CombinedString].ClanOfficer = false;
                                 PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue("Clan20", out string _phrase);
                                 _phrase = _phrase.Replace("{PlayerName}", _PlayertoRemove.playerName);
@@ -545,7 +545,7 @@ namespace ServerTools
                                     string _clanMember = ClanMember[i];
                                     if (PersistentContainer.Instance.Players[_clanMember].ClanName == _clanName)
                                     {
-                                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clanMember);
+                                        ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clanMember);
                                         if (_cInfo2 != null && _cInfo != _cInfo2)
                                         {
                                             Phrases.Dict.TryGetValue("Clan32", out _phrase);
@@ -569,7 +569,7 @@ namespace ServerTools
         {
             try
             {
-                bool _clanOfficer = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOfficer;
+                bool _clanOfficer = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOfficer;
                 if (!_clanOfficer)
                 {
                     Phrases.Dict.TryGetValue("Clan7", out string _phrase);
@@ -586,8 +586,8 @@ namespace ServerTools
                     }
                     else
                     {
-                        string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
-                        string _clanName2 = PersistentContainer.Instance.Players[_playertoPromote.playerId].ClanName;
+                        string _clanName = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
+                        string _clanName2 = PersistentContainer.Instance.Players[_playertoPromote.CrossplatformId.CombinedString].ClanName;
                         if (_clanName2 == null || _clanName != _clanName2)
                         {
                             Phrases.Dict.TryGetValue("Clan17", out string _phrase);
@@ -596,7 +596,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            bool _clanOfficer2 = PersistentContainer.Instance.Players[_playertoPromote.playerId].ClanOfficer;
+                            bool _clanOfficer2 = PersistentContainer.Instance.Players[_playertoPromote.CrossplatformId.CombinedString].ClanOfficer;
                             if (_clanOfficer2)
                             {
                                 Phrases.Dict.TryGetValue("Clan22", out string _phrase);
@@ -605,7 +605,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                PersistentContainer.Instance.Players[_playertoPromote.playerId].ClanOfficer = true;
+                                PersistentContainer.Instance.Players[_playertoPromote.CrossplatformId.CombinedString].ClanOfficer = true;
                                 PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue("Clan23", out string _phrase);
                                 _phrase = _phrase.Replace("{PlayerName}", _playerName);
@@ -625,7 +625,7 @@ namespace ServerTools
         {
             try
             {
-                bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner;
+                bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOwner;
                 if (!_clanOwner)
                 {
                     Phrases.Dict.TryGetValue("Clan7", out string _phrase);
@@ -642,8 +642,8 @@ namespace ServerTools
                     }
                     else
                     {
-                        string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
-                        string _clanName2 = PersistentContainer.Instance.Players[_membertoDemote.playerId].ClanName;
+                        string _clanName = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
+                        string _clanName2 = PersistentContainer.Instance.Players[_membertoDemote.CrossplatformId.CombinedString].ClanName;
                         if (_clanName2 == null || _clanName != _clanName2)
                         {
                             Phrases.Dict.TryGetValue("Clan17", out string _phrase);
@@ -652,7 +652,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            bool _clanOfficer2 = PersistentContainer.Instance.Players[_membertoDemote.playerId].ClanOfficer;
+                            bool _clanOfficer2 = PersistentContainer.Instance.Players[_membertoDemote.CrossplatformId.CombinedString].ClanOfficer;
                             if (!_clanOfficer2)
                             {
                                 Phrases.Dict.TryGetValue("Clan24", out string _phrase);
@@ -661,7 +661,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                PersistentContainer.Instance.Players[_membertoDemote.playerId].ClanOfficer = false;
+                                PersistentContainer.Instance.Players[_membertoDemote.CrossplatformId.CombinedString].ClanOfficer = false;
                                 PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue("Clan25", out string _phrase);
                                 _phrase = _phrase.Replace("{PlayerName}", _playerName);
@@ -681,7 +681,7 @@ namespace ServerTools
         {
             try
             {
-                bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner;
+                bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOwner;
                 if (_clanOwner)
                 {
                     Phrases.Dict.TryGetValue("Clan26", out string _phrase);
@@ -689,7 +689,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
+                    string _clanName = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
                     if (!string.IsNullOrEmpty(_clanName))
                     {
                         Phrases.Dict.TryGetValue("Clan27", out string _phrase);
@@ -697,8 +697,8 @@ namespace ServerTools
                     }
                     else
                     {
-                        ClanMember.Remove(_cInfo.playerId);
-                        PersistentContainer.Instance.Players[_cInfo.playerId].ClanName = "";
+                        ClanMember.Remove(_cInfo.CrossplatformId.CombinedString);
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName = "";
                         PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue("Clan21", out string _phrase);
                         _phrase = _phrase.Replace("{ClanName}", _clanName);
@@ -708,7 +708,7 @@ namespace ServerTools
                             string _clanMember = ClanMember[i];
                             if (PersistentContainer.Instance.Players[_clanMember].ClanName == _clanName)
                             {
-                                ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clanMember);
+                                ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clanMember);
                                 if (_cInfo2 != null)
                                 {
                                     Phrases.Dict.TryGetValue("Clan32", out _phrase);
@@ -741,14 +741,14 @@ namespace ServerTools
                             {
                                 _clanRequests = PersistentContainer.Instance.Players[_clan.Key].ClanRequestToJoin;
                             }
-                            if (!_clanRequests.ContainsKey(_cInfo.playerId))
+                            if (!_clanRequests.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                             {
-                                _clanRequests.Add(_cInfo.playerId, _cInfo.playerName);
+                                _clanRequests.Add(_cInfo.CrossplatformId.CombinedString, _cInfo.playerName);
                                 PersistentContainer.Instance.Players[_clan.Key].ClanRequestToJoin = _clanRequests;
                                 PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue("Clan40", out string _phrase);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clan.Key);
+                                ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clan.Key);
                                 if (_cInfo2 != null)
                                 {
                                     Phrases.Dict.TryGetValue("Clan38", out _phrase);
@@ -782,10 +782,10 @@ namespace ServerTools
 
         public static string GetChatCommands(ClientInfo _cInfo)
         {
-            string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
-            string _clanInvite = PersistentContainer.Instance.Players[_cInfo.playerId].ClanInvite;
-            bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner;
-            bool _clanOfficer = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOfficer;
+            string _clanName = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
+            string _clanInvite = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanInvite;
+            bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOwner;
+            bool _clanOfficer = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanOfficer;
             Phrases.Dict.TryGetValue("Clan43", out string _phrase);
             string _commands = _phrase;
             if (string.IsNullOrEmpty(_clanName))
@@ -814,7 +814,7 @@ namespace ServerTools
             {
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Command_leave);
             }
-            if (ClanMember.Contains(_cInfo.playerId))
+            if (ClanMember.Contains(_cInfo.PlatformId.ReadablePlatformUserIdentifier))
             {
                 _commands = string.Format("{0} {1}{2} or {3}{4}", _commands, ChatHook.Chat_Command_Prefix1, Command_chat, ChatHook.Chat_Command_Prefix1, Command_cc);
             }
@@ -826,14 +826,14 @@ namespace ServerTools
         {
             try
             {
-                string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
+                string _clanName = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
                 if (!string.IsNullOrEmpty(_clanName))
                 {
                     foreach (KeyValuePair<string, string> _clan in Clans)
                     {
                         if (_clan.Value == _clanName)
                         {
-                            ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clan.Key);
+                            ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clan.Key);
                             if (_cInfo2 != null)
                             {
                                 string _senderName = string.Format("{0}(Clan) {1}[-]", Private_Chat_Color, _cInfo.playerName);

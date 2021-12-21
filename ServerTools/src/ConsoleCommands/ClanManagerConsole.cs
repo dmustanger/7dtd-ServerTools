@@ -35,7 +35,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 && _params.Count > 2)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -45,12 +45,12 @@ namespace ServerTools
                         ClanManager.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan manager has been set to off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Clan manager has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan manager is already off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Clan manager is already off"));
                         return;
                     }
                 }
@@ -61,12 +61,12 @@ namespace ServerTools
                         ClanManager.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan manager has been set to on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Clan manager has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan manager is already on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Clan manager is already on"));
                         return;
                     }
                 }
@@ -74,28 +74,28 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     if (ClanManager.Clans.Count > 0)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan List:"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Clan List:"));
                         foreach (KeyValuePair<string, string> i in ClanManager.Clans)
                         {
                             string _playerName = PersistentContainer.Instance.Players[i.Key].PlayerName;
                             if (!string.IsNullOrEmpty(_playerName))
                             {
-                                SdtdConsole.Instance.Output(string.Format("Clan named {0}, owned by {1}, with id {2}", i.Value, _playerName, i.Key));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Clan named {0}, owned by {1}, with id {2}", i.Value, _playerName, i.Key));
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Clan named {0}, owned by player with id {1}", i.Value, i.Key));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Clan named {0}, owned by player with id {1}", i.Value, i.Key));
                             }
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No clans were found"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] No clans were found"));
                     }
                     return;
                 }
@@ -103,7 +103,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
                     if (int.TryParse(_params[1], out int _steamId))
@@ -117,9 +117,9 @@ namespace ServerTools
                                 ClanManager.Clans.Remove(_params[1]);
                                 PersistentContainer.Instance.Players[_params[1]].ClanOwner = false;
                                 PersistentContainer.Instance.Players[_params[1]].ClanRequestToJoin = null;
-                                for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+                                for (int i = 0; i < PersistentContainer.Instance.Players.IDs.Count; i++)
                                 {
-                                    string _id = PersistentContainer.Instance.Players.SteamIDs[i];
+                                    string _id = PersistentContainer.Instance.Players.IDs[i];
                                     PersistentPlayer p = PersistentContainer.Instance.Players[_id];
                                     {
                                         if (p.ClanName != null && p.ClanName == _clanName)
@@ -127,8 +127,8 @@ namespace ServerTools
                                             p.ClanOfficer = false;
                                             p.ClanName = "";
                                             ClanManager.ClanMember.Remove(_id);
-                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Deleted {0} with id {1} from the clan system", p.PlayerName, _id));
-                                            ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_id);
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Deleted {0} with id {1} from the clan system", p.PlayerName, _id));
+                                            ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_id);
                                             if (_cInfo2 != null)
                                             {
                                                 Phrases.Dict.TryGetValue("Clan21", out string _phrase);
@@ -147,11 +147,11 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[_params[1]].ClanOfficer = false;
                             PersistentContainer.Instance.Players[_params[1]].ClanName = "";
                             PersistentContainer.DataChange = true;
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Deleted {0} with id {1} from the clan system", _playerName, _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Deleted {0} with id {1} from the clan system", _playerName, _params[1]));
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0} was not found in the clan system", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] {0} was not found in the clan system", _params[1]));
                             
                         }
                     }
@@ -167,9 +167,9 @@ namespace ServerTools
                                     break;
                                 }
                             }
-                            for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+                            for (int i = 0; i < PersistentContainer.Instance.Players.IDs.Count; i++)
                             {
-                                string _id = PersistentContainer.Instance.Players.SteamIDs[i];
+                                string _id = PersistentContainer.Instance.Players.IDs[i];
                                 PersistentPlayer p = PersistentContainer.Instance.Players[_id];
                                 {
                                     if (p.ClanName != null && p.ClanName == _params[1])
@@ -178,8 +178,8 @@ namespace ServerTools
                                         p.ClanOfficer = false;
                                         p.ClanRequestToJoin = null;
                                         ClanManager.ClanMember.Remove(_id);
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Deleted {0} with id {1} from the clan system", p.PlayerName, _id));
-                                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_id);
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Deleted {0} with id {1} from the clan system", p.PlayerName, _id));
+                                        ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_id);
                                         if (_cInfo2 != null)
                                         {
                                             Phrases.Dict.TryGetValue("Clan21", out string _phrase);
@@ -198,7 +198,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0} was not found in the clan system", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] {0} was not found in the clan system", _params[1]));
 
                         }
                     }
@@ -206,7 +206,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

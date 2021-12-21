@@ -13,9 +13,9 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. st-mt add <steamId/entityId>\n" +
-                "  2. st-mt add <steamId/entityId> <time>\n" +
-                "  3. st-mt remove <steamId>\n" +
+                "  1. st-mt add <EOS/EntityId/PlayerName>\n" +
+                "  2. st-mt add <EOS/EntityId/PlayerName> <time>\n" +
+                "  3. st-mt remove <EOS>\n" +
                 "  4. st-mt list\n" +
                 "1. Adds a steam Id to the mute list for 60 minutes\n" +
                 "2. Adds a steam Id to the mute list for a specific time\n" +
@@ -35,62 +35,62 @@ namespace ServerTools
                 {
                     if (_params.Count < 1 || _params.Count > 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found {0}.", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found '{0}'", _params.Count));
                         return;
                     }
                     if (_params[0].ToLower().Equals("add"))
                     {
                         if (_params.Count < 2 || _params.Count > 3)
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or 3, found {0}.", _params.Count));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or 3, found '{0}'", _params.Count));
                             return;
                         }
-                        if (_params[1].Length < 1 || _params[1].Length > 17)
+                        if (!_params[1].Contains("_"))
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id: Invalid Id {0}.", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id {0}", _params[1]));
                             return;
                         }
-                        int _muteTime = 60;
+                        int muteTime = 60;
                         if (_params[2] != null)
                         {
-                            if (int.TryParse(_params[2], out int _value))
-                                _muteTime = _value;
+                            if (int.TryParse(_params[2], out int value))
+                                muteTime = value;
                         }
-                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                        if (_cInfo != null)
+                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                        if (cInfo != null)
                         {
-                            if (Mute.Mutes.Contains(_cInfo.playerId))
+                            if (Mute.Mutes.Contains(cInfo.PlatformId.CombinedString) || Mute.Mutes.Contains(cInfo.CrossplatformId.CombinedString))
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Steam Id {0}, player name {1} is already muted.", _cInfo.playerId, _cInfo.playerName));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' '{1}' named '{2}' is already muted", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                 return;
                             }
                             else
                             {
-                                if (_muteTime == -1)
+                                if (muteTime == -1)
                                 {
-                                    Mute.Mutes.Add(_cInfo.playerId);
-                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = -1;
-                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteName = _cInfo.playerName;
-                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteDate = DateTime.Now;
+                                    Mute.Mutes.Add(cInfo.PlatformId.ReadablePlatformUserIdentifier);
+                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteTime = -1;
+                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteName = cInfo.playerName;
+                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteDate = DateTime.Now;
                                     PersistentContainer.DataChange = true;
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Steam Id {0}, player name {1} has been muted indefinitely.", _cInfo.playerId, _cInfo.playerName));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' '{1}' named '{2}' has been muted indefinitely", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                     return;
                                 }
                                 else
                                 {
-                                    Mute.Mutes.Add(_cInfo.playerId);
-                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = _muteTime;
-                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteName = _cInfo.playerName;
-                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteDate = DateTime.Now;
+                                    Mute.Mutes.Add(cInfo.CrossplatformId.CombinedString);
+                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteTime = muteTime;
+                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteName = cInfo.playerName;
+                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteDate = DateTime.Now;
 
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Steam Id {0}, player name {1} has been muted for {2} minutes.", _cInfo.playerId, _cInfo.playerName, _muteTime));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' '{1}' named '{2}' has been muted for '{3}' minutes", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, muteTime));
                                     return;
                                 }
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with Id {0} can not be found.", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with Id '{0}' can not be found", _params[1]));
                             return;
                         }
                     }
@@ -98,31 +98,31 @@ namespace ServerTools
                     {
                         if (_params.Count != 2)
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}.", _params.Count));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                             return;
                         }
-                        if (_params[1].Length != 17)
+                        if (!_params[1].Contains("_"))
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id: Invalid Id {0}.", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id '{0}'", _params[1]));
                             return;
                         }
-                        string _id = _params[1];
-                        if (Mute.Mutes.Contains(_id))
+                        string id = _params[1];
+                        if (Mute.Mutes.Contains(id))
                         {
-                            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_id);
-                            if (_cInfo != null)
+                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(id);
+                            if (cInfo != null)
                             {
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "You have been unmuted.[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + "You have been unmuted[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
-                            Mute.Mutes.Remove(_id);
-                            PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = 0;
+                            Mute.Mutes.Remove(id);
+                            PersistentContainer.Instance.Players[id].MuteTime = 0;
                             PersistentContainer.DataChange = true;
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Steam Id {0} has been unmuted.", _id));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' has been unmuted", id));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Steam Id {0} is not muted.", _id));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' is not muted", id));
                             return;
                         }
                     }
@@ -130,12 +130,12 @@ namespace ServerTools
                     {
                         if (_params.Count != 1)
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}.", _params.Count));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                             return;
                         }
                         if (Mute.Mutes.Count == 0)
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No players are muted."));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] No players are muted"));
                             return;
                         }
                         else
@@ -152,18 +152,18 @@ namespace ServerTools
                                     double fractionalMinutes = varTime.TotalMinutes;
                                     int _timepassed = (int)fractionalMinutes;
                                     int _timeleft = _muteTime - _timepassed;
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Muted player: steam Id {0} named {1} for {2} more minutes.", _id, _muteName, _timeleft));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Muted player: Id '{0}' named '{1}' has '{2}' minutes remaining", _id, _muteName, _timeleft));
                                 }
                                 else if (_muteTime == -1)
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Muted player: steam Id {0} named {1} forever.", _id, _muteName));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Muted player: Id '{0}' named '{1}' for eternity", _id, _muteName));
                                 }
                             }
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                         return;
                     }
                 }
@@ -174,7 +174,7 @@ namespace ServerTools
             }
             else
             {
-                SdtdConsole.Instance.Output("[SERVERTOOLS] Mute is not enabled.");
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Mute is not enabled");
                 return;
             }
         }

@@ -20,20 +20,31 @@ namespace ServerTools
                 }
                 else
                 {
-                    DateTime lastkillme = PersistentContainer.Instance.Players[_cInfo.playerId].LastKillMe;
+                    DateTime lastkillme = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastKillMe;
                     TimeSpan varTime = DateTime.Now - lastkillme;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int timepassed = (int)fractionalMinutes;
                     if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                     {
-                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                         {
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                            if (DateTime.Now < _dt)
+                            if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                             {
-                                int delay = Delay_Between_Uses / 2;
-                                Time(_cInfo, timepassed, delay);
-                                return;
+                                if (DateTime.Now < dt)
+                                {
+                                    int delay = Delay_Between_Uses / 2;
+                                    Time(_cInfo, timepassed, delay);
+                                    return;
+                                }
+                            }
+                            else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                            {
+                                if (DateTime.Now < dt)
+                                {
+                                    int delay = Delay_Between_Uses / 2;
+                                    Time(_cInfo, timepassed, delay);
+                                    return;
+                                }
                             }
                         }
                     }
@@ -79,7 +90,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (Player_Check)
@@ -92,7 +103,7 @@ namespace ServerTools
                                 ClientInfo cInfo2 = clientList[i];
                                 if (cInfo2 != null)
                                 {
-                                    EntityPlayer player2 = GameManager.Instance.World.Players.dict[cInfo2.entityId];
+                                    EntityPlayer player2 = PersistentOperations.GetEntityPlayer(cInfo2.entityId);
                                     if (player2 != null)
                                     {
                                         Vector3 pos2 = player2.GetPosition();
@@ -100,8 +111,8 @@ namespace ServerTools
                                         {
                                             if (!player.IsFriendsWith(player2))
                                             {
-                                                Phrases.Dict.TryGetValue("Suicide2", out string _phrase2);
-                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                Phrases.Dict.TryGetValue("Suicide2", out string phrase);
+                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 return;
                                             }
                                         }
@@ -124,16 +135,16 @@ namespace ServerTools
                                     Vector3 pos2 = entity.GetPosition();
                                     if (((int)player.position.x - (int)pos2.x) * ((int)player.position.x - (int)pos2.x) + ((int)player.position.z - (int)pos2.z) * ((int)player.position.z - (int)pos2.z) <= 20 * 20)
                                     {
-                                        Phrases.Dict.TryGetValue("Suicide3", out string _phrase3);
-                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase3 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        Phrases.Dict.TryGetValue("Suicide3", out string phrase);
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         return;
                                     }
                                 }
                             }
                         }
                     }
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), null);
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastKillMe = DateTime.Now;
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.CrossplatformId.CombinedString), null);
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastKillMe = DateTime.Now;
                     PersistentContainer.DataChange = true;
                 }
             }

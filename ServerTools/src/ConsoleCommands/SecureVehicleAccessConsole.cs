@@ -28,10 +28,10 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
-                if (!string.IsNullOrEmpty(_senderInfo.RemoteClientInfo.playerId))
+                if (!string.IsNullOrEmpty(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
                 {
                     List<Entity> Entities = GameManager.Instance.World.Entities.list;
                     if (Entities != null)
@@ -45,10 +45,10 @@ namespace ServerTools
                                 if (_name == "vehicleBicycle" || _name == "vehicleMinibike" || _name == "vehicleMotorcycle" || _name == "vehicle4x4Truck" || _name == "vehicleGyrocopter")
                                 {
                                     EntityVehicle _vehicle = _entity as EntityVehicle;
-                                    if (!_vehicle.IsUserAllowed(_senderInfo.RemoteClientInfo.playerId))
+                                    if (!_vehicle.IsUserAllowed(_senderInfo.RemoteClientInfo.CrossplatformId))
                                     {
-                                        List<string> _users = _vehicle.GetUsers();
-                                        _users.Add(_senderInfo.RemoteClientInfo.playerId);
+                                        List<PlatformUserIdentifierAbs> _users = _vehicle.GetUsers();
+                                        _users.Add(_senderInfo.RemoteClientInfo.CrossplatformId);
                                         _vehicle.bPlayerStatsChanged = true;
                                     }
                                 }
@@ -56,7 +56,7 @@ namespace ServerTools
                         }
                     }
                 }
-                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle access set for {0}", _senderInfo.RemoteClientInfo.playerId));
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vehicle access set for '{0}' in loaded areas. Unloaded areas are unchanged", _senderInfo.RemoteClientInfo.CrossplatformId.CombinedString));
             }
             catch (Exception e)
             {

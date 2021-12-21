@@ -14,7 +14,7 @@ namespace ServerTools
             {
                 if (Regions.Count > 0)
                 {
-                    string regionDir = GameUtils.GetSaveGameRegionDir();
+                    string regionDir = GameIO.GetSaveGameRegionDir();
                     if (Directory.Exists(regionDir))
                     {
                         string[] files = Directory.GetFiles(regionDir, "*.7rg", SearchOption.AllDirectories);

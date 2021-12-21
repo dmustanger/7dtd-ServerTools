@@ -33,7 +33,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 || _params.Count > 2)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -43,12 +43,12 @@ namespace ServerTools
                         AnimalTracking.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking has been set to off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking is already off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking is already off"));
                         return;
                     }
                 }
@@ -59,12 +59,12 @@ namespace ServerTools
                         AnimalTracking.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking has been set to on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking is already off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking is already off"));
                         return;
                     }
                 }
@@ -72,16 +72,16 @@ namespace ServerTools
                 {
                     if (_params[1].ToLower().Equals("all"))
                     {
-                        for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+                        for (int i = 0; i < PersistentContainer.Instance.Players.IDs.Count; i++)
                         {
-                            string _id = PersistentContainer.Instance.Players.SteamIDs[i];
+                            string _id = PersistentContainer.Instance.Players.IDs[i];
                             PersistentPlayer p = PersistentContainer.Instance.Players[_id];
                             {
                                 PersistentContainer.Instance.Players[_id].LastAnimal = DateTime.Now.AddYears(-1);
                                 PersistentContainer.DataChange = true;
                             }
                         }
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] Animal tracking delay reset for all players.");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Animal tracking delay reset for all players");
                     }
                     else
                     {
@@ -90,24 +90,24 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[_params[1]].LastAnimal = DateTime.Now.AddYears(-1);
                             PersistentContainer.DataChange = true;
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking delay reset for {0}.", _cInfo.playerName));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking delay reset for {0}", _cInfo.playerName));
                         }
                         else
                         {
                             if (_params[1].Length != 17)
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not reset Id: Invalid Id {0}", _params[1]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not reset Id: Invalid Id {0}", _params[1]));
                                 return;
                             }
                             PersistentContainer.Instance.Players[_params[1]].LastAnimal = DateTime.Now.AddYears(-1);
                             PersistentContainer.DataChange = true;
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking delay reset for {0}.", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking delay reset for {0}", _params[1]));
                         }
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

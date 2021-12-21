@@ -21,7 +21,7 @@ namespace ServerTools
 
         public static void SetTarget()
         {
-            SdtdConsole.Instance.ExecuteSync(string.Format("SetTargetFps {0}", Set_Target), null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("SetTargetFps {0}", Set_Target), null);
         }
 
         public static void LowFPS()

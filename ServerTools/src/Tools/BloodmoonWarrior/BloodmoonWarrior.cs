@@ -12,8 +12,8 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, BloodmoonStarted = false, Reduce_Death_Count = false;
         public static int Zombie_Kills = 10, Chance = 50, Reward_Count = 1, Level_Required = 10;
 
-        public static List<string> WarriorList = new List<string>();
-        public static Dictionary<string, int> KilledZombies = new Dictionary<string, int>();
+        public static List<int> WarriorList = new List<int>();
+        public static Dictionary<int, int> KilledZombies = new Dictionary<int, int>();
 
         private static readonly Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
 
@@ -46,7 +46,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -165,7 +165,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -178,12 +178,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing BloodmoonWarrior.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -194,7 +194,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -247,7 +247,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -271,11 +271,11 @@ namespace ServerTools
                                 ClientInfo cInfo = clientList[i];
                                 if (cInfo != null)
                                 {
-                                    EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                                    EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                                     if (player != null && player.IsSpawned() && player.IsAlive() && player.Died > 0 && player.Progression.GetLevel() >= 10 && Random.Next(0, 100) < Chance)
                                     {
-                                        WarriorList.Add(cInfo.playerId);
-                                        KilledZombies.Add(cInfo.playerId, 0);
+                                        WarriorList.Add(cInfo.entityId);
+                                        KilledZombies.Add(cInfo.entityId, 0);
                                         Phrases.Dict.TryGetValue("BloodmoonWarrior1", out string phrase);
                                         phrase = phrase.Replace("{Count}", Zombie_Kills.ToString());
                                         ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -301,27 +301,27 @@ namespace ServerTools
         {
             try
             {
-                List<string> _warriors = WarriorList;
-                for (int i = 0; i < _warriors.Count; i++)
+                List<int> warriors = WarriorList;
+                for (int i = 0; i < warriors.Count; i++)
                 {
-                    string _warrior = _warriors[i];
-                    EntityPlayer _player = PersistentOperations.GetEntityPlayer(_warrior);
-                    if (_player != null && _player.IsAlive())
+                    int warrior = warriors[i];
+                    EntityPlayer player = PersistentOperations.GetEntityPlayer(warrior);
+                    if (player != null && player.IsAlive())
                     {
-                        if (KilledZombies.TryGetValue(_warrior, out int _killedZ))
+                        if (KilledZombies.TryGetValue(warrior, out int _killedZ))
                         {
                             if (_killedZ >= Zombie_Kills)
                             {
-                                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_warrior);
+                                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(warrior);
                                 if (_cInfo != null)
                                 {
                                     Counter(_cInfo, Reward_Count);
                                     if (Reduce_Death_Count)
                                     {
-                                        int _deathCount = _player.Died - 1;
-                                        _player.Died = _deathCount;
-                                        _player.bPlayerStatsChanged = true;
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(_player));
+                                        int deathCount = player.Died - 1;
+                                        player.Died = deathCount;
+                                        player.bPlayerStatsChanged = true;
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(player));
                                         Phrases.Dict.TryGetValue("BloodmoonWarrior2", out string _phrase);
                                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
@@ -358,22 +358,22 @@ namespace ServerTools
         {
             try
             {
-                string _randomItem = List.RandomObject();
-                if (Dict.TryGetValue(_randomItem, out string[]  _item))
+                string randomItem = List.RandomObject();
+                if (Dict.TryGetValue(randomItem, out string[]  item))
                 {
-                    int _minCount = int.Parse(_item[1]);
-                    int _maxCount = int.Parse(_item[2]);
-                    int _minQuality = int.Parse(_item[3]);
-                    int _maxQuality = int.Parse(_item[4]);
-                    int _count = Random.Next(_minCount, _maxCount + 1);
-                    int _quality = Random.Next(_minCount, _maxCount + 1);
-                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_randomItem, false).type, _quality, _quality, false, null);
+                    int minCount = int.Parse(item[1]);
+                    int maxCount = int.Parse(item[2]);
+                    int minQuality = int.Parse(item[3]);
+                    int maxQuality = int.Parse(item[4]);
+                    int count = Random.Next(minCount, maxCount + 1);
+                    int quality = Random.Next(minCount, maxCount + 1);
+                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type, quality, quality, false, null);
                     World world = GameManager.Instance.World;
                     var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                     {
                         entityClass = EntityClass.FromString("item"),
                         id = EntityFactory.nextEntityID++,
-                        itemStack = new ItemStack(_itemValue, _count),
+                        itemStack = new ItemStack(itemValue, count),
                         pos = world.Players.dict[_cInfo.entityId].position,
                         rot = new Vector3(20f, 0f, 20f),
                         lifetime = 60f,

@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "19.6.9";
+        public const string Version = "20.0.0";
         public static bool Upgrade = false;
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
@@ -25,7 +25,7 @@ namespace ServerTools
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(ConfigFilePath))
+            if (!File.Exists(ConfigFilePath))
             {
                 WriteXml();
             }
@@ -1005,58 +1005,6 @@ namespace ServerTools
                                 if (line.HasAttribute("Countries_Not_Allowed"))
                                 {
                                     CountryBan.Countries_Not_Allowed = line.GetAttribute("Countries_Not_Allowed");
-                                }
-                                break;
-                            case "Credentials":
-                                if (!line.HasAttribute("Enable"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(line.GetAttribute("Enable"), out Credentials.IsEnabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!line.HasAttribute("No_Family_Share"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of missing 'No_Family_Share' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(line.GetAttribute("No_Family_Share"), out Credentials.Family_Share))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of invalid (True/False) value for 'No_Family_Share' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!line.HasAttribute("No_Bad_Id"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of missing 'No_Bad_Id' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(line.GetAttribute("No_Bad_Id"), out Credentials.Bad_Id))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of invalid (True/False) value for 'No_Bad_Id' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!line.HasAttribute("No_Internal"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of missing 'No_Internal' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(line.GetAttribute("No_Internal"), out Credentials.No_Internal))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of invalid (True/False) value for 'No_Internal' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!line.HasAttribute("Admin_Level"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out Credentials.Admin_Level))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Credentials entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                                    continue;
                                 }
                                 break;
                             case "Custom_Commands":
@@ -4089,7 +4037,6 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Clean_Bin_Extended2\" Poll=\"{0}\" Protected_Spaces=\"{1}\" Vehicles=\"{2}\" Wallet=\"{3}\" Waypoints=\"{4}\" />", CleanBin.Poll, CleanBin.Protected_Spaces, CleanBin.Vehicles, CleanBin.Wallet, CleanBin.Waypoints));
                 sw.WriteLine(string.Format("        <Tool Name=\"Console_Command_Log\" Enable=\"{0}\" />", ConsoleCommandLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Country_Ban\" Enable=\"{0}\" Countries_Not_Allowed=\"CN,IL\" />", CountryBan.IsEnabled, CountryBan.Countries_Not_Allowed));
-                sw.WriteLine(string.Format("        <Tool Name=\"Credentials\" Enable=\"{0}\" No_Family_Share=\"{1}\" No_Bad_Id=\"{2}\" No_Internal=\"{3}\" Admin_Level=\"{4}\" />", Credentials.IsEnabled, Credentials.Family_Share, Credentials.Bad_Id, Credentials.No_Internal, Credentials.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Custom_Commands\" Enable=\"{0}\" />", CustomCommands.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Damage_Detector\" Enable=\"{0}\" Entity_Damage_Limit=\"{1}\" Block_Damage_Limit=\"{2}\" Player_Damage_Limit=\"{3}\" Admin_Level=\"{4}\" />", DamageDetector.IsEnabled, DamageDetector.Entity_Damage_Limit, DamageDetector.Block_Damage_Limit, DamageDetector.Player_Damage_Limit, DamageDetector.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Day7\" Enable=\"{0}\" />", Day7.IsEnabled));
@@ -4213,7 +4160,7 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
-                if (Utils.FileExists(ConfigFilePath))
+                if (File.Exists(ConfigFilePath))
                 {
                     XmlDocument xml = new XmlDocument();
                     try

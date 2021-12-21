@@ -17,8 +17,8 @@ namespace ServerTools
                     string _tags = _entity.EntityClass.Tags.ToString();
                     if (_tags.Contains("zombie") || _tags.Contains("hostile"))
                     {
-                        EntityAlive _entityAlive = GameManager.Instance.World.Entities.dict[_entity.entityId] as EntityAlive;
-                        if (_entityAlive != null)
+                        EntityAlive entityAlive = PersistentOperations.GetEntityPlayer(_entity.entityId) as EntityAlive;
+                        if (entityAlive != null)
                         {
                             if (((_player.position.x - _entity.position.x) * (_player.position.x - _entity.position.x) + (_player.position.z - _entity.position.z) * (_player.position.z - _entity.position.z)) < 75f * 75f)
                             {
@@ -35,10 +35,10 @@ namespace ServerTools
 
         public static bool PCheck(ClientInfo _cInfo, EntityPlayer _player)
         {
-            List<EntityPlayer> _playerList = GameManager.Instance.World.Players.list;
-            for (int i = 0; i < _playerList.Count; i++)
+            List<EntityPlayer> playerList = GameManager.Instance.World.Players.list;
+            for (int i = 0; i < playerList.Count; i++)
             {
-                EntityPlayer _player2 = _playerList[i];
+                EntityPlayer _player2 = playerList[i];
                 if (_player2 != null && _player != _player2 && _player2.IsSpawned() && !_player.IsFriendsWith(_player2))
                 {
                     if (((_player.position.x - _player2.position.x) * (_player.position.x - _player2.position.x) + (_player.position.z - _player2.position.z) * (_player.position.z - _player2.position.z)) < 125f * 125f)
@@ -54,11 +54,11 @@ namespace ServerTools
 
         public static bool VehicleCheck(ClientInfo _cInfo)
         {
-            Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (_player.AttachedToEntity != null)
+            EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+            if (player.AttachedToEntity != null)
             {
-                Phrases.Dict.TryGetValue("Teleport3", out string _phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Teleport3", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 return true;
             }
             return false;

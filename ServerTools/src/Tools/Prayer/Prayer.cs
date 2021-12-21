@@ -38,7 +38,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -98,7 +98,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -111,12 +111,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing Prayer.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -127,7 +127,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -180,7 +180,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -205,18 +205,18 @@ namespace ServerTools
                 else
                 {
                     DateTime lastPrayer = DateTime.Now;
-                    if (PersistentContainer.Instance.Players[_cInfo.playerId].LastPrayer != null)
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastPrayer != null)
                     {
-                        lastPrayer = PersistentContainer.Instance.Players[_cInfo.playerId].LastPrayer;
+                        lastPrayer = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastPrayer;
                     }
                     TimeSpan varTime = DateTime.Now - lastPrayer;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int timepassed = (int)fractionalMinutes;
                     if (ReservedSlots.IsEnabled)
                     {
-                        if (ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        if (ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                         {
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime dt);
+                            ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime dt);
                             if (DateTime.Now < dt)
                             {
                                 int delay = Delay_Between_Uses / 2;
@@ -272,7 +272,7 @@ namespace ServerTools
             {
                 if (Wallet.IsEnabled && Command_Cost > 0)
                 {
-                    if (Wallet.GetCurrency(_cInfo.playerId) >= Command_Cost)
+                    if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
                     {
                         SetBuff(_cInfo);
                     }
@@ -303,13 +303,13 @@ namespace ServerTools
                     List<string> Keys = new List<string>(Dict.Keys);
                     string randomKey = Keys[Random.Next(Dict.Count)];
                     string message = Dict[randomKey];
-                    SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.playerId, randomKey), null);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, randomKey), null);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
-                        Wallet.RemoveCurrency(_cInfo.playerId, Command_Cost);
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                     }
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastPrayer = DateTime.Now;
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastPrayer = DateTime.Now;
                     PersistentContainer.DataChange = true;
                 }
             }

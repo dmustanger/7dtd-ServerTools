@@ -35,7 +35,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -89,7 +89,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -102,12 +102,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing LoginNotice.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -118,7 +118,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -174,7 +174,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -183,10 +183,15 @@ namespace ServerTools
 
         public static void PlayerNotice(ClientInfo _cInfo)
         {
-            if (Dict.TryGetValue(_cInfo.playerId, out string _message))
+            if (Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out string message))
             {
-                _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _message + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                message = message.Replace("{PlayerName}", _cInfo.playerName);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + message + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            }
+            else if (Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out message))
+            {
+                message = message.Replace("{PlayerName}", _cInfo.playerName);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + message + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
         }
 

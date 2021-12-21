@@ -45,7 +45,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1 && _params.Count != 2 && _params.Count != 5)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, 2 or 5, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, 2 or 5, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -55,12 +55,12 @@ namespace ServerTools
                         ProtectedZones.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces has been set to off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces is already off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces is already off"));
                         return;
                     }
                 }
@@ -71,12 +71,12 @@ namespace ServerTools
                         ProtectedZones.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces has been set to on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces is already on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces is already on"));
                         return;
                     }
                 }
@@ -84,17 +84,17 @@ namespace ServerTools
                 {
                     if (_params.Count != 1 && _params.Count != 5)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 5, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 5, found '{0}'", _params.Count));
                         return;
                     }
                     if (_params.Count == 1)
                     {
                         if (_senderInfo.RemoteClientInfo == null)
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No client info found. Join the server as a client before using this command"));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] No client info found. Join the server as a client before using this command"));
                             return;
                         }
-                        EntityPlayer player = PersistentOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.playerId);
+                        EntityPlayer player = PersistentOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
                         if (player != null)
                         {
                             int x = (int)player.position.x, z = (int)player.position.z;
@@ -104,8 +104,8 @@ namespace ServerTools
                                 vectors[0] = x;
                                 vectors[1] = z;
                                 ProtectedZones.Vectors.Add(player.entityId, vectors);
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The first position has been set to {0}x,{1}z", x, z));
-                                SdtdConsole.Instance.Output("[SERVERTOOLS] Stand in the opposite corner and use add again. Use cancel to clear the saved location and start again");
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The first position has been set to {0}x,{1}z", x, z));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Stand in the opposite corner and use add again. Use cancel to clear the saved location and start again");
                                 return;
                             }
                             else
@@ -135,12 +135,12 @@ namespace ServerTools
                                 {
                                     ProtectedZones.ProtectedList.Add(vectors);
                                     ProtectedZones.UpdateXml();
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added protected space from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3], vectors[4]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added protected space from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3], vectors[4]));
                                     return;
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] This protected space is already on the list"));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] This protected space is already on the list"));
                                     return;
                                 }
                             }
@@ -150,22 +150,22 @@ namespace ServerTools
                     {
                         if (!int.TryParse(_params[1], out int xMin))
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer: {0}", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[1]));
                             return;
                         }
                         if (!int.TryParse(_params[2], out int zMin))
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer: {0}", _params[2]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[2]));
                             return;
                         }
                         if (!int.TryParse(_params[3], out int xMax))
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer: {0}", _params[3]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[3]));
                             return;
                         }
                         if (!int.TryParse(_params[4], out int zMax))
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer: {0}", _params[4]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[4]));
                             return;
                         }
                         int[] vectors = new int[5];
@@ -194,12 +194,12 @@ namespace ServerTools
                         {
                             ProtectedZones.ProtectedList.Add(vectors);
                             ProtectedZones.UpdateXml();
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added protected space from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3], vectors[4]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added protected space from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3], vectors[4]));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] This protected space is already on the list"));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] This protected space is already on the list"));
                             return;
                         }
                     }
@@ -208,18 +208,18 @@ namespace ServerTools
                 {
                     if (_senderInfo.RemoteClientInfo == null)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You are not in game. There is nothing to cancel"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You are not in game. There is nothing to cancel"));
                         return;
                     }
                     if (ProtectedZones.Vectors.ContainsKey(_senderInfo.RemoteClientInfo.entityId))
                     {
                         ProtectedZones.Vectors.Remove(_senderInfo.RemoteClientInfo.entityId);
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Cancelled your saved corner positions"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Cancelled your saved corner positions"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have no saved position for a protected space. Use add in the first corner you want to protect"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have no saved position for a protected space. Use add in the first corner you want to protect"));
                         return;
                     }
                 }
@@ -236,24 +236,24 @@ namespace ServerTools
                                     int[] _vectors = ProtectedZones.ProtectedList[_listNum - 1];
                                     ProtectedZones.ProtectedList.Remove(_vectors);
                                     ProtectedZones.UpdateXml();
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed protected space {0}: {1}x,{2}z to {3}x,{4}z", _listNum, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed protected space {0}: {1}x,{2}z to {3}x,{4}z", _listNum, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
                                     return;
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid list number: {0}", _params[1]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid list number '{0}'", _params[1]));
                                     return;
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer: {0}", _params[1]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[1]));
                                 return;
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] There are no protected spaces"));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no protected spaces"));
                             return;
                         }
                     }
@@ -267,24 +267,24 @@ namespace ServerTools
                 {
                     if (ProtectedZones.ProtectedList.Count > 0)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces list:"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces list:"));
                         for (int i = 0; i < ProtectedZones.ProtectedList.Count; i++)
                         {
                             int[] _vectors = ProtectedZones.ProtectedList[i];
                             if (_vectors[4] == 1)
                             {
-                                SdtdConsole.Instance.Output(string.Format("#{0}: {1}x,{2}z to {3}x,{4}z is active", i + 1, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("#{0}: {1}x,{2}z to {3}x,{4}z is active", i + 1, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("#{0}: {1}x,{2}z to {3}x,{4}z is deactivated", i + 1, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("#{0}: {1}x,{2}z to {3}x,{4}z is deactivated", i + 1, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
                             }
                         }
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] There are no protected spaces"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no protected spaces"));
                         return;
                     }
                 }
@@ -292,7 +292,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     int.TryParse(_params[1], out int _listEntry);
@@ -303,25 +303,25 @@ namespace ServerTools
                         {
                             _protectedSpace[4] = 0;
                             ProtectedZones.UpdateXml();
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Deactivated protected space #{0}", _listEntry));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Deactivated protected space #{0}", _listEntry));
                         }
                         else
                         {
                             _protectedSpace[4] = 1;
                             ProtectedZones.UpdateXml();
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Activated protected space #{0}", _listEntry));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Activated protected space #{0}", _listEntry));
                         }
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] This number does not exist on the protected spaces list. Unable to active or deactivate"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] This number does not exist on the protected spaces list. Unable to active or deactivate"));
                         return;
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

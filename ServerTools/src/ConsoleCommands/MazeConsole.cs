@@ -37,7 +37,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1 && _params.Count != 3 && _params.Count != 4)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, 3 or 4, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, 3 or 4, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("add"))
@@ -53,67 +53,67 @@ namespace ServerTools
                                     if (blocks < 30)
                                     {
                                         blocks = 30;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Maze size is too small. Maze size increased to 30"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze size is too small. Maze size increased to 30"));
                                     }
                                     else if (blocks > 120)
                                     {
                                         blocks = 120;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Maze size is too big. Maze size decreased to 120"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze size is too big. Maze size decreased to 120"));
                                     }
                                     if (floors < 1)
                                     {
                                         floors = 1;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Floor count is too low. Floor count set to 1"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Floor count is too low. Floor count set to 1"));
                                     }
                                     else if (floors > 10)
                                     {
                                         floors = 10;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Floor count is too high. Floor count decreased to 10"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Floor count is too high. Floor count decreased to 10"));
                                     }
                                     if (floors >= 2 && blocks > 110)
                                     {
                                         floors = 1;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 1"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 1"));
                                     }
                                     else if (floors >= 3 && blocks > 90)
                                     {
                                         floors = 2;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 2"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 2"));
                                     }
                                     else if (floors >= 4 && blocks > 80)
                                     {
                                         floors = 3;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 3"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 3"));
                                     }
                                     else if (floors >= 5 && blocks > 70)
                                     {
                                         floors = 4;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 4"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 4"));
                                     }
                                     else if (floors >= 6 && blocks > 65)
                                     {
                                         floors = 5;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 5"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 5"));
                                     }
                                     else if (floors >= 7 && blocks > 60)
                                     {
                                         floors = 6;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 6"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 6"));
                                     }
                                     else if (floors >= 8 && blocks > 55)
                                     {
                                         floors = 7;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 7"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 7"));
                                     }
                                     else if (floors >= 9 && blocks > 52)
                                     {
                                         floors = 8;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 8"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 8"));
                                     }
                                     else if (floors == 10 && blocks > 50)
                                     {
                                         floors = 9;
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 9"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 9"));
                                     }
                                     World world = GameManager.Instance.World;
                                     EntityPlayer player = world.Players.dict[_senderInfo.RemoteClientInfo.entityId];
@@ -121,13 +121,13 @@ namespace ServerTools
                                     {
                                         if (player.position.y < 3)
                                         {
-                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Your position is too low. Unable to generate maze at this world height"));
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Your position is too low. Unable to generate maze at this world height"));
                                             return;
                                         }
                                         BlockValue groundBlockValue = world.GetBlock(new Vector3i(player.position.x, player.position.y - 1, player.position.z));
                                         if (groundBlockValue.Equals(BlockValue.Air))
                                         {
-                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Air block detected under you. Unable to generate a maze at this position"));
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Air block detected under you. Unable to generate a maze at this position"));
                                             return;
                                         }
                                         Block steelFloor = Block.GetBlockByName("steelBlock", false);
@@ -149,8 +149,8 @@ namespace ServerTools
                                                             Block ladder = Block.GetBlockByName("ladderMetal", false);
                                                             if (ladder != null)
                                                             {
-                                                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Maze generation started at player position {0}. Please be patient", player.position));
-                                                                SdtdConsole.Instance.Output(string.Format("Inspect the maze for potential collapse after it spawns"));
+                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze generation started at player position {0}. Please be patient", player.position));
+                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Inspect the maze for potential collapse after it spawns"));
                                                                 BlockValue steelBlockValue = Block.GetBlockValue("steelBlock");
                                                                 BlockValue concreteBlockValue = Block.GetBlockValue("concreteBlock");
                                                                 BlockValue stoneBlockValue = Block.GetBlockValue("terrStone");
@@ -187,7 +187,7 @@ namespace ServerTools
                                                                         }
                                                                         else
                                                                         {
-                                                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Part of the maze is outside of a loaded chunk area. Reduce the size of the maze"));
+                                                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Part of the maze is outside of a loaded chunk area. Reduce the size of the maze"));
                                                                             return;
                                                                         }
                                                                     }
@@ -224,7 +224,7 @@ namespace ServerTools
                                                                     mazeForm = FormPath(mazeForm, pathStart, blocks, floors);
                                                                     if (mazeForm == null)
                                                                     {
-                                                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to form the maze. Try again"));
+                                                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to form the maze. Try again"));
                                                                         return;
                                                                     }
                                                                     List<BlockChangeInfo> clearSpace = new List<BlockChangeInfo>();
@@ -298,7 +298,7 @@ namespace ServerTools
                                                                     }
                                                                     GameManager.Instance.SetBlocksRPC(clearSpace, null);
                                                                     GameManager.Instance.SetBlocksRPC(blockList, null);
-                                                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Maze has been formed. The start of the maze is at {0}", pathStart));
+                                                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze has been formed. The start of the maze is at {0}", pathStart));
                                                                 }
                                                                 else if (_params.Count == 4)
                                                                 {
@@ -335,7 +335,7 @@ namespace ServerTools
                                                                         mazeForm = FormPath(mazeForm, pathStart, blocks, floors);
                                                                         if (mazeForm == null)
                                                                         {
-                                                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to form the maze. Try again"));
+                                                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to form the maze. Try again"));
                                                                             return;
                                                                         }
                                                                         List<BlockChangeInfo> clearSpace = new List<BlockChangeInfo>();
@@ -409,88 +409,88 @@ namespace ServerTools
                                                                         }
                                                                         GameManager.Instance.SetBlocksRPC(clearSpace, null);
                                                                         GameManager.Instance.SetBlocksRPC(blockList, null);
-                                                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Maze has been spawned. The start of the maze is at {0}", pathStart));
+                                                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze has been spawned. The start of the maze is at {0}", pathStart));
                                                                     }
                                                                     else
                                                                     {
-                                                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: {0}", _params[3]));
+                                                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: {0}", _params[3]));
                                                                         return;
                                                                     }
                                                                 }
-                                                                if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.playerId))
+                                                                if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier))
                                                                 {
-                                                                    Undo[_senderInfo.RemoteClientInfo.playerId] = undo;
+                                                                    Undo[_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier] = undo;
                                                                 }
                                                                 else
                                                                 {
-                                                                    Undo.Add(_senderInfo.RemoteClientInfo.playerId, undo);
+                                                                    Undo.Add(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier, undo);
                                                                 }
-                                                                SdtdConsole.Instance.Output(string.Format("Use command maze undo to reset the maze space"));
+                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Use command maze undo to reset the maze space"));
                                                                 return;
                                                             }
                                                             else
                                                             {
-                                                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: ladderMetal"));
+                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: ladderMetal"));
                                                                 return;
                                                             }
                                                         }
                                                         else
                                                         {
-                                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: glassBulletproofBlock"));
+                                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: glassBulletproofBlock"));
                                                             return;
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: glassBusinessBlock"));
+                                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: glassBusinessBlock"));
                                                         return;
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: terrStone"));
+                                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: terrStone"));
                                                     return;
                                                 }
                                             }
                                             else
                                             {
-                                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: concreteBlock"));
+                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: concreteBlock"));
                                                 return;
                                             }
                                         }
                                         else
                                         {
-                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: steelBlock"));
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: steelBlock"));
                                             return;
                                         }
                                     }
                                     else
                                     {
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to form player info for world position. Join the game first or check for errors"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to form player info for world position. Join the game first or check for errors"));
                                         return;
                                     }
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to form client info for world position. Join the game first or check for errors"));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to form client info for world position. Join the game first or check for errors"));
                                     return;
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid number of floors: {0}", _params[2]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid number of floors: {0}", _params[2]));
                                 return;
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid width of blocks: {0}", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid width of blocks: {0}", _params[1]));
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 4 or 5, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 4 or 5, found {0}", _params.Count));
                         return;
                     }
                 }
@@ -500,15 +500,15 @@ namespace ServerTools
                     {
                         if (_senderInfo.RemoteClientInfo != null)
                         {
-                            if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.playerId))
+                            if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier))
                             {
-                                Undo.TryGetValue(_senderInfo.RemoteClientInfo.playerId, out Dictionary<Vector3i, BlockValue> undo);
+                                Undo.TryGetValue(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier, out Dictionary<Vector3i, BlockValue> undo);
                                 World world = GameManager.Instance.World;
                                 foreach (var block in undo)
                                 {
                                     if (!world.IsChunkAreaLoaded(block.Key.x, block.Key.y, block.Key.z))
                                     {
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Area is not loaded @ {0}. Unable to undo maze blocks", block.Key));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Area is not loaded @ {0}. Unable to undo maze blocks", block.Key));
                                         return;
                                     }
                                 }
@@ -518,31 +518,31 @@ namespace ServerTools
                                     blockList.Add(new BlockChangeInfo(0, block.Key, block.Value));
                                 }
                                 GameManager.Instance.SetBlocksRPC(blockList, null);
-                                Undo.Remove(_senderInfo.RemoteClientInfo.playerId);
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The maze you last spawned has been undone"));
+                                Undo.Remove(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier);
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The maze you last spawned has been undone"));
                                 return;
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have not spawned a maze. Unable to undo"));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have not spawned a maze. Unable to undo"));
                                 return;
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to form client info to run undo command"));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to form client info to run undo command"));
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

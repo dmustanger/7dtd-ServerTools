@@ -116,22 +116,6 @@ namespace ServerTools
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
                 }
 
-                original = AccessTools.Method(typeof(EntityAlive), "DamageEntity");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.DamageEntity method was not found"));
-                }
-                else
-                {
-                    MethodInfo prefix = typeof(Injections).GetMethod("EntityAlive_DamageEntity_Prefix");
-                    if (prefix == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_DamageEntity.prefix"));
-                        return;
-                    }
-                    harmony.Patch(original, new HarmonyMethod(prefix), null);
-                }
-
                 original = AccessTools.Method(typeof(GameManager), "Cleanup");
                 if (original == null)
                 {
@@ -150,38 +134,6 @@ namespace ServerTools
                         }
                         harmony.Patch(original, null, null, null, new HarmonyMethod(Finalizer));
                     }
-                }
-
-                original = AccessTools.Method(typeof(ObjectiveTreasureChest), "CalculateTreasurePoint");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: ObjectiveTreasureChest.CalculateTreasurePoint method was not found"));
-                }
-                else
-                {
-                    MethodInfo finalizer = typeof(Injections).GetMethod("ObjectiveTreasureChest_CalculateTreasurePoint_Finalizer");
-                    if (finalizer == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ObjectiveTreasureChest_CalculateTreasurePoint.finalizer"));
-                        return;
-                    }
-                    harmony.Patch(original, null, null, null, new HarmonyMethod(finalizer));
-                }
-
-                original = AccessTools.Method(typeof(EntityAlive), "ProcessDamageResponse");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.ProcessDamageResponse method was not found"));
-                }
-                else
-                {
-                    MethodInfo prefix = typeof(Injections).GetMethod("EntityAlive_ProcessDamageResponse_Prefix");
-                    if (prefix == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_ProcessDamageResponse.prefix"));
-                        return;
-                    }
-                    harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
                 original = AccessTools.Method(typeof(GameManager), "CollectEntityServer");
@@ -358,6 +310,54 @@ namespace ServerTools
                         return;
                     }
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
+                }
+
+                original = AccessTools.Method(typeof(EntityAlive), "DamageEntity");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.DamageEntity method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("EntityAlive_DamageEntity_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_DamageEntity.prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                original = AccessTools.Method(typeof(EntityAlive), "ProcessDamageResponse");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.ProcessDamageResponse method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("EntityAlive_ProcessDamageResponse_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_ProcessDamageResponse.prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                original = AccessTools.Method(typeof(ClientInfoCollection), "GetForNameOrId");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: ClientInfoCollection.GetForNameOrId method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("ClientInfoCollection_GetForNameOrId_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ClientInfoCollection_GetForNameOrId.prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
                 Log.Out("[SERVERTOOLS] Runtime patching complete");

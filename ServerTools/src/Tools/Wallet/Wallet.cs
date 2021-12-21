@@ -11,10 +11,10 @@ namespace ServerTools
 
         public static Dictionary<int, int> UpdateRequired = new Dictionary<int, int>();
 
-        public static int GetCurrency(string _steamId)
+        public static int GetCurrency(string _id)
         {
             int value = 0;
-            ClientInfo cInfo = PersistentOperations.GetClientInfoFromSteamId(_steamId);
+            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_id);
             if (cInfo != null)
             {
                 ItemStack[] stacks = cInfo.latestPlayerData.bag;
@@ -28,7 +28,7 @@ namespace ServerTools
             }
             else
             {
-                PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_steamId);
+                PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromId(_id);
                 if (pdf != null)
                 {
                     ItemStack[] stacks = pdf.bag;
@@ -44,12 +44,12 @@ namespace ServerTools
             return value;
         }
 
-        public static void AddCurrency(string _steamid, int _amount)
+        public static void AddCurrency(string _id, int _amount)
         {
-            ClientInfo cInfo = PersistentOperations.GetClientInfoFromSteamId(_steamid);
+            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_id);
             if (cInfo != null)
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_steamid);
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                 if (player != null)
                 {
                     if (player.IsSpawned())
@@ -75,13 +75,13 @@ namespace ServerTools
                     }
                     else
                     {
-                        Timers.Wallet_Add_SingleUseTimer(cInfo.playerId, _amount);
+                        Timers.Wallet_Add_SingleUseTimer(cInfo.CrossplatformId.CombinedString, _amount);
                     }
                 }
             }
             else
             {
-                PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_steamid);
+                PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromId(_id);
                 if (pdf != null)
                 {
                     ItemValue itemValue = new ItemValue(ItemClass.GetItem(PersistentOperations.Currency_Item).type);
@@ -128,7 +128,7 @@ namespace ServerTools
                         if (update)
                         {
                             pdf.bag = stacks;
-                            pdf.Save(GameUtils.GetPlayerDataDir(), _steamid);
+                            pdf.Save(GameIO.GetPlayerDataDir(), _id);
                         }
                     }
                 }
@@ -138,15 +138,15 @@ namespace ServerTools
         public static void RemoveCurrency(string _steamid, int _amount)
         {
             int count = 0;
-            ClientInfo cInfo = PersistentOperations.GetClientInfoFromSteamId(_steamid);
+            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_steamid);
             if (cInfo != null)
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                 if (player != null)
                 {
                     if (player.IsSpawned())
                     {
-                        count = GetCurrency(cInfo.playerId);
+                        count = GetCurrency(cInfo.CrossplatformId.CombinedString);
                         if (count > _amount)
                         {
                             count -= _amount;
@@ -155,64 +155,18 @@ namespace ServerTools
                             {
                                 UpdateRequired.Add(cInfo.entityId, count);
                                 GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
-                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", NetPackageGameEventResponse.ResponseTypes.Approved));
+                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
                             }
                         }
                         else if (count == _amount)
                         {
                             GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
-                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", NetPackageGameEventResponse.ResponseTypes.Approved));
+                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
                         }
                     }
                     else
                     {
-                        Timers.Wallet_Remove_SingleUseTimer(cInfo.playerId, count);
-                    }
-                }
-            }
-        }
-
-        public static void ClearBag(string _steamId)
-        {
-            ClientInfo cInfo = PersistentOperations.GetClientInfoFromSteamId(_steamId);
-            if (cInfo != null)
-            {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
-                if (player != null)
-                {
-                    if (player.IsSpawned())
-                    {
-                        GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
-                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", NetPackageGameEventResponse.ResponseTypes.Approved));
-                    }
-                }
-            }
-            else
-            {
-                PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_steamId);
-                if (pdf != null)
-                {
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(PersistentOperations.Currency_Item).type);
-                    if (itemValue != null)
-                    {
-                        ItemStack[] stacks = pdf.bag;
-                        if (stacks != null)
-                        {
-                            bool update = false;
-                            for (int i = 0; i < stacks.Length; i++)
-                            {
-                                if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.Name == PersistentOperations.Currency_Item)
-                                {
-                                    stacks[i] = ItemStack.Empty.Clone();
-                                    update = true;
-                                }
-                            }
-                            if (update)
-                            {
-                                pdf.bag = stacks;
-                                pdf.Save(GameUtils.GetPlayerDataDir(), _steamId);
-                            }
-                        }
+                        Timers.Wallet_Remove_SingleUseTimer(cInfo.CrossplatformId.CombinedString, count);
                     }
                 }
             }

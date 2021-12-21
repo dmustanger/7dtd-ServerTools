@@ -42,7 +42,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -95,7 +95,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -108,12 +108,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing DuplicateItemExemption.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -124,7 +124,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -178,7 +178,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -337,7 +337,7 @@ namespace ServerTools
                                                         {
                                                             using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                             {
-                                                                sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their bag inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their bag inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
                                                                 sw.Flush();
                                                                 sw.Close();
@@ -347,7 +347,7 @@ namespace ServerTools
                                                         {
                                                             using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                             {
-                                                                sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their bag at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their bag at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
                                                                 sw.Flush();
                                                                 sw.Close();
@@ -368,7 +368,7 @@ namespace ServerTools
                                                         {
                                                             using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                             {
-                                                                sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
                                                                 sw.Flush();
                                                                 sw.Close();
@@ -378,7 +378,7 @@ namespace ServerTools
                                                         {
                                                             using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                             {
-                                                                sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
                                                                 sw.Flush();
                                                                 sw.Close();
@@ -404,7 +404,7 @@ namespace ServerTools
                                                             {
                                                                 using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
-                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
                                                                     sw.Flush();
                                                                     sw.Close();
@@ -414,7 +414,7 @@ namespace ServerTools
                                                             {
                                                                 using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
-                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
                                                                     sw.Flush();
                                                                     sw.Close();
@@ -435,7 +435,7 @@ namespace ServerTools
                                                             {
                                                                 using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
-                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
                                                                     sw.Flush();
                                                                     sw.Close();
@@ -445,7 +445,7 @@ namespace ServerTools
                                                             {
                                                                 using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
-                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their bag, identical to another stack at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
                                                                     sw.Flush();
                                                                     sw.Close();
@@ -574,7 +574,7 @@ namespace ServerTools
                                                             {
                                                                 using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
-                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
                                                                     sw.Flush();
                                                                     sw.Close();
@@ -584,7 +584,7 @@ namespace ServerTools
                                                             {
                                                                 using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
-                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory, standing at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
                                                                     sw.Flush();
                                                                     sw.Close();
@@ -605,7 +605,7 @@ namespace ServerTools
                                                             {
                                                                 using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
-                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
                                                                     sw.Flush();
                                                                     sw.Close();
@@ -615,7 +615,7 @@ namespace ServerTools
                                                             {
                                                                 using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                 {
-                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                    sw.WriteLine(string.Format("{0}: {1} {2} has added {3} with quality {4} to their inventory, standing at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                     sw.WriteLine();
                                                                     sw.Flush();
                                                                     sw.Close();
@@ -641,7 +641,7 @@ namespace ServerTools
                                                                 {
                                                                     using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                     {
-                                                                        sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                        sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                         sw.WriteLine();
                                                                         sw.Flush();
                                                                         sw.Close();
@@ -651,7 +651,7 @@ namespace ServerTools
                                                                 {
                                                                     using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                     {
-                                                                        sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                        sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, standing at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                         sw.WriteLine();
                                                                         sw.Flush();
                                                                         sw.Close();
@@ -672,7 +672,7 @@ namespace ServerTools
                                                                 {
                                                                     using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                     {
-                                                                        sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                        sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, inside their own or ally claimed space at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                         sw.WriteLine();
                                                                         sw.Flush();
                                                                         sw.Close();
@@ -682,7 +682,7 @@ namespace ServerTools
                                                                 {
                                                                     using (StreamWriter sw = new StreamWriter(DupeFilepath, true, Encoding.UTF8))
                                                                     {
-                                                                        sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, standing at {5} {6} {7}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                        sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4} to their inventory, identical to another stack, standing at {5} {6} {7}.", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                         sw.WriteLine();
                                                                         sw.Flush();
                                                                         sw.Close();

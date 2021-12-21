@@ -50,46 +50,46 @@ namespace ServerTools
         {
             try
             {
-                PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_cInfo.playerId);
-                if (_pdf != null)
+                PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromUId(_cInfo.CrossplatformId);
+                if (pdf != null)
                 {
-                    Vector3i _pos = new Vector3i((int)_pdf.ecd.pos.x, (int)_pdf.ecd.pos.y, (int)_pdf.ecd.pos.z);
-                    if (GameManager.Instance.World.IsChunkAreaLoaded(_pos.x, _pos.y, _pos.z))
+                    Vector3i pos = new Vector3i((int)pdf.ecd.pos.x, (int)pdf.ecd.pos.y, (int)pdf.ecd.pos.z);
+                    if (GameManager.Instance.World.IsChunkAreaLoaded(pos.x, pos.y, pos.z))
                     {
-                        Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_pos.x, _pos.y, _pos.z);
+                        Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(pos.x, pos.y, pos.z);
                         if (chunk != null)
                         {
-                            BlockValue _blockValue = Block.GetBlockValue("cntStorageChest");
-                            if (_blockValue.Block != null)
+                            BlockValue blockValue = Block.GetBlockValue("cntStorageChest");
+                            if (blockValue.Block != null)
                             {
-                                GameManager.Instance.World.SetBlockRPC(chunk.ClrIdx, _pos, _blockValue);
-                                if (GameManager.Instance.World.GetTileEntity(chunk.ClrIdx, _pos) is TileEntityLootContainer tileEntityLootContainer)
+                                GameManager.Instance.World.SetBlockRPC(chunk.ClrIdx, pos, blockValue);
+                                if (GameManager.Instance.World.GetTileEntity(chunk.ClrIdx, pos) is TileEntityLootContainer tileEntityLootContainer)
                                 {
                                     if (All || Bag)
                                     {
-                                        for (int i = 0; i < _pdf.bag.Length; i++)
+                                        for (int i = 0; i < pdf.bag.Length; i++)
                                         {
-                                            if (!_pdf.bag[i].IsEmpty())
+                                            if (!pdf.bag[i].IsEmpty())
                                             {
-                                                tileEntityLootContainer.AddItem(_pdf.bag[i]);
-                                                _pdf.bag[i] = ItemStack.Empty.Clone();
+                                                tileEntityLootContainer.AddItem(pdf.bag[i]);
+                                                pdf.bag[i] = ItemStack.Empty.Clone();
                                             }
                                         }
                                     }
                                     if (All || Belt)
                                     {
-                                        for (int i = 0; i < _pdf.inventory.Length; i++)
+                                        for (int i = 0; i < pdf.inventory.Length; i++)
                                         {
-                                            if (!_pdf.inventory[i].IsEmpty())
+                                            if (!pdf.inventory[i].IsEmpty())
                                             {
-                                                tileEntityLootContainer.AddItem(_pdf.inventory[i]);
-                                                _pdf.inventory[i] = ItemStack.Empty.Clone();
+                                                tileEntityLootContainer.AddItem(pdf.inventory[i]);
+                                                pdf.inventory[i] = ItemStack.Empty.Clone();
                                             }
                                         }
                                     }
                                     if (All || Equipment)
                                     {
-                                        ItemValue[] _equipmentValues = _pdf.equipment.GetItems();
+                                        ItemValue[] _equipmentValues = pdf.equipment.GetItems();
                                         for (int i = 0; i < _equipmentValues.Length; i++)
                                         {
                                             if (!_equipmentValues[i].IsEmpty())
@@ -102,84 +102,15 @@ namespace ServerTools
                                     }
                                     if (tileEntityLootContainer.IsEmpty())
                                     {
-                                        GameManager.Instance.World.SetBlockRPC(chunk.ClrIdx, _pos, BlockValue.Air);
+                                        GameManager.Instance.World.SetBlockRPC(chunk.ClrIdx, pos, BlockValue.Air);
                                     }
                                     else
                                     {
                                         tileEntityLootContainer.SetModified();
                                     }
-                                    PersistentOperations.SavePlayerDataFile(_cInfo.playerId, _pdf);
+                                    PersistentOperations.SavePlayerDataFile(_cInfo.CrossplatformId.ToString(), pdf);
                                 }
                             }
-                        }
-                    }
-                    else
-                    {
-                        ChunkManager.ChunkObserver _observer = GameManager.Instance.AddChunkObserver(_pos.ToVector3(), false, 2, -1);
-                        if (_observer != null)
-                        {
-                            Thread.Sleep(1000);
-                            Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_pos.x, _pos.y, _pos.z);
-                            if (_chunk != null)
-                            {
-                                EntityBackpack entityBackpack = new EntityBackpack();
-                                entityBackpack = EntityFactory.CreateEntity("Backpack".GetHashCode(), _pdf.ecd.pos + Vector3.up * 2f) as EntityBackpack;
-                                entityBackpack.RefPlayerId = _pdf.ecd.clientEntityId;
-                                entityBackpack.lootContainer = new TileEntityLootContainer(null);
-                                entityBackpack.lootContainer.SetUserAccessing(true);
-                                entityBackpack.lootContainer.SetEmpty();
-                                entityBackpack.lootContainer.lootListIndex = entityBackpack.GetLootList();
-                                entityBackpack.lootContainer.SetContainerSize(LootContainer.lootList[entityBackpack.GetLootList()].size, true);
-                                if (All || Bag)
-                                {
-                                    for (int i = 0; i < _pdf.bag.Length; i++)
-                                    {
-                                        if (!_pdf.bag[i].IsEmpty())
-                                        {
-                                            entityBackpack.lootContainer.AddItem(_pdf.bag[i]);
-                                            _pdf.bag[i] = ItemStack.Empty.Clone();
-                                        }
-                                    }
-                                }
-                                if (All || Belt)
-                                {
-                                    for (int i = 0; i < _pdf.inventory.Length; i++)
-                                    {
-                                        if (!_pdf.inventory[i].IsEmpty())
-                                        {
-                                            entityBackpack.lootContainer.AddItem(_pdf.inventory[i]);
-                                            _pdf.inventory[i] = ItemStack.Empty.Clone();
-                                        }
-                                    }
-                                }
-                                if (All || Equipment)
-                                {
-                                    ItemValue[] _equipmentValues = _pdf.equipment.GetItems();
-                                    for (int i = 0; i < _equipmentValues.Length; i++)
-                                    {
-                                        if (!_equipmentValues[i].IsEmpty())
-                                        {
-                                            ItemStack _itemStack = new ItemStack(_equipmentValues[i], 1);
-                                            entityBackpack.lootContainer.AddItem(_itemStack);
-                                            _equipmentValues[i].Clear();
-                                        }
-                                    }
-                                }
-                                _pdf.droppedBackpackPosition = new Vector3i(_pdf.ecd.pos);
-                                entityBackpack.lootContainer.bPlayerBackpack = true;
-                                entityBackpack.lootContainer.SetUserAccessing(false);
-                                entityBackpack.lootContainer.SetModified();
-                                entityBackpack.entityId = -1;
-                                entityBackpack.RefPlayerId = _pdf.ecd.clientEntityId;
-                                EntityCreationData entityCreationData = new EntityCreationData(entityBackpack);
-                                entityCreationData.entityName = string.Format(Localization.Get("playersBackpack"), _pdf.ecd.entityName);
-                                entityCreationData.id = -1;
-                                entityCreationData.lootContainer = entityBackpack.lootContainer.Clone();
-                                PersistentOperations.SavePlayerDataFile(_cInfo.playerId, _pdf);
-                                GameManager.Instance.RequestToSpawnEntityServer(entityCreationData);
-                                entityBackpack.OnEntityUnload();
-                            }
-                            GameManager.Instance.RemoveChunkObserver(_observer);
                         }
                     }
                 }
@@ -194,31 +125,31 @@ namespace ServerTools
         {
             try
             {
-                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_id);
-                if (_cInfo != null)
+                ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_id);
+                if (cInfo != null)
                 {
-                    if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
+                    if (GameManager.Instance.World.Players.dict.ContainsKey(cInfo.entityId))
                     {
-                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                        if (_player != null)
+                        EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];
+                        if (player != null)
                         {
-                            if (Players.TryGetValue(_cInfo.entityId, out Vector3 _pos))
+                            if (Players.TryGetValue(cInfo.entityId, out Vector3 pos))
                             {
-                                if (_player.position != _pos)
+                                if (player.position != pos)
                                 {
-                                    Phrases.Dict.TryGetValue("ExitCommand1", out string _phrase);
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("ExitCommand1", out string phrase);
+                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                                 else
                                 {
-                                    PlayerDataFile _playerDataFile = PersistentOperations.GetPlayerDataFileFromSteamId(_cInfo.playerId);
-                                    if (_playerDataFile != null)
+                                    PlayerDataFile playerDataFile = PersistentOperations.GetPlayerDataFileFromUId(cInfo.CrossplatformId);
+                                    if (playerDataFile != null)
                                     {
-                                        PersistentOperations.SavePlayerDataFile(_cInfo.playerId, _playerDataFile);
+                                        PersistentOperations.SavePlayerDataFile(cInfo.CrossplatformId.ToString(), playerDataFile);
                                     }
-                                    Players.Remove(_cInfo.entityId);
-                                    Disconnect(_cInfo);
+                                    Players.Remove(cInfo.entityId);
+                                    Disconnect(cInfo);
                                 }
                             }
                         }
@@ -235,9 +166,9 @@ namespace ServerTools
         {
             try
             {
-                Phrases.Dict.TryGetValue("ExitCommand3", out string _phrase);
-                _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase), null);
+                Phrases.Dict.TryGetValue("ExitCommand3", out string phrase);
+                phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.ToString(), phrase), null);
             }
             catch (Exception e)
             {
@@ -249,10 +180,10 @@ namespace ServerTools
         {
             try
             {
-                Phrases.Dict.TryGetValue("ExitCommand2", out string _phrase);
-                _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                _phrase = _phrase.Replace("{Command_exit}", Command_exit);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("ExitCommand2", out string phrase);
+                phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                phrase = phrase.Replace("{Command_exit}", Command_exit);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)
             {

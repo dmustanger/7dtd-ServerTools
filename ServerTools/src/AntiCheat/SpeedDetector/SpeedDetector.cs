@@ -53,15 +53,13 @@ namespace ServerTools
                 {
                     Flags.Remove(_cInfo.entityId);
                     Phrases.Dict.TryGetValue("AntiCheat1", out string phrase);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, phrase), null);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                     {
-                        sw.WriteLine(string.Format("Detected '{0}' with steam id '{1}' using a speed hack", _cInfo.playerName, _cInfo.playerId));
+                        sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' using a speed hack", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                         sw.WriteLine();
-                        sw.Flush();
-                        sw.Close();
                     }
-                    Log.Warning("[SERVERTOOLS] Detected '{0}' with steam id '{1}' using a speed hack", _cInfo.playerName, _cInfo.playerId);
+                    Log.Warning(string.Format("[SERVERTOOLS] Detected id '{0}' '{1}' named '{2}' using a speed hack", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                     Phrases.Dict.TryGetValue("AntiCheat3", out phrase);
                     phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
                     ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);

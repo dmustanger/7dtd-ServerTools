@@ -28,7 +28,7 @@ namespace ServerTools
                     if (ammoData[2] < 0)
                     {
                         Phrases.Dict.TryGetValue("AntiCheat2", out string phrase);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, phrase), null);
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                         return true;
                     }
                     else

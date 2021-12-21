@@ -41,7 +41,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     UpdateXml();
                 }
@@ -107,7 +107,7 @@ namespace ServerTools
                         if (line.HasAttributes)
                         {
                             OldNodeList = nodeList;
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpgradeXml();
                             return;
                         }
@@ -120,12 +120,12 @@ namespace ServerTools
                                 if (line.HasAttributes)
                                 {
                                     OldNodeList = nodeList;
-                                    Utils.FileDelete(FilePath);
+                                    File.Delete(FilePath);
                                     UpgradeXml();
                                     return;
                                 }
                             }
-                            Utils.FileDelete(FilePath);
+                            File.Delete(FilePath);
                             UpdateXml();
                             Log.Out(string.Format("[SERVERTOOLS] The existing Waypoints.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                         }
@@ -136,7 +136,7 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    Utils.FileDelete(FilePath);
+                    File.Delete(FilePath);
                     UpdateXml();
                 }
                 else
@@ -189,7 +189,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -200,13 +200,26 @@ namespace ServerTools
         {
             try
             {
-                if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                if (ReservedSlots.IsEnabled)
                 {
-                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                    if (DateTime.Now < _dt)
+                    if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                     {
-                        ListResult(_cInfo, Reserved_Max_Waypoints);
-                        return;
+                        if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
+                        {
+                            if (DateTime.Now < dt)
+                            {
+                                ListResult(_cInfo, Reserved_Max_Waypoints);
+                                return;
+                            }
+                        }
+                        else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                        {
+                            if (DateTime.Now < dt)
+                            {
+                                ListResult(_cInfo, Reserved_Max_Waypoints);
+                                return;
+                            }
+                        }
                     }
                 }
                 ListResult(_cInfo, Max_Waypoints);
@@ -222,9 +235,9 @@ namespace ServerTools
             try
             {
                 Dictionary<string, string> waypoints = new Dictionary<string, string>();
-                if (PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints != null)
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null)
                 {
-                    waypoints = PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints;
+                    waypoints = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints;
                 }
                 int count = 0;
                 if (waypoints.Count > 0)
@@ -283,11 +296,11 @@ namespace ServerTools
         {
             try
             {
-                if (!Event.Teams.ContainsKey(_cInfo.playerId))
+                if (!Event.Teams.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
                     if (Delay_Between_Uses < 1)
                     {
-                        if ((PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints.ContainsKey(_waypoint)) ||
+                        if ((PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypoint)) ||
                             Dict.ContainsKey(_waypoint))
                         {
                             Checks(_cInfo, _waypoint, _friends);
@@ -300,22 +313,33 @@ namespace ServerTools
                     }
                     else
                     {
-                        if (PersistentContainer.Instance.Players[_cInfo.playerId].LastWaypoint != null)
+                        if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint != null)
                         {
-                            DateTime _lastWaypoint = PersistentContainer.Instance.Players[_cInfo.playerId].LastWaypoint;
+                            DateTime _lastWaypoint = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint;
                             TimeSpan varTime = DateTime.Now - _lastWaypoint;
                             double fractionalMinutes = varTime.TotalMinutes;
                             int _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                                 {
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                                    if (DateTime.Now < _dt)
+                                    if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                                     {
-                                        int _delay = Delay_Between_Uses / 2;
-                                        Time(_cInfo, _waypoint, _timepassed, _delay, _friends);
-                                        return;
+                                        if (DateTime.Now < dt)
+                                        {
+                                            int delay = Delay_Between_Uses / 2;
+                                            Time(_cInfo, _waypoint, _timepassed, delay, _friends);
+                                            return;
+                                        }
+                                    }
+                                    else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                                    {
+                                        if (DateTime.Now < dt)
+                                        {
+                                            int delay = Delay_Between_Uses / 2;
+                                            Time(_cInfo, _waypoint, _timepassed, delay, _friends);
+                                            return;
+                                        }
                                     }
                                 }
                             }
@@ -323,23 +347,23 @@ namespace ServerTools
                         }
                         else
                         {
-                            if ((PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints.ContainsKey(_waypoint)) ||
+                            if ((PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypoint)) ||
                             Dict.ContainsKey(_waypoint))
                             {
                                 Checks(_cInfo, _waypoint, false);
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue("Waypoints9", out string _phrase);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Waypoints9", out string phrase);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("Waypoints13", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Waypoints13", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -358,13 +382,13 @@ namespace ServerTools
                 }
                 else
                 {
-                    int _timeleft = _delay - _timepassed;
-                    Phrases.Dict.TryGetValue("Waypoints1", out string _phrase);
-                    _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
-                    _phrase = _phrase.Replace("{Value}", _timeleft.ToString());
-                    _phrase = _phrase.Replace("{Command_waypoint}", Command_waypoint);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    int timeleft = _delay - _timepassed;
+                    Phrases.Dict.TryGetValue("Waypoints1", out string phrase);
+                    phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    phrase = phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                    phrase = phrase.Replace("{Value}", timeleft.ToString());
+                    phrase = phrase.Replace("{Command_waypoint}", Command_waypoint);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -377,7 +401,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (Vehicle)
@@ -409,7 +433,7 @@ namespace ServerTools
                     int y = (int)position.y;
                     int z = (int)position.z;
                     Vector3i vec3i = new Vector3i(x, y, z);
-                    if (PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints.ContainsKey(_waypoint))
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypoint))
                     {
                         CommandCost(_cInfo, _waypoint, position, _friends, Command_Cost);
                     }
@@ -433,7 +457,7 @@ namespace ServerTools
             {
                 if (Wallet.IsEnabled && _cost >= 1)
                 {
-                    if (Wallet.GetCurrency(_cInfo.playerId) >= _cost)
+                    if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= _cost)
                     {
                         Exec(_cInfo, _waypoint, _position, _friends, _cost);
                     }
@@ -459,9 +483,9 @@ namespace ServerTools
         {
             try
             {
-                if (PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints.ContainsKey(_waypoint))
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypoint))
                 {
-                    Dictionary<string, string> waypoints = PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints;
+                    Dictionary<string, string> waypoints = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints;
                     waypoints.TryGetValue(_waypoint, out string waypointPos);
                     string[] cords = waypointPos.Split(',');
                     int.TryParse(cords[0], out int x);
@@ -472,11 +496,11 @@ namespace ServerTools
                         FriendInvite(_cInfo, _position, waypointPos);
                     }
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastWaypoint = DateTime.Now;
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint = DateTime.Now;
                     PersistentContainer.DataChange = true;
                     if (Wallet.IsEnabled && _cost >= 1)
                     {
-                        Wallet.RemoveCurrency(_cInfo.playerId, _cost);
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
                     }
                 }
                 else if (Dict.ContainsKey(_waypoint))
@@ -491,11 +515,11 @@ namespace ServerTools
                         FriendInvite(_cInfo, _position, waypointData[0]);
                     }
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastWaypoint = DateTime.Now;
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint = DateTime.Now;
                     PersistentContainer.DataChange = true;
                     if (Wallet.IsEnabled && _cost >= 1)
                     {
-                        Wallet.RemoveCurrency(_cInfo.playerId, _cost);
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
                     }
                 }
                 else
@@ -514,28 +538,28 @@ namespace ServerTools
         {
             try
             {
-                if (!Event.Teams.ContainsKey(_cInfo.playerId))
+                if (!Event.Teams.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
                     World world = GameManager.Instance.World;
-                    EntityPlayer _player = world.Players.dict[_cInfo.entityId];
-                    if (_player != null)
+                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                    if (player != null)
                     {
-                        Vector3 _position = _player.GetPosition();
-                        if (PersistentOperations.ClaimedByNone(_cInfo.playerId, new Vector3i(_position.x, _position.y, _position.z)))
+                        Vector3 position = player.GetPosition();
+                        if (PersistentOperations.ClaimedByNone(_cInfo.CrossplatformId, new Vector3i(position.x, position.y, position.z)))
                         {
                             ReservedCheck(_cInfo, _waypoint);
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue("Waypoints10", out string _phrase);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue("Waypoints10", out string phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("Waypoints13", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Waypoints13", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -548,13 +572,23 @@ namespace ServerTools
         {
             try
             {
-                if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
-                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                    if (DateTime.Now < _dt)
+                    if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                     {
-                        SavePoint(_cInfo, _waypoint, Reserved_Max_Waypoints);
-                        return;
+                        if (DateTime.Now < dt)
+                        {
+                            SavePoint(_cInfo, _waypoint, Reserved_Max_Waypoints);
+                            return;
+                        }
+                    }
+                    else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                    {
+                        if (DateTime.Now < dt)
+                        {
+                            SavePoint(_cInfo, _waypoint, Reserved_Max_Waypoints);
+                            return;
+                        }
                     }
                 }
                 SavePoint(_cInfo, _waypoint, Max_Waypoints);
@@ -575,28 +609,28 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }
-                if (PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints.Count > 0)
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.Count > 0)
                 {
-                    if (PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints.Count < _waypointTotal)
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.Count < _waypointTotal)
                     {
-                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                        if (_player != null)
+                        EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                        if (player != null)
                         {
-                            Vector3 _position = _player.GetPosition();
-                            int _x = (int)_position.x;
-                            int _y = (int)_position.y;
-                            int _z = (int)_position.z;
-                            string _wposition = _x + "," + _y + "," + _z;
-                            Dictionary<string, string> _waypoints = PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints;
-                            if (!_waypoints.ContainsKey(_waypoint))
+                            Vector3 position = player.GetPosition();
+                            int x = (int)position.x;
+                            int y = (int)position.y;
+                            int z = (int)position.z;
+                            string wposition = x + "," + y + "," + z;
+                            Dictionary<string, string> waypoints = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints;
+                            if (!waypoints.ContainsKey(_waypoint))
                             {
-                                _waypoints.Add(_waypoint, _wposition);
-                                PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints = _waypoints;
+                                waypoints.Add(_waypoint, wposition);
+                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints = waypoints;
                                 PersistentContainer.DataChange = true;
-                                Phrases.Dict.TryGetValue("Waypoints8", out string _phrase);
-                                _phrase = _phrase.Replace("{Name}", _waypoint);
-                                _phrase = _phrase.Replace("{Position}", _wposition);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Waypoints8", out string phrase);
+                                phrase = phrase.Replace("{Name}", _waypoint);
+                                phrase = phrase.Replace("{Position}", wposition);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                             else
                             {
@@ -614,21 +648,21 @@ namespace ServerTools
                 }
                 else
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    if (_player != null)
+                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                    if (player != null)
                     {
-                        Dictionary<string, string> _waypoints = new Dictionary<string, string>();
-                        Vector3 _position = _player.GetPosition();
-                        int _x = (int)_position.x;
-                        int _y = (int)_position.y;
-                        int _z = (int)_position.z;
-                        string _wposition = _x + "," + _y + "," + _z;
-                        _waypoints.Add(_waypoint, _wposition);
-                        PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints = _waypoints;
+                        Dictionary<string, string> waypoints = new Dictionary<string, string>();
+                        Vector3 position = player.GetPosition();
+                        int x = (int)position.x;
+                        int y = (int)position.y;
+                        int z = (int)position.z;
+                        string wposition = x + "," + y + "," + z;
+                        waypoints.Add(_waypoint, wposition);
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints = waypoints;
                         PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue("Waypoints8", out string _phrase);
                         _phrase = _phrase.Replace("{Name}", _waypoint);
-                        _phrase = _phrase.Replace("{Position}", _wposition);
+                        _phrase = _phrase.Replace("{Position}", wposition);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
@@ -643,20 +677,20 @@ namespace ServerTools
         {
             try
             {
-                if (PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints.ContainsKey(_waypoint))
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypoint))
                 {
-                    Dictionary<string, string> _waypoints = PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints;
-                    _waypoints.Remove(_waypoint);
-                    PersistentContainer.Instance.Players[_cInfo.playerId].Waypoints = _waypoints;
+                    Dictionary<string, string> waypoints = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints;
+                    waypoints.Remove(_waypoint);
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints = waypoints;
                     PersistentContainer.DataChange = true;
-                    Phrases.Dict.TryGetValue("Waypoints7", out string _phrase);
-                    _phrase = _phrase.Replace("{Name}", _waypoint);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Waypoints7", out string phrase);
+                    phrase = phrase.Replace("{Name}", _waypoint);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("Waypoints4", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Waypoints4", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -672,7 +706,7 @@ namespace ServerTools
                 int x = (int)_position.x;
                 int y = (int)_position.y;
                 int z = (int)_position.z;
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     List<ClientInfo> clientList = PersistentOperations.ClientList();
@@ -681,7 +715,7 @@ namespace ServerTools
                         for (int i = 0; i < clientList.Count; i++)
                         {
                             ClientInfo cInfo2 = clientList[i];
-                            EntityPlayer player2 = GameManager.Instance.World.Players.dict[cInfo2.entityId];
+                            EntityPlayer player2 = PersistentOperations.GetEntityPlayer(cInfo2.entityId);
                             if (player2 != null)
                             {
                                 if (player.IsFriendsWith(player2))
@@ -742,8 +776,8 @@ namespace ServerTools
                     {
                         Invite.Remove(_cInfo.entityId);
                         FriendPosition.Remove(_cInfo.entityId);
-                        Phrases.Dict.TryGetValue("Waypoints18", out string _phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Waypoints18", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }

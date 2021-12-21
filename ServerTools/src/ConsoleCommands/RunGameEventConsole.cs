@@ -13,7 +13,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Runs a event from the gameevent.xml on the specific player\n" +
-                "Usage: st-rge <steamId/entityId/playerName> <eventName>\n";
+                "Usage: st-rge <EOS/EntityId/PlayerName> <eventName>\n";
         }
 
         public override string[] GetCommands()
@@ -27,32 +27,32 @@ namespace ServerTools
             {
                 if (_params.Count != 2)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                     return;
                 }
                 ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
                 if (cInfo != null)
                 {
-                    EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.playerId);
+                    EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                     if (player != null)
                     {
                         if (GameEventManager.GameEventSequences.ContainsKey(_params[1]))
                         {
                             GameEventManager.Current.HandleAction(_params[1], null, player, false, "");
-                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup(_params[1], cInfo.playerName, "", NetPackageGameEventResponse.ResponseTypes.Approved));
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Ran game event named '{0}' on player '{1}'", _params[1], cInfo.playerId));
+                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup(_params[1], cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Ran game event named '{0}' on player '{1}'", _params[1], cInfo.CrossplatformId.CombinedString));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate '{0}' in the game events list", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate '{0}' in the game events list", _params[1]));
                             return;
                         }
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online", _params[0]));
                     return;
                 }
             }

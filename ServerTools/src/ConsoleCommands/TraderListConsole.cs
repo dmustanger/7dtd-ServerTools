@@ -33,14 +33,14 @@ namespace ServerTools
                     TraderArea _traderArea = _traderlist[i];
                     Vector3i _position = _traderArea.Position;
                     bool _closed = _traderArea.IsClosed;
-                    SdtdConsole.Instance.Output(string.Format("#{0}: Trader located at x {1} y {2} z {3}.", _counter, _position.x, _position.y, _position.z));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("#{0}: Trader located at x {1} y {2} z {3}", _counter, _position.x, _position.y, _position.z));
                     if (!_closed)
                     {
-                        SdtdConsole.Instance.Output(string.Format("#{0}: Trader is open.", _counter));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("#{0}: Trader is open", _counter));
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("#{0}: Trader is closed.", _counter));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("#{0}: Trader is closed", _counter));
                     }
                     _counter++;
                 }

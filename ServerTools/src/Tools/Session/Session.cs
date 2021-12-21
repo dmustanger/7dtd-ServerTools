@@ -9,12 +9,12 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (PersistentOperations.Session.TryGetValue(_cInfo.playerId, out DateTime _time))
+            if (PersistentOperations.Session.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime _time))
             {
                 TimeSpan varTime = DateTime.Now - _time;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;
-                int _sessionTime = PersistentContainer.Instance.Players[_cInfo.playerId].SessionTime;
+                int _sessionTime = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].SessionTime;
                 _sessionTime = _sessionTime + _timepassed;
                 Phrases.Dict.TryGetValue("Session1", out string _phrase);
                 _phrase = _phrase.Replace("{TimePassed}", _timepassed.ToString());

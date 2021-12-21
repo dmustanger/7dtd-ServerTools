@@ -28,7 +28,7 @@ namespace ServerTools
             {
                 if (_params.Count < 2)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or more, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or more, found {0}", _params.Count));
                     return;
                 }
                 ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
@@ -37,7 +37,7 @@ namespace ServerTools
                     _params.RemoveAt(0);
                     string command = string.Join(" ", _params);
                     cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup(string.Format("{0}", command), true));
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Ran console command '{0}' on player with steam id {1} named {2}", command, cInfo.playerId, cInfo.playerName));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Ran console command '{0}' on player with steam id {1} named {2}", command, cInfo.PlatformId.ReadablePlatformUserIdentifier, cInfo.playerName));
                 }
                 else
                 {

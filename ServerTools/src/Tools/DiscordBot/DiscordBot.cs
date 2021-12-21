@@ -22,7 +22,7 @@ namespace ServerTools
         {
             try
             {
-                if (!Utils.FileExists(FilePath))
+                if (!File.Exists(FilePath))
                 {
                     using (Aes aes = Aes.Create())
                     {

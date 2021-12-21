@@ -19,17 +19,30 @@ namespace ServerTools
                     for (int i = 0; i < clientList.Count; i++)
                     {
                         ClientInfo cInfo = clientList[i];
-                        if (cInfo != null && cInfo.playerId != null)
+                        if (cInfo != null)
                         {
                             if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo) > Admin_Level)
                             {
-                                EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                                 if (player != null)
                                 {
                                     if (ReservedSlots.IsEnabled)
                                     {
-                                        if (ReservedSlots.Dict.TryGetValue(cInfo.playerId, out DateTime dt))
+                                        if (ReservedSlots.Dict.ContainsKey(cInfo.PlatformId.CombinedString))
                                         {
+                                            ReservedSlots.Dict.TryGetValue(cInfo.PlatformId.CombinedString, out DateTime dt);
+                                            if (DateTime.Now < dt)
+                                            {
+                                                DonatorRad(cInfo, player);
+                                            }
+                                            else
+                                            {
+                                                NormalRad(cInfo, player);
+                                            }
+                                        }
+                                        else if (ReservedSlots.Dict.ContainsKey(cInfo.CrossplatformId.CombinedString))
+                                        {
+                                            ReservedSlots.Dict.TryGetValue(cInfo.CrossplatformId.CombinedString, out DateTime dt);
                                             if (DateTime.Now < dt)
                                             {
                                                 DonatorRad(cInfo, player);

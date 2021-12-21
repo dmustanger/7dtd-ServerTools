@@ -79,7 +79,7 @@ namespace ServerTools
                 {
                     Phrases.Dict.TryGetValue("RestartVote3", out string phrase);
                     ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("st-StopServer 2"), null);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("st-StopServer 2"), null);
                 }
                 else
                 {

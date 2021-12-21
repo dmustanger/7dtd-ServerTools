@@ -14,7 +14,7 @@ namespace ServerTools
         {
             using (StreamWriter sw = new StreamWriter(filePath, true, Encoding.UTF8))
             {
-                sw.WriteLine(string.Format("{0} {1} {2}: {3}", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _message));
+                sw.WriteLine(string.Format("{0} {1} {2}: {3}", DateTime.Now, _cInfo.PlatformId.ReadablePlatformUserIdentifier, _cInfo.playerName, _message));
                 sw.Flush();
                 sw.Close();
             }

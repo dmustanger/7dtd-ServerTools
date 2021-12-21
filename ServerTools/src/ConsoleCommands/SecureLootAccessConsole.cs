@@ -28,10 +28,10 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
-                if (!string.IsNullOrEmpty(_senderInfo.RemoteClientInfo.playerId))
+                if (!string.IsNullOrEmpty(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
                 {
                     LinkedList<Chunk> chunkArray = new LinkedList<Chunk>();
                     DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
@@ -49,10 +49,10 @@ namespace ServerTools
                                 if (type.ToString().Equals("SecureLoot"))
                                 {
                                     TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
-                                    if (!SecureLoot.IsUserAllowed(_senderInfo.RemoteClientInfo.playerId))
+                                    if (!SecureLoot.IsUserAllowed(_senderInfo.RemoteClientInfo.CrossplatformId))
                                     {
-                                        List<string> _users = SecureLoot.GetUsers();
-                                        _users.Add(_senderInfo.RemoteClientInfo.playerId);
+                                        List<PlatformUserIdentifierAbs> _users = SecureLoot.GetUsers();
+                                        _users.Add(_senderInfo.RemoteClientInfo.CrossplatformId);
                                         SecureLoot.SetModified();
                                     }
                                 }
@@ -60,7 +60,7 @@ namespace ServerTools
                         }
                     }
                 }
-                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Secure loot access set for {0} in all loaded areas. Unloaded areas have not changed", _senderInfo.RemoteClientInfo.playerId));
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Secure loot access set for '{0}' in all loaded areas. Unloaded areas have not changed", _senderInfo.RemoteClientInfo.CrossplatformId.CombinedString));
             }
             catch (Exception e)
             {

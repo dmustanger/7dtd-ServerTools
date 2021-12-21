@@ -28,7 +28,7 @@ namespace ServerTools
             try
             {
                 List<Entity> Entities = GameManager.Instance.World.Entities.list;
-                SdtdConsole.Instance.Output("Bicycle List:");
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("Bicycle List:");
                 for (int i = 0; i < Entities.Count; i++)
                 {
                     Entity _entity = Entities[i];
@@ -45,20 +45,20 @@ namespace ServerTools
                             ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_attachedPlayer.entityId);
                             if (_cInfo != null)
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle.", i, _entity.entityId, x, y, z, _cInfo.playerName));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle.", i, _entity.entityId, x, y, z, _cInfo.playerName));
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
                         }
                     }
                 }
-                SdtdConsole.Instance.Output("Minibike List:");
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("Minibike List:");
                 for (int i = 0; i < Entities.Count; i++)
                 {
                     Entity _entity = Entities[i];
@@ -75,20 +75,20 @@ namespace ServerTools
                             ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_attachedPlayer.entityId);
                             if (_cInfo != null)
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle.", i, _entity.entityId, x, y, z, _cInfo.playerName));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle", i, _entity.entityId, x, y, z, _cInfo.playerName));
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
                         }
                     }
                 }
-                SdtdConsole.Instance.Output("Motorcycle List:");
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("Motorcycle List:");
                 for (int i = 0; i < Entities.Count; i++)
                 {
                     Entity _entity = Entities[i];
@@ -105,20 +105,20 @@ namespace ServerTools
                             ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_attachedPlayer.entityId);
                             if (_cInfo != null)
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle.", i, _entity.entityId, x, y, z, _cInfo.playerName));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle", i, _entity.entityId, x, y, z, _cInfo.playerName));
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
                         }
                     }
                 }
-                SdtdConsole.Instance.Output("4x4 List:");
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("4x4 List:");
                 for (int i = 0; i < Entities.Count; i++)
                 {
                     Entity _entity = Entities[i];
@@ -135,20 +135,20 @@ namespace ServerTools
                             ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_attachedPlayer.entityId);
                             if (_cInfo != null)
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle.", i, _entity.entityId, x, y, z, _cInfo.playerName));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle", i, _entity.entityId, x, y, z, _cInfo.playerName));
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
                         }
                     }
                 }
-                SdtdConsole.Instance.Output("Gyro List:");
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("Gyro List:");
                 for (int i = 0; i < Entities.Count; i++)
                 {
                     Entity _entity = Entities[i];
@@ -165,16 +165,16 @@ namespace ServerTools
                             ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_attachedPlayer.entityId);
                             if (_cInfo != null)
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle.", i, _entity.entityId, x, y, z, _cInfo.playerName));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle", i, _entity.entityId, x, y, z, _cInfo.playerName));
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
                         }
                     }
                 }

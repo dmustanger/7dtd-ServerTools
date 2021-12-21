@@ -17,7 +17,7 @@ namespace ServerTools
 
         public static void Check(ClientInfo _cInfo, string _message)
         {
-            DateTime lastLog = PersistentContainer.Instance.Players[_cInfo.playerId].LastLog;
+            DateTime lastLog = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastLog;
             TimeSpan varTime = DateTime.Now - lastLog;
             double fractionalMinutes = varTime.TotalMinutes;
             int timepassed = (int)fractionalMinutes;
@@ -63,16 +63,16 @@ namespace ServerTools
             }
             using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
-                sw.WriteLine(string.Format("{0}: Location {1} Player {2} {3} Report: {4}", DateTime.Now, _pos, _cInfo.playerName, _cInfo.playerId, _message));
+                sw.WriteLine(string.Format("{0}: Location '{1}' Id '{2}' '{3}' named '{4}'. '{5}'", DateTime.Now, _pos, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _message));
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();
             }
-            PersistentContainer.Instance.Players[_cInfo.playerId].LastLog = DateTime.Now;
+            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastLog = DateTime.Now;
             PersistentContainer.DataChange = true;
             Phrases.Dict.TryGetValue("Report5", out string phrase1);
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-            Log.Out(string.Format("[SERVERTOOLS] Report sent by player {0} {1} and saved to the report logs", _cInfo.playerName, _cInfo.playerId));
+            Log.Out(string.Format("[SERVERTOOLS] Report sent by Id '{0}' '{1}' named '{2}' and saved to the report logs", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
         }
     }
 }

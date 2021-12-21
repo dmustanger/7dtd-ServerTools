@@ -30,7 +30,7 @@ namespace ServerTools
 
         private static void LoadXml()
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -53,21 +53,21 @@ namespace ServerTools
                 {
                     if (childNodes[i].NodeType != XmlNodeType.Comment)
                     {
-                        XmlElement _line = (XmlElement)childNodes[i];
-                        if (_line.HasAttributes)
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (line.HasAttributes)
                         {
-                            if (_line.HasAttribute("Version") && _line.GetAttribute("Version") == Config.Version)
+                            if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
                             {
                                 upgrade = false;
                                 continue;
                             }
-                            else if (_line.HasAttribute("Name") && _line.HasAttribute("Message"))
+                            else if (line.HasAttribute("Name") && line.HasAttribute("Message"))
                             {
-                                string _name = _line.GetAttribute("Name");
-                                string _message = _line.GetAttribute("Message");
-                                if (!Dict.ContainsKey(_name))
+                                string name = line.GetAttribute("Name");
+                                string message = line.GetAttribute("Message");
+                                if (!Dict.ContainsKey(name))
                                 {
-                                    Dict.Add(_name, _message);
+                                    Dict.Add(name, message);
                                 }
                             }
                         }
@@ -157,7 +157,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Gimme2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Gimme3", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} in your wallet to run this command";
+                        phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Gimme3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Gimme4", out phrase))
@@ -167,7 +167,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Gimme4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Gimme5", out phrase))
                     {
-                        phrase = "Unable to give WalletCoin for Gimme reward because Wallet is not enabled";
+                        phrase = "Unable to give currency for Gimme reward because Wallet is not enabled";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Gimme5\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
@@ -668,12 +668,12 @@ namespace ServerTools
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("Lottery1", out phrase))
                     {
-                        phrase = "There is no open lottery. Type {Command_Prefix1}{Command_lottery} # to open a new lottery at that buy in price. You must have enough in your wallet";
+                        phrase = "There is no open lottery. Type {Command_Prefix1}{Command_lottery} # to open a new lottery at that buy in price";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lottery2", out phrase))
                     {
-                        phrase = "A lottery is open for {Value} {CoinName}. Minimum buy in is {BuyIn}. Enter it by typing {Command_Prefix1}{Command_lottery_enter}";
+                        phrase = "A lottery is open for {Value1} {CoinName}. Minimum amount to enter is {Value2}. Enter it by typing {Command_Prefix1}{Command_lottery_enter}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lottery3", out phrase))
@@ -737,7 +737,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lobby3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lobby4", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} in your wallet to run this command";
+                        phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lobby4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lobby5", out phrase))
@@ -826,7 +826,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Market8\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Market9", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} in your wallet to run this command";
+                        phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Market9\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Market10", out phrase))
@@ -915,7 +915,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Waypoints13\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Waypoints14", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} in your wallet to run this command";
+                        phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Waypoints14\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Waypoints15", out phrase))
@@ -954,7 +954,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"AnimalTracking1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("AnimalTracking2", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} in your wallet to run this command";
+                        phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"AnimalTracking2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("AnimalTracking3", out phrase))
@@ -1111,7 +1111,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"CustomCommands2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("CustomCommands3", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} in your wallet to run this command";
+                        phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"CustomCommands3\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
@@ -1249,7 +1249,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"FriendTeleport9\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("FriendTeleport10", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} in your wallet to run this command";
+                        phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"FriendTeleport10\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("FriendTeleport11", out phrase))
@@ -1316,7 +1316,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Died2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Died3", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} in your wallet to run this command";
+                        phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Died3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Died4", out phrase))
@@ -1486,7 +1486,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("VehicleRecall5", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} in your wallet to run this command";
+                        phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("VehicleRecall6", out phrase))
@@ -1852,7 +1852,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction9\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Auction10", out phrase))
                     {
-                        phrase = "Your auction item was purchased and the value placed in your wallet";
+                        phrase = "Your auction item was purchased";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction10\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Auction11", out phrase))
@@ -1921,7 +1921,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank5", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} to transfer to your bank";
+                        phrase = "You do not have enough {Name} to transfer to your bank";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank6", out phrase))
@@ -2161,7 +2161,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Homes5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Homes6", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} in your wallet to run this command";
+                        phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Homes6\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Homes7", out phrase))
@@ -2410,7 +2410,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Prayer1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Prayer2", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} in your wallet to run this command";
+                        phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Prayer2\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
@@ -2424,7 +2424,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"ScoutPlayer1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("ScoutPlayer2", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} in your wallet to run this command";
+                        phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"ScoutPlayer2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("ScoutPlayer3", out phrase))
@@ -2900,7 +2900,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Travel3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Travel4", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName} in your wallet to run this command";
+                        phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Travel4\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
@@ -3086,7 +3086,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 UpdateXml();
             }
@@ -3098,7 +3098,7 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
-                Utils.FileDelete(FilePath);
+                File.Delete(FilePath);
                 UpdateXml();
                 FileWatcher.EnableRaisingEvents = true;
             }

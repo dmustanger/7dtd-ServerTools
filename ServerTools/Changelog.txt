@@ -1,5 +1,18 @@
 ﻿CHANGELOG
 
+20.0.0
+Built using Alpha 20 experimental assets
+Functioning with Alpha 20 experimental. Untested with other versions
+
+-Fixed console commands web ban list and web timeout list giving a
+invalid param count response
+-Fixed console command alternatives overlapping each other
+-Fixed Real_World_Time interval utilizing seconds instead of minutes
+-Fixed multi color array failing to form for Chat_Color tool
+-Updated for A20 compatibility
+-Changed xml files and console commands to require platform identification
+Example: Steam_76561191234567891 or EOS_0000a1b1c1dfe1feg1b1aaa1234aa123
+
 19.6.9
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

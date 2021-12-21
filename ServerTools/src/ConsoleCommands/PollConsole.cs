@@ -33,49 +33,49 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Poll", "poll", "st-poll" };
+            return new string[] { "st-Poll", "poll" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             if (!Poll.IsEnabled)
             {
-                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Polling is disabled. You must enable the tool first", _params.Count));
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Polling is disabled. You must enable the tool first", _params.Count));
                 return;
             }
             try
             {
                 if (_params.Count < 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected more than 1, found {0}", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected more than 1, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower() == "new")
                 {
                     if (!int.TryParse(_params[1], out int _hours))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer {0}", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer {0}", _params[1]));
                         return;
                     }
                     if (PersistentContainer.Instance.PollOpen)
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] A poll is already open");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] A poll is already open");
                         return;
                     }
                     else
                     {
                         _params.RemoveAt(0);
                         _params.RemoveAt(0);
-                        string _message = string.Join(" ", _params.ToArray());
-                        string[] _newPollData = { DateTime.Now.ToString(), _hours.ToString(), _message };
-                        PersistentContainer.Instance.PollData = _newPollData;
+                        string message = string.Join(" ", _params.ToArray());
+                        string[] newPollData = { DateTime.Now.ToString(), _hours.ToString(), message };
+                        PersistentContainer.Instance.PollData = newPollData;
                         PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                         PersistentContainer.Instance.PollOpen = true;
                         PersistentContainer.DataChange = true;
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] A new poll has opened for {0} hour. Poll message: {1}", _hours, _message));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] A new poll has opened for '{0}' hour. Poll message '{1}'", _hours, message));
                         using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                         {
-                            sw.WriteLine(string.Format("{0}: A new poll has opened for {1} hour. Message: {2}", DateTime.Now, _hours, _message));
+                            sw.WriteLine(string.Format("{0}: A new poll has opened for {1} hour. Message: {2}", DateTime.Now, _hours, message));
                             sw.WriteLine();
                             sw.Flush();
                             sw.Close();
@@ -87,7 +87,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (PersistentContainer.Instance.PollOpen)
@@ -96,7 +96,7 @@ namespace ServerTools
                         PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                         PersistentContainer.Instance.PollOpen = false;
                         PersistentContainer.DataChange = true;
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] The open poll has been cancelled");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] The open poll has been cancelled");
                         using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                         {
                             sw.WriteLine(string.Format("{0}: The poll has been cancelled", DateTime.Now));
@@ -108,7 +108,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] There is no open poll to cancel");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There is no open poll to cancel");
                         return;
                     }
                 }
@@ -116,7 +116,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     if (PersistentContainer.Instance.PollOpen)
@@ -127,7 +127,7 @@ namespace ServerTools
                             PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                             PersistentContainer.Instance.PollOpen = false;
                             PersistentContainer.DataChange = true;
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] The open poll has been stopped but no announcement made due to missing data");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] The open poll has been stopped but no announcement made due to missing data");
                             using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                             {
                                 sw.WriteLine(string.Format("{0}: The poll has been stopped. Data was missing so nothing was recorded", DateTime.Now));
@@ -146,7 +146,7 @@ namespace ServerTools
                                 PersistentContainer.Instance.PollData = null;
                                 PersistentContainer.Instance.PollOpen = false;
                                 PersistentContainer.DataChange = true;
-                                SdtdConsole.Instance.Output("[SERVERTOOLS] The open poll has been stopped but no announcement made due to no votes");
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] The open poll has been stopped but no announcement made due to no votes");
                                 using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: The poll has been stopped. There was no votes recorded", DateTime.Now));
@@ -182,7 +182,7 @@ namespace ServerTools
                                     _oldPoll.Add(_pollData, "yes");
                                     PersistentContainer.Instance.PollOld = _oldPoll;
                                 }
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. Yes votes have won {0} to {1}. Poll message: {2}", _yes, _no, _pollData[2]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. Yes votes have won {0} to {1}. Poll message: {2}", _yes, _no, _pollData[2]));
                                 using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: The poll has been stopped. Yes votes have won {1} to {2}", DateTime.Now, _yes, _no));
@@ -205,7 +205,7 @@ namespace ServerTools
                                     _oldPoll.Add(_pollData, "no");
                                     PersistentContainer.Instance.PollOld = _oldPoll;
                                 }
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. No votes have won {0} to {1}. Poll message: {2}", _no, _yes, _pollData[2]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. No votes have won {0} to {1}. Poll message: {2}", _no, _yes, _pollData[2]));
                                 using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: The poll has been stopped. No votes have won {1} to {2}", DateTime.Now, _no, _yes));
@@ -228,7 +228,7 @@ namespace ServerTools
                                     _oldPoll.Add(_pollData, "tie");
                                     PersistentContainer.Instance.PollOld = _oldPoll;
                                 }
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. It was a tie at {0} votes each. Poll message: {1}", _yes, _pollData[2]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. It was a tie at {0} votes each. Poll message: {1}", _yes, _pollData[2]));
                                 using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: The poll has been stopped. It was a tie at {1} votes each", DateTime.Now, _yes));
@@ -259,7 +259,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] There is no open poll to stop");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There is no open poll to stop");
                         return;
                     }
                 }
@@ -267,7 +267,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     if (PersistentContainer.Instance.PollOpen)
@@ -283,8 +283,8 @@ namespace ServerTools
                             int _timeLeft = _pollHours - _timepassed;
                             if (_timeLeft > 0)
                             {
-                                SdtdConsole.Instance.Output("[SERVERTOOLS] There is a poll running");
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] It is set to run for {0} hour. {1} hour remains. Poll message: {2}", _pollData[1], _timeLeft, _pollData[2]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There is a poll running");
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] It is set to run for {0} hour. {1} hour remains. Poll message: {2}", _pollData[1], _timeLeft, _pollData[2]));
                                 return;
                             }
                             else
@@ -292,7 +292,7 @@ namespace ServerTools
                                 Dictionary<string, bool> _pollVotes = PersistentContainer.Instance.PollVote;
                                 if (_pollVotes.Count == 0)
                                 {
-                                    SdtdConsole.Instance.Output("[SERVERTOOLS] The open poll has been stopped but no announcement made due to no votes");
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] The open poll has been stopped but no announcement made due to no votes");
                                     return;
                                 }
                                 int _yes = 0, _no = 0;
@@ -321,7 +321,7 @@ namespace ServerTools
                                         _oldPoll.Add(_pollData, "yes");
                                         PersistentContainer.Instance.PollOld = _oldPoll;
                                     }
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. Yes votes have won {0} to {1}. Poll message: {2}", _yes, _no, _pollData[2]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. Yes votes have won {0} to {1}. Poll message: {2}", _yes, _no, _pollData[2]));
                                     using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                     {
                                         sw.WriteLine(string.Format("{0}: The poll has been stopped. Yes votes have won {1} to {2}", DateTime.Now, _yes, _no));
@@ -344,7 +344,7 @@ namespace ServerTools
                                         _oldPoll.Add(_pollData, "no");
                                         PersistentContainer.Instance.PollOld = _oldPoll;
                                     }
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. No votes have won {0} to {1}. Poll message: {2}", _no, _yes, _pollData[2]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. No votes have won {0} to {1}. Poll message: {2}", _no, _yes, _pollData[2]));
                                     using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                     {
                                         sw.WriteLine(string.Format("{0}: The poll has been stopped. No votes have won {1} to {2}", DateTime.Now, _no, _yes));
@@ -367,7 +367,7 @@ namespace ServerTools
                                         _oldPoll.Add(_pollData, "tie");
                                         PersistentContainer.Instance.PollOld = _oldPoll;
                                     }
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. It was a tie at {0} votes each. Poll message: {1}", _yes, _pollData[2]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The open poll has been stopped and recorded. It was a tie at {0} votes each. Poll message: {1}", _yes, _pollData[2]));
                                     using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                                     {
                                         sw.WriteLine(string.Format("{0}: The poll has been stopped. It was a tie at {1} votes each", DateTime.Now, _yes));
@@ -396,19 +396,19 @@ namespace ServerTools
                                 PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                                 PersistentContainer.Instance.PollOpen = true;
                                 PersistentContainer.DataChange = true;
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] A new poll has opened for {0} hour. Poll message: {1}", _pollHours, _message));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] A new poll has opened for {0} hour. Poll message: {1}", _pollHours, _message));
                                 return;
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] There is a open poll but the data is missing. Cancel the poll or start a new one");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There is a open poll but the data is missing. Cancel the poll or start a new one");
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] There is no open poll");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There is no open poll");
                         return;
                     }
                 }
@@ -416,7 +416,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     else
@@ -428,15 +428,15 @@ namespace ServerTools
                             for (int i = 0; i < _keys.Count; i++)
                             {
                                 KeyValuePair<string[], string> _poll = _oldPoll.ElementAt(i);
-                                SdtdConsole.Instance.Output(string.Format("Poll {0} opened at {1} for {2} hour", i + 1, _poll.Key[0], _poll.Key[1]));
-                                SdtdConsole.Instance.Output(string.Format("Message: {0}", _poll.Key[2]));
-                                SdtdConsole.Instance.Output(string.Format("Vote: {0}", _poll.Value));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Poll {0} opened at {1} for {2} hour", i + 1, _poll.Key[0], _poll.Key[1]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Message: {0}", _poll.Key[2]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Vote: {0}", _poll.Value));
                             }
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] There are no saved polls");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There are no saved polls");
                             return;
                         }
                     }
@@ -445,22 +445,22 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
                     if (!int.TryParse(_params[1], out int _number))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer {0}", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer {0}", _params[1]));
                         return;
                     }
                     if (!int.TryParse(_params[2], out int _hours))
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer {0}", _params[2]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer {0}", _params[2]));
                         return;
                     }
                     if (PersistentContainer.Instance.PollOpen)
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] A poll is already open");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] A poll is already open");
                         return;
                     }
                     int _numberAdjusted = _number - 1;
@@ -475,8 +475,8 @@ namespace ServerTools
                             PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
                             PersistentContainer.Instance.PollOpen = true;
                             PersistentContainer.DataChange = true;
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Poll {0} has been opened for {1} hour", _number, _hours));
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Message: {0}", _poll.Key[2]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Poll {0} has been opened for {1} hour", _number, _hours));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Message: {0}", _poll.Key[2]));
                             using (StreamWriter sw = new StreamWriter(Poll.Filepath, true, Encoding.UTF8))
                             {
                                 sw.WriteLine(string.Format("{0}: A new poll has opened for {1} hour. Message: {2}", DateTime.Now, _hours, _poll.Key[2]));
@@ -487,13 +487,13 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] That entry does not exist in the list");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] That entry does not exist in the list");
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("[SERVERTOOLS] There are no saved polls");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There are no saved polls");
                         return;
                     }
                 }
