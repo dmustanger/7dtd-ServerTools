@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 public static class Injections
 {
@@ -45,8 +46,8 @@ public static class Injections
         {
             if (__state)
             {
-                int _maxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
-                GamePrefs.Set(EnumGamePrefs.ServerMaxPlayerCount, _maxPlayers - 1);
+                int maxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
+                GamePrefs.Set(EnumGamePrefs.ServerMaxPlayerCount, maxPlayers - 1);
             }
         }
         catch (Exception e)
@@ -154,28 +155,6 @@ public static class Injections
         catch (Exception e)
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ChatMessageServer_Postfix: {0}", e.Message));
-        }
-    }
-
-    public static void GameManager_OnApplicationQuit_Prefix()
-    {
-        try
-        {
-            Dictionary<int, EntityPlayer> _entityPlayers = PersistentOperations.GetEntityPlayers();
-            if (_entityPlayers != null && _entityPlayers.Count > 0)
-            {
-                foreach (var _entityPlayer in _entityPlayers)
-                {
-                    if (_entityPlayer.Value.AttachedToEntity != null && _entityPlayer.Value.IsSpawned())
-                    {
-                        _entityPlayer.Value.Detach();
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_OnApplicationQuit_Prefix: {0}", e.Message));
         }
     }
 
@@ -405,18 +384,18 @@ public static class Injections
         }
     }
 
-    public static void EntityAlive_OnReloadEnd_Postfix(EntityAlive __instance)
+    public static void GameManager_ItemReloadServer_Postfix(int _entityId)
     {
         try
         {
-            if (InfiniteAmmo.IsEnabled && InfiniteAmmo.Dict.ContainsKey(__instance.entityId))
+            if (InfiniteAmmo.IsEnabled && InfiniteAmmo.Dict.ContainsKey(_entityId))
             {
-                InfiniteAmmo.Dict.Remove(__instance.entityId);
+                InfiniteAmmo.Dict.Remove(_entityId);
             }
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.EntityAlive_OnReloadEnd_Postfix: {0}", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_ItemReloadServer_Postfix: {0}", e.Message));
         }
     }
 

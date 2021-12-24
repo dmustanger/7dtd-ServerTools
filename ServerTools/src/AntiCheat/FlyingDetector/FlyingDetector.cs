@@ -9,7 +9,7 @@ namespace ServerTools
     class FlyingDetector
     {
         public static bool IsEnabled = false, AboveGround = true, BelowGround = true;
-        public static int Flying_Admin_Level = 0, Total_Flags = 3;
+        public static int Flying_Admin_Level = 0, Flag_Limit = 3;
 
         public static Dictionary<int, int> Flags = new Dictionary<int, int>();
 
@@ -22,7 +22,7 @@ namespace ServerTools
             BelowGround = true;
             for (float i = _postion.x - 1; i <= (_postion.x + 1); i++)
             {
-                for (float j = _postion.y - 2; j <= (_postion.y + 2); j++)
+                for (float j = _postion.y - 3; j <= (_postion.y + 2); j++)
                 {
                     for (float k = _postion.z - 1; k <= (_postion.z + 1); k++)
                     {
@@ -63,8 +63,7 @@ namespace ServerTools
             {
                 Flags.TryGetValue(_cInfo.entityId, out int flags);
                 flags++;
-                Flags[_cInfo.entityId] = flags;
-                if (flags == Total_Flags)
+                if (flags == Flag_Limit)
                 {
                     List<EntityPlayer> playerList = PersistentOperations.PlayerList();
                     for (int j = 0; j < playerList.Count; j++)
@@ -75,37 +74,29 @@ namespace ServerTools
                             return;
                         }
                     }
-                    Timers.Flying_SingleUseTimer(_cInfo, new Vector3i(_player.position));
-                }
-            }
-            else
-            {
-                Flags.Add(_cInfo.entityId, 1);
-            }
-        }
-
-        public static void TimerExpired(ClientInfo _cInfo, Vector3i _position)
-        {
-            if (Flags.ContainsKey(_cInfo.entityId))
-            {
-                Flags.TryGetValue(_cInfo.entityId, out int flags);
-                if (flags >= Total_Flags)
-                {
                     Flags.Remove(_cInfo.entityId);
                     Phrases.Dict.TryGetValue("Flying2", out string phrase);
                     SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                     {
-                        sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' flying @ {3}", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _position));
+                        sw.WriteLine(string.Format("Detected Id '{0}' '{1}' named '{2}' flying @ '{3}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _player.position));
                         sw.WriteLine();
                         sw.Flush();
                         sw.Close();
                     }
-                    Log.Warning("[SERVERTOOLS] Detected id '{0}' '{1}' named '{2}' flying @ '{3}'. They have been banned", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _position);
+                    Log.Warning("[SERVERTOOLS] Detected Id '{0}' '{1}' named '{2}' flying @ '{3}'. They have been banned", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _player.position);
                     Phrases.Dict.TryGetValue("Flying1", out phrase);
                     phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
                     ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
+                else
+                {
+                    Flags[_cInfo.entityId] = flags;
+                }
+            }
+            else
+            {
+                Flags.Add(_cInfo.entityId, 1);
             }
         }
     }

@@ -12,7 +12,7 @@ namespace ServerTools
 
         public static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
 
-        private static List<string> PhraseList = new List<string>();
+        //private static List<string> PhraseList = new List<string>();
 
         private const string file = "Phrases.xml";
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -1300,6 +1300,11 @@ namespace ServerTools
                         phrase = "Loot, storage, vehicles, traders and workstations are locked until shutdown completes";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Shutdown3\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Shutdown4", out phrase))
+                    {
+                        phrase = "Server is shutting down. Rejoin when it restarts";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Shutdown4\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************* Died ************************* -->");
@@ -3060,6 +3065,24 @@ namespace ServerTools
                         phrase = "Workstation is locked";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"WorkstationLock1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- *********************** New_Player ********************* -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("NewPlayer1", out phrase))
+                    {
+                        phrase = "Currently in bloodmoon. Please join when it finishes";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"NewPlayer1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ********************** Country_Ban ********************* -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("CountryBan1", out phrase))
+                    {
+                        phrase = "Auto detection has banned you for country IP region";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"CountryBan1\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");

@@ -17,10 +17,10 @@ namespace ServerTools
                 "  2. st-mt add <EOS/EntityId/PlayerName> <time>\n" +
                 "  3. st-mt remove <EOS>\n" +
                 "  4. st-mt list\n" +
-                "1. Adds a steam Id to the mute list for 60 minutes\n" +
-                "2. Adds a steam Id to the mute list for a specific time\n" +
-                "3. Removes a steam Id from the mute list\n" +
-                "4. Lists all steam Id in the mute list\n" +
+                "1. Adds a Id to the mute list for 60 minutes\n" +
+                "2. Adds a Id to the mute list for a specific time\n" +
+                "3. Removes a Id from the mute list\n" +
+                "4. Lists all Id in the mute list\n" +
                 "*Note Use -1 for time to mute indefinitely*";
         }
         public override string[] GetCommands()

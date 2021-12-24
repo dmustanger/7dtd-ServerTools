@@ -255,22 +255,6 @@ namespace ServerTools
             };
         }
 
-        public static void Flying_SingleUseTimer(ClientInfo _cInfo, Vector3i _position)
-        {
-            System.Timers.Timer singleUseTimer = new System.Timers.Timer(2000)
-            {
-                AutoReset = false
-            };
-            singleUseTimer.Start();
-            singleUseTimer.Elapsed += (sender, e) =>
-            {
-                Init13(_cInfo, _position);
-                singleUseTimer.Stop();
-                singleUseTimer.Close();
-                singleUseTimer.Dispose();
-            };
-        }
-
         public static void PersistentDataSave()
         {
             System.Timers.Timer saveDelay = new System.Timers.Timer(120000)
@@ -565,11 +549,6 @@ namespace ServerTools
         private static void Init12(ClientInfo _cInfo)
         {
             SpeedDetector.TimerExpired(_cInfo);
-        }
-
-        private static void Init13(ClientInfo _cInfo, Vector3i _position)
-        {
-            FlyingDetector.TimerExpired(_cInfo, _position);
         }
     }
 }

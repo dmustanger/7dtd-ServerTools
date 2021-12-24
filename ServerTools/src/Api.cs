@@ -75,21 +75,24 @@ namespace ServerTools
                 {
                     if (Shutdown.NoEntry)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"Server is shutting down. Rejoin when it restarts\"", _cInfo.CrossplatformId.CombinedString), null);
+                        Phrases.Dict.TryGetValue("Shutdown4", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     }
                     if (NewPlayer.Block_During_Bloodmoon && PersistentOperations.IsBloodmoon())
                     {
+                        Phrases.Dict.TryGetValue("NewPlayer1", out string phrase);
                         PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromUId(_cInfo.CrossplatformId);
                         if (pdf != null)
                         {
                             if (pdf.totalTimePlayed < 5)
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.CrossplatformId.CombinedString), null);
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                             }
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"Currently in bloodmoon. Please join when it finishes\"", _cInfo.CrossplatformId.CombinedString), null);
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                         }
                     }
                     if (!string.IsNullOrEmpty(_cInfo.ip))
@@ -115,7 +118,8 @@ namespace ServerTools
             {
                 if (CountryBan.IsEnabled && CountryBan.IsCountryBanned(_cInfo))
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"Auto detection has banned you for country IP region\"", _cInfo.CrossplatformId.CombinedString), null);
+                    Phrases.Dict.TryGetValue("CountryBan1", out string phrase);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     return;
                 }
             }

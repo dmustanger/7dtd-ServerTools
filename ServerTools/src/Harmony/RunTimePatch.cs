@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection;
 
@@ -152,22 +153,6 @@ namespace ServerTools
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
-                original = AccessTools.Method(typeof(GameManager), "OnApplicationQuit");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.OnApplicationQuit method was not found"));
-                }
-                else
-                {
-                    MethodInfo prefix = typeof(Injections).GetMethod("GameManager_OnApplicationQuit_Prefix");
-                    if (prefix == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_OnApplicationQuit.prefix"));
-                        return;
-                    }
-                    harmony.Patch(original, new HarmonyMethod(prefix), null);
-                }
-
                 original = AccessTools.Method(typeof(GameManager), "OpenTileEntityAllowed");
                 if (original == null)
                 {
@@ -248,17 +233,17 @@ namespace ServerTools
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
                 }
 
-                original = AccessTools.Method(typeof(EntityAlive), "OnReloadEnd");
+                original = AccessTools.Method(typeof(GameManager), "ItemReloadServer");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.OnReloadEnd method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ItemReloadServer method was not found"));
                 }
                 else
                 {
-                    MethodInfo postfix = typeof(Injections).GetMethod("EntityAlive_OnReloadEnd_Postfix");
+                    MethodInfo postfix = typeof(Injections).GetMethod("GameManager_ItemReloadServer_Postfix");
                     if (postfix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_OnReloadEnd.postfix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_ItemReloadServer.postfix"));
                         return;
                     }
                     harmony.Patch(original, null, new HarmonyMethod(postfix));

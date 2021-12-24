@@ -129,7 +129,7 @@ namespace ServerTools
                                 RestartVote.ThirtyMin = true;
                             }
                             continue;
-                        case "Watchlist":
+                        case "WatchList":
                             if (DateTime.Now >= entry.Value)
                             {
                                 watchList = "";

@@ -8,13 +8,12 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.0.0";
+        public const string Version = "20.0.1";
         public static bool Upgrade = false;
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
         private const string ConfigFile = "ServerToolsConfig.xml";
-        private static List<string> ConfigList = new List<string>();
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, ConfigFile);
 
         public static void Load()
@@ -1456,7 +1455,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of missing 'Flags' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(line.GetAttribute("Flags"), out FlyingDetector.Total_Flags))
+                                if (!int.TryParse(line.GetAttribute("Flags"), out FlyingDetector.Flag_Limit))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Flags' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -3916,28 +3915,28 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            case "XRay_Detector":
-                                if (!line.HasAttribute("Enable"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(line.GetAttribute("Enable"), out XRayDetector.IsEnabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!line.HasAttribute("Admin_Level"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out XRayDetector.Admin_Level))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                break;
+                            //case "XRay_Detector":
+                            //    if (!line.HasAttribute("Enable"))
+                            //    {
+                            //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                            //        continue;
+                            //    }
+                            //    if (!bool.TryParse(line.GetAttribute("Enable"), out XRayDetector.IsEnabled))
+                            //    {
+                            //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                            //        continue;
+                            //    }
+                            //    if (!line.HasAttribute("Admin_Level"))
+                            //    {
+                            //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                            //        continue;
+                            //    }
+                            //    if (!int.TryParse(line.GetAttribute("Admin_Level"), out XRayDetector.Admin_Level))
+                            //    {
+                            //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                            //        continue;
+                            //    }
+                            //    break;
                             case "Zones":
                                 if (!line.HasAttribute("Enable"))
                                 {
@@ -4051,7 +4050,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Exit_Command_Extended\" Admin_Level=\"{0}\" Exit_Time=\"{1}\" />", ExitCommand.Admin_Level, ExitCommand.Exit_Time));
                 sw.WriteLine(string.Format("        <Tool Name=\"Falling_Blocks_Remover\" Enable=\"{0}\" Log=\"{1}\" Max_Blocks=\"{2}\" />", FallingBlocks.IsEnabled, FallingBlocks.OutputLog, FallingBlocks.Max_Blocks));
                 sw.WriteLine(string.Format("        <Tool Name=\"First_Claim_Block\" Enable=\"{0}\" />", FirstClaimBlock.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Flying_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", FlyingDetector.IsEnabled, FlyingDetector.Flying_Admin_Level, FlyingDetector.Total_Flags));
+                sw.WriteLine(string.Format("        <Tool Name=\"Flying_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", FlyingDetector.IsEnabled, FlyingDetector.Flying_Admin_Level, FlyingDetector.Flag_Limit));
                 sw.WriteLine(string.Format("        <Tool Name=\"FPS\" Enable=\"{0}\" Set_Target=\"{1}\" Low_FPS=\"{2}\" />", Fps.IsEnabled, Fps.Set_Target, Fps.Low_FPS));
                 sw.WriteLine(string.Format("        <Tool Name=\"Friend_Teleport\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" Player_Check=\"{3}\" Zombie_Check=\"{4}\" />", FriendTeleport.IsEnabled, FriendTeleport.Delay_Between_Uses, FriendTeleport.Command_Cost, FriendTeleport.Player_Check, FriendTeleport.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Gamble\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", Gamble.IsEnabled, Gamble.Delay_Between_Uses, Gamble.Command_Cost));

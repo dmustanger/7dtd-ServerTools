@@ -141,7 +141,8 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Watchlist>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Player Id=\"12345678909876543\" Reason=\"Suspected cheating\" / -->");
+                    sw.WriteLine("    <!-- Player Id=\"Steam_12345678909876543\" Reason=\"Suspected cheating\" / -->");
+                    sw.WriteLine("    <!-- Player Id=\"EOS_1a3b5c7a9b1c3a5b7c9a1b3c5a7b9c1a3\" Reason=\"Cheaters R Assho\" / -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -195,7 +196,7 @@ namespace ServerTools
                         {
                             if (DateTime.Now < time)
                             {
-                                EventSchedule.Add("Shutdown", time);
+                                EventSchedule.Add("WatchList", time);
                                 return;
                             }
                         }
@@ -206,7 +207,7 @@ namespace ServerTools
                         {
                             if (DateTime.Now < time)
                             {
-                                EventSchedule.Add("Shutdown", time);
+                                EventSchedule.Add("WatchList", time);
                                 return;
                             }
                         }
@@ -218,11 +219,11 @@ namespace ServerTools
                     {
                         if (DateTime.Now < time)
                         {
-                            EventSchedule.Add("Shutdown", time);
+                            EventSchedule.Add("WatchList", time);
                         }
                         else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Delay + ":00", out DateTime secondaryTime))
                         {
-                            EventSchedule.Add("Shutdown", secondaryTime);
+                            EventSchedule.Add("WatchList", secondaryTime);
                         }
                     }
                 }
@@ -230,7 +231,7 @@ namespace ServerTools
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
-                        EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(delay));
+                        EventSchedule.Add("WatchList", DateTime.Now.AddMinutes(delay));
                     }
                     else
                     {

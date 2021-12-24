@@ -63,7 +63,8 @@ namespace ServerTools
                     else
                     {
                         string shape = block.shape.GetName().ToLower();
-                        if (shape.Contains("cube") && (!shape.Contains("quarter") || !shape.Contains("half")))
+                        Log.Out(string.Format("[SERVERTOOLS] Shape: {0}", shape));
+                        if (shape == "cube" || shape == "cube_frame" || shape == "cube_half" || shape == "cube_0.25m")
                         {
                             if (!_player.IsCrouching)
                             {
