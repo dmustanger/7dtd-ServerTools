@@ -11,20 +11,20 @@ namespace ServerTools
         public static List<int> BlackScreen = new List<int>();
 
         private static int AirType = BlockValue.Air.type;
+        private static Vector3 CameraPosition;
 
         public static void IsInsideBlocks(ClientInfo _cInfo, EntityPlayer _player)
         {
-            Vector3 cameraPosition;
             if (!_player.IsCrouching)
             {
-                cameraPosition = new Vector3(_player.position.x, _player.position.y + 1.6f, _player.position.z);
+                CameraPosition = new Vector3(_player.position.x, _player.position.y + 1.6f, _player.position.z);
             }
             else
             {
-                cameraPosition = new Vector3(_player.position.x, _player.position.y + 1f, _player.position.z);
+                CameraPosition = new Vector3(_player.position.x, _player.position.y + 1f, _player.position.z);
             }
             World world = GameManager.Instance.World;
-            Vector3i blockPosition = World.worldToBlockPos(cameraPosition);
+            Vector3i blockPosition = World.worldToBlockPos(CameraPosition);
             BlockValue blockValue = world.GetBlock(blockPosition);
             if (blockValue.type != AirType)
             {
@@ -64,7 +64,7 @@ namespace ServerTools
                     {
                         string shape = block.shape.GetName().ToLower();
                         Log.Out(string.Format("[SERVERTOOLS] Shape: {0}", shape));
-                        if (shape == "cube" || shape == "cube_frame" || shape == "cube_half" || shape == "cube_0.25m")
+                        if (shape == "cube" || shape == "cube_frame")
                         {
                             if (!_player.IsCrouching)
                             {

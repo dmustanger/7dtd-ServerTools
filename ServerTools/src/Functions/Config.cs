@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -8,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.0.1";
+        public const string Version = "20.0.2";
         public static bool Upgrade = false;
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
@@ -2676,16 +2675,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!line.HasAttribute("Max_Speed"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of missing 'Max_Speed' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(line.GetAttribute("Max_Speed"), out PlayerStats.Max_Speed))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Max_Speed' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
                                 if (!line.HasAttribute("Health"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Stats entry in ServerToolsConfig.xml because of missing 'Health' attribute: {0}", subChild.OuterXml));
@@ -3915,28 +3904,28 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            //case "XRay_Detector":
-                            //    if (!line.HasAttribute("Enable"))
-                            //    {
-                            //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
-                            //        continue;
-                            //    }
-                            //    if (!bool.TryParse(line.GetAttribute("Enable"), out XRayDetector.IsEnabled))
-                            //    {
-                            //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                            //        continue;
-                            //    }
-                            //    if (!line.HasAttribute("Admin_Level"))
-                            //    {
-                            //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                            //        continue;
-                            //    }
-                            //    if (!int.TryParse(line.GetAttribute("Admin_Level"), out XRayDetector.Admin_Level))
-                            //    {
-                            //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                            //        continue;
-                            //    }
-                            //    break;
+                            case "XRay_Detector":
+                                if (!line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out XRayDetector.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!line.HasAttribute("Admin_Level"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out XRayDetector.Admin_Level))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring XRay_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "Zones":
                                 if (!line.HasAttribute("Enable"))
                                 {
@@ -4090,7 +4079,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Normal_Player_Color_Prefix\" Enable=\"{0}\" Prefix=\"{1}\" Name_Color=\"{2}\" Prefix_Color=\"{3}\" />", ChatHook.Normal_Player_Color_Prefix, ChatHook.Normal_Player_Prefix, ChatHook.Normal_Player_Name_Color, ChatHook.Normal_Player_Prefix_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_List\" Enable=\"{0}\" />", PlayerList.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_Logs\" Enable=\"{0}\" Vehicle=\"{1}\" Interval=\"{2}\" />", PlayerLogs.IsEnabled, PlayerLogs.Vehicle, PlayerLogs.Delay));
-                sw.WriteLine(string.Format("        <Tool Name=\"Player_Stats\" Enable=\"{0}\" Max_Speed=\"{1}\" Health=\"{2}\" Stamina=\"{3}\" Jump_Strength=\"{4}\" />", PlayerStats.IsEnabled, PlayerStats.Max_Speed, PlayerStats.Health, PlayerStats.Stamina, PlayerStats.Jump_Strength));
+                sw.WriteLine(string.Format("        <Tool Name=\"Player_Stats\" Enable=\"{0}\" Health=\"{1}\" Stamina=\"{2}\" Jump_Strength=\"{3}\" />", PlayerStats.IsEnabled, PlayerStats.Health, PlayerStats.Stamina, PlayerStats.Jump_Strength));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_Stats_Extended\" Height=\"{0}\" Admin_Level=\"{1}\" Kick_Enabled=\"{2}\" Ban_Enabled=\"{3}\" />", PlayerStats.Height, PlayerStats.Admin_Level, PlayerStats.Kick_Enabled, PlayerStats.Ban_Enabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"POI_Protection\" Enable=\"{0}\" Bed=\"{1}\" Claim=\"{2}\" />", POIProtection.IsEnabled, POIProtection.Bed, POIProtection.Claim));
                 sw.WriteLine(string.Format("        <Tool Name=\"Poll\" Enable=\"{0}\" />", Poll.IsEnabled));

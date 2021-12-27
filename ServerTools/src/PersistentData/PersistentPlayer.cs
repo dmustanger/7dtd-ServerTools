@@ -7,7 +7,7 @@ namespace ServerTools
 
     public class PersistentPlayer
     {
-        private readonly string steamId;
+        private readonly string id;
         private Dictionary<int, ItemDataSerializable> auction;
         private Dictionary<int, ItemDataSerializable> auctionReturn;
         private List<string[]> autoPartyInvite;
@@ -867,9 +867,9 @@ namespace ServerTools
             }
         }
 
-        public PersistentPlayer(string steamId)
+        public PersistentPlayer(string id)
         {
-            this.steamId = steamId;
+            this.id = id;
         }
     }
 }

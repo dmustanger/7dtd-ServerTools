@@ -1,7 +1,5 @@
 ﻿using HarmonyLib;
 using System;
-using System.Collections.Generic;
-using System.Numerics;
 using System.Reflection;
 
 namespace ServerTools
@@ -291,7 +289,7 @@ namespace ServerTools
                     MethodInfo postfix = typeof(Injections).GetMethod("NetPackagePlayerInventory_ProcessPackage_Postfix");
                     if (postfix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerInventory_ProcessPackage.postfix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerInventory_ProcessPackage_Postfix"));
                         return;
                     }
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
@@ -307,7 +305,7 @@ namespace ServerTools
                     MethodInfo prefix = typeof(Injections).GetMethod("EntityAlive_DamageEntity_Prefix");
                     if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_DamageEntity.prefix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_DamageEntity_Prefix"));
                         return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
@@ -323,7 +321,7 @@ namespace ServerTools
                     MethodInfo prefix = typeof(Injections).GetMethod("EntityAlive_ProcessDamageResponse_Prefix");
                     if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_ProcessDamageResponse.prefix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_ProcessDamageResponse_Prefix"));
                         return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
@@ -339,7 +337,7 @@ namespace ServerTools
                     MethodInfo prefix = typeof(Injections).GetMethod("ClientInfoCollection_GetForNameOrId_Prefix");
                     if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ClientInfoCollection_GetForNameOrId.prefix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ClientInfoCollection_GetForNameOrId_Prefix"));
                         return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);

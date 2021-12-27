@@ -4,28 +4,21 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using UnityEngine;
 
 public static class Injections
 {
 
-    public static void PlayerLoginRPC_Prefix(ClientInfo _cInfo, out bool __state)
+    public static void PlayerLoginRPC_Prefix(ClientInfo _cInfo, string _playerName, ValueTuple<PlatformUserIdentifierAbs, string> _platformUserAndToken, ValueTuple<PlatformUserIdentifierAbs, string> _crossplatformUserAndToken, out bool __state)
     {
         __state = false;
         try
         {
-            if (_cInfo.PlatformId != null && _cInfo.CrossplatformId != null)
+            if (_platformUserAndToken.Item1 != null && _crossplatformUserAndToken.Item1 != null)
             {
-                if (NewPlayer.IsEnabled && NewPlayer.Block_During_Bloodmoon && PersistentOperations.IsBloodmoon())
-                {
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerDenied>().Setup(new GameUtils.KickPlayerData(GameUtils.EKickReason.ManualKick, 0, default, "[ServerTools] - New players are kicked during the bloodmoon. Please return after the bloodmoon is over")));
-                    return;
-                }
-                
                 if (ReservedSlots.IsEnabled)
                 {
                     int maxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
-                    if (ConnectionManager.Instance.ClientCount() > maxPlayers && ReservedSlots.FullServer(_cInfo))
+                    if (ConnectionManager.Instance.ClientCount() > maxPlayers && ReservedSlots.FullServer(_cInfo, _platformUserAndToken.Item1, _crossplatformUserAndToken.Item1))
                     {
                         GamePrefs.Set(EnumGamePrefs.ServerMaxPlayerCount, maxPlayers + 1);
                         __state = true;
@@ -352,7 +345,7 @@ public static class Injections
         {
             if (DroppedBagProtection.IsEnabled && _entity != null && _entity is EntityBackpack)
             {
-                
+
                 List<ClientInfo> clientList = PersistentOperations.ClientList();
                 if (clientList != null)
                 {
@@ -517,6 +510,7 @@ public static class Injections
                     }
                 }
             }
+
         }
         catch (Exception e)
         {

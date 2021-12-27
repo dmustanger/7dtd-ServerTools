@@ -1143,7 +1143,7 @@ namespace ServerTools
                             }
                             if (ReservedSlots.IsEnabled && messageLowerCase == ReservedSlots.Command_reserved)
                             {
-                                ReservedSlots.ReservedStatus(_cInfo);
+                                ReservedSlots.ReservedStatus(_cInfo, _cInfo.PlatformId, _cInfo.CrossplatformId);
                                 return false;
                             }
                             if (Prayer.IsEnabled && messageLowerCase == Prayer.Command_pray)

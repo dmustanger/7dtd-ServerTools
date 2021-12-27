@@ -89,7 +89,7 @@ namespace ServerTools
                                                 sw.Flush();
                                                 sw.Close();
                                             }
-                                            if ((_victim.RecordedDamage.Fatal || _strength >= _victim.Health) && lastEntityKilled != _victim.entityId)
+                                            if ((_victim.RecordedDamage.Fatal || _strength >= _victim.Health) && _victim.IsAlive() && lastEntityKilled != _victim.entityId)
                                             {
                                                 lastEntityKilled = _victim.entityId;
                                                 if (KillNotice.IsEnabled && KillNotice.PvP)
@@ -145,10 +145,13 @@ namespace ServerTools
                                         {
                                             return false;
                                         }
-                                        if ((_victim.RecordedDamage.Fatal || _strength >= _victim.Health) && Wallet.IsEnabled && Wallet.Zombie_Kill > 0 && lastEntityKilled != _victim.entityId)
+                                        if ((_victim.RecordedDamage.Fatal || _strength >= _victim.Health) && _victim.IsAlive() && lastEntityKilled != _victim.entityId)
                                         {
                                             lastEntityKilled = _victim.entityId;
-                                            Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, Wallet.Zombie_Kill);
+                                            if (Wallet.IsEnabled && Wallet.Zombie_Kill > 0)
+                                            {
+                                                Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, Wallet.Zombie_Kill);
+                                            }
                                             if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.BloodmoonStarted && BloodmoonWarrior.WarriorList.Contains(cInfo.entityId))
                                             {
                                                 if (BloodmoonWarrior.KilledZombies.TryGetValue(cInfo.entityId, out int killedZ))
@@ -168,14 +171,14 @@ namespace ServerTools
                                     }
                                     if (PersistentOperations.IsBloodmoon() && Market.IsEnabled && Market.MarketPlayers.Contains(cInfo.entityId))
                                     {
-                                        Phrases.Dict.TryGetValue("Market12", out string _phrase);
-                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        Phrases.Dict.TryGetValue("Market12", out string phrase);
+                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         return false;
                                     }
                                     if (PersistentOperations.IsBloodmoon() && Lobby.IsEnabled && Lobby.LobbyPlayers.Contains(cInfo.entityId))
                                     {
-                                        Phrases.Dict.TryGetValue("Lobby12", out string _phrase);
-                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        Phrases.Dict.TryGetValue("Lobby12", out string phrase);
+                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         return false;
                                     }
                                     int distance = (int)player.GetDistance(_victim);

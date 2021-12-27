@@ -1,5 +1,17 @@
 ﻿CHANGELOG
 
+20.0.2
+Built using Alpha 20 experimental assets
+Functioning with Alpha 20 experimental. Untested with other versions
+
+-Fixed Reserved_Slots not functioning as intended
+-Fixed XRay_Detector not functioning as intended
+-Fixed Flight_Detector not functioning as intended
+-Fixed Speed_Detector not functioning as intended
+-Fixed corpses giving extra currency
+*note XRay_Detector will only function with terrain, draw bridges and 
+some of the blocks
+
 20.0.1
 Built using Alpha 20 experimental assets
 Functioning with Alpha 20 experimental. Untested with other versions

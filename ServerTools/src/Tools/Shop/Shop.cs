@@ -194,6 +194,7 @@ namespace ServerTools
                     sw.WriteLine("<Shop>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
+                    sw.WriteLine("    <!-- <Item Name=\"\" SecondaryName=\"\" Count=\"\" Quality=\"\" Price=\"\" Category=\"\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -487,6 +488,7 @@ namespace ServerTools
                     sw.WriteLine("<Shop>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
+                    sw.WriteLine("    <!-- <Item Name=\"\" SecondaryName=\"\" Count=\"\" Quality=\"\" Price=\"\" Category=\"\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Secondary name is") && 

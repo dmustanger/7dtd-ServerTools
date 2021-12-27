@@ -41,7 +41,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (Reserved_Only && ReservedSlots.IsEnabled && !ReservedSlots.ReservedCheck(_cInfo))
+            if (Reserved_Only && ReservedSlots.IsEnabled && !ReservedSlots.ReservedCheck(_cInfo, _cInfo.PlatformId, _cInfo.CrossplatformId))
             {
                 Phrases.Dict.TryGetValue("Market8", out string phrase);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

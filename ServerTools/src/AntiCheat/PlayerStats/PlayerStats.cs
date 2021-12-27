@@ -8,7 +8,7 @@ namespace ServerTools
     class PlayerStats
     {
         public static bool IsEnabled = false, Kick_Enabled = false, Ban_Enabled = false;
-        public static int Admin_Level = 0, Days_Before_Log_Delete = 5, Max_Speed = 28, Health = 255, Stamina = 255;
+        public static int Admin_Level = 0, Days_Before_Log_Delete = 5, Health = 255, Stamina = 255;
         public static double Jump_Strength = 1.5, Height = 1.8;
 
         private static readonly string file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
@@ -31,7 +31,6 @@ namespace ServerTools
                                 EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                                 if (player != null && player.IsSpawned())
                                 {
-                                    var p_speedForward = player.speedForward;
                                     var p_Health = player.Stats.Health.Value;
                                     var p_Stamina = player.Stats.Stamina.Value;
                                     var p_jumpStrength = player.jumpStrength;
@@ -140,33 +139,6 @@ namespace ServerTools
                                             Phrases.Dict.TryGetValue("PlayerStats15", out string phrase);
                                             SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban {0} \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
                                             Phrases.Dict.TryGetValue("PlayerStats16", out phrase);
-                                            phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
-                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                                        }
-                                    }
-                                    if (p_speedForward > Max_Speed)
-                                    {
-                                        using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
-                                        {
-                                            sw.WriteLine(string.Format("{0}: Detected id '{1}' '{2}' named '{3}' with an illegal run speed value of '{4}'", DateTime.Now, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, p_speedForward));
-                                            sw.WriteLine();
-                                            sw.Flush();
-                                            sw.Close();
-                                        }
-                                        Log.Warning(string.Format("Detected id '{0}' '{1}' named '{2}' with an illegal run speed value of '{3}'", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, p_speedForward));
-                                        if (Kick_Enabled)
-                                        {
-                                            Phrases.Dict.TryGetValue("PlayerStats17", out string phrase);
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
-                                            Phrases.Dict.TryGetValue("PlayerStats18", out phrase);
-                                            phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
-                                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                                        }
-                                        if (Ban_Enabled)
-                                        {
-                                            Phrases.Dict.TryGetValue("PlayerStats19", out string phrase);
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban {0} \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
-                                            Phrases.Dict.TryGetValue("PlayerStats20", out phrase);
                                             phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
                                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                         }

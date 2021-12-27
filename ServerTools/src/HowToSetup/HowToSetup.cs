@@ -20,7 +20,7 @@ namespace ServerTools
                 sw.WriteLine("ServerTools was coded and tested under a Windows operating system. If you find bugs, report them to");
                 sw.WriteLine("https://github.com/dmustanger/7dtd-ServerTools/issues");
                 sw.WriteLine();
-                sw.WriteLine("You can join the discord channel with this link https://discord.gg/6G8VZQg");
+                sw.WriteLine("You can also report bugs at the main Discord guild for ServerTools. This is the invitation link https://discord.gg/6G8VZQg");
                 sw.WriteLine();
                 sw.WriteLine("After running your server with ServerTools installed, you will be able to access the ServerToolsConfig.xml found in the ServerTools folder located in your dedicated server installation directory.");
                 sw.WriteLine("You will need to enable and set each tools options to match your server preferences. Changes to this file are live and typically do not require the Server to be restarted.");

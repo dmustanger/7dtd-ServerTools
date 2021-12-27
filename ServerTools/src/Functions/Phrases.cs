@@ -3043,7 +3043,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"AntiCheat1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("AntiCheat2", out phrase))
                     {
-                        phrase = "Banned for using a infinite ammo hack";
+                        phrase = "Auto detection has banned you for using infinite ammo hack";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"AntiCheat2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("AntiCheat3", out phrase))

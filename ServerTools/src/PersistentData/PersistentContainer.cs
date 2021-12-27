@@ -10,7 +10,7 @@ namespace ServerTools
     {
         public static bool DataChange = false;
 
-        private static string filepath = string.Format("{0}/ServerTools.bin", API.ConfigPath);
+        private static string Filepath = string.Format("{0}/ServerTools.bin", API.ConfigPath);
         private static PersistentContainer instance;
         private PersistentPlayers players;
         private static bool Saving = false;
@@ -71,15 +71,11 @@ namespace ServerTools
                 {
                     if (!Saving)
                     {
-                        if (!Shutdown.NoEntry)
+                        Saving = true;
+                        using (Stream stream = File.Open(Filepath, FileMode.Create, FileAccess.ReadWrite))
                         {
-                            Saving = true;
-                            Stream stream = File.Open(filepath, FileMode.Create, FileAccess.ReadWrite);
                             BinaryFormatter bFormatter = new BinaryFormatter();
                             bFormatter.Serialize(stream, this);
-                            stream.Close();
-                            stream.Dispose();
-                            Saving = false;
                         }
                     }
                     DataChange = false;
@@ -87,33 +83,34 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Saving = false;
+                
                 Log.Out(string.Format("[SERVERTOOLS] Exception in PersistentContainer.Save: {0}", e.Message));
             }
+            Saving = false;
         }
 
         public bool Load()
         {
             try
             {
-                if (File.Exists(filepath))
+                if (File.Exists(Filepath))
                 {
                     PersistentContainer obj;
-                    Stream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
-                    BinaryFormatter bFormatter = new BinaryFormatter();
-                    obj = (PersistentContainer)bFormatter.Deserialize(stream);
-                    stream.Close();
-                    stream.Dispose();
+                    using (Stream stream = File.Open(Filepath, FileMode.Open, FileAccess.Read))
+                    {
+                        BinaryFormatter bFormatter = new BinaryFormatter();
+                        obj = (PersistentContainer)bFormatter.Deserialize(stream);
+                    }
                     instance = obj;
                     return true;
                 }
                 else
                 {
-                    Stream stream = File.Open(filepath, FileMode.Create, FileAccess.ReadWrite);
-                    BinaryFormatter bFormatter = new BinaryFormatter();
-                    bFormatter.Serialize(stream, this);
-                    stream.Close();
-                    stream.Dispose();
+                    using (Stream stream = File.Open(Filepath, FileMode.Create, FileAccess.ReadWrite))
+                    {
+                        BinaryFormatter bFormatter = new BinaryFormatter();
+                        bFormatter.Serialize(stream, this);
+                    }
                     return true;
                 }
             }

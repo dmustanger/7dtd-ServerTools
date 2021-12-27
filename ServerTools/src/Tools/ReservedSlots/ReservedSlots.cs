@@ -14,7 +14,7 @@ namespace ServerTools
 
         public static Dictionary<string, DateTime> Dict = new Dictionary<string, DateTime>();
         public static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
-        public static Dictionary<string, DateTime> Kicked = new Dictionary<string, DateTime>();
+        public static Dictionary<ClientInfo, DateTime> Kicked = new Dictionary<ClientInfo, DateTime>();
 
         private static string file = "ReservedSlots.xml";
         private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -190,19 +190,19 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static bool ReservedCheck(ClientInfo _cInfo)
+        public static bool ReservedCheck(ClientInfo _cInfo, PlatformUserIdentifierAbs _platformId, PlatformUserIdentifierAbs _crossplatformId)
         {
-            if (Dict.ContainsKey(_cInfo.PlatformId.CombinedString))
+            if (Dict.ContainsKey(_platformId.CombinedString))
             {
-                Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt);
+                Dict.TryGetValue(_platformId.CombinedString, out DateTime dt);
                 if (DateTime.Now < dt)
                 {
                     return true;
                 }
             }
-            else if (Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+            else if (Dict.ContainsKey(_crossplatformId.CombinedString))
             {
-                Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime dt);
+                Dict.TryGetValue(_crossplatformId.CombinedString, out DateTime dt);
                 if (DateTime.Now < dt)
                 {
                     return true;
@@ -211,98 +211,101 @@ namespace ServerTools
             return false;
         }
 
-        public static void ReservedStatus(ClientInfo _cInfo)
+        public static void ReservedStatus(ClientInfo _cInfo, PlatformUserIdentifierAbs _platformId, PlatformUserIdentifierAbs _crossplatformId)
         {
-            if (Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+            if (Dict.ContainsKey(_platformId.CombinedString))
             {
-                if (Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
+                if (Dict.TryGetValue(_platformId.CombinedString, out DateTime dt))
                 {
                     if (DateTime.Now < dt)
                     {
-                        Phrases.Dict.TryGetValue("Reserved4", out string phrase4);
-                        phrase4 = phrase4.Replace("{DateTime}", dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase4 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Reserved4", out string phrase);
+                        phrase = phrase.Replace("{DateTime}", dt.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("Reserved5", out string phrase5);
-                        phrase5 = phrase5.Replace("{DateTime}", dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase5 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Reserved5", out string phrase);
+                        phrase = phrase.Replace("{DateTime}", dt.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
-                else if (Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+            }
+            else if (Dict.ContainsKey(_crossplatformId.CombinedString))
+            {
+                if (Dict.TryGetValue(_crossplatformId.CombinedString, out DateTime dt))
                 {
                     if (DateTime.Now < dt)
                     {
-                        Phrases.Dict.TryGetValue("Reserved4", out string phrase4);
-                        phrase4 = phrase4.Replace("{DateTime}", dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase4 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Reserved4", out string phrase);
+                        phrase = phrase.Replace("{DateTime}", dt.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("Reserved5", out string phrase5);
-                        phrase5 = phrase5.Replace("{DateTime}", dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase5 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Reserved5", out string phrase);
+                        phrase = phrase.Replace("{DateTime}", dt.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                Phrases.Dict.TryGetValue("Reserved6", out string phrase6);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase6 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Reserved6", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static bool AdminCheck(ClientInfo _cInfo)
+        public static bool AdminCheck(ClientInfo _cInfo, PlatformUserIdentifierAbs _platformId, PlatformUserIdentifierAbs _crossplatformId)
         {
-            if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) <= Admin_Level || GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) <= Admin_Level)
+            if (GameManager.Instance.adminTools.GetUserPermissionLevel(_platformId) <= Admin_Level || 
+                GameManager.Instance.adminTools.GetUserPermissionLevel(_crossplatformId) <= Admin_Level)
             {
                 return true;
             }
             return false;
         }
 
-        public static bool FullServer(ClientInfo _cInfo)
+        public static bool FullServer(ClientInfo _cInfo, PlatformUserIdentifierAbs _platformId, PlatformUserIdentifierAbs _crossplatformId)
         {
             try
             {
-                List<string> reservedKicks = new List<string>();
-                List<string> normalKicks = new List<string>();
-                string clientToKick = null;
+                List<ClientInfo> reserved = new List<ClientInfo>();
+                List<ClientInfo> normal = new List<ClientInfo>();
                 List<ClientInfo> clientList = PersistentOperations.ClientList();
                 if (clientList != null)
                 {
-                    if (AdminCheck(_cInfo))//admin is joining
+                    if (AdminCheck(_cInfo, _platformId, _crossplatformId))//admin is joining
                     {
                         for (int i = 0; i < clientList.Count; i++)
                         {
                             ClientInfo cInfo2 = clientList[i];
-                            if (cInfo2 != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
+                            if (cInfo2 != null && cInfo2.PlatformId != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
                             {
-                                if (!AdminCheck(cInfo2))//not admin
+                                if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId))//not admin
                                 {
-                                    if (ReservedCheck(cInfo2))//reserved player
+                                    if (ReservedCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId))//reserved player
                                     {
-                                        reservedKicks.Add(cInfo2.CrossplatformId.CombinedString);
+                                        reserved.Add(cInfo2);
                                     }
                                     else
                                     {
-                                        normalKicks.Add(cInfo2.CrossplatformId.CombinedString);
+                                        normal.Add(cInfo2);
                                     }
                                 }
                             }
                         }
                     }
-                    else if (ReservedCheck(_cInfo))//reserved player is joining
+                    else if (ReservedCheck(_cInfo, _platformId, _crossplatformId))//reserved player is joining
                     {
                         for (int i = 0; i < clientList.Count; i++)
                         {
                             ClientInfo cInfo2 = clientList[i];
                             if (cInfo2 != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
                             {
-                                if (!AdminCheck(cInfo2) && !ReservedCheck(cInfo2))
+                                if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId) && !ReservedCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId))
                                 {
-                                    normalKicks.Add(cInfo2.CrossplatformId.CombinedString);
+                                    normal.Add(cInfo2);
                                 }
                             }
                         }
@@ -312,9 +315,9 @@ namespace ServerTools
                         for (int i = 0; i < clientList.Count; i++)
                         {
                             ClientInfo cInfo2 = clientList[i];
-                            if (cInfo2 != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
+                            if (cInfo2 != null && cInfo2.PlatformId != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
                             {
-                                if (!AdminCheck(cInfo2) && !ReservedCheck(cInfo2))
+                                if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId) && !ReservedCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId))
                                 {
                                     if (Session_Time > 0)
                                     {
@@ -325,7 +328,7 @@ namespace ServerTools
                                             int timepassed = (int)fractionalMinutes;
                                             if (timepassed >= Session_Time)
                                             {
-                                                normalKicks.Add(cInfo2.CrossplatformId.CombinedString);
+                                                normal.Add(cInfo2);
                                             }
                                         }
                                     }
@@ -333,24 +336,24 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (normalKicks.Count > 0)
+                    if (normal.Count > 0)
                     {
-                        normalKicks.RandomizeList();
-                        clientToKick = normalKicks[0];
+                        normal.RandomizeList();
                         if (Session_Time > 0)
                         {
-                            Kicked.Add(clientToKick, DateTime.Now);
+                            Kicked.Add(normal[0], DateTime.Now);
                         }
-                        Phrases.Dict.TryGetValue("Reserved1", out string phrase1);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", clientToKick, phrase1), null);
+                        Phrases.Dict.TryGetValue("Reserved1", out string phrase);
+                        phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
+                        normal[0].SendPackage(NetPackageManager.GetPackage<NetPackagePlayerDenied>().Setup(new GameUtils.KickPlayerData(GameUtils.EKickReason.ManualKick, 0, default, phrase)));
                         return true;
                     }
-                    else if (reservedKicks.Count > 0)
+                    else if (reserved.Count > 0)
                     {
-                        reservedKicks.RandomizeList();
-                        clientToKick = reservedKicks[0];
-                        Phrases.Dict.TryGetValue("Reserved1", out string phrase1);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", clientToKick, phrase1), null);
+                        reserved.RandomizeList();
+                        Phrases.Dict.TryGetValue("Reserved1", out string phrase);
+                        phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
+                        reserved[0].SendPackage(NetPackageManager.GetPackage<NetPackagePlayerDenied>().Setup(new GameUtils.KickPlayerData(GameUtils.EKickReason.ManualKick, 0, default, phrase)));
                         return true;
                     }
                 }

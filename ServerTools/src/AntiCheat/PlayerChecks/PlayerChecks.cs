@@ -78,7 +78,7 @@ namespace ServerTools
                                     if (oldPosition != player.position)
                                     {
                                         TwoSecondMovement[cInfo.entityId] = player.position;
-                                        if (oldPosition.y - player.position.y >= 4)
+                                        if (oldPosition.y - player.position.y >= 3)
                                         {
                                             TwoSecondMovement.Remove(cInfo.entityId);
                                             continue;
@@ -91,16 +91,29 @@ namespace ServerTools
                                                 continue;
                                             }
                                         }
-                                        if (SpeedDetector.IsEnabled && userPermissionLevel > SpeedDetector.Speed_Admin_Level && SpeedDetector.TravelTooFar(oldPosition, player.position))
+                                        if (cInfo.ping < 350)
                                         {
-                                            SpeedDetector.Detected(cInfo);
-                                        }
-                                        if (FlyingDetector.IsEnabled && userPermissionLevel > FlyingDetector.Flying_Admin_Level && cInfo.ping < 350)
-                                        {
-                                            
-                                            if (FlyingDetector.IsFlying(player.position))
+                                            if (SpeedDetector.IsEnabled && userPermissionLevel > SpeedDetector.Speed_Admin_Level)
                                             {
-                                                FlyingDetector.Detected(cInfo, player);
+                                                if (SpeedDetector.TravelTooFar(oldPosition, player.position))
+                                                {
+                                                    SpeedDetector.Detected(cInfo);
+                                                }
+                                                else if (SpeedDetector.Flags.ContainsKey(cInfo.entityId))
+                                                {
+                                                    SpeedDetector.Flags.Remove(cInfo.entityId);
+                                                }
+                                            }
+                                            if (FlyingDetector.IsEnabled && userPermissionLevel > FlyingDetector.Flying_Admin_Level)
+                                            {
+                                                if (FlyingDetector.IsFlying(player.position))
+                                                {
+                                                    FlyingDetector.Detected(cInfo, player);
+                                                }
+                                                else if (FlyingDetector.Flags.ContainsKey(cInfo.entityId))
+                                                {
+                                                    FlyingDetector.Flags.Remove(cInfo.entityId);
+                                                }
                                             }
                                         }
                                     }

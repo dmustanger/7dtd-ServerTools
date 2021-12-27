@@ -16,15 +16,15 @@ namespace ServerTools
         private static string file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, file);
 
-        public static bool IsFlying(Vector3 _postion)
+        public static bool IsFlying(Vector3 _position)
         {
             AboveGround = true;
             BelowGround = true;
-            for (float i = _postion.x - 1; i <= (_postion.x + 1); i++)
+            for (float i = _position.x - 1; i <= (_position.x + 1); i++)
             {
-                for (float j = _postion.y - 3; j <= (_postion.y + 2); j++)
+                for (float j = _position.y - 3; j <= (_position.y + 2); j++)
                 {
-                    for (float k = _postion.z - 1; k <= (_postion.z + 1); k++)
+                    for (float k = _position.z - 1; k <= (_position.z + 1); k++)
                     {
                         BlockValue blockValue = GameManager.Instance.World.GetBlock(new Vector3i(i, j, k));
                         Block block = blockValue.Block;
