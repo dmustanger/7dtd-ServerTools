@@ -339,13 +339,9 @@ namespace ServerTools
                     if (normal.Count > 0)
                     {
                         normal.RandomizeList();
-                        if (Session_Time > 0)
-                        {
-                            Kicked.Add(normal[0], DateTime.Now);
-                        }
                         Phrases.Dict.TryGetValue("Reserved1", out string phrase);
                         phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
-                        normal[0].SendPackage(NetPackageManager.GetPackage<NetPackagePlayerDenied>().Setup(new GameUtils.KickPlayerData(GameUtils.EKickReason.ManualKick, 0, default, phrase)));
+                        GameUtils.KickPlayerForClientInfo(normal[0], new GameUtils.KickPlayerData(GameUtils.EKickReason.ManualKick, 0, default(DateTime), phrase));
                         return true;
                     }
                     else if (reserved.Count > 0)
@@ -353,7 +349,7 @@ namespace ServerTools
                         reserved.RandomizeList();
                         Phrases.Dict.TryGetValue("Reserved1", out string phrase);
                         phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
-                        reserved[0].SendPackage(NetPackageManager.GetPackage<NetPackagePlayerDenied>().Setup(new GameUtils.KickPlayerData(GameUtils.EKickReason.ManualKick, 0, default, phrase)));
+                        GameUtils.KickPlayerForClientInfo(reserved[0], new GameUtils.KickPlayerData(GameUtils.EKickReason.ManualKick, 0, default(DateTime), phrase));
                         return true;
                     }
                 }

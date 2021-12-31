@@ -44,17 +44,12 @@ namespace ServerTools
             {
                 if (_params.Count < 2 && _params.Count > 5)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 to 5, found {0}", _params.Count));
-                    return;
-                }
-                if (_params[0].Length < 3 || _params[0].Length > 17)
-                {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not give item: Invalid id {0}", _params[0]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 to 5, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[1].Length < 1)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not give item: Invalid name {0}", _params[1]));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid item name '{0}'", _params[1]));
                     return;
                 }
                 else
@@ -122,7 +117,7 @@ namespace ServerTools
                                         }
                                         else
                                         {
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} has not spawned or is dead. Unable to give item at this time", cInfo.PlatformId.ReadablePlatformUserIdentifier));
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player Id '{0' has not spawned or is dead. Unable to give item at this time", cInfo.PlatformId.ReadablePlatformUserIdentifier));
                                         }
                                     }
                                 }
@@ -156,18 +151,18 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} has not spawned or is dead. Unable to give item at this time", _params[0]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player Id '{0}' has not spawned or is dead. Unable to give item at this time", _params[0]));
                                 }
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} not found", _params[0]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player Id '{0}' not found", _params[0]));
                             }
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find item {0}", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find item '{0}'", _params[1]));
                         return;
                     }
                 }

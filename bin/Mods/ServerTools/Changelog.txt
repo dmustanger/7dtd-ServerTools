@@ -1,5 +1,28 @@
 ﻿CHANGELOG
 
+20.0.3
+Built using Alpha 20 experimental assets
+Functioning with Alpha 20 experimental. Untested with other versions
+
+-Added Net_Package_Detector. Detects netcode manipulation and logs it
+-Added console command st-SetPlayerKills
+-Added console command st-SetZombieKills
+-Added console command st-SetPlayerDeaths
+-Added option Interrupt_Bloodmoon to Shutdown tool
+-Fixed an index error in Reserved_Slots when kicking normal player
+-Fixed Bounty tool not functioning as intended
+-Fixed Custom_Commands reducing all whisper and global message to
+lowercase
+-Fixed Wallet failing to return a value over the max stack value
+-Changed the damage log to contain the position of the attacker and
+victim
+
+20.0.21
+Built using Alpha 20 experimental assets
+Functioning with Alpha 20 experimental. Untested with other versions
+
+-Disabled bedroll fix that made things worse
+
 20.0.2
 Built using Alpha 20 experimental assets
 Functioning with Alpha 20 experimental. Untested with other versions

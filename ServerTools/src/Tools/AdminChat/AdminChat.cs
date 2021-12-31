@@ -15,7 +15,9 @@ namespace ServerTools
                 for (int i = 0; i < clientList.Count; i++)
                 {
                     ClientInfo cInfo = clientList[i];
-                    if (cInfo != null && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo) <= ChatHook.Mod_Level && _sender.CrossplatformId.CombinedString != cInfo.CrossplatformId.CombinedString)
+                    if (cInfo != null && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) <= ChatHook.Mod_Level || 
+                        GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) <= ChatHook.Mod_Level) && 
+                        _sender.CrossplatformId.CombinedString != cInfo.CrossplatformId.CombinedString)
                     {
                         ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _message + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper, null);
                     }

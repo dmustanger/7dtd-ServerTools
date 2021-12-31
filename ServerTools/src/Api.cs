@@ -212,7 +212,8 @@ namespace ServerTools
                             SpeedDetector.Flags.Remove(_cInfo.entityId);
                         }
                     }
-                    if (ExitCommand.IsEnabled && !ExitCommand.Players.ContainsKey(_cInfo.entityId) && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > ExitCommand.Admin_Level)
+                    if (ExitCommand.IsEnabled && !ExitCommand.Players.ContainsKey(_cInfo.entityId) && (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > ExitCommand.Admin_Level ||
+                        GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > ExitCommand.Admin_Level))
                     {
                         ExitCommand.Players.Add(_cInfo.entityId, player.position);
                     }

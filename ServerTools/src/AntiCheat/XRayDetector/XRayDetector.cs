@@ -63,7 +63,7 @@ namespace ServerTools
                     else
                     {
                         string shape = block.shape.GetName().ToLower();
-                        Log.Out(string.Format("[SERVERTOOLS] Shape: {0}", shape));
+                        //Log.Out(string.Format("[SERVERTOOLS] Shape: {0}", shape));
                         if (shape == "cube" || shape == "cube_frame")
                         {
                             if (!_player.IsCrouching)

@@ -18,11 +18,17 @@ namespace ServerTools
                 for (int i = 0; i < clientList.Count; i++)
                 {
                     ClientInfo cInfoAdmin = clientList[i];
-                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfoAdmin) <= Admin_Level)
+                    int userPlatformID = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfoAdmin.PlatformId);
+                    int userCrossplatformID = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfoAdmin.CrossplatformId);
+                    if (userPlatformID <= Admin_Level ||
+                        userCrossplatformID <= Admin_Level)
                     {
                         admins.Add(cInfoAdmin.playerName);
                     }
-                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfoAdmin) > Admin_Level && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfoAdmin) <= Mod_Level)
+                    if ((userPlatformID > Admin_Level ||
+                        userCrossplatformID > Admin_Level) &&
+                        userPlatformID <= Mod_Level ||
+                        userCrossplatformID <= Mod_Level)
                     {
                         mods.Add(cInfoAdmin.playerName);
                     }

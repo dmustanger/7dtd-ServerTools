@@ -130,7 +130,7 @@ namespace ServerTools
                     if (!Directory.Exists(Destination))
                     {
                         Directory.CreateDirectory(Destination);
-                        Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at {0} and backup resumed", Destination));
+                        Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at '{0}'. Auto backup resumed", Destination));
                     }
                     string[] files = { };
                     if (!Destination.EndsWith("\\") || !Destination.EndsWith("\n") || !Destination.EndsWith("/"))
@@ -153,7 +153,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Auto backup could not locate the save directory: {0}", Destination));
+                        Log.Out(string.Format("[SERVERTOOLS] Auto backup could not locate the save directory '{0}'", Destination));
                     }
                 }
             }
@@ -245,7 +245,7 @@ namespace ServerTools
                     }
                     zip.Save(Path.ChangeExtension(location, ".zip"));
                 }
-                Log.Out(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at {0}. File is named {1}", _destinationDirInfo.FullName, name + ".zip"));
+                Log.Out(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at '{0}'. File is named '{1}'", _destinationDirInfo.FullName, name + ".zip"));
                 Phrases.Dict.TryGetValue("AutoBackup2", out string phrase1);
                 ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }

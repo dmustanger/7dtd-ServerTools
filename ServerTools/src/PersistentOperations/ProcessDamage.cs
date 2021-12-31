@@ -84,7 +84,7 @@ namespace ServerTools
                                             float distance = player2.GetDistance(player1);
                                             using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                             {
-                                                sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' hit '{4}' '{5}' named '{6}' using '{7}' for '{8}' damage @ '{9}' total distance '{10}'", DateTime.Now, cInfo2.PlatformId.CombinedString, cInfo2.CrossplatformId.CombinedString, cInfo2.playerName, cInfo1.PlatformId.CombinedString, cInfo1.CrossplatformId.CombinedString, cInfo1.playerName, _damageSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _damageSource.AttackingItem.ItemClass.GetItemName(), _strength, player1.position, distance));
+                                                sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' '{6}' named '{7}' @ '{8}' using '{9}' for '{10}' damage. Distance '{11}'", DateTime.Now, cInfo2.PlatformId.CombinedString, cInfo2.CrossplatformId.CombinedString, cInfo2.playerName, cInfo2.latestPlayerData.ecd.pos, cInfo1.PlatformId.CombinedString, cInfo1.CrossplatformId.CombinedString, cInfo1.playerName, cInfo1.latestPlayerData.ecd.pos, _damageSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _damageSource.AttackingItem.ItemClass.GetItemName(), _strength, distance));
                                                 sw.WriteLine();
                                                 sw.Flush();
                                                 sw.Close();
@@ -103,6 +103,10 @@ namespace ServerTools
                                                 if (Wallet.IsEnabled && Wallet.PVP && Wallet.Player_Kill > 0)
                                                 {
                                                     Wallet.AddCurrency(cInfo2.CrossplatformId.CombinedString, Wallet.Player_Kill);
+                                                }
+                                                if (MagicBullet.IsEnabled && !MagicBullet.Kill.Contains(cInfo2.entityId))
+                                                {
+                                                    MagicBullet.Kill.Add(cInfo2.entityId);
                                                 }
                                             }
                                         }
@@ -184,7 +188,7 @@ namespace ServerTools
                                     int distance = (int)player.GetDistance(_victim);
                                     using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                     {
-                                        sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' hit '{4}' named '{5}' using '{6}' for '{7}' damage @ '{8}' total distance '{9}'", DateTime.Now, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, _victim.entityId, _victim.EntityName, _damageSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _damageSource.AttackingItem.ItemClass.GetItemName(), _strength, _victim.position, distance));
+                                        sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' named '{6}' @ '{7}' using '{8}' for '{9}' damage. Distance '{10}'", DateTime.Now, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, cInfo.latestPlayerData.ecd.pos, _victim.entityId, _victim.EntityName, _victim.position, _damageSource.AttackingItem.ItemClass.GetLocalizedItemName() ?? _damageSource.AttackingItem.ItemClass.GetItemName(), _strength, distance));
                                         sw.WriteLine();
                                         sw.Flush();
                                         sw.Close();

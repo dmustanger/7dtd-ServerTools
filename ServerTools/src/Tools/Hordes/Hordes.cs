@@ -10,30 +10,31 @@ namespace ServerTools
         {
             if (!GameManager.Instance.World.aiDirector.BloodMoonComponent.BloodMoonActive)
             {
-                int _playerCount = ConnectionManager.Instance.ClientCount();
-                if (_playerCount > 5)
+                int playerCount = ConnectionManager.Instance.ClientCount();
+                if (playerCount > 5)
                 {
-                    int _counter = 0;
+                    int counter = 0;
                     List<Entity> Entities = GameManager.Instance.World.Entities.list;
                     for (int i = 0; i < Entities.Count; i++)
                     {
-                        Entity _entity = Entities[i];
-                        if (_entity != null)
+                        Entity entity = Entities[i];
+                        if (entity != null)
                         {
-                            if (!_entity.IsClientControlled())
+                            if (!entity.IsClientControlled())
                             {
-                                EntityType _type = _entity.entityType;
-                                if (_type == EntityType.Zombie)
+                                EntityType type = entity.entityType;
+                                if (type == EntityType.Zombie)
                                 {
-                                    _counter++;
+                                    counter++;
                                 }
                             }
                         }
                     }
-                    if (_counter < 30)
+                    if (counter < 30)
                     {
                         GameManager.Instance.World.aiDirector.GetComponent<AIDirectorWanderingHordeComponent>().SpawnWanderingHorde(false);
-                        Log.Out(string.Format("[SERVERTOOLS] Spawned a horde"));
+                        Phrases.Dict.TryGetValue("Hordes1", out string phrase);
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                     }
                 }
             }

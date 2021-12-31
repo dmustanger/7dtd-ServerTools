@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.0.2";
+        public const string Version = "20.0.3";
         public static bool Upgrade = false;
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
@@ -2242,6 +2242,18 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            //case "Magic_Bullet":
+                            //    if (!line.HasAttribute("Enable"))
+                            //    {
+                            //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Magic_Bullet entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                            //        continue;
+                            //    }
+                            //    if (!bool.TryParse(line.GetAttribute("Enable"), out MagicBullet.IsEnabled))
+                            //    {
+                            //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Magic_Bullet entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                            //        continue;
+                            //    }
+                            //    break;
                             case "Market":
                                 if (!line.HasAttribute("Enable"))
                                 {
@@ -2444,6 +2456,18 @@ namespace ServerTools
                                 if (!int.TryParse(line.GetAttribute("Votes_Needed"), out MuteVote.Votes_Needed))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Mute_Vote entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Votes_Needed' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
+                            case "Net_Package_Detector":
+                                if (!line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Net_Package_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(line.GetAttribute("Enable"), out PersistentOperations.Net_Package_Detector))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Net_Package_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -3221,6 +3245,16 @@ namespace ServerTools
                                 if (!bool.TryParse(line.GetAttribute("UI_Lock"), out Shutdown.UI_Lock))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'UI_Lock' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!line.HasAttribute("Interrupt_Bloodmoon"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Interrupt_Shutdown entry in ServerToolsConfig.xml because of missing 'Interrupt_Bloodmoon' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(line.GetAttribute("Interrupt_Bloodmoon"), out Shutdown.Interrupt_Bloodmoon))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Interrupt_Shutdown entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Interrupt_Bloodmoon' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -4064,12 +4098,14 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Login_Notice\" Enable=\"{0}\" />", LoginNotice.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Logs\" Days_Before_Log_Delete=\"{0}\" />", LoadProcess.Days_Before_Log_Delete));
                 sw.WriteLine(string.Format("        <Tool Name=\"Lottery\" Enable=\"{0}\" Bonus=\"{1}\" />", Lottery.IsEnabled, Lottery.Bonus));
+                //sw.WriteLine(string.Format("        <Tool Name=\"Magic_Bullet\" Enable=\"{0}\" />", MagicBullet.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Market\" Enable=\"{0}\" Return=\"{1}\" Delay_Between_Uses=\"{2}\" Market_Size=\"{3}\" Market_Position=\"{4}\" />", Market.IsEnabled, Market.Return, Market.Delay_Between_Uses, Market.Market_Size, Market.Market_Position));
                 sw.WriteLine(string.Format("        <Tool Name=\"Market_Extended\" Reserved_Only=\"{0}\" Command_Cost=\"{1}\" Player_Check=\"{2}\" Zombie_Check=\"{3}\" PvE=\"{4}\" />", Market.Reserved_Only, Market.Command_Cost, Market.Player_Check, Market.Zombie_Check, Market.PvE));
                 sw.WriteLine(string.Format("        <Tool Name=\"Message_Color\" Enable=\"{0}\" Color=\"{1}\" />", ChatHook.Message_Color_Enabled, ChatHook.Message_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" Show_On_Respawn=\"{1}\" />", Motd.IsEnabled, Motd.Show_On_Respawn));
                 sw.WriteLine(string.Format("        <Tool Name=\"Mute\" Enable=\"{0}\" Block_Commands=\"{1}\" />", Mute.IsEnabled, Mute.Block_Commands));
                 sw.WriteLine(string.Format("        <Tool Name=\"Mute_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", MuteVote.IsEnabled, MuteVote.Players_Online, MuteVote.Votes_Needed));
+                sw.WriteLine(string.Format("        <Tool Name=\"Net_Package_Detector\" Enable=\"{0}\" />", PersistentOperations.Net_Package_Detector));
                 sw.WriteLine(string.Format("        <Tool Name=\"New_Player\" Enable=\"{0}\" Entry_Message=\"{1}\" />", NewPlayer.IsEnabled, NewPlayer.Entry_Message));
                 sw.WriteLine(string.Format("        <Tool Name=\"New_Player_Extended\" Block_During_Bloodmoon=\"{0}\" />", NewPlayer.Block_During_Bloodmoon));
                 sw.WriteLine(string.Format("        <Tool Name=\"New_Player_Protection\" Enable=\"{0}\" Level=\"{1}\" />", NewPlayerProtection.IsEnabled, NewPlayerProtection.Level));
@@ -4095,7 +4131,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Scout_Player\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", ScoutPlayer.IsEnabled, ScoutPlayer.Delay_Between_Uses, ScoutPlayer.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Inside_Market=\"{1}\" Inside_Traders=\"{2}\" />", Shop.IsEnabled, Shop.Inside_Market, Shop.Inside_Traders));
                 sw.WriteLine(string.Format("        <Tool Name=\"Shutdown\" Enable=\"{0}\" Countdown=\"{1}\" Time=\"{2}\" Alert_On_Login=\"{3}\" Alert_Count=\"{4}\" />", Shutdown.IsEnabled, Shutdown.Countdown, Shutdown.Time, Shutdown.Alert_On_Login, Shutdown.Alert_Count));
-                sw.WriteLine(string.Format("        <Tool Name=\"Shutdown_Extended\" UI_Lock=\"{0}\" />", Shutdown.UI_Lock));
+                sw.WriteLine(string.Format("        <Tool Name=\"Shutdown_Extended\" UI_Lock=\"{0}\" Interrupt_Bloodmoon=\"{1}\" />", Shutdown.UI_Lock, Shutdown.Interrupt_Bloodmoon));
                 sw.WriteLine(string.Format("        <Tool Name=\"Sleeper_Respawn\" Enable=\"{0}\" />", SleeperRespawn.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Spectator_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" />", PlayerChecks.SpectatorEnabled, PlayerChecks.Spectator_Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Speed_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", SpeedDetector.IsEnabled, SpeedDetector.Speed_Admin_Level, SpeedDetector.Total_Flags));

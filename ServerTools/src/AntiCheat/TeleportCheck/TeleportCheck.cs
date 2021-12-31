@@ -13,7 +13,8 @@ namespace ServerTools
 
         public static void TeleportCheckValid(ClientInfo _cInfo)
         {
-            if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level)
+            if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level ||
+                GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > Admin_Level)
             {
                 Penalty(_cInfo);
             }

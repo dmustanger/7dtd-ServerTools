@@ -195,7 +195,8 @@ public static class Injections
             ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
             if (cInfo != null)
             {
-                if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo) > 0)
+                if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > 0 ||
+                    GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > 0)
                 {
                     if (DroppedBagProtection.IsEnabled)
                     {
@@ -345,7 +346,6 @@ public static class Injections
         {
             if (DroppedBagProtection.IsEnabled && _entity != null && _entity is EntityBackpack)
             {
-
                 List<ClientInfo> clientList = PersistentOperations.ClientList();
                 if (clientList != null)
                 {
@@ -517,5 +517,17 @@ public static class Injections
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ClientInfoCollection_GetForNameOrId_Prefix: {0}", e.Message));
         }
         return false;
+    }
+
+    public static bool NetPackagePlayerStats_ProcessPackage_Prefix(NetPackagePlayerStats __instance)
+    {
+        if (PersistentOperations.Net_Package_Detector && __instance.Sender != null)
+        {
+            if (!PlayerStatsPackage.IsValid(__instance))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }

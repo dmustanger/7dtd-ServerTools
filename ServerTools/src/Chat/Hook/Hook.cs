@@ -331,7 +331,8 @@ namespace ServerTools
                                 {
                                     CustomCommands.CustomCommandList(_cInfo);
                                 }
-                                if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= Admin_Level)
+                                if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) <= Admin_Level ||
+                                    GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) <= Admin_Level)
                                 {
                                     CustomCommands.AdminCommandList(_cInfo);
                                 }
@@ -807,7 +808,8 @@ namespace ServerTools
                                 {
                                     if (Auction.No_Admins)
                                     {
-                                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= Admin_Level)
+                                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) <= Admin_Level ||
+                                            GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) <= Admin_Level)
                                         {
                                             Phrases.Dict.TryGetValue("Auction13", out string _phrase);
                                             ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -842,7 +844,8 @@ namespace ServerTools
                                 {
                                     if (Auction.No_Admins)
                                     {
-                                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level)
+                                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level ||
+                                            GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > Admin_Level)
                                         {
                                             _message = messageLowerCase.Replace(Auction.Command_auction_sell + " ", "");
                                             Auction.CheckBox(_cInfo, _message);
@@ -1232,7 +1235,8 @@ namespace ServerTools
                                         ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
-                                else if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= ExitCommand.Admin_Level)
+                                else if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) <= ExitCommand.Admin_Level ||
+                                    GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) <= ExitCommand.Admin_Level)
                                 {
                                     ExitCommand.Disconnect(_cInfo);
                                 }

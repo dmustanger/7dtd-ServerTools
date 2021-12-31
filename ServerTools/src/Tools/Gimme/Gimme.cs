@@ -99,73 +99,55 @@ namespace ServerTools
                                         continue;
                                     }
                                     string name = line.GetAttribute("Name");
-                                    if (name.ToLower() == "walletcoin")
+                                    if (!PersistentOperations.IsValidItem(name))
                                     {
-                                        if (Wallet.IsEnabled)
-                                        {
-                                            if (minCount < 1)
-                                            {
-                                                minCount = 1;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry. Wallet tool is not enabled: {0}", line.OuterXml));
-                                            continue;
-                                        }
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry. Name not found: {0}", name));
+                                        continue;
+                                    }
+                                    ItemValue itemValue = ItemClass.GetItem(name, false);
+                                    if (minCount > itemValue.ItemClass.Stacknumber.Value)
+                                    {
+                                        minCount = itemValue.ItemClass.Stacknumber.Value;
+                                    }
+                                    else if (minCount < 1)
+                                    {
+                                        minCount = 1;
+                                    }
+                                    if (maxCount > itemValue.ItemClass.Stacknumber.Value)
+                                    {
+                                        maxCount = itemValue.ItemClass.Stacknumber.Value;
+                                    }
+                                    else if (maxCount < 1)
+                                    {
+                                        maxCount = 1;
+                                    }
+                                    int exchange;
+                                    if (minCount > maxCount)
+                                    {
+                                        exchange = maxCount;
+                                        maxCount = minCount;
+                                        minCount = exchange;
+                                    }
+                                    if (minQuality > maxQuality)
+                                    {
+                                        exchange = maxQuality;
+                                        maxQuality = minQuality;
+                                        minQuality = exchange;
+                                    }
+
+                                    string secondary;
+                                    if (line.HasAttribute("SecondaryName"))
+                                    {
+                                        secondary = line.GetAttribute("SecondaryName");
                                     }
                                     else
                                     {
-                                        if (!PersistentOperations.IsValidItem(name))
-                                        {
-                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry. Name not found: {0}", name));
-                                            continue;
-                                        }
-                                        ItemValue itemValue = ItemClass.GetItem(name, false);
-                                        if (minCount > itemValue.ItemClass.Stacknumber.Value)
-                                        {
-                                            minCount = itemValue.ItemClass.Stacknumber.Value;
-                                        }
-                                        else if (minCount < 1)
-                                        {
-                                            minCount = 1;
-                                        }
-                                        if (maxCount > itemValue.ItemClass.Stacknumber.Value)
-                                        {
-                                            maxCount = itemValue.ItemClass.Stacknumber.Value;
-                                        }
-                                        else if (maxCount < 1)
-                                        {
-                                            maxCount = 1;
-                                        }
-                                        int exchange;
-                                        if (minCount > maxCount)
-                                        {
-                                            exchange = maxCount;
-                                            maxCount = minCount;
-                                            minCount = exchange;
-                                        }
-                                        if (minQuality > maxQuality)
-                                        {
-                                            exchange = maxQuality;
-                                            maxQuality = minQuality;
-                                            minQuality = exchange;
-                                        }
-
-                                        string secondary;
-                                        if (line.HasAttribute("SecondaryName"))
-                                        {
-                                            secondary = line.GetAttribute("SecondaryName");
-                                        }
-                                        else
-                                        {
-                                            secondary = name;
-                                        }
-                                        if (!Dict.ContainsKey(name))
-                                        {
-                                            string[] c = new string[] { secondary, minCount.ToString(), maxCount.ToString(), minQuality.ToString(), maxQuality.ToString() };
-                                            Dict.Add(name, c);
-                                        }
+                                        secondary = name;
+                                    }
+                                    if (!Dict.ContainsKey(name))
+                                    {
+                                        string[] c = new string[] { secondary, minCount.ToString(), maxCount.ToString(), minQuality.ToString(), maxQuality.ToString() };
+                                        Dict.Add(name, c);
                                     }
                                 }
                             }

@@ -9,10 +9,9 @@ namespace ServerTools
 {
     class PersistentOperations
     {
-        public static bool ZoneRunning = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false, No_Currency = false;
+        public static bool ZoneRunning = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false, No_Currency = false, Net_Package_Detector = false;
         public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0;
         public static string Currency_Item;
-        public static FastTags Shotgun = FastTags.Parse("shotgun");
 
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static Dictionary<int, int> EntityId = new Dictionary<int, int>();

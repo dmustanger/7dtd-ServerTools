@@ -19,7 +19,7 @@ namespace ServerTools
         public static bool TravelTooFar(Vector3 _oldPosition, Vector3 _newPosition)
         {
             float distance = Vector3.Distance(_oldPosition, _newPosition);
-            if (distance > 28)
+            if (distance > 32)
             {
                 return true;
             }

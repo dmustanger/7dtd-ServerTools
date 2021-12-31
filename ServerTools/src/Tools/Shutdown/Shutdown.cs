@@ -5,7 +5,7 @@ namespace ServerTools
 {
     public static class Shutdown
     {
-        public static bool IsEnabled = false, Alert_On_Login = false, NoEntry = false, ShuttingDown = false, UI_Lock = false, UI_Locked = false;
+        public static bool IsEnabled = false, Alert_On_Login = false, NoEntry = false, ShuttingDown = false, UI_Lock = false, UI_Locked = false, Interrupt_Bloodmoon = false;
         public static int Countdown = 2, Alert_Count = 2;
         public static string Command_shutdown = "shutdown", Time = "120";
 
@@ -71,24 +71,26 @@ namespace ServerTools
 
         public static void PrepareShutdown()
         {
-            if (PersistentOperations.IsBloodmoon() || Event.Open)
+            if (PersistentOperations.IsBloodmoon())
             {
-                EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(10));
-                if (Event.Open && !Event.OperatorWarned)
+                if (!Interrupt_Bloodmoon)
                 {
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(Event.Operator);
-                    if (cInfo != null)
+                    EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(10));
+                    if (Event.Open && !Event.OperatorWarned)
                     {
-                        Event.OperatorWarned = true;
-                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + "A scheduled shutdown is set to begin but is on hold until the event ends" + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(Event.Operator);
+                        if (cInfo != null)
+                        {
+                            Event.OperatorWarned = true;
+                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + "A scheduled shutdown is set to begin but is on hold until the event ends" + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
+
                     }
+                    return;
                 }
             }
-            else
-            {
-                EventSchedule.Remove("Shutdown");
-                StartShutdown();
-            }
+            EventSchedule.Remove("Shutdown");
+            StartShutdown();
         }
 
         public static void StartShutdown()

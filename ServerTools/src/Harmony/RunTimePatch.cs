@@ -16,7 +16,7 @@ namespace ServerTools
                 MethodInfo original = AccessTools.Method(typeof(GameManager), "PlayerLoginRPC");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.PlayerLoginRPC method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.PlayerLoginRPC Class.Method was not found"));
                 }
                 else
                 {
@@ -38,7 +38,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(ConnectionManager), "ServerConsoleCommand");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: ConnectionManager.ServerConsoleCommand method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: ConnectionManager.ServerConsoleCommand Class.Method was not found"));
                 }
                 else
                 {
@@ -54,7 +54,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(GameManager), "ChangeBlocks");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ChangeBlocks method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ChangeBlocks Class.Method was not found"));
                 }
                 else
                 {
@@ -70,7 +70,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(World), "AddFallingBlock");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.AddFallingBlock method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.AddFallingBlock Class.Method was not found"));
                 }
                 else
                 {
@@ -86,7 +86,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(World), "AddFallingBlocks");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.AddFallingBlocks method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.AddFallingBlocks Class.Method was not found"));
                 }
                 else
                 {
@@ -102,7 +102,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(GameManager), "ChatMessageServer");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ChatMessageServer method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ChatMessageServer Class.Method was not found"));
                 }
                 else
                 {
@@ -118,7 +118,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(GameManager), "Cleanup");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.Cleanup method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.Cleanup Class.Method was not found"));
                 }
                 else
                 {
@@ -138,7 +138,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(GameManager), "CollectEntityServer");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.CollectEntityServer method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.CollectEntityServer Class.Method was not found"));
                 }
                 else
                 {
@@ -154,7 +154,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(GameManager), "OpenTileEntityAllowed");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.OpenTileEntityAllowed method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.OpenTileEntityAllowed Class.Method was not found"));
                 }
                 else
                 {
@@ -170,7 +170,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(GameManager), "OpenTileEntityAllowed");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.OpenTileEntityAllowed method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.OpenTileEntityAllowed Class.Method was not found"));
                 }
                 else
                 {
@@ -186,7 +186,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(EntityAlive), "OnEntityDeath");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.OnEntityDeath method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.OnEntityDeath Class.Method was not found"));
                 }
                 else
                 {
@@ -202,7 +202,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(ChunkCluster), "AddChunkSync");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChunkCluster.AddChunkSync method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChunkCluster.AddChunkSync Class.Method was not found"));
                 }
                 else
                 {
@@ -218,7 +218,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(World), "SpawnEntityInWorld");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.SpawnEntityInWorld method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.SpawnEntityInWorld Class.Method was not found"));
                 }
                 else
                 {
@@ -234,7 +234,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(GameManager), "ItemReloadServer");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ItemReloadServer method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ItemReloadServer Class.Method was not found"));
                 }
                 else
                 {
@@ -250,7 +250,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(GameManager), "PlayerSpawnedInWorld");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.PlayerSpawnedInWorld method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.PlayerSpawnedInWorld Class.Method was not found"));
                 }
                 else
                 {
@@ -266,7 +266,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(EntityAlive), "SetDead");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.SetDead method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.SetDead Class.Method was not found"));
                 }
                 else
                 {
@@ -282,7 +282,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(NetPackagePlayerInventory), "ProcessPackage");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerInventory.ProcessPackage method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerInventory.ProcessPackage Class.Method was not found"));
                 }
                 else
                 {
@@ -298,7 +298,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(EntityAlive), "DamageEntity");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.DamageEntity method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.DamageEntity Class.Method was not found"));
                 }
                 else
                 {
@@ -314,7 +314,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(EntityAlive), "ProcessDamageResponse");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.ProcessDamageResponse method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.ProcessDamageResponse Class.Method was not found"));
                 }
                 else
                 {
@@ -330,7 +330,7 @@ namespace ServerTools
                 original = AccessTools.Method(typeof(ClientInfoCollection), "GetForNameOrId");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: ClientInfoCollection.GetForNameOrId method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: ClientInfoCollection.GetForNameOrId Class.Method was not found"));
                 }
                 else
                 {
@@ -338,6 +338,22 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: ClientInfoCollection_GetForNameOrId_Prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                original = AccessTools.Method(typeof(NetPackagePlayerStats), "ProcessPackage");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerStats.ProcessPackage Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackagePlayerStats_ProcessPackage_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerStats_ProcessPackage_Prefix"));
                         return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);

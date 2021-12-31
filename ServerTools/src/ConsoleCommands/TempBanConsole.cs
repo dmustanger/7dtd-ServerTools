@@ -41,7 +41,8 @@ namespace ServerTools
                 ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[0]);
                 if (cInfo != null)
                 {
-                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo) > Admin_Level)
+                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level ||
+                        GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                     {
                         if (_time > 60)
                         {

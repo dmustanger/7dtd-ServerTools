@@ -54,23 +54,48 @@ namespace ServerTools
                 {
                     if (player.IsSpawned())
                     {
-                        ItemStack stack = new ItemStack(ItemClass.GetItem(PersistentOperations.Currency_Item, false), _amount);
-                        if (stack != null)
+                        ItemValue itemValue = ItemClass.GetItem(PersistentOperations.Currency_Item, false);
+                        if (itemValue != null)
                         {
-                            World world = GameManager.Instance.World;
-                            EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                            List<int> stackList = new List<int>();
+                            int maxStack = itemValue.ItemClass.Stacknumber.Value;
+                            if (_amount > maxStack)
                             {
-                                entityClass = EntityClass.FromString("item"),
-                                id = EntityFactory.nextEntityID++,
-                                itemStack = stack,
-                                pos = world.Players.dict[cInfo.entityId].position,
-                                rot = new Vector3(20f, 0f, 20f),
-                                lifetime = 60f,
-                                belongsPlayerId = cInfo.entityId
-                            });
-                            world.SpawnEntityInWorld(entityItem);
-                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
-                            world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                for (int i = 0; i < 100; i++)
+                                {
+                                    if (_amount > maxStack)
+                                    {
+                                        _amount = _amount - maxStack;
+                                        stackList.Add(maxStack);
+                                    }
+                                    else
+                                    {
+                                        stackList.Add(_amount);
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                stackList.Add(_amount);
+                            }
+                            for (int i = 0; i < stackList.Count; i++)
+                            {
+                                World world = GameManager.Instance.World;
+                                EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                                {
+                                    entityClass = EntityClass.FromString("item"),
+                                    id = EntityFactory.nextEntityID++,
+                                    itemStack = new ItemStack(itemValue, stackList[i]),
+                                    pos = world.Players.dict[cInfo.entityId].position,
+                                    rot = new Vector3(20f, 0f, 20f),
+                                    lifetime = 60f,
+                                    belongsPlayerId = cInfo.entityId
+                                });
+                                world.SpawnEntityInWorld(entityItem);
+                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
+                                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                            }
                         }
                     }
                     else

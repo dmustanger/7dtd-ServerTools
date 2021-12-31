@@ -107,6 +107,32 @@ namespace ServerTools
                 Dict.Remove("Jail");
                 Log.Out("Jail disabled");
             }
+            if (MagicBullet.IsEnabled)
+            {
+                if (!Dict.Contains("Magic bullet"))
+                {
+                    Dict.Add("Magic bullet");
+                    Log.Out("Magic bullet enabled");
+                }
+            }
+            else if (Dict.Contains("Magic bullet") && !_initiating)
+            {
+                Dict.Remove("Magic bullet");
+                Log.Out("Magic bullet disabled");
+            }
+            if (PersistentOperations.Net_Package_Detector)
+            {
+                if (!Dict.Contains("Net package detector"))
+                {
+                    Dict.Add("Net package detector");
+                    Log.Out("Net package detector enabled");
+                }
+            }
+            else if (Dict.Contains("Net package detector") && !_initiating)
+            {
+                Dict.Remove("Net package detector");
+                Log.Out("Net package detector disabled");
+            }
             if (PlayerStats.IsEnabled)
             {
                 if (!Dict.Contains("Player stats"))

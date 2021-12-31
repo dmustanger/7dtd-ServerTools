@@ -263,7 +263,8 @@ namespace ServerTools
                         for (int i = 0; i < clientList.Count; i++)
                         {
                             ClientInfo cInfo = clientList[i];
-                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo) <= Admin_Level)
+                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) <= Admin_Level ||
+                                GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) <= Admin_Level)
                             {
                                 for (int j = 0; j < players.Count; j++)
                                 {

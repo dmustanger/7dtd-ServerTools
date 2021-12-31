@@ -138,9 +138,10 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("Inside_Claim controls whether players must be inside their own claim to use the bank commands.");
                 sw.WriteLine("The bank will use the same currency as the Wallet. It defaults to the casinoCoin but this can be changed via the items.xml provided in the Config folder with the latest release.");
+                sw.WriteLine("This file is provided with the installation files.");
                 sw.WriteLine("Deposit_Fee controls how much is withdrawn from a deposit to the bank. Withdraw has no fee. Set 0 for none.");
                 sw.WriteLine("Players can type /bank to see their bank value.");
-                sw.WriteLine("Tranferring from the Wallet to the Bank will take coins from the players bag.");
+                sw.WriteLine("Tranferring from the Wallet to the Bank will take currency from the players bag.");
                 sw.WriteLine("/deposit # takes from the players bag and adds it to their bank.");
                 sw.WriteLine("/withdraw # takes from the players bank and adds it to their bag.");
                 sw.WriteLine("Turn on and off player transfer to allow players to transfer between bank accounts.");
@@ -1404,7 +1405,9 @@ namespace ServerTools
                 sw.WriteLine("Set a numeric value for Player_Kill");
                 sw.WriteLine("Set True or False for Bank_Transfers");
                 sw.WriteLine();
-                sw.WriteLine("Each kill will reward coins to the player. Set what they are worth in the ServerTools config.");
+                sw.WriteLine("The Wallet will use the casinoCoin by default but this can be changed via the items.xml provided in the Config folder with the latest release.");
+                sw.WriteLine("This file is provided with the installation files.");
+                sw.WriteLine("Each kill will reward currency to the player. Set what they are worth in the ServerTools config.");
                 sw.WriteLine("Set any values you want for zombie and player kills. If PvP is not set to true, player kills will earn nothing.");
                 sw.WriteLine("Bank_Transfers let a player send and receive wallet funds with the bank.");
                 sw.WriteLine();

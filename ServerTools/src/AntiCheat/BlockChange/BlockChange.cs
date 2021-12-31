@@ -51,13 +51,6 @@ namespace ServerTools
                                                 ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 return false;
                                             }
-                                            else
-                                            {
-                                                GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, newBlockInfo.blockValue);
-                                                NavObjectManager.Instance.UnRegisterNavObjectByOwnerEntity(player, "sleeping_bag");
-                                                player.SpawnPoints.Set(newBlockInfo.pos);
-                                                return false;
-                                            }
                                         }
                                         else if (newBlock is BlockLandClaim)//placed a land claim
                                         {
@@ -76,12 +69,6 @@ namespace ServerTools
                                         }
                                         return true;
                                     }
-                                    else if (oldBlockValue.Block is BlockSleepingBag)//old block was sleeping bag
-                                    {
-                                        GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
-                                        GameManager.Instance.persistentPlayers.SpawnPointRemoved(newBlockInfo.pos);
-                                        return false;
-                                    }
                                     else if (oldBlockValue.Block is BlockTrapDoor)
                                     {
                                         return true;
@@ -95,8 +82,8 @@ namespace ServerTools
                                                 if (DamageDetector.IsEnabled)
                                                 {
                                                     int total = oldBlock.MaxDamage - oldBlockValue.damage;
-                                                    if (oldBlock.MaxDamage - oldBlockValue.damage >= DamageDetector.Block_Damage_Limit &&
-                                                        GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
+                                                    if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level ||
+                                                        GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level))
                                                     {
                                                         Penalty(total, player, cInfo);
                                                         return false;
@@ -119,7 +106,8 @@ namespace ServerTools
                                                 if (DamageDetector.IsEnabled)
                                                 {
                                                     int total = oldBlock.MaxDamage - oldBlockValue.damage;
-                                                    if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
+                                                    if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level ||
+                                                        GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level))
                                                     {
                                                         Penalty(total, player, cInfo);
                                                         return false;
@@ -139,7 +127,8 @@ namespace ServerTools
                                             if (DamageDetector.IsEnabled)
                                             {
                                                 int total = newBlockInfo.blockValue.damage - oldBlockValue.damage;
-                                                if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
+                                                if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level ||
+                                                    GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level))
                                                 {
                                                     Penalty(total, player, cInfo);
                                                     return false;
@@ -160,7 +149,8 @@ namespace ServerTools
                                         if (DamageDetector.IsEnabled)
                                         {
                                             int total = oldBlock.MaxDamage - oldBlockValue.damage + newBlockInfo.blockValue.damage;
-                                            if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
+                                            if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level ||
+                                                GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level))
                                             {
                                                 Penalty(total, player, cInfo);
                                                 return false;
@@ -184,22 +174,19 @@ namespace ServerTools
         {
             try
             {
-                if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > Admin_Level)
+                Phrases.Dict.TryGetValue("DamageDetector3", out string phrase);
+                phrase = phrase.Replace("{Value}", _total.ToString());
+                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
                 {
-                    Phrases.Dict.TryGetValue("DamageDetector3", out string phrase);
-                    phrase = phrase.Replace("{Value}", _total.ToString());
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
-                    using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
-                    {
-                        sw.WriteLine(string.Format("Detected \"'{0}'\" with id '{1}' '{2}' using '{2}' that exceeded the damage limit @ '{3}'. Damage value '{4}'", _cInfo.playerName, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _player.inventory.holdingItem.GetLocalizedItemName() ?? _player.inventory.holdingItem.GetItemName(), _player.position, _total));
-                        sw.WriteLine();
-                        sw.Flush();
-                        sw.Close();
-                    }
-                    Phrases.Dict.TryGetValue("DamageDetector1", out phrase);
-                    phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-                    ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    sw.WriteLine(string.Format("Detected \"'{0}'\" with id '{1}' '{2}' using '{3}' that exceeded the damage limit @ '{4}'. Damage value '{5}'", _cInfo.playerName, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _player.inventory.holdingItem.GetLocalizedItemName() ?? _player.inventory.holdingItem.GetItemName(), _player.position, _total));
+                    sw.WriteLine();
+                    sw.Flush();
+                    sw.Close();
                 }
+                Phrases.Dict.TryGetValue("DamageDetector1", out phrase);
+                phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
             catch (Exception e)
             {

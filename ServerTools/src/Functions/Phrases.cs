@@ -257,6 +257,11 @@ namespace ServerTools
                         phrase = "You are not on the reservation list";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Reserved6\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Reserved7", out phrase))
+                    {
+                        phrase = "A slot has been opened for you. Please retry";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Reserved7\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* Clan_Manager ********************* -->");
@@ -1637,12 +1642,12 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"KillNotice1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("KillNotice2", out phrase))
                     {
-                        phrase = "{Name1} ({Level1}) has killed {Name2} ({Level2}) using {Item}";
+                        phrase = "{Name1} lvl ({Level1}) has killed {Name2} lvl ({Level2}) using {Item}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"KillNotice2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("KillNotice3", out phrase))
                     {
-                        phrase = "{Name1} ({Level1}) has killed {Name2} ({Level2}) using {Item}. {Value} damage";
+                        phrase = "{Name1} lvl ({Level1}) has killed {Name2} lvl ({Level2}) using {Item}. {Value} damage";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"KillNotice3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("KillNotice4", out phrase))
@@ -1652,12 +1657,12 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"KillNotice4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("KillNotice5", out phrase))
                     {
-                        phrase = "{PlayerName} ({Level}) has been ate by {ZombieName}. {Value} damage. Nom nom nom";
+                        phrase = "{PlayerName} lvl ({Level}) has been ate by {ZombieName}. {Value} damage. Nom nom nom";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"KillNotice5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("KillNotice6", out phrase))
                     {
-                        phrase = "{PlayerName} ({Level}) has been ate by {ZombieName}. Nom nom nom";
+                        phrase = "{PlayerName} lvl ({Level}) has been ate by {ZombieName}. Nom nom nom";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"KillNotice6\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("KillNotice7", out phrase))
@@ -3083,6 +3088,29 @@ namespace ServerTools
                         phrase = "Auto detection has banned you for country IP region";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"CountryBan1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ************************* Hordes *********************** -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("Hordes1", out phrase))
+                    {
+                        phrase = "A horde has been spotted wandering the wastes";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Hordes1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ********************** Magic_Bullet ******************** -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("MagicBullet1", out phrase))
+                    {
+                        phrase = "Auto detection has banned you for net packet manipulation";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"MagicBullet1\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("MagicBullet2", out phrase))
+                    {
+                        phrase = "Detected Id '{0}' '{1}' named '{2}' manipulating net packages. They have been banned";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"MagicBullet2\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");

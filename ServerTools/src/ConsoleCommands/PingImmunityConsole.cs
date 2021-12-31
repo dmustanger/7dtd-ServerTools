@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools] - Add, remove and view steam ids on the ping immunity list.";
+            return "[ServerTools] - Add, remove and view ids on the ping immunity list.";
         }
 
         public override string GetHelp()

@@ -1153,20 +1153,24 @@ namespace ServerTools
                         }
                     }
                     string commandLower = _command.ToLower();
-                    if (commandLower.StartsWith("global "))
+                    if (commandLower.Contains("global "))
                     {
-                        _command = commandLower.Replace("global ", "");
+                        _command = _command.Replace("global ", "");
+                        _command = _command.Replace("Global ", "");
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                     }
                     else if (commandLower.StartsWith("whisper "))
                     {
-                        _command = commandLower.Replace("whisper ", "");
+                        _command = _command.Replace("whisper ", "");
+                        _command = _command.Replace("Whisper ", "");
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    else if (commandLower.StartsWith("tele ") || commandLower.StartsWith("teleportplayer ") || commandLower.StartsWith("tp "))
+                    else if (commandLower.StartsWith("tele ") || commandLower.StartsWith("tp "))
                     {
-                        _command = commandLower.Replace("tele ", "teleportplayer ");
-                        _command = commandLower.Replace("tp ", "teleportplayer ");
+                        _command = _command.Replace("tele ", "teleportplayer ");
+                        _command = _command.Replace("tp ", "teleportplayer ");
+                        _command = _command.Replace("Tele ", "teleportplayer ");
+                        _command = _command.Replace("Tp ", "teleportplayer ");
                         SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
                     }
                     else

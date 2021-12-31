@@ -47,6 +47,9 @@
     <Compile Include="src\AntiCheat\BlockChange\BlockChange.cs" />
     <Compile Include="src\AntiCheat\DamageDetector\DamageDetector.cs" />
     <Compile Include="src\AntiCheat\InfiniteAmmo\InfiniteAmmo.cs" />
+    <Compile Include="src\AntiCheat\MagicBullet\MagicBullet.cs" />
+    <Compile Include="src\AntiCheat\NetPackages\NetPackageEntityAddScore.cs" />
+    <Compile Include="src\AntiCheat\NetPackages\NetPackagePlayerStats.cs" />
     <Compile Include="src\AntiCheat\PlayerChecks\PlayerChecks.cs" />
     <Compile Include="src\AntiCheat\SpeedDetector\SpeedDetector.cs" />
     <Compile Include="src\AntiCheat\XRayDetector\XRayDetector.cs" />
@@ -72,6 +75,9 @@
     <Compile Include="src\ConsoleCommands\SecureVehicleAccessConsole.cs" />
     <Compile Include="src\ConsoleCommands\SecureLootAccessConsole.cs" />
     <Compile Include="src\ConsoleCommands\ScoutPlayerConsole.cs" />
+    <Compile Include="src\ConsoleCommands\SetDeaths.cs" />
+    <Compile Include="src\ConsoleCommands\SetZombieKillsConsole.cs" />
+    <Compile Include="src\ConsoleCommands\SetPlayerKillsConsole.cs" />
     <Compile Include="src\ConsoleCommands\SpawnActiveBlocks.cs" />
     <Compile Include="src\ConsoleCommands\TestConsole.cs" />
     <Compile Include="src\ConsoleCommands\WaypointsConsole.cs" />
