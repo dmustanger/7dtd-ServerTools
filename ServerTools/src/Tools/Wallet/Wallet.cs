@@ -6,7 +6,7 @@ namespace ServerTools
     class Wallet
     {
         public static bool IsEnabled = false, Bank_Transfers = false, PVP = false;
-        public static string Currency_Name = "coin", Command_wallet = "wallet";
+        public static string Currency_Name = "coin";
         public static int Zombie_Kill = 10, Player_Kill = 25, Session_Bonus = 5;
 
         public static Dictionary<int, int> UpdateRequired = new Dictionary<int, int>();

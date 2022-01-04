@@ -1,0 +1,31 @@
+<configs>
+
+<append xpath="/windows">
+	
+	<window name="browserMap" controller="ServerInfo">
+		<panel name="header" pos="-300,0" height="40" depth="1" backgroundspritename="ui_game_panel_header" bordercolor="[white]" borderthickness="5" >
+			<label style="header.name" pos="0,0" width="257" text="World Map" />
+		</panel>
+		<panel name="" pos="-300,0" height="63">
+			<sprite depth="5" pos="0,0" height="33" width="260" name="background" color="[darkGrey]" type="sliced" />
+			<label name="ServerDescription" />
+			<label depth="4" pos="0,-40" height="30" width="257" name="ServerWebsiteURL" text="http://0.0.0.0:8082" justify="center" style="press, hover" font_size="30" upper_case="false" />
+			<!-- Change the text IP and Port to the one needed by Allocs web map. Check it functions through a web browser first -->
+		</panel>
+	</window>
+	
+	<window name="browserDiscord" controller="ServerInfo">
+		<panel name="header" pos="-300,0" height="40" depth="1" backgroundspritename="ui_game_panel_header" bordercolor="[white]" borderthickness="5" >
+			<label style="header.name" pos="0,0" width="257" text="Discord Invite" />
+		</panel>
+		<panel name="" pos="-300,0" height="63">
+			<sprite depth="5" pos="0,0" height="33" width="260" name="background" color="[darkGrey]" type="sliced" />
+			<label name="ServerDescription" />
+			<label depth="4" pos="0,-40" height="30" width="257" name="ServerWebsiteURL" text="http://discord.gg/linkHere" justify="center" style="press, hover" font_size="30" upper_case="false" />
+			<!-- Change the text link to a Discord invite link of your choice. Check it functions through a web browser first -->
+		</panel>
+	</window>
+	
+</append>
+
+</configs>

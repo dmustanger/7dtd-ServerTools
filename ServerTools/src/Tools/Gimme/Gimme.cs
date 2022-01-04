@@ -450,7 +450,7 @@ namespace ServerTools
                         int.TryParse(item[4], out int maxQuality);
                         int count = Random.Next(minCount, maxCount + 1);
                         int quality = Random.Next(minQuality, maxQuality + 1);
-                        ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type, quality, quality, false, null);
+                        ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type, quality, quality, true, null);
                         World world = GameManager.Instance.World;
                         EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                         {

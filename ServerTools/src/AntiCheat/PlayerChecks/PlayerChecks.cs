@@ -33,7 +33,7 @@ namespace ServerTools
                             {
                                 int userPlatformPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId);
                                 int userCrossplatformPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId);
-                                if (SpectatorEnabled && (userPlatformPermissionLevel > Spectator_Admin_Level || userCrossplatformPermissionLevel > Spectator_Admin_Level))
+                                if (SpectatorEnabled && (userPlatformPermissionLevel > Spectator_Admin_Level && userCrossplatformPermissionLevel > Spectator_Admin_Level))
                                 {
                                     if (player.IsSpectator)
                                     {
@@ -53,7 +53,7 @@ namespace ServerTools
                                         continue;
                                     }
                                 }
-                                if (GodEnabled && (userPlatformPermissionLevel > Godmode_Admin_Level || userCrossplatformPermissionLevel > Godmode_Admin_Level))
+                                if (GodEnabled && (userPlatformPermissionLevel > Godmode_Admin_Level && userCrossplatformPermissionLevel > Godmode_Admin_Level))
                                 {
                                     if (player.Buffs.HasBuff("god"))
                                     {
@@ -94,7 +94,7 @@ namespace ServerTools
                                         }
                                         if (cInfo.ping < 350)
                                         {
-                                            if (SpeedDetector.IsEnabled && (userPlatformPermissionLevel > SpeedDetector.Speed_Admin_Level || userCrossplatformPermissionLevel > SpeedDetector.Speed_Admin_Level))
+                                            if (SpeedDetector.IsEnabled && (userPlatformPermissionLevel > SpeedDetector.Speed_Admin_Level && userCrossplatformPermissionLevel > SpeedDetector.Speed_Admin_Level))
                                             {
                                                 if (SpeedDetector.TravelTooFar(oldPosition, player.position))
                                                 {
@@ -105,7 +105,7 @@ namespace ServerTools
                                                     SpeedDetector.Flags.Remove(cInfo.entityId);
                                                 }
                                             }
-                                            if (FlyingDetector.IsEnabled && (userPlatformPermissionLevel > FlyingDetector.Flying_Admin_Level || userCrossplatformPermissionLevel > FlyingDetector.Flying_Admin_Level))
+                                            if (FlyingDetector.IsEnabled && (userPlatformPermissionLevel > FlyingDetector.Flying_Admin_Level && userCrossplatformPermissionLevel > FlyingDetector.Flying_Admin_Level))
                                             {
                                                 if (FlyingDetector.IsFlying(player.position))
                                                 {
@@ -147,7 +147,7 @@ namespace ServerTools
                         ClientInfo cInfo = clientList[i];
                         if (cInfo != null)
                         {
-                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > XRayDetector.Admin_Level ||
+                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > XRayDetector.Admin_Level &&
                                 GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > XRayDetector.Admin_Level)
                             {
                                 EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);

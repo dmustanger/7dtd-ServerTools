@@ -359,6 +359,86 @@ namespace ServerTools
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
+                original = AccessTools.Method(typeof(NetPackageEntityAddScoreClient), "ProcessPackage");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityAddScoreClient.ProcessPackage Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackageEntityAddScoreClient_ProcessPackage_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityAddScoreClient_ProcessPackage_Prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                original = AccessTools.Method(typeof(NetPackageChat), "ProcessPackage");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageChat.ProcessPackage Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackageChat_ProcessPackage_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageChat_ProcessPackage_Prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                original = AccessTools.Method(typeof(NetPackageEntityPosAndRot), "ProcessPackage");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityPosAndRot.ProcessPackage Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackageEntityPosAndRot_ProcessPackage_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityPosAndRot_ProcessPackage_Prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                original = AccessTools.Method(typeof(NetPackagePlayerData), "ProcessPackage");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerData.ProcessPackage Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackagePlayerData_ProcessPackage_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerData_ProcessPackage_Prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                original = AccessTools.Method(typeof(NetPackageAddRemoveBuff), "ProcessPackage");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageAddRemoveBuff.ProcessPackage Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackageAddRemoveBuff_ProcessPackage_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageAddRemoveBuff_ProcessPackage_Prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
                 Log.Out("[SERVERTOOLS] Runtime patching complete");
             }
             catch (Exception e)

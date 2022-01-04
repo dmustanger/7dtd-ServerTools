@@ -1304,6 +1304,22 @@ namespace ServerTools
                                     return false;
                                 }
                             }
+                            if (AllocsMap.IsEnabled)
+                            {
+                                if (messageLowerCase == AllocsMap.Command_map)
+                                {
+                                    AllocsMap.Exec(_cInfo);
+                                    return false;
+                                }
+                            }
+                            if (DiscordInvite.IsEnabled)
+                            {
+                                if (messageLowerCase == DiscordInvite.Command_discord)
+                                {
+                                    DiscordInvite.Exec(_cInfo);
+                                    return false;
+                                }
+                            }
                             if (!Passthrough)
                             {
                                 return false;

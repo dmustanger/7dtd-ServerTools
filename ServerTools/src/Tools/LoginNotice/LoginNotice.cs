@@ -138,7 +138,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LoginNotice>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- <Player Id=\"76561191234567891\" Message=\"Time to kick ass and chew bubble gum\" /> -->");
+                    sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Message=\"Time to kick ass and chew bubble gum\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
@@ -205,10 +205,10 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LoginNotice>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- <Player Id=\"76561191234567891\" Message=\"Time to kick ass and chew bubble gum\" /> -->");
+                    sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Message=\"Time to kick ass and chew bubble gum\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Player Id=\"76561191234567891\"") &&
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891\"") &&
                             !OldNodeList[i].OuterXml.Contains("    <!-- <Player Id=\"\""))
                         {
                             sw.WriteLine(OldNodeList[i].OuterXml);

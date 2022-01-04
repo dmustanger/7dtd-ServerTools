@@ -71,23 +71,19 @@ namespace ServerTools
 
         public static void PrepareShutdown()
         {
-            if (PersistentOperations.IsBloodmoon())
+            if (PersistentOperations.IsBloodmoon() && !Interrupt_Bloodmoon)
             {
-                if (!Interrupt_Bloodmoon)
+                EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(10));
+                if (Event.Open && !Event.OperatorWarned)
                 {
-                    EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(10));
-                    if (Event.Open && !Event.OperatorWarned)
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(Event.Operator);
+                    if (cInfo != null)
                     {
-                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(Event.Operator);
-                        if (cInfo != null)
-                        {
-                            Event.OperatorWarned = true;
-                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + "A scheduled shutdown is set to begin but is on hold until the event ends" + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        }
-
+                        Event.OperatorWarned = true;
+                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + "A scheduled shutdown is set to begin but is on hold until the bloodmoon ends" + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    return;
                 }
+                return;
             }
             EventSchedule.Remove("Shutdown");
             StartShutdown();

@@ -48,7 +48,11 @@
     <Compile Include="src\AntiCheat\DamageDetector\DamageDetector.cs" />
     <Compile Include="src\AntiCheat\InfiniteAmmo\InfiniteAmmo.cs" />
     <Compile Include="src\AntiCheat\MagicBullet\MagicBullet.cs" />
+    <Compile Include="src\AntiCheat\NetPackages\NetPackageAddRemoveBuff.cs" />
+    <Compile Include="src\AntiCheat\NetPackages\NetPackageChat.cs" />
     <Compile Include="src\AntiCheat\NetPackages\NetPackageEntityAddScore.cs" />
+    <Compile Include="src\AntiCheat\NetPackages\NetPackageEntityPosAndRot.cs" />
+    <Compile Include="src\AntiCheat\NetPackages\NetPackagePlayerData.cs" />
     <Compile Include="src\AntiCheat\NetPackages\NetPackagePlayerStats.cs" />
     <Compile Include="src\AntiCheat\PlayerChecks\PlayerChecks.cs" />
     <Compile Include="src\AntiCheat\SpeedDetector\SpeedDetector.cs" />
@@ -88,9 +92,11 @@
     <Compile Include="src\PersistentOperations\ActiveTools.cs" />
     <Compile Include="src\PersistentOperations\ProcessDamage.cs" />
     <Compile Include="src\Serialize\ItemStackSerializable.cs" />
+    <Compile Include="src\Tools\AllocsMap\AllocsMap.cs" />
     <Compile Include="src\Tools\AutoBackup\AutoBackup.cs" />
     <Compile Include="src\Tools\AutoPartyInvite\AutoPartyInvite.cs" />
     <Compile Include="src\Tools\BotResponse\BotResponse.cs" />
+    <Compile Include="src\Tools\DiscordInvite\DiscordInvite.cs" />
     <Compile Include="src\Tools\DroppedBagProtection\DroppedBagProtection.cs" />
     <Compile Include="src\Tools\Bank\Bank.cs" />
     <Compile Include="src\Tools\BlockLogger\BlockLogger.cs" />

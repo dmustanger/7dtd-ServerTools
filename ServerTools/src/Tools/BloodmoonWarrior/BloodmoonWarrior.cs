@@ -312,23 +312,23 @@ namespace ServerTools
                         {
                             if (_killedZ >= Zombie_Kills)
                             {
-                                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(warrior);
-                                if (_cInfo != null)
+                                ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(warrior);
+                                if (cInfo != null)
                                 {
-                                    Counter(_cInfo, Reward_Count);
+                                    Counter(cInfo, Reward_Count);
                                     if (Reduce_Death_Count)
                                     {
                                         int deathCount = player.Died - 1;
                                         player.Died = deathCount;
                                         player.bPlayerStatsChanged = true;
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(player));
+                                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(player));
                                         Phrases.Dict.TryGetValue("BloodmoonWarrior2", out string _phrase);
-                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                     else
                                     {
                                         Phrases.Dict.TryGetValue("BloodmoonWarrior3", out string _phrase);
-                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                             }
@@ -367,7 +367,7 @@ namespace ServerTools
                     int maxQuality = int.Parse(item[4]);
                     int count = Random.Next(minCount, maxCount + 1);
                     int quality = Random.Next(minCount, maxCount + 1);
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type, quality, quality, false, null);
+                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type, quality, quality, true, null);
                     World world = GameManager.Instance.World;
                     var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                     {

@@ -639,6 +639,19 @@ namespace ServerTools
                 Dict.Remove("Discord bot");
                 Log.Out("Discord bot disabled");
             }
+            if (DiscordInvite.IsEnabled)
+            {
+                if (!Dict.Contains("Discord invite"))
+                {
+                    Dict.Add("Discord invite");
+                    Log.Out("Discord invite enabled");
+                }
+            }
+            else if (Dict.Contains("Discord invite") && !_initiating)
+            {
+                Dict.Remove("Discord invite");
+                Log.Out("Discord invite disabled");
+            }
             if (DroppedBagProtection.IsEnabled)
             {
                 if (!Dict.Contains("Dropped bag protection"))

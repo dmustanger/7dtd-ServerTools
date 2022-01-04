@@ -167,7 +167,7 @@ namespace ServerTools
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, whisper, global -->");
-                    sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ whisper You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Permission=\"false\" Cost=\"0\" /> -->");
+                    sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Permission=\"false\" Cost=\"0\" /> -->");
                     sw.WriteLine("    <!-- <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Reserved=\"false\" Permission=\"\" Cost=\"\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
@@ -1048,7 +1048,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Custom command error. Unable to commit delay with improper integer: {0}", _command));
+                                    Log.Out(string.Format("[SERVERTOOLS] Custom command error. Unable to commit delay with invalid integer '{0}'", _command));
                                 }
                             }
                             else
@@ -1165,12 +1165,10 @@ namespace ServerTools
                         _command = _command.Replace("Whisper ", "");
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    else if (commandLower.StartsWith("tele ") || commandLower.StartsWith("tp "))
+                    else if (commandLower.StartsWith("tp "))
                     {
-                        _command = _command.Replace("tele ", "teleportplayer ");
-                        _command = _command.Replace("tp ", "teleportplayer ");
-                        _command = _command.Replace("Tele ", "teleportplayer ");
-                        _command = _command.Replace("Tp ", "teleportplayer ");
+                        _command = _command.Replace("tp ", "tele ");
+                        _command = _command.Replace("Tp ", "tele ");
                         SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
                     }
                     else
@@ -1196,7 +1194,7 @@ namespace ServerTools
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, whisper, global -->");
-                    sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ whisper You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Permission=\"false\" Cost=\"0\" /> -->");
+                    sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Permission=\"false\" Cost=\"0\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Possible variables") && 
@@ -1214,7 +1212,7 @@ namespace ServerTools
                             XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && (line.Name == "Custom" || line.Name == "Command"))
                             {
-                                string trigger = "", command = "", delay = "", hidden = "", reserved = "", permission = "", cost = "";
+                                string trigger = "", command = "", delay = "0", hidden = "false", reserved = "false", permission = "false", cost = "0";
                                 if (line.HasAttribute("Trigger"))
                                 {
                                     trigger = line.GetAttribute("Trigger");
@@ -1227,41 +1225,21 @@ namespace ServerTools
                                 {
                                     delay = line.GetAttribute("DelayBetweenUses");
                                 }
-                                else
-                                {
-                                    delay = "0";
-                                }
                                 if (line.HasAttribute("Hidden"))
                                 {
                                     hidden = line.GetAttribute("Hidden");
-                                }
-                                else
-                                {
-                                    hidden = "false";
                                 }
                                 if (line.HasAttribute("Reserved"))
                                 {
                                     reserved = line.GetAttribute("Reserved");
                                 }
-                                else
-                                {
-                                    reserved = "false";
-                                }
                                 if (line.HasAttribute("Permission"))
                                 {
                                     permission = line.GetAttribute("Permission");
                                 }
-                                else
-                                {
-                                    permission = "false";
-                                }
                                 if (line.HasAttribute("Cost"))
                                 {
                                     cost = line.GetAttribute("Cost");
-                                }
-                                else
-                                {
-                                    cost = "0";
                                 }
                                 sw.WriteLine(string.Format("    <Custom Trigger=\"{0}\" Command=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Reserved=\"{4}\" Permission=\"{5}\" Cost=\"{6}\" />", trigger, command, delay, hidden, reserved, permission, cost));
                             }

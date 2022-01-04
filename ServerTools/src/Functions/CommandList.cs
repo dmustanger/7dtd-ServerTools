@@ -378,9 +378,6 @@ namespace ServerTools
                         case "lobby":
                             Lobby.Command_lobby = kvp.Value;
                             continue;
-                        case "wallet":
-                            Wallet.Command_wallet = kvp.Value;
-                            continue;
                         case "shop":
                             Shop.Command_shop = kvp.Value;
                             continue;
@@ -649,7 +646,6 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"lback\" Replacement=\"lback\" />");
             Commands.Add("    <Command Default=\"setlobby\" Replacement=\"setlobby\" />");
             Commands.Add("    <Command Default=\"lobby\" Replacement=\"lobby\" />");
-            Commands.Add("    <Command Default=\"wallet\" Replacement=\"wallet\" />");
             Commands.Add("    <Command Default=\"shop\" Replacement=\"shop\" />");
             Commands.Add("    <Command Default=\"shop buy\" Replacement=\"shop buy\" />");
             Commands.Add("    <Command Default=\"friend\" Replacement=\"friend\" />");
@@ -680,8 +676,6 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"bank\" Replacement=\"bank\" />");
             Commands.Add("    <Command Default=\"deposit\" Replacement=\"deposit\" />");
             Commands.Add("    <Command Default=\"withdraw\" Replacement=\"withdraw\" />");
-            Commands.Add("    <Command Default=\"wallet deposit\" Replacement=\"wallet deposit\" />");
-            Commands.Add("    <Command Default=\"wallet withdraw\" Replacement=\"wallet withdraw\" />");
             Commands.Add("    <Command Default=\"transfer\" Replacement=\"transfer\" />");
             Commands.Add("    <Command Default=\"join\" Replacement=\"event\" />");
             Commands.Add("    <Command Default=\"infoticker\" Replacement=\"infoticker\" />");

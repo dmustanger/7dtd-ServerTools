@@ -1623,14 +1623,19 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bounties6\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bounties7", out phrase))
                     {
-                        phrase = "Type {Command_Prefix1}{Command_bounty} Id# Value or {Command_Prefix1}{Command_bounty} Id# for the minimum bounty against this player";
+                        phrase = "Type {Command_Prefix1}{Command_bounty} Id Value or {Command_Prefix1}{Command_bounty} Id for the minimum bounty against this player id";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bounties7\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bounties8", out phrase))
                     {
-                        phrase = "{PlayerName}. Id: {EntityId}. Bounty: {CurrentBounty}. Minimum: {Minimum} {CoinName}";
+                        phrase = "Id {EntityId} named {PlayerName}. Current bounty: {CurrentBounty} {CoinName}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bounties8\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Bounties9", out phrase))
+                    {
+                        phrase = "No players have a bounty on them";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Bounties9\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* Kill_Notice ********************** -->");

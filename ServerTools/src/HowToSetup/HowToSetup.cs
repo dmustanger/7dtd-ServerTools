@@ -92,7 +92,7 @@ namespace ServerTools
                 sw.WriteLine("An automatic backup of the world files will be created in a zip file.");
                 sw.WriteLine("Time_Between_Saves controls how many minutes will pass between backups.");
                 sw.WriteLine("You can allow the default location or specify a save directory you would like your backups to go with Destination.");
-                sw.WriteLine("Be careful to put the entire location if inputing a custom one. Example C:/MyFiles/7DaysBackups/");
+                sw.WriteLine("Be careful to put the entire location if inputting a custom one. Example C:/MyFiles/7DaysBackups/");
                 sw.WriteLine("Set the compression level to 0, 1 or 2. 0 is none, 1 is optimal, 2 is maximum.");
                 sw.WriteLine("Backup_Count controls how many backups it will keep in total.");
                 sw.WriteLine();
@@ -141,7 +141,7 @@ namespace ServerTools
                 sw.WriteLine("This file is provided with the installation files.");
                 sw.WriteLine("Deposit_Fee controls how much is withdrawn from a deposit to the bank. Withdraw has no fee. Set 0 for none.");
                 sw.WriteLine("Players can type /bank to see their bank value.");
-                sw.WriteLine("Tranferring from the Wallet to the Bank will take currency from the players bag.");
+                sw.WriteLine("Transferring from the Wallet to the Bank will take currency from the players bag.");
                 sw.WriteLine("/deposit # takes from the players bag and adds it to their bank.");
                 sw.WriteLine("/withdraw # takes from the players bank and adds it to their bag.");
                 sw.WriteLine("Turn on and off player transfer to allow players to transfer between bank accounts.");
@@ -236,7 +236,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"Chat_Command_Log\" Enable =\"False\" />");
+                sw.WriteLine("<Tool Name=\"Chat_Command_Log\" Enable=\"False\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine();
@@ -251,7 +251,7 @@ namespace ServerTools
                 sw.WriteLine("Set a symbol ServerTools will use for chat based commands");
                 sw.WriteLine("Set a symbol ServerTools will use for chat based commands");
                 sw.WriteLine();
-                sw.WriteLine("Set a server response name to chat commands and server responses from servertools");
+                sw.WriteLine("Set a server response name to chat commands and server responses from ServerTools");
                 sw.WriteLine("The color all general response messages will display as in chat.");
                 sw.WriteLine("Chat_Command_Prefix is the symbol used as a prefix to chat based commands.");
                 sw.WriteLine("Chat_Command_Prefix2 is the symbol used as a prefix to chat based commands.");
@@ -357,7 +357,7 @@ namespace ServerTools
                 sw.WriteLine("<Tool Name=\"Country_Ban\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
-                sw.WriteLine("Add what countries you do not want to allow to join the server seperated with a comma");
+                sw.WriteLine("Add what countries you do not want to allow to join the server separated with a comma");
                 sw.WriteLine("You must specify the country using the 2 digit iso code. You can get the 2 digit iso code here at countrycode.org");
                 sw.WriteLine();
                 sw.WriteLine();
@@ -419,7 +419,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("Enables communications through Discordian discord bot.");
                 sw.WriteLine("Requires Web_API be enabled.");
-                sw.WriteLine("Webhook must match the webhook token from Discord. Instructions are provided with the bot.");
+                sw.WriteLine("Webhook must match the Webhook token from Discord. Instructions are provided with the bot.");
                 sw.WriteLine("The bot is downloaded separately on Github.");
                 sw.WriteLine();
                 sw.WriteLine();
@@ -591,7 +591,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("Allows players to gamble Wallet currency using chat commands.");
                 sw.WriteLine("It will begin a 50/50 draw with 1 in 2 chance of winning. The player must spend the Command_Cost to enter. If they win, they can collect the winnings or bet again.");
-                sw.WriteLine("If the player wins in sequencial rounds, the winnings increase but their chance of success decreases.");
+                sw.WriteLine("If the player wins in sequential rounds, the winnings increase but their chance of success decreases.");
                 sw.WriteLine("Round 1: 1 in 2 chance. Round 2: 1 in 3. Round 3: 1 in 4. Round 4: 1 in 5, and so on.");
                 sw.WriteLine();
                 sw.WriteLine();
@@ -701,7 +701,7 @@ namespace ServerTools
                 sw.WriteLine("Set True or False for Random");
                 sw.WriteLine();
                 sw.WriteLine("Enabling will create a InfoTicker.xml in your main installation folder in a ServerTools folder");
-                sw.WriteLine("Each entry in InfoTicker.xml is a message that will disply in game.");
+                sw.WriteLine("Each entry in InfoTicker.xml is a message that will display in game.");
                 sw.WriteLine("Delay_Between_Messages controls the time before the next message is displayed.");
                 sw.WriteLine("Setting Random to true will show the messages in a random order until all have been displayed. The list will repeat again but in a new random order.");
                 sw.WriteLine("Leaving Random to false will display each message in order of the list until all have been displayed. The list will repeat.");
@@ -994,14 +994,14 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine();
-                sw.WriteLine("Players will no longer be able to pick up any vehicles will this is enabled.");
+                sw.WriteLine("Players will no longer be able to pick up any vehicles when this is enabled.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine("<Tool Name=\"Normal_Player_Color_Prefix\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
-                sw.WriteLine("Set a value of your choice in paranthesis for Prefix");
+                sw.WriteLine("Set a value of your choice in parenthesis for Prefix");
                 sw.WriteLine("Set a color using a html value in brackets for Color");
                 sw.WriteLine();
                 sw.WriteLine("Enabling makes all standard players chat message show with a prefix and color.");
@@ -1134,7 +1134,7 @@ namespace ServerTools
                 sw.WriteLine("Jail will send the player to the designated jail space provided it is setup.");
                 sw.WriteLine("Kill will kill the player.");
                 sw.WriteLine("Kick will kick the player from the server.");
-                sw.WriteLine("Ban will ban the player fro mthe server.");
+                sw.WriteLine("Ban will ban the player from the server.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -1206,7 +1206,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("< Tool Name =\"Shop\" />");
+                sw.WriteLine("<Tool Name=\"Shop\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set True or False for Inside_Market");
@@ -1291,7 +1291,7 @@ namespace ServerTools
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set a numeric value for Delay_Between_Uses");
                 sw.WriteLine();
-                sw.WriteLine("Players can type /stuck to send themself to the world surface.");
+                sw.WriteLine("Players can type /stuck to send themselves to the world surface.");
                 sw.WriteLine("Can not be used inside other player's claim space.");
                 sw.WriteLine("Set the Delay_Between_Uses to control how long a player must wait before stuck will work for them again.");
                 sw.WriteLine("This is likely not a viable tool if the Flight tool is operating because they will likely be detected flying if stuck in a wall.");
@@ -1397,7 +1397,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("< Tool Name =\"Wallet\" />");
+                sw.WriteLine("<Tool Name=\"Wallet\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set True or False for PvP");

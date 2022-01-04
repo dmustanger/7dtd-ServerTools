@@ -13,13 +13,13 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Removes an entity from the game\n" +
-                "Usage: st-re <EntityId>\n" +
-                "Usage: re <EntityId>";
+                "Usage: st-rem <EntityId>\n" +
+                "Usage: rem <EntityId>";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-RemoveEntity", "re", "st-re" };
+            return new string[] { "st-RemoveEntity", "rem", "st-rem" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

@@ -19,29 +19,36 @@ namespace ServerTools
 
         public static void BountyList(ClientInfo _cInfo)
         {
-            List<ClientInfo> clientList = ConnectionManager.Instance.Clients.List.ToList();
-            for (int i = 0; i < clientList.Count; i++)
+            List<ClientInfo> clients = PersistentOperations.ClientList();
+            if (clients != null)
             {
-                ClientInfo cInfo2 = clientList[i];
-                if (cInfo2 != null)
+                for (int i = 0; i < clients.Count; i++)
                 {
-                    int currentbounty = PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].Bounty;
-                    if (currentbounty > 0)
+                    ClientInfo cInfo2 = clients[i];
+                    if (cInfo2 != null)
                     {
-                        Phrases.Dict.TryGetValue("bounties8", out string phrase);
-                        phrase = phrase.Replace("{PlayerName}", cInfo2.playerName);
-                        phrase = phrase.Replace("{EntityId}", cInfo2.entityId.ToString());
-                        phrase = phrase.Replace("{CurrentBounty}", currentbounty.ToString());
-                        phrase = phrase.Replace("{Minimum}", Minimum_Bounty.ToString());
-                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        int currentbounty = PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].Bounty;
+                        if (currentbounty > 0)
+                        {
+                            Phrases.Dict.TryGetValue("bounties8", out string phrase);
+                            phrase = phrase.Replace("{PlayerName}", cInfo2.playerName);
+                            phrase = phrase.Replace("{EntityId}", cInfo2.entityId.ToString());
+                            phrase = phrase.Replace("{CurrentBounty}", currentbounty.ToString());
+                            phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
                     }
                 }
+                Phrases.Dict.TryGetValue("bounties7", out string phrase1);
+                phrase1 = phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                phrase1 = phrase1.Replace("{Command_bounty}", Command_bounty);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
-            Phrases.Dict.TryGetValue("bounties7", out string phrase1);
-            phrase1 = phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-            phrase1 = phrase1.Replace("{Command_bounty}", Command_bounty);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            else
+            {
+                Phrases.Dict.TryGetValue("bounties9", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            }
         }
 
         public static void NewBounty(ClientInfo _cInfo, string _message)

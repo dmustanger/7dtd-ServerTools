@@ -1,5 +1,27 @@
 ﻿CHANGELOG
 
+20.0.4
+Built using Alpha 20 experimental assets
+Functioning with Alpha 20 experimental. Untested with other versions
+
+-Added Allocs_Map tool. Type /map to open a window with a clickable
+link that opens the in game web browser to Allocs map. This requires
+Allocs mod be installed to function and the right link setup in the 
+windows.xml provided with the install files
+-Added Discord_Invite tool. Type /discord to open a window with a 
+clickable link that opens the in game web browser to the Discord
+invitation link provided. The right link must be setup in the 
+windows.xml provided with the install files
+-Fixed CommandList.xml still listing the old wallet commands
+-Fixed Bloodmoon_Warrior rewards spawning without durability, mod
+or cosmetic slots
+-Fixed Bounty tool not functioning as intended
+-Updated Net_Package_Detector with more operations
+-Updated Country_Ban database
+-Updated default ServerToolsConfig.xml. Anti cheat tools are now
+separated to their own section when the file is created
+-Updated HowToSetup.txt
+
 20.0.3
 Built using Alpha 20 experimental assets
 Functioning with Alpha 20 experimental. Untested with other versions
@@ -10,7 +32,6 @@ Functioning with Alpha 20 experimental. Untested with other versions
 -Added console command st-SetPlayerDeaths
 -Added option Interrupt_Bloodmoon to Shutdown tool
 -Fixed an index error in Reserved_Slots when kicking normal player
--Fixed Bounty tool not functioning as intended
 -Fixed Custom_Commands reducing all whisper and global message to
 lowercase
 -Fixed Wallet failing to return a value over the max stack value

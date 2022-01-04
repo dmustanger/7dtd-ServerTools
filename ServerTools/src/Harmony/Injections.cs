@@ -530,4 +530,64 @@ public static class Injections
         }
         return true;
     }
+
+    public static bool NetPackageEntityAddScoreClient_ProcessPackage_Prefix(NetPackageEntityAddScoreClient __instance)
+    {
+        if (PersistentOperations.Net_Package_Detector && __instance.Sender != null)
+        {
+            if (!EntityAddScoreClientPackage.IsValid(__instance))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static bool NetPackageChat_ProcessPackage_Prefix(NetPackageChat __instance)
+    {
+        if (PersistentOperations.Net_Package_Detector && __instance.Sender != null)
+        {
+            if (!ChatPackage.IsValid(__instance))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static bool NetPackageEntityPosAndRot_ProcessPackage_Prefix(NetPackageEntityPosAndRot __instance)
+    {
+        if (PersistentOperations.Net_Package_Detector && __instance.Sender != null)
+        {
+            if (!EntityPosAndRotPackage.IsValid(__instance))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static bool NetPackagePlayerData_ProcessPackage_Prefix(NetPackagePlayerData __instance)
+    {
+        if (PersistentOperations.Net_Package_Detector && __instance.Sender != null)
+        {
+            if (!PlayerDataPackage.IsValid(__instance))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static bool NetPackageAddRemoveBuff_ProcessPackage_Prefix(NetPackageAddRemoveBuff __instance)
+    {
+        if (PersistentOperations.Net_Package_Detector && __instance.Sender != null)
+        {
+            if (!AddRemoveBuffPackage.IsValid(__instance))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }
