@@ -832,13 +832,9 @@ namespace ServerTools
                 }
                 if (Jail.IsEnabled)
                 {
-                    if (Jail.Command_jail != "")
+                    if (Jail.Command_set != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Jail.Command_jail);
-                    }
-                    if (Jail.Command_unjail != "")
-                    {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Jail.Command_unjail);
+                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Jail.Command_set);
                     }
                 }
                 if (NewSpawnTele.IsEnabled)

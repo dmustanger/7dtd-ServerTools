@@ -246,35 +246,49 @@ namespace ServerTools
         {
             try
             {
-                List<ClientInfo> clientList = PersistentOperations.ClientList();
-                if (clientList != null)
+                List<ClientInfo> clients = PersistentOperations.ClientList();
+                if (clients != null && clients.Count > 0)
                 {
-                    List<ClientInfo> players = new List<ClientInfo>();
-                    for (int i = 0; i < clientList.Count; i++)
+                    List<ClientInfo> admin = PersistentOperations.ClientList();
+                    List<ClientInfo> player = PersistentOperations.ClientList();
+                    for (int i = 0; i < clients.Count; i++)
                     {
-                        ClientInfo cInfo = clientList[i];
-                        if (Dict.ContainsKey(cInfo.PlatformId.CombinedString) || Dict.ContainsKey(cInfo.CrossplatformId.CombinedString))
+                        ClientInfo cInfo = clients[i];
+                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
+                            GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                         {
-                            players.Add(cInfo);
+                            if (Dict.ContainsKey(cInfo.PlatformId.ReadablePlatformUserIdentifier) ||
+                            Dict.ContainsKey(cInfo.CrossplatformId.ReadablePlatformUserIdentifier))
+                            {
+                                player.Add(cInfo);
+                            }
+                        }
+                        else
+                        {
+                            admin.Add(cInfo);
                         }
                     }
-                    if (players.Count > 0)
+                    if (admin.Count > 0 && player.Count > 0)
                     {
-                        for (int i = 0; i < clientList.Count; i++)
+                        for (int i = 0; i < player.Count; i++)
                         {
-                            ClientInfo cInfo = clientList[i];
-                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) <= Admin_Level ||
-                                GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) <= Admin_Level)
+                            Phrases.Dict.TryGetValue("Watchlist1", out string phrase);
+                            if (Dict.TryGetValue(player[i].PlatformId.ReadablePlatformUserIdentifier, out string reason))
                             {
-                                for (int j = 0; j < players.Count; j++)
+                                phrase = phrase.Replace("{PlayerName}", player[i].playerName);
+                                phrase = phrase.Replace("{Reason}", reason);
+                                for (int j = 0; j < admin.Count; j++)
                                 {
-                                    Phrases.Dict.TryGetValue("Watchlist1", out string phrase);
-                                    if (Dict.TryGetValue(players[i].PlatformId.ReadablePlatformUserIdentifier, out string reason))
-                                    {
-                                        phrase = phrase.Replace("{PlayerName}", players[i].playerName);
-                                        phrase = phrase.Replace("{Reason}", reason);
-                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    }
+                                    ChatHook.ChatMessage(admin[j], Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                            }
+                            else if (Dict.TryGetValue(player[i].CrossplatformId.ReadablePlatformUserIdentifier, out reason))
+                            {
+                                phrase = phrase.Replace("{PlayerName}", player[i].playerName);
+                                phrase = phrase.Replace("{Reason}", reason);
+                                for (int j = 0; j < admin.Count; j++)
+                                {
+                                    ChatHook.ChatMessage(admin[j], Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }

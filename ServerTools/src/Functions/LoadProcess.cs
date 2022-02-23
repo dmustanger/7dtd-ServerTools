@@ -14,11 +14,14 @@ namespace ServerTools
         {
             try
             {
-                Log.Out(string.Format("[SERVERTOOLS] Checking for save directory {0}", API.ConfigPath));
                 if (!Directory.Exists(API.ConfigPath))
                 {
                     Directory.CreateDirectory(API.ConfigPath);
-                    Log.Out(string.Format("[SERVERTOOLS] Created directory {0}", API.ConfigPath));
+                    Log.Out(string.Format("[SERVERTOOLS] Created new directory '{0}'", API.ConfigPath));
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Located directory '{0}'", API.ConfigPath));
                 }
                 if (!Directory.Exists(API.ConfigPath + "/Logs/ChatLogs"))
                 {
@@ -80,10 +83,18 @@ namespace ServerTools
                 {
                     Directory.CreateDirectory(API.ConfigPath + "/Logs/OutputLogs");
                 }
+                if (!Directory.Exists(API.GamePath + "/Mods/ServerTools/Config"))
+                {
+                    Directory.CreateDirectory(API.GamePath + "/Mods/ServerTools/Config");
+                }
+                if (!Directory.Exists(API.GamePath + "/Mods/ServerTools/Config/XUi"))
+                {
+                    Directory.CreateDirectory(API.GamePath + "/Mods/ServerTools/Config/XUi");
+                }
             }
             catch (XmlException e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in creation of directory @ {0}. Error = {1}", API.ConfigPath, e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in creation of directory @ '{0}'. Error = {1}", API.ConfigPath, e.Message));
             }
 
             try
@@ -126,7 +137,8 @@ namespace ServerTools
 
             try
             {
-                PersistentOperations.SetInstallFolder();
+                PersistentOperations.SetFolders();
+                PersistentOperations.CreateCustomXUi();
                 PersistentOperations.GetCurrencyName();
                 PersistentOperations.EntityIdList();
                 PersistentOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
@@ -246,8 +258,8 @@ namespace ServerTools
 
             Track.Cleanup();
 
-            CountryBan.BuildList();
             DroppedBagProtection.BuildList();
+            BlackJack.BuildDeck();
 
             ActiveTools.Exec(true);
 

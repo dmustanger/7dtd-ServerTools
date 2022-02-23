@@ -39,30 +39,11 @@ namespace ServerTools
                     {
                         if (Badwords.Invalid_Name)
                         {
-                            if (_mainName.Contains(" "))
+                            for (int i = 0; i < Badwords.Dict.Count; i++)
                             {
-                                string[] _nameSplit = _mainName.Split(' ');
-                                for (int i = 0; i < _nameSplit.Length; i++)
+                                if (_mainName.ToLower().Contains(Badwords.Dict[i]))
                                 {
-                                    string _partialName = _nameSplit[i].ToLower();
-                                    for (int j = 0; j < Badwords.Dict.Count; j++)
-                                    {
-                                        if (_partialName == Badwords.Dict[j])
-                                        {
-                                            _mainName = _mainName.ToLower().Replace(Badwords.Dict[j], "***");
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                for (int i = 0; i < Badwords.Dict.Count; i++)
-                                {
-                                    if (_mainName == Badwords.Dict[i])
-                                    {
-                                        _mainName = "***";
-                                        continue;
-                                    }
+                                    _mainName = _mainName.ToLower().Replace(Badwords.Dict[i], "***");
                                 }
                             }
                         }
@@ -129,18 +110,15 @@ namespace ServerTools
                                         }
                                         else
                                         {
-                                            if (_count + 1 == Messages_Per_Min)
+                                            ChatFloodCount[_cInfo.CrossplatformId.CombinedString] += 1;
+                                            if (ChatFloodCount[_cInfo.CrossplatformId.CombinedString] == Messages_Per_Min + 1)
                                             {
                                                 ChatFloodCount.Remove(_cInfo.CrossplatformId.CombinedString);
                                                 ChatFloodTime.Remove(_cInfo.CrossplatformId.CombinedString);
                                                 ChatFloodLock.Add(_cInfo.CrossplatformId.CombinedString, DateTime.Now);
-                                                Phrases.Dict.TryGetValue("ChatFloodProtection1", out string _phrase);
-                                                ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                Phrases.Dict.TryGetValue("ChatFloodProtection1", out string phrase);
+                                                ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 return false;
-                                            }
-                                            else
-                                            {
-                                                ChatFloodCount[_cInfo.CrossplatformId.CombinedString] = _count + 1;
                                             }
                                         }
                                     }
@@ -358,23 +336,9 @@ namespace ServerTools
                                 Gimme.Exec(_cInfo);
                                 return false;
                             }
-                            if (Jail.IsEnabled && (messageLowerCase == Jail.Command_set_jail || messageLowerCase.StartsWith(Jail.Command_jail) || messageLowerCase.StartsWith(Jail.Command_unjail)))
+                            if (Jail.IsEnabled && messageLowerCase == Jail.Command_set)
                             {
-                                if (messageLowerCase == Jail.Command_set_jail)
-                                {
-                                    ChatMessage(_cInfo, Config.Chat_Response_Color + _message, -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    Jail.SetJail(_cInfo);
-                                }
-                                else if (messageLowerCase.StartsWith(Jail.Command_jail))
-                                {
-                                    ChatMessage(_cInfo, Config.Chat_Response_Color + _message, -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    Jail.PutInJail(_cInfo, _message);
-                                }
-                                else if (messageLowerCase.StartsWith(Jail.Command_unjail))
-                                {
-                                    ChatMessage(_cInfo, Config.Chat_Response_Color + _message, -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    Jail.RemoveFromJail(_cInfo, _message);
-                                }
+                                Jail.SetJail(_cInfo);
                                 return false;
                             }
                             if (NewSpawnTele.IsEnabled && messageLowerCase == NewSpawnTele.Command_setspawn)
@@ -1163,22 +1127,19 @@ namespace ServerTools
                             {
                                 if (Hardcore.Optional)
                                 {
-                                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreEnabled)
+                                    EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                                    if (_player != null)
                                     {
-                                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                        if (_player != null)
-                                        {
-                                            int deaths = XUiM_Player.GetDeaths(_player);
-                                            int lifeTime = (int)_player.lifetime;
-                                            string[] harcorestats = { _cInfo.playerName, _player.Score.ToString(), lifeTime.ToString(), deaths.ToString(), "0" };
-                                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats = harcorestats;
-                                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreEnabled = true;
-                                            PersistentContainer.DataChange = true;
-                                            Phrases.Dict.TryGetValue("Hardcore11", out string _phrase);
-                                            _phrase = _phrase.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
-                                            _phrase = _phrase.Replace("{Command_hardcore}", Hardcore.Command_hardcore);
-                                            ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                        }
+                                        int deaths = XUiM_Player.GetDeaths(_player);
+                                        int lifeTime = (int)_player.lifetime;
+                                        string[] harcorestats = { _cInfo.playerName, _player.Score.ToString(), lifeTime.ToString(), deaths.ToString(), "0" };
+                                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats = harcorestats;
+                                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreEnabled = true;
+                                        PersistentContainer.DataChange = true;
+                                        Phrases.Dict.TryGetValue("Hardcore11", out string _phrase);
+                                        _phrase = _phrase.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                        _phrase = _phrase.Replace("{Command_hardcore}", Hardcore.Command_hardcore);
+                                        ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                     else
                                     {
@@ -1312,12 +1273,33 @@ namespace ServerTools
                                     return false;
                                 }
                             }
-                            if (DiscordInvite.IsEnabled)
+                            if (DiscordLink.IsEnabled)
                             {
-                                if (messageLowerCase == DiscordInvite.Command_discord)
+                                if (messageLowerCase == DiscordLink.Command_discord)
                                 {
-                                    DiscordInvite.Exec(_cInfo);
+                                    DiscordLink.Exec(_cInfo);
                                     return false;
+                                }
+                            }
+                            if (BlackJack.IsEnabled && WebAPI.IsEnabled)
+                            {
+                                if (messageLowerCase == BlackJack.Command_blackjack)
+                                {
+                                    BlackJack.Exec(_cInfo);
+                                    return false;
+                                }
+                            }
+                            if (messageLowerCase == "cvar")
+                            {
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                                if (player != null)
+                                {
+                                    List<KeyValuePair<string, float>> cvars = player.Buffs.CVars.ToList();
+                                    Log.Out(string.Format("[SERVERTOOLS] cvars count {0}", cvars.Count));
+                                    for (int i = 0; i < cvars.Count; i++)
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] cvar name = '{0}' value = '{1}'", cvars[i].Key, cvars[i].Value));
+                                    }
                                 }
                             }
                             if (!Passthrough)
@@ -1582,7 +1564,7 @@ namespace ServerTools
                         {
                             foreach (var response in BotResponse.Dict)
                             {
-                                if (response.Key.Contains(_message.ToLower()))
+                                if (response.Key == _message.ToLower())
                                 {
                                     GameManager.Instance.ChatMessageServer(null, EChatType.Global, -1, response.Value, Config.Server_Response_Name, false, null);
                                     break;

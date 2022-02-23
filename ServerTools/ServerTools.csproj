@@ -46,9 +46,9 @@
     <Compile Include="src\AntiCheat\DupeLog\DupeLog.cs" />
     <Compile Include="src\AntiCheat\BlockChange\BlockChange.cs" />
     <Compile Include="src\AntiCheat\DamageDetector\DamageDetector.cs" />
+    <Compile Include="src\AntiCheat\FamilyShare\FamilyShare.cs" />
     <Compile Include="src\AntiCheat\InfiniteAmmo\InfiniteAmmo.cs" />
     <Compile Include="src\AntiCheat\MagicBullet\MagicBullet.cs" />
-    <Compile Include="src\AntiCheat\NetPackages\NetPackageAddRemoveBuff.cs" />
     <Compile Include="src\AntiCheat\NetPackages\NetPackageChat.cs" />
     <Compile Include="src\AntiCheat\NetPackages\NetPackageEntityAddScore.cs" />
     <Compile Include="src\AntiCheat\NetPackages\NetPackageEntityPosAndRot.cs" />
@@ -61,6 +61,7 @@
     <Compile Include="src\ConsoleCommands\CleanBinConsole.cs" />
     <Compile Include="src\ConsoleCommands\ClientConsoleCommandConsole.cs" />
     <Compile Include="src\ConsoleCommands\DeletePlayerDataConsole.cs" />
+    <Compile Include="src\ConsoleCommands\FamilyShareConsole.cs" />
     <Compile Include="src\ConsoleCommands\FlyingConsole.cs" />
     <Compile Include="src\ConsoleCommands\GiveExpConsole.cs" />
     <Compile Include="src\ConsoleCommands\GodmodeDetectorConsole.cs" />
@@ -95,8 +96,9 @@
     <Compile Include="src\Tools\AllocsMap\AllocsMap.cs" />
     <Compile Include="src\Tools\AutoBackup\AutoBackup.cs" />
     <Compile Include="src\Tools\AutoPartyInvite\AutoPartyInvite.cs" />
+    <Compile Include="src\Tools\BlackJack\BlackJack.cs" />
     <Compile Include="src\Tools\BotResponse\BotResponse.cs" />
-    <Compile Include="src\Tools\DiscordInvite\DiscordInvite.cs" />
+    <Compile Include="src\Tools\DiscordLink\DiscordLink.cs" />
     <Compile Include="src\Tools\DroppedBagProtection\DroppedBagProtection.cs" />
     <Compile Include="src\Tools\Bank\Bank.cs" />
     <Compile Include="src\Tools\BlockLogger\BlockLogger.cs" />
@@ -266,7 +268,6 @@
     <Compile Include="src\ConsoleCommands\StopServerCommandConsole.cs" />
     <Compile Include="src\ConsoleCommands\TempBanConsole.cs" />
     <Compile Include="src\ConsoleCommands\PollConsole.cs" />
-    <Compile Include="src\Tools\CountryBan\CountryBan.cs" />
     <Compile Include="src\Tools\EntityCleanup\EntityCleanup.cs" />
     <Compile Include="src\Functions\Config.cs" />
     <Compile Include="src\Functions\Mods.cs" />
@@ -329,6 +330,7 @@
     <Reference Include="Pathfinding.Ionic.Zip.Reduced, Version=1.9.1.9000, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\7dtd-binaries\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

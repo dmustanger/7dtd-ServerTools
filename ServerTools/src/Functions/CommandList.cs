@@ -270,14 +270,8 @@ namespace ServerTools
                         case "gimmie":
                             Gimme.Command_gimmie = kvp.Value;
                             continue;
-                        case "set jail":
-                            Jail.Command_set_jail = kvp.Value;
-                            continue;
-                        case "jail":
-                            Jail.Command_jail = kvp.Value;
-                            continue;
-                        case "unjail":
-                            Jail.Command_unjail = kvp.Value;
+                        case "setjail":
+                            Jail.Command_set = kvp.Value;
                             continue;
                         case "forgive":
                             Jail.Command_forgive = kvp.Value;
@@ -610,9 +604,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"suicide\" Replacement=\"suicide\" />");
             Commands.Add("    <Command Default=\"gimme\" Replacement=\"gimme\" />");
             Commands.Add("    <Command Default=\"gimmie\" Replacement=\"gimmie\" />");
-            Commands.Add("    <Command Default=\"set jail\" Replacement=\"set jail\" />");
-            Commands.Add("    <Command Default=\"jail\" Replacement=\"jail\" />");
-            Commands.Add("    <Command Default=\"unjail\" Replacement=\"unjail\" />");
+            Commands.Add("    <Command Default=\"setjail\" Replacement=\"setjail\" />");
             Commands.Add("    <Command Default=\"forgive\" Replacement=\"forgive\" />");
             Commands.Add("    <Command Default=\"setspawn\" Replacement=\"setspawn\" />");
             Commands.Add("    <Command Default=\"ready\" Replacement=\"ready\" />");

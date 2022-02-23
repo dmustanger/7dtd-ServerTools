@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Jail_Shock = false;
         public static int Jail_Size = 8;
-        public static string Command_set_jail = "set jail", Command_jail = "jail", Command_unjail = "unjail", Command_forgive = "forgive";
+        public static string Command_set = "setjail", Command_forgive = "forgive";
         public static string Jail_Position = "0,0,0";
 
         public static SortedDictionary<string, Vector3> ReleasePosition = new SortedDictionary<string, Vector3>();
@@ -16,7 +16,7 @@ namespace ServerTools
 
         public static void SetJail(ClientInfo _cInfo)
         {
-            string[] _command1 = { Command_set_jail };
+            string[] _command1 = { Command_set };
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_command1, _cInfo))
             {
                 Phrases.Dict.TryGetValue("Jail10", out string _phrase);
@@ -36,48 +36,6 @@ namespace ServerTools
                     Phrases.Dict.TryGetValue("Jail3", out string phrase);
                     phrase = phrase.Replace("{JailPosition}", Jail_Position);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                }
-            }
-        }
-
-        public static void PutInJail(ClientInfo _cInfo, string _playerName)
-        {
-            string[] _command2 = { Command_jail };
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command2, _cInfo))
-            {
-                Phrases.Dict.TryGetValue("Jail10", out string phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-            }
-            else
-            {
-                if (Jail_Position == "0,0,0" || Jail_Position == "0 0 0" || Jail_Position == "")
-                {
-                    Phrases.Dict.TryGetValue("Jail4", out string phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                }
-                else
-                {
-                    _playerName = _playerName.Replace(Command_jail + " ", "");
-                    ClientInfo playertoJail = PersistentOperations.GetClientInfoFromNameOrId(_playerName);
-                    if (playertoJail == null)
-                    {
-                        Phrases.Dict.TryGetValue("Jail11", out string phrase);
-                        phrase = phrase.Replace("{PlayerName}", _playerName);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                    else
-                    {
-                        if (!Jailed.Contains(playertoJail.CrossplatformId.CombinedString))
-                        {
-                            PutPlayerInJail(_cInfo, playertoJail);
-                        }
-                        else
-                        {
-                            Phrases.Dict.TryGetValue("Jail5", out string phrase);
-                            phrase = phrase.Replace("{PlayerName}", _playerName);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                    }
                 }
             }
         }
@@ -104,85 +62,6 @@ namespace ServerTools
             Phrases.Dict.TryGetValue("Jail6", out phrase);
             phrase = phrase.Replace("{PlayerName}", _PlayertoJail.playerName);
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-        }
-
-        public static void RemoveFromJail(ClientInfo _cInfo, string _playerName)
-        {
-            string[] command3 = { Command_unjail };
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(command3, _cInfo))
-            {
-                Phrases.Dict.TryGetValue("Jail10", out string phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-            }
-            else
-            {
-                _playerName = _playerName.Replace("unjail ", "");
-                ClientInfo playerToUnjail = PersistentOperations.GetClientInfoFromNameOrId(_playerName);
-                if (playerToUnjail == null)
-                {
-                    Phrases.Dict.TryGetValue("Jail11", out string phrase);
-                    phrase = phrase.Replace("{PlayerName}", _playerName);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                }
-                else
-                {
-                    int jailTime = PersistentContainer.Instance.Players[playerToUnjail.CrossplatformId.CombinedString].JailTime;
-                    if (jailTime == 0)
-                    {
-                        Phrases.Dict.TryGetValue("Jail7", out string phrase);
-                        phrase = phrase.Replace("{PlayerName}", _playerName);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                    else
-                    {
-                        if (!Jailed.Contains(playerToUnjail.CrossplatformId.CombinedString))
-                        {
-                            Phrases.Dict.TryGetValue("Jail7", out string phrase);
-                            phrase = phrase.Replace("{PlayerName}", _playerName);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                        else
-                        {
-                            Jailed.Remove(playerToUnjail.CrossplatformId.CombinedString);
-                            PersistentContainer.Instance.Players[playerToUnjail.CrossplatformId.CombinedString].JailTime = 0;
-                            PersistentContainer.DataChange = true;
-                            EntityPlayer player = GameManager.Instance.World.Players.dict[playerToUnjail.entityId];
-                            EntityBedrollPositionList position = player.SpawnPoints;
-                            if (position.Count > 0 && (PersistentOperations.ClaimedByAllyOrSelf(playerToUnjail.CrossplatformId, position.GetPos()) || PersistentOperations.ClaimedByNone(playerToUnjail.CrossplatformId, position.GetPos())))
-                            {
-
-                                playerToUnjail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(position[0].x, position[0].y + 1, position[0].z), null, false));
-                            }
-                            else
-                            {
-                                Vector3[] pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                if (PersistentOperations.ClaimedByAllyOrSelf(playerToUnjail.CrossplatformId, new Vector3i(pos[0].x, pos[0].y, pos[0].z)) || PersistentOperations.ClaimedByNone(playerToUnjail.CrossplatformId, new Vector3i(pos[0].x, pos[0].y, pos[0].z)))
-                                {
-                                    playerToUnjail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(pos[0].x, pos[0].y + 1, pos[0].z), null, false));
-                                }
-                                else
-                                {
-                                    pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                    if (PersistentOperations.ClaimedByAllyOrSelf(playerToUnjail.CrossplatformId, new Vector3i(pos[0].x, pos[0].y, pos[0].z)) || PersistentOperations.ClaimedByNone(playerToUnjail.CrossplatformId, new Vector3i(pos[0].x, pos[0].y, pos[0].z)))
-                                    {
-                                        playerToUnjail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(pos[0].x, pos[0].y + 1, pos[0].z), null, false));
-                                    }
-                                    else
-                                    {
-                                        pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                        if (PersistentOperations.ClaimedByAllyOrSelf(playerToUnjail.CrossplatformId, new Vector3i(pos[0].x, pos[0].y, pos[0].z)) || PersistentOperations.ClaimedByNone(playerToUnjail.CrossplatformId, new Vector3i(pos[0].x, pos[0].y, pos[0].z)))
-                                        {
-                                            playerToUnjail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(pos[0].x, pos[0].y + 1, pos[0].z), null, false));
-                                        }
-                                    }
-                                }
-                            }
-                            Phrases.Dict.TryGetValue("Jail2", out string phrase);
-                            ChatHook.ChatMessage(playerToUnjail, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                    }
-                }
-            }
         }
 
         public static void StatusCheck()

@@ -54,7 +54,7 @@ namespace ServerTools
                                 for (int i = 0; i < clientList.Count; i++)
                                 {
                                     ClientInfo cInfo = clientList[i];
-                                    if (!ExitCommand.Players.ContainsKey(cInfo.entityId) && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > ExitCommand.Admin_Level ||
+                                    if (!ExitCommand.Players.ContainsKey(cInfo.entityId) && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > ExitCommand.Admin_Level &&
                                         GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > ExitCommand.Admin_Level))
                                     {
                                         EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
@@ -85,13 +85,13 @@ namespace ServerTools
                     }
                     else
                     {
-                        if (!int.TryParse(_params[0], out StopServer.Delay))
+                        if (int.TryParse(_params[0], out int countdown))
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid time specified '{0}'", _params[0]));
+                            Shutdown.StartShutdown(countdown);
                         }
                         else
                         {
-                            Shutdown.StartShutdown();
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid time specified '{0}'", _params[0]));
                         }
                     }                   
                 }

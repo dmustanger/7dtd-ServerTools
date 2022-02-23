@@ -130,10 +130,10 @@ namespace ServerTools
                                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Air block detected under you. Unable to generate a maze at this position"));
                                             return;
                                         }
-                                        Block steelFloor = Block.GetBlockByName("steelBlock", false);
+                                        Block steelFloor = Block.GetBlockByName("steelShapes", false);
                                         if (steelFloor != null)
                                         {
-                                            Block concreteWalls = Block.GetBlockByName("concreteBlock", false);
+                                            Block concreteWalls = Block.GetBlockByName("concreteShapes", false);
                                             if (concreteWalls != null)
                                             {
                                                 Block stoneFiller = Block.GetBlockByName("terrStone", false);
@@ -151,8 +151,8 @@ namespace ServerTools
                                                             {
                                                                 SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze generation started at player position {0}. Please be patient", player.position));
                                                                 SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Inspect the maze for potential collapse after it spawns"));
-                                                                BlockValue steelBlockValue = Block.GetBlockValue("steelBlock");
-                                                                BlockValue concreteBlockValue = Block.GetBlockValue("concreteBlock");
+                                                                BlockValue steelBlockValue = Block.GetBlockValue("steelShapes");
+                                                                BlockValue concreteBlockValue = Block.GetBlockValue("concreteShapes");
                                                                 BlockValue stoneBlockValue = Block.GetBlockValue("terrStone");
                                                                 BlockValue glassCeilingBlockValue = Block.GetBlockValue("glassBusinessBlock");
                                                                 BlockValue glassBlockValue = Block.GetBlockValue("glassBulletproofBlock");

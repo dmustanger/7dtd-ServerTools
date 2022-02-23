@@ -627,6 +627,37 @@ namespace ServerTools
             }
         }
 
+        public static void SetLink(string _voteSite)
+        {
+            try
+            {
+                if (File.Exists(API.GamePath + "/Mods/ServerTools/Config/XUi/windows.xml"))
+                {
+                    string[] arrLines = File.ReadAllLines(API.GamePath + "/Mods/ServerTools/Config/XUi/windows.xml");
+                    int lineNumber = 0;
+                    for (int i = 0; i < arrLines.Length; i++)
+                    {
+                        if (arrLines[i].Contains("browserVote"))
+                        {
+                            lineNumber = i + 7;
+                            if (arrLines[lineNumber].Contains(_voteSite))
+                            {
+                                return;
+                            }
+                            break;
+                        }
+                    }
+                    arrLines[lineNumber] = string.Format("<label depth=\"4\" pos=\"0,-40\" height=\"30\" width=\"257\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"30\" upper_case=\"false\" />", _voteSite);
+                    File.WriteAllLines(API.GamePath + "/Mods/ServerTools/Config/XUi/windows.xml", arrLines);
+                }
+            }
+            catch (XmlException e)
+            {
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", API.GamePath + "/Mods/ServerTools/Config/XUi/windows.xml", e.Message));
+                return;
+            }
+        }
+
         private static void UpgradeXml()
         {
             try

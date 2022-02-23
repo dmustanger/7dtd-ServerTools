@@ -1,7 +1,9 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -39,11 +41,11 @@ namespace ServerTools
                                 if (newBlockInfo != null && newBlockInfo.bChangeBlockValue)//has new block value
                                 {
                                     Block newBlock = newBlockInfo.blockValue.Block;
-                                    if (oldBlockValue.type == BlockValue.Air.type)//old block was air
+                                    if (oldBlockValue.Equals(BlockValue.Air))//old block was air
                                     {
                                         if (newBlock is BlockSleepingBag)//placed a sleeping bag
                                         {
-                                            if (POIProtection.IsEnabled && POIProtection.Bed && world.IsPositionWithinPOI(newBlockInfo.pos.ToVector3(), 5))
+                                            if (POIProtection.IsEnabled && POIProtection.Bed && world.IsPositionWithinPOI(newBlockInfo.pos.ToVector3(), 8))
                                             {
                                                 GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
                                                 PersistentOperations.ReturnBlock(cInfo, newBlock.GetBlockName(), 1);
@@ -63,7 +65,7 @@ namespace ServerTools
                                                 return false;
                                             }
                                         }
-                                        if (BlockLogger.IsEnabled && newBlockInfo.blockValue.type != BlockValue.Air.type)
+                                        if (BlockLogger.IsEnabled && !_blocksToChange[i].blockValue.Equals(BlockValue.Air))
                                         {
                                             BlockLogger.PlacedBlock(cInfo, newBlock, newBlockInfo.pos);
                                         }
@@ -73,7 +75,7 @@ namespace ServerTools
                                     {
                                         return true;
                                     }
-                                    else if (newBlockInfo.blockValue.type == BlockValue.Air.type)//new block is air
+                                    else if (newBlockInfo.blockValue.Equals(BlockValue.Air.type))//new block is air
                                     {
                                         if (oldBlockValue.Block is BlockLandClaim)
                                         {
@@ -82,9 +84,10 @@ namespace ServerTools
                                                 if (DamageDetector.IsEnabled)
                                                 {
                                                     int total = oldBlock.MaxDamage - oldBlockValue.damage;
-                                                    if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level ||
+                                                    if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
                                                         GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level))
                                                     {
+
                                                         Penalty(total, player, cInfo);
                                                         return false;
                                                     }
@@ -99,14 +102,14 @@ namespace ServerTools
                                                 BlockLogger.RemovedBlock(cInfo, oldBlock, newBlockInfo.pos);
                                             }
                                         }
-                                        if (!oldBlock.CanPickup)//old block can not be picked up
+                                        else if (!oldBlock.CanPickup)//old block can not be picked up
                                         {
                                             if (!PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, newBlockInfo.pos))
                                             {
                                                 if (DamageDetector.IsEnabled)
                                                 {
                                                     int total = oldBlock.MaxDamage - oldBlockValue.damage;
-                                                    if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level ||
+                                                    if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
                                                         GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level))
                                                     {
                                                         Penalty(total, player, cInfo);
@@ -127,7 +130,7 @@ namespace ServerTools
                                             if (DamageDetector.IsEnabled)
                                             {
                                                 int total = newBlockInfo.blockValue.damage - oldBlockValue.damage;
-                                                if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level ||
+                                                if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
                                                     GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level))
                                                 {
                                                     Penalty(total, player, cInfo);
@@ -149,7 +152,7 @@ namespace ServerTools
                                         if (DamageDetector.IsEnabled)
                                         {
                                             int total = oldBlock.MaxDamage - oldBlockValue.damage + newBlockInfo.blockValue.damage;
-                                            if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level ||
+                                            if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
                                                 GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level))
                                             {
                                                 Penalty(total, player, cInfo);

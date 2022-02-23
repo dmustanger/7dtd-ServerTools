@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using UnityEngine;
 
 namespace ServerTools
 {
-    class PersistentOperations
+    public class PersistentOperations
     {
         public static bool ZoneRunning = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false, No_Currency = false, Net_Package_Detector = false;
         public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0;
-        public static string Currency_Item;
+        public static string Currency_Item, XPathDir;
 
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static Dictionary<int, int> EntityId = new Dictionary<int, int>();
@@ -23,47 +24,185 @@ namespace ServerTools
         public static readonly string AlphaNumSet = "jJkqQr9Kl3wXAbyYz0ZLmFpPRsMn5NoO6dDe1EfStaBc2CgGhH7iITu4U8vWxV";
         public static readonly char[] InvalidPrefix = new char[] { '!', '@', '#', '$', '%', '&', '/', '\\' };
 
-        public static void SetInstallFolder()
+        public static void SetFolders()
         {
-            string mainDir = Directory.GetCurrentDirectory();
-            string[] directories = Directory.GetDirectories(mainDir);
-            if (directories.Length > 0)
+            if (Directory.Exists(API.GamePath + "/Mods/ServerTools"))
             {
-                for (int i = 0; i < directories.Length; i++)
+                if (Directory.Exists(API.GamePath + "/Mods/ServerTools/WebAPI"))
                 {
-                    if (directories[i].Contains("Mods"))
+                    WebAPI.Directory = API.GamePath + "/Mods/ServerTools/WebAPI";
+                }
+                if (Directory.Exists(API.GamePath + "/Mods/ServerTools/Config"))
+                {
+                    XPathDir = API.GamePath + "/Mods/ServerTools/Config";
+                }
+            }
+        }
+
+        public static void CreateCustomXUi()
+        {
+            if (XPathDir != "")
+            {
+                if (!File.Exists(XPathDir + "/gameevents.xml"))
+                {
+                    using (StreamWriter sw = new StreamWriter(XPathDir + "/gameevents.xml", false, Encoding.UTF8))
                     {
-                        string[] childDirectories = Directory.GetDirectories(directories[i]);
-                        if (childDirectories.Length > 0)
-                        {
-                            for (int j = 0; j < childDirectories.Length; j++)
-                            {
-                                if (childDirectories[j].Contains("ServerTools"))
-                                {
-                                    API.InstallPath = childDirectories[j];
-                                    if (File.Exists(childDirectories[j] + "/IP2Location.txt"))
-                                    {
-                                        CountryBan.FileLocation = childDirectories[j] + "/IP2Location.txt";
-                                    }
-                                    if (File.Exists(childDirectories[j] + "/7za.exe"))
-                                    {
-                                        AutoBackup.FileLocation = childDirectories[j] + "/7za.exe";
-                                    }
-                                    string[] subChildDirectories = Directory.GetDirectories(childDirectories[j]);
-                                    if (subChildDirectories.Length > 0)
-                                    {
-                                        for (int k = 0; k < subChildDirectories.Length; k++)
-                                        {
-                                            if (subChildDirectories[k].Contains("WebPanel"))
-                                            {
-                                                WebAPI.Directory = subChildDirectories[k] + "/";
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        sw.WriteLine("<configs>");
+                        sw.WriteLine();
+                        sw.WriteLine("<append xpath=\"/gameevents\">");
+                        sw.WriteLine();
+                        sw.WriteLine("  <action_sequence name=\"action_admin\">");
+                        sw.WriteLine();
+                        sw.WriteLine("      <action class=\"RemoveItems\">");
+                        sw.WriteLine("          <property name=\"items_location\" value=\"Backpack\" />");
+                        sw.WriteLine("          <property name=\"remove_item_tag\" value=\"admin\" />");
+                        sw.WriteLine("      </action>");
+                        sw.WriteLine();
+                        sw.WriteLine("      <action class=\"PlaySound\">");
+                        sw.WriteLine("          <property name=\"sound\" value=\"ui_trader_purchase\" />");
+                        sw.WriteLine("          <property name=\"inside_head\" value=\"true\" />");
+                        sw.WriteLine("      </action>");
+                        sw.WriteLine();
+                        sw.WriteLine("  </action_sequence>");
+                        sw.WriteLine();
+                        sw.WriteLine("  <action_sequence name=\"action_dukes\">");
+                        sw.WriteLine();
+                        sw.WriteLine("      <action class=\"RemoveItems\">");
+                        sw.WriteLine("          <property name=\"items_location\" value=\"Backpack\" />");
+                        sw.WriteLine("          <property name=\"remove_item_tag\" value=\"dukes\" />");
+                        sw.WriteLine("      </action>");
+                        sw.WriteLine();
+                        sw.WriteLine("      <action class=\"PlaySound\">");
+                        sw.WriteLine("          <property name=\"sound\" value=\"ui_trader_purchase\" />");
+                        sw.WriteLine("          <property name=\"inside_head\" value=\"true\" />");
+                        sw.WriteLine("      </action>");
+                        sw.WriteLine();
+                        sw.WriteLine("  </action_sequence>");
+                        sw.WriteLine();
+                        sw.WriteLine("  <action_sequence name=\"action_currency\">");
+                        sw.WriteLine();
+                        sw.WriteLine("      <action class=\"RemoveItems\">");
+                        sw.WriteLine("          <property name=\"items_location\" value=\"Backpack\" />");
+                        sw.WriteLine("          <property name=\"remove_item_tag\" value=\"currency\" />");
+                        sw.WriteLine("      </action>");
+                        sw.WriteLine();
+                        sw.WriteLine("      <action class=\"PlaySound\">");
+                        sw.WriteLine("          <property name=\"sound\" value=\"ui_trader_purchase\" />");
+                        sw.WriteLine("          <property name=\"inside_head\" value=\"true\" />");
+                        sw.WriteLine("      </action>");
+                        sw.WriteLine();
+                        sw.WriteLine("  </action_sequence>");
+                        sw.WriteLine();
+                        sw.WriteLine("</append>");
+                        sw.WriteLine();
+                        sw.WriteLine("</configs>");
+                        sw.Flush();
+                        sw.Close();
+                    }
+                }
+                if (!File.Exists(XPathDir + "/items.xml"))
+                {
+                    using (StreamWriter sw = new StreamWriter(XPathDir + "/items.xml", false, Encoding.UTF8))
+                    {
+                        sw.WriteLine("<configs>");
+                        sw.WriteLine();
+                        sw.WriteLine("<set xpath=\"/items/item[@name='casinoCoin']/property[@name='Tags']/@value\">dukes,currency</set>");
+                        sw.WriteLine("<!-- ..... Wallet and Bank currency ^ ..... -->");
+                        sw.WriteLine("<!-- Replace with custom item name from items.xml if desired -->");
+                        sw.WriteLine();
+                        sw.WriteLine("</configs>");
+                        sw.Flush();
+                        sw.Close();
+                    }
+                }
+                if (!File.Exists(XPathDir + "/XUi/windows.xml"))
+                {
+                    using (StreamWriter sw = new StreamWriter(XPathDir + "/XUi/windows.xml", false, Encoding.UTF8))
+                    {
+                        sw.WriteLine("<configs>");
+                        sw.WriteLine();
+                        sw.WriteLine("<append xpath=\"/windows\">");
+                        sw.WriteLine();
+                        sw.WriteLine("  <window name=\"browserMap\" controller=\"ServerInfo\">");
+                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" bordercolor=\"[white]\" borderthickness=\"5\" >");
+                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"257\" text=\"World Map\" />");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"260\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                        sw.WriteLine("          <label name=\"ServerDescription\" />");
+                        sw.WriteLine("          <label depth=\"4\" pos=\"0,-40\" height=\"30\" width=\"257\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8082\" justify=\"center\" style=\"press,hover\" font_size=\"30\" upper_case=\"false\" />");
+                        sw.WriteLine("          <!-- Change the text IP and Port to the one needed by Allocs web map. Check it functions through a web browser first -->");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("  </window>");
+                        sw.WriteLine();
+                        sw.WriteLine("  <window name=\"browserDiscord\" controller=\"ServerInfo\">");
+                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" bordercolor=\"[white]\" borderthickness=\"5\" >");
+                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"257\" text=\"Discord Invite\" />");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"260\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                        sw.WriteLine("          <label name=\"ServerDescription\" />");
+                        sw.WriteLine("          <label depth=\"4\" pos=\"0,-40\" height=\"30\" width=\"257\" name=\"ServerWebsiteURL\" text=\"http://discord.gg/linkHere\" justify=\"center\" style=\"press,hover\" font_size=\"30\" upper_case=\"false\" />");
+                        sw.WriteLine("          <!-- Change the text to a Discord invite link of your choice. Check it functions through a web browser first -->");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("  </window>");
+                        sw.WriteLine();
+                        sw.WriteLine("  <window name=\"browserVote\" controller=\"ServerInfo\">");
+                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" bordercolor=\"[white]\" borderthickness=\"5\" >");
+                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"257\" text=\"Voting Site\" />");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"260\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                        sw.WriteLine("          <label name=\"ServerDescription\" />");
+                        sw.WriteLine("          <label depth=\"4\" pos=\"0,-40\" height=\"30\" width=\"257\" name=\"ServerWebsiteURL\" text=\"https://7daystodie-servers.com/server/12345\" justify=\"center\" style=\"press,hover\" font_size=\"30\" upper_case=\"false\" />");
+                        sw.WriteLine("          <!-- Change the text to a voting link of your choice. Check it functions through a web browser first -->");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("  </window>");
+                        sw.WriteLine();
+                        sw.WriteLine("  <window name=\"browserBlackJack\" controller=\"ServerInfo\">");
+                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" bordercolor=\"[white]\" borderthickness=\"5\" >");
+                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"257\" text=\"Black Jack\" />");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"260\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                        sw.WriteLine("          <label name=\"ServerDescription\" />");
+                        sw.WriteLine("          <label depth=\"4\" pos=\"0,-40\" height=\"30\" width=\"257\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/blackJack.html\" justify=\"center\" style=\"press,hover\" font_size=\"30\" upper_case=\"false\" />");
+                        sw.WriteLine("          <!-- Change the text IP and Port to the one needed by ServerTools web api -->");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("  </window>");
+                        sw.WriteLine();
+                        sw.WriteLine("</append>");
+                        sw.WriteLine();
+                        sw.WriteLine("</configs>");
+                    }
+                }
+                if (!File.Exists(XPathDir + "/XUi/xui.xml"))
+                {
+                    using (StreamWriter sw = new StreamWriter(XPathDir + "/XUi/xui.xml", false, Encoding.UTF8))
+                    {
+                        sw.WriteLine("<configs>");
+                        sw.WriteLine();
+                        sw.WriteLine("<append xpath=\"/xui/ruleset\">");
+                        sw.WriteLine();
+                        sw.WriteLine("  <window_group name=\"browserMap\">");
+                        sw.WriteLine("      <window name=\"browserMap\" />");
+                        sw.WriteLine("  </window_group>");
+                        sw.WriteLine();
+                        sw.WriteLine("  <window_group name=\"browserDiscord\">");
+                        sw.WriteLine("      <window name=\"browserDiscord\" />");
+                        sw.WriteLine("  </window_group>");
+                        sw.WriteLine();
+                        sw.WriteLine("  <window_group name=\"browserVote\">");
+                        sw.WriteLine("      <window name=\"browserVote\" />");
+                        sw.WriteLine("  </window_group>");
+                        sw.WriteLine();
+                        sw.WriteLine("  <window_group name=\"browserBlackJack\">");
+                        sw.WriteLine("      <window name=\"browserBlackJack\" />");
+                        sw.WriteLine("  </window_group>");
+                        sw.WriteLine();
+                        sw.WriteLine("</append>");
+                        sw.WriteLine();
+                        sw.WriteLine("</configs>");
                     }
                 }
             }
@@ -85,7 +224,7 @@ namespace ServerTools
                             if (cInfo != null && !Teleportation.Teleporting.Contains(cInfo.entityId))
                             {
                                 EntityPlayer player = GetEntityPlayer(cInfo.entityId);
-                                if (player != null && !player.IsDead() && player.IsSpawned())
+                                if (player != null && !player.IsDead() && player.IsSpawned() && player.position != null)
                                 {
                                     if (Zones.IsEnabled && Zones.ZoneList.Count > 0)
                                     {
@@ -141,8 +280,7 @@ namespace ServerTools
         {
             if (ConnectionManager.Instance.Clients != null && ConnectionManager.Instance.Clients.Count > 0)
             {
-                List<ClientInfo> clientList = SingletonMonoBehaviour<ConnectionManager>.Instance.Clients.List.ToList();
-                return clientList;
+                return SingletonMonoBehaviour<ConnectionManager>.Instance.Clients.List.ToList();
             }
             return null;
         }
@@ -198,6 +336,19 @@ namespace ServerTools
                 if (entity != null && entity is EntityZombie)
                 {
                     return entity as EntityZombie;
+                }
+            }
+            return null;
+        }
+
+        public static EntityAnimal GetAnimal(int _id)
+        {
+            if (GameManager.Instance.World.Entities.dict.ContainsKey(_id))
+            {
+                Entity entity = GameManager.Instance.World.Entities.dict[_id];
+                if (entity != null && entity is EntityAnimal)
+                {
+                    return entity as EntityAnimal;
                 }
             }
             return null;
@@ -619,27 +770,6 @@ namespace ServerTools
             return pass;
         }
 
-        public static long ConvertIPToLong(string ipAddress)
-        {
-            try
-            {
-                if (IPAddress.TryParse(ipAddress, out IPAddress ip))
-                {
-                    byte[] bytes = ip.MapToIPv4().GetAddressBytes();
-                    return 16777216L * bytes[0] +
-                        65536 * bytes[1] +
-                        256 * bytes[2] +
-                        bytes[3]
-                        ;
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.ConvertIPToLong: {0}", e.Message));
-            }
-            return 0;
-        }
-
         public static void GetCurrencyName()
         {
             List<ItemClass> itemClassCurrency = ItemClass.GetItemsWithTag(FastTags.Parse("currency"));
@@ -655,7 +785,7 @@ namespace ServerTools
                 Bank.IsEnabled = false;
                 Config.WriteXml();
                 Config.LoadXml();
-                Log.Out(string.Format("[SERVERTOOLS] Unable to find an item with the tag 'currency' in the item list. Wallet and Bank tool are disabled"));
+                Log.Out(string.Format("[SERVERTOOLS] Unable to find an item with the tag 'currency' in the item list. Wallet and Bank tool are disabled until server restart"));
             }
         }
 

@@ -193,7 +193,7 @@ namespace ServerTools
             {
                 if (_cInfo != null)
                 {
-                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level ||
+                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level &&
                         GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > Admin_Level)
                     {
                         for (int i = 0; i < _playerDataFile.inventory.Length; i++)

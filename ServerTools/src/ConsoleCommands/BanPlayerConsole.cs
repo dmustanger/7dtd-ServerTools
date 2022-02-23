@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. st-bp <EntityId/PlayerName/Id> <Time> <Hours/Days/Years>\n" +
-                   "  2. st-bp <EntityId/PlayerName/Id> <Time> <Hours/Days/Years> <Reason>\n" +
+                   "  1. st-bp <Id/EOS/EntityId/PlayerName> <Time> <Hours/Days/Years>\n" +
+                   "  2. st-bp <Id/EOS/EntityId/PlayerName> <Time> <Hours/Days/Years> <Reason>\n" +
                    "1. Ban a player for the specified time and remove all of their existing claim blocks\n" +
                    "2. Ban a player for the specified time and remove all of their existing claim blocks while giving a reason for the ban\n";
         }

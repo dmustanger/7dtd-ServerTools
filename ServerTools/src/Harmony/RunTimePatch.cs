@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace ServerTools
@@ -58,10 +59,10 @@ namespace ServerTools
                 }
                 else
                 {
-                    MethodInfo prefix = typeof(Injections).GetMethod("ChangeBlocks_Prefix");
+                    MethodInfo prefix = typeof(Injections).GetMethod("GameManager_ChangeBlocks_Prefix");
                     if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChangeBlocks.prefix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_ChangeBlocks.Prefix"));
                         return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
@@ -74,13 +75,13 @@ namespace ServerTools
                 }
                 else
                 {
-                    MethodInfo postfix = typeof(Injections).GetMethod("AddFallingBlock_Postfix");
-                    if (postfix == null)
+                    MethodInfo prefix = typeof(Injections).GetMethod("AddFallingBlock_Prefix");
+                    if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: AddFallingBlock.postfix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: AddFallingBlock.prefix"));
                         return;
                     }
-                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
                 original = AccessTools.Method(typeof(World), "AddFallingBlocks");
@@ -90,13 +91,13 @@ namespace ServerTools
                 }
                 else
                 {
-                    MethodInfo postfix = typeof(Injections).GetMethod("AddFallingBlocks_Postfix");
-                    if (postfix == null)
+                    MethodInfo prefix = typeof(Injections).GetMethod("AddFallingBlocks_Prefix");
+                    if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: AddFallingBlocks.postfix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: AddFallingBlocks.prefix"));
                         return;
                     }
-                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
                 original = AccessTools.Method(typeof(GameManager), "ChatMessageServer");
@@ -295,38 +296,6 @@ namespace ServerTools
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
                 }
 
-                original = AccessTools.Method(typeof(EntityAlive), "DamageEntity");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.DamageEntity Class.Method was not found"));
-                }
-                else
-                {
-                    MethodInfo prefix = typeof(Injections).GetMethod("EntityAlive_DamageEntity_Prefix");
-                    if (prefix == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_DamageEntity_Prefix"));
-                        return;
-                    }
-                    harmony.Patch(original, new HarmonyMethod(prefix), null);
-                }
-
-                original = AccessTools.Method(typeof(EntityAlive), "ProcessDamageResponse");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.ProcessDamageResponse Class.Method was not found"));
-                }
-                else
-                {
-                    MethodInfo prefix = typeof(Injections).GetMethod("EntityAlive_ProcessDamageResponse_Prefix");
-                    if (prefix == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_ProcessDamageResponse_Prefix"));
-                        return;
-                    }
-                    harmony.Patch(original, new HarmonyMethod(prefix), null);
-                }
-
                 original = AccessTools.Method(typeof(ClientInfoCollection), "GetForNameOrId");
                 if (original == null)
                 {
@@ -423,17 +392,17 @@ namespace ServerTools
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
-                original = AccessTools.Method(typeof(NetPackageAddRemoveBuff), "ProcessPackage");
+                original = AccessTools.Method(typeof(NetPackageDamageEntity), "ProcessPackage");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageAddRemoveBuff.ProcessPackage Class.Method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageDamageEntity.ProcessPackage Class.Method was not found"));
                 }
                 else
                 {
-                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackageAddRemoveBuff_ProcessPackage_Prefix");
+                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackageDamageEntity_ProcessPackage_Prefix");
                     if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageAddRemoveBuff_ProcessPackage_Prefix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageDamageEntity_ProcessPackage_Prefix"));
                         return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);

@@ -140,12 +140,12 @@ namespace ServerTools
             {
                 HalfSecondRunning = true;
                 List<ClientInfo> clientList = PersistentOperations.ClientList();
-                if (clientList != null)
+                if (clientList != null && clientList.Count > 0)
                 {
                     for (int i = 0; i < clientList.Count; i++)
                     {
                         ClientInfo cInfo = clientList[i];
-                        if (cInfo != null)
+                        if (cInfo != null && cInfo.PlatformId != null && cInfo.CrossplatformId != null)
                         {
                             if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > XRayDetector.Admin_Level &&
                                 GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > XRayDetector.Admin_Level)

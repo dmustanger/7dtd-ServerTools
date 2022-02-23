@@ -14,8 +14,8 @@ namespace ServerTools
             return "Usage:\n" +
                    "  1. st-bty off\n" +
                    "  2. st-bty on\n" +
-                   "  3. st-bty edit {Id/EntityId/PlayerName} {Value}\n" +
-                   "  4. st-bty remove {Id/EntityId/PlayerName}\n" +
+                   "  3. st-bty edit {Id/EOS/EntityId/PlayerName} {Value}\n" +
+                   "  4. st-bty remove {Id/EOS/EntityId/PlayerName}\n" +
                    "  5. st-bty list\n" +
                    "1. Turn off bounties\n" +
                    "2. Turn on bounties\n" +

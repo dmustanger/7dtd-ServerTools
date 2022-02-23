@@ -8,8 +8,8 @@ namespace ServerTools
 {
     class KillNotice
     {
-        public static bool IsEnabled = false, IsRunning = false, PvP = false, Zombie_Kills = false, Show_Level = false, Show_Damage = false;
-        public static Dictionary<int, int[]> ZombieDamage = new Dictionary<int, int[]>();
+        public static bool IsEnabled = false, IsRunning = false, PvP = false, Zombie_Kills = false, Animal_Kills = false, Show_Level = false, Show_Damage = false;
+        public static Dictionary<int, int[]> Damage = new Dictionary<int, int[]>();
 
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();
 
@@ -277,9 +277,9 @@ namespace ServerTools
                     if (Show_Damage)
                     {
                         Phrases.Dict.TryGetValue("KillNotice5", out string phrase);
-                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                        phrase = phrase.Replace("{Name1}", _cInfo.playerName);
                         phrase = phrase.Replace("{Level}", _victim.Progression.Level.ToString());
-                        phrase = phrase.Replace("{ZombieName}", _zombie.EntityName);
+                        phrase = phrase.Replace("{Name2}", _zombie.EntityName);
                         phrase = phrase.Replace("{Value}", _damage.ToString());
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         return;
@@ -287,9 +287,9 @@ namespace ServerTools
                     else
                     {
                         Phrases.Dict.TryGetValue("KillNotice6", out string phrase);
-                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                        phrase = phrase.Replace("{Name1}", _cInfo.playerName);
                         phrase = phrase.Replace("{Level}", _victim.Progression.Level.ToString());
-                        phrase = phrase.Replace("{ZombieName}", _zombie.EntityName);
+                        phrase = phrase.Replace("{Name2}", _zombie.EntityName);
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                     }
                 }
@@ -298,8 +298,8 @@ namespace ServerTools
                     if (Show_Damage)
                     {
                         Phrases.Dict.TryGetValue("KillNotice7", out string phrase);
-                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-                        phrase = phrase.Replace("{ZombieName}", _zombie.EntityName);
+                        phrase = phrase.Replace("{Name1}", _cInfo.playerName);
+                        phrase = phrase.Replace("{Name2}", _zombie.EntityName);
                         phrase = phrase.Replace("{Value}", _damage.ToString());
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         return;
@@ -307,8 +307,8 @@ namespace ServerTools
                     else
                     {
                         Phrases.Dict.TryGetValue("KillNotice8", out string phrase);
-                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-                        phrase = phrase.Replace("{ZombieName}", _zombie.EntityName);
+                        phrase = phrase.Replace("{Name1}", _cInfo.playerName);
+                        phrase = phrase.Replace("{Name2}", _zombie.EntityName);
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                     }
                 }
@@ -316,6 +316,57 @@ namespace ServerTools
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in KillNotice.ZombieKilledPlayer: {0}", e.Message));
+            }
+        }
+
+        public static void AnimalKilledPlayer(EntityAnimal _animal, EntityPlayer _victim, ClientInfo _cInfo, int _damage)
+        {
+            try
+            {
+                if (Show_Level)
+                {
+                    if (Show_Damage)
+                    {
+                        Phrases.Dict.TryGetValue("KillNotice5", out string phrase);
+                        phrase = phrase.Replace("{Name1}", _cInfo.playerName);
+                        phrase = phrase.Replace("{Level}", _victim.Progression.Level.ToString());
+                        phrase = phrase.Replace("{Name2}", _animal.EntityName);
+                        phrase = phrase.Replace("{Value}", _damage.ToString());
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        return;
+                    }
+                    else
+                    {
+                        Phrases.Dict.TryGetValue("KillNotice6", out string phrase);
+                        phrase = phrase.Replace("{Name1}", _cInfo.playerName);
+                        phrase = phrase.Replace("{Level}", _victim.Progression.Level.ToString());
+                        phrase = phrase.Replace("{Name2}", _animal.EntityName);
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    }
+                }
+                else
+                {
+                    if (Show_Damage)
+                    {
+                        Phrases.Dict.TryGetValue("KillNotice7", out string phrase);
+                        phrase = phrase.Replace("{Name1}", _cInfo.playerName);
+                        phrase = phrase.Replace("{Name2}", _animal.EntityName);
+                        phrase = phrase.Replace("{Value}", _damage.ToString());
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        return;
+                    }
+                    else
+                    {
+                        Phrases.Dict.TryGetValue("KillNotice8", out string phrase);
+                        phrase = phrase.Replace("{Name1}", _cInfo.playerName);
+                        phrase = phrase.Replace("{Name2}", _animal.EntityName);
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in KillNotice.AnimalKilledPlayer: {0}", e.Message));
             }
         }
 

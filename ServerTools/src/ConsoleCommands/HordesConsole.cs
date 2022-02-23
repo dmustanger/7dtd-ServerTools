@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools] - Enable or disable hordes.";
+            return "[ServerTools] - Enable or disable hordes";
         }
         public override string GetHelp()
         {

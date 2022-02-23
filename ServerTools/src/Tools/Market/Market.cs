@@ -61,7 +61,6 @@ namespace ServerTools
             else
             {
                 DateTime lastMarket = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastMarket;
-
                 TimeSpan varTime = DateTime.Now - lastMarket;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;

@@ -81,7 +81,7 @@ namespace ServerTools
                                     line.HasAttribute("ReminderNotice") && line.HasAttribute("PvPvE") && line.HasAttribute("NoZombie"))
                                 {
                                     string[] zone = { line.GetAttribute("Name"), line.GetAttribute("Corner1"), line.GetAttribute("Corner2"), line.GetAttribute("Circle"),
-                                line.GetAttribute("EntryMessage"), line.GetAttribute("ExitMessage"), line.GetAttribute("EntryCommand"),line.GetAttribute("ExitCommand"),
+                                line.GetAttribute("EntryMessage"), line.GetAttribute("ExitMessage"), line.GetAttribute("EntryCommand"), line.GetAttribute("ExitCommand"),
                                 line.GetAttribute("ReminderNotice"), line.GetAttribute("PvPvE"), line.GetAttribute("NoZombie") };
                                     if (zone[6] == "")
                                     {
@@ -326,6 +326,22 @@ namespace ServerTools
                             {
                                 ZonePlayer[_player.entityId] = zone;
                                 Reminder[_player.entityId] = DateTime.Now;
+                                if (zone[9] == "0")
+                                {
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
+                                }
+                                else if (zone[9] == "1")
+                                {
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
+                                }
+                                else if (zone[9] == "2")
+                                {
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
+                                }
                                 if (Zone_Message && zone[4] != "")
                                 {
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -340,6 +356,22 @@ namespace ServerTools
                         {
                             ZonePlayer.Add(_player.entityId, zone);
                             Reminder.Add(_player.entityId, DateTime.Now);
+                            if (zone[9] == "0")
+                            {
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
+                            }
+                            else if (zone[9] == "1")
+                            {
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
+                            }
+                            else if (zone[9] == "2")
+                            {
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
+                            }
                             if (Zone_Message && zone[4] != "")
                             {
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -357,6 +389,10 @@ namespace ServerTools
                     ZonePlayer.TryGetValue(_player.entityId, out string[] zone);
                     ZonePlayer.Remove(_player.entityId);
                     Reminder.Remove(_player.entityId);
+                    if (zone[9] != PersistentOperations.Player_Killing_Mode.ToString())
+                    {
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup(string.Format("sgs PlayerKillingMode {0}", PersistentOperations.Player_Killing_Mode), true));
+                    }
                     if (Zone_Message && zone[5] != "")
                     {
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + zone[5] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

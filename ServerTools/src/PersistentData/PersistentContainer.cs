@@ -20,18 +20,20 @@ namespace ServerTools
         private Dictionary<int, List<int>> clientMuteList;
         private Dictionary<string, byte[]> connections;
         private Dictionary<string, DateTime> connectionTimeOut;
+        private bool countryBan;
         private DateTime lastWeather;
         private List<string> protectedZones;
         private string[] pollData;
         private Dictionary<string[], string> pollOld;
         private bool pollOpen;
         private Dictionary<string, bool> pollVote;
+        private bool proxyBan;
         private List<string> regionReset;
         private List<string[]> track;
-        private Dictionary<string, string[]> webPanelAuthorizedIVKeyList;
-        private Dictionary<string, DateTime> webPanelAuthorizedTimeList;
-        private List<string> webPanelBanList;
-        private Dictionary<string, DateTime> webPanelTimeoutList;
+        private Dictionary<string, string[]> webAuthorizedIVKeyList;
+        private Dictionary<string, DateTime> webAuthorizedTimeList;
+        private List<string> webBanList;
+        private Dictionary<string, DateTime> webTimeoutList;
         private int worldSeed;
         
 
@@ -181,6 +183,18 @@ namespace ServerTools
             }
         }
 
+        public bool CountryBan
+        {
+            get
+            {
+                return countryBan;
+            }
+            set
+            {
+                countryBan = value;
+            }
+        }
+
         public DateTime LastWeather
         {
             get
@@ -253,6 +267,18 @@ namespace ServerTools
             }
         }
 
+        public bool ProxyBan
+        {
+            get
+            {
+                return proxyBan;
+            }
+            set
+            {
+                proxyBan = value;
+            }
+        }
+
         public List<string> RegionReset
         {
             get
@@ -277,51 +303,51 @@ namespace ServerTools
             }
         }
 
-        public Dictionary<string, string[]> WebPanelAuthorizedIVKeyList
+        public Dictionary<string, string[]> WebAuthorizedIVKeyList
         {
             get
             {
-                return webPanelAuthorizedIVKeyList;
+                return webAuthorizedIVKeyList;
             }
             set
             {
-                webPanelAuthorizedIVKeyList = value;
+                webAuthorizedIVKeyList = value;
             }
         }
 
-        public Dictionary<string, DateTime> WebPanelAuthorizedTimeList
+        public Dictionary<string, DateTime> WebAuthorizedTimeList
         {
             get
             {
-                return webPanelAuthorizedTimeList;
+                return webAuthorizedTimeList;
             }
             set
             {
-                webPanelAuthorizedTimeList = value;
+                webAuthorizedTimeList = value;
             }
         }
 
-        public List<string> WebPanelBanList
+        public List<string> WebBanList
         {
             get
             {
-                return webPanelBanList;
+                return webBanList;
             }
             set
             {
-                webPanelBanList = value;
+                webBanList = value;
             }
         }
 
-        public Dictionary<string, DateTime> WebPanelTimeoutList
+        public Dictionary<string, DateTime> WebTimeoutList
         {
             get
             {
-                return webPanelTimeoutList;
+                return webTimeoutList;
             }
             set
             {
-                webPanelTimeoutList = value;
+                webTimeoutList = value;
             }
         }
 

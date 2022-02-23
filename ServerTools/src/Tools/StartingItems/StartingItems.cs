@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Xml;
 using UnityEngine;
 
@@ -214,65 +213,44 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void Exec(ClientInfo _cInfo)
-        {
-            if (Dict.Count > 0)
-            {
-                if (!PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].StartingItems)
-                {
-                    SpawnItems(_cInfo);
-                }
-                else
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Starting items have already been spawned for player named '{0}' with Id '{1}' '{2}'", _cInfo.playerName, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString));
-                }
-            }
-            else
-            {
-                Log.Out("[SERVERTOOLS] Starting items list empty. Check the StartingItems.xml file for entries or mistakes.");
-            }
-        }
-
-        public static void SpawnItems(ClientInfo _cInfo)
+        public static void Exec(ClientInfo _cInfo, List<string> _items)
         {
             try
             {
-                if (Dict.Count > 0)
+                World world = GameManager.Instance.World;
+                if (_items == null)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].StartingItems = true;
-                    World world = GameManager.Instance.World;
-                    List<string> _itemList = Dict.Keys.ToList();
-                    for (int i = 0; i < _itemList.Count; i++)
+                    _items = Dict.Keys.ToList();
+                }
+                string item = _items[0];
+                if (Dict.TryGetValue(item, out int[] itemData))
+                {
+                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(item, false).type, itemData[1], itemData[1], false, null, 1f);
+                    EntityItem entityItem = new EntityItem();
+                    entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                     {
-                        string item = _itemList[i];
-                        if (Dict.TryGetValue(item, out int[] _itemData))
-                        {
-                            ItemValue _itemValue = new ItemValue(ItemClass.GetItem(item, false).type, false);
-                            if (_itemValue.HasQuality)
-                            {
-                                _itemValue.Quality = _itemData[1];
-                            }
-                            EntityItem entityItem = new EntityItem();
-                            entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                            {
-                                entityClass = EntityClass.FromString("item"),
-                                id = EntityFactory.nextEntityID++,
-                                itemStack = new ItemStack(_itemValue, _itemData[0]),
-                                pos = world.Players.dict[_cInfo.entityId].position,
-                                rot = new Vector3(20f, 0f, 20f),
-                                lifetime = 60f,
-                                belongsPlayerId = _cInfo.entityId
-                            });
-                            world.SpawnEntityInWorld(entityItem);
-                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                            world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                            Thread.Sleep(TimeSpan.FromSeconds(1));
-                        }
+                        entityClass = EntityClass.FromString("item"),
+                        id = EntityFactory.nextEntityID++,
+                        itemStack = new ItemStack(itemValue, itemData[0]),
+                        pos = world.Players.dict[_cInfo.entityId].position,
+                        rot = new Vector3(20f, 0f, 20f),
+                        lifetime = 60f,
+                        belongsPlayerId = _cInfo.entityId
+                    });
+                    world.SpawnEntityInWorld(entityItem);
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                    _items.Remove(item);
+                    if (_items.Count > 0)
+                    {
+                        Timers.StartingItemsDelayTimer(_cInfo, _items);
                     }
-                    PersistentContainer.DataChange = true;
-                    Log.Out(string.Format("[SERVERTOOLS] Player named '{0}' with Id '{1}' '{2}' received their starting items", _cInfo.playerName, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString));
-                    Phrases.Dict.TryGetValue("StartingItems1", out string phrase1);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    else
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Player named '{0}' with Id '{1}' '{2}' received their starting items", _cInfo.playerName, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString));
+                        Phrases.Dict.TryGetValue("StartingItems1", out string phrase1);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    }
                 }
             }
             catch (Exception e)

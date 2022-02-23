@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Platform.Steam;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -9,7 +10,6 @@ namespace ServerTools
     {
         public static string GamePath = Directory.GetCurrentDirectory();
         public static string ConfigPath = string.Format("{0}/ServerTools", GamePath);
-        public static string InstallPath = "";
         public static List<string> Verified = new List<string>();
 
         public void InitMod(Mod _modInstance)
@@ -79,7 +79,7 @@ namespace ServerTools
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     }
-                    if (NewPlayer.Block_During_Bloodmoon && PersistentOperations.IsBloodmoon())
+                    if (NewPlayer.Block_During_Bloodmoon && PersistentOperations.IsBloodmoon() && ConnectionManager.Instance.ClientCount() > 1)
                     {
                         Phrases.Dict.TryGetValue("NewPlayer1", out string phrase);
                         PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromUId(_cInfo.CrossplatformId);
@@ -116,11 +116,9 @@ namespace ServerTools
         {
             if (_cInfo != null)
             {
-                if (CountryBan.IsEnabled && CountryBan.IsCountryBanned(_cInfo))
+                if (FamilyShare.IsEnabled && _cInfo.PlatformId is UserIdentifierSteam)
                 {
-                    Phrases.Dict.TryGetValue("CountryBan1", out string phrase);
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
-                    return;
+                    FamilyShare.Exec(_cInfo);
                 }
             }
         }
@@ -178,12 +176,10 @@ namespace ServerTools
                             {
                                 OldPlayerJoined(_cInfo, player);
                             }
-                            //Log.Out(string.Format("[SERVERTOOLS] Test 1"));
                             if (AutoPartyInvite.IsEnabled)
                             {
                                 AutoPartyInvite.Exec(_cInfo, player);
                             }
-                            //Log.Out(string.Format("[SERVERTOOLS] Test 2"));
                         }
                         else if (_respawnReason == RespawnType.Died)
                         {
@@ -212,7 +208,7 @@ namespace ServerTools
                             SpeedDetector.Flags.Remove(_cInfo.entityId);
                         }
                     }
-                    if (ExitCommand.IsEnabled && !ExitCommand.Players.ContainsKey(_cInfo.entityId) && (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > ExitCommand.Admin_Level ||
+                    if (ExitCommand.IsEnabled && !ExitCommand.Players.ContainsKey(_cInfo.entityId) && (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > ExitCommand.Admin_Level &&
                         GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > ExitCommand.Admin_Level))
                     {
                         ExitCommand.Players.Add(_cInfo.entityId, player.position);
@@ -239,15 +235,23 @@ namespace ServerTools
                     EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
-                        if (KillNotice.IsEnabled && KillNotice.Zombie_Kills && string.IsNullOrEmpty(_secondaryName))
+                        if (KillNotice.IsEnabled && (KillNotice.Zombie_Kills || KillNotice .Animal_Kills) && string.IsNullOrEmpty(_secondaryName))
                         {
-                            if (KillNotice.ZombieDamage.ContainsKey(player.entityId))
+                            if (KillNotice.Damage.ContainsKey(player.entityId))
                             {
-                                KillNotice.ZombieDamage.TryGetValue(player.entityId, out int[] damage);
+                                KillNotice.Damage.TryGetValue(player.entityId, out int[] damage);
                                 EntityZombie zombie = PersistentOperations.GetZombie(damage[0]);
                                 if (zombie != null)
                                 {
                                     KillNotice.ZombieKilledPlayer(zombie, player, _cInfo, damage[1]);
+                                }
+                                else
+                                {
+                                    EntityAnimal animal = PersistentOperations.GetAnimal(damage[0]);
+                                    if (animal != null)
+                                    {
+                                        KillNotice.AnimalKilledPlayer(animal, player, _cInfo, damage[1]);
+                                    }
                                 }
                             }
                         }
@@ -295,7 +299,7 @@ namespace ServerTools
         {
             try
             {
-                if (_cInfo != null)
+                if (_cInfo != null && _cInfo.CrossplatformId != null)
                 {
                     string id = _cInfo.CrossplatformId.CombinedString;
                     Log.Out(string.Format("[SERVERTOOLS] Player with id '{0}' '{1}' disconnected", _cInfo.PlatformId.CombinedString, id));
@@ -361,9 +365,9 @@ namespace ServerTools
                     {
                         LevelUp.PlayerLevels.Remove(_cInfo.entityId);
                     }
-                    if (KillNotice.ZombieDamage.ContainsKey(_cInfo.entityId))
+                    if (KillNotice.Damage.ContainsKey(_cInfo.entityId))
                     {
-                        KillNotice.ZombieDamage.Remove(_cInfo.entityId);
+                        KillNotice.Damage.Remove(_cInfo.entityId);
                     }
                     if (InfiniteAmmo.Dict.ContainsKey(_cInfo.entityId))
                     {
@@ -412,7 +416,7 @@ namespace ServerTools
                         }
                         else if (StartingItems.IsEnabled && StartingItems.Dict.Count > 0)
                         {
-                            StartingItems.Exec(_cInfo);
+                            StartingItems.Exec(_cInfo, null);
                         }
                         ProcessPlayer(_cInfo, player);
                     }

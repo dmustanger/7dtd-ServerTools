@@ -6,168 +6,198 @@ namespace ServerTools
 {
     class EntityCleanup
     {
-        public static bool IsEnabled = false, BlockIsEnabled = false, FallingTreeEnabled = false, Underground = false, Bicycles = false, MiniBikes = false, 
-            MotorBikes = false, Jeeps = false, Gyros = false;
+        public static bool IsEnabled = false, FallingTreeEnabled = false, Underground = false, Bicycles = false, MiniBikes = false, 
+            MotorBikes = false, Jeeps = false, Gyros = false, Drones = false;
         private static List<int> Tree = new List<int>();
 
         public static void EntityCheck()
         {
             try
             {
-                if (GameManager.Instance.World != null && GameManager.Instance.World.Entities.Count > 0)
+                if (GameManager.Instance.World.Entities.Count > 0)
                 {
-                    List<Entity> Entities = GameManager.Instance.World.Entities.list;
-                    if (Entities != null)
+                    List<Entity> entityList = GameManager.Instance.World.Entities.list;
+                    if (entityList != null)
                     {
-                        for (int i = 0; i < Entities.Count; i++)
+                        for (int i = 0; i < entityList.Count; i++)
                         {
-                            Entity _entity = Entities[i];
-                            if (_entity != null && _entity.IsSpawned())
+                            Entity entity = entityList[i];
+                            if (entity != null && entity.IsSpawned())
                             {
-                                if (_entity is EntityFallingBlock)
+                                Vector3 pos = entity.position;
+                                if (FallingTreeEnabled && entity is EntityFallingTree)
                                 {
-                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed falling block id {0}", _entity.entityId));
-                                    continue;
-                                }
-                                else if (_entity is EntityFallingTree)
-                                {
-                                    if (Tree.Contains(_entity.entityId))
+                                    if (Tree.Contains(entity.entityId))
                                     {
-                                        Tree.Remove(_entity.entityId);
-                                        GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                        Log.Out("[SERVERTOOLS] Entity cleanup: Removed falling tree");
+                                        Tree.Remove(entity.entityId);
+                                        GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
+                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed a falling tree @ {0}", pos));
                                         continue;
                                     }
                                     else
                                     {
-                                        Tree.Add(_entity.entityId);
+                                        Tree.Add(entity.entityId);
                                         continue;
                                     }
                                 }
                                 else if (Underground)
                                 {
-                                    if (_entity is EntityZombie || _entity is EntityAnimal)
+                                    if (entity is EntityZombie || entity is EntityAnimal)
                                     {
-                                        if ((int)_entity.position.y <= -10)
+                                        if ((int)pos.y <= -10)
                                         {
-                                            GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                            Log.Out("[SERVERTOOLS] Entity cleanup: Removed {0} with entity id {1}", _entity.name, _entity.entityId);
+                                            GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed '{0}' with entity id '{1}' @ '{2}'", entity.name, entity.entityId, pos));
+                                            continue;
+                                        }
+                                    }
+                                    else if (entity is EntityVehicle)
+                                    {
+                                        if ((int)pos.y <= -10)
+                                        {
+                                            GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed '{0}' with entity id '{1}' belonging to '{2}' @ '{3}'", entity.name, entity.entityId, entity.belongsPlayerId, pos));
+                                            continue;
+                                        }
+                                    }
+                                    else if (entity is EntityItem)
+                                    {
+                                        if ((int)pos.y <= -10)
+                                        {
+                                            GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed '{0}' with entity id '{1}' belonging to '{2}' @ '{3}'", entity.name, entity.entityId, entity.belongsPlayerId, pos));
                                             continue;
                                         }
                                     }
                                 }
-                                else if (Bicycles && _entity is EntityBicycle)
+                                else if (Bicycles && entity is EntityBicycle)
                                 {
-                                    Vector3 _vec = _entity.position;
-                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                    EntityPlayer _douche = GameManager.Instance.World.GetClosestPlayer((int)_vec.x, (int)_vec.y, (int)_vec.z, -1, 10);
-                                    if (_douche == null)
+                                    GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
+                                    EntityPlayer douche = GameManager.Instance.World.GetClosestPlayer((int)pos.x, (int)pos.y, (int)pos.z, -1, 10);
+                                    if (douche == null)
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed bicycle id {0}", _entity.entityId));
+                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed bicycle id '{0}' belonging to '{1}'", entity.entityId, entity.belongsPlayerId));
                                     }
                                     else
                                     {
-                                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_douche.entityId);
-                                        if (_cInfo != null)
+                                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(douche.entityId);
+                                        if (cInfo != null)
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed bicycle id {0}. Closest player is {1}", _entity.entityId, _cInfo.playerName));
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed bicycle id '{0}' belonging to '{1}'. Closest player id '{2}' named '{3}'", entity.entityId, entity.belongsPlayerId, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                         }
                                         else
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed bicycle id {0}", _entity.entityId));
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed bicycle id '{0}' belonging to '{1}'", entity.entityId, entity.belongsPlayerId));
                                         }
                                     }
                                     continue;
                                 }
-                                else if (MiniBikes && _entity is EntityMinibike)
+                                else if (Drones && entity is EntityDrone)
                                 {
-                                    Vector3 _vec = _entity.position;
-                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                    EntityPlayer _douche = GameManager.Instance.World.GetClosestPlayer((int)_vec.x, (int)_vec.y, (int)_vec.z, -1, 10);
-                                    if (_douche == null)
+                                    GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
+                                    EntityPlayer douche = GameManager.Instance.World.GetClosestPlayer((int)pos.x, (int)pos.y, (int)pos.z, -1, 10);
+                                    if (douche == null)
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed minibike id {0}", _entity.entityId));
+                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed drone id '{0}' belonging to '{1}'", entity.entityId, entity.belongsPlayerId));
                                     }
                                     else
                                     {
-                                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_douche.entityId);
-                                        if (_cInfo != null)
+                                        ClientInfo cInfo = ConnectionManager.Instance.Clients.ForEntityId(douche.entityId);
+                                        if (cInfo != null)
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed minibike id {0}. Closest player is {1}", _entity.entityId, _cInfo.playerName));
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed drone id '{0}' belonging to '{1}'. Closest player id '{2}' named '{3}'", entity.entityId, entity.belongsPlayerId, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                         }
                                         else
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed minibike id {0}", _entity.entityId));
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed drone id '{0}' belonging to '{1}'", entity.entityId, entity.belongsPlayerId));
                                         }
                                     }
                                     continue;
                                 }
-                                else if (MotorBikes && _entity is EntityMotorcycle)
+                                else if (MiniBikes && entity is EntityMinibike)
                                 {
-                                    Vector3 _vec = _entity.position;
-                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                    EntityPlayer _douche = GameManager.Instance.World.GetClosestPlayer((int)_vec.x, (int)_vec.y, (int)_vec.z, -1, 10);
-                                    if (_douche == null)
+                                    GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
+                                    EntityPlayer douche = GameManager.Instance.World.GetClosestPlayer((int)pos.x, (int)pos.y, (int)pos.z, -1, 10);
+                                    if (douche == null)
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed motorcycle id {0}", _entity.entityId));
+                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed minibike id '{0}' belonging to '{1}'", entity.entityId, entity.belongsPlayerId));
                                     }
                                     else
                                     {
-                                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_douche.entityId);
-                                        if (_cInfo != null)
+                                        ClientInfo cInfo = ConnectionManager.Instance.Clients.ForEntityId(douche.entityId);
+                                        if (cInfo != null)
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed motorcycle id {0}. Closest player is {1}", _entity.entityId, _cInfo.playerName));
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed minibike id '{0}' belonging to '{1}'. Closest player id '{2}' named '{3}'", entity.entityId, entity.belongsPlayerId, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                         }
                                         else
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed motorcycle id {0}", _entity.entityId));
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed minibike id '{0}' belonging to '{1}'", entity.entityId, entity.belongsPlayerId));
                                         }
                                     }
                                     continue;
                                 }
-                                else if (Jeeps && _entity is EntityVJeep)
+                                else if (MotorBikes && entity is EntityMotorcycle)
                                 {
-                                    Vector3 _vec = _entity.position;
-                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                    EntityPlayer _douche = GameManager.Instance.World.GetClosestPlayer((int)_vec.x, (int)_vec.y, (int)_vec.z, -1, 10);
-                                    if (_douche == null)
+                                    GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
+                                    EntityPlayer douche = GameManager.Instance.World.GetClosestPlayer((int)pos.x, (int)pos.y, (int)pos.z, -1, 10);
+                                    if (douche == null)
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed jeep id {0}", _entity.entityId));
+                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed motorcycle id '{0}' belonging to '{1}'", entity.entityId, entity.belongsPlayerId));
                                     }
                                     else
                                     {
-                                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_douche.entityId);
-                                        if (_cInfo != null)
+                                        ClientInfo cInfo = ConnectionManager.Instance.Clients.ForEntityId(douche.entityId);
+                                        if (cInfo != null)
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed jeep id {0}. Closest player is {1}", _entity.entityId, _cInfo.playerName));
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed motorcycle id '{0}' belonging to '{1}'. Closest player id '{2}' named '{3}'", entity.entityId, entity.belongsPlayerId, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                         }
                                         else
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed jeep id {0}", _entity.entityId));
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed motorcycle id '{0}' belonging to '{1}'", entity.entityId, entity.belongsPlayerId));
                                         }
                                     }
                                     continue;
                                 }
-                                else if (Gyros && _entity is EntityVGyroCopter)
+                                else if (Jeeps && entity is EntityVJeep)
                                 {
-                                    Vector3 _vec = _entity.position;
-                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                    EntityPlayer _douche = GameManager.Instance.World.GetClosestPlayer((int)_vec.x, (int)_vec.y, (int)_vec.z, -1, 10);
-                                    if (_douche == null)
+                                    GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
+                                    EntityPlayer douche = GameManager.Instance.World.GetClosestPlayer((int)pos.x, (int)pos.y, (int)pos.z, -1, 10);
+                                    if (douche == null)
                                     {
-                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed gyrocopter id {0}", _entity.entityId));
+                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed jeep id '{0}' belonging to '{1}'", entity.entityId, entity.belongsPlayerId));
                                     }
                                     else
                                     {
-                                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_douche.entityId);
-                                        if (_cInfo != null)
+                                        ClientInfo cInfo = ConnectionManager.Instance.Clients.ForEntityId(douche.entityId);
+                                        if (cInfo != null)
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed gyrocopter id {0}. Closest player is {1}", _entity.entityId, _cInfo.playerName));
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed jeep id '{0}' belonging to '{1}'. Closest player id '{2}' named '{3}'", entity.entityId, entity.belongsPlayerId, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                         }
                                         else
                                         {
-                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed gyrocopter id {0}", _entity.entityId));
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed jeep id '{0}' belonging to '{1}'", entity.entityId, entity.belongsPlayerId));
+                                        }
+                                    }
+                                    continue;
+                                }
+                                else if (Gyros && entity is EntityVGyroCopter)
+                                {
+                                    GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
+                                    EntityPlayer douche = GameManager.Instance.World.GetClosestPlayer((int)pos.x, (int)pos.y, (int)pos.z, -1, 10);
+                                    if (douche == null)
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed gyrocopter id '{0}' belonging to '{1}'", entity.entityId, entity.belongsPlayerId));
+                                    }
+                                    else
+                                    {
+                                        ClientInfo cInfo = ConnectionManager.Instance.Clients.ForEntityId(douche.entityId);
+                                        if (cInfo != null)
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed gyrocopter id '{0}' belonging to '{1}'. Closest player id '{2}' named '{3}'", entity.entityId, entity.belongsPlayerId, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                                        }
+                                        else
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed gyrocopter id '{0}' belonging to '{1}'", entity.entityId, entity.belongsPlayerId));
                                         }
                                     }
                                     continue;

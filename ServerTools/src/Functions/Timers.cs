@@ -239,6 +239,22 @@ namespace ServerTools
             };
         }
 
+        public static void Blackjack_SingleUseTimer(string _ip)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(60000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init11(_ip);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
         public static void Speed_SingleUseTimer(ClientInfo _cInfo)
         {
             System.Timers.Timer singleUseTimer = new System.Timers.Timer(2000)
@@ -252,6 +268,22 @@ namespace ServerTools
                 singleUseTimer.Stop();
                 singleUseTimer.Close();
                 singleUseTimer.Dispose();
+            };
+        }
+
+        public static void StartingItemsDelayTimer(ClientInfo _cInfo, List<string> _items)
+        {
+            System.Timers.Timer startingItemsDelayTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            startingItemsDelayTimer.Start();
+            startingItemsDelayTimer.Elapsed += (sender, e) =>
+            {
+                Init13(_cInfo, _items);
+                startingItemsDelayTimer.Stop();
+                startingItemsDelayTimer.Close();
+                startingItemsDelayTimer.Dispose();
             };
         }
 
@@ -504,7 +536,7 @@ namespace ServerTools
 
         private static void Init3(ClientInfo _cInfo)
         {
-            StartingItems.Exec(_cInfo);
+            StartingItems.Exec(_cInfo, null);
         }
 
         private static void Init4(ClientInfo _cInfo)
@@ -546,9 +578,19 @@ namespace ServerTools
             Wallet.RemoveCurrency(_playerId, _amount);
         }
 
+        private static void Init11(string _ip)
+        {
+            BlackJack.RemovePlayer(_ip);
+        }
+
         private static void Init12(ClientInfo _cInfo)
         {
             SpeedDetector.TimerExpired(_cInfo);
+        }
+
+        private static void Init13(ClientInfo _cInfo, List<string> _items)
+        {
+            StartingItems.Exec(_cInfo, _items);
         }
     }
 }

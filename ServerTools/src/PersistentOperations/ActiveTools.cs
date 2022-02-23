@@ -418,18 +418,18 @@ namespace ServerTools
                 Dict.Remove("Battle logger");
                 Log.Out("Battle logger disabled");
             }
-            if (EntityCleanup.BlockIsEnabled)
+            if (BlackJack.IsEnabled)
             {
-                if (!Dict.Contains("Block cleanup"))
+                if (!Dict.Contains("Black jack"))
                 {
-                    Dict.Add("Block cleanup");
-                    Log.Out("Block cleanup enabled");
+                    Dict.Add("Black jack");
+                    Log.Out("Black jack enabled");
                 }
             }
-            else if (Dict.Contains("Block cleanup") && !_initiating)
+            else if (Dict.Contains("Black jack") && !_initiating)
             {
-                Dict.Remove("Block cleanup");
-                Log.Out("Block cleanup disabled");
+                Dict.Remove("Black jack");
+                Log.Out("Black jack disabled");
             }
             if (Bloodmoon.IsEnabled)
             {
@@ -574,19 +574,6 @@ namespace ServerTools
                 Dict.Remove("Console command log");
                 Log.Out("Console command log disabled");
             }
-            if (CountryBan.IsEnabled)
-            {
-                if (!Dict.Contains("Country ban"))
-                {
-                    Dict.Add("Country ban");
-                    Log.Out("Country ban enabled");
-                }
-            }
-            else if (Dict.Contains("Country ban") && !_initiating)
-            {
-                Dict.Remove("Country ban");
-                Log.Out("Country ban disabled");
-            }
             if (CustomCommands.IsEnabled)
             {
                 if (!Dict.Contains("Custom commands"))
@@ -639,18 +626,18 @@ namespace ServerTools
                 Dict.Remove("Discord bot");
                 Log.Out("Discord bot disabled");
             }
-            if (DiscordInvite.IsEnabled)
+            if (DiscordLink.IsEnabled)
             {
-                if (!Dict.Contains("Discord invite"))
+                if (!Dict.Contains("Discord link"))
                 {
-                    Dict.Add("Discord invite");
-                    Log.Out("Discord invite enabled");
+                    Dict.Add("Discord link");
+                    Log.Out("Discord link enabled");
                 }
             }
-            else if (Dict.Contains("Discord invite") && !_initiating)
+            else if (Dict.Contains("Discord link") && !_initiating)
             {
-                Dict.Remove("Discord invite");
-                Log.Out("Discord invite disabled");
+                Dict.Remove("Discord link");
+                Log.Out("Discord link disabled");
             }
             if (DroppedBagProtection.IsEnabled)
             {

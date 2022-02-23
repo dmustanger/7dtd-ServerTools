@@ -25,7 +25,7 @@ namespace ServerTools
                     {
                         admins.Add(cInfoAdmin.playerName);
                     }
-                    if ((userPlatformID > Admin_Level ||
+                    if ((userPlatformID > Admin_Level &&
                         userCrossplatformID > Admin_Level) &&
                         userPlatformID <= Mod_Level ||
                         userCrossplatformID <= Mod_Level)

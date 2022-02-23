@@ -1,5 +1,52 @@
 ﻿CHANGELOG
 
+20.2.0
+Built using Alpha 20 experimental assets
+Functioning with Alpha 20 experimental. Untested with other versions
+
+-Added Family_Share_Prevention tool. Stops clients from joining with
+family share accounts on steam. Exemption through console commands
+are available
+-Added option Animal_Kills to Kill_Notice
+-Added Voting_Link tool. Type /vote to open a window with a clickable
+link that opens the in game web browser to the voting site
+-Added option Delete_Drones to Entity_Cleanup tool
+-Fixed upgrades wiping out part of the config settings
+-Fixed Starting_Items not functioning as intended
+-Fixed Market running the Player_Check improperly
+-Fixed console command st-StopServer not using specified countdown
+-Fixed Bot_Response not functioning as intended
+-Fixed Maze generator to function with the new blocks of a20
+-Fixed Chat_Flood_Protection not functioning as intended
+-Fixed Bloodmoon response using the dawn time instead of dusk
+-Fixed Bounties not functioning as intended
+-Updated xpath documents formation to be created when needed and
+to avoid wiping out previous custom changes on version updates
+-Updated Entity_Cleanup code process
+-Updated Falling_Blocks_Remover to prevent potential crash
+-Updated Falling_Blocks_Remover to no longer immediately remove
+some placed blocks
+-Updated Bad_Word_Filter to function with the Discord Webhook
+-Updated HowToSetup.txt
+-Updated Kill_Notice phrases
+-Changed Discord_Invite tool name to Discord_Link
+-Changed option Entity_Underground to Underground for Entity_Cleanup
+-Changed NewPlayer_Extended option Block_During_Bloodmoon to allow
+new players to join if the server is empty
+-Removed Country_Ban tool
+-Removed Public_Waypoints option from Waypoints_Extended
+-Removed Wallet option from Clean_Bin
+-Removed xpath documents from initial installation files
+-Removed option Falling_Blocks from Entity_Cleanup
+
+20.0.41
+Built using Alpha 20 experimental assets
+Functioning with Alpha 20 experimental. Untested with other versions
+
+-Fixed many permission checks across various tools
+-Removed a section of the Net_Package_Detector that was causing false
+positive
+
 20.0.4
 Built using Alpha 20 experimental assets
 Functioning with Alpha 20 experimental. Untested with other versions

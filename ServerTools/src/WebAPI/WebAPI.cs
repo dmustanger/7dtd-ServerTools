@@ -20,6 +20,10 @@ namespace ServerTools
         public static Dictionary<string, DateTime> AuthorizedTime = new Dictionary<string, DateTime>();
         public static Dictionary<string, string[]> Visitor = new Dictionary<string, string[]>();
         public static Dictionary<string, string> PassThrough = new Dictionary<string, string>();
+        public static Dictionary<string, int> PageHits = new Dictionary<string, int>();
+        public static Dictionary<string, int> LoginAttempts = new Dictionary<string, int>();
+        public static Dictionary<string, DateTime> TimeOut = new Dictionary<string, DateTime>();
+        public static List<string> Ban = new List<string>();
 
         private static string Redirect = "", BaseAddress = "";
         private static HttpListener Listener = new HttpListener();
@@ -83,7 +87,7 @@ namespace ServerTools
         {
             try
             {
-                Dictionary<string, DateTime> timeoutList = PersistentContainer.Instance.WebPanelTimeoutList;
+                Dictionary<string, DateTime> timeoutList = PersistentContainer.Instance.WebTimeoutList;
                 if (timeoutList != null && timeoutList.Count > 0)
                 {
                     for (int i = 0; i < timeoutList.Count; i++)
@@ -97,15 +101,15 @@ namespace ServerTools
                             timeoutList.Remove(expires.Key);
                         }
                     }
-                    WebPanel.TimeOut = timeoutList;
+                    TimeOut = timeoutList;
                 }
-                List<string> banList = PersistentContainer.Instance.WebPanelBanList;
+                List<string> banList = PersistentContainer.Instance.WebBanList;
                 if (banList != null && banList.Count > 0)
                 {
-                    WebPanel.Ban = banList;
+                    Ban = banList;
                 }
-                Dictionary<string, DateTime> authorizedTimeList = PersistentContainer.Instance.WebPanelAuthorizedTimeList;
-                Dictionary<string, string[]> authorizedIVKeyList = PersistentContainer.Instance.WebPanelAuthorizedIVKeyList;
+                Dictionary<string, DateTime> authorizedTimeList = PersistentContainer.Instance.WebAuthorizedTimeList;
+                Dictionary<string, string[]> authorizedIVKeyList = PersistentContainer.Instance.WebAuthorizedIVKeyList;
                 if (authorizedTimeList != null && authorizedIVKeyList != null && authorizedTimeList.Count > 0 && authorizedIVKeyList.Count > 0)
                 {
                     for (int i = 0; i < authorizedTimeList.Count; i++)
@@ -170,18 +174,18 @@ namespace ServerTools
                                         response.StatusCode = 403;
                                         string ip = request.RemoteEndPoint.Address.ToString();
                                         string uri = request.Url.AbsoluteUri;
-                                        if (WebPanel.Ban.Contains(ip))
+                                        if (Ban.Contains(ip))
                                         {
                                             WebPanel.Writer(string.Format("Request denied for banned IP: {0}", ip));
                                             Allowed = false;
                                         }
-                                        else if (WebPanel.TimeOut.ContainsKey(ip))
+                                        else if (TimeOut.ContainsKey(ip))
                                         {
-                                            WebPanel.TimeOut.TryGetValue(ip, out DateTime timeout);
+                                            TimeOut.TryGetValue(ip, out DateTime timeout);
                                             if (DateTime.Now >= timeout)
                                             {
-                                                WebPanel.TimeOut.Remove(ip);
-                                                PersistentContainer.Instance.WebPanelTimeoutList.Remove(ip);
+                                                TimeOut.Remove(ip);
+                                                PersistentContainer.Instance.WebTimeoutList.Remove(ip);
                                                 PersistentContainer.DataChange = true;
                                             }
                                             else
@@ -200,26 +204,26 @@ namespace ServerTools
                                         {
                                             if (!request.IsLocal)
                                             {
-                                                if (!WebPanel.Ban.Contains(ip))
+                                                if (!Ban.Contains(ip))
                                                 {
-                                                    if (WebPanel.TimeOut.ContainsKey(ip))
+                                                    if (TimeOut.ContainsKey(ip))
                                                     {
-                                                        WebPanel.TimeOut.Remove(ip);
+                                                        TimeOut.Remove(ip);
                                                     }
-                                                    if (PersistentContainer.Instance.WebPanelTimeoutList != null && PersistentContainer.Instance.WebPanelTimeoutList.ContainsKey(ip))
+                                                    if (PersistentContainer.Instance.WebTimeoutList != null && PersistentContainer.Instance.WebTimeoutList.ContainsKey(ip))
                                                     {
-                                                        PersistentContainer.Instance.WebPanelTimeoutList.Remove(ip);
+                                                        PersistentContainer.Instance.WebTimeoutList.Remove(ip);
                                                     }
-                                                    WebPanel.Ban.Add(ip);
-                                                    if (PersistentContainer.Instance.WebPanelBanList != null)
+                                                    Ban.Add(ip);
+                                                    if (PersistentContainer.Instance.WebBanList != null)
                                                     {
-                                                        PersistentContainer.Instance.WebPanelBanList.Add(ip);
+                                                        PersistentContainer.Instance.WebBanList.Add(ip);
                                                     }
                                                     else
                                                     {
                                                         List<string> bannedIP = new List<string>();
                                                         bannedIP.Add(ip);
-                                                        PersistentContainer.Instance.WebPanelBanList = bannedIP;
+                                                        PersistentContainer.Instance.WebBanList = bannedIP;
                                                     }
                                                     PersistentContainer.DataChange = true;
                                                 }
@@ -283,56 +287,102 @@ namespace ServerTools
             {
                 using (_response)
                 {
-                    if (_request.HttpMethod == "GET" && WebPanel.IsEnabled)
+                    if (_request.HttpMethod == "GET")
                     {
-                        _uri = _uri.Remove(0, _uri.IndexOf(Port.ToString()) + Port.ToString().Length + 1);
-                        if (_uri.Contains("st.html"))
+                        if (WebPanel.IsEnabled || BlackJack.IsEnabled)
                         {
-                            if (_uri.EndsWith("/"))
+                            _uri = _uri.Remove(0, _uri.IndexOf(Port.ToString()) + Port.ToString().Length + 1);
+                            if (_uri.Contains("st.html"))
                             {
-                                _response.Redirect("http://" + BaseAddress + ":" + Port + "/st.html");
-                                _response.StatusCode = 308;
-                            }
-                            else if (WebPanel.PageHits.ContainsKey(_ip))
-                            {
-                                WebPanel.PageHits.TryGetValue(_ip, out int count);
-                                if (count++ >= 6)
+                                if (_uri.EndsWith("/"))
                                 {
-                                    WebPanel.PageHits.Remove(_ip);
-                                    if (!_request.IsLocal)
+                                    _response.Redirect("http://" + BaseAddress + ":" + Port + "/st.html");
+                                    _response.StatusCode = 308;
+                                }
+                                else if (PageHits.ContainsKey(_ip))
+                                {
+                                    PageHits[_ip] += 1;
+                                    if (PageHits[_ip] >= 6)
                                     {
-                                        WebPanel.TimeOut.Add(_ip, DateTime.Now.AddMinutes(5));
-                                        if (PersistentContainer.Instance.WebPanelTimeoutList != null)
+                                        PageHits.Remove(_ip);
+                                        if (!_request.IsLocal)
                                         {
-                                            PersistentContainer.Instance.WebPanelTimeoutList.Add(_ip, DateTime.Now.AddMinutes(5));
+                                            TimeOut.Add(_ip, DateTime.Now.AddMinutes(5));
+                                            if (PersistentContainer.Instance.WebTimeoutList != null)
+                                            {
+                                                PersistentContainer.Instance.WebTimeoutList.Add(_ip, DateTime.Now.AddMinutes(5));
+                                            }
+                                            else
+                                            {
+                                                Dictionary<string, DateTime> timeouts = new Dictionary<string, DateTime>();
+                                                timeouts.Add(_ip, DateTime.Now.AddMinutes(5));
+                                                PersistentContainer.Instance.WebTimeoutList = timeouts;
+                                            }
+                                            PersistentContainer.DataChange = true;
+                                            WebPanel.Writer(string.Format("Homepage request denied for IP '{0}'. Client is now in time out for five minutes", _ip));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        GET(_response, Directory + _uri, _ip);
+                                        WebPanel.Writer(string.Format("Homepage request granted for IP '{0}'", _ip));
+                                    }
+                                }
+                                else
+                                {
+                                    PageHits.Add(_ip, 1);
+                                    GET(_response, Directory + _uri, _ip);
+                                    WebPanel.Writer(string.Format("Homepage request granted for IP '{0}'", _ip));
+                                }
+                            }
+                            else if (_uri.Contains("blackJack.html") && BlackJack.Player.ContainsKey(_ip))
+                            {
+                                if (PageHits.ContainsKey(_ip))
+                                {
+                                    PageHits[_ip] += 1;
+                                    if (PageHits[_ip] >= 3)
+                                    {
+                                        TimeOut.Add(_ip, DateTime.Now.AddMinutes(5));
+                                        if (PersistentContainer.Instance.WebTimeoutList != null)
+                                        {
+                                            PersistentContainer.Instance.WebTimeoutList.Add(_ip, DateTime.Now.AddMinutes(5));
                                         }
                                         else
                                         {
                                             Dictionary<string, DateTime> timeouts = new Dictionary<string, DateTime>();
                                             timeouts.Add(_ip, DateTime.Now.AddMinutes(5));
-                                            PersistentContainer.Instance.WebPanelTimeoutList = timeouts;
+                                            PersistentContainer.Instance.WebTimeoutList = timeouts;
                                         }
                                         PersistentContainer.DataChange = true;
-                                        WebPanel.Writer(string.Format("Homepage request denied for IP {0}. Client is now in time out for five minutes", _ip));
+                                        WebPanel.Writer(string.Format("Black jack request denied for IP '{0}'. Client is now in time out for five minutes", _ip));
+                                    }
+                                    else
+                                    {
+                                        GET(_response, Directory + _uri, _ip);
+                                        WebPanel.Writer(string.Format("Black jack request granted for IP '{0}'", _ip));
                                     }
                                 }
                                 else
                                 {
-                                    WebPanel.PageHits[_ip] = count + 1;
-                                    GET(_response, _uri, _ip, _request.IsLocal);
-                                    WebPanel.Writer(string.Format("Homepage request granted for IP {0}", _ip));
+                                    PageHits.Add(_ip, 1);
+                                    GET(_response, Directory + _uri, _ip);
+                                    WebPanel.Writer(string.Format("Black jack request granted for IP '{0}'", _ip));
                                 }
                             }
-                            else
+                            else if (_uri == "CSS/styles.css" || _uri == "Font/7DaysLater.woff2" || _uri == "JS/aes.js" || _uri == "JS/cipher-core.js" ||
+                                _uri == "JS/core.js" || _uri == "JS/crypto-js.js" || _uri == "JS/enc-base64.js" || _uri == "JS/enc-utf16.js" || _uri == "JS/evpkdf.js" || 
+                                _uri == "JS/lib-typedarrays.js" || _uri == "JS/md5.js" || _uri == "JS/pad-pkcs7.js" || _uri == "JS/scripts.js" || _uri == "JS/x64-core.js" || 
+                                _uri == "Img/BloodBorder.webp" || _uri == "Img/Lock.webp" || _uri == "Img/STLogo.webp" || _uri == "Img/UserIcon.webp" || 
+                                _uri == "Img/ZombieDevs.webp" || _uri == "favicon.ico" || _uri == "JS/blackJackScripts.js" || _uri == "CSS/blackJackStyles.js")
                             {
-                                WebPanel.PageHits.Add(_ip, 1);
-                                GET(_response, _uri, _ip, _request.IsLocal);
-                                WebPanel.Writer(string.Format("Homepage request granted for IP {0}", _ip));
+                                GET(_response, Directory + _uri, _ip);
                             }
-                        }
-                        else
-                        {
-                            GET(_response, _uri, _ip, _request.IsLocal);
+                            else if (_uri == "Config" && PassThrough.ContainsKey(_ip) && PassThrough[_ip] == "Config")
+                            {
+                                PassThrough.Remove(_ip);
+                                _uri = API.ConfigPath + "/ServerToolsConfig.xml";
+                                GET(_response, _uri, _ip);
+                            }
                         }
                     }
                     else if (_request.HttpMethod == "POST" && (WebPanel.IsEnabled || DiscordBot.IsEnabled))
@@ -351,55 +401,39 @@ namespace ServerTools
             }
         }
 
-        private static void GET(HttpListenerResponse _response, string _uri, string _ip, bool _isLocal)
+        private static void GET(HttpListenerResponse _response, string _uri, string _ip)
         {
             try
             {
-                if (_uri == "CSS/styles.css" || _uri == "Font/7DaysLater.woff2" || _uri == "JS/aes.js" || _uri == "JS/cipher-core.js" || _uri == "JS/core.js" || _uri == "JS/crypto-js.js" ||
-                    _uri == "JS/enc-base64.js" || _uri == "JS/enc-utf16.js" || _uri == "JS/evpkdf.js" || _uri == "JS/lib-typedarrays.js" || _uri == "JS/md5.js" ||
-                    _uri == "JS/pad-pkcs7.js" || _uri == "JS/scripts.js" || _uri == "JS/x64-core.js" || _uri == "Img/BloodBorder.webp" || _uri == "Img/Lock.webp" ||
-                    _uri == "Img/STLogo.webp" || _uri == "Img/UserIcon.webp" || _uri == "Img/ZombieDevs.webp" || _uri == "st.html" || _uri == "favicon.ico" || _uri == "Config")
+                using (_response)
                 {
-                    using (_response)
+                    FileInfo fileInfo = new FileInfo(_uri);
+                    if (fileInfo != null && fileInfo.Exists)
                     {
-                        string location = Directory + _uri;
-                        if (_uri == "Config" && PassThrough.ContainsKey(_ip) && PassThrough[_ip] == "Config")
+                        byte[] c = File.ReadAllBytes(_uri);
+                        if (c != null)
                         {
-                            PassThrough.Remove(_ip);
-                            location = API.ConfigPath + "/ServerToolsConfig.xml";
-                        }
-                        FileInfo fileInfo = new FileInfo(location);
-                        if (fileInfo != null && fileInfo.Exists)
-                        {
-                            byte[] c = File.ReadAllBytes(location);
-                            if (c != null)
-                            {
-                                _response.StatusCode = 200;
-                                _response.SendChunked = false;
-                                _response.ProtocolVersion = HttpVersion;
-                                _response.KeepAlive = true;
-                                _response.AddHeader("Keep-Alive", "timeout=300, max=100");
-                                _response.ContentType = MimeType.GetMimeType(Path.GetExtension(fileInfo.Extension));
-                                _response.ContentLength64 = (long)c.Length;
-                                _response.ContentEncoding = Encoding.UTF8;
-                                _response.OutputStream.Write(c, 0, c.Length);
-                            }
-                            else
-                            {
-                                _response.StatusCode = 404;
-                                WebPanel.Writer(string.Format("Requested file was found but unable to form: {0}", location));
-                            }
+                            _response.StatusCode = 200;
+                            _response.SendChunked = false;
+                            _response.ProtocolVersion = HttpVersion;
+                            _response.KeepAlive = true;
+                            _response.AddHeader("Keep-Alive", "timeout=300, max=100");
+                            _response.ContentType = MimeType.GetMimeType(Path.GetExtension(fileInfo.Extension));
+                            _response.ContentLength64 = (long)c.Length;
+                            _response.ContentEncoding = Encoding.UTF8;
+                            _response.OutputStream.Write(c, 0, c.Length);
                         }
                         else
                         {
                             _response.StatusCode = 404;
-                            WebPanel.Writer(string.Format("Received get request for missing file at {0} from IP {1}", location, _ip));
+                            WebPanel.Writer(string.Format("Requested file was found but unable to form from uri '{0}", _uri));
                         }
                     }
-                }
-                else if (!_isLocal)
-                {
-                    WebPanel.Writer(string.Format("Detected {0} attempting to access an invalid address {1}", _ip, _uri));
+                    else
+                    {
+                        _response.StatusCode = 404;
+                        WebPanel.Writer(string.Format("Received get request for missing file at '{0}' from IP '{1}'", _uri, _ip));
+                    }
                 }
             }
             catch (Exception e)
@@ -418,62 +452,176 @@ namespace ServerTools
                     {
                         using (Stream body = _request.InputStream)
                         {
-                            if (body != null)
+                            if (DiscordBot.IsEnabled && (_uri == "DiscordHandShake" || _uri == "DiscordPost" || _uri == "Discord_Sync"))
                             {
-                                if (_uri == "DiscordHandShake" || _uri == "DiscordPost" || _uri == "Discord_Sync")
+                                switch (_uri)
                                 {
-                                    if (DiscordBot.IsEnabled)
-                                    {
-                                        switch (_uri)
+                                    case "DiscordHandShake":
+                                        string postMessage = "";
+                                        using (StreamReader read = new StreamReader(body, Encoding.UTF8))
                                         {
-                                            case "DiscordHandShake":
-                                                string postMessage = "";
-                                                using (StreamReader read = new StreamReader(body, Encoding.UTF8))
+                                            postMessage = read.ReadToEnd();
+                                        }
+                                        if (!PassThrough.ContainsKey(_ip))
+                                        {
+                                            if (!string.IsNullOrEmpty(postMessage))
+                                            {
+                                                if (postMessage.Length == 16 && !PersistentContainer.Instance.Connections.ContainsKey(postMessage))
                                                 {
-                                                    postMessage = read.ReadToEnd();
-                                                }
-                                                if (!PassThrough.ContainsKey(_ip))
-                                                {
-                                                    if (!string.IsNullOrEmpty(postMessage))
+                                                    using (Aes aes = Aes.Create())
                                                     {
-                                                        if (postMessage.Length == 16 && !PersistentContainer.Instance.Connections.ContainsKey(postMessage))
+                                                        aes.BlockSize = 128;
+                                                        aes.KeySize = 256;
+                                                        aes.Mode = CipherMode.CBC;
+                                                        aes.Padding = PaddingMode.PKCS7;
+                                                        aes.GenerateIV();
+                                                        byte[] iv = aes.IV;
+                                                        if (iv != null)
                                                         {
-                                                            using (Aes aes = Aes.Create())
+                                                            PersistentContainer.Instance.Connections.Add(postMessage, iv);
+                                                            PersistentContainer.Instance.ConnectionTimeOut.Add(postMessage, DateTime.Now.AddMinutes(1));
+                                                            PersistentContainer.DataChange = true;
+                                                            _response.StatusCode = 200;
+                                                            _response.SendChunked = false;
+                                                            _response.ProtocolVersion = HttpVersion;
+                                                            _response.KeepAlive = true;
+                                                            _response.AddHeader("Keep-Alive", "timeout=300, max=100");
+                                                            _response.ContentLength64 = (long)iv.Length;
+                                                            _response.ContentType = "application/octet-stream";
+                                                            using (Stream output = _response.OutputStream)
                                                             {
-                                                                aes.BlockSize = 128;
-                                                                aes.KeySize = 256;
-                                                                aes.Mode = CipherMode.CBC;
-                                                                aes.Padding = PaddingMode.PKCS7;
-                                                                aes.GenerateIV();
-                                                                byte[] iv = aes.IV;
-                                                                if (iv != null)
-                                                                {
-                                                                    PersistentContainer.Instance.Connections.Add(postMessage, iv);
-                                                                    PersistentContainer.Instance.ConnectionTimeOut.Add(postMessage, DateTime.Now.AddMinutes(1));
-                                                                    PersistentContainer.DataChange = true;
-                                                                    _response.StatusCode = 200;
-                                                                    _response.SendChunked = false;
-                                                                    _response.ProtocolVersion = HttpVersion;
-                                                                    _response.KeepAlive = true;
-                                                                    _response.AddHeader("Keep-Alive", "timeout=300, max=100");
-                                                                    _response.ContentLength64 = (long)iv.Length;
-                                                                    _response.ContentType = "application/octet-stream";
-                                                                    using (Stream output = _response.OutputStream)
-                                                                    {
-                                                                        output.Write(iv, 0, iv.Length);
-                                                                    }
-                                                                }
+                                                                output.Write(iv, 0, iv.Length);
                                                             }
-                                                            PassThrough.Add(_ip, postMessage);
+                                                        }
+                                                    }
+                                                    PassThrough.Add(_ip, postMessage);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            PassThrough.TryGetValue(_ip, out string clientId);
+                                            PassThrough.Remove(_ip);
+                                            PersistentContainer.Instance.Connections.TryGetValue(clientId, out byte[] iv);
+                                            string decrypted = DiscordDecrypt(postMessage, iv);
+                                            if (decrypted == DiscordBot.TokenKey)
+                                            {
+                                                using (Aes aes = Aes.Create())
+                                                {
+                                                    aes.BlockSize = 128;
+                                                    aes.KeySize = 256;
+                                                    aes.Mode = CipherMode.CBC;
+                                                    aes.Padding = PaddingMode.PKCS7;
+                                                    aes.GenerateIV();
+                                                    iv = aes.IV;
+                                                    if (iv != null)
+                                                    {
+                                                        PersistentContainer.Instance.Connections[clientId] = iv;
+                                                        PersistentContainer.Instance.ConnectionTimeOut[clientId] = DateTime.Now.AddMinutes(5);
+                                                        PersistentContainer.DataChange = true;
+                                                        _response.StatusCode = 200;
+                                                        _response.SendChunked = false;
+                                                        _response.ProtocolVersion = HttpVersion;
+                                                        _response.KeepAlive = true;
+                                                        _response.AddHeader("Keep-Alive", "timeout=300, max=100");
+                                                        _response.ContentLength64 = (long)iv.Length;
+                                                        _response.ContentType = "application/octet-stream";
+                                                        using (Stream output = _response.OutputStream)
+                                                        {
+                                                            output.Write(iv, 0, iv.Length);
                                                         }
                                                     }
                                                 }
-                                                else
+                                            }
+                                            else
+                                            {
+                                                PersistentContainer.Instance.Connections.Remove(clientId);
+                                                PersistentContainer.Instance.ConnectionTimeOut.Remove(clientId);
+                                                PersistentContainer.DataChange = true;
+                                            }
+                                        }
+                                        break;
+                                    case "DiscordPost":
+                                        if (!PassThrough.ContainsKey(_ip))
+                                        {
+                                            using (StreamReader read = new StreamReader(body, Encoding.UTF8))
+                                            {
+                                                postMessage = read.ReadToEnd();
+                                            }
+                                            if (!string.IsNullOrEmpty(postMessage) && postMessage.Length > 16)
+                                            {
+                                                string clientId = postMessage.Substring(0, 16);
+                                                if (PersistentContainer.Instance.Connections.ContainsKey(clientId))
                                                 {
-                                                    PassThrough.TryGetValue(_ip, out string clientId);
-                                                    PassThrough.Remove(_ip);
                                                     PersistentContainer.Instance.Connections.TryGetValue(clientId, out byte[] iv);
-                                                    string decrypted = DiscordDecrypt(postMessage, iv);
+                                                    string decrypted = DiscordDecrypt(postMessage.Substring(16), iv);
+                                                    if (decrypted == DiscordBot.TokenKey)
+                                                    {
+                                                        using (Aes aes = Aes.Create())
+                                                        {
+                                                            aes.BlockSize = 128;
+                                                            aes.KeySize = 256;
+                                                            aes.Mode = CipherMode.CBC;
+                                                            aes.Padding = PaddingMode.PKCS7;
+                                                            aes.GenerateIV();
+                                                            iv = aes.IV;
+                                                            if (iv != null)
+                                                            {
+                                                                PersistentContainer.Instance.Connections[clientId] = iv;
+                                                                PersistentContainer.Instance.ConnectionTimeOut[clientId] = DateTime.Now.AddMinutes(1);
+                                                                PersistentContainer.DataChange = true;
+                                                                _response.StatusCode = 200;
+                                                                _response.SendChunked = false;
+                                                                _response.ProtocolVersion = HttpVersion;
+                                                                _response.KeepAlive = true;
+                                                                _response.AddHeader("Keep-Alive", "timeout=300, max=100");
+                                                                _response.ContentLength64 = (long)iv.Length;
+                                                                _response.ContentType = "application/octet-stream";
+                                                                using (Stream output = _response.OutputStream)
+                                                                {
+                                                                    output.Write(iv, 0, iv.Length);
+                                                                }
+                                                            }
+                                                        }
+                                                        PassThrough.Add(_ip, postMessage);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            PassThrough.TryGetValue(_ip, out string clientId);
+                                            PassThrough.Remove(_ip);
+                                            PersistentContainer.Instance.ConnectionTimeOut[clientId] = DateTime.Now.AddMinutes(5);
+                                            PersistentContainer.DataChange = true;
+                                            using (StreamReader read = new StreamReader(body, Encoding.UTF32))
+                                            {
+                                                postMessage = read.ReadToEnd();
+                                            }
+                                            if (!string.IsNullOrEmpty(postMessage))
+                                            {
+                                                string[] message = postMessage.Split('☼');
+                                                if (int.TryParse(message[0], out int id))
+                                                {
+                                                    GameManager.Instance.ChatMessageServer(null, EChatType.Global, id, DiscordBot.Message_Color + message[2] + "[-]", DiscordBot.Prefix_Color + DiscordBot.Prefix + "[-] " + DiscordBot.Name_Color + message[1] + "[-]", false, null);
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    case "Discord_Sync":
+                                        using (StreamReader read = new StreamReader(body, Encoding.UTF8))
+                                        {
+                                            postMessage = read.ReadToEnd();
+                                        }
+                                        if (!string.IsNullOrEmpty(postMessage) && postMessage.Length > 16)
+                                        {
+                                            if (PersistentContainer.Instance.Connections.ContainsKey(postMessage))
+                                            {
+                                                string clientId = postMessage.Substring(0, 16);
+                                                if (PersistentContainer.Instance.Connections.ContainsKey(clientId))
+                                                {
+                                                    PersistentContainer.Instance.Connections.TryGetValue(clientId, out byte[] iv);
+                                                    string decrypted = DiscordDecrypt(postMessage.Substring(16), iv);
                                                     if (decrypted == DiscordBot.TokenKey)
                                                     {
                                                         using (Aes aes = Aes.Create())
@@ -503,216 +651,130 @@ namespace ServerTools
                                                             }
                                                         }
                                                     }
-                                                    else
-                                                    {
-                                                        PersistentContainer.Instance.Connections.Remove(clientId);
-                                                        PersistentContainer.Instance.ConnectionTimeOut.Remove(clientId);
-                                                        PersistentContainer.DataChange = true;
-                                                    }
                                                 }
-                                                break;
-                                            case "DiscordPost":
-                                                if (!PassThrough.ContainsKey(_ip))
-                                                {
-                                                    using (StreamReader read = new StreamReader(body, Encoding.UTF8))
-                                                    {
-                                                        postMessage = read.ReadToEnd();
-                                                    }
-                                                    if (!string.IsNullOrEmpty(postMessage) && postMessage.Length > 16)
-                                                    {
-                                                        string clientId = postMessage.Substring(0, 16);
-                                                        if (PersistentContainer.Instance.Connections.ContainsKey(clientId))
-                                                        {
-                                                            PersistentContainer.Instance.Connections.TryGetValue(clientId, out byte[] iv);
-                                                            string decrypted = DiscordDecrypt(postMessage.Substring(16), iv);
-                                                            if (decrypted == DiscordBot.TokenKey)
-                                                            {
-                                                                using (Aes aes = Aes.Create())
-                                                                {
-                                                                    aes.BlockSize = 128;
-                                                                    aes.KeySize = 256;
-                                                                    aes.Mode = CipherMode.CBC;
-                                                                    aes.Padding = PaddingMode.PKCS7;
-                                                                    aes.GenerateIV();
-                                                                    iv = aes.IV;
-                                                                    if (iv != null)
-                                                                    {
-                                                                        PersistentContainer.Instance.Connections[clientId] = iv;
-                                                                        PersistentContainer.Instance.ConnectionTimeOut[clientId] = DateTime.Now.AddMinutes(1);
-                                                                        PersistentContainer.DataChange = true;
-                                                                        _response.StatusCode = 200;
-                                                                        _response.SendChunked = false;
-                                                                        _response.ProtocolVersion = HttpVersion;
-                                                                        _response.KeepAlive = true;
-                                                                        _response.AddHeader("Keep-Alive", "timeout=300, max=100");
-                                                                        _response.ContentLength64 = (long)iv.Length;
-                                                                        _response.ContentType = "application/octet-stream";
-                                                                        using (Stream output = _response.OutputStream)
-                                                                        {
-                                                                            output.Write(iv, 0, iv.Length);
-                                                                        }
-                                                                    }
-                                                                }
-                                                                PassThrough.Add(_ip, postMessage);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    PassThrough.TryGetValue(_ip, out string clientId);
-                                                    PassThrough.Remove(_ip);
-                                                    PersistentContainer.Instance.ConnectionTimeOut[clientId] = DateTime.Now.AddMinutes(5);
-                                                    PersistentContainer.DataChange = true;
-                                                    using (StreamReader read = new StreamReader(body, Encoding.UTF32))
-                                                    {
-                                                        postMessage = read.ReadToEnd();
-                                                    }
-                                                    if (!string.IsNullOrEmpty(postMessage))
-                                                    {
-                                                        string[] message = postMessage.Split('☼');
-                                                        if (int.TryParse(message[0], out int id))
-                                                        {
-                                                            GameManager.Instance.ChatMessageServer(null, EChatType.Global, id, DiscordBot.Message_Color + message[2] + "[-]", DiscordBot.Prefix_Color + DiscordBot.Prefix + "[-] " + DiscordBot.Name_Color + message[1] + "[-]", false, null);
-                                                        }
-                                                    }
-                                                }
-                                                break;
-                                            case "Discord_Sync":
-                                                using (StreamReader read = new StreamReader(body, Encoding.UTF8))
-                                                {
-                                                    postMessage = read.ReadToEnd();
-                                                }
-                                                if (!string.IsNullOrEmpty(postMessage) && postMessage.Length > 16)
-                                                {
-                                                    if (PersistentContainer.Instance.Connections.ContainsKey(postMessage))
-                                                    {
-                                                        string clientId = postMessage.Substring(0, 16);
-                                                        if (PersistentContainer.Instance.Connections.ContainsKey(clientId))
-                                                        {
-                                                            PersistentContainer.Instance.Connections.TryGetValue(clientId, out byte[] iv);
-                                                            string decrypted = DiscordDecrypt(postMessage.Substring(16), iv);
-                                                            if (decrypted == DiscordBot.TokenKey)
-                                                            {
-                                                                using (Aes aes = Aes.Create())
-                                                                {
-                                                                    aes.BlockSize = 128;
-                                                                    aes.KeySize = 256;
-                                                                    aes.Mode = CipherMode.CBC;
-                                                                    aes.Padding = PaddingMode.PKCS7;
-                                                                    aes.GenerateIV();
-                                                                    iv = aes.IV;
-                                                                    if (iv != null)
-                                                                    {
-                                                                        PersistentContainer.Instance.Connections[clientId] = iv;
-                                                                        PersistentContainer.Instance.ConnectionTimeOut[clientId] = DateTime.Now.AddMinutes(5);
-                                                                        PersistentContainer.DataChange = true;
-                                                                        _response.StatusCode = 200;
-                                                                        _response.SendChunked = false;
-                                                                        _response.ProtocolVersion = HttpVersion;
-                                                                        _response.KeepAlive = true;
-                                                                        _response.AddHeader("Keep-Alive", "timeout=300, max=100");
-                                                                        _response.ContentLength64 = (long)iv.Length;
-                                                                        _response.ContentType = "application/octet-stream";
-                                                                        using (Stream output = _response.OutputStream)
-                                                                        {
-                                                                            output.Write(iv, 0, iv.Length);
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                break;
+                                            }
                                         }
-                                    }
+                                        break;
                                 }
-                                else if (_uri == "Handshake" || _uri == "SignIn" || _uri == "SignOut" || _uri == "NewPass" || _uri == "Console" ||
-                                _uri == "Command" || _uri == "Players" || _uri == "Config" || _uri == "SaveConfig" || _uri == "Kick" ||
-                                _uri == "Ban" || _uri == "Mute" || _uri == "Jail" || _uri == "Reward")
+                            }
+                            else if (_uri == "Handshake" || _uri == "SignIn" || _uri == "SignOut" || _uri == "NewPass" || _uri == "Console" ||
+                            _uri == "Command" || _uri == "Players" || _uri == "Config" || _uri == "SaveConfig" || _uri == "Kick" ||
+                            _uri == "Ban" || _uri == "Mute" || _uri == "Jail" || _uri == "Reward")
+                            {
+                                if (WebPanel.IsEnabled)
                                 {
-                                    if (WebPanel.IsEnabled)
+                                    string responseMessage = "";
+                                    string postMessage = "";
+                                    using (StreamReader read = new StreamReader(body, Encoding.UTF8))
                                     {
-                                        string responseMessage = "";
-                                        string postMessage = "";
-                                        using (StreamReader read = new StreamReader(body, Encoding.UTF8))
-                                        {
-                                            postMessage = read.ReadToEnd();
-                                        }
-                                        string clientId = postMessage.Substring(0, 16);
-                                        switch (_uri)
-                                        {
-                                            case "Handshake":
-                                                if (!Visitor.ContainsKey(postMessage))
+                                        postMessage = read.ReadToEnd();
+                                    }
+                                    string clientId = postMessage.Substring(0, 16);
+                                    switch (_uri)
+                                    {
+                                        case "Handshake":
+                                            if (!Visitor.ContainsKey(postMessage))
+                                            {
+                                                Visitor.Add(postMessage, null);
+                                                _response.StatusCode = 200;
+                                            }
+                                            else
+                                            {
+                                                _response.StatusCode = 401;
+                                            }
+                                            break;
+                                        case "SignIn":
+                                            if (Visitor.ContainsKey(clientId))
+                                            {
+                                                if (!PassThrough.ContainsKey(clientId))
                                                 {
-                                                    Visitor.Add(postMessage, null);
-                                                    _response.StatusCode = 200;
-                                                }
-                                                else
-                                                {
-                                                    _response.StatusCode = 401;
-                                                }
-                                                break;
-                                            case "SignIn":
-                                                if (Visitor.ContainsKey(clientId))
-                                                {
-                                                    if (!PassThrough.ContainsKey(clientId))
+                                                    string login = postMessage.Substring(16);
+                                                    if (!string.IsNullOrEmpty(PersistentContainer.Instance.Players[login].WebPass) && PersistentContainer.Instance.Players[login].WebPass != "")
                                                     {
-                                                        string login = postMessage.Substring(16);
-                                                        if (!string.IsNullOrEmpty(PersistentContainer.Instance.Players[login].WebPass) && PersistentContainer.Instance.Players[login].WebPass != "")
+                                                        string key = "";
+                                                        string kChop = PersistentContainer.Instance.Players[login].WebPass;
+                                                        if (kChop.Length >= 16)
                                                         {
-                                                            string key = "";
-                                                            string kChop = PersistentContainer.Instance.Players[login].WebPass;
-                                                            if (kChop.Length >= 16)
-                                                            {
-                                                                key += kChop.Substring(0, 16);
-                                                            }
-                                                            else if (kChop.Length >= 8)
-                                                            {
-                                                                kChop = kChop.Substring(0, 8);
-                                                                key += kChop + kChop;
-                                                            }
-                                                            else
-                                                            {
-                                                                kChop = kChop.Substring(0, 4);
-                                                                key += kChop + kChop + kChop + kChop;
-                                                            }
-                                                            string iv = PersistentOperations.CreatePassword(16);
-                                                            Visitor[clientId] = new string[] { login, key, iv };
-                                                            PassThrough.Add(clientId, "SignIn");
-                                                            responseMessage += iv;
-                                                            _response.StatusCode = 200;
+                                                            key += kChop.Substring(0, 16);
                                                         }
-                                                    }
-                                                    else if (PassThrough[clientId] == "SignIn")
-                                                    {
-                                                        PassThrough.Remove(clientId);
-                                                        Visitor.TryGetValue(clientId, out string[] IVKey);
-                                                        string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                        if (decrypted == PersistentContainer.Instance.Players[IVKey[0]].WebPass)
+                                                        else if (kChop.Length >= 8)
                                                         {
-                                                            Visitor.Remove(clientId);
-                                                            string newIv = PersistentOperations.CreatePassword(16);
-                                                            AuthorizedIvKey.Add(clientId, new string[] { IVKey[0], IVKey[1], newIv });
-                                                            AuthorizedTime.Add(clientId, DateTime.Now);
-                                                            responseMessage += newIv;
-                                                            _response.StatusCode = 200;
-                                                            WebPanel.Writer(string.Format("Client sign in success: {0} @ {1}", IVKey[0], _ip));
+                                                            kChop = kChop.Substring(0, 8);
+                                                            key += kChop + kChop;
                                                         }
                                                         else
                                                         {
-                                                            WebPanel.Writer(string.Format("Client sign in failed: {0} @ {1}", IVKey[0], _ip));
+                                                            kChop = kChop.Substring(0, 4);
+                                                            key += kChop + kChop + kChop + kChop;
                                                         }
+                                                        string iv = PersistentOperations.CreatePassword(16);
+                                                        Visitor[clientId] = new string[] { login, key, iv };
+                                                        PassThrough.Add(clientId, "SignIn");
+                                                        responseMessage += iv;
+                                                        _response.StatusCode = 200;
                                                     }
+                                                }
+                                                else if (PassThrough[clientId] == "SignIn")
+                                                {
+                                                    PassThrough.Remove(clientId);
+                                                    Visitor.TryGetValue(clientId, out string[] IVKey);
+                                                    string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                    if (decrypted == PersistentContainer.Instance.Players[IVKey[0]].WebPass)
+                                                    {
+                                                        Visitor.Remove(clientId);
+                                                        string newIv = PersistentOperations.CreatePassword(16);
+                                                        AuthorizedIvKey.Add(clientId, new string[] { IVKey[0], IVKey[1], newIv });
+                                                        AuthorizedTime.Add(clientId, DateTime.Now);
+                                                        responseMessage += newIv;
+                                                        _response.StatusCode = 200;
+                                                        WebPanel.Writer(string.Format("Client sign in success: {0} @ {1}", IVKey[0], _ip));
+                                                    }
+                                                    else
+                                                    {
+                                                        WebPanel.Writer(string.Format("Client sign in failed: {0} @ {1}", IVKey[0], _ip));
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                _response.StatusCode = 401;
+                                            }
+                                            break;
+                                        case "SignOut":
+                                            if (AuthorizedIvKey.ContainsKey(clientId))
+                                            {
+                                                AuthorizedTime.TryGetValue(clientId, out DateTime expires);
+                                                if (Expired(expires))
+                                                {
+                                                    AuthorizedIvKey.Remove(clientId);
+                                                    AuthorizedTime.Remove(clientId);
+                                                    _response.Redirect(Redirect);
+                                                    _response.StatusCode = 401;
                                                 }
                                                 else
                                                 {
-                                                    _response.StatusCode = 401;
+                                                    AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                    string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                    if (decrypted == clientId)
+                                                    {
+                                                        AuthorizedIvKey.Remove(clientId);
+                                                        AuthorizedTime.Remove(clientId);
+                                                        _response.Redirect(Redirect);
+                                                        _response.StatusCode = 200;
+                                                        WebPanel.Writer(string.Format("Client {0} at IP {1} has signed out", IVKey[0], _ip));
+                                                    }
                                                 }
-                                                break;
-                                            case "SignOut":
-                                                if (AuthorizedIvKey.ContainsKey(clientId))
+                                            }
+                                            else
+                                            {
+                                                _response.Redirect(Panel_Address);
+                                                _response.StatusCode = 401;
+                                            }
+                                            break;
+                                        case "NewPass":
+                                            if (AuthorizedIvKey.ContainsKey(clientId))
+                                            {
+                                                if (!PassThrough.ContainsKey(clientId))
                                                 {
                                                     AuthorizedTime.TryGetValue(clientId, out DateTime expires);
                                                     if (Expired(expires))
@@ -724,765 +786,731 @@ namespace ServerTools
                                                     }
                                                     else
                                                     {
+                                                        AuthorizedTime[clientId] = DateTime.Now;
                                                         AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
                                                         string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
                                                         if (decrypted == clientId)
                                                         {
-                                                            AuthorizedIvKey.Remove(clientId);
-                                                            AuthorizedTime.Remove(clientId);
-                                                            _response.Redirect(Redirect);
+                                                            string newIv = PersistentOperations.CreatePassword(16);
+                                                            AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
+                                                            PassThrough.Add(clientId, "NewPass");
+                                                            responseMessage += newIv;
                                                             _response.StatusCode = 200;
-                                                            WebPanel.Writer(string.Format("Client {0} at IP {1} has signed out", IVKey[0], _ip));
                                                         }
                                                     }
                                                 }
-                                                else
+                                                else if (PassThrough[clientId] == "NewPass")
                                                 {
-                                                    _response.Redirect(Panel_Address);
-                                                    _response.StatusCode = 401;
+                                                    PassThrough.Remove(clientId);
+                                                    AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                    string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                    PersistentContainer.Instance.Players[IVKey[0]].WebPass = decrypted;
+                                                    PersistentContainer.DataChange = true;
+                                                    string newIv = PersistentOperations.CreatePassword(16);
+                                                    AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
+                                                    responseMessage += newIv;
+                                                    _response.StatusCode = 200;
+                                                    WebPanel.Writer(string.Format("Client {0} at IP {1} has set a new password", IVKey[0], _ip));
                                                 }
-                                                break;
-                                            case "NewPass":
-                                                if (AuthorizedIvKey.ContainsKey(clientId))
+                                            }
+                                            else
+                                            {
+                                                _response.StatusCode = 401;
+                                            }
+                                            break;
+                                        case "Console":
+                                            if (AuthorizedIvKey.ContainsKey(clientId))
+                                            {
+                                                if (!PassThrough.ContainsKey(clientId))
                                                 {
-                                                    if (!PassThrough.ContainsKey(clientId))
+                                                    AuthorizedTime.TryGetValue(clientId, out DateTime expires);
+                                                    if (Expired(expires))
                                                     {
-                                                        AuthorizedTime.TryGetValue(clientId, out DateTime expires);
-                                                        if (Expired(expires))
+                                                        AuthorizedIvKey.Remove(clientId);
+                                                        AuthorizedTime.Remove(clientId);
+                                                        _response.Redirect(Redirect);
+                                                        _response.StatusCode = 401;
+                                                    }
+                                                    else
+                                                    {
+                                                        AuthorizedTime[clientId] = DateTime.Now;
+                                                        AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                        string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                        if (decrypted == clientId)
                                                         {
-                                                            AuthorizedIvKey.Remove(clientId);
-                                                            AuthorizedTime.Remove(clientId);
-                                                            _response.Redirect(Redirect);
-                                                            _response.StatusCode = 401;
+                                                            string newIv = PersistentOperations.CreatePassword(16);
+                                                            AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
+                                                            PassThrough.Add(clientId, "Console");
+                                                            responseMessage += newIv;
+                                                            _response.StatusCode = 200;
+                                                        }
+                                                    }
+                                                }
+                                                else if (PassThrough[clientId] == "Console")
+                                                {
+                                                    PassThrough.Remove(clientId);
+                                                    int.TryParse(postMessage.Substring(16), out int _lineNumber);
+                                                    int _logCount = OutputLog.ActiveLog.Count;
+                                                    if (_logCount >= _lineNumber + 1)
+                                                    {
+                                                        for (int i = _lineNumber; i < _logCount; i++)
+                                                        {
+                                                            responseMessage += OutputLog.ActiveLog[i] + "\n";
+                                                        }
+                                                        responseMessage += "☼" + _logCount;
+                                                    }
+                                                    _response.StatusCode = 200;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                _response.StatusCode = 401;
+                                            }
+                                            break;
+                                        case "Command":
+                                            if (AuthorizedIvKey.ContainsKey(clientId))
+                                            {
+                                                if (!PassThrough.ContainsKey(clientId))
+                                                {
+                                                    AuthorizedTime.TryGetValue(clientId, out DateTime expires);
+                                                    if (Expired(expires))
+                                                    {
+                                                        AuthorizedIvKey.Remove(clientId);
+                                                        AuthorizedTime.Remove(clientId);
+                                                        _response.Redirect(Redirect);
+                                                        _response.StatusCode = 401;
+                                                    }
+                                                    else
+                                                    {
+                                                        AuthorizedTime[clientId] = DateTime.Now;
+                                                        AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                        string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                        if (decrypted == clientId)
+                                                        {
+                                                            string newIv = PersistentOperations.CreatePassword(16);
+                                                            AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
+                                                            PassThrough.Add(clientId, "Command");
+                                                            responseMessage += newIv;
+                                                            _response.StatusCode = 200;
+                                                        }
+                                                    }
+                                                }
+                                                else if (PassThrough[clientId] == "Command")
+                                                {
+                                                    PassThrough.Remove(clientId);
+                                                    AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                    string[] idLineCountandCommand = postMessage.Split(new[] { '☼' }, 3);
+                                                    string decrypted = PanelDecrypt(idLineCountandCommand[2], Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                    string newIv = PersistentOperations.CreatePassword(16);
+                                                    AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
+                                                    string command = decrypted;
+                                                    if (command.Length > 300)
+                                                    {
+                                                        responseMessage += newIv;
+                                                        _response.StatusCode = 400;
+                                                    }
+                                                    else
+                                                    {
+                                                        IConsoleCommand commandValid = SingletonMonoBehaviour<SdtdConsole>.Instance.GetCommand(command, false);
+                                                        if (commandValid == null)
+                                                        {
+                                                            responseMessage += newIv;
+                                                            _response.StatusCode = 406;
                                                         }
                                                         else
                                                         {
-                                                            AuthorizedTime[clientId] = DateTime.Now;
-                                                            AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                            string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                            if (decrypted == clientId)
+                                                            ClientInfo cInfo = new ClientInfo
                                                             {
-                                                                string newIv = PersistentOperations.CreatePassword(16);
-                                                                AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
-                                                                PassThrough.Add(clientId, "NewPass");
-                                                                responseMessage += newIv;
-                                                                _response.StatusCode = 200;
+                                                                playerName = "-Web_Panel- " + IVKey[0],
+                                                                entityId = -1
+                                                            };
+                                                            List<string> cmdReponse = SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(command, cInfo);
+                                                            int logCount = OutputLog.ActiveLog.Count;
+                                                            int.TryParse(idLineCountandCommand[1], out int lineNumber);
+                                                            if (logCount >= lineNumber + 1)
+                                                            {
+                                                                for (int i = lineNumber; i < logCount; i++)
+                                                                {
+                                                                    responseMessage += OutputLog.ActiveLog[i] + "\n";
+                                                                }
                                                             }
+                                                            for (int i = 0; i < cmdReponse.Count; i++)
+                                                            {
+                                                                responseMessage += cmdReponse[i] + "\n";
+                                                            }
+                                                            responseMessage += "☼" + logCount + "☼" + newIv;
+                                                            WebPanel.Writer(string.Format("Executed console command '{0}' from Client: {1} IP: {2}", command, IVKey[0], _ip));
+                                                            _response.StatusCode = 200;
                                                         }
                                                     }
-                                                    else if (PassThrough[clientId] == "NewPass")
+                                                }
+                                            }
+                                            else
+                                            {
+                                                _response.StatusCode = 401;
+                                            }
+                                            break;
+                                        case "Players":
+                                            if (AuthorizedIvKey.ContainsKey(clientId))
+                                            {
+                                                if (!PassThrough.ContainsKey(clientId))
+                                                {
+                                                    AuthorizedTime.TryGetValue(clientId, out DateTime expires);
+                                                    if (Expired(expires))
                                                     {
-                                                        PassThrough.Remove(clientId);
+                                                        AuthorizedIvKey.Remove(clientId);
+                                                        AuthorizedTime.Remove(clientId);
+                                                        _response.Redirect(Redirect);
+                                                        _response.StatusCode = 401;
+                                                    }
+                                                    else
+                                                    {
+                                                        AuthorizedTime[clientId] = DateTime.Now;
                                                         AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
                                                         string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                        PersistentContainer.Instance.Players[IVKey[0]].WebPass = decrypted;
-                                                        PersistentContainer.DataChange = true;
+                                                        if (decrypted == clientId)
+                                                        {
+                                                            string newIv = PersistentOperations.CreatePassword(16);
+                                                            AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
+                                                            PassThrough.Add(clientId, "Players");
+                                                            responseMessage += newIv;
+                                                            _response.StatusCode = 200;
+                                                        }
+                                                    }
+                                                }
+                                                else if (PassThrough[clientId] == "Players")
+                                                {
+                                                    PassThrough.Remove(clientId);
+                                                    List<ClientInfo> clientList = PersistentOperations.ClientList();
+                                                    if (clientList != null)
+                                                    {
+                                                        int count = 0;
+                                                        for (int i = 0; i < clientList.Count; i++)
+                                                        {
+                                                            ClientInfo cInfo = clientList[i];
+                                                            if (cInfo != null)
+                                                            {
+                                                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                                                                if (player != null && player.Progression != null)
+                                                                {
+                                                                    if (cInfo.playerName.Contains("☼") || cInfo.playerName.Contains("§") || cInfo.playerName.Contains("/"))
+                                                                    {
+                                                                        responseMessage += cInfo.PlatformId.CombinedString + "/" + cInfo.entityId + "§" + "<Invalid Chars>" + "§"
+                                                                            + player.Health + "/" + (int)player.Stamina + "§" + player.Progression.Level + "§"
+                                                                            + (int)player.position.x + "," + (int)player.position.y + "," + (int)player.position.z;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        responseMessage += cInfo.PlatformId.CombinedString + "/" + cInfo.entityId + "§" + cInfo.playerName + "§"
+                                                                            + player.Health + "/" + (int)player.Stamina + "§" + player.Progression.Level + "§"
+                                                                            + (int)player.position.x + "," + (int)player.position.y + "," + (int)player.position.z;
+                                                                    }
+                                                                    if (Mute.IsEnabled && Mute.Mutes.Contains(cInfo.CrossplatformId.CombinedString))
+                                                                    {
+                                                                        responseMessage += "§" + "True";
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        responseMessage += "§" + "False";
+                                                                    }
+                                                                    if (Jail.IsEnabled && Jail.Jailed.Contains(cInfo.CrossplatformId.CombinedString))
+                                                                    {
+                                                                        responseMessage += "/" + "True" + "☼";
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        responseMessage += "/" + "False" + "☼";
+                                                                    }
+                                                                    count++;
+                                                                }
+                                                            }
+                                                        }
+                                                        if (responseMessage != "")
+                                                        {
+                                                            responseMessage = responseMessage.TrimEnd('☼');
+                                                            AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                            string encrypted = PanelEncrypt(responseMessage, Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                            string decrypted = PanelDecrypt(encrypted, Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                            string newIv = PersistentOperations.CreatePassword(16);
+                                                            AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
+                                                            responseMessage = encrypted + "☼" + newIv + "☼" + count;
+                                                        }
+                                                    }
+                                                    _response.StatusCode = 200;
+                                                }
+                                            }
+                                            break;
+                                        case "Config":
+                                            if (AuthorizedIvKey.ContainsKey(clientId))
+                                            {
+                                                AuthorizedTime.TryGetValue(clientId, out DateTime expires);
+                                                if (Expired(expires))
+                                                {
+                                                    AuthorizedIvKey.Remove(clientId);
+                                                    AuthorizedTime.Remove(clientId);
+                                                    _response.Redirect(Redirect);
+                                                    _response.StatusCode = 401;
+                                                }
+                                                else
+                                                {
+                                                    AuthorizedTime[clientId] = DateTime.Now;
+                                                    AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                    string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                    if (decrypted == clientId)
+                                                    {
+                                                        string newIv = PersistentOperations.CreatePassword(16);
+                                                        AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
+                                                        PassThrough.Add(_ip, "Config");
+                                                        responseMessage += newIv;
+                                                        _response.StatusCode = 200;
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                _response.StatusCode = 401;
+                                            }
+                                            break;
+                                        case "SaveConfig":
+                                            if (AuthorizedIvKey.ContainsKey(clientId))
+                                            {
+                                                if (!PassThrough.ContainsKey(clientId))
+                                                {
+                                                    AuthorizedTime.TryGetValue(clientId, out DateTime expires);
+                                                    if (Expired(expires))
+                                                    {
+                                                        AuthorizedIvKey.Remove(clientId);
+                                                        AuthorizedTime.Remove(clientId);
+                                                        _response.Redirect(Redirect);
+                                                        _response.StatusCode = 401;
+                                                    }
+                                                    else
+                                                    {
+                                                        AuthorizedTime[clientId] = DateTime.Now;
+                                                        AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                        string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                        if (decrypted == clientId)
+                                                        {
+                                                            string newIv = PersistentOperations.CreatePassword(16);
+                                                            AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
+                                                            PassThrough.Add(clientId, "SaveConfig");
+                                                            responseMessage += newIv;
+                                                            _response.StatusCode = 200;
+                                                        }
+                                                    }
+                                                }
+                                                else if (PassThrough[clientId] == "SaveConfig")
+                                                {
+                                                    PassThrough.Remove(clientId);
+                                                    XmlDocument xmlDoc = new XmlDocument();
+                                                    try
+                                                    {
+                                                        xmlDoc.Load(Config.ConfigFilePath);
+                                                    }
+                                                    catch (XmlException e)
+                                                    {
+                                                        Log.Out(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", Config.ConfigFilePath, e.Message));
+                                                    }
+                                                    if (xmlDoc != null)
+                                                    {
+                                                        AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                        string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
                                                         string newIv = PersistentOperations.CreatePassword(16);
                                                         AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
                                                         responseMessage += newIv;
-                                                        _response.StatusCode = 200;
-                                                        WebPanel.Writer(string.Format("Client {0} at IP {1} has set a new password", IVKey[0], _ip));
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    _response.StatusCode = 401;
-                                                }
-                                                break;
-                                            case "Console":
-                                                if (AuthorizedIvKey.ContainsKey(clientId))
-                                                {
-                                                    if (!PassThrough.ContainsKey(clientId))
-                                                    {
-                                                        AuthorizedTime.TryGetValue(clientId, out DateTime expires);
-                                                        if (Expired(expires))
+                                                        bool changed = false;
+                                                        XmlNodeList _nodes = xmlDoc.GetElementsByTagName("Tool");
+                                                        decrypted = decrypted.TrimEnd('☼');
+                                                        string[] tools = decrypted.Split('☼');
+                                                        for (int i = 0; i < tools.Length; i++)
                                                         {
-                                                            AuthorizedIvKey.Remove(clientId);
-                                                            AuthorizedTime.Remove(clientId);
-                                                            _response.Redirect(Redirect);
-                                                            _response.StatusCode = 401;
-                                                        }
-                                                        else
-                                                        {
-                                                            AuthorizedTime[clientId] = DateTime.Now;
-                                                            AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                            string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                            if (decrypted == clientId)
+                                                            XmlNode node = _nodes[i];
+                                                            string[] nameAndOptions = tools[i].Split('§');
+                                                            if (nameAndOptions[1].Contains("╚"))
                                                             {
-                                                                string newIv = PersistentOperations.CreatePassword(16);
-                                                                AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
-                                                                PassThrough.Add(clientId, "Console");
-                                                                responseMessage += newIv;
-                                                                _response.StatusCode = 200;
-                                                            }
-                                                        }
-                                                    }
-                                                    else if (PassThrough[clientId] == "Console")
-                                                    {
-                                                        PassThrough.Remove(clientId);
-                                                        int.TryParse(postMessage.Substring(16), out int _lineNumber);
-                                                        int _logCount = OutputLog.ActiveLog.Count;
-                                                        if (_logCount >= _lineNumber + 1)
-                                                        {
-                                                            for (int i = _lineNumber; i < _logCount; i++)
-                                                            {
-                                                                responseMessage += OutputLog.ActiveLog[i] + "\n";
-                                                            }
-                                                            responseMessage += "☼" + _logCount;
-                                                        }
-                                                        _response.StatusCode = 200;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    _response.StatusCode = 401;
-                                                }
-                                                break;
-                                            case "Command":
-                                                if (AuthorizedIvKey.ContainsKey(clientId))
-                                                {
-                                                    if (!PassThrough.ContainsKey(clientId))
-                                                    {
-                                                        AuthorizedTime.TryGetValue(clientId, out DateTime expires);
-                                                        if (Expired(expires))
-                                                        {
-                                                            AuthorizedIvKey.Remove(clientId);
-                                                            AuthorizedTime.Remove(clientId);
-                                                            _response.Redirect(Redirect);
-                                                            _response.StatusCode = 401;
-                                                        }
-                                                        else
-                                                        {
-                                                            AuthorizedTime[clientId] = DateTime.Now;
-                                                            AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                            string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                            if (decrypted == clientId)
-                                                            {
-                                                                string newIv = PersistentOperations.CreatePassword(16);
-                                                                AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
-                                                                PassThrough.Add(clientId, "Command");
-                                                                responseMessage += newIv;
-                                                                _response.StatusCode = 200;
-                                                            }
-                                                        }
-                                                    }
-                                                    else if (PassThrough[clientId] == "Command")
-                                                    {
-                                                        PassThrough.Remove(clientId);
-                                                        AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                        string[] idLineCountandCommand = postMessage.Split(new[] { '☼' }, 3);
-                                                        string decrypted = PanelDecrypt(idLineCountandCommand[2], Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                        string newIv = PersistentOperations.CreatePassword(16);
-                                                        AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
-                                                        string command = decrypted;
-                                                        if (command.Length > 300)
-                                                        {
-                                                            responseMessage += newIv;
-                                                            _response.StatusCode = 400;
-                                                        }
-                                                        else
-                                                        {
-                                                            IConsoleCommand commandValid = SingletonMonoBehaviour<SdtdConsole>.Instance.GetCommand(command, false);
-                                                            if (commandValid == null)
-                                                            {
-                                                                responseMessage += newIv;
-                                                                _response.StatusCode = 406;
-                                                            }
-                                                            else
-                                                            {
-                                                                ClientInfo cInfo = new ClientInfo
+                                                                string[] _options = nameAndOptions[1].Split('╚');
+                                                                for (int j = 0; j < _options.Length; j++)
                                                                 {
-                                                                    playerName = "-Web_Panel- " + IVKey[0],
-                                                                    entityId = -1
-                                                                };
-                                                                List<string> cmdReponse = SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(command, cInfo);
-                                                                int logCount = OutputLog.ActiveLog.Count;
-                                                                int.TryParse(idLineCountandCommand[1], out int lineNumber);
-                                                                if (logCount >= lineNumber + 1)
-                                                                {
-                                                                    for (int i = lineNumber; i < logCount; i++)
-                                                                    {
-                                                                        responseMessage += OutputLog.ActiveLog[i] + "\n";
-                                                                    }
-                                                                }
-                                                                for (int i = 0; i < cmdReponse.Count; i++)
-                                                                {
-                                                                    responseMessage += cmdReponse[i] + "\n";
-                                                                }
-                                                                responseMessage += "☼" + logCount + "☼" + newIv;
-                                                                WebPanel.Writer(string.Format("Executed console command '{0}' from Client: {1} IP: {2}", command, IVKey[0], _ip));
-                                                                _response.StatusCode = 200;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    _response.StatusCode = 401;
-                                                }
-                                                break;
-                                            case "Players":
-                                                if (AuthorizedIvKey.ContainsKey(clientId))
-                                                {
-                                                    if (!PassThrough.ContainsKey(clientId))
-                                                    {
-                                                        AuthorizedTime.TryGetValue(clientId, out DateTime expires);
-                                                        if (Expired(expires))
-                                                        {
-                                                            AuthorizedIvKey.Remove(clientId);
-                                                            AuthorizedTime.Remove(clientId);
-                                                            _response.Redirect(Redirect);
-                                                            _response.StatusCode = 401;
-                                                        }
-                                                        else
-                                                        {
-                                                            AuthorizedTime[clientId] = DateTime.Now;
-                                                            AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                            string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                            if (decrypted == clientId)
-                                                            {
-                                                                string newIv = PersistentOperations.CreatePassword(16);
-                                                                AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
-                                                                PassThrough.Add(clientId, "Players");
-                                                                responseMessage += newIv;
-                                                                _response.StatusCode = 200;
-                                                            }
-                                                        }
-                                                    }
-                                                    else if (PassThrough[clientId] == "Players")
-                                                    {
-                                                        PassThrough.Remove(clientId);
-                                                        List<ClientInfo> clientList = PersistentOperations.ClientList();
-                                                        if (clientList != null)
-                                                        {
-                                                            int count = 0;
-                                                            for (int i = 0; i < clientList.Count; i++)
-                                                            {
-                                                                ClientInfo cInfo = clientList[i];
-                                                                if (cInfo != null)
-                                                                {
-                                                                    EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
-                                                                    if (player != null && player.Progression != null)
-                                                                    {
-                                                                        if (cInfo.playerName.Contains("☼") || cInfo.playerName.Contains("§") || cInfo.playerName.Contains("/"))
-                                                                        {
-                                                                            responseMessage += cInfo.PlatformId.CombinedString + "/" + cInfo.entityId + "§" + "<Invalid Chars>" + "§"
-                                                                                + player.Health + "/" + (int)player.Stamina + "§" + player.Progression.Level + "§"
-                                                                                + (int)player.position.x + "," + (int)player.position.y + "," + (int)player.position.z;
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            responseMessage += cInfo.PlatformId.CombinedString + "/" + cInfo.entityId + "§" + cInfo.playerName + "§"
-                                                                                + player.Health + "/" + (int)player.Stamina + "§" + player.Progression.Level + "§"
-                                                                                + (int)player.position.x + "," + (int)player.position.y + "," + (int)player.position.z;
-                                                                        }
-                                                                        if (Mute.IsEnabled && Mute.Mutes.Contains(cInfo.CrossplatformId.CombinedString))
-                                                                        {
-                                                                            responseMessage += "§" + "True";
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            responseMessage += "§" + "False";
-                                                                        }
-                                                                        if (Jail.IsEnabled && Jail.Jailed.Contains(cInfo.CrossplatformId.CombinedString))
-                                                                        {
-                                                                            responseMessage += "/" + "True" + "☼";
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            responseMessage += "/" + "False" + "☼";
-                                                                        }
-                                                                        count++;
-                                                                    }
-                                                                }
-                                                            }
-                                                            if (responseMessage != "")
-                                                            {
-                                                                responseMessage = responseMessage.TrimEnd('☼');
-                                                                AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                                string encrypted = PanelEncrypt(responseMessage, Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                                string decrypted = PanelDecrypt(encrypted, Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                                string newIv = PersistentOperations.CreatePassword(16);
-                                                                AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
-                                                                responseMessage = encrypted + "☼" + newIv + "☼" + count;
-                                                            }
-                                                        }
-                                                        _response.StatusCode = 200;
-                                                    }
-                                                }
-                                                break;
-                                            case "Config":
-                                                if (AuthorizedIvKey.ContainsKey(clientId))
-                                                {
-                                                    AuthorizedTime.TryGetValue(clientId, out DateTime expires);
-                                                    if (Expired(expires))
-                                                    {
-                                                        AuthorizedIvKey.Remove(clientId);
-                                                        AuthorizedTime.Remove(clientId);
-                                                        _response.Redirect(Redirect);
-                                                        _response.StatusCode = 401;
-                                                    }
-                                                    else
-                                                    {
-                                                        AuthorizedTime[clientId] = DateTime.Now;
-                                                        AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                        string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                        if (decrypted == clientId)
-                                                        {
-                                                            string newIv = PersistentOperations.CreatePassword(16);
-                                                            AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
-                                                            PassThrough.Add(_ip, "Config");
-                                                            responseMessage += newIv;
-                                                            _response.StatusCode = 200;
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    _response.StatusCode = 401;
-                                                }
-                                                break;
-                                            case "SaveConfig":
-                                                if (AuthorizedIvKey.ContainsKey(clientId))
-                                                {
-                                                    if (!PassThrough.ContainsKey(clientId))
-                                                    {
-                                                        AuthorizedTime.TryGetValue(clientId, out DateTime expires);
-                                                        if (Expired(expires))
-                                                        {
-                                                            AuthorizedIvKey.Remove(clientId);
-                                                            AuthorizedTime.Remove(clientId);
-                                                            _response.Redirect(Redirect);
-                                                            _response.StatusCode = 401;
-                                                        }
-                                                        else
-                                                        {
-                                                            AuthorizedTime[clientId] = DateTime.Now;
-                                                            AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                            string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                            if (decrypted == clientId)
-                                                            {
-                                                                string newIv = PersistentOperations.CreatePassword(16);
-                                                                AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
-                                                                PassThrough.Add(clientId, "SaveConfig");
-                                                                responseMessage += newIv;
-                                                                _response.StatusCode = 200;
-                                                            }
-                                                        }
-                                                    }
-                                                    else if (PassThrough[clientId] == "SaveConfig")
-                                                    {
-                                                        PassThrough.Remove(clientId);
-                                                        XmlDocument xmlDoc = new XmlDocument();
-                                                        try
-                                                        {
-                                                            xmlDoc.Load(Config.ConfigFilePath);
-                                                        }
-                                                        catch (XmlException e)
-                                                        {
-                                                            Log.Out(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", Config.ConfigFilePath, e.Message));
-                                                        }
-                                                        if (xmlDoc != null)
-                                                        {
-                                                            AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                            string decrypted = PanelDecrypt(postMessage.Substring(16), Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                            string newIv = PersistentOperations.CreatePassword(16);
-                                                            AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
-                                                            responseMessage += newIv;
-                                                            bool changed = false;
-                                                            XmlNodeList _nodes = xmlDoc.GetElementsByTagName("Tool");
-                                                            decrypted = decrypted.TrimEnd('☼');
-                                                            string[] tools = decrypted.Split('☼');
-                                                            for (int i = 0; i < tools.Length; i++)
-                                                            {
-                                                                XmlNode node = _nodes[i];
-                                                                string[] nameAndOptions = tools[i].Split('§');
-                                                                if (nameAndOptions[1].Contains("╚"))
-                                                                {
-                                                                    string[] _options = nameAndOptions[1].Split('╚');
-                                                                    for (int j = 0; j < _options.Length; j++)
-                                                                    {
-                                                                        string[] optionNameAndValue = _options[j].Split('σ');
-                                                                        int nodePosition = j + 1;
-                                                                        if (nameAndOptions[0] == node.Attributes[0].Value && optionNameAndValue[0] == node.Attributes[nodePosition].Name && optionNameAndValue[1] != node.Attributes[nodePosition].Value)
-                                                                        {
-                                                                            changed = true;
-                                                                            node.Attributes[nodePosition].Value = optionNameAndValue[1];
-                                                                        }
-                                                                    }
-                                                                }
-                                                                else
-                                                                {
-                                                                    string[] optionNameAndValue = nameAndOptions[1].Split('σ');
-                                                                    if (nameAndOptions[0] == node.Attributes[0].Value && optionNameAndValue[0] == node.Attributes[1].Name && optionNameAndValue[1] != node.Attributes[1].Value)
+                                                                    string[] optionNameAndValue = _options[j].Split('σ');
+                                                                    int nodePosition = j + 1;
+                                                                    if (nameAndOptions[0] == node.Attributes[0].Value && optionNameAndValue[0] == node.Attributes[nodePosition].Name && optionNameAndValue[1] != node.Attributes[nodePosition].Value)
                                                                     {
                                                                         changed = true;
-                                                                        node.Attributes[1].Value = optionNameAndValue[1];
+                                                                        node.Attributes[nodePosition].Value = optionNameAndValue[1];
                                                                     }
                                                                 }
                                                             }
-                                                            if (changed)
-                                                            {
-                                                                xmlDoc.Save(Config.ConfigFilePath);
-                                                                WebPanel.Writer(string.Format("Client {0} at IP {1} has updated the Config ", IVKey[0], _ip));
-                                                                _response.StatusCode = 200;
-                                                            }
                                                             else
                                                             {
+                                                                string[] optionNameAndValue = nameAndOptions[1].Split('σ');
+                                                                if (nameAndOptions[0] == node.Attributes[0].Value && optionNameAndValue[0] == node.Attributes[1].Name && optionNameAndValue[1] != node.Attributes[1].Value)
+                                                                {
+                                                                    changed = true;
+                                                                    node.Attributes[1].Value = optionNameAndValue[1];
+                                                                }
+                                                            }
+                                                        }
+                                                        if (changed)
+                                                        {
+                                                            xmlDoc.Save(Config.ConfigFilePath);
+                                                            WebPanel.Writer(string.Format("Client {0} at IP {1} has updated the Config ", IVKey[0], _ip));
+                                                            _response.StatusCode = 200;
+                                                        }
+                                                        else
+                                                        {
+                                                            _response.StatusCode = 406;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case "Kick":
+                                            if (AuthorizedIvKey.ContainsKey(clientId))
+                                            {
+                                                AuthorizedTime.TryGetValue(clientId, out DateTime expires);
+                                                if (Expired(expires))
+                                                {
+                                                    AuthorizedIvKey.Remove(clientId);
+                                                    AuthorizedTime.Remove(clientId);
+                                                    _response.Redirect(Redirect);
+                                                    _response.StatusCode = 401;
+                                                }
+                                                else
+                                                {
+                                                    AuthorizedTime[clientId] = DateTime.Now;
+                                                    AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                    string[] commandSplit = postMessage.Substring(16).Split('☼');
+                                                    string decrypted = PanelDecrypt(commandSplit[0], Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                    if (decrypted == clientId)
+                                                    {
+                                                        string newIv = PersistentOperations.CreatePassword(16);
+                                                        AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
+                                                        responseMessage += newIv;
+                                                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
+                                                        if (cInfo != null)
+                                                        {
+                                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0}", cInfo.CrossplatformId.CombinedString), null);
+                                                            WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has kicked '{2}' '{3}'", clientId, _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString));
+                                                            _response.StatusCode = 200;
+                                                        }
+                                                        else
+                                                        {
+                                                            _response.StatusCode = 406;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                _response.StatusCode = 403;
+                                            }
+                                            break;
+                                        case "Ban":
+                                            if (AuthorizedIvKey.ContainsKey(clientId))
+                                            {
+                                                AuthorizedTime.TryGetValue(clientId, out DateTime expires);
+                                                if (Expired(expires))
+                                                {
+                                                    AuthorizedIvKey.Remove(clientId);
+                                                    AuthorizedTime.Remove(clientId);
+                                                    _response.Redirect(Redirect);
+                                                    _response.StatusCode = 401;
+                                                }
+                                                else
+                                                {
+                                                    AuthorizedTime[clientId] = DateTime.Now;
+                                                    AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                    string[] commandSplit = postMessage.Substring(16).Split('☼');
+                                                    string decrypted = PanelDecrypt(commandSplit[0], Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                    if (decrypted == clientId)
+                                                    {
+                                                        string newIv = PersistentOperations.CreatePassword(16);
+                                                        AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
+                                                        responseMessage += newIv;
+                                                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
+                                                        if (cInfo != null)
+                                                        {
+                                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 year", cInfo.CrossplatformId.CombinedString), null);
+                                                            WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has banned id '{2}' '{3}' named '{4}'", IVKey[0], _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                                                            _response.StatusCode = 200;
+                                                        }
+                                                        else
+                                                        {
+                                                            PersistentPlayerData ppd = PersistentOperations.GetPersistentPlayerDataFromId(commandSplit[1]);
+                                                            if (ppd != null)
+                                                            {
+                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 year", ppd.UserIdentifier.CombinedString), null);
+                                                                WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has banned id '{2}' named '{3}'", IVKey[0], _ip, ppd.UserIdentifier.CombinedString, ppd.PlayerName));
                                                                 _response.StatusCode = 406;
                                                             }
                                                         }
                                                     }
                                                 }
-                                                break;
-                                            case "Kick":
-                                                if (AuthorizedIvKey.ContainsKey(clientId))
+                                            }
+                                            else
+                                            {
+                                                _response.StatusCode = 401;
+                                            }
+                                            break;
+                                        case "Mute":
+                                            if (AuthorizedIvKey.ContainsKey(clientId))
+                                            {
+                                                AuthorizedTime.TryGetValue(clientId, out DateTime expires);
+                                                if (Expired(expires))
                                                 {
-                                                    AuthorizedTime.TryGetValue(clientId, out DateTime expires);
-                                                    if (Expired(expires))
+                                                    AuthorizedIvKey.Remove(clientId);
+                                                    AuthorizedTime.Remove(clientId);
+                                                    _response.Redirect(Redirect);
+                                                    _response.StatusCode = 401;
+                                                }
+                                                else
+                                                {
+                                                    AuthorizedTime[clientId] = DateTime.Now;
+                                                    AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                    string[] commandSplit = postMessage.Substring(16).Split('☼');
+                                                    string decrypted = PanelDecrypt(commandSplit[0], Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                    if (decrypted == clientId)
                                                     {
-                                                        AuthorizedIvKey.Remove(clientId);
-                                                        AuthorizedTime.Remove(clientId);
-                                                        _response.Redirect(Redirect);
-                                                        _response.StatusCode = 401;
-                                                    }
-                                                    else
-                                                    {
-                                                        AuthorizedTime[clientId] = DateTime.Now;
-                                                        AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                        string[] commandSplit = postMessage.Substring(16).Split('☼');
-                                                        string decrypted = PanelDecrypt(commandSplit[0], Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                        if (decrypted == clientId)
+                                                        string newIv = PersistentOperations.CreatePassword(16);
+                                                        AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
+                                                        responseMessage += newIv;
+                                                        if (Mute.IsEnabled)
                                                         {
-                                                            string newIv = PersistentOperations.CreatePassword(16);
-                                                            AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
-                                                            responseMessage += newIv;
                                                             ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
                                                             if (cInfo != null)
                                                             {
-                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0}", cInfo.CrossplatformId.CombinedString), null);
-                                                                WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has kicked '{2}' '{3}'", clientId, _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString));
-                                                                _response.StatusCode = 200;
-                                                            }
-                                                            else
-                                                            {
-                                                                _response.StatusCode = 406;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    _response.StatusCode = 403;
-                                                }
-                                                break;
-                                            case "Ban":
-                                                if (AuthorizedIvKey.ContainsKey(clientId))
-                                                {
-                                                    AuthorizedTime.TryGetValue(clientId, out DateTime expires);
-                                                    if (Expired(expires))
-                                                    {
-                                                        AuthorizedIvKey.Remove(clientId);
-                                                        AuthorizedTime.Remove(clientId);
-                                                        _response.Redirect(Redirect);
-                                                        _response.StatusCode = 401;
-                                                    }
-                                                    else
-                                                    {
-                                                        AuthorizedTime[clientId] = DateTime.Now;
-                                                        AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                        string[] commandSplit = postMessage.Substring(16).Split('☼');
-                                                        string decrypted = PanelDecrypt(commandSplit[0], Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                        if (decrypted == clientId)
-                                                        {
-                                                            string newIv = PersistentOperations.CreatePassword(16);
-                                                            AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
-                                                            responseMessage += newIv;
-                                                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
-                                                            if (cInfo != null)
-                                                            {
-                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 year", cInfo.CrossplatformId.CombinedString), null);
-                                                                WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has banned id '{2}' '{3}' named '{4}'", IVKey[0], _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
-                                                                _response.StatusCode = 200;
-                                                            }
-                                                            else
-                                                            {
-                                                                PersistentPlayerData ppd = PersistentOperations.GetPersistentPlayerDataFromId(commandSplit[1]);
-                                                                if (ppd != null)
+                                                                if (Mute.Mutes.Contains(cInfo.CrossplatformId.CombinedString))
                                                                 {
-                                                                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 year", ppd.UserIdentifier.CombinedString), null);
-                                                                    WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has banned id '{2}' named '{3}'", IVKey[0], _ip, ppd.UserIdentifier.CombinedString, ppd.PlayerName));
-                                                                    _response.StatusCode = 406;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    _response.StatusCode = 401;
-                                                }
-                                                break;
-                                            case "Mute":
-                                                if (AuthorizedIvKey.ContainsKey(clientId))
-                                                {
-                                                    AuthorizedTime.TryGetValue(clientId, out DateTime expires);
-                                                    if (Expired(expires))
-                                                    {
-                                                        AuthorizedIvKey.Remove(clientId);
-                                                        AuthorizedTime.Remove(clientId);
-                                                        _response.Redirect(Redirect);
-                                                        _response.StatusCode = 401;
-                                                    }
-                                                    else
-                                                    {
-                                                        AuthorizedTime[clientId] = DateTime.Now;
-                                                        AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                        string[] commandSplit = postMessage.Substring(16).Split('☼');
-                                                        string decrypted = PanelDecrypt(commandSplit[0], Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                        if (decrypted == clientId)
-                                                        {
-                                                            string newIv = PersistentOperations.CreatePassword(16);
-                                                            AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
-                                                            responseMessage += newIv;
-                                                            if (Mute.IsEnabled)
-                                                            {
-                                                                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
-                                                                if (cInfo != null)
-                                                                {
-                                                                    if (Mute.Mutes.Contains(cInfo.CrossplatformId.CombinedString))
-                                                                    {
-                                                                        Mute.Mutes.Remove(cInfo.CrossplatformId.CombinedString);
-                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteTime = 0;
-                                                                        WebPanel.Writer(string.Format("Client {0} at IP {1} has unmuted id {2} named {3}", IVKey[0], _ip, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
-                                                                        _response.StatusCode = 202;
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        Mute.Mutes.Add(cInfo.CrossplatformId.CombinedString);
-                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteTime = -1;
-                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteName = cInfo.playerName;
-                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteDate = DateTime.Now;
-                                                                        WebPanel.Writer(string.Format("Client {0} at IP {1} has muted id {2} named {3}", IVKey[0], _ip, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
-                                                                        _response.StatusCode = 200;
-                                                                    }
-                                                                    PersistentContainer.DataChange = true;
+                                                                    Mute.Mutes.Remove(cInfo.CrossplatformId.CombinedString);
+                                                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteTime = 0;
+                                                                    WebPanel.Writer(string.Format("Client {0} at IP {1} has unmuted id {2} named {3}", IVKey[0], _ip, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                                                                    _response.StatusCode = 202;
                                                                 }
                                                                 else
                                                                 {
-                                                                    if (Mute.Mutes.Contains(commandSplit[1]))
-                                                                    {
-                                                                        Mute.Mutes.Remove(commandSplit[1]);
-                                                                        PersistentContainer.Instance.Players[commandSplit[1]].MuteTime = 0;
-                                                                        WebPanel.Writer(string.Format("Client {0} at IP {1} has unmuted id {2}", IVKey[0], _ip, commandSplit[1]));
-                                                                        _response.StatusCode = 202;
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        Mute.Mutes.Add(commandSplit[1]);
-                                                                        PersistentContainer.Instance.Players[commandSplit[1]].MuteTime = -1;
-                                                                        PersistentContainer.Instance.Players[commandSplit[1]].MuteName = "-Unknown-";
-                                                                        PersistentContainer.Instance.Players[commandSplit[1]].MuteDate = DateTime.Now;
-                                                                        WebPanel.Writer(string.Format("Client {0} at IP {1} has muted id {2}", IVKey[0], _ip, commandSplit[1]));
-                                                                        _response.StatusCode = 200;
-                                                                    }
-                                                                    PersistentContainer.DataChange = true;
+                                                                    Mute.Mutes.Add(cInfo.CrossplatformId.CombinedString);
+                                                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteTime = -1;
+                                                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteName = cInfo.playerName;
+                                                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteDate = DateTime.Now;
+                                                                    WebPanel.Writer(string.Format("Client {0} at IP {1} has muted id {2} named {3}", IVKey[0], _ip, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                                                                    _response.StatusCode = 200;
                                                                 }
+                                                                PersistentContainer.DataChange = true;
                                                             }
                                                             else
                                                             {
-                                                                _response.StatusCode = 406;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    _response.StatusCode = 401;
-                                                }
-                                                break;
-                                            case "Jail":
-                                                if (AuthorizedIvKey.ContainsKey(clientId))
-                                                {
-                                                    AuthorizedTime.TryGetValue(clientId, out DateTime expires);
-                                                    if (Expired(expires))
-                                                    {
-                                                        AuthorizedIvKey.Remove(clientId);
-                                                        AuthorizedTime.Remove(clientId);
-                                                        _response.Redirect(Redirect);
-                                                        _response.StatusCode = 401;
-                                                    }
-                                                    else
-                                                    {
-                                                        AuthorizedTime[clientId] = DateTime.Now;
-                                                        AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                        string[] commandSplit = postMessage.Substring(16).Split('☼');
-                                                        string decrypted = PanelDecrypt(commandSplit[0], Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                        if (decrypted == clientId)
-                                                        {
-                                                            string newIv = PersistentOperations.CreatePassword(16);
-                                                            AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
-                                                            responseMessage += newIv;
-                                                            if (Jail.IsEnabled)
-                                                            {
-                                                                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
-                                                                if (cInfo != null)
+                                                                if (Mute.Mutes.Contains(commandSplit[1]))
                                                                 {
-                                                                    if (Jail.Jailed.Contains(cInfo.CrossplatformId.CombinedString))
-                                                                    {
-                                                                        EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];
-                                                                        if (player != null)
-                                                                        {
-                                                                            EntityBedrollPositionList position = player.SpawnPoints;
-                                                                            Jail.Jailed.Remove(cInfo.CrossplatformId.CombinedString);
-                                                                            PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailTime = 0;
-                                                                            PersistentContainer.DataChange = true;
-                                                                            if (position != null && position.Count > 0)
-                                                                            {
-                                                                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(position[0].x, -1, position[0].z), null, false));
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                Vector3[] pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                                                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(pos[0].x, -1, pos[0].z), null, false));
-                                                                            }
-                                                                            WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has unjailed '{2}' '{3}' named '{4}'", IVKey[0], _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
-                                                                            _response.StatusCode = 200;
-                                                                        }
-                                                                    }
-                                                                    else if (Jail.Jail_Position != "")
-                                                                    {
-                                                                        EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];
-                                                                        if (player != null && player.IsSpawned())
-                                                                        {
-                                                                            if (Jail.Jail_Position.Contains(","))
-                                                                            {
-                                                                                string[] cords = Jail.Jail_Position.Split(',');
-                                                                                int.TryParse(cords[0], out int _x);
-                                                                                int.TryParse(cords[1], out int _y);
-                                                                                int.TryParse(cords[2], out int _z);
-                                                                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
-                                                                            }
-                                                                        }
-                                                                        Jail.Jailed.Add(cInfo.CrossplatformId.CombinedString);
-                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailTime = -1;
-                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailName = cInfo.playerName;
-                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailDate = DateTime.Now;
-                                                                        PersistentContainer.DataChange = true;
-                                                                        WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has jailed '{2}' '{3}' named '{4}'", IVKey[0], _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
-                                                                        _response.StatusCode = 200;
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        _response.StatusCode = 409;
-                                                                    }
+                                                                    Mute.Mutes.Remove(commandSplit[1]);
+                                                                    PersistentContainer.Instance.Players[commandSplit[1]].MuteTime = 0;
+                                                                    WebPanel.Writer(string.Format("Client {0} at IP {1} has unmuted id {2}", IVKey[0], _ip, commandSplit[1]));
+                                                                    _response.StatusCode = 202;
                                                                 }
                                                                 else
                                                                 {
-                                                                    if (Jail.Jailed.Contains(commandSplit[1]))
-                                                                    {
-                                                                        Jail.Jailed.Remove(commandSplit[1]);
-                                                                        PersistentContainer.Instance.Players[commandSplit[1]].JailTime = 0;
-                                                                        WebPanel.Writer(string.Format("Client {0} at IP {1} has unjailed {2}", IVKey[0], _ip, commandSplit[1]));
-                                                                    }
-                                                                    else if (Jail.Jail_Position != "")
-                                                                    {
-                                                                        Jail.Jailed.Add(commandSplit[1]);
-                                                                        PersistentContainer.Instance.Players[commandSplit[1]].JailTime = -1;
-                                                                        PersistentContainer.Instance.Players[commandSplit[1]].JailName = "-Unknown-";
-                                                                        PersistentContainer.Instance.Players[commandSplit[1]].JailDate = DateTime.Now;
-                                                                        WebPanel.Writer(string.Format("Client {0} at IP {1} has jailed {2}", IVKey[0], _ip, commandSplit[1]));
-                                                                    }
-                                                                    PersistentContainer.DataChange = true;
-                                                                    _response.StatusCode = 406;
+                                                                    Mute.Mutes.Add(commandSplit[1]);
+                                                                    PersistentContainer.Instance.Players[commandSplit[1]].MuteTime = -1;
+                                                                    PersistentContainer.Instance.Players[commandSplit[1]].MuteName = "-Unknown-";
+                                                                    PersistentContainer.Instance.Players[commandSplit[1]].MuteDate = DateTime.Now;
+                                                                    WebPanel.Writer(string.Format("Client {0} at IP {1} has muted id {2}", IVKey[0], _ip, commandSplit[1]));
+                                                                    _response.StatusCode = 200;
                                                                 }
-                                                            }
-                                                            else
-                                                            {
-                                                                _response.StatusCode = 500;
+                                                                PersistentContainer.DataChange = true;
                                                             }
                                                         }
                                                         else
                                                         {
-                                                            AuthorizedTime.Remove(clientId);
-                                                            AuthorizedIvKey.Remove(clientId);
+                                                            _response.StatusCode = 406;
                                                         }
                                                     }
                                                 }
-                                                else
+                                            }
+                                            else
+                                            {
+                                                _response.StatusCode = 401;
+                                            }
+                                            break;
+                                        case "Jail":
+                                            if (AuthorizedIvKey.ContainsKey(clientId))
+                                            {
+                                                AuthorizedTime.TryGetValue(clientId, out DateTime expires);
+                                                if (Expired(expires))
                                                 {
+                                                    AuthorizedIvKey.Remove(clientId);
+                                                    AuthorizedTime.Remove(clientId);
+                                                    _response.Redirect(Redirect);
                                                     _response.StatusCode = 401;
                                                 }
-                                                break;
-                                            case "Reward":
-                                                if (AuthorizedIvKey.ContainsKey(clientId))
+                                                else
                                                 {
-                                                    AuthorizedTime.TryGetValue(clientId, out DateTime expires);
-                                                    if (Expired(expires))
+                                                    AuthorizedTime[clientId] = DateTime.Now;
+                                                    AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                    string[] commandSplit = postMessage.Substring(16).Split('☼');
+                                                    string decrypted = PanelDecrypt(commandSplit[0], Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                    if (decrypted == clientId)
                                                     {
-                                                        AuthorizedIvKey.Remove(clientId);
-                                                        AuthorizedTime.Remove(clientId);
-                                                        _response.Redirect(Redirect);
-                                                        _response.StatusCode = 401;
-                                                    }
-                                                    else
-                                                    {
-                                                        AuthorizedTime[clientId] = DateTime.Now;
-                                                        AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
-                                                        string[] commandSplit = postMessage.Substring(16).Split('☼');
-                                                        string decrypted = PanelDecrypt(commandSplit[0], Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
-                                                        if (decrypted == clientId)
+                                                        string newIv = PersistentOperations.CreatePassword(16);
+                                                        AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], newIv };
+                                                        responseMessage += newIv;
+                                                        if (Jail.IsEnabled)
                                                         {
-                                                            string _newIv = PersistentOperations.CreatePassword(16);
-                                                            AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], _newIv };
-                                                            responseMessage += _newIv;
-                                                            if (VoteReward.IsEnabled)
+                                                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
+                                                            if (cInfo != null)
                                                             {
-                                                                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
-                                                                if (cInfo != null)
+                                                                if (Jail.Jailed.Contains(cInfo.CrossplatformId.CombinedString))
                                                                 {
-                                                                    VoteReward.ItemOrBlockCounter(cInfo, VoteReward.Reward_Count);
-                                                                    WebPanel.Writer(string.Format("Client {0} at IP {1} has rewarded {2} named {3}", IVKey[0], _ip, cInfo.PlatformId.CombinedString, cInfo.playerName));
+                                                                    EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];
+                                                                    if (player != null)
+                                                                    {
+                                                                        EntityBedrollPositionList position = player.SpawnPoints;
+                                                                        Jail.Jailed.Remove(cInfo.CrossplatformId.CombinedString);
+                                                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailTime = 0;
+                                                                        PersistentContainer.DataChange = true;
+                                                                        if (position != null && position.Count > 0)
+                                                                        {
+                                                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(position[0].x, -1, position[0].z), null, false));
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            Vector3[] pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
+                                                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(pos[0].x, -1, pos[0].z), null, false));
+                                                                        }
+                                                                        WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has unjailed '{2}' '{3}' named '{4}'", IVKey[0], _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                                                                        _response.StatusCode = 200;
+                                                                    }
+                                                                }
+                                                                else if (Jail.Jail_Position != "")
+                                                                {
+                                                                    EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];
+                                                                    if (player != null && player.IsSpawned())
+                                                                    {
+                                                                        if (Jail.Jail_Position.Contains(","))
+                                                                        {
+                                                                            string[] cords = Jail.Jail_Position.Split(',');
+                                                                            int.TryParse(cords[0], out int _x);
+                                                                            int.TryParse(cords[1], out int _y);
+                                                                            int.TryParse(cords[2], out int _z);
+                                                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                                                                        }
+                                                                    }
+                                                                    Jail.Jailed.Add(cInfo.CrossplatformId.CombinedString);
+                                                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailTime = -1;
+                                                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailName = cInfo.playerName;
+                                                                    PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailDate = DateTime.Now;
+                                                                    PersistentContainer.DataChange = true;
+                                                                    WebPanel.Writer(string.Format("Client '{0}' at IP '{1}' has jailed '{2}' '{3}' named '{4}'", IVKey[0], _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                                                                    _response.StatusCode = 200;
                                                                 }
                                                                 else
                                                                 {
-                                                                    _response.StatusCode = 406;
+                                                                    _response.StatusCode = 409;
                                                                 }
                                                             }
                                                             else
                                                             {
-                                                                _response.StatusCode = 500;
+                                                                if (Jail.Jailed.Contains(commandSplit[1]))
+                                                                {
+                                                                    Jail.Jailed.Remove(commandSplit[1]);
+                                                                    PersistentContainer.Instance.Players[commandSplit[1]].JailTime = 0;
+                                                                    WebPanel.Writer(string.Format("Client {0} at IP {1} has unjailed {2}", IVKey[0], _ip, commandSplit[1]));
+                                                                }
+                                                                else if (Jail.Jail_Position != "")
+                                                                {
+                                                                    Jail.Jailed.Add(commandSplit[1]);
+                                                                    PersistentContainer.Instance.Players[commandSplit[1]].JailTime = -1;
+                                                                    PersistentContainer.Instance.Players[commandSplit[1]].JailName = "-Unknown-";
+                                                                    PersistentContainer.Instance.Players[commandSplit[1]].JailDate = DateTime.Now;
+                                                                    WebPanel.Writer(string.Format("Client {0} at IP {1} has jailed {2}", IVKey[0], _ip, commandSplit[1]));
+                                                                }
+                                                                PersistentContainer.DataChange = true;
+                                                                _response.StatusCode = 406;
                                                             }
                                                         }
+                                                        else
+                                                        {
+                                                            _response.StatusCode = 500;
+                                                        }
                                                     }
+                                                    else
+                                                    {
+                                                        AuthorizedTime.Remove(clientId);
+                                                        AuthorizedIvKey.Remove(clientId);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                _response.StatusCode = 401;
+                                            }
+                                            break;
+                                        case "Reward":
+                                            if (AuthorizedIvKey.ContainsKey(clientId))
+                                            {
+                                                AuthorizedTime.TryGetValue(clientId, out DateTime expires);
+                                                if (Expired(expires))
+                                                {
+                                                    AuthorizedIvKey.Remove(clientId);
+                                                    AuthorizedTime.Remove(clientId);
+                                                    _response.Redirect(Redirect);
+                                                    _response.StatusCode = 401;
                                                 }
                                                 else
                                                 {
-                                                    _response.StatusCode = 401;
+                                                    AuthorizedTime[clientId] = DateTime.Now;
+                                                    AuthorizedIvKey.TryGetValue(clientId, out string[] IVKey);
+                                                    string[] commandSplit = postMessage.Substring(16).Split('☼');
+                                                    string decrypted = PanelDecrypt(commandSplit[0], Encoding.UTF8.GetBytes(IVKey[1]), Encoding.UTF8.GetBytes(IVKey[2]));
+                                                    if (decrypted == clientId)
+                                                    {
+                                                        string _newIv = PersistentOperations.CreatePassword(16);
+                                                        AuthorizedIvKey[clientId] = new string[] { IVKey[0], IVKey[1], _newIv };
+                                                        responseMessage += _newIv;
+                                                        if (VoteReward.IsEnabled)
+                                                        {
+                                                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(commandSplit[1]);
+                                                            if (cInfo != null)
+                                                            {
+                                                                VoteReward.ItemOrBlockCounter(cInfo, VoteReward.Reward_Count);
+                                                                WebPanel.Writer(string.Format("Client {0} at IP {1} has rewarded {2} named {3}", IVKey[0], _ip, cInfo.PlatformId.CombinedString, cInfo.playerName));
+                                                            }
+                                                            else
+                                                            {
+                                                                _response.StatusCode = 406;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            _response.StatusCode = 500;
+                                                        }
+                                                    }
                                                 }
-                                                break;
-                                        }
-                                        byte[] c = Encoding.UTF8.GetBytes(responseMessage);
-                                        if (c != null)
-                                        {
-                                            _response.SendChunked = false;
-                                            _response.ProtocolVersion = HttpVersion;
-                                            _response.KeepAlive = true;
-                                            _response.AddHeader("Keep-Alive", "timeout=300, max=100");
-                                            _response.ContentLength64 = (long)c.Length;
-                                            _response.ContentEncoding = Encoding.UTF8;
-                                            _response.ContentType = "text/html; charset=utf-8";
-                                            using (Stream output = _response.OutputStream)
-                                            {
-                                                output.Write(c, 0, c.Length);
                                             }
+                                            else
+                                            {
+                                                _response.StatusCode = 401;
+                                            }
+                                            break;
+                                    }
+                                    byte[] c = Encoding.UTF8.GetBytes(responseMessage);
+                                    if (c != null)
+                                    {
+                                        _response.SendChunked = false;
+                                        _response.ProtocolVersion = HttpVersion;
+                                        _response.KeepAlive = true;
+                                        _response.AddHeader("Keep-Alive", "timeout=300, max=100");
+                                        _response.ContentLength64 = (long)c.Length;
+                                        _response.ContentEncoding = Encoding.UTF8;
+                                        _response.ContentType = "text/html; charset=utf-8";
+                                        using (Stream output = _response.OutputStream)
+                                        {
+                                            output.Write(c, 0, c.Length);
                                         }
                                     }
                                 }
-                                else
-                                {
-                                    WebPanel.Writer(string.Format("Detected {0} attempting to access an invalid address {1}", _ip, _uri));
-                                }
+                            }
+                            else
+                            {
+                                WebPanel.Writer(string.Format("Detected {0} attempting to access an invalid address {1}", _ip, _uri));
                             }
                         }
                     }

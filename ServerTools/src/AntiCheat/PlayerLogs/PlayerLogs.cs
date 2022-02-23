@@ -156,7 +156,7 @@ namespace ServerTools
                                                 playerNode.AppendChild(newEntry);
                                                 newEntry = xmlDoc.CreateTextNode(string.Format("       {0}: EntityId {1} / Name {2} / IP Address {3} / Position {4} X {5} Y {6} Z / RegionFile r.{7}.{8}.7rg\n", dt, cInfo.entityId, cInfo.playerName, ip, x, y, z, regionX, regionZ));
                                                 playerNode.AppendChild(newEntry);
-                                                newEntry = xmlDoc.CreateTextNode(string.Format("       Health {0} / Stamina {1} / ZombieKills {2} / PlayerKills {3} / PlayerLevel {4}\n", (int)player.Stats.Health.Value, (int)player.Stats.Stamina.Value, player.KilledZombies, player.KilledPlayers, player.Progression.GetLevel()));
+                                                newEntry = xmlDoc.CreateTextNode(string.Format("       Health {0} / Stamina {1} / ZombieKills {2} / PlayerKills {3} / PlayerLevel {4} / Deaths {5}\n", (int)player.Stats.Health.Value, (int)player.Stats.Stamina.Value, player.KilledZombies, player.KilledPlayers, player.Progression.GetLevel(), player.Died));
                                                 playerNode.AppendChild(newEntry);
                                                 newEntry = xmlDoc.CreateTextNode("       Belt:\n");
                                                 playerNode.AppendChild(newEntry);

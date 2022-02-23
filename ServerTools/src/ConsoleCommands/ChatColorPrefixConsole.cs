@@ -98,7 +98,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online or offline. Use steam id for offline player", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online or offline", _params[1]));
                             return;
                         }
                     }
@@ -240,7 +240,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online or offline. Use steam id for offline player", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online or offline", _params[1]));
                             return;
                         }
                     }
@@ -321,29 +321,29 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
-                    string steamId = "";
-                    ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    string id = "";
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
-                        steamId = cInfo.PlatformId.ReadablePlatformUserIdentifier;
+                        id = cInfo.PlatformId.ReadablePlatformUserIdentifier;
                     }
                     else
                     {
                         PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromId(_params[1]);
                         if (pdf != null)
                         {
-                            steamId = _params[1];
+                            id = _params[1];
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online or offline. Use steam id for offline player", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online or offline", _params[1]));
                             return;
                         }
                     }
-                    if (ChatColor.Players.ContainsKey(steamId))
+                    if (ChatColor.Players.ContainsKey(id))
                     {
-                        ChatColor.Players.Remove(steamId);
-                        ChatColor.ExpireDate.Remove(steamId);
+                        ChatColor.Players.Remove(id);
+                        ChatColor.ExpireDate.Remove(id);
                         ChatColor.UpdateXml();
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed player id '{0}' from the chat color prefix list", _params[1]));
                         return;

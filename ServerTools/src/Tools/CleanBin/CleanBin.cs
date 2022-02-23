@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Auction = false, Bank = false, Bounties = false, Delays = false, 
             Homes = false, Jail = false, Lobby = false, Market = false, New_Spawn_Tele = false, Poll = false, 
-            Protected_Spaces = false, Vehicles = false, Wallet = false, Waypoints = false;
+            Protected_Spaces = false, Vehicles = false, Waypoints = false;
 
         public static void Exec()
         {
@@ -92,10 +92,6 @@ namespace ServerTools
                 if (Vehicles)
                 {
                     PersistentContainer.Instance.Players[id[i]].Vehicles = new Dictionary<int, string[]>();
-                }
-                if (Wallet)
-                {
-                    PersistentContainer.Instance.Players[id[i]].PlayerWallet = 0;
                 }
                 if (Waypoints)
                 {

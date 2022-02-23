@@ -25,6 +25,7 @@ namespace ServerTools
         private string eventReturnPosition;
         private bool eventSpawn;
         private List<List<string>> events;
+        private bool familyShareImmune;
         private bool firstClaimBlock;
         private bool hardcoreEnabled;
         private List<string[]> hardcoreSavedStats;
@@ -66,6 +67,7 @@ namespace ServerTools
         private bool oldPlayer;
         private string playerName;
         private int playerWallet;
+        private bool proxyBanImmune;
         private int sessionTime;
         private bool startingItems;
         private int totalTimePlayed;
@@ -276,6 +278,18 @@ namespace ServerTools
             set
             {
                 events = value;
+            }
+        }
+
+        public bool FamilyShareImmune
+        {
+            get
+            {
+                return familyShareImmune;
+            }
+            set
+            {
+                familyShareImmune = value;
             }
         }
 
@@ -744,6 +758,18 @@ namespace ServerTools
             set
             {
                 playerWallet = value;
+            }
+        }
+
+        public bool ProxyBanImmune
+        {
+            get
+            {
+                return proxyBanImmune;
+            }
+            set
+            {
+                proxyBanImmune = value;
             }
         }
 

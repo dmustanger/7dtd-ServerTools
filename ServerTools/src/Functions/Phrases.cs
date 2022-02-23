@@ -1623,7 +1623,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bounties6\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bounties7", out phrase))
                     {
-                        phrase = "Type {Command_Prefix1}{Command_bounty} Id Value or {Command_Prefix1}{Command_bounty} Id for the minimum bounty against this player id";
+                        phrase = "Type {Command_Prefix1}{Command_bounty} Id Value or with no Value for the minimum bounty against this player id";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bounties7\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bounties8", out phrase))
@@ -1662,22 +1662,22 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"KillNotice4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("KillNotice5", out phrase))
                     {
-                        phrase = "{PlayerName} lvl ({Level}) has been ate by {ZombieName}. {Value} damage. Nom nom nom";
+                        phrase = "{Name1} lvl ({Level}) has been ate by {Name2}. {Value} damage. Nom nom nom";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"KillNotice5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("KillNotice6", out phrase))
                     {
-                        phrase = "{PlayerName} lvl ({Level}) has been ate by {ZombieName}. Nom nom nom";
+                        phrase = "{Name1} lvl ({Level}) has been ate by {Name2}. Nom nom nom";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"KillNotice6\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("KillNotice7", out phrase))
                     {
-                        phrase = "{PlayerName} has been ate by {ZombieName}. {Value} damage. Nom nom nom";
+                        phrase = "{Name1} has been ate by {Name2}. {Value} damage. Nom nom nom";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"KillNotice7\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("KillNotice8", out phrase))
                     {
-                        phrase = "{PlayerName} has been ate by {ZombieName}. Nom nom nom";
+                        phrase = "{Name1} has been ate by {Name2}. Nom nom nom";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"KillNotice8\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
@@ -3108,14 +3108,27 @@ namespace ServerTools
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("MagicBullet1", out phrase))
                     {
-                        phrase = "Auto detection has banned you for net packet manipulation";
+                        phrase = "Auto detection has banned you for using magic bullet hack";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"MagicBullet1\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("MagicBullet2", out phrase))
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ************************ Proxy_Ban ********************* -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("ProxyBan1", out phrase))
                     {
-                        phrase = "Detected Id '{0}' '{1}' named '{2}' manipulating net packages. They have been banned";
+                        phrase = "Auto detection has banned you for proxy use";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"MagicBullet2\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine(string.Format("    <Phrase Name=\"ProxyBan1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ********************** Family_Share ******************** -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("FamilyShare1", out phrase))
+                    {
+                        phrase = "Family share accounts are forbidden without permission";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"FamilyShare1\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");

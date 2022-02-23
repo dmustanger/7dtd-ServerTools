@@ -51,7 +51,7 @@ namespace ServerTools
                 for (int i = 0; i < clientList.Count; i++)
                 {
                     ClientInfo cInfoAdmin = clientList[i];
-                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfoAdmin.PlatformId) <= Admin_Level ||
+                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfoAdmin.PlatformId) <= Admin_Level &&
                         GameManager.Instance.adminTools.GetUserPermissionLevel(cInfoAdmin.CrossplatformId) <= Admin_Level)
                     {
                         Phrases.Dict.TryGetValue("Report2", out string phrase);

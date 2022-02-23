@@ -66,6 +66,16 @@ namespace ServerTools
         {
             try
             {
+                if (Badwords.IsEnabled)
+                {
+                    for (int i = 0; i < Badwords.Dict.Count; i++)
+                    {
+                        if (Queue[0].ToLower().Contains(Badwords.Dict[i]))
+                        {
+                            Queue[0] = Queue[0].ToLower().Replace(Badwords.Dict[i], "***");
+                        }
+                    }
+                }
                 using (WebClient client = new WebClient())
                 {
                     client.Headers[HttpRequestHeader.ContentType] = "application/json";
@@ -83,7 +93,7 @@ namespace ServerTools
                     }
                     if (e.Message.Contains("(401)"))
                     {
-                        Log.Out("[SERVERTOOLS] The Discord webhook you have provided is not authorized. Correct the token you have provided in the ServerToolsConfig.xml");
+                        Log.Out("[SERVERTOOLS] The Discord webhook you have provided is not authorized. Check the token you have provided in the ServerToolsConfig.xml");
                     }
                     else if (e.Message.Contains("(403)"))
                     {

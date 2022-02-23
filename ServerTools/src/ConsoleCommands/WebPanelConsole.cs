@@ -176,12 +176,12 @@ namespace ServerTools
                         WebAPI.AuthorizedIvKey.Clear();
                         WebAPI.AuthorizedTime.Clear();
                         WebAPI.Visitor.Clear();
-                        WebPanel.PageHits.Clear();
-                        WebPanel.LoginAttempts.Clear();
-                        WebPanel.TimeOut.Clear();
-                        if (PersistentContainer.Instance.WebPanelTimeoutList != null && PersistentContainer.Instance.WebPanelTimeoutList.Count > 0)
+                        WebAPI.PageHits.Clear();
+                        WebAPI.LoginAttempts.Clear();
+                        WebAPI.TimeOut.Clear();
+                        if (PersistentContainer.Instance.WebTimeoutList != null && PersistentContainer.Instance.WebTimeoutList.Count > 0)
                         {
-                            PersistentContainer.Instance.WebPanelTimeoutList.Clear();
+                            PersistentContainer.Instance.WebTimeoutList.Clear();
                             PersistentContainer.DataChange = true;
                         }
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Web panel has been reset of all session data. Clients must relog"));
@@ -203,18 +203,18 @@ namespace ServerTools
                     else if (_params[1].ToLower() == "add")
                     {
                         string ip = _params[2];
-                        if (!WebPanel.TimeOut.ContainsKey(ip))
+                        if (!WebAPI.TimeOut.ContainsKey(ip))
                         {
-                            WebPanel.TimeOut.Add(ip, DateTime.Now.AddMinutes(5));
-                            if (PersistentContainer.Instance.WebPanelTimeoutList != null)
+                            WebAPI.TimeOut.Add(ip, DateTime.Now.AddMinutes(5));
+                            if (PersistentContainer.Instance.WebTimeoutList != null)
                             {
-                                PersistentContainer.Instance.WebPanelTimeoutList.Add(ip, DateTime.Now.AddMinutes(5));
+                                PersistentContainer.Instance.WebTimeoutList.Add(ip, DateTime.Now.AddMinutes(5));
                             }
                             else
                             {
                                 Dictionary<string, DateTime> timeouts = new Dictionary<string, DateTime>();
                                 timeouts.Add(ip, DateTime.Now.AddMinutes(5));
-                                PersistentContainer.Instance.WebPanelTimeoutList = timeouts;
+                                PersistentContainer.Instance.WebTimeoutList = timeouts;
                             }
                             PersistentContainer.DataChange = true;
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] IP '{0}' has been added to the timeout list", ip));
@@ -229,10 +229,10 @@ namespace ServerTools
                     else if (_params[1].ToLower() == "remove")
                     {
                         string ip = _params[2];
-                        if (WebPanel.TimeOut.ContainsKey(ip))
+                        if (WebAPI.TimeOut.ContainsKey(ip))
                         {
-                            WebPanel.TimeOut.Remove(ip);
-                            PersistentContainer.Instance.WebPanelTimeoutList.Remove(ip);
+                            WebAPI.TimeOut.Remove(ip);
+                            PersistentContainer.Instance.WebTimeoutList.Remove(ip);
                             PersistentContainer.DataChange = true;
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] IP '{0}' has been removed from the timeout list", ip));
                             return;
@@ -258,18 +258,18 @@ namespace ServerTools
                     else if (_params[1].ToLower() == "add")
                     {
                         string ip = _params[2];
-                        if (!WebPanel.Ban.Contains(ip))
+                        if (!WebAPI.Ban.Contains(ip))
                         {
-                            WebPanel.Ban.Add(ip);
-                            if (PersistentContainer.Instance.WebPanelBanList != null)
+                            WebAPI.Ban.Add(ip);
+                            if (PersistentContainer.Instance.WebBanList != null)
                             {
-                                PersistentContainer.Instance.WebPanelBanList.Add(ip);
+                                PersistentContainer.Instance.WebBanList.Add(ip);
                             }
                             else
                             {
                                 List<string> bans = new List<string>();
                                 bans.Add(ip);
-                                PersistentContainer.Instance.WebPanelBanList = bans;
+                                PersistentContainer.Instance.WebBanList = bans;
                             }
                             PersistentContainer.DataChange = true;
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] IP '{0}' has been added to the ban list", ip));
@@ -284,12 +284,12 @@ namespace ServerTools
                     else if (_params[1].ToLower() == "remove")
                     {
                         string ip = _params[2];
-                        if (WebPanel.Ban.Contains(ip))
+                        if (WebAPI.Ban.Contains(ip))
                         {
-                            WebPanel.Ban.Remove(ip);
-                            if (PersistentContainer.Instance.WebPanelBanList != null)
+                            WebAPI.Ban.Remove(ip);
+                            if (PersistentContainer.Instance.WebBanList != null)
                             {
-                                PersistentContainer.Instance.WebPanelBanList.Remove(ip);
+                                PersistentContainer.Instance.WebBanList.Remove(ip);
                                 PersistentContainer.DataChange = true;
                             }
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] IP '{0}' has been removed from the ban list", ip));
@@ -323,9 +323,9 @@ namespace ServerTools
                     {
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no clients on the web panel list"));
                     }
-                    if (WebPanel.TimeOut.Count > 0)
+                    if (WebAPI.TimeOut.Count > 0)
                     {
-                        foreach (var timeout in WebPanel.TimeOut)
+                        foreach (var timeout in WebAPI.TimeOut)
                         {
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Timed out IP '{0}'. Lasts until '{1}'", timeout.Key, timeout.Value.AddMinutes(10)));
                         }
@@ -334,11 +334,11 @@ namespace ServerTools
                     {
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no timed out ip address"));
                     }
-                    if (WebPanel.Ban.Count > 0)
+                    if (WebAPI.Ban.Count > 0)
                     {
-                        for (int i = 0; i < WebPanel.Ban.Count; i++)
+                        for (int i = 0; i < WebAPI.Ban.Count; i++)
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Banned IP '{0}'", WebPanel.Ban[i]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Banned IP '{0}'", WebAPI.Ban[i]));
                         }
                     }
                     else

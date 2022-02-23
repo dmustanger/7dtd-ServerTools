@@ -86,10 +86,10 @@ namespace ServerTools
                 return;
             }
             EventSchedule.Remove("Shutdown");
-            StartShutdown();
+            StartShutdown(Countdown);
         }
 
-        public static void StartShutdown()
+        public static void StartShutdown(int _countdown)
         {
             if (Lottery.OpenLotto)
             {
@@ -100,20 +100,20 @@ namespace ServerTools
             {
                 ExitCommand.Players.Clear();
             }
-            if (Countdown < 1)
+            if (_countdown < 1)
             {
-                Countdown = 1;
+                _countdown = 1;
             }
-            Timers.StopServerMinutes = Countdown;
+            Timers.StopServerMinutes = _countdown;
             ShuttingDown = true;
-            if (Countdown == 1)
+            if (_countdown == 1)
             {
                 OneMinute();
             }
             else
             {
                 Phrases.Dict.TryGetValue("StopServer1", out string phrase);
-                phrase = phrase.Replace("{Value}", Countdown.ToString());
+                phrase = phrase.Replace("{Value}", _countdown.ToString());
                 Alert(phrase, Shutdown.Alert_Count);
             }
         }

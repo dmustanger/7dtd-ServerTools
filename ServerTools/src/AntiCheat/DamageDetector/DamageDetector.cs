@@ -16,7 +16,7 @@ namespace ServerTools
         {
             try
             {
-                if (_itemValue != null && _strength >= Player_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level || 
+                if (_itemValue != null && _strength >= Player_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level && 
                     GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > Admin_Level))
                 {
                     Phrases.Dict.TryGetValue("DamageDetector2", out string phrase);
@@ -46,7 +46,7 @@ namespace ServerTools
         {
             try
             {
-                if (_itemValue != null && _strength >= Entity_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level ||
+                if (_itemValue != null && _strength >= Entity_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level &&
                     GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > Admin_Level))
                 {
                     Phrases.Dict.TryGetValue("DamageDetector2", out string phrase);

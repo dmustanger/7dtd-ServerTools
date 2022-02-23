@@ -98,7 +98,7 @@ namespace ServerTools
                 if (daysRemaining == 0 && !PersistentOperations.IsBloodmoon())
                 {
                     Phrases.Dict.TryGetValue("Bloodmoon2", out string phrase);
-                    phrase = phrase.Replace("{Time}", GameManager.Instance.World.DawnHour.ToString());
+                    phrase = phrase.Replace("{Time}", GameManager.Instance.World.DuskHour.ToString());
                     ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
                 else if (PersistentOperations.IsBloodmoon())

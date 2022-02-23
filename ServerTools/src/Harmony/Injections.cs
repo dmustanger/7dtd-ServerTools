@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 public static class Injections
 {
@@ -49,7 +50,7 @@ public static class Injections
         }
     }
 
-    public static bool ChangeBlocks_Prefix(GameManager __instance, PlatformUserIdentifierAbs persistentPlayerId, List<BlockChangeInfo> _blocksToChange)
+    public static bool GameManager_ChangeBlocks_Prefix(GameManager __instance, PlatformUserIdentifierAbs persistentPlayerId, List<BlockChangeInfo> _blocksToChange)
     {
         try
         {
@@ -57,7 +58,7 @@ public static class Injections
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ChangeBlocks_Prefix: {0}", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_ChangeBlocks_Prefix: {0}", e.Message));
         }
         return true;
     }
@@ -74,33 +75,65 @@ public static class Injections
         }
     }
 
-    public static void AddFallingBlock_Postfix(World __instance, Vector3i _blockPos)
+    public static void AddFallingBlock_Prefix(World __instance, Vector3i _blockPos)
     {
         try
         {
-            if (FallingBlocks.IsEnabled)
+            if (FallingBlocks.IsEnabled && _blockPos != null)
             {
-                FallingBlocks.Single(__instance, _blockPos);
+                BlockValue blockValue = __instance.GetBlock(_blockPos);
+                if (!(blockValue.Block is BlockSleepingBag) && !(blockValue.Block is BlockPlant) && !blockValue.Block.Equals(BlockValue.Air))
+                {
+                    GameManager.Instance.World.SetBlockRPC(_blockPos, BlockValue.Air);
+                }
             }
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.AddFallingBlock_Postfix: {0}", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.AddFallingBlock_Prefix: {0}", e.Message));
         }
     }
 
-    public static void AddFallingBlocks_Postfix(World __instance, IList<Vector3i> _list)
+    public static void AddFallingBlocks_Prefix(World __instance, IList<Vector3i> _list)
     {
         try
         {
-            if (FallingBlocks.IsEnabled)
+            if (FallingBlocks.IsEnabled && _list != null)
             {
-                FallingBlocks.Multiple(__instance, _list);
+                for (int i = 0; i < _list.Count; i++)
+                {
+                    BlockValue blockValue = __instance.GetBlock(_list[i]);
+                    if (!(blockValue.Block is BlockSleepingBag) && !(blockValue.Block is BlockPlant) && !blockValue.Equals(BlockValue.Air))
+                    {
+                        GameManager.Instance.World.SetBlockRPC(_list[i], BlockValue.Air);
+                    }
+                }
+                if (_list.Count > FallingBlocks.Max_Blocks && FallingBlocks.OutputLog)
+                {
+                    EntityPlayer closestPlayer = __instance.GetClosestPlayer(_list[0].x, _list[0].y, _list[0].z, -1, 75);
+                    if (closestPlayer != null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Removed '{0}' falling blocks around '{1}'. The closest player entity id was '{2}' named '{3}' @ '{4}'", _list.Count, _list[0], closestPlayer.entityId, closestPlayer.EntityName, closestPlayer.position));
+                    }
+                    else
+                    {
+                        closestPlayer = __instance.GetClosestPlayer(_list[_list.Count - 1].x, _list[_list.Count - 1].y, _list[_list.Count - 1].z, -1, 75);
+                        if (closestPlayer != null)
+                        {
+
+                            Log.Out(string.Format("[SERVERTOOLS] Removed '{0}' falling blocks around '{1}'. The closest player entity id was '{2}' named '{3}' @ '{4}'", _list.Count, _list[_list.Count - 1], closestPlayer.entityId, closestPlayer.EntityName, closestPlayer.position));
+                        }
+                        else
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Removed '{0}' falling blocks around '{1}'. No players were located near by", _list.Count, _list[0]));
+                        }
+                    }
+                }
             }
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.AddFallingBlocks_Postfix: {0}", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.AddFallingBlocks_Prefix: {0}", e.Message));
         }
     }
 
@@ -195,7 +228,7 @@ public static class Injections
             ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
             if (cInfo != null)
             {
-                if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > 0 ||
+                if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > 0 &&
                     GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > 0)
                 {
                     if (DroppedBagProtection.IsEnabled)
@@ -440,42 +473,6 @@ public static class Injections
         }
     }
 
-    public static bool EntityAlive_DamageEntity_Prefix(EntityAlive __instance, DamageSource _damageSource, int _strength)
-    {
-        try
-        {
-            if (__instance.entityId != _damageSource.getEntityId())
-            {
-                return ProcessDamage.Exec(__instance, _damageSource, _strength);
-            }
-        }
-        catch (Exception e)
-        {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.EntityAlive_DamageEntity_Prefix: {0}", e.Message));
-        }
-        return true;
-    }
-
-    public static bool EntityAlive_ProcessDamageResponse_Prefix(EntityAlive __instance, DamageResponse _dmResponse)
-    {
-        try
-        {
-            if (_dmResponse.Source != null && __instance.entityId != _dmResponse.Source.getEntityId())
-            {
-                if (NewPlayerProtection.IsEnabled && __instance is EntityPlayer)
-                {
-                    NewPlayerProtection.AddHealing(__instance, _dmResponse);
-                }
-                return ProcessDamage.Exec(__instance, _dmResponse.Source, _dmResponse.Strength);
-            }
-        }
-        catch (Exception e)
-        {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.EntityAlive_ProcessDamageResponse_Prefix: {0}", e.Message));
-        }
-        return true;
-    }
-
     public static bool ClientInfoCollection_GetForNameOrId_Prefix(ref ClientInfo __result, string _nameOrId)
     {
         try
@@ -502,15 +499,14 @@ public static class Injections
                 PlatformUserIdentifierAbs userIdentifier;
                 if (PlatformUserIdentifierAbs.TryFromCombinedString(_nameOrId, out userIdentifier))
                 {
-                    ClientInfo clientInfo3 = PersistentOperations.GetClientInfoFromUId(userIdentifier);
-                    if (clientInfo3 != null)
+                    clientInfo = PersistentOperations.GetClientInfoFromUId(userIdentifier);
+                    if (clientInfo != null)
                     {
-                        __result = clientInfo3;
+                        __result = clientInfo;
                         return false;
                     }
                 }
             }
-
         }
         catch (Exception e)
         {
@@ -579,15 +575,15 @@ public static class Injections
         return true;
     }
 
-    public static bool NetPackageAddRemoveBuff_ProcessPackage_Prefix(NetPackageAddRemoveBuff __instance)
+    public static void NetPackageDamageEntity_ProcessPackage_Prefix(ref NetPackageDamageEntity __instance)
     {
-        if (PersistentOperations.Net_Package_Detector && __instance.Sender != null)
+        if (__instance.Sender != null && ProcessDamage.Exec(__instance))
         {
-            if (!AddRemoveBuffPackage.IsValid(__instance))
+            if (ProcessDamage.bFatal(__instance))
             {
-                return false;
+                ProcessDamage.bFatal(__instance) = false;
             }
+            ProcessDamage.strength(__instance) = 0;
         }
-        return true;
     }
 }

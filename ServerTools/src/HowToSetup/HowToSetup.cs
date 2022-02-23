@@ -13,7 +13,7 @@ namespace ServerTools
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine("This was drafted for version 20.0.0");
+                sw.WriteLine("This was drafted for version 20.2.0");
                 sw.WriteLine();
                 sw.WriteLine("If you find mistakes or the file is out of date, let the dev team know.");
                 sw.WriteLine();
@@ -527,6 +527,15 @@ namespace ServerTools
                 sw.WriteLine("Attempts to remove all falling blocks in the game for performance improvements.");
                 sw.WriteLine("If the log is enabled, it will log the general location of the falling blocks when it goes over the Max_Blocks count. It will also attempt to log the closest player id and name");
                 sw.WriteLine("Set the Max_Blocks to control how many blocks must be detected falling at one time for the log to engage. This can be used to detect large collapses.");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine("<Tool Name=\"Family_Share_Prevention\" />");
+                sw.WriteLine();
+                sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine();
+                sw.WriteLine("Once enabled, clients using a family share account will be banned from the server upon joining.");
+                sw.WriteLine("Clients can be added to the family share list through console command. This will allow them to join.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -1550,7 +1559,7 @@ namespace ServerTools
                 sw.WriteLine("Console commands");
                 sw.WriteLine();
                 sw.WriteLine("Type help to get a list of available console commands.");
-                sw.WriteLine("Type help <command> to get more detailed information about a specific command.");
+                sw.WriteLine("Type help 'command name' to get more detailed information about a specific command.");
                 sw.WriteLine();
                 sw.WriteLine("Chat commands");
                 sw.WriteLine();

@@ -1,0 +1,42 @@
+:root
+{
+	font-family:"seven_days_later";
+	background-image: url("../Img/Table.jpg");
+}
+
+@font-face
+{
+	font-family:"seven_days_later";
+	src:url(../Font/7DaysLater.woff2) format("woff2");
+	font-display:swap;
+}
+
+#GeneralBody
+{
+	position:absolute;
+	width:100%;
+	height:100%;
+	margin:0;
+	padding:0;
+	overflow:hidden;
+}
+
+#Head
+{
+	position:absolute;
+	width:100%;
+	height:10%;
+	margin:0;
+	padding:0;
+	overflow:hidden;
+}
+
+#Password
+{
+	position:center;
+	width:10%;
+	height:20%;
+	margin:0;
+	padding:0;
+	overflow:hidden;
+}

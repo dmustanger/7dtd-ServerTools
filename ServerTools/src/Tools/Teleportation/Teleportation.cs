@@ -11,21 +11,17 @@ namespace ServerTools
             List<Entity> Entities = GameManager.Instance.World.Entities.list;
             for (int i = 0; i < Entities.Count; i++)
             {
-                Entity _entity = Entities[i];
-                if (_entity != null && _player != _entity && _entity.IsSpawned() && !_entity.IsClientControlled())
+                Entity entity = Entities[i];
+                if (entity != null && _player != entity && entity.IsSpawned() && entity is EntityZombie)
                 {
-                    string _tags = _entity.EntityClass.Tags.ToString();
-                    if (_tags.Contains("zombie") || _tags.Contains("hostile"))
+                    EntityAlive entityAlive = PersistentOperations.GetEntityPlayer(entity.entityId);
+                    if (entityAlive != null)
                     {
-                        EntityAlive entityAlive = PersistentOperations.GetEntityPlayer(_entity.entityId) as EntityAlive;
-                        if (entityAlive != null)
+                        if (((_player.position.x - entity.position.x) * (_player.position.x - entity.position.x) + (_player.position.z - entity.position.z) * (_player.position.z - entity.position.z)) < 75f * 75f)
                         {
-                            if (((_player.position.x - _entity.position.x) * (_player.position.x - _entity.position.x) + (_player.position.z - _entity.position.z) * (_player.position.z - _entity.position.z)) < 75f * 75f)
-                            {
-                                Phrases.Dict.TryGetValue("Teleport1", out string _phrase);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                return true;
-                            }
+                            Phrases.Dict.TryGetValue("Teleport1", out string _phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            return true;
                         }
                     }
                 }
@@ -35,17 +31,20 @@ namespace ServerTools
 
         public static bool PCheck(ClientInfo _cInfo, EntityPlayer _player)
         {
-            List<EntityPlayer> playerList = GameManager.Instance.World.Players.list;
-            for (int i = 0; i < playerList.Count; i++)
+            List<EntityPlayer> players = PersistentOperations.PlayerList();
+            if (players.Count > 1)
             {
-                EntityPlayer _player2 = playerList[i];
-                if (_player2 != null && _player != _player2 && _player2.IsSpawned() && !_player.IsFriendsWith(_player2))
+                for (int i = 0; i < players.Count; i++)
                 {
-                    if (((_player.position.x - _player2.position.x) * (_player.position.x - _player2.position.x) + (_player.position.z - _player2.position.z) * (_player.position.z - _player2.position.z)) < 125f * 125f)
+                    EntityPlayer player2 = players[i];
+                    if (player2 != null && player2.entityId != _cInfo.entityId && !_player.IsFriendsWith(player2))
                     {
-                        Phrases.Dict.TryGetValue("Teleport2", out string _phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        return true;
+                        if (((_player.position.x - player2.position.x) * (_player.position.x - player2.position.x) + (_player.position.z - player2.position.z) * (_player.position.z - player2.position.z)) < 125f * 125f)
+                        {
+                            Phrases.Dict.TryGetValue("Teleport2", out string _phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            return true;
+                        }
                     }
                 }
             }
