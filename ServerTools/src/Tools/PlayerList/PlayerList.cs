@@ -5,7 +5,7 @@ namespace ServerTools
     class PlayerList
     {
         public static bool IsEnabled = false;
-        public static string Command_playerlist = "playerlist";
+        public static string Command_playerlist = "playerlist", Command_plist = "plist";
 
         public static void Exec(ClientInfo _cInfo)
         {

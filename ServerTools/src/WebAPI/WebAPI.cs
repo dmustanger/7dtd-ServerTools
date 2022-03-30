@@ -68,7 +68,7 @@ namespace ServerTools
             try
             {
                 string ip = GamePrefs.GetString(EnumGamePrefs.ServerIP);
-                if (!string.IsNullOrEmpty(ip) && ip != "")
+                if (!string.IsNullOrEmpty(ip))
                 {
                     BaseAddress = ip;
                     return true;

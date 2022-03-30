@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
 using System.Xml;
 
 namespace ServerTools
@@ -12,180 +11,110 @@ namespace ServerTools
 
         public static void Load()
         {
-            try
+            if (!Directory.Exists(API.ConfigPath))
             {
-                if (!Directory.Exists(API.ConfigPath))
-                {
-                    Directory.CreateDirectory(API.ConfigPath);
-                    Log.Out(string.Format("[SERVERTOOLS] Created new directory '{0}'", API.ConfigPath));
-                }
-                else
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Located directory '{0}'", API.ConfigPath));
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/ChatLogs"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/ChatLogs");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/DetectionLogs"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/DetectionLogs");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/BountyLogs"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/BountyLogs");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/AuctionLog"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/AuctionLogs");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/BankLogs"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/BankLogs");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/DupeLogs"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/DupeLogs");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/PlayerLogs"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/PlayerLogs");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/PlayerReports"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/PlayerReports");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/PollLogs"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/PollLogs");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/ChatCommandLogs"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/ChatCommandLogs");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/DamageLogs"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/DamageLogs");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/BlockLogs"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/BlockLogs");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/ConsoleCommandLogs"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/ConsoleCommandLogs");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/WebPanelLogs"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/WebPanelLogs");
-                }
-                if (!Directory.Exists(API.ConfigPath + "/Logs/OutputLogs"))
-                {
-                    Directory.CreateDirectory(API.ConfigPath + "/Logs/OutputLogs");
-                }
-                if (!Directory.Exists(API.GamePath + "/Mods/ServerTools/Config"))
-                {
-                    Directory.CreateDirectory(API.GamePath + "/Mods/ServerTools/Config");
-                }
-                if (!Directory.Exists(API.GamePath + "/Mods/ServerTools/Config/XUi"))
-                {
-                    Directory.CreateDirectory(API.GamePath + "/Mods/ServerTools/Config/XUi");
-                }
+                Directory.CreateDirectory(API.ConfigPath);
+                Log.Out(string.Format("[SERVERTOOLS] Created new directory '{0}'", API.ConfigPath));
             }
-            catch (XmlException e)
+            else
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in creation of directory @ '{0}'. Error = {1}", API.ConfigPath, e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Located directory '{0}'", API.ConfigPath));
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/ChatLogs"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/ChatLogs");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/DetectionLogs"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/DetectionLogs");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/BountyLogs"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/BountyLogs");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/AuctionLog"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/AuctionLogs");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/BankLogs"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/BankLogs");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/DupeLogs"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/DupeLogs");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/PlayerLogs"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/PlayerLogs");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/PlayerReports"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/PlayerReports");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/PollLogs"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/PollLogs");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/ChatCommandLogs"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/ChatCommandLogs");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/DamageLogs"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/DamageLogs");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/BlockLogs"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/BlockLogs");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/ConsoleCommandLogs"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/ConsoleCommandLogs");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/WebPanelLogs"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/WebPanelLogs");
+            }
+            if (!Directory.Exists(API.ConfigPath + "/Logs/OutputLogs"))
+            {
+                Directory.CreateDirectory(API.ConfigPath + "/Logs/OutputLogs");
+            }
+            if (!Directory.Exists(API.GamePath + "/Mods/ServerTools/Config"))
+            {
+                Directory.CreateDirectory(API.GamePath + "/Mods/ServerTools/Config");
+            }
+            if (!Directory.Exists(API.GamePath + "/Mods/ServerTools/Config/XUi"))
+            {
+                Directory.CreateDirectory(API.GamePath + "/Mods/ServerTools/Config/XUi");
             }
 
-            try
-            {
-                StateManager.Awake();
-            }
-            catch (XmlException e)
-            {
-                Log.Out("[SERVERTOOLS] Failed to load the persistent database bin file. Restart the server and check for errors. Error = {0}", e.Message);
-            }
+            StateManager.Awake();
 
-            try
-            {
-                RunTimePatch.PatchAll();
-            }
-            catch (XmlException e)
-            {
-                Log.Out("[SERVERTOOLS] Failed to run the harmony injection process. Error = {0}", e.Message);
-            }
+            RunTimePatch.PatchAll();
 
-            try
-            {
-                Config.Load();
-                Log.Out("[SERVERTOOLS] Running ServerTools v.{0}", Config.Version);
-            }
-            catch (XmlException e)
-            {
-                Log.Out("[SERVERTOOLS] Failed to load the configuration file. Check for errors in the file. Error = {0}", e.Message);
-            }
+            Config.Load();
+            Log.Out("[SERVERTOOLS] Running ServerTools v.{0}", Config.Version);
 
-            try
-            {
-                CommandList.BuildList();
-                CommandList.Load();
-            }
-            catch (XmlException e)
-            {
-                Log.Out("[SERVERTOOLS] Failed to load the CommandList.xml. Check for errors in the file. Error = {0}", e.Message);
-            }
+            CommandList.BuildList();
+            CommandList.Load();
 
-            try
-            {
-                PersistentOperations.SetFolders();
-                PersistentOperations.CreateCustomXUi();
-                PersistentOperations.GetCurrencyName();
-                PersistentOperations.EntityIdList();
-                PersistentOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
-                PersistentOperations.ThirtySeconds = true;
-            }
-            catch (XmlException e)
-            {
-                Log.Out("[SERVERTOOLS] Failed to set the persistent operations. Error = {0}", e.Message);
-            }
+            PersistentOperations.SetFolders();
+            PersistentOperations.CreateCustomXUi();
+            PersistentOperations.GetCurrencyName();
+            PersistentOperations.EntityIdList();
+            PersistentOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
+            PersistentOperations.ThirtySeconds = true;
 
-            try
-            {
-                Mods.Load();
-            }
-            catch (XmlException e)
-            {
-                Log.Out("[SERVERTOOLS] Failed to load the tools. Restart the server and check for errors. Error = {0}", e.Message);
-            }
+            Mods.Load();
 
-            try
-            {
-                Phrases.Load();
-            }
-            catch (XmlException e)
-            {
-                Log.Out("[SERVERTOOLS] Failed to load the Phrases.xml. Check for errors in the file. Error = {0}", e.Message);
-            }
+            Phrases.Load();
 
-            try
-            {
-                HowToSetup.Load();
-            }
-            catch (XmlException e)
-            {
-                Log.Out("[SERVERTOOLS] Failed to load the HowToSetup.xml. Error = {0}", e.Message);
-            }
+            HowToSetup.Load();
 
             if (Fps.IsEnabled)
             {
-                try
-                {
-                    Fps.SetTarget();
-                }
-                catch (XmlException e)
-                {
-                    Log.Out("[SERVERTOOLS] Failed to set the target fps. Error = {0}", e.Message);
-                }
+                Fps.SetTarget();
             }
 
             if (SleeperRespawn.IsEnabled)

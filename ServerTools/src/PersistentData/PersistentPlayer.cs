@@ -68,6 +68,7 @@ namespace ServerTools
         private string playerName;
         private int playerWallet;
         private bool proxyBanImmune;
+        private Dictionary<string, string> customReturnPositions;
         private int sessionTime;
         private bool startingItems;
         private int totalTimePlayed;
@@ -770,6 +771,18 @@ namespace ServerTools
             set
             {
                 proxyBanImmune = value;
+            }
+        }
+
+        public Dictionary<string, string> CustomReturnPositions
+        {
+            get
+            {
+                return customReturnPositions;
+            }
+            set
+            {
+                customReturnPositions = value;
             }
         }
 

@@ -401,6 +401,7 @@ namespace ServerTools
                     {
                         ProcessCommand(_cInfo, zone[7]);
                     }
+                    return;
                 }
             }
             catch (Exception e)

@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class ReservedSlots
     {
-        public static bool IsEnabled = false, IsRunning = false, Operating = false, Reduced_Delay = false, Admin_Slot = false, Bonus_Exp = false;
+        public static bool IsEnabled = false, IsRunning = false, Reduced_Delay = false, Bonus_Exp = false;
         public static int Session_Time = 30, Admin_Level = 0;
         public static string Command_reserved = "reserved";
 
@@ -190,7 +190,7 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static bool ReservedCheck(ClientInfo _cInfo, PlatformUserIdentifierAbs _platformId, PlatformUserIdentifierAbs _crossplatformId)
+        public static bool ReservedCheck(PlatformUserIdentifierAbs _platformId, PlatformUserIdentifierAbs _crossplatformId)
         {
             if (Dict.ContainsKey(_platformId.CombinedString))
             {
@@ -200,7 +200,7 @@ namespace ServerTools
                     return true;
                 }
             }
-            else if (Dict.ContainsKey(_crossplatformId.CombinedString))
+            if (Dict.ContainsKey(_crossplatformId.CombinedString))
             {
                 Dict.TryGetValue(_crossplatformId.CombinedString, out DateTime dt);
                 if (DateTime.Now < dt)
@@ -215,45 +215,40 @@ namespace ServerTools
         {
             if (Dict.ContainsKey(_platformId.CombinedString))
             {
-                if (Dict.TryGetValue(_platformId.CombinedString, out DateTime dt))
+                Dict.TryGetValue(_platformId.CombinedString, out DateTime dt);
+                if (DateTime.Now < dt)
                 {
-                    if (DateTime.Now < dt)
-                    {
-                        Phrases.Dict.TryGetValue("Reserved4", out string phrase);
-                        phrase = phrase.Replace("{DateTime}", dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                    else
-                    {
-                        Phrases.Dict.TryGetValue("Reserved5", out string phrase);
-                        phrase = phrase.Replace("{DateTime}", dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    Phrases.Dict.TryGetValue("Reserved4", out string phrase);
+                    phrase = phrase.Replace("{DateTime}", dt.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
-            }
-            else if (Dict.ContainsKey(_crossplatformId.CombinedString))
-            {
-                if (Dict.TryGetValue(_crossplatformId.CombinedString, out DateTime dt))
+                else
                 {
-                    if (DateTime.Now < dt)
-                    {
-                        Phrases.Dict.TryGetValue("Reserved4", out string phrase);
-                        phrase = phrase.Replace("{DateTime}", dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                    else
-                    {
-                        Phrases.Dict.TryGetValue("Reserved5", out string phrase);
-                        phrase = phrase.Replace("{DateTime}", dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    Phrases.Dict.TryGetValue("Reserved5", out string phrase);
+                    phrase = phrase.Replace("{DateTime}", dt.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
+                return;
             }
-            else
+            if (Dict.ContainsKey(_crossplatformId.CombinedString))
             {
-                Phrases.Dict.TryGetValue("Reserved6", out string phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Dict.TryGetValue(_crossplatformId.CombinedString, out DateTime dt);
+                if (DateTime.Now < dt)
+                {
+                    Phrases.Dict.TryGetValue("Reserved4", out string phrase);
+                    phrase = phrase.Replace("{DateTime}", dt.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                }
+                else
+                {
+                    Phrases.Dict.TryGetValue("Reserved5", out string phrase);
+                    phrase = phrase.Replace("{DateTime}", dt.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                }
+                return;
             }
+            Phrases.Dict.TryGetValue("Reserved6", out string phrase1);
+            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static bool AdminCheck(ClientInfo _cInfo, PlatformUserIdentifierAbs _platformId, PlatformUserIdentifierAbs _crossplatformId)
@@ -284,7 +279,7 @@ namespace ServerTools
                             {
                                 if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId))//not admin
                                 {
-                                    if (ReservedCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId))//reserved player
+                                    if (ReservedCheck(cInfo2.PlatformId, cInfo2.CrossplatformId))//reserved player
                                     {
                                         reserved.Add(cInfo2);
                                     }
@@ -296,14 +291,14 @@ namespace ServerTools
                             }
                         }
                     }
-                    else if (ReservedCheck(_cInfo, _platformId, _crossplatformId))//reserved player is joining
+                    else if (ReservedCheck(_platformId, _crossplatformId))//reserved player is joining
                     {
                         for (int i = 0; i < clientList.Count; i++)
                         {
                             ClientInfo cInfo2 = clientList[i];
                             if (cInfo2 != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
                             {
-                                if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId) && !ReservedCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId))
+                                if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId) && !ReservedCheck(cInfo2.PlatformId, cInfo2.CrossplatformId))
                                 {
                                     normal.Add(cInfo2);
                                 }
@@ -317,7 +312,7 @@ namespace ServerTools
                             ClientInfo cInfo2 = clientList[i];
                             if (cInfo2 != null && cInfo2.PlatformId != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
                             {
-                                if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId) && !ReservedCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId))
+                                if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId) && !ReservedCheck(cInfo2.PlatformId, cInfo2.CrossplatformId))
                                 {
                                     if (Session_Time > 0)
                                     {

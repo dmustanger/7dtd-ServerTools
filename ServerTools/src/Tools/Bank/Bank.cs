@@ -107,7 +107,8 @@ namespace ServerTools
                     {
                         Vector3 position = player.GetPosition();
                         Vector3i vec3i = new Vector3i((int)position.x, (int)position.y, (int)position.z);
-                        if (!PersistentOperations.ClaimedByAllyOrSelf(_cInfo.CrossplatformId, vec3i))
+                        
+                        if (PersistentOperations.ClaimedByWho(_cInfo.CrossplatformId, vec3i) == EnumLandClaimOwner.None)
                         {
                             Phrases.Dict.TryGetValue("Bank2", out string phrase);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

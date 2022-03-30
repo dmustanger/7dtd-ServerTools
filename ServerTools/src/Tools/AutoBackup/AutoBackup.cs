@@ -1,8 +1,8 @@
-﻿using Pathfinding.Ionic.Zip;
-using Pathfinding.Ionic.Zlib;
+﻿using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 namespace ServerTools
@@ -122,7 +122,7 @@ namespace ServerTools
                     DirectoryInfo destDirInfo = new DirectoryInfo(API.ConfigPath + "/WorldBackup/");//destination dir
                     if (destDirInfo != null)
                     {
-                        Save(destDirInfo);//exec save method
+                        Save(destDirInfo.FullName);//exec save method
                     }
                 }
                 else if (saveDirInfo != null && !string.IsNullOrEmpty(Destination))
@@ -149,7 +149,7 @@ namespace ServerTools
                     DirectoryInfo destDirInfo = new DirectoryInfo(Destination);//destination dir
                     if (destDirInfo != null)
                     {
-                        Save(destDirInfo);//exec file save
+                        Save(destDirInfo.FullName);//exec file save
                     }
                     else
                     {
@@ -159,104 +159,112 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Process: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Prepare: {0}", e.Message));
+                th.Abort();
             }
-            th.Abort();
         }
 
         private static void DeleteFiles(string[] _files)
         {
-            try
+            if (_files != null)
             {
-                if (_files != null)
+                List<FileInfo> fileList = new List<FileInfo>();
+                for (int i = 0; i < _files.Length; i++)
                 {
-                    List<FileInfo> fileList = new List<FileInfo>();
-                    for (int i = 0; i < _files.Length; i++)
+                    string fileName = _files[i];
+                    if (fileName.Contains("Backup"))
                     {
-                        string fileName = _files[i];
-                        if (fileName.Contains("Backup"))
-                        {
-                            FileInfo fInfo = new FileInfo(fileName);
-                            fileList.Add(fInfo);
-                        }
+                        FileInfo fInfo = new FileInfo(fileName);
+                        fileList.Add(fInfo);
                     }
-                    if (fileList.Count > 0 && fileList.Count > Backup_Count)
+                }
+                if (fileList.Count > 0 && fileList.Count > Backup_Count)
+                {
+                    fileList.Sort((x, y) => DateTime.Compare(x.CreationTime, y.CreationTime));
+                    fileList.Reverse();
+                    for (int j = 0; j < fileList.Count; j++)
                     {
-                        fileList.Sort((x, y) => DateTime.Compare(x.CreationTime, y.CreationTime));
-                        fileList.Reverse();
-                        for (int j = 0; j < fileList.Count; j++)
+                        if (j >= Backup_Count - 1)
                         {
-                            if (j >= Backup_Count - 1)
-                            {
-                                FileInfo fInfo = fileList[j];
-                                Log.Out(string.Format("[SERVERTOOLS] Auto backup cleanup has deleted {0}", fInfo.Name));
-                                fInfo.Delete();
-                            }
+                            FileInfo fInfo = fileList[j];
+                            Log.Out(string.Format("[SERVERTOOLS] Auto backup cleanup has deleted {0}", fInfo.Name));
+                            fInfo.Delete();
                         }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.DeleteFiles: {0}", e.Message));
             }
         }
 
-        private static void Save(DirectoryInfo _destinationDirInfo)
+        private static void Save(string _destinationDirInfo)
         {
-            try
+            Phrases.Dict.TryGetValue("AutoBackup1", out string phrase);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            string name = string.Format("Backup_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
+            string[] fileNames = Directory.GetFiles(SaveDirectory, "*", SearchOption.AllDirectories);
+            string destination = _destinationDirInfo + string.Format("/Backup_{0}.zip", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
+
+            using (ZipOutputStream OutputStream = new ZipOutputStream(File.Create(destination)))
             {
-                CompressionLevel compression = CompressionLevel.None;
-                if (Compression_Level == 0)
+                OutputStream.UseZip64 = UseZip64.On;
+                if (Compression_Level > 9)
                 {
-                    compression = CompressionLevel.None;
+                    OutputStream.SetLevel(9);
                 }
-                else if (Compression_Level == 1)
+                else if (Compression_Level < 0)
                 {
-                    compression = CompressionLevel.BestSpeed;
+                    OutputStream.SetLevel(0);
                 }
-                else if (Compression_Level >= 2)
+                else
                 {
-                    compression = CompressionLevel.BestCompression;
+                    OutputStream.SetLevel(Compression_Level);
                 }
-                string[] files = Directory.GetFiles(SaveDirectory, "*", SearchOption.AllDirectories);
-                Phrases.Dict.TryGetValue("AutoBackup1", out string phrase);
-                ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                string location = _destinationDirInfo.FullName + string.Format("/Backup_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
-                string name = string.Format("Backup_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
-                using (ZipFile zip = new ZipFile(location))
+                byte[] buffer = new byte[4096];
+                for (int i = 0; i < fileNames.Length; i++)
                 {
-                    zip.UseZip64WhenSaving = Zip64Option.Always;
-                    zip.CompressionLevel = compression;
-                    zip.ParallelDeflateThreshold = 0;
-                    for (int i = 0; i < files.Length; i++)
+                    string file = fileNames[i];
+                    ZipEntry entry = new ZipEntry(file);
+
+                    entry.DateTime = DateTime.Now;
+                    OutputStream.PutNextEntry(entry);
+                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
-                        string file = files[i];
-                        zip.AddFile(file).FileName = file.Substring(file.IndexOf(SaveDirectory));
-                    }
-                    files = Directory.GetFiles(API.ConfigPath, "ServerTools.bin", SearchOption.AllDirectories);
-                    if (files != null)
-                    {
-                        for (int i = 0; i < files.Length; i++)
+                        int sourceBytes;
+                        do
                         {
-                            string file = files[i];
-                            zip.AddFile(file);
+                            sourceBytes = fs.Read(buffer, 0, buffer.Length);
+                            OutputStream.Write(buffer, 0, sourceBytes);
+                        }
+                        while (sourceBytes > 0);
+                    }
+                }
+                fileNames = Directory.GetFiles(API.ConfigPath, "ServerTools.bin", SearchOption.AllDirectories);
+                if (fileNames != null)
+                {
+                    for (int i = 0; i < fileNames.Length; i++)
+                    {
+                        string file = fileNames[i];
+                        ZipEntry entry = new ZipEntry(file);
+
+                        entry.DateTime = DateTime.Now;
+                        OutputStream.PutNextEntry(entry);
+                        using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                        {
+                            int sourceBytes;
+                            do
+                            {
+                                sourceBytes = fs.Read(buffer, 0, buffer.Length);
+                                OutputStream.Write(buffer, 0, sourceBytes);
+                            }
+                            while (sourceBytes > 0);
                         }
                     }
-                    zip.Save(Path.ChangeExtension(location, ".zip"));
                 }
-                Log.Out(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at '{0}'. File is named '{1}'", _destinationDirInfo.FullName, name + ".zip"));
-                Phrases.Dict.TryGetValue("AutoBackup2", out string phrase1);
-                ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                OutputStream.Finish();
+                OutputStream.Close();
             }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Save: {0}", e.Message));
-                if (e.Message.Contains("112"))
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Auto backup does not have enough free space to work with on the selected drive. Please make space available before operating the backup process."));
-                }
-            }
+            Log.Out(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at '{0}'. File is named '{1}'", _destinationDirInfo, name + ".zip"));
+            Phrases.Dict.TryGetValue("AutoBackup2", out phrase);
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
     }
 }

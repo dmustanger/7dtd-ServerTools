@@ -95,6 +95,10 @@ namespace ServerTools
                             SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                         }
                     }
+                    if (FamilyShare.IsEnabled && _cInfo.PlatformId is UserIdentifierSteam)
+                    {
+                        FamilyShare.Exec(_cInfo);
+                    }
                     if (!string.IsNullOrEmpty(_cInfo.ip))
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Player connected with ID '{0}' '{1}' and IP '{2}' named '{3}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.ip, _cInfo.playerName));
@@ -114,13 +118,7 @@ namespace ServerTools
 
         private static void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)//Setting player view and profile
         {
-            if (_cInfo != null)
-            {
-                if (FamilyShare.IsEnabled && _cInfo.PlatformId is UserIdentifierSteam)
-                {
-                    FamilyShare.Exec(_cInfo);
-                }
-            }
+            
         }
 
         private static void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)//Spawning player

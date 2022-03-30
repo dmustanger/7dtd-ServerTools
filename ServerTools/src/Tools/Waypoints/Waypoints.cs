@@ -9,7 +9,7 @@ namespace ServerTools
 {
     class Waypoints
     {
-        public static bool IsEnabled = false, Player_Check = false, Zombie_Check = false, Vehicle = false, Public_Waypoints = false, IsRunning = false;
+        public static bool IsEnabled = false, IsRunning = false, Player_Check = false, Zombie_Check = false, Vehicle = false, Public_Waypoints = false;
         public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Reserved_Max_Waypoints = 4, Command_Cost = 0;
         public static string Command_go_way = "go way", Command_waypoint = "waypoint", Command_way = "way", Command_wp = "wp", Command_fwaypoint = "fwaypoint", Command_fway = "fway", Command_fwp = "fwp", 
             Command_waypoint_save = "waypoint save", Command_way_save = "way save", Command_ws = "ws", Command_waypoint_del = "waypoint del", Command_way_del = "way del", Command_wd = "wd";
@@ -545,7 +545,7 @@ namespace ServerTools
                     if (player != null)
                     {
                         Vector3 position = player.GetPosition();
-                        if (PersistentOperations.ClaimedByNone(_cInfo.CrossplatformId, new Vector3i(position.x, position.y, position.z)))
+                        if (!PersistentOperations.ClaimedByNone(new Vector3i(position)))
                         {
                             ReservedCheck(_cInfo, _waypoint);
                         }

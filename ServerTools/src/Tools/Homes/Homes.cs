@@ -301,7 +301,8 @@ namespace ServerTools
                     if (player != null)
                     {
                         Vector3 position = player.GetPosition();
-                        if (PersistentOperations.ClaimedByAllyOrSelf(_cInfo.CrossplatformId, new Vector3i(position.x, position.y, position.z)))
+                        EnumLandClaimOwner owner = PersistentOperations.ClaimedByWho(_cInfo.CrossplatformId, new Vector3i(position.x, position.y, position.z));
+                        if (owner == EnumLandClaimOwner.Ally || owner == EnumLandClaimOwner.Self)
                         {
                             ReservedCheck(_cInfo, _home);
                         }

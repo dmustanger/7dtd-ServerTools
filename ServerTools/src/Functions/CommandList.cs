@@ -441,6 +441,9 @@ namespace ServerTools
                         case "playerlist":
                             PlayerList.Command_playerlist = kvp.Value;
                             continue;
+                        case "plist":
+                            PlayerList.Command_plist = kvp.Value;
+                            continue;
                         case "stuck":
                             Stuck.Command_stuck = kvp.Value;
                             continue;
@@ -661,6 +664,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"lottery\" Replacement=\"lottery\" />");
             Commands.Add("    <Command Default=\"lottery enter\" Replacement=\"lottery enter\" />");
             Commands.Add("    <Command Default=\"playerlist\" Replacement=\"playerlist\" />");
+            Commands.Add("    <Command Default=\"plist\" Replacement=\"plist\" />");
             Commands.Add("    <Command Default=\"stuck\" Replacement=\"stuck\" />");
             Commands.Add("    <Command Default=\"poll yes\" Replacement=\"poll yes\" />");
             Commands.Add("    <Command Default=\"poll no\" Replacement=\"poll no\" />");

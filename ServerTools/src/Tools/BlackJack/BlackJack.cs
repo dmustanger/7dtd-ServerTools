@@ -13,7 +13,6 @@ namespace ServerTools
         public static Dictionary<string, List<string[]>> PlayerDeck = new Dictionary<string, List<string[]>>();
 
         private static List<string[]> Deck = new List<string[]>();
-        private static readonly Random Random = new Random();
 
         public static void BuildDeck()
         {
@@ -73,8 +72,12 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (Player.ContainsKey(_cInfo.ip) && Player[_cInfo.ip][0] == _cInfo.CrossplatformId.CombinedString)
+            if (Player.ContainsKey(_cInfo.ip))
             {
+                if (Player[_cInfo.ip][0] != _cInfo.CrossplatformId.CombinedString)
+                {
+                    Player[_cInfo.ip][0] = _cInfo.CrossplatformId.CombinedString;
+                }
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserBlackJack", true));
                 return;
             }

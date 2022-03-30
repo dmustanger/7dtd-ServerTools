@@ -40,29 +40,29 @@ namespace ServerTools
             }
         }
 
-        private static void PutPlayerInJail(ClientInfo _cInfo, ClientInfo _PlayertoJail)
-        {
-            string[] cords = Jail_Position.Split(',');
-            int.TryParse(cords[0], out int x);
-            int.TryParse(cords[1], out int y);
-            int.TryParse(cords[2], out int z);
-            _PlayertoJail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-            Jailed.Add(_PlayertoJail.CrossplatformId.CombinedString);
-            PersistentContainer.Instance.Players[_PlayertoJail.CrossplatformId.CombinedString].JailTime = 60;
-            PersistentContainer.Instance.Players[_PlayertoJail.CrossplatformId.CombinedString].JailName= _PlayertoJail.playerName;
-            PersistentContainer.Instance.Players[_PlayertoJail.CrossplatformId.CombinedString].JailDate = DateTime.Now;
-            PersistentContainer.DataChange = true;
-            Phrases.Dict.TryGetValue("Jail1", out string phrase);
-            ChatHook.ChatMessage(_PlayertoJail, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-            if (Jail_Shock)
-            {
-                Phrases.Dict.TryGetValue("Jail8", out phrase);
-                ChatHook.ChatMessage(_PlayertoJail, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-            }
-            Phrases.Dict.TryGetValue("Jail6", out phrase);
-            phrase = phrase.Replace("{PlayerName}", _PlayertoJail.playerName);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-        }
+        //private static void PutPlayerInJail(ClientInfo _cInfo, ClientInfo _PlayertoJail)
+        //{
+        //    string[] cords = Jail_Position.Split(',');
+        //    int.TryParse(cords[0], out int x);
+        //    int.TryParse(cords[1], out int y);
+        //    int.TryParse(cords[2], out int z);
+        //    _PlayertoJail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+        //    Jailed.Add(_PlayertoJail.CrossplatformId.CombinedString);
+        //    PersistentContainer.Instance.Players[_PlayertoJail.CrossplatformId.CombinedString].JailTime = 60;
+        //    PersistentContainer.Instance.Players[_PlayertoJail.CrossplatformId.CombinedString].JailName= _PlayertoJail.playerName;
+        //    PersistentContainer.Instance.Players[_PlayertoJail.CrossplatformId.CombinedString].JailDate = DateTime.Now;
+        //    PersistentContainer.DataChange = true;
+        //    Phrases.Dict.TryGetValue("Jail1", out string phrase);
+        //    ChatHook.ChatMessage(_PlayertoJail, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+        //    if (Jail_Shock)
+        //    {
+        //        Phrases.Dict.TryGetValue("Jail8", out phrase);
+        //        ChatHook.ChatMessage(_PlayertoJail, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+        //    }
+        //    Phrases.Dict.TryGetValue("Jail6", out phrase);
+        //    phrase = phrase.Replace("{PlayerName}", _PlayertoJail.playerName);
+        //    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+        //}
 
         public static void StatusCheck()
         {

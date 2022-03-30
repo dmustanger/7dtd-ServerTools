@@ -24,7 +24,7 @@ namespace ServerTools
                     for (int i = 0; i < clientList.Count; i++)
                     {
                         ClientInfo cInfo = clientList[i];
-                        if (cInfo != null)
+                        if (cInfo != null && cInfo.PlatformId != null && cInfo.CrossplatformId != null)
                         {
                             if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
                                 GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)

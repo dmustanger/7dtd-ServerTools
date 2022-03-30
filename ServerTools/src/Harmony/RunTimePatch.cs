@@ -165,23 +165,13 @@ namespace ServerTools
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_OpenTileEntityAllowed.prefix"));
                         return;
                     }
-                    harmony.Patch(original, new HarmonyMethod(prefix), null);
-                }
-
-                original = AccessTools.Method(typeof(GameManager), "OpenTileEntityAllowed");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.OpenTileEntityAllowed Class.Method was not found"));
-                }
-                else
-                {
                     MethodInfo postfix = typeof(Injections).GetMethod("GameManager_OpenTileEntityAllowed_Postfix");
                     if (postfix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_OpenTileEntityAllowed.postfix"));
                         return;
                     }
-                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                    harmony.Patch(original, new HarmonyMethod(prefix), new HarmonyMethod(postfix));
                 }
 
                 original = AccessTools.Method(typeof(EntityAlive), "OnEntityDeath");

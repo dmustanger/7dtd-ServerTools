@@ -42,6 +42,19 @@ namespace ServerTools
                 Dict.Remove("Dupe log");
                 Log.Out("Dupe log disabled");
             }
+            if (FamilyShare.IsEnabled)
+            {
+                if (!Dict.Contains("Family share"))
+                {
+                    Dict.Add("Family share");
+                    Log.Out("Family share enabled");
+                }
+            }
+            else if (Dict.Contains("Family share") && !_initiating)
+            {
+                Dict.Remove("Family share");
+                Log.Out("Family share disabled");
+            }
             if (FlyingDetector.IsEnabled)
             {
                 if (!Dict.Contains("Flying detector"))
@@ -430,6 +443,19 @@ namespace ServerTools
             {
                 Dict.Remove("Black jack");
                 Log.Out("Black jack disabled");
+            }
+            if (BlockLogger.IsEnabled)
+            {
+                if (!Dict.Contains("Block logger"))
+                {
+                    Dict.Add("Block logger");
+                    Log.Out("Block logger enabled");
+                }
+            }
+            else if (Dict.Contains("Block logger") && !_initiating)
+            {
+                Dict.Remove("Block logger");
+                Log.Out("Block logger disabled");
             }
             if (Bloodmoon.IsEnabled)
             {

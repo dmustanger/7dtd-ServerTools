@@ -10,7 +10,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false;
 
-        public static Dictionary<string, string> Dict = new Dictionary<string, string>();
+        public static Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
 
         private const string file = "LoginNotice.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -66,13 +66,17 @@ namespace ServerTools
                                     upgrade = false;
                                     continue;
                                 }
-                                else if (line.HasAttribute("Id") && line.HasAttribute("Message"))
+                                else if (line.HasAttribute("Id") && line.HasAttribute("Name") && line.HasAttribute("Message"))
                                 {
+
                                     string id = line.GetAttribute("Id");
-                                    string message = line.GetAttribute("Message");
+                                    string[] nameMessage = new string[2];
+                                    nameMessage[0] = line.GetAttribute("Name");
+                                    nameMessage[1] = line.GetAttribute("Message");
+                                    
                                     if (!Dict.ContainsKey(id))
                                     {
-                                        Dict.Add(id, message);
+                                        Dict.Add(id, nameMessage);
                                     }
                                 }
                             }
@@ -138,16 +142,16 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LoginNotice>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Message=\"Time to kick ass and chew bubble gum\" /> -->");
+                    sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Macaroni\" Message=\"Time to kick ass and chew bubble gum\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
                     {
-                        foreach (KeyValuePair<string, string> kvp in Dict)
+                        foreach (KeyValuePair<string, string[]> kvp in Dict)
                         {
-                            if (Dict.TryGetValue(kvp.Key, out string _message))
+                            if (Dict.TryGetValue(kvp.Key, out string[] _nameMessage))
                             {
-                                sw.WriteLine(string.Format("    <Player Id=\"{0}\" Message=\"{1}\" />", kvp.Key, _message));
+                                sw.WriteLine(string.Format("    <Player Id=\"{0}\" Name=\"{1}\" Message=\"{2}\" />", kvp.Key, _nameMessage[0], _nameMessage[1]));
                             }
                         }
                     }
@@ -183,15 +187,15 @@ namespace ServerTools
 
         public static void PlayerNotice(ClientInfo _cInfo)
         {
-            if (Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out string message))
+            if (Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out string[] nameMessage))
             {
-                message = message.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + message + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                nameMessage[1] = nameMessage[1].Replace("{PlayerName}", _cInfo.playerName);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + nameMessage[1] + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
-            else if (Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out message))
+            else if (Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out nameMessage))
             {
-                message = message.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + message + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                nameMessage[1] = nameMessage[1].Replace("{PlayerName}", _cInfo.playerName);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + nameMessage[1] + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
         }
 
@@ -205,7 +209,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LoginNotice>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Message=\"Time to kick ass and chew bubble gum\" /> -->");
+                    sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Macaroni\" Message=\"Time to kick ass and chew bubble gum\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891\"") &&
@@ -223,16 +227,20 @@ namespace ServerTools
                             XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Player")
                             {
-                                string id = "", message = "";
+                                string id = "", name = "", message = "";
                                 if (line.HasAttribute("Id"))
                                 {
                                     id = line.GetAttribute("Id");
+                                }
+                                if (line.HasAttribute("Name"))
+                                {
+                                    name = line.GetAttribute("Name");
                                 }
                                 if (line.HasAttribute("Message"))
                                 {
                                     message = line.GetAttribute("Message");
                                 }
-                                sw.WriteLine(string.Format("    <Player Id=\"{0}\" Message=\"{1}\" />", id, message));
+                                sw.WriteLine(string.Format("    <Player Id=\"{0}\" Name=\"{1}\" Message=\"{2}\" />", id, message));
                             }
                         }
                     }

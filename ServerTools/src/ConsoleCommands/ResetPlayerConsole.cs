@@ -42,11 +42,12 @@ namespace ServerTools
                 }
                 else if (_params[0].Contains("_"))
                 {
-                    if (PersistentOperations.GetPersistentPlayerDataFromId(_params[0]) != null)
+                    PersistentPlayerData ppd = PersistentOperations.GetPersistentPlayerDataFromId(_params[0]);
+                    if (ppd != null)
                     {
                         GC.Collect();
                         MemoryPools.Cleanup();
-                        ResetProfileExec(_params[0]);
+                        ResetProfileExec(ppd.UserIdentifier.ReadablePlatformUserIdentifier);
                     }
                     else
                     {
@@ -123,6 +124,7 @@ namespace ServerTools
                 {
                     p.Auction = new Dictionary<int, ItemDataSerializable>();
                     p.AuctionReturn = new Dictionary<int, ItemDataSerializable>();
+                    p.AutoPartyInvite = new List<string[]>();
                     p.Bank = 0;
                     p.Bounty = 0;
                     p.BountyHunter = 0;
@@ -133,6 +135,11 @@ namespace ServerTools
                     p.ClanRequestToJoin = new Dictionary<string, string>();
                     p.CountryBanImmune = false;
                     p.CustomCommandDelays = new Dictionary<string, DateTime>();
+                    p.EventOver = false;
+                    p.EventReturnPosition = "";
+                    p.EventSpawn = false;
+                    p.Events = new List<List<string>>();
+                    p.FamilyShareImmune = false;
                     p.FirstClaimBlock = false;
                     p.HardcoreEnabled = false;
                     p.HardcoreSavedStats = new List<string[]>();
@@ -153,10 +160,15 @@ namespace ServerTools
                     p.LastLobby = new DateTime();
                     p.LastLog = new DateTime();
                     p.LastMarket = new DateTime();
+                    p.LastNameColorChange = new DateTime();
+                    p.LastPrayer = new DateTime();
+                    p.LastPrefixColorChange = new DateTime();
+                    p.LastScout = new DateTime();
                     p.LastStuck = new DateTime();
                     p.LastTravel = new DateTime();
                     p.LastVote = new DateTime();
                     p.LastVoteWeek = new DateTime();
+                    p.LastWaypoint = new DateTime();
                     p.LastWhisper = "";
                     p.LobbyReturnPos = "";
                     p.MarketReturnPos = "";
@@ -168,6 +180,7 @@ namespace ServerTools
                     p.OldPlayer = false;
                     p.PlayerName = "";
                     p.PlayerWallet = 0;
+                    p.ProxyBanImmune = false;
                     p.SessionTime = 0;
                     p.StartingItems = false;
                     p.TotalTimePlayed = 0;

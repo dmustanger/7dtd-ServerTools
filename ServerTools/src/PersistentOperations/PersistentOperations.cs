@@ -30,11 +30,11 @@ namespace ServerTools
             {
                 if (Directory.Exists(API.GamePath + "/Mods/ServerTools/WebAPI"))
                 {
-                    WebAPI.Directory = API.GamePath + "/Mods/ServerTools/WebAPI";
+                    WebAPI.Directory = API.GamePath + "/Mods/ServerTools/WebAPI/";
                 }
                 if (Directory.Exists(API.GamePath + "/Mods/ServerTools/Config"))
                 {
-                    XPathDir = API.GamePath + "/Mods/ServerTools/Config";
+                    XPathDir = API.GamePath + "/Mods/ServerTools/Config/";
                 }
             }
         }
@@ -43,9 +43,9 @@ namespace ServerTools
         {
             if (XPathDir != "")
             {
-                if (!File.Exists(XPathDir + "/gameevents.xml"))
+                if (!File.Exists(XPathDir + "gameevents.xml"))
                 {
-                    using (StreamWriter sw = new StreamWriter(XPathDir + "/gameevents.xml", false, Encoding.UTF8))
+                    using (StreamWriter sw = new StreamWriter(XPathDir + "gameevents.xml", false, Encoding.UTF8))
                     {
                         sw.WriteLine("<configs>");
                         sw.WriteLine();
@@ -100,9 +100,9 @@ namespace ServerTools
                         sw.Close();
                     }
                 }
-                if (!File.Exists(XPathDir + "/items.xml"))
+                if (!File.Exists(XPathDir + "items.xml"))
                 {
-                    using (StreamWriter sw = new StreamWriter(XPathDir + "/items.xml", false, Encoding.UTF8))
+                    using (StreamWriter sw = new StreamWriter(XPathDir + "items.xml", false, Encoding.UTF8))
                     {
                         sw.WriteLine("<configs>");
                         sw.WriteLine();
@@ -115,9 +115,9 @@ namespace ServerTools
                         sw.Close();
                     }
                 }
-                if (!File.Exists(XPathDir + "/XUi/windows.xml"))
+                if (!File.Exists(XPathDir + "XUi/windows.xml"))
                 {
-                    using (StreamWriter sw = new StreamWriter(XPathDir + "/XUi/windows.xml", false, Encoding.UTF8))
+                    using (StreamWriter sw = new StreamWriter(XPathDir + "XUi/windows.xml", false, Encoding.UTF8))
                     {
                         sw.WriteLine("<configs>");
                         sw.WriteLine();
@@ -176,9 +176,9 @@ namespace ServerTools
                         sw.WriteLine("</configs>");
                     }
                 }
-                if (!File.Exists(XPathDir + "/XUi/xui.xml"))
+                if (!File.Exists(XPathDir + "XUi/xui.xml"))
                 {
-                    using (StreamWriter sw = new StreamWriter(XPathDir + "/XUi/xui.xml", false, Encoding.UTF8))
+                    using (StreamWriter sw = new StreamWriter(XPathDir + "XUi/xui.xml", false, Encoding.UTF8))
                     {
                         sw.WriteLine("<configs>");
                         sw.WriteLine();
@@ -287,7 +287,20 @@ namespace ServerTools
 
         public static ClientInfo GetClientInfoFromNameOrId(string _id)
         {
-            return SingletonMonoBehaviour<ConnectionManager>.Instance.Clients.GetForNameOrId(_id);
+            ClientInfo cInfo = SingletonMonoBehaviour<ConnectionManager>.Instance.Clients.GetForNameOrId(_id);
+            if (cInfo != null)
+            {
+                return cInfo;
+            }
+            else if (int.TryParse(_id, out int entityId))
+            {
+                cInfo = SingletonMonoBehaviour<ConnectionManager>.Instance.Clients.ForEntityId(entityId);
+                if (cInfo != null)
+                {
+                    return cInfo;
+                }
+            }
+            return null;
         }
 
         public static ClientInfo GetClientInfoFromEntityId(int _entityId)
@@ -564,25 +577,30 @@ namespace ServerTools
             }
         }
 
-        public static bool ClaimedBySelf(PlatformUserIdentifierAbs _uId, Vector3i _position)
+        public static bool ClaimedByNone(Vector3i _position)
         {
-            PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
-            if (persistentPlayerList != null)
+            Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_position);
+            if (chunk != null)
             {
-                PersistentPlayerData persistentPlayerData = persistentPlayerList.GetPlayerData(_uId);
-                if (persistentPlayerData != null)
+                PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
+                if (persistentPlayerList != null)
                 {
-                    EnumLandClaimOwner owner = GameManager.Instance.World.GetLandClaimOwner(_position, persistentPlayerData);
-                    if (owner == EnumLandClaimOwner.Self)
+                    int claimSize = GameStats.GetInt(EnumGameStats.LandClaimSize);
+                    Dictionary<Vector3i, PersistentPlayerData> claims = persistentPlayerList.m_lpBlockMap;
+                    foreach (var claim in claims)
                     {
-                        return true;
+                        float distance = (claim.Key.ToVector3() - _position.ToVector3()).magnitude;
+                        if (distance <= claimSize / 2 && GameManager.Instance.World.IsLandProtectionValidForPlayer(claim.Value))
+                        {
+                            return false;
+                        }
                     }
                 }
             }
-            return false;
+            return true;
         }
 
-        public static bool ClaimedByAlly(PlatformUserIdentifierAbs _uId, Vector3i _position)
+        public static EnumLandClaimOwner ClaimedByWho(PlatformUserIdentifierAbs _uId, Vector3i _position)
         {
             PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
             if (persistentPlayerList != null)
@@ -590,50 +608,10 @@ namespace ServerTools
                 PersistentPlayerData persistentPlayerData = persistentPlayerList.GetPlayerData(_uId);
                 if (persistentPlayerData != null)
                 {
-                    EnumLandClaimOwner owner = GameManager.Instance.World.GetLandClaimOwner(_position, persistentPlayerData);
-                    if (owner == EnumLandClaimOwner.Ally)
-                    {
-                        return true;
-                    }
+                    return GameManager.Instance.World.GetLandClaimOwner(_position, persistentPlayerData);
                 }
             }
-            return false;
-        }
-
-        public static bool ClaimedByNone(PlatformUserIdentifierAbs _uId, Vector3i _position)
-        {
-            PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
-            if (persistentPlayerList != null)
-            {
-                PersistentPlayerData persistentPlayerData = persistentPlayerList.GetPlayerData(_uId);
-                if (persistentPlayerData != null)
-                {
-                    EnumLandClaimOwner owner = GameManager.Instance.World.GetLandClaimOwner(_position, persistentPlayerData);
-                    if (owner == EnumLandClaimOwner.None)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        public static bool ClaimedByAllyOrSelf(PlatformUserIdentifierAbs _uId, Vector3i _position)
-        {
-            PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
-            if (persistentPlayerList != null)
-            {
-                PersistentPlayerData persistentPlayerData = persistentPlayerList.GetPlayerData(_uId);
-                if (persistentPlayerData != null)
-                {
-                    EnumLandClaimOwner owner = GameManager.Instance.World.GetLandClaimOwner(_position, persistentPlayerData);
-                    if (owner == EnumLandClaimOwner.Ally || owner == EnumLandClaimOwner.Self)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return EnumLandClaimOwner.None;
         }
 
         public static void ClearChunkProtection(ClientInfo _cInfo)

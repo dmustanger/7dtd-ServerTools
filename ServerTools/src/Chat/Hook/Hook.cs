@@ -901,9 +901,8 @@ namespace ServerTools
                                 NewSpawnTele.ReturnPlayer(_cInfo);
                                 return false;
                             }
-                            if (PlayerList.IsEnabled && messageLowerCase == PlayerList.Command_playerlist)
+                            if (PlayerList.IsEnabled && messageLowerCase == PlayerList.Command_playerlist || messageLowerCase == PlayerList.Command_plist)
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] PlayerList.Command_playerlist"));
                                 PlayerList.Exec(_cInfo);
                                 return false;
                             }
@@ -1103,7 +1102,7 @@ namespace ServerTools
                                 Whisper.Reply(_cInfo, _message);
                                 return false;
                             }
-                            if (CustomCommands.IsEnabled && CustomCommands.Dict.ContainsKey(_message = messageLowerCase))
+                            if (CustomCommands.IsEnabled && CustomCommands.Dict.ContainsKey(messageLowerCase))
                             {
                                 CustomCommands.InitiateCommand(_cInfo, messageLowerCase);
                                 return false;
@@ -1287,19 +1286,6 @@ namespace ServerTools
                                 {
                                     BlackJack.Exec(_cInfo);
                                     return false;
-                                }
-                            }
-                            if (messageLowerCase == "cvar")
-                            {
-                                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
-                                if (player != null)
-                                {
-                                    List<KeyValuePair<string, float>> cvars = player.Buffs.CVars.ToList();
-                                    Log.Out(string.Format("[SERVERTOOLS] cvars count {0}", cvars.Count));
-                                    for (int i = 0; i < cvars.Count; i++)
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] cvar name = '{0}' value = '{1}'", cvars[i].Key, cvars[i].Value));
-                                    }
                                 }
                             }
                             if (!Passthrough)

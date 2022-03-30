@@ -12,35 +12,21 @@ namespace ServerTools
 
         public static void Add(string _classMethod, DateTime _time)
         {
-            try
+            if (Schedule.ContainsKey(_classMethod))
             {
-                if (Schedule.ContainsKey(_classMethod))
-                {
-                    Schedule[_classMethod] = _time;
-                }
-                else
-                {
-                    Schedule.Add(_classMethod, _time);
-                }
+                Schedule[_classMethod] = _time;
             }
-            catch (Exception e)
+            else
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in EventSchedule.AddSingle: {0}", e.Message));
+                Schedule.Add(_classMethod, _time);
             }
         }
 
         public static void Remove(string _className)
         {
-            try
+            if (Schedule.ContainsKey(_className))
             {
-                if (Schedule.ContainsKey(_className))
-                {
-                    Schedule.Remove(_className);
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in EventSchedule.Remove: {0}", e.Message));
+                Schedule.Remove(_className);
             }
         }
 
@@ -48,103 +34,106 @@ namespace ServerTools
         {
             try
             {
-                foreach (var entry in Schedule.ToArray())
+                if (Schedule.Count > 0)
                 {
-                    switch (entry.Key)
+                    foreach (var entry in Schedule.ToArray())
                     {
-                        case "AutoBackup":
-                            if (DateTime.Now >= entry.Value)
-                            {
-                                autoBackup = "";
-                                AutoBackup.SetDelay();
-                                AutoBackup.Exec();
-                            }
-                            continue;
-                        case "AutoSaveWorld":
-                            if (DateTime.Now >= entry.Value)
-                            {
-                                autoSaveWorld = "";
-                                AutoSaveWorld.SetDelay();
-                                AutoSaveWorld.Save();
-                            }
-                            continue;
-                        case "Bloodmoon":
-                            if (DateTime.Now >= entry.Value)
-                            {
-                                bloodmoon = "";
-                                Bloodmoon.SetDelay();
-                                Bloodmoon.StatusCheck();
-                            }
-                            continue;
-                        case "BreakTime":
-                            if (DateTime.Now >= entry.Value)
-                            {
-                                breakTime = "";
-                                BreakTime.SetDelay();
-                                BreakTime.Exec();
-                            }
-                            continue;
-                        case "InfoTicker":
-                            if (DateTime.Now >= entry.Value)
-                            {
-                                infoTicker = "";
-                                InfoTicker.SetDelay();
-                                InfoTicker.Exec();
-                            }
-                            continue;
-                        case "NightAlert":
-                            if (DateTime.Now >= entry.Value)
-                            {
-                                nightAlert = "";
-                                NightAlert.SetDelay();
-                                NightAlert.Exec();
-                            }
-                            continue;
-                        case "PlayerLogs":
-                            if (DateTime.Now >= entry.Value)
-                            {
-                                playerLogs = "";
-                                PlayerLogs.SetDelay();
-                                PlayerLogs.Exec();
-                            }
-                            continue;
-                        case "RealWorldTime":
-                            if (DateTime.Now >= entry.Value)
-                            {
-                                realWorldTime = "";
-                                RealWorldTime.SetDelay();
-                                RealWorldTime.Exec();
-                            }
-                            continue;
-                        case "Shutdown":
-                            if (DateTime.Now >= entry.Value)
-                            {
-                                Remove("Shutdown");
-                                Shutdown.PrepareShutdown();
-                            }
-                            continue;
-                        case "ThirtyMinutes":
-                            if (DateTime.Now >= entry.Value)
-                            {
-                                RestartVote.ThirtyMin = true;
-                            }
-                            continue;
-                        case "WatchList":
-                            if (DateTime.Now >= entry.Value)
-                            {
-                                watchList = "";
-                                WatchList.SetDelay();
-                                WatchList.Exec();
-                            }
-                            continue;
-                        case "Zones":
-                            if (DateTime.Now >= entry.Value)
-                            {
-                                zones = "";
-                                Zones.SetDelay();
-                                Zones.ReminderExec();
-                            }
-                            continue;
+                        switch (entry.Key)
+                        {
+                            case "AutoBackup":
+                                if (DateTime.Now >= entry.Value)
+                                {
+                                    autoBackup = "";
+                                    AutoBackup.SetDelay();
+                                    AutoBackup.Exec();
+                                }
+                                continue;
+                            case "AutoSaveWorld":
+                                if (DateTime.Now >= entry.Value)
+                                {
+                                    autoSaveWorld = "";
+                                    AutoSaveWorld.SetDelay();
+                                    AutoSaveWorld.Save();
+                                }
+                                continue;
+                            case "Bloodmoon":
+                                if (DateTime.Now >= entry.Value)
+                                {
+                                    bloodmoon = "";
+                                    Bloodmoon.SetDelay();
+                                    Bloodmoon.StatusCheck();
+                                }
+                                continue;
+                            case "BreakTime":
+                                if (DateTime.Now >= entry.Value)
+                                {
+                                    breakTime = "";
+                                    BreakTime.SetDelay();
+                                    BreakTime.Exec();
+                                }
+                                continue;
+                            case "InfoTicker":
+                                if (DateTime.Now >= entry.Value)
+                                {
+                                    infoTicker = "";
+                                    InfoTicker.SetDelay();
+                                    InfoTicker.Exec();
+                                }
+                                continue;
+                            case "NightAlert":
+                                if (DateTime.Now >= entry.Value)
+                                {
+                                    nightAlert = "";
+                                    NightAlert.SetDelay();
+                                    NightAlert.Exec();
+                                }
+                                continue;
+                            case "PlayerLogs":
+                                if (DateTime.Now >= entry.Value)
+                                {
+                                    playerLogs = "";
+                                    PlayerLogs.SetDelay();
+                                    PlayerLogs.Exec();
+                                }
+                                continue;
+                            case "RealWorldTime":
+                                if (DateTime.Now >= entry.Value)
+                                {
+                                    realWorldTime = "";
+                                    RealWorldTime.SetDelay();
+                                    RealWorldTime.Exec();
+                                }
+                                continue;
+                            case "Shutdown":
+                                if (DateTime.Now >= entry.Value)
+                                {
+                                    Remove("Shutdown");
+                                    Shutdown.PrepareShutdown();
+                                }
+                                continue;
+                            case "ThirtyMinutes":
+                                if (DateTime.Now >= entry.Value)
+                                {
+                                    RestartVote.ThirtyMin = true;
+                                }
+                                continue;
+                            case "WatchList":
+                                if (DateTime.Now >= entry.Value)
+                                {
+                                    watchList = "";
+                                    WatchList.SetDelay();
+                                    WatchList.Exec();
+                                }
+                                continue;
+                            case "Zones":
+                                if (DateTime.Now >= entry.Value)
+                                {
+                                    zones = "";
+                                    Zones.SetDelay();
+                                    Zones.ReminderExec();
+                                }
+                                continue;
+                        }
                     }
                 }
             }

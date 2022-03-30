@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Auction = false, Bank = false, Bounties = false, Delays = false, 
             Homes = false, Jail = false, Lobby = false, Market = false, New_Spawn_Tele = false, Poll = false, 
-            Protected_Spaces = false, Vehicles = false, Waypoints = false;
+            Protected_Zones = false, Vehicles = false, Waypoints = false;
 
         public static void Exec()
         {
@@ -80,7 +80,7 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[id[i]].MarketReturnPos = string.Empty;
                 }
-                if (Protected_Spaces)
+                if (Protected_Zones)
                 {
                     
                 }

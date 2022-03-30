@@ -229,12 +229,20 @@ namespace ServerTools
                     else
                     {
                         PlayerLevels.Add(player.entityId, player.Progression.Level);
+                        if (player.Progression.Level == 1)
+                        {
+                            if (Dict.ContainsKey(player.Progression.Level))
+                            {
+                                Dict.TryGetValue(player.Progression.Level, out string command);
+                                ProcessCommand(_cInfo, command);
+                            }
+                        }
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in LevelUp.Exec: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in LevelUp.CheckLevel: {0}", e.Message));
             }
         }
 

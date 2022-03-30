@@ -82,7 +82,9 @@ public static class Injections
             if (FallingBlocks.IsEnabled && _blockPos != null)
             {
                 BlockValue blockValue = __instance.GetBlock(_blockPos);
-                if (!(blockValue.Block is BlockSleepingBag) && !(blockValue.Block is BlockPlant) && !blockValue.Block.Equals(BlockValue.Air))
+                if (!(blockValue.Block is BlockSleepingBag) && !(blockValue.Block is BlockPlant) && !(blockValue.Block is BlockDoor)
+                    && !(blockValue.Block is BlockCropsGrown) && !(blockValue.Block is BlockBackpack) && !(blockValue.Block is BlockDrawBridge)
+                    && !blockValue.Block.GetBlockName().ToLower().Contains("fence"))
                 {
                     GameManager.Instance.World.SetBlockRPC(_blockPos, BlockValue.Air);
                 }
@@ -103,7 +105,9 @@ public static class Injections
                 for (int i = 0; i < _list.Count; i++)
                 {
                     BlockValue blockValue = __instance.GetBlock(_list[i]);
-                    if (!(blockValue.Block is BlockSleepingBag) && !(blockValue.Block is BlockPlant) && !blockValue.Equals(BlockValue.Air))
+                    if (!(blockValue.Block is BlockSleepingBag) && !(blockValue.Block is BlockPlant) && !(blockValue.Block is BlockDoor)
+                        && !(blockValue.Block is BlockCropsGrown) && !(blockValue.Block is BlockBackpack) && !(blockValue.Block is BlockDrawBridge)
+                        && !blockValue.Block.GetBlockName().ToLower().Contains("fence"))
                     {
                         GameManager.Instance.World.SetBlockRPC(_list[i], BlockValue.Air);
                     }
@@ -240,7 +244,6 @@ public static class Injections
                             {
                                 if (!DroppedBagProtection.IsAllowed(_entityIdThatOpenedIt, lootContainer))
                                 {
-
                                     Phrases.Dict.TryGetValue("DroppedBagProtection1", out string phrase);
                                     ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     __result = false;
@@ -274,12 +277,17 @@ public static class Injections
                     }
                     if (WorkstationLock.IsEnabled && _te is TileEntityWorkstation)
                     {
-                        if (!PersistentOperations.ClaimedByAllyOrSelf(cInfo.CrossplatformId, _te.localChunkPos) && !PersistentOperations.ClaimedByNone(cInfo.CrossplatformId, _te.localChunkPos))
+                        EntityPlayer entityPlayer = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                        if (entityPlayer != null)
                         {
-                            Phrases.Dict.TryGetValue("WorkstationLock1", out string phrase);
-                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            __result = false;
-                            return false;
+                            EnumLandClaimOwner owner = PersistentOperations.ClaimedByWho(cInfo.CrossplatformId, new Vector3i(entityPlayer.position));
+                            if (owner != EnumLandClaimOwner.Self && owner != EnumLandClaimOwner.Ally && !PersistentOperations.ClaimedByNone(new Vector3i(entityPlayer.position)))
+                            {
+                                Phrases.Dict.TryGetValue("WorkstationLock1", out string phrase);
+                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                __result = false;
+                                return false;
+                            }
                         }
                     }
                 }
@@ -292,7 +300,7 @@ public static class Injections
         return true;
     }
 
-    public static bool GameManager_OpenTileEntityAllowed_Postfix(bool __state, int _entityIdThatOpenedIt)
+    public static void GameManager_OpenTileEntityAllowed_Postfix(bool __state, int _entityIdThatOpenedIt, TileEntity _te)
     {
         try
         {
@@ -309,7 +317,6 @@ public static class Injections
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_OpenTileEntityAllowed_Postfix: {0}", e.Message));
         }
-        return true;
     }
 
     public static bool EntityAlive_OnEntityDeath_Prefix(EntityAlive __instance)

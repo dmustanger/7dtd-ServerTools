@@ -9,7 +9,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools] - Turn on/off, add, remove, or list players in jail.";
+            return "[ServerTools] - Turn on/off, add, remove, or list players in jail";
         }
         public override string GetHelp()
         {
@@ -21,9 +21,9 @@ namespace ServerTools
                 "  5. st-jl list\n" +
                 "1. Turn off jail\n" +
                 "2. Turn on jail\n" +
-                "3. Adds a steam Id to the jail list for a specific time in minutes\n" +
-                "4. Removes a steam Id from the jail list\n" +
-                "5. Lists all steam Id in the jail list" +
+                "3. Adds a Id to the jail list for a specific time in minutes\n" +
+                "4. Removes a Id from the jail list\n" +
+                "5. Lists all Id in the jail list" +
                 "*Note Use -1 for time to jail indefinitely*";
         }
         public override string[] GetCommands()
@@ -149,7 +149,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id '{0}' ", _params[1]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid EOS Id '{0}' ", _params[1]));
                                     return;
                                 }
                             }
@@ -209,7 +209,7 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id '{0}' ", _params[1]));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid EOS Id '{0}' ", _params[1]));
                                         return;
                                     }
                                 }

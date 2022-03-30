@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -166,7 +167,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, whisper, global -->");
+                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, {SetReturn}, {Return}, whisper, global -->");
                     sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Permission=\"false\" Cost=\"0\" /> -->");
                     sw.WriteLine("    <!-- <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Reserved=\"false\" Permission=\"\" Cost=\"\" /> -->");
                     sw.WriteLine();
@@ -898,18 +899,18 @@ namespace ServerTools
                 {
                     return true;
                 }
+                Phrases.Dict.TryGetValue("CustomCommands2", out string phrase);
+                phrase = phrase.Replace("{Command}", _command);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommands.Permission: {0}", e.Message));
             }
-            Phrases.Dict.TryGetValue("CustomCommands2", out string phrase);
-            phrase = phrase.Replace("{Command}", _command);
-            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             return false;
         }
 
-        private static void Delay(ClientInfo _cInfo, string _message, int _delay, int _cost, DateTime _lastUse)
+        private static void Delay(ClientInfo _cInfo, string _command, int _delay, int _cost, DateTime _lastUse)
         {
             TimeSpan varTime = DateTime.Now - _lastUse;
             double fractionalMinutes = varTime.TotalMinutes;
@@ -923,7 +924,7 @@ namespace ServerTools
                         if (DateTime.Now < dt)
                         {
                             int newDelay = _delay / 2;
-                            TimePass(_cInfo, _message, timePassed, newDelay, _cost);
+                            TimePass(_cInfo, _command, timePassed, newDelay, _cost);
                             return;
                         }
                     }
@@ -932,35 +933,35 @@ namespace ServerTools
                         if (DateTime.Now < dt)
                         {
                             int newDelay = _delay / 2;
-                            TimePass(_cInfo, _message, timePassed, newDelay, _cost);
+                            TimePass(_cInfo, _command, timePassed, newDelay, _cost);
                             return;
                         }
                     }
                 }
             }
-            TimePass(_cInfo, _message, timePassed, _delay, _cost);
+            TimePass(_cInfo, _command, timePassed, _delay, _cost);
         }
 
-        private static void TimePass(ClientInfo _cInfo, string _message, int _timePassed, int _delay, int _cost)
+        private static void TimePass(ClientInfo _cInfo, string _command, int _timePassed, int _delay, int _cost)
         {
             if (_timePassed >= _delay)
             {
-                CommandCost(_cInfo, _message, _cost);
+                CommandCost(_cInfo, _command, _cost);
             }
             else
             {
                 int _timeleft = _delay - _timePassed;
-                Delayed(_cInfo, _message, _timeleft, _delay);
+                Delayed(_cInfo, _command, _timeleft, _delay);
             }
         }
 
-        private static void Delayed(ClientInfo _cInfo, string _message, int _timeLeft, int _delay)
+        private static void Delayed(ClientInfo _cInfo, string _command, int _timeLeft, int _delay)
         {
             try
             {
                 Phrases.Dict.TryGetValue("CustomCommands1", out string phrase);
                 phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                phrase = phrase.Replace("{CommandCustom}", _message);
+                phrase = phrase.Replace("{CommandCustom}", _command);
                 phrase = phrase.Replace("{DelayBetweenUses}", _delay.ToString());
                 phrase = phrase.Replace("{TimeRemaining}", _timeLeft.ToString());
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -1039,7 +1040,7 @@ namespace ServerTools
                                 if (int.TryParse(commandSplit[1], out int time))
                                 {
                                     commands.RemoveRange(0, i + 1);
-                                    Timers.Custom_SingleUseTimer(time, _cInfo.CrossplatformId.CombinedString, commands);
+                                    Timers.Custom_SingleUseTimer(time, _cInfo.CrossplatformId.CombinedString, commands, _command);
                                     return;
                                 }
                                 else
@@ -1049,13 +1050,13 @@ namespace ServerTools
                             }
                             else
                             {
-                                CommandExec(_cInfo, commandTrimmed);
+                                CommandExec(_cInfo, commandTrimmed, _command);
                             }
                         }
                     }
                     else
                     {
-                        CommandExec(_cInfo, commandData[0]);
+                        CommandExec(_cInfo, commandData[0], _command);
                     }
                 }
             }
@@ -1065,7 +1066,7 @@ namespace ServerTools
             }
         }
 
-        public static void CustomCommandDelayed(string _playerId, List<string> _commands)
+        public static void CustomCommandDelayed(string _playerId, List<string> _commands, string _trigger)
         {
             try
             {
@@ -1081,7 +1082,7 @@ namespace ServerTools
                             if (int.TryParse(commandSplit[1], out int _time))
                             {
                                 _commands.RemoveRange(0, i + 1);
-                                Timers.Custom_SingleUseTimer(_time, cInfo.CrossplatformId.CombinedString, _commands);
+                                Timers.Custom_SingleUseTimer(_time, cInfo.CrossplatformId.CombinedString, _commands, _trigger);
                                 return;
                             }
                             else
@@ -1091,7 +1092,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            CommandExec(cInfo, commandTrimmed);
+                            CommandExec(cInfo, commandTrimmed, _trigger);
                         }
                     }
                 }
@@ -1102,7 +1103,7 @@ namespace ServerTools
             }
         }
 
-        private static void CommandExec(ClientInfo _cInfo, string _command)
+        private static void CommandExec(ClientInfo _cInfo, string _command, string _trigger)
         {
             try
             {
@@ -1112,19 +1113,19 @@ namespace ServerTools
                     {
                         _command = _command.Replace("{EntityId}", _cInfo.entityId.ToString());
                     }
-                    if (_command.Contains("{Id}"))
+                    else if (_command.Contains("{Id}"))
                     {
                         _command = _command.Replace("{Id}", _cInfo.PlatformId.CombinedString);
                     }
-                    if (_command.Contains("{EOS}"))
+                    else if (_command.Contains("{EOS}"))
                     {
                         _command = _command.Replace("{EOS}", _cInfo.CrossplatformId.CombinedString);
                     }
-                    if (_command.Contains("{PlayerName}"))
+                    else if (_command.Contains("{PlayerName}"))
                     {
                         _command = _command.Replace("{PlayerName}", _cInfo.playerName);
                     }
-                    if (_command.Contains("{RandomId}"))
+                    else if (_command.Contains("{RandomId}"))
                     {
                         List<ClientInfo> clientList = PersistentOperations.ClientList();
                         if (clientList != null)
@@ -1136,7 +1137,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (_command.Contains("{RandomEOS}"))
+                    else if (_command.Contains("{RandomEOS}"))
                     {
                         List<ClientInfo> clientList = PersistentOperations.ClientList();
                         if (clientList != null)
@@ -1148,28 +1149,63 @@ namespace ServerTools
                             }
                         }
                     }
-                    string commandLower = _command.ToLower();
-                    if (commandLower.Contains("global "))
+                    else if (_command.Contains("{SetReturn}"))
                     {
-                        _command = _command.Replace("global ", "");
-                        _command = _command.Replace("Global ", "");
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions != null)
+                        {
+                            if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.ContainsKey(_trigger))
+                            {
+                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.Remove(_trigger);
+                            }
+                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.Add(_trigger, _cInfo.latestPlayerData.ecd.pos.ToString());
+                        }
+                        else
+                        {
+                            Dictionary<string, string> positions = new Dictionary<string, string>();
+                            positions.Add(_trigger, _cInfo.latestPlayerData.ecd.pos.ToString());
+                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions = positions;
+                        }
+                        PersistentContainer.DataChange = true;
                     }
-                    else if (commandLower.StartsWith("whisper "))
+                    else if (_command.Contains("{Return}"))
                     {
-                        _command = _command.Replace("whisper ", "");
-                        _command = _command.Replace("Whisper ", "");
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                    else if (commandLower.StartsWith("tp "))
-                    {
-                        _command = _command.Replace("tp ", "tele ");
-                        _command = _command.Replace("Tp ", "tele ");
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                        _command = _command.Replace("{Return} ", "");
+                        if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.ContainsKey(_command))
+                        {
+                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.TryGetValue(_command, out string position);
+                            string[] cords = position.Split(',');
+                            float.TryParse(cords[0], out float x);
+                            float.TryParse(cords[1], out float y);
+                            float.TryParse(cords[2], out float z);
+                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                        }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                        string commandLower = _command.ToLower();
+                        if (commandLower.Contains("global "))
+                        {
+                            _command = _command.Replace("global ", "");
+                            _command = _command.Replace("Global ", "");
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        }
+                        else if (commandLower.StartsWith("whisper "))
+                        {
+                            _command = _command.Replace("whisper ", "");
+                            _command = _command.Replace("Whisper ", "");
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
+                        else if (commandLower.StartsWith("tp "))
+                        {
+                            _command = _command.Replace("tp ", "tele ");
+                            _command = _command.Replace("Tp ", "tele ");
+                            _command = _command.Replace("TP ", "tele ");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                        }
+                        else
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                        }
                     }
                 }
             }

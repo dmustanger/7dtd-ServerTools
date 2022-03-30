@@ -64,7 +64,7 @@ namespace ServerTools
             }
         }
 
-        public static void Custom_SingleUseTimer(int _delay, string _playerId, List<string> _commands)
+        public static void Custom_SingleUseTimer(int _delay, string _playerId, List<string> _commands, string _trigger)
         {
             if (_delay > 180)
             {
@@ -78,7 +78,7 @@ namespace ServerTools
             singleUseTimer.Start();
             singleUseTimer.Elapsed += (sender, e) =>
             {
-                Init1(_playerId, _commands);
+                Init1(_playerId, _commands, _trigger);
                 singleUseTimer.Stop();
                 singleUseTimer.Close();
                 singleUseTimer.Dispose();
@@ -524,9 +524,9 @@ namespace ServerTools
             }
         }
 
-        private static void Init1(string _playerId, List<string> _commands)
+        private static void Init1(string _playerId, List<string> _commands, string _trigger)
         {
-            CustomCommands.CustomCommandDelayed(_playerId, _commands);
+            CustomCommands.CustomCommandDelayed(_playerId, _commands, _trigger);
         }
 
         private static void Init2(string _playerId, int _amount)

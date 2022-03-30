@@ -17,7 +17,7 @@ namespace ServerTools
                     EntityAlive entityAlive = PersistentOperations.GetEntityPlayer(entity.entityId);
                     if (entityAlive != null)
                     {
-                        if (((_player.position.x - entity.position.x) * (_player.position.x - entity.position.x) + (_player.position.z - entity.position.z) * (_player.position.z - entity.position.z)) < 75f * 75f)
+                        if ((entityAlive.position - entity.position).magnitude <= 100)
                         {
                             Phrases.Dict.TryGetValue("Teleport1", out string _phrase);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -39,7 +39,7 @@ namespace ServerTools
                     EntityPlayer player2 = players[i];
                     if (player2 != null && player2.entityId != _cInfo.entityId && !_player.IsFriendsWith(player2))
                     {
-                        if (((_player.position.x - player2.position.x) * (_player.position.x - player2.position.x) + (_player.position.z - player2.position.z) * (_player.position.z - player2.position.z)) < 125f * 125f)
+                        if ((_player.position - player2.position).magnitude <= 125)
                         {
                             Phrases.Dict.TryGetValue("Teleport2", out string _phrase);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

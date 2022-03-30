@@ -41,7 +41,7 @@ namespace ServerTools
                                     if (cInfoAttacker != null)
                                     {
                                         EntityPlayer attackingPlayer = attacker as EntityPlayer;
-                                        if (attackingItem != null)
+                                        if (attackingItem(__instance) != null)
                                         {
                                             if (DamageDetector.IsEnabled && !DamageDetector.IsValidPvP(victim as EntityPlayer, cInfoAttacker, strength(__instance), attackingItem(__instance)))
                                             {

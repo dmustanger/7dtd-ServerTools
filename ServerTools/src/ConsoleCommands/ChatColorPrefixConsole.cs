@@ -18,17 +18,19 @@ namespace ServerTools
                 "  3. st-ccp add <Id/entityId/playerName> <nameColor> <prefix> <prefixColor> <daysToExpire>\n" +
                 "  4. st-ccp add <Id/entityId/playerName> <daysToExpire>\n" +
                 "  5. st-ccp edit <Id/entityId/playerName> <nameColor> <prefix> <prefixColor>\n" +
-                "  6. st-ccp edit <Id/entityId/playerName> <daysToExpire>\n" +
-                "  7. st-ccp remove <Id/entityId/playerName>\n" +
-                "  8. st-ccp list\n" +
+                "  6. st-ccp edit <Id/entityId/playerName> <prefix>\n" +
+                "  7. st-ccp edit <Id/entityId/playerName> <daysToExpire>\n" +
+                "  8. st-ccp remove <Id/entityId/playerName>\n" +
+                "  9. st-ccp list\n" +
                 "1. Turn off chat color prefix\n" +
                 "2. Turn on chat color prefix\n" +
                 "3. Adds a player to the list. If they already exist on the list it will replace the entry but add to the expiration time\n" +
                 "4. Adds a player to the list with no colors or prefix. If they already exist on the list it will replace the entry but add to the expiration time\n" +
                 "5. Edit a player's prefix and colors\n" +
-                "6. Edit a player's expiry date\n" +
-                "7. Removes a player from the list\n" +
-                "8. Shows all players on the list\n" +
+                "6. Edit a player's prefix\n" +
+                "7. Edit a player's expiry date\n" +
+                "8. Removes a player from the list\n" +
+                "9. Shows all players on the list\n" +
                 "*Note*     Using the entity id or player name to add a player will only work if they are online. Use their steam id when offline" +
                 "*Note*     The colors must be entered as 6 digit HTML color code or color names from the color list. Example FF0000, FFFF00, Red, Rainbow";
         }
@@ -250,7 +252,11 @@ namespace ServerTools
                         {
                             if (!int.TryParse(_params[2], out int daysToExpire))
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to edit player. Invalid integer '{0}'", _params[2]));
+                                ChatColor.Players.TryGetValue(id, out string[] tags);
+                                string[] c = new string[] { tags[0], tags[1], _params[2], tags[3] };
+                                ChatColor.Players[id] = c;
+                                ChatColor.UpdateXml();
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Edited chat color prefix for player id '{0}'. Prefix set to '{1}'", id, _params[2]));
                                 return;
                             }
                             ChatColor.ExpireDate[id] = DateTime.Now.AddDays(daysToExpire);

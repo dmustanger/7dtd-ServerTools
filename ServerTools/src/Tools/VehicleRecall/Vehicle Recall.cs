@@ -151,12 +151,12 @@ namespace ServerTools
                 if (Inside_Claim)
                 {
                     World world = GameManager.Instance.World;
-                    Vector3 _position = _player.GetPosition();
-                    int x = (int)_position.x;
-                    int y = (int)_position.y;
-                    int z = (int)_position.z;
-                    Vector3i _vec3i = new Vector3i(x, y, z);
-                    if (!PersistentOperations.ClaimedByAllyOrSelf(_cInfo.CrossplatformId, _vec3i))
+                    Vector3 position = _player.GetPosition();
+                    int x = (int)position.x;
+                    int y = (int)position.y;
+                    int z = (int)position.z;
+                    Vector3i vec3i = new Vector3i(x, y, z);
+                    if (PersistentOperations.ClaimedByWho(_cInfo.CrossplatformId, vec3i) == EnumLandClaimOwner.None)
                     {
                         Phrases.Dict.TryGetValue("VehicleRecall6", out string _phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

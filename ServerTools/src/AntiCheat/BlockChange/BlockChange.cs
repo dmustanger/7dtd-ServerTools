@@ -1,9 +1,7 @@
-﻿using HarmonyLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -26,22 +24,16 @@ namespace ServerTools
                         EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
                         if (player != null)
                         {
-                            int slot = player.inventory.holdingItemIdx;
-                            ItemValue itemValue = cInfo.latestPlayerData.inventory[slot].itemValue;
-                            if (itemValue != null && InfiniteAmmo.IsEnabled && itemValue.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo, player, slot, itemValue))
-                            {
-                                return false;
-                            }
                             World world = __instance.World;
                             for (int i = 0; i < _blocksToChange.Count; i++)
                             {
                                 BlockChangeInfo newBlockInfo = _blocksToChange[i];//new block info
                                 BlockValue oldBlockValue = world.GetBlock(newBlockInfo.pos);//old block value
                                 Block oldBlock = oldBlockValue.Block;
-                                if (newBlockInfo != null && newBlockInfo.bChangeBlockValue)//has new block value
+                                if (newBlockInfo != null && oldBlock != null && newBlockInfo.bChangeBlockValue)//has new block value
                                 {
                                     Block newBlock = newBlockInfo.blockValue.Block;
-                                    if (oldBlockValue.Equals(BlockValue.Air))//old block was air
+                                    if (newBlock != null)
                                     {
                                         if (newBlock is BlockSleepingBag)//placed a sleeping bag
                                         {
@@ -69,9 +61,8 @@ namespace ServerTools
                                         {
                                             BlockLogger.PlacedBlock(cInfo, newBlock, newBlockInfo.pos);
                                         }
-                                        return true;
                                     }
-                                    else if (oldBlockValue.Block is BlockTrapDoor)
+                                    if (oldBlockValue.Block is BlockTrapDoor)
                                     {
                                         return true;
                                     }
@@ -79,7 +70,7 @@ namespace ServerTools
                                     {
                                         if (oldBlockValue.Block is BlockLandClaim)
                                         {
-                                            if (!PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, newBlockInfo.pos))
+                                            if (PersistentOperations.ClaimedByWho(_persistentPlayerId, newBlockInfo.pos) == EnumLandClaimOwner.None)
                                             {
                                                 if (DamageDetector.IsEnabled)
                                                 {
@@ -96,6 +87,12 @@ namespace ServerTools
                                                 {
                                                     BlockLogger.BrokeBlock(cInfo, oldBlock, newBlockInfo.pos);
                                                 }
+                                                int slot = player.inventory.holdingItemIdx;
+                                                ItemValue itemValue = cInfo.latestPlayerData.inventory[slot].itemValue;
+                                                if (itemValue != null && InfiniteAmmo.IsEnabled && itemValue.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo, player, slot, itemValue))
+                                                {
+                                                    return false;
+                                                }
                                             }
                                             else if (BlockLogger.IsEnabled)
                                             {
@@ -104,7 +101,7 @@ namespace ServerTools
                                         }
                                         else if (!oldBlock.CanPickup)//old block can not be picked up
                                         {
-                                            if (!PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, newBlockInfo.pos))
+                                            if (PersistentOperations.ClaimedByWho(_persistentPlayerId, newBlockInfo.pos) == EnumLandClaimOwner.None)
                                             {
                                                 if (DamageDetector.IsEnabled)
                                                 {
@@ -137,6 +134,12 @@ namespace ServerTools
                                                     return false;
                                                 }
                                             }
+                                            int slot = player.inventory.holdingItemIdx;
+                                            ItemValue itemValue = cInfo.latestPlayerData.inventory[slot].itemValue;
+                                            if (itemValue != null && InfiniteAmmo.IsEnabled && itemValue.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo, player, slot, itemValue))
+                                            {
+                                                return false;
+                                            }
                                         }
                                     }
                                     else if (oldBlock.DowngradeBlock.Block.blockID == newBlock.blockID)//downgraded
@@ -158,6 +161,12 @@ namespace ServerTools
                                                 Penalty(total, player, cInfo);
                                                 return false;
                                             }
+                                        }
+                                        int slot = player.inventory.holdingItemIdx;
+                                        ItemValue itemValue = cInfo.latestPlayerData.inventory[slot].itemValue;
+                                        if (itemValue != null && InfiniteAmmo.IsEnabled && itemValue.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo, player, slot, itemValue))
+                                        {
+                                            return false;
                                         }
                                     }
                                 }

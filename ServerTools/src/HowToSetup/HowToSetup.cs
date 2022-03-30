@@ -93,7 +93,7 @@ namespace ServerTools
                 sw.WriteLine("Time_Between_Saves controls how many minutes will pass between backups.");
                 sw.WriteLine("You can allow the default location or specify a save directory you would like your backups to go with Destination.");
                 sw.WriteLine("Be careful to put the entire location if inputting a custom one. Example C:/MyFiles/7DaysBackups/");
-                sw.WriteLine("Set the compression level to 0, 1 or 2. 0 is none, 1 is optimal, 2 is maximum.");
+                sw.WriteLine("Set the compression level from 0-9. 0 is none, 9 is maximum.");
                 sw.WriteLine("Backup_Count controls how many backups it will keep in total.");
                 sw.WriteLine();
                 sw.WriteLine();
@@ -374,6 +374,7 @@ namespace ServerTools
                 sw.WriteLine("Run a permission check on the player using the command by setting it via the xml file to true or false. Users must be the right permission level in the serveradmin.xml");
                 sw.WriteLine("Responses in chat can include whisper or global with a message. Whisper will send it to the player that triggers the command, while global will send the message");
                 sw.WriteLine("to the entire server.");
+                sw.WriteLine("{SetReturn} will save the users current location with the trigger name. {Return} 'trigger' will teleport the user to the saved location");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
