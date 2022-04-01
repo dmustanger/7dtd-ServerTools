@@ -1,5 +1,11 @@
 ﻿CHANGELOG
 
+20.3.1
+Built using Alpha 20 experimental assets
+Functioning with Alpha 20 experimental. Untested with other versions
+
+-Fixed Custom_Commands {Variables} not functioning as intended
+
 20.3.0
 Built using Alpha 20 experimental assets
 Functioning with Alpha 20 experimental. Untested with other versions

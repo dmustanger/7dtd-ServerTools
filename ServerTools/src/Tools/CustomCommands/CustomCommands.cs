@@ -1113,19 +1113,19 @@ namespace ServerTools
                     {
                         _command = _command.Replace("{EntityId}", _cInfo.entityId.ToString());
                     }
-                    else if (_command.Contains("{Id}"))
+                    if (_command.Contains("{Id}"))
                     {
                         _command = _command.Replace("{Id}", _cInfo.PlatformId.CombinedString);
                     }
-                    else if (_command.Contains("{EOS}"))
+                    if (_command.Contains("{EOS}"))
                     {
                         _command = _command.Replace("{EOS}", _cInfo.CrossplatformId.CombinedString);
                     }
-                    else if (_command.Contains("{PlayerName}"))
+                    if (_command.Contains("{PlayerName}"))
                     {
                         _command = _command.Replace("{PlayerName}", _cInfo.playerName);
                     }
-                    else if (_command.Contains("{RandomId}"))
+                    if (_command.Contains("{RandomId}"))
                     {
                         List<ClientInfo> clientList = PersistentOperations.ClientList();
                         if (clientList != null)
@@ -1137,7 +1137,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    else if (_command.Contains("{RandomEOS}"))
+                    if (_command.Contains("{RandomEOS}"))
                     {
                         List<ClientInfo> clientList = PersistentOperations.ClientList();
                         if (clientList != null)
@@ -1149,7 +1149,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    else if (_command.Contains("{SetReturn}"))
+                    if (_command.Contains("{SetReturn}"))
                     {
                         if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions != null)
                         {
@@ -1182,24 +1182,24 @@ namespace ServerTools
                     }
                     else
                     {
-                        string commandLower = _command.ToLower();
-                        if (commandLower.Contains("global "))
+                        if (_command.Contains("global "))
                         {
                             _command = _command.Replace("global ", "");
-                            _command = _command.Replace("Global ", "");
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         }
-                        else if (commandLower.StartsWith("whisper "))
+                        else if (_command.StartsWith("whisper "))
                         {
                             _command = _command.Replace("whisper ", "");
-                            _command = _command.Replace("Whisper ", "");
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
-                        else if (commandLower.StartsWith("tp "))
+                        else if (_command.StartsWith("tp "))
                         {
                             _command = _command.Replace("tp ", "tele ");
-                            _command = _command.Replace("Tp ", "tele ");
-                            _command = _command.Replace("TP ", "tele ");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                        }
+                        else if (_command.StartsWith("teleportplayer "))
+                        {
+                            _command = _command.Replace("teleportplayer ", "tele ");
                             SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
                         }
                         else
