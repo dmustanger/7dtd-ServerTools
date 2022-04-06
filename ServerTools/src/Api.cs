@@ -133,9 +133,14 @@ namespace ServerTools
                     {
                         if (_respawnReason == RespawnType.NewGame)
                         {
+                            if (player.distanceWalked < 1 && player.totalTimePlayed <= 1 && !PersistentOperations.NewPlayerQue.Contains(_cInfo))
+                            {
+                                PersistentOperations.NewPlayerQue.Add(_cInfo);
+                            }
                         }
                         else if (_respawnReason == RespawnType.LoadedGame)
                         {
+
                         }
                         else if (_respawnReason == RespawnType.EnterMultiplayer)
                         {

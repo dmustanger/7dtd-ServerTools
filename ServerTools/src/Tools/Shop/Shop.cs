@@ -443,12 +443,20 @@ namespace ServerTools
             try
             {
                 World world = GameManager.Instance.World;
-                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false);
+                ItemValue itemValue = new ItemValue(ItemClass.GetItem(_itemName).type);
+                if (itemValue.HasQuality)
+                {
+                    itemValue.Quality = 1;
+                    if (_quality > 0)
+                    {
+                        itemValue.Quality = _quality;
+                    }
+                }
                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {
                     entityClass = EntityClass.FromString("item"),
                     id = EntityFactory.nextEntityID++,
-                    itemStack = new ItemStack(_itemValue, _count),
+                    itemStack = new ItemStack(itemValue, _count),
                     pos = world.Players.dict[_cInfo.entityId].position,
                     rot = new Vector3(20f, 0f, 20f),
                     lifetime = 60f,
@@ -458,7 +466,7 @@ namespace ServerTools
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                 Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price);
-                Log.Out(string.Format("Sold '{0}' to '{1}' '{2}' named '{3}' through the shop", _itemValue.ItemClass.Name, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
+                Log.Out(string.Format("Sold '{0}' to '{1}' '{2}' named '{3}' through the shop", itemValue.ItemClass.Name, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                 Phrases.Dict.TryGetValue("Shop16", out string _phrase);
                 _phrase = _phrase.Replace("{Count}", _count.ToString());
                 if (_secondaryName != "")
@@ -467,7 +475,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    _phrase = _phrase.Replace("{Item}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName());
+                    _phrase = _phrase.Replace("{Item}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.GetItemName());
                 }
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }

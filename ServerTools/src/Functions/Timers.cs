@@ -389,6 +389,7 @@ namespace ServerTools
                 newPlayer++;
                 if (newPlayer >= 5)
                 {
+                    newPlayer = 0;
                     ClientInfo cInfo = PersistentOperations.NewPlayerQue[0];
                     PersistentOperations.NewPlayerQue.RemoveAt(0);
                     API.NewPlayerExec(cInfo);

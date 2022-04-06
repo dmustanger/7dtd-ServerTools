@@ -1,5 +1,14 @@
 ﻿CHANGELOG
 
+20.3.2
+Built using Alpha 20 experimental assets
+Functioning with Alpha 20 experimental. Untested with other versions
+
+-Fixed rock resource disappearing due to Falling_Blocks_Remover
+-Fixed items spawning with no quality
+-Fixed Waypoints claim check
+-Changed console command st-ProtectedSpaces to st-ProtectedZones
+
 20.3.1
 Built using Alpha 20 experimental assets
 Functioning with Alpha 20 experimental. Untested with other versions

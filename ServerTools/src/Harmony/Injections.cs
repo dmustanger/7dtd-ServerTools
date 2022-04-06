@@ -84,7 +84,7 @@ public static class Injections
                 BlockValue blockValue = __instance.GetBlock(_blockPos);
                 if (!(blockValue.Block is BlockSleepingBag) && !(blockValue.Block is BlockPlant) && !(blockValue.Block is BlockDoor)
                     && !(blockValue.Block is BlockCropsGrown) && !(blockValue.Block is BlockBackpack) && !(blockValue.Block is BlockDrawBridge)
-                    && !blockValue.Block.GetBlockName().ToLower().Contains("fence"))
+                    && !blockValue.Block.IsTerrainDecoration && !blockValue.Block.GetBlockName().ToLower().Contains("fence"))
                 {
                     GameManager.Instance.World.SetBlockRPC(_blockPos, BlockValue.Air);
                 }
@@ -107,7 +107,7 @@ public static class Injections
                     BlockValue blockValue = __instance.GetBlock(_list[i]);
                     if (!(blockValue.Block is BlockSleepingBag) && !(blockValue.Block is BlockPlant) && !(blockValue.Block is BlockDoor)
                         && !(blockValue.Block is BlockCropsGrown) && !(blockValue.Block is BlockBackpack) && !(blockValue.Block is BlockDrawBridge)
-                        && !blockValue.Block.GetBlockName().ToLower().Contains("fence"))
+                        && !blockValue.Block.IsTerrainDecoration && !blockValue.Block.GetBlockName().ToLower().Contains("fence"))
                     {
                         GameManager.Instance.World.SetBlockRPC(_list[i], BlockValue.Air);
                     }

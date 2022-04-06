@@ -545,7 +545,7 @@ namespace ServerTools
                     if (player != null)
                     {
                         Vector3 position = player.GetPosition();
-                        if (!PersistentOperations.ClaimedByNone(new Vector3i(position)))
+                        if (PersistentOperations.ClaimedByNone(new Vector3i(position)))
                         {
                             ReservedCheck(_cInfo, _waypoint);
                         }

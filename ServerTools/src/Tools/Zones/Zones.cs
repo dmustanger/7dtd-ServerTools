@@ -23,6 +23,7 @@ namespace ServerTools
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         private static XmlNodeList OldNodeList;
+        private static readonly System.Random Random = new System.Random();
 
         public static void Load()
         {
@@ -492,23 +493,70 @@ namespace ServerTools
         {
             try
             {
-                _command = _command.Replace("{EntityId}", _cInfo.entityId.ToString());
-                _command = _command.Replace("{Id}", _cInfo.PlatformId.CombinedString);
-                _command = _command.Replace("{EOS}", _cInfo.CrossplatformId.CombinedString);
-                _command = _command.Replace("{PlayerName}", _cInfo.playerName);
-                if (_command.ToLower().StartsWith("global "))
+                if (_command.Contains("{EntityId}"))
                 {
-                    _command = _command.Replace("Global ", "");
+                    _command = _command.Replace("{EntityId}", _cInfo.entityId.ToString());
+                }
+                if (_command.Contains("{Id}"))
+                {
+                    _command = _command.Replace("{Id}", _cInfo.PlatformId.CombinedString);
+                }
+                if (_command.Contains("{EOS}"))
+                {
+                    _command = _command.Replace("{EOS}", _cInfo.CrossplatformId.CombinedString);
+                }
+                if (_command.Contains("{PlayerName}"))
+                {
+                    _command = _command.Replace("{PlayerName}", _cInfo.playerName);
+                }
+                if (_command.Contains("{RandomId}"))
+                {
+                    List<ClientInfo> clientList = PersistentOperations.ClientList();
+                    if (clientList != null)
+                    {
+                        ClientInfo cInfo2 = clientList.ElementAt(Random.Next(clientList.Count));
+                        if (cInfo2 != null)
+                        {
+                            _command = _command.Replace("{RandomId}", cInfo2.PlatformId.CombinedString);
+                        }
+                    }
+                }
+                if (_command.Contains("{RandomEOS}"))
+                {
+                    List<ClientInfo> clientList = PersistentOperations.ClientList();
+                    if (clientList != null)
+                    {
+                        ClientInfo cInfo2 = clientList.ElementAt(Random.Next(clientList.Count));
+                        if (cInfo2 != null)
+                        {
+                            _command = _command.Replace("{RandomEOS}", cInfo2.CrossplatformId.CombinedString);
+                        }
+                    }
+                }
+                if (_command.Contains("global "))
+                {
                     _command = _command.Replace("global ", "");
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
-                else if (_command.ToLower().StartsWith("whisper "))
+                else if (_command.StartsWith("whisper "))
                 {
-                    _command = _command.Replace("Whisper ", "");
                     _command = _command.Replace("whisper ", "");
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
-                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                else if (_command.StartsWith("tp "))
+                {
+                    _command = _command.Replace("tp ", "tele ");
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                }
+                else if (_command.StartsWith("teleportplayer "))
+                {
+                    _command = _command.Replace("teleportplayer ", "tele ");
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                }
+                else
+                {
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                }
             }
             catch (Exception e)
             {

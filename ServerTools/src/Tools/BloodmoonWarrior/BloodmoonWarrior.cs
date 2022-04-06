@@ -367,7 +367,15 @@ namespace ServerTools
                     int maxQuality = int.Parse(item[4]);
                     int count = Random.Next(minCount, maxCount + 1);
                     int quality = Random.Next(minCount, maxCount + 1);
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type, quality, quality, true, null, 1f);
+                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type);
+                    if (itemValue.HasQuality)
+                    {
+                        itemValue.Quality = 1;
+                        if (quality > 0)
+                        {
+                            itemValue.Quality = quality;
+                        }
+                    }
                     World world = GameManager.Instance.World;
                     var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                     {

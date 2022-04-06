@@ -470,8 +470,16 @@ namespace ServerTools
                     else
                     {
                         int quality = Random.Next(itemData[2], itemData[3] + 1);
-                        ItemValue _itemValue = new ItemValue(ItemClass.GetItem(randomItem).type, quality, quality, false, null, 1);
-                        Give(_cInfo, _itemValue, count);
+                        ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem).type);
+                        if (itemValue.HasQuality)
+                        {
+                            itemValue.Quality = 1;
+                            if (quality > 0)
+                            {
+                                itemValue.Quality = quality;
+                            }
+                        }
+                        Give(_cInfo, itemValue, count);
                     }
                 }
             }

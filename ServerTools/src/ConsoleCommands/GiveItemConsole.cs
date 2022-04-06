@@ -63,19 +63,20 @@ namespace ServerTools
                             itemCount = count;
                         }
                     }
-                    int min = 1;
-                    int max = 1;
-                    if (_params.Count > 3 && int.TryParse(_params[3], out int itemQuality))
-                    {
-                        if (itemQuality > 0 && itemQuality < 7)
-                        {
-                            min = itemQuality;
-                            max = itemQuality;
-                        }
-                    }
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, min, max, true, null);
+                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type);
                     if (itemValue != null)
                     {
+                        if (itemValue.HasQuality)
+                        {
+                            itemValue.Quality = 1;
+                            if (_params.Count > 3 && int.TryParse(_params[3], out int itemQuality))
+                            {
+                                if (itemQuality > 0)
+                                {
+                                    itemValue.Quality = itemQuality;
+                                }
+                            }
+                        }
                         if (_params.Count > 4 && float.TryParse(_params[4], out float durability))
                         {
                             if (durability > 0 && durability < 101)

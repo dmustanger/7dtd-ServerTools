@@ -225,7 +225,15 @@ namespace ServerTools
                 string item = _items[0];
                 if (Dict.TryGetValue(item, out int[] itemData))
                 {
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(item, false).type, itemData[1], itemData[1], false, null, 1f);
+                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(item, false).type);
+                    if (itemValue.HasQuality)
+                    {
+                        itemValue.Quality = 1;
+                        if (itemData[1] > 0)
+                        {
+                            itemValue.Quality = itemData[1];
+                        }
+                    }
                     EntityItem entityItem = new EntityItem();
                     entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                     {

@@ -13,15 +13,15 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. st-ps off\n" +
-                   "  2. st-ps on\n" +
-                   "  3. st-ps add\n" +
-                   "  4. st-ps add <x> <z> <x> <z>\n" +
-                   "  5. st-ps cancel\n" +
-                   "  6. st-ps remove\n" +
-                   "  7. st-ps remove <#>\n" +
-                   "  8. st-ps list\n" +
-                   "  9. st-ps active <#>\n" +
+                   "  1. st-pz off\n" +
+                   "  2. st-pz on\n" +
+                   "  3. st-pz add\n" +
+                   "  4. st-pz add <x> <z> <x> <z>\n" +
+                   "  5. st-pz cancel\n" +
+                   "  6. st-pz remove\n" +
+                   "  7. st-pz remove <#>\n" +
+                   "  8. st-pz list\n" +
+                   "  9. st-pz active <#>\n" +
                    "1. Turn off ProtectedZones\n" +
                    "2. Turn on ProtectedZones\n" +
                    "3. Add a protected zone. Stand in the south west corner, use add, stand in the north east corner and use add again\n" +
@@ -36,7 +36,7 @@ namespace ServerTools
     
         public override string[] GetCommands()
         {
-            return new string[] { "st-ProtectedSpaces", "ps", "st-ps" };
+            return new string[] { "st-ProtectedZones", "pz", "st-pz" };
         }
     
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

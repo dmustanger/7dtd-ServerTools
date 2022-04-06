@@ -952,3 +952,13 @@ D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.1\ServerTools\
 D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.1\ServerTools\obj\Release\ServerTools.csproj.Fody.CopyLocal.cache
 D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.1\ServerTools\obj\Release\ServerTools.csproj.CopyComplete
 D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.1\ServerTools\obj\Release\ServerTools.dll
+F:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.2\bin\Mods\ServerTools\ModInfo.xml
+F:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.2\bin\Mods\ServerTools\Changelog.txt
+F:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.2\bin\Mods\ServerTools\ServerTools.dll.config
+F:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.2\bin\Mods\ServerTools\ServerTools.dll
+F:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.2\ServerTools\obj\Release\ServerTools.csprojAssemblyReference.cache
+F:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.2\ServerTools\obj\Release\ServerTools.Properties.Resources.resources
+F:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.2\ServerTools\obj\Release\ServerTools.csproj.GenerateResource.cache
+F:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.2\ServerTools\obj\Release\ServerTools.csproj.Fody.CopyLocal.cache
+F:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.2\ServerTools\obj\Release\ServerTools.csproj.CopyComplete
+F:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.3.2\ServerTools\obj\Release\ServerTools.dll
