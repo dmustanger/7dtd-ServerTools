@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.3.2";
+        public const string Version = "20.3.3";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -3834,7 +3834,7 @@ namespace ServerTools
                                                 }
                                                 if (!bool.TryParse(line.GetAttribute("Player_Check"), out Waypoints.Player_Check))
                                                 {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Player_Check' attribute: {0}", line.OuterXml));
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Player_Check' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 if (!line.HasAttribute("Zombie_Check"))
@@ -3844,7 +3844,7 @@ namespace ServerTools
                                                 }
                                                 if (!bool.TryParse(line.GetAttribute("Zombie_Check"), out Waypoints.Zombie_Check))
                                                 {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Zombie_Check' attribute: {0}", line.OuterXml));
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Zombie_Check' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 if (!line.HasAttribute("Vehicle"))
@@ -3854,7 +3854,17 @@ namespace ServerTools
                                                 }
                                                 if (!bool.TryParse(line.GetAttribute("Vehicle"), out Waypoints.Vehicle))
                                                 {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Vehicle' attribute: {0}", line.OuterXml));
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Vehicle' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!line.HasAttribute("No_POI"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of missing 'No_POI' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!bool.TryParse(line.GetAttribute("No_POI"), out Waypoints.No_POI))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'No_POI' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 break;
@@ -4169,7 +4179,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Wallet_Extended\" Session_Bonus=\"{0}\" Currency_Name=\"{1}\" />", Wallet.Session_Bonus, Wallet.Currency_Name));
                 sw.WriteLine(string.Format("        <Tool Name=\"Watch_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Delay=\"{2}\" />", WatchList.IsEnabled, WatchList.Admin_Level, WatchList.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints =\"{1}\" Reserved_Max_Waypoints=\"{2}\" Command_Cost =\"{3}\" Delay_Between_Uses=\"{4}\" />", Waypoints.IsEnabled, Waypoints.Max_Waypoints, Waypoints.Reserved_Max_Waypoints, Waypoints.Command_Cost, Waypoints.Delay_Between_Uses));
-                sw.WriteLine(string.Format("        <Tool Name=\"Waypoints_Extended\" Player_Check =\"{0}\" Zombie_Check=\"{1}\" Vehicle=\"{2}\" />", Waypoints.Player_Check, Waypoints.Zombie_Check, Waypoints.Vehicle));
+                sw.WriteLine(string.Format("        <Tool Name=\"Waypoints_Extended\" Player_Check =\"{0}\" Zombie_Check=\"{1}\" Vehicle=\"{2}\" No_POI=\"{3}\" />", Waypoints.Player_Check, Waypoints.Zombie_Check, Waypoints.Vehicle, Waypoints.No_POI));
                 sw.WriteLine(string.Format("        <Tool Name=\"Web_API\" Enable=\"{0}\" Port=\"{1}\" />", WebAPI.IsEnabled, WebAPI.Port));
                 sw.WriteLine(string.Format("        <Tool Name=\"Web_Panel\" Enable=\"{0}\" />", WebPanel.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Workstation_Lock\" Enable=\"{0}\" />", WorkstationLock.IsEnabled));

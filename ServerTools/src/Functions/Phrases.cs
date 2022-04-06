@@ -582,7 +582,7 @@ namespace ServerTools
                     {
                         phrase = "You have been released from jail";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"191\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Jail2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Jail3", out phrase))
                     {
                         phrase = "You have set the jail position as {JailPosition}";
@@ -880,7 +880,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Waypoints5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Waypoints6", out phrase))
                     {
-                        phrase = "";
+                        phrase = "You can not save a waypoint in a POI area";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Waypoints6\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Waypoints7", out phrase))
@@ -1119,6 +1119,11 @@ namespace ServerTools
                         phrase = "You do not have enough {CoinName} to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"CustomCommands3\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("CustomCommands4", out phrase))
+                    {
+                        phrase = "You are not on the reserved list. Unable to run this command";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"CustomCommands4\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************* Shop ************************* -->");

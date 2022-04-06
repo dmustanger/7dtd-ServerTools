@@ -1,5 +1,21 @@
 ﻿CHANGELOG
 
+20.3.3
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added option No_POI to Waypoints. Does not allow players to save 
+waypoints in a POI
+-Fixed New_Player_Protection chat messages
+-Fixed Jail chat message
+-Fixed releasing players from Jail while they are offline
+-Fixed Custom_Commands reserved option not functioning as intended
+-Fixed Kill_Notice giving the wrong name of zombies
+-Fixed damage logs recording 'GameObject' when shooting zombies
+
+-Note versions 20.3.0 - 20.3.2 were all built using Alpha 20 stable
+assets, not experimental
+
 20.3.2
 Built using Alpha 20 experimental assets
 Functioning with Alpha 20 experimental. Untested with other versions

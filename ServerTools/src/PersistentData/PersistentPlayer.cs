@@ -36,6 +36,7 @@ namespace ServerTools
         private DateTime jailDate;
         private string jailName;
         private int jailTime;
+        private bool jailRelease;
         private DateTime lastAnimal;
         private DateTime lastDied;
         private DateTime lastFriendTele;
@@ -399,6 +400,18 @@ namespace ServerTools
             set
             {
                 jailTime = value;
+            }
+        }
+
+        public bool JailRelease
+        {
+            get
+            {
+                return jailRelease;
+            }
+            set
+            {
+                jailRelease = value;
             }
         }
 

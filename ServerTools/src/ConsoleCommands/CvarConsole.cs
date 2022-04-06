@@ -14,8 +14,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. st-cvar edit <Id/entityId/playerName> <cvarName> <value>\n" +
-                   "  2. st-cvar list <Id/entityId/playerName>\n" +
+                   "  1. st-cvar edit <id/entityId/playerName> <cvarName> <value>\n" +
+                   "  2. st-cvar list <id/entityId/playerName>\n" +
                    "1. Edit a player's cvar value\n" +
                    "2. Lists the cvars currently applied to a player\n";
         }

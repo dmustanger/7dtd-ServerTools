@@ -9,7 +9,7 @@ namespace ServerTools
 {
     class Waypoints
     {
-        public static bool IsEnabled = false, IsRunning = false, Player_Check = false, Zombie_Check = false, Vehicle = false, Public_Waypoints = false;
+        public static bool IsEnabled = false, IsRunning = false, Player_Check = false, Zombie_Check = false, Vehicle = false, Public_Waypoints = false, No_POI = false;
         public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Reserved_Max_Waypoints = 4, Command_Cost = 0;
         public static string Command_go_way = "go way", Command_waypoint = "waypoint", Command_way = "way", Command_wp = "wp", Command_fwaypoint = "fwaypoint", Command_fway = "fway", Command_fwp = "fwp", 
             Command_waypoint_save = "waypoint save", Command_way_save = "way save", Command_ws = "ws", Command_waypoint_del = "waypoint del", Command_way_del = "way del", Command_wd = "wd";
@@ -425,6 +425,15 @@ namespace ServerTools
                     {
                         if (Teleportation.ZCheck(_cInfo, player))
                         {
+                            return;
+                        }
+                    }
+                    if (No_POI)
+                    {
+                        if (GameManager.Instance.World.IsPositionWithinPOI(player.position, 3))
+                        {
+                            Phrases.Dict.TryGetValue("Waypoints6", out string phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             return;
                         }
                     }

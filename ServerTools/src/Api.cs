@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -558,6 +559,15 @@ namespace ServerTools
                     Wallet.AddCurrency(id, PersistentContainer.Instance.Players[id].PlayerWallet);
                     PersistentContainer.Instance.Players[id].PlayerWallet = 0;
                     PersistentContainer.DataChange = true;
+                }
+                if (PersistentContainer.Instance.Players[id].JailRelease)
+                {
+                    PersistentContainer.Instance.Players[id].JailRelease = false;
+                    PersistentContainer.DataChange = true;
+                    Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), null, false));
+                    Phrases.Dict.TryGetValue("Jail2", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

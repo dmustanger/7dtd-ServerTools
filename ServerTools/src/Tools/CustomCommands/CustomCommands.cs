@@ -697,7 +697,7 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     _commands = "";
                 }
-                if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.ReadablePlatformUserIdentifier))
+                if (ReservedSlots.IsEnabled && (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
                 {
                     if (ReservedSlots.Command_reserved != "")
                     {
@@ -796,17 +796,49 @@ namespace ServerTools
                     string commands = "";
                     foreach (KeyValuePair<string, string[]> kvp in Dict)
                     {
-                        if (bool.TryParse(kvp.Value[2], out bool result))
+                        bool.TryParse(kvp.Value[2], out bool hidden);
+                        bool.TryParse(kvp.Value[3], out bool reserved);
+                        if (!hidden)
                         {
-                            if (!result)
+                            if (reserved)
                             {
-                                string c = kvp.Key;
-                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, c);
-                                if (commands.Length >= 100)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                                 {
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    commands = "";
+                                    if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
+                                    {
+                                        if (DateTime.Now < dt)
+                                        {
+                                            string c = kvp.Key;
+                                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, c);
+                                            if (commands.Length >= 100)
+                                            {
+                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                commands = "";
+                                            }
+                                        }
+                                    }
+                                    else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                                    {
+                                        if (DateTime.Now < dt)
+                                        {
+                                            string c = kvp.Key;
+                                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, c);
+                                            if (commands.Length >= 100)
+                                            {
+                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                commands = "";
+                                            }
+                                        }
+                                    }
                                 }
+                                continue;
+                            }
+                            string d = kvp.Key;
+                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, d);
+                            if (commands.Length >= 100)
+                            {
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                commands = "";
                             }
                         }
                     }
@@ -864,7 +896,12 @@ namespace ServerTools
                 {
                     int.TryParse(c[1], out int delay);
                     int.TryParse(c[4], out int cost);
-                    bool permission = bool.Parse(c[3]);
+                    bool.TryParse(c[3], out bool reserved);
+                    if (reserved && !ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) && !ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+                    {
+                        return;
+                    }
+                    bool.TryParse(c[4], out bool permission);
                     if (permission && !Permission(_cInfo, _command))
                     {
                         return; 
@@ -1225,7 +1262,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, whisper, global -->");
+                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, {SetReturn}, {Return}, whisper, global -->");
                     sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Permission=\"false\" Cost=\"0\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {

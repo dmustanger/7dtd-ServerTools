@@ -122,16 +122,8 @@ namespace ServerTools
                                     Jailed.Remove(id);
                                     PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailTime = 0;
                                     PersistentContainer.DataChange = true;
-                                    EntityBedrollPositionList _position = player.SpawnPoints;
-                                    if (_position.Count > 0)
-                                    {
-                                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_position[0].x, _position[0].y + 1, _position[0].z), null, false));
-                                    }
-                                    else
-                                    {
-                                        Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), null, false));
-                                    }
+                                    Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
+                                    cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), null, false));
                                     Phrases.Dict.TryGetValue("Jail2", out string phrase);
                                     ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -140,6 +132,7 @@ namespace ServerTools
                             {
                                 Jailed.Remove(id);
                                 PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailTime = 0;
+                                PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].JailRelease = true;
                                 PersistentContainer.DataChange = true;
                             }
                         }

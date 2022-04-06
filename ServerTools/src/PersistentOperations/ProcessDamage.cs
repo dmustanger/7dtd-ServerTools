@@ -64,13 +64,13 @@ namespace ServerTools
                                         {
                                             if (NewPlayerProtection.IsProtected(victimPlayer))
                                             {
-                                                Phrases.Dict.TryGetValue("NewPlayerProtection1", out string phrase);
+                                                Phrases.Dict.TryGetValue("NewPlayerProtection2", out string phrase);
                                                 ChatHook.ChatMessage(cInfoAttacker, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 return true;
                                             }
                                             else if (NewPlayerProtection.IsProtected(attackingPlayer))
                                             {
-                                                Phrases.Dict.TryGetValue("NewPlayerProtection2", out string phrase);
+                                                Phrases.Dict.TryGetValue("NewPlayerProtection1", out string phrase);
                                                 ChatHook.ChatMessage(cInfoVictim, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 return true;
                                             }
@@ -218,7 +218,7 @@ namespace ServerTools
                                 int distance = (int)attackingPlayer.GetDistance(victim);
                                 using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                 {
-                                    sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' named '{6}' @ '{7}' using '{8}' for '{9}' damage. Distance '{10}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, victim.entityId, victim.name, victim.position, attackingItem(__instance).ItemClass.GetLocalizedItemName() ?? attackingItem(__instance).ItemClass.GetItemName(), strength(__instance), distance));
+                                    sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' named '{6}' @ '{7}' using '{8}' for '{9}' damage. Distance '{10}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, victim.entityId, victim.EntityClass.entityClassName, victim.position, attackingItem(__instance).ItemClass.GetLocalizedItemName() ?? attackingItem(__instance).ItemClass.GetItemName(), strength(__instance), distance));
                                     sw.WriteLine();
                                     sw.Flush();
                                     sw.Close();

@@ -279,7 +279,7 @@ namespace ServerTools
                         Phrases.Dict.TryGetValue("KillNotice5", out string phrase);
                         phrase = phrase.Replace("{Name1}", _cInfo.playerName);
                         phrase = phrase.Replace("{Level}", _victim.Progression.Level.ToString());
-                        phrase = phrase.Replace("{Name2}", _zombie.EntityName);
+                        phrase = phrase.Replace("{Name2}", _zombie.EntityClass.entityClassName);
                         phrase = phrase.Replace("{Value}", _damage.ToString());
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         return;
@@ -289,7 +289,7 @@ namespace ServerTools
                         Phrases.Dict.TryGetValue("KillNotice6", out string phrase);
                         phrase = phrase.Replace("{Name1}", _cInfo.playerName);
                         phrase = phrase.Replace("{Level}", _victim.Progression.Level.ToString());
-                        phrase = phrase.Replace("{Name2}", _zombie.EntityName);
+                        phrase = phrase.Replace("{Name2}", _zombie.EntityClass.entityClassName);
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                     }
                 }
@@ -299,7 +299,7 @@ namespace ServerTools
                     {
                         Phrases.Dict.TryGetValue("KillNotice7", out string phrase);
                         phrase = phrase.Replace("{Name1}", _cInfo.playerName);
-                        phrase = phrase.Replace("{Name2}", _zombie.EntityName);
+                        phrase = phrase.Replace("{Name2}", _zombie.EntityClass.entityClassName);
                         phrase = phrase.Replace("{Value}", _damage.ToString());
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         return;
@@ -308,7 +308,7 @@ namespace ServerTools
                     {
                         Phrases.Dict.TryGetValue("KillNotice8", out string phrase);
                         phrase = phrase.Replace("{Name1}", _cInfo.playerName);
-                        phrase = phrase.Replace("{Name2}", _zombie.EntityName);
+                        phrase = phrase.Replace("{Name2}", _zombie.EntityClass.entityClassName);
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                     }
                 }
