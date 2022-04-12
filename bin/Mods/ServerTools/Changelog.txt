@@ -1,5 +1,17 @@
 ﻿CHANGELOG
 
+20.3.4
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Fixed Shutdown Lock_Out option not forcing workstation UI
+to close if already open
+-Fixed Reserved_Slots not functioning as intended
+-Fixed Family_Share running too early in the player connection
+process
+-Fixed Allocs_Map IP address getting set blank in the xui
+-Changed phrase Bounties8
+
 20.3.3
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

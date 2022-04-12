@@ -50,7 +50,8 @@ namespace ServerTools
                         {
                             if (player.Buffs.CVars.ContainsKey(_params[2]))
                             {
-                                player.Buffs.CVars[_params[2]] = value;
+                                player.Buffs.SetCustomVar(_params[2], value);
+                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageModifyCVar>().Setup(player, _params[2], value));
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' with cvar named '{1}' has been set to value '{2}'", cInfo.playerName, _params[2], _params[3]));
                                 return;
                             }

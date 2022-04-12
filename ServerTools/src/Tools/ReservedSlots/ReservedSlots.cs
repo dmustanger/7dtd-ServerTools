@@ -296,7 +296,7 @@ namespace ServerTools
                         for (int i = 0; i < clientList.Count; i++)
                         {
                             ClientInfo cInfo2 = clientList[i];
-                            if (cInfo2 != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
+                            if (cInfo2 != null && cInfo2.PlatformId != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
                             {
                                 if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId) && !ReservedCheck(cInfo2.PlatformId, cInfo2.CrossplatformId))
                                 {
@@ -305,46 +305,26 @@ namespace ServerTools
                             }
                         }
                     }
-                    else//regular player is joining
-                    {
-                        for (int i = 0; i < clientList.Count; i++)
-                        {
-                            ClientInfo cInfo2 = clientList[i];
-                            if (cInfo2 != null && cInfo2.PlatformId != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
-                            {
-                                if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId) && !ReservedCheck(cInfo2.PlatformId, cInfo2.CrossplatformId))
-                                {
-                                    if (Session_Time > 0)
-                                    {
-                                        if (PersistentOperations.Session.TryGetValue(cInfo2.CrossplatformId.CombinedString, out DateTime dateTime))
-                                        {
-                                            TimeSpan varTime = DateTime.Now - dateTime;
-                                            double fractionalMinutes = varTime.TotalMinutes;
-                                            int timepassed = (int)fractionalMinutes;
-                                            if (timepassed >= Session_Time)
-                                            {
-                                                normal.Add(cInfo2);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
                     if (normal.Count > 0)
                     {
-                        normal.RandomizeList();
+                        if (normal.Count > 1)
+                        {
+                            normal.RandomizeList();
+                        }
                         Phrases.Dict.TryGetValue("Reserved1", out string phrase);
                         phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
-                        GameUtils.KickPlayerForClientInfo(normal[0], new GameUtils.KickPlayerData(GameUtils.EKickReason.ManualKick, 0, default(DateTime), phrase));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", normal[0].CrossplatformId.CombinedString, phrase), null);
                         return true;
                     }
                     else if (reserved.Count > 0)
                     {
-                        reserved.RandomizeList();
+                        if (reserved.Count > 1)
+                        {
+                            reserved.RandomizeList();
+                        }
                         Phrases.Dict.TryGetValue("Reserved1", out string phrase);
                         phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
-                        GameUtils.KickPlayerForClientInfo(reserved[0], new GameUtils.KickPlayerData(GameUtils.EKickReason.ManualKick, 0, default(DateTime), phrase));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", reserved[0].CrossplatformId.CombinedString, phrase), null);
                         return true;
                     }
                 }

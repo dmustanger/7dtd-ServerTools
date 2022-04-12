@@ -1,5 +1,4 @@
 ﻿using Platform.Steam;
-using System;
 
 namespace ServerTools
 {

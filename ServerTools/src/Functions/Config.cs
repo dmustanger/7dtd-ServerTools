@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.3.3";
+        public const string Version = "20.3.4";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -125,7 +125,7 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Allocs_Map entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (AllocsMap.IsEnabled)
+                                                if (AllocsMap.IsEnabled && PersistentOperations.ThirtySeconds)
                                                 {
                                                     string ip = GamePrefs.GetString(EnumGamePrefs.ServerIP);
                                                     int controlPort = GamePrefs.GetInt(EnumGamePrefs.ControlPanelPort);

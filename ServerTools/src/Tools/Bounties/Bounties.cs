@@ -35,7 +35,8 @@ namespace ServerTools
                                 Phrases.Dict.TryGetValue("Bounties8", out string phrase);
                                 phrase = phrase.Replace("{PlayerName}", cInfo2.playerName);
                                 phrase = phrase.Replace("{EntityId}", cInfo2.entityId.ToString());
-                                phrase = phrase.Replace("{CurrentBounty}", currentbounty.ToString());
+                                phrase = phrase.Replace("{Value}", currentbounty.ToString());
+                                phrase = phrase.Replace("{Minimum}", Minimum_Bounty.ToString());
                                 phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }

@@ -104,7 +104,6 @@ namespace ServerTools
             PersistentOperations.GetCurrencyName();
             PersistentOperations.EntityIdList();
             PersistentOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
-            PersistentOperations.ThirtySeconds = true;
 
             Mods.Load();
 

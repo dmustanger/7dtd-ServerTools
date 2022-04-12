@@ -191,7 +191,7 @@ namespace ServerTools
             };
         }
 
-        public static void Delayed_Web_API()
+        public static void Thirty_Second_Delay()
         {
             System.Timers.Timer singleUseTimer = new System.Timers.Timer(30000)
             {
@@ -567,7 +567,18 @@ namespace ServerTools
 
         private static void Init9()
         {
-            PersistentOperations.ThirtySeconds = false;
+            PersistentOperations.ThirtySeconds = true;
+            if (AllocsMap.IsEnabled)
+            {
+                string ip = GamePrefs.GetString(EnumGamePrefs.ServerIP);
+                int controlPort = GamePrefs.GetInt(EnumGamePrefs.ControlPanelPort);
+                string link = string.Format("http://{0}:{1}", ip, controlPort + 2);
+                if (AllocsMap.Link != link)
+                {
+                    AllocsMap.Link = link;
+                    AllocsMap.SetLink(link);
+                }
+            }
             if (WebAPI.IsEnabled && !WebAPI.IsRunning)
             {
                 WebAPI.Load();

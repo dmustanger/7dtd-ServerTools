@@ -1633,7 +1633,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bounties7\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bounties8", out phrase))
                     {
-                        phrase = "Id {EntityId} named {PlayerName}. Current bounty: {CurrentBounty} {CoinName}";
+                        phrase = "{PlayerName} with id {EntityId}. Bounty of {Value} {CoinName}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bounties8\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bounties9", out phrase))
