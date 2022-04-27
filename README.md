@@ -3,7 +3,13 @@ Server tools for 7 days to die dedicated servers<br>
 <br>
 # Installation
 <br>
-Go to the releases tab and check for the latest files https://github.com/dmustanger/7dtd-ServerTools/releases <br>
+Go to the releases tab and check for the latest ServerTools files for download. https://github.com/dmustanger/7dtd-ServerTools/releases <br>
+<br>
+Optionally you can find Country ban and Proxy ban tools at the links provided below. They are modules that work along side ServerTools and get installed the same as any other mod for your server. They both require ServerTools to function. <br>
+https://github.com/ObsComp/ServerTools-CountryBan/releases <br>
+https://github.com/ObsComp/ServerTools-ProxyBan/releases <br>
+<br>
+They have been separated to reduce the size of ServerTools since not all servers need it. It also allows us to update the database for the IP lists of countries and proxies without needing to update ServerTools.<br>
 <br>
 Download and extract the files.<br>
 <br>
