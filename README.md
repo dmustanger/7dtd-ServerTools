@@ -17,9 +17,9 @@ Copy the Mods folder to the root directory of your server.<br>
 <br>
 Start the server.<br>
 <br>
-The mod will auto create a new folder named ServerTools. Inside this folde is the ServerToolsConfig.xml that control most of program.<br>
+The mod will auto create a new folder named ServerTools. Inside this folder is the ServerToolsConfig.xml that controls most of mod.<br>
 Enable each part of the mod you want via ServerToolsConfig.xml<br>
-Once a module is enabled, if it has an xml for further options, it will auto create them in the ServerTools folder.<br>
+Once a module/tool is enabled, if it has an xml it will be generated and placed in the same ServerTools folder.<br>
 <br>
 <br>
 <br>
