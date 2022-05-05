@@ -32,7 +32,7 @@ Anti Cheat<br>
 Automatically detects and deals with cheaters. Customizable<br>
 <br>
 Detects: flight, invalid items, invalid stack sizes, god mode, spectator mode, <br>
-accessive player stats such as height, speed, jump strength, max stamina, max health, <br>
+excessive player stats such as height, speed, jump strength, max stamina, max health, <br>
 xray block collision, infinite ammo, speed hacks<br>
 <br>
 Crendentials can be checked for internal IP address, family share accounts, invalid steam id.<br>
