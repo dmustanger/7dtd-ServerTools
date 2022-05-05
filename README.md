@@ -23,6 +23,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
 <br>
 <br>
 <br>
+
 # AntiCheat
 
 - [AntiCheat](#anticheat)
@@ -47,7 +48,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
 
 # Tools
 
-- [ServerTools - tools](#servertools---tools)
+- [Tools](#tools)
   - [AdminChatCommands](#adminchatcommands)
   - [Admin_List](#admin_list)
   - [Animal_Tracking](#animal_tracking)
