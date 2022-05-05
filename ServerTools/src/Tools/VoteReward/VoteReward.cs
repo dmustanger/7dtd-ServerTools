@@ -12,7 +12,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, RandomListRunning = false, Reward_Entity = false;
         public static int Reward_Count = 1, Delay_Between_Uses = 24, Entity_Id = 73, Weekly_Votes = 5;
-        public static string Your_Voting_Site = "https://7daystodie-servers.com/server/12345", API_Key = "xxxxxxxx", Command_reward = "reward";
+        public static string Your_Voting_Site = "https://7daystodie-servers.com/server/12345", API_Key = "xxxxxxxx", Command_reward = "reward", Command_vote = "vote";
         
         private static bool PosFound = false;
 
@@ -633,6 +633,11 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in VoteReward.Entityspawn: {0}", e.Message));
             }
+        }
+
+        public static void Exec(ClientInfo _cInfo)
+        {
+            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserVote", true));
         }
 
         public static void SetLink(string _voteSite)

@@ -159,7 +159,7 @@ namespace ServerTools
                 sw.WriteLine("<ChatColor>");
                 sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                 sw.WriteLine("    <!-- NameColor and PrefixColor can come from the ColorList.xml -->");
-                sw.WriteLine("    <!-- <Player Id=\"Steam_12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
+                sw.WriteLine("    <!-- <Player Id=\"Steam_12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"2050-01-11 07:30:00\" /> -->");
                 sw.WriteLine();
                 sw.WriteLine();
                 if (Players.Count > 0)
@@ -224,6 +224,8 @@ namespace ServerTools
                         phrase = phrase.Replace("{NameTags}", colorTags[1]);
                         phrase = phrase.Replace("{PrefixTags}", colorTags[3]);
                         phrase = phrase.Replace("{DateTime}", expiry.ToString());
+                        phrase = phrase.Replace("[", "");
+                        phrase = phrase.Replace("]", "");
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
@@ -236,6 +238,8 @@ namespace ServerTools
                         phrase = phrase.Replace("{NameTags}", colorTags[1]);
                         phrase = phrase.Replace("{PrefixTags}", colorTags[3]);
                         phrase = phrase.Replace("{DateTime}", expiry.ToString());
+                        phrase = phrase.Replace("[", "");
+                        phrase = phrase.Replace("]", "");
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
@@ -525,7 +529,7 @@ namespace ServerTools
                     sw.WriteLine("<ChatColor>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- NameColor and PrefixColor can come from the ColorList.xml -->");
-                    sw.WriteLine("    <!-- <Player Id=\"Steam_12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
+                    sw.WriteLine("    <!-- <Player Id=\"Steam_12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"2050-01-11 07:30:00\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- NameColor and") &&

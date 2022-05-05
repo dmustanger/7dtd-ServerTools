@@ -10,7 +10,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false;
 
-        public static Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
+        public static Dictionary<string, string[]> Dict1 = new Dictionary<string, string[]>();
+        public static Dictionary<string, DateTime> Dict2 = new Dictionary<string, DateTime>();
 
         private const string file = "LoginNotice.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -26,7 +27,8 @@ namespace ServerTools
 
         public static void Unload()
         {
-            Dict.Clear();
+            Dict1.Clear();
+            Dict2.Clear();
             FileWatcher.Dispose();
             IsRunning = false;
         }
@@ -53,7 +55,8 @@ namespace ServerTools
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
                 if (childNodes != null)
                 {
-                    Dict.Clear();
+                    Dict1.Clear();
+                    Dict2.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
                         if (childNodes[i].NodeType != XmlNodeType.Comment)
@@ -66,17 +69,22 @@ namespace ServerTools
                                     upgrade = false;
                                     continue;
                                 }
-                                else if (line.HasAttribute("Id") && line.HasAttribute("Name") && line.HasAttribute("Message"))
+                                else if (line.HasAttribute("Id") && line.HasAttribute("Name") && line.HasAttribute("Message") && line.HasAttribute("Expiry"))
                                 {
 
                                     string id = line.GetAttribute("Id");
                                     string[] nameMessage = new string[2];
                                     nameMessage[0] = line.GetAttribute("Name");
                                     nameMessage[1] = line.GetAttribute("Message");
-                                    
-                                    if (!Dict.ContainsKey(id))
+                                    if (!DateTime.TryParse(line.GetAttribute("Expiry"), out DateTime expiry))
                                     {
-                                        Dict.Add(id, nameMessage);
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring LoginNotice.xml entry because of invalid (Date-Time) value for 'Expiry' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!Dict1.ContainsKey(id))
+                                    {
+                                        Dict1.Add(id, nameMessage);
+                                        Dict2.Add(id, expiry);
                                     }
                                 }
                             }
@@ -142,16 +150,19 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LoginNotice>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Macaroni\" Message=\"Time to kick ass and chew bubble gum\" /> -->");
+                    sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Macaroni\" Message=\"Time to kick ass and chew bubble gum\" Expiry=\"2050-01-11 07:30:00\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
-                    if (Dict.Count > 0)
+                    if (Dict1.Count > 0)
                     {
-                        foreach (KeyValuePair<string, string[]> kvp in Dict)
+                        foreach (KeyValuePair<string, string[]> kvp in Dict1)
                         {
-                            if (Dict.TryGetValue(kvp.Key, out string[] _nameMessage))
+                            if (Dict1.TryGetValue(kvp.Key, out string[] nameMessage))
                             {
-                                sw.WriteLine(string.Format("    <Player Id=\"{0}\" Name=\"{1}\" Message=\"{2}\" />", kvp.Key, _nameMessage[0], _nameMessage[1]));
+                                if (Dict2.TryGetValue(kvp.Key, out DateTime expiry))
+                                {
+                                    sw.WriteLine(string.Format("    <Player Id=\"{0}\" Name=\"{1}\" Message=\"{2}\" Expiry=\"{3}\" />", kvp.Key, nameMessage[0], nameMessage[1], expiry));
+                                }
                             }
                         }
                     }
@@ -185,14 +196,38 @@ namespace ServerTools
             LoadXml();
         }
 
+        public static void LoginStatus(ClientInfo _cInfo)
+        {
+            if (Dict2.ContainsKey(_cInfo.PlatformId.CombinedString))
+            {
+                Dict2.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt);
+                if (DateTime.Now < dt)
+                {
+                    Phrases.Dict.TryGetValue("LoginNotice1", out string phrase);
+                    phrase = phrase.Replace("{DateTime}", dt.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
+            else if (Dict2.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+            {
+                Dict2.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime dt);
+                if (DateTime.Now < dt)
+                {
+                    Phrases.Dict.TryGetValue("LoginNotice1", out string phrase);
+                    phrase = phrase.Replace("{DateTime}", dt.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
+        }
+
         public static void PlayerNotice(ClientInfo _cInfo)
         {
-            if (Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out string[] nameMessage))
+            if (Dict1.TryGetValue(_cInfo.PlatformId.CombinedString, out string[] nameMessage))
             {
                 nameMessage[1] = nameMessage[1].Replace("{PlayerName}", _cInfo.playerName);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + nameMessage[1] + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
             }
-            else if (Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out nameMessage))
+            else if (Dict1.TryGetValue(_cInfo.CrossplatformId.CombinedString, out nameMessage))
             {
                 nameMessage[1] = nameMessage[1].Replace("{PlayerName}", _cInfo.playerName);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + nameMessage[1] + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
@@ -209,7 +244,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LoginNotice>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Macaroni\" Message=\"Time to kick ass and chew bubble gum\" /> -->");
+                    sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Macaroni\" Message=\"Time to kick ass and chew bubble gum\" Expiry=\"2050-01-11 07:30:00\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891\"") &&
@@ -227,7 +262,7 @@ namespace ServerTools
                             XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Player")
                             {
-                                string id = "", name = "", message = "";
+                                string id = "", name = "", message = "", expiry = "";
                                 if (line.HasAttribute("Id"))
                                 {
                                     id = line.GetAttribute("Id");
@@ -240,7 +275,11 @@ namespace ServerTools
                                 {
                                     message = line.GetAttribute("Message");
                                 }
-                                sw.WriteLine(string.Format("    <Player Id=\"{0}\" Name=\"{1}\" Message=\"{2}\" />", id, message));
+                                if (line.HasAttribute("Expiry"))
+                                {
+                                    expiry = line.GetAttribute("Expiry");
+                                }
+                                sw.WriteLine(string.Format("    <Player Id=\"{0}\" Name=\"{1}\" Message=\"{2}\" Expiry=\"{3}\" />", id, name, message, expiry));
                             }
                         }
                     }

@@ -182,7 +182,7 @@ namespace ServerTools
             Phrases.Dict.TryGetValue("FriendTeleport4", out _phrase);
             _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
             _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-            _phrase = _phrase.Replace("{Command_friend}", Command_friend);
+            _phrase = _phrase.Replace("{Command_accept}", Command_accept);
             ChatHook.ChatMessage(_friend, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 

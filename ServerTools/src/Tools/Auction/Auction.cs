@@ -104,78 +104,56 @@ namespace ServerTools
                                                                     }
                                                                 }
                                                             }
-                                                            int _id = GenerateAuctionId();
-                                                            if (_id > 0)
+                                                            int id = GenerateAuctionId();
+                                                            if (id > 0)
                                                             {
-                                                                AuctionItems.Add(_id, _cInfo.CrossplatformId.CombinedString);
+                                                                AuctionItems.Add(id, _cInfo.CrossplatformId.CombinedString);
                                                                 items[0] = ItemStack.Empty.Clone();
+                                                                ItemDataSerializable serializedItemStack = new ItemDataSerializable();
+                                                                {
+                                                                    serializedItemStack.name = item.itemValue.ItemClass.GetItemName();
+                                                                    serializedItemStack.count = item.count;
+                                                                    serializedItemStack.useTimes = item.itemValue.UseTimes;
+                                                                    serializedItemStack.quality = item.itemValue.Quality;
+                                                                    serializedItemStack.seed = item.itemValue.Seed;
+                                                                    if (item.itemValue.Modifications.Length > 0)
+                                                                    {
+                                                                        serializedItemStack.modSlots = item.itemValue.Modifications.Length;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        serializedItemStack.modSlots = 0;
+                                                                    }
+                                                                    if (item.itemValue.CosmeticMods.Length > 0)
+                                                                    {
+                                                                        serializedItemStack.cosmeticSlots = item.itemValue.CosmeticMods.Length;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        serializedItemStack.cosmeticSlots = 0;
+                                                                    }
+                                                                }
                                                                 if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.Count > 0)
                                                                 {
-                                                                    ItemDataSerializable serializedItemStack = new ItemDataSerializable();
-                                                                    {
-                                                                        serializedItemStack.name = item.itemValue.ItemClass.GetItemName();
-                                                                        serializedItemStack.count = item.count;
-                                                                        serializedItemStack.useTimes = item.itemValue.UseTimes;
-                                                                        serializedItemStack.quality = item.itemValue.Quality;
-                                                                        if (item.itemValue.CosmeticMods.Length > 0)
-                                                                        {
-                                                                            serializedItemStack.modSlots = item.itemValue.Modifications.Length;
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            serializedItemStack.modSlots = 0;
-                                                                        }
-                                                                        if (item.itemValue.CosmeticMods.Length > 0)
-                                                                        {
-                                                                            serializedItemStack.cosmeticSlots = item.itemValue.CosmeticMods.Length;
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            serializedItemStack.cosmeticSlots = 0;
-                                                                        }
-                                                                    }
-                                                                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.Add(_id, serializedItemStack);
+                                                                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.Add(id, serializedItemStack);
                                                                 }
                                                                 else
                                                                 {
-                                                                    ItemDataSerializable serializedItemStack = new ItemDataSerializable();
-                                                                    {
-                                                                        serializedItemStack.name = item.itemValue.ItemClass.GetItemName();
-                                                                        serializedItemStack.count = item.count;
-                                                                        serializedItemStack.useTimes = item.itemValue.UseTimes;
-                                                                        serializedItemStack.quality = item.itemValue.Quality;
-                                                                        if (item.itemValue.Modifications.Length > 0)
-                                                                        {
-                                                                            serializedItemStack.modSlots = item.itemValue.Modifications.Length;
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            serializedItemStack.modSlots = 0;
-                                                                        }
-                                                                        if (item.itemValue.CosmeticMods.Length > 0)
-                                                                        {
-                                                                            serializedItemStack.cosmeticSlots = item.itemValue.CosmeticMods.Length;
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            serializedItemStack.cosmeticSlots = 0;
-                                                                        }
-                                                                    }
                                                                     Dictionary<int, ItemDataSerializable> auctionItems = new Dictionary<int, ItemDataSerializable>
                                                                             {
-                                                                                { _id, serializedItemStack }
+                                                                                { id, serializedItemStack }
                                                                             };
                                                                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction = auctionItems;
                                                                 }
                                                                 if (PersistentContainer.Instance.AuctionPrices != null && PersistentContainer.Instance.AuctionPrices.Count > 0)
                                                                 {
-                                                                    PersistentContainer.Instance.AuctionPrices.Add(_id, auctionPrice);
+                                                                    PersistentContainer.Instance.AuctionPrices.Add(id, auctionPrice);
                                                                 }
                                                                 else
                                                                 {
                                                                     Dictionary<int, int> _auctionPrices = new Dictionary<int, int>
                                                                             {
-                                                                                { _id, auctionPrice }
+                                                                                { id, auctionPrice }
                                                                             };
                                                                     PersistentContainer.Instance.AuctionPrices = _auctionPrices;
                                                                 }
@@ -201,10 +179,10 @@ namespace ServerTools
                                                                         sw.Close();
                                                                     }
                                                                 }
-                                                                Phrases.Dict.TryGetValue("Auction1", out string _phrase);
-                                                                _phrase = _phrase.Replace("{Name}", item.itemValue.ItemClass.GetLocalizedItemName() ?? item.itemValue.ItemClass.GetItemName());
-                                                                _phrase = _phrase.Replace("{Value}", _id.ToString());
-                                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                                Phrases.Dict.TryGetValue("Auction1", out string phrase);
+                                                                phrase = phrase.Replace("{Name}", item.itemValue.ItemClass.GetLocalizedItemName() ?? item.itemValue.ItemClass.GetItemName());
+                                                                phrase = phrase.Replace("{Value}", id.ToString());
+                                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                                 return;
                                                             }
                                                             else
@@ -264,13 +242,19 @@ namespace ServerTools
                                 string id = playerlist[i];
                                 if (PersistentContainer.Instance.Players[id].Auction != null && PersistentContainer.Instance.Players[id].Auction.Count > 0)
                                 {
+                                    if (_cInfo.CrossplatformId.CombinedString == id)
+                                    {
+                                        Phrases.Dict.TryGetValue("Auction19", out string phrase);
+                                        phrase = phrase.Replace("{Value}", PersistentContainer.Instance.Players[id].Auction.Count.ToString());
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    }
                                     Dictionary<int, ItemDataSerializable> auctionItems = PersistentContainer.Instance.Players[id].Auction;
                                     foreach (var item in auctionItems)
                                     {
                                         ItemValue itemValue = new ItemValue(ItemClass.GetItem(item.Value.name, false).type, false);
                                         if (itemValue != null)
                                         {
-                                            if (auctionPrices.TryGetValue(item.Key, out int _price))
+                                            if (auctionPrices.TryGetValue(item.Key, out int price))
                                             {
                                                 if (itemValue.HasQuality)
                                                 {
@@ -279,8 +263,8 @@ namespace ServerTools
                                                     phrase = phrase.Replace("{Count}", item.Value.count.ToString());
                                                     phrase = phrase.Replace("{Item}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.GetItemName());
                                                     phrase = phrase.Replace("{Quality}", item.Value.quality.ToString());
-                                                    phrase = phrase.Replace("{Durability}", (item.Value.useTimes / itemValue.MaxUseTimes * 100).ToString());
-                                                    phrase = phrase.Replace("{Price}", _price.ToString());
+                                                    phrase = phrase.Replace("{Durability}", ((itemValue.MaxUseTimes - item.Value.useTimes) / itemValue.MaxUseTimes * 100).ToString());
+                                                    phrase = phrase.Replace("{Price}", price.ToString());
                                                     phrase = phrase.Replace("{Coin}", Wallet.Currency_Name);
                                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 }
@@ -290,7 +274,7 @@ namespace ServerTools
                                                     phrase = phrase.Replace("{Id}", item.Key.ToString());
                                                     phrase = phrase.Replace("{Count}", item.Value.count.ToString());
                                                     phrase = phrase.Replace("{Item}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.GetItemName());
-                                                    phrase = phrase.Replace("{Price}", _price.ToString());
+                                                    phrase = phrase.Replace("{Price}", price.ToString());
                                                     phrase = phrase.Replace("{Coin}", Wallet.Currency_Name);
                                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 }
@@ -357,10 +341,19 @@ namespace ServerTools
                 if (PersistentContainer.Instance.Players[id].Auction != null && PersistentContainer.Instance.Players[id].Auction.Count > 0)
                 {
                     PersistentContainer.Instance.Players[id].Auction.TryGetValue(_purchase, out ItemDataSerializable itemData);
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(itemData.name, false).type, itemData.quality, itemData.quality, false);
+                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(itemData.name, false).type);
                     if (itemValue != null)
                     {
+                        if (itemValue.ItemClass.HasQuality)
+                        {
+                            itemValue.Quality = 1;
+                            if (itemData.quality > 0)
+                            {
+                                itemValue.Quality = itemData.quality;
+                            }
+                        }
                         itemValue.UseTimes = itemData.useTimes;
+                        itemValue.Seed = itemData.seed;
                         if (itemData.modSlots > 0)
                         {
                             itemValue.Modifications = new ItemValue[itemData.modSlots];
@@ -388,13 +381,13 @@ namespace ServerTools
                         PersistentContainer.Instance.AuctionPrices.Remove(_purchase);
                         PersistentContainer.DataChange = true;
                         Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price);
-                        float _fee = _price * ((float)Tax / 100);
-                        int _adjustedPrice = _price - (int)_fee;
-                        Wallet.AddCurrency(id, _adjustedPrice);
-                        string _playerName = PersistentOperations.GetPlayerDataFileFromId(id).ecd.entityName;
+                        float fee = _price * ((float)Tax / 100);
+                        int adjustedPrice = _price - (int)fee;
+                        Wallet.AddCurrency(id, adjustedPrice);
+                        string playerName = PersistentOperations.GetPlayerDataFileFromId(id).ecd.entityName;
                         using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                         {
-                            sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' has purchased auction entry '{3}', profits went to id '{4}' named '{5}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _purchase, id, _playerName));
+                            sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' has purchased auction entry '{3}', profits went to id '{4}' named '{5}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _purchase, id, playerName));
                             sw.WriteLine();
                             sw.Flush();
                             sw.Close();
@@ -422,49 +415,54 @@ namespace ServerTools
             {
                 if (AuctionItems.ContainsKey(itemId))
                 {
-                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.Count > 0)
+                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                    if (player != null)
                     {
-                        if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.TryGetValue(itemId, out ItemDataSerializable itemData))
+                        if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.Count > 0)
                         {
-                            ItemValue itemValue = new ItemValue(ItemClass.GetItem(itemData.name, false).type, itemData.quality, itemData.quality, false);
-                            if (itemValue != null)
+                            if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.TryGetValue(itemId, out ItemDataSerializable itemData))
                             {
-                                itemValue.UseTimes = itemData.useTimes;
-                                if (itemData.modSlots > 0)
+                                ItemValue itemValue = new ItemValue(ItemClass.GetItem(itemData.name, false).type, itemData.quality, itemData.quality, false);
+                                if (itemValue != null)
                                 {
-                                    itemValue.Modifications = new ItemValue[itemData.modSlots];
+                                    itemValue.UseTimes = itemData.useTimes;
+                                    itemValue.Seed = itemData.seed;
+                                    if (itemData.modSlots > 0)
+                                    {
+                                        itemValue.Modifications = new ItemValue[itemData.modSlots];
+                                    }
+                                    if (itemData.cosmeticSlots > 0)
+                                    {
+                                        itemValue.CosmeticMods = new ItemValue[itemData.cosmeticSlots];
+                                    }
+                                    World world = GameManager.Instance.World;
+                                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                                    {
+                                        entityClass = EntityClass.FromString("item"),
+                                        id = EntityFactory.nextEntityID++,
+                                        itemStack = new ItemStack(itemValue, itemData.count),
+                                        pos = world.Players.dict[_cInfo.entityId].position,
+                                        rot = new Vector3(20f, 0f, 20f),
+                                        lifetime = 60f,
+                                        belongsPlayerId = _cInfo.entityId
+                                    });
+                                    world.SpawnEntityInWorld(entityItem);
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                    AuctionItems.Remove(itemId);
+                                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.Remove(itemId);
+                                    PersistentContainer.Instance.AuctionPrices.Remove(itemId);
+                                    PersistentContainer.DataChange = true;
+                                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                                    {
+                                        sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' has cancelled their auction entry number '{4}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, itemId));
+                                        sw.WriteLine();
+                                        sw.Flush();
+                                        sw.Close();
+                                    }
+                                    Phrases.Dict.TryGetValue("Auction11", out string phrase);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
-                                if (itemData.cosmeticSlots > 0)
-                                {
-                                    itemValue.CosmeticMods = new ItemValue[itemData.cosmeticSlots];
-                                }
-                                World world = GameManager.Instance.World;
-                                var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                                {
-                                    entityClass = EntityClass.FromString("item"),
-                                    id = EntityFactory.nextEntityID++,
-                                    itemStack = new ItemStack(itemValue, itemData.count),
-                                    pos = world.Players.dict[_cInfo.entityId].position,
-                                    rot = new Vector3(20f, 0f, 20f),
-                                    lifetime = 60f,
-                                    belongsPlayerId = _cInfo.entityId
-                                });
-                                world.SpawnEntityInWorld(entityItem);
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                                AuctionItems.Remove(itemId);
-                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.Remove(itemId);
-                                PersistentContainer.Instance.AuctionPrices.Remove(itemId);
-                                PersistentContainer.DataChange = true;
-                                using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
-                                {
-                                    sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' has cancelled their auction entry number '{4}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, itemId));
-                                    sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
-                                }
-                                Phrases.Dict.TryGetValue("Auction11", out string phrase);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
@@ -482,15 +480,15 @@ namespace ServerTools
             List<string> playerlist = PersistentContainer.Instance.Players.IDs;
             for (int i = 0; i < playerlist.Count; i++)
             {
-                string _id = playerlist[i];
-                PersistentPlayer p = PersistentContainer.Instance.Players[_id];
+                string id = playerlist[i];
+                PersistentPlayer p = PersistentContainer.Instance.Players[id];
                 if (p != null)
                 {
                     if (p.Auction != null && p.Auction.Count > 0)
                     {
-                        foreach (var _auctionItem in p.Auction)
+                        foreach (var auctionItem in p.Auction)
                         {
-                            AuctionItems.Add(_auctionItem.Key, _id);
+                            AuctionItems.Add(auctionItem.Key, id);
                         }
                     }
                 }
@@ -499,16 +497,16 @@ namespace ServerTools
 
         private static int GenerateAuctionId()
         {
-            int _id = 0;
+            int id = 0;
             for (int i = 0; i < 20; i++)
             {
-                _id = Random.Next(1000, 5001);
-                if (!AuctionItems.ContainsKey(_id))
+                id = Random.Next(1000, 5001);
+                if (!AuctionItems.ContainsKey(id))
                 {
                     break;
                 }
             }
-            return _id;
+            return id;
         }
     }
 }

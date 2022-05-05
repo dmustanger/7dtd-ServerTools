@@ -191,7 +191,7 @@ namespace ServerTools
 
             ActiveTools.Exec(true);
 
-            EventSchedule.Add("ThirtyMinutes", DateTime.Now.AddMinutes(30));
+            Timers.Thirty_Second_Delay();
             Timers.PersistentDataSave();
         }
 

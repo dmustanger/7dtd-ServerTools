@@ -339,6 +339,9 @@ namespace ServerTools
                         case "reward":
                             VoteReward.Command_reward = kvp.Value;
                             continue;
+                        case "vote":
+                            VoteReward.Command_vote = kvp.Value;
+                            continue;
                         case "shutdown":
                             Shutdown.Command_shutdown = kvp.Value;
                             continue;
@@ -399,9 +402,6 @@ namespace ServerTools
                         case "yes":
                             RestartVote.Command_yes = kvp.Value;
                             continue;
-                        case "reserved":
-                            ReservedSlots.Command_reserved = kvp.Value;
-                            continue;
                         case "auction":
                             Auction.Command_auction = kvp.Value;
                             continue;
@@ -420,11 +420,14 @@ namespace ServerTools
                         case "loc":
                             Loc.Command_loc = kvp.Value;
                             continue;
-                        case "recall":
-                            VehicleRecall.Command_recall = kvp.Value;
+                        case "vehicle":
+                            VehicleRecall.Command_vehicle = kvp.Value;
                             continue;
-                        case "recall del":
-                            VehicleRecall.Command_recall_del = kvp.Value;
+                        case "vehicle save":
+                            VehicleRecall.Command_vehicle_save = kvp.Value;
+                            continue;
+                        case "vehicle del":
+                            VehicleRecall.Command_vehicle_del = kvp.Value;
                             continue;
                         case "report":
                             Report.Command_report = kvp.Value;
@@ -570,6 +573,9 @@ namespace ServerTools
                         case "party remove":
                             AutoPartyInvite.Command_party_remove = kvp.Value;
                             continue;
+                        case "expire":
+                            PersistentOperations.Command_expire = kvp.Value;
+                            continue;
                     }
                 }
             }
@@ -611,6 +617,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"forgive\" Replacement=\"forgive\" />");
             Commands.Add("    <Command Default=\"setspawn\" Replacement=\"setspawn\" />");
             Commands.Add("    <Command Default=\"ready\" Replacement=\"ready\" />");
+            Commands.Add("    <Command Default=\"vote\" Replacement=\"vote\" />");
             Commands.Add("    <Command Default=\"trackanimal\" Replacement=\"trackanimal\" />");
             Commands.Add("    <Command Default=\"track\" Replacement=\"track\" />");
             Commands.Add("    <Command Default=\"claim\" Replacement=\"claim\" />");
@@ -650,15 +657,15 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"mutevote\" Replacement=\"mutevote\" />");
             Commands.Add("    <Command Default=\"kickvote\" Replacement=\"kickvote\" />");
             Commands.Add("    <Command Default=\"yes\" Replacement=\"yes\" />");
-            Commands.Add("    <Command Default=\"reserved\" Replacement=\"reserved\" />");
             Commands.Add("    <Command Default=\"auction\" Replacement=\"auction\" />");
             Commands.Add("    <Command Default=\"auction cancel\" Replacement=\"auction cancel\" />");
             Commands.Add("    <Command Default=\"auction buy\" Replacement=\"auction buy\" />");
             Commands.Add("    <Command Default=\"auction sell\" Replacement=\"auction sell\" />");
             Commands.Add("    <Command Default=\"fps\" Replacement=\"fps\" />");
             Commands.Add("    <Command Default=\"loc\" Replacement=\"loc\" />");
-            Commands.Add("    <Command Default=\"recall\" Replacement=\"recall\" />");
-            Commands.Add("    <Command Default=\"recall del\" Replacement=\"recall del\" />");
+            Commands.Add("    <Command Default=\"vehicle\" Replacement=\"vehicle\" />");
+            Commands.Add("    <Command Default=\"vehicle save\" Replacement=\"vehicle save\" />");
+            Commands.Add("    <Command Default=\"vehicle del\" Replacement=\"vehicle del\" />");
             Commands.Add("    <Command Default=\"report\" Replacement=\"report\" />");
             Commands.Add("    <Command Default=\"bounty\" Replacement=\"bounty\" />");
             Commands.Add("    <Command Default=\"lottery\" Replacement=\"lottery\" />");
@@ -707,6 +714,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"party\" Replacement=\"party\" />");
             Commands.Add("    <Command Default=\"party add\" Replacement=\"party add\" />");
             Commands.Add("    <Command Default=\"party remove\" Replacement=\"party remove\" />");
+            Commands.Add("    <Command Default=\"expire\" Replacement=\"expire\" />");
         }
 
         private static void UpgradeXml()

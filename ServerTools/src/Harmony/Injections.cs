@@ -322,7 +322,7 @@ public static class Injections
     {
         try
         {
-            if (ReservedSlots.Bonus_Exp && __instance is EntityZombie)
+            if (ReservedSlots.Bonus_Exp > 0 && __instance is EntityZombie)
             {
                 EntityAlive entityAlive = __instance.GetAttackTarget();
                 if (entityAlive != null && entityAlive is EntityPlayer)
@@ -330,11 +330,15 @@ public static class Injections
                     ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityAlive.entityId);
                     if (cInfo != null && ReservedSlots.IsEnabled && (ReservedSlots.Dict.ContainsKey(cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(cInfo.CrossplatformId.CombinedString)))
                     {
-
+                        if (ReservedSlots.Bonus_Exp > 100)
+                        {
+                            ReservedSlots.Bonus_Exp = 100;
+                        }
                         int experience = EntityClass.list[__instance.entityClass].ExperienceValue;
-                        experience = (int)experience / 4;
-                        NetPackageEntityAddExpClient package = NetPackageManager.GetPackage<NetPackageEntityAddExpClient>().Setup(entityAlive.entityId, experience, Progression.XPTypes.Kill);
-                        ConnectionManager.Instance.SendPackage(package, false, entityAlive.entityId, -1, -1, -1);
+                        float percent = ReservedSlots.Bonus_Exp / 100f;
+                        float bonus = experience * percent;
+                        experience = (int)bonus;
+                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityAddExpClient>().Setup(entityAlive.entityId, experience, Progression.XPTypes.Kill));
                         Log.Out(string.Format("[SERVERTOOLS] Added bonus experience of '{0}' to reserved player '{1}' '{2}' named '{3}'", experience, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                     }
                 }

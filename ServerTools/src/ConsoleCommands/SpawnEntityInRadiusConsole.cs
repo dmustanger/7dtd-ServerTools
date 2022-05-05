@@ -21,7 +21,7 @@ namespace ServerTools
                 "2. Spawn one or more entity with in a radius of the specified player. Enter the id, name or entity id of the player. Enter the radius and entity id to spawn\n" +
                 "*Note*     Type spawnentity or se in the console to see all the available entity and their id\n" +
                 "*Example*   st-SpawnEntityRadius -55 -1 1000 r.30 2 18 18 20 21 71\n" +
-                "*Example*   st-ser 76561191234567890 r.30 61 62 63 63\n";
+                "*Example*   st-ser Steam_76561191234567890 r.30 61 62 63 63\n";
         }
 
         public override string[] GetCommands()

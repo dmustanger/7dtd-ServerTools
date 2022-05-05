@@ -775,22 +775,22 @@ namespace ServerTools
                                         if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) <= Admin_Level ||
                                             GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) <= Admin_Level)
                                         {
-                                            Phrases.Dict.TryGetValue("Auction13", out string _phrase);
-                                            ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                            Phrases.Dict.TryGetValue("Auction13", out string phrase);
+                                            ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
                                     _message = messageLowerCase.Replace(Auction.Command_auction_buy + " ", "");
                                     {
-                                        if (int.TryParse(_message, out int _purchase))
+                                        if (int.TryParse(_message, out int purchase))
                                         {
-                                            if (Auction.AuctionItems.ContainsKey(_purchase))
+                                            if (Auction.AuctionItems.ContainsKey(purchase))
                                             {
-                                                Auction.WalletCheck(_cInfo, _purchase);
+                                                Auction.WalletCheck(_cInfo, purchase);
                                             }
                                             else
                                             {
-                                                Phrases.Dict.TryGetValue("Auction14", out string _phrase);
-                                                ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                Phrases.Dict.TryGetValue("Auction14", out string phrase);
+                                                ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                             }
                                         }
                                     }
@@ -816,8 +816,8 @@ namespace ServerTools
                                         }
                                         else
                                         {
-                                            Phrases.Dict.TryGetValue("Auction13", out string _phrase);
-                                            ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                            Phrases.Dict.TryGetValue("Auction13", out string phrase);
+                                            ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
                                     else
@@ -845,21 +845,26 @@ namespace ServerTools
                             }
                             if (VehicleRecall.IsEnabled)
                             {
-                                if (messageLowerCase.StartsWith(VehicleRecall.Command_recall_del + " "))
+                                if (messageLowerCase.StartsWith(VehicleRecall.Command_vehicle_del + " "))
                                 {
-                                    _message = messageLowerCase.Replace(VehicleRecall.Command_recall_del + " ", "");
-                                    VehicleRecall.RemoveVehicle(_cInfo, _message);
+                                    messageLowerCase = messageLowerCase.Replace(VehicleRecall.Command_vehicle_del + " ", "");
+                                    VehicleRecall.RemoveVehicle(_cInfo, messageLowerCase);
                                     return false;
                                 }
-                                if (messageLowerCase.StartsWith(VehicleRecall.Command_recall + " "))
+                                if (messageLowerCase.StartsWith(VehicleRecall.Command_vehicle_save))
                                 {
-                                    _message = messageLowerCase.Replace(VehicleRecall.Command_recall + " ", "");
-                                    VehicleRecall.Exec(_cInfo, _message);
+                                    VehicleRecall.SaveVehicle(_cInfo);
                                     return false;
                                 }
-                                else if (messageLowerCase == VehicleRecall.Command_recall)
+                                if (messageLowerCase.StartsWith(VehicleRecall.Command_vehicle + " "))
                                 {
-                                    VehicleRecall.Exec(_cInfo, "");
+                                    messageLowerCase = messageLowerCase.Replace(VehicleRecall.Command_vehicle + " ", "");
+                                    VehicleRecall.Exec(_cInfo, messageLowerCase);
+                                    return false;
+                                }
+                                else if (messageLowerCase == VehicleRecall.Command_vehicle)
+                                {
+                                    VehicleRecall.List(_cInfo);
                                     return false;
                                 }
                             }
@@ -1107,9 +1112,20 @@ namespace ServerTools
                                 CustomCommands.InitiateCommand(_cInfo, messageLowerCase);
                                 return false;
                             }
-                            if (ReservedSlots.IsEnabled && messageLowerCase == ReservedSlots.Command_reserved)
+                            if (messageLowerCase == PersistentOperations.Command_expire)
                             {
-                                ReservedSlots.ReservedStatus(_cInfo, _cInfo.PlatformId, _cInfo.CrossplatformId);
+                                if (ReservedSlots.IsEnabled && (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
+                                {
+                                    ReservedSlots.ReservedStatus(_cInfo, _cInfo.PlatformId, _cInfo.CrossplatformId);
+                                }
+                                if (ChatColor.IsEnabled && (ChatColor.Players.ContainsKey(_cInfo.PlatformId.CombinedString) || ChatColor.Players.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
+                                {
+                                    ChatColor.ShowColorAndExpiry(_cInfo);
+                                }
+                                if (LoginNotice.IsEnabled && (LoginNotice.Dict1.ContainsKey(_cInfo.PlatformId.CombinedString) || LoginNotice.Dict1.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
+                                {
+                                    LoginNotice.LoginStatus(_cInfo);
+                                }
                                 return false;
                             }
                             if (Prayer.IsEnabled && messageLowerCase == Prayer.Command_pray)
@@ -1263,6 +1279,12 @@ namespace ServerTools
                                     AutoPartyInvite.Add(_cInfo, messageLowerCase);
                                     return false;
                                 }
+                                else if (messageLowerCase.StartsWith(AutoPartyInvite.Command_party_remove + " "))
+                                {
+                                    messageLowerCase = messageLowerCase.Replace(AutoPartyInvite.Command_party_remove + " ", "");
+                                    AutoPartyInvite.Remove(_cInfo, messageLowerCase);
+                                    return false;
+                                }
                             }
                             if (AllocsMap.IsEnabled)
                             {
@@ -1277,6 +1299,14 @@ namespace ServerTools
                                 if (messageLowerCase == DiscordLink.Command_discord)
                                 {
                                     DiscordLink.Exec(_cInfo);
+                                    return false;
+                                }
+                            }
+                            if (VoteReward.IsEnabled)
+                            {
+                                if (messageLowerCase == VoteReward.Command_vote)
+                                {
+                                    VoteReward.Exec(_cInfo);
                                     return false;
                                 }
                             }
@@ -1548,11 +1578,21 @@ namespace ServerTools
                         GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, _message, _name, false, _recipientEntityIds);
                         if (BotResponse.IsEnabled)
                         {
-                            foreach (var response in BotResponse.Dict)
+                            string messageToLower = _message.ToLower();
+                            List<string> responses = BotResponse.Dict.Keys.ToList();
+                            for (int i = 0; i < responses.Count; i++)
                             {
-                                if (response.Key == _message.ToLower())
+                                if (responses[i] == messageToLower)
                                 {
-                                    GameManager.Instance.ChatMessageServer(null, EChatType.Global, -1, response.Value, Config.Server_Response_Name, false, null);
+                                    BotResponse.Dict.TryGetValue(responses[i], out string response);
+                                    if (BotResponse.Whisper)
+                                    {
+                                        GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Whisper, -1, Config.Chat_Response_Color + response + "[-]", Config.Server_Response_Name, false, null);
+                                    }
+                                    else
+                                    {
+                                        GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, Config.Chat_Response_Color + response + "[-]", Config.Server_Response_Name, false, null);
+                                    }
                                     break;
                                 }
                             }

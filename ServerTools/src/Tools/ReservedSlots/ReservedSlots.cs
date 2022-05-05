@@ -8,9 +8,8 @@ namespace ServerTools
 {
     public class ReservedSlots
     {
-        public static bool IsEnabled = false, IsRunning = false, Reduced_Delay = false, Bonus_Exp = false;
-        public static int Session_Time = 30, Admin_Level = 0;
-        public static string Command_reserved = "reserved";
+        public static bool IsEnabled = false, IsRunning = false, Reduced_Delay = false;
+        public static int Session_Time = 30, Admin_Level = 0, Bonus_Exp = 0;
 
         public static Dictionary<string, DateTime> Dict = new Dictionary<string, DateTime>();
         public static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
@@ -149,8 +148,8 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ReservedSlots>");
                 sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Tron\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
-                sw.WriteLine("    <!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123\" Name=\"Yoggi\" Expires=\"01/11/2150 7:30:00 AM\" /> -->");
+                sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Tron\" Expires=\"2050-10-29 10:30:00\" /> -->");
+                sw.WriteLine("    <!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123\" Name=\"Yoggi\" Expires=\"2050-01-11 07:30:00\" /> -->");
                 sw.WriteLine();
                 sw.WriteLine();
                 if (Dict.Count > 0)
@@ -346,8 +345,8 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<ReservedSlots>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Tron\" Expires=\"10/29/2050 7:30:00 AM\" /> -->");
-                    sw.WriteLine("    <!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123\" Name=\"Yoggi\" Expires=\"01/11/2150 7:30:00 AM\" /> -->");
+                    sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Tron\" Expires=\"2050-10-29 10:30:00\" /> -->");
+                    sw.WriteLine("    <!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123\" Name=\"Yoggi\" Expires=\"2050-01-11 07:30:00\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Player Id=\"\"") &&

@@ -47,7 +47,7 @@ namespace ServerTools
                             if (PersistentContainer.Instance.Players[ppd2.UserIdentifier.CombinedString].AutoPartyInvite != null &&
                                 PersistentContainer.Instance.Players[ppd2.UserIdentifier.CombinedString].AutoPartyInvite.Count > 0)
                             {
-                                List<string[]> autoInvites = PersistentContainer.Instance.Players[ppd2.UserIdentifier.ToString()].AutoPartyInvite;
+                                List<string[]> autoInvites = PersistentContainer.Instance.Players[ppd2.UserIdentifier.CombinedString].AutoPartyInvite;
                                 for (int i = 0; i < autoInvites.Count; i++)
                                 {
                                     if (autoInvites[i][0] == _cInfo.entityId.ToString())

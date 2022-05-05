@@ -1,5 +1,59 @@
 ﻿CHANGELOG
 
+20.4.0
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added option Whisper to Bot_Response. Controls whether the
+response is sent to chat as a whisper
+-Added options Players and Zombies to Hordes tool. Sets how 
+many players and how few zombies must be in game for a horde
+to spawn
+-Added option Time to Lottery. Controls how long before the
+lottery begins
+-Added Expiry variable to LoginNotice.xml
+-Added chat command /expire. Will show the expiry date of
+Reserved_Slots, Chat_Color and Login_Notice
+-Added some missing chat commands to the /commands response
+-Fixed Auction items sold or cancelled with semi random damage
+values compared to the original entry
+-Fixed Auction showing strange durability values
+-Fixed Hardcore tool not functioning as intended
+-Fixed upgrade process not creating XML backups
+-Fixed Bot_Response not functioning as intended
+-Fixed Auto_Party_Invite causing an error when a player joined
+-Fixed phrase FriendTeleport4
+-Fixed Infinite_Ammo false positive triggered after dying
+-Fixed Chat_Color html tags and expiration not showing
+correctly in chat
+-Fixed chat command /vote not showing the window with a
+clickable link to the voting website
+-Fixed /go home in the /commands response
+-Fixed /go way in the /commands response
+-Changed Auction to let the owner know which items are theirs
+in the list
+-Changed Horde tool to spawn on a random player location 
+instead of a wandering horde
+-Changed currency allotment to offline players. The value owed
+will be given when they log on
+-Changed Vehicle_Recall commands to /vehicle, /vehicle del #,
+/vehicle save
+-Changed Zones to run the exit process upon respawn if a player
+dies
+-Changed option Bonus_Exp for Reserved_Slots tool. It is now
+entered as a integer. Example: 25 for 25% bonus, 50 for 50%
+-Updated 30 minute timer on server start up that is used to
+prevent a restart vote
+-Updated Vehicle_Recall to allow teleporting a vehicle from
+anywhere on the map. Distance option still applies
+-Updated HowToSetup.txt
+-Removed chat command /reserved
+-Removed static system calls and replaced them with dynamic calls 
+for randomization to avoid potential memory leaks and improve
+results
+*Big thank you to Abaddon from Discord for his contribution
+to the readme documentation on github. It looks great!*
+
 20.3.4
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

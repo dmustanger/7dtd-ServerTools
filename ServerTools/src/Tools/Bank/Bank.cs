@@ -213,7 +213,15 @@ namespace ServerTools
                         {
                             if (GetCurrent(_cInfo.CrossplatformId.CombinedString) >= value)
                             {
-                                int maxAllowed = itemValue.ItemClass.Stacknumber.Value;
+                                int maxAllowed;
+                                if (itemValue.ItemClass.Stacknumber != null)
+                                {
+                                    maxAllowed = itemValue.ItemClass.Stacknumber.Value;
+                                }
+                                else
+                                {
+                                    maxAllowed = 30000;
+                                }
                                 if (value <= maxAllowed)
                                 {
                                     ItemStack itemStack = new ItemStack(itemValue, value);

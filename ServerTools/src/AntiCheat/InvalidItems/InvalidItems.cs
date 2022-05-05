@@ -212,7 +212,7 @@ namespace ServerTools
                                         MaxStack(_cInfo, name, count, maxAllowed);
                                     }
                                 }
-                                if (IsEnabled && Dict.Contains(name))
+                                if (Dict.Contains(name))
                                 {
                                     if (Ban_Player)
                                     {
@@ -259,7 +259,7 @@ namespace ServerTools
                                         MaxStack(_cInfo, name, count, maxAllowed);
                                     }
                                 }
-                                if (IsEnabled && Dict.Contains(name))
+                                if (Dict.Contains(name))
                                 {
                                     if (Ban_Player)
                                     {
@@ -290,43 +290,40 @@ namespace ServerTools
                                 }
                             }
                         }
-                        if (IsEnabled)
+                        for (int i = 0; i < _playerDataFile.equipment.GetSlotCount(); i++)
                         {
-                            for (int i = 0; i < _playerDataFile.equipment.GetSlotCount(); i++)
+                            ItemValue itemValue = _playerDataFile.equipment.GetSlotItem(i);
+                            if (itemValue != null && !itemValue.Equals(ItemValue.None))
                             {
-                                ItemValue itemValue = _playerDataFile.equipment.GetSlotItem(i);
-                                if (itemValue != null && !itemValue.Equals(ItemValue.None))
+                                string name = ItemClass.list[itemValue.type].Name;
+                                if (Dict.Contains(name))
                                 {
-                                    string name = ItemClass.list[itemValue.type].Name;
-                                    if (Dict.Contains(name))
+                                    if (Ban_Player)
                                     {
-                                        if (Ban_Player)
+                                        Ban(_cInfo, name);
+                                    }
+                                    else
+                                    {
+                                        if (Flags.ContainsKey(_cInfo.entityId))
                                         {
-                                            Ban(_cInfo, name);
+                                            if (Flags.TryGetValue(_cInfo.entityId, out int value))
+                                            {
+                                                if (value == 2)
+                                                {
+                                                    Flag3(_cInfo, name);
+                                                }
+                                                else
+                                                {
+                                                    Flag2(_cInfo, name);
+                                                }
+                                            }
                                         }
                                         else
                                         {
-                                            if (Flags.ContainsKey(_cInfo.entityId))
-                                            {
-                                                if (Flags.TryGetValue(_cInfo.entityId, out int value))
-                                                {
-                                                    if (value == 2)
-                                                    {
-                                                        Flag3(_cInfo, name);
-                                                    }
-                                                    else
-                                                    {
-                                                        Flag2(_cInfo, name);
-                                                    }
-                                                }
-                                            }
-                                            else
-                                            {
-                                                Flag1(_cInfo, name);
-                                            }
+                                            Flag1(_cInfo, name);
                                         }
-                                        return;
                                     }
+                                    return;
                                 }
                             }
                         }
@@ -435,7 +432,7 @@ namespace ServerTools
             try
             {
                 Phrases.Dict.TryGetValue("InvalidItem4", out string phrase);
-                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, phrase), null);
+                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                 using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
                 {
                     sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' with invalid item '{3}'. The player has been kicked", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _name));

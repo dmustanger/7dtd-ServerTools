@@ -428,13 +428,14 @@ namespace ServerTools
             if (Lottery.IsEnabled && Lottery.OpenLotto)
             {
                 lottery++;
-                if (lottery == 3300)
+                if (lottery == Lottery.Time * 60 - 60)
                 {
                     Lottery.Alert();
                 }
-                if (lottery >= 3600)
+                if (lottery >= Lottery.Time * 60)
                 {
                     lottery = 0;
+                    Lottery.OpenLotto = false;
                     Lottery.StartLotto();
                 }
             }

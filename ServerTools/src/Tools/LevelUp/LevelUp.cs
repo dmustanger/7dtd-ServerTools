@@ -9,7 +9,7 @@ namespace ServerTools
 {
     class LevelUp
     {
-        public static bool IsEnabled = false, IsRunning = false, Xml_Only = false;
+        public static bool IsEnabled = false, IsRunning = false, Xml_Only = false, Announce = true;
 
         public static Dictionary<int, int> PlayerLevels = new Dictionary<int, int>();
 
@@ -206,10 +206,13 @@ namespace ServerTools
                                 {
                                     Dict.TryGetValue(player.Progression.Level, out string command);
                                     ProcessCommand(_cInfo, command);
-                                    Phrases.Dict.TryGetValue("LevelUp1", out string phrase);
-                                    phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                    phrase = phrase.Replace("{Value}", player.Progression.Level.ToString());
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                    if (Announce)
+                                    {
+                                        Phrases.Dict.TryGetValue("LevelUp1", out string phrase);
+                                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                        phrase = phrase.Replace("{Value}", player.Progression.Level.ToString());
+                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                    }
                                 }
                             }
                             else
@@ -219,10 +222,13 @@ namespace ServerTools
                                     Dict.TryGetValue(player.Progression.Level, out string command);
                                     ProcessCommand(_cInfo, command);
                                 }
-                                Phrases.Dict.TryGetValue("LevelUp1", out string phrase);
-                                phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                phrase = phrase.Replace("{Value}", player.Progression.Level.ToString());
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                if (Announce)
+                                {
+                                    Phrases.Dict.TryGetValue("LevelUp1", out string phrase);
+                                    phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                    phrase = phrase.Replace("{Value}", player.Progression.Level.ToString());
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                                }
                             }
                         }
                     }

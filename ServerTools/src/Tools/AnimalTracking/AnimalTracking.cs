@@ -11,8 +11,6 @@ namespace ServerTools
         public static int Delay_Between_Uses = 60, Minimum_Spawn_Radius = 40, Maximum_Spawn_Radius = 60, Command_Cost = 0;
         public static string Animal_Ids = "85,86,87,88";
 
-        private static readonly System.Random rnd = new System.Random();
-
         public static void Exec(ClientInfo _cInfo)
         {
             try
@@ -154,9 +152,9 @@ namespace ServerTools
                         minRad = Minimum_Spawn_Radius;
                         maxRad = Maximum_Spawn_Radius;
                     }
-                    int r = rnd.Next(1, animalId.Count + 1);
+                    int r = new System.Random().Next(1, animalId.Count + 1);
                     int.TryParse(animalId[r], out int randomId);
-                    int nextRadius = rnd.Next(minRad, maxRad + 1);
+                    int nextRadius = new System.Random().Next(minRad, maxRad + 1);
                     Dictionary<int, EntityClass>.KeyCollection entityTypesCollection = EntityClass.list.Dict.Keys;
                     int counter = 1;
                     foreach (int i in entityTypesCollection)

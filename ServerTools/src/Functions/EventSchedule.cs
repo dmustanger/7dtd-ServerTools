@@ -111,12 +111,6 @@ namespace ServerTools
                                     Shutdown.PrepareShutdown();
                                 }
                                 continue;
-                            case "ThirtyMinutes":
-                                if (DateTime.Now >= entry.Value)
-                                {
-                                    RestartVote.ThirtyMin = true;
-                                }
-                                continue;
                             case "WatchList":
                                 if (DateTime.Now >= entry.Value)
                                 {

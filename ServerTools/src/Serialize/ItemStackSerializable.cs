@@ -15,6 +15,7 @@ namespace ServerTools
             this.quality = 0;
             this.modSlots = 0;
             this.cosmeticSlots = 0;
+            this.seed = 0;
         }
 
         public string name;
@@ -28,5 +29,7 @@ namespace ServerTools
         public int modSlots;
 
         public int cosmeticSlots;
+
+        public ushort seed;
     }
 }

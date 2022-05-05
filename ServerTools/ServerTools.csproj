@@ -129,7 +129,7 @@
     <Compile Include="src\ConsoleCommands\AutoBackupConsole.cs" />
     <Compile Include="src\ConsoleCommands\BanPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\DonorConsole.cs" />
-    <Compile Include="src\ConsoleCommands\ChatColorPrefixConsole.cs" />
+    <Compile Include="src\ConsoleCommands\ChatColorConsole.cs" />
     <Compile Include="src\ConsoleCommands\EntityRotateConsole.cs" />
     <Compile Include="src\ConsoleCommands\BackpackTeleportConsole.cs" />
     <Compile Include="src\ConsoleCommands\EntityTeleportConsole.cs" />
@@ -190,7 +190,6 @@
     <Compile Include="src\ConsoleCommands\AnimalTrackingConsole.cs" />
     <Compile Include="src\ConsoleCommands\AdminListConsole.cs" />
     <Compile Include="src\ConsoleCommands\VehicleListConsole.cs" />
-    <Compile Include="src\ConsoleCommands\CountryBanImmunityConsole.cs" />
     <Compile Include="src\ConsoleCommands\EventCommandsConsole.cs" />
     <Compile Include="src\ConsoleCommands\TraderListConsole.cs" />
     <Compile Include="src\ConsoleCommands\ZonesConsole.cs" />

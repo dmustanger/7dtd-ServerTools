@@ -5,7 +5,7 @@ namespace ServerTools
     class Lottery
     {
         public static bool IsEnabled = false, OpenLotto = false, ShuttingDown = false;
-        public static int Bonus = 0, LottoValue = 0;
+        public static int Time = 10, Bonus = 0, LottoValue = 0;
         public static string Command_lottery = "lottery", Command_lottery_enter = "lottery enter";
         public static List<ClientInfo> LottoEntries = new List<ClientInfo>();
 
@@ -103,7 +103,7 @@ namespace ServerTools
                         Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, LottoValue);
                         Phrases.Dict.TryGetValue("Lottery7", out string phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        if (LottoEntries.Count == 10)
+                        if (LottoEntries.Count == 8)
                         {
                             StartLotto();
                         }
@@ -136,7 +136,7 @@ namespace ServerTools
             int random = rnd.Next(0, LottoEntries.Count + 1);
             ClientInfo winner = LottoEntries[random];
             int winnings;
-            if (LottoEntries.Count == 10)
+            if (LottoEntries.Count == 8)
             {
                 winnings = LottoValue * LottoEntries.Count + Bonus;
             }
@@ -144,7 +144,6 @@ namespace ServerTools
             {
                 winnings = LottoValue * LottoEntries.Count;
             }
-            OpenLotto = false;
             LottoValue = 0;
             LottoEntries.Clear();
             Wallet.AddCurrency(winner.CrossplatformId.CombinedString, winnings);

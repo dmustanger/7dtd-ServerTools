@@ -22,11 +22,9 @@ namespace ServerTools
                    "  6. st-web reset all\n" +
                    "  7. st-web timeout add <IP>\n" +
                    "  8. st-web timeout remove <IP>\n" +
-                   "  9. st-web timeout list\n" +
-                   "  10. st-web ban add <IP>\n" +
-                   "  11. st-web ban remove <IP>\n" +
-                   "  12. st-web ban list\n" +
-                   "  13. st-web list\n" +
+                   "  9. st-web ban add <IP>\n" +
+                   "  10. st-web ban remove <IP>\n" +
+                   "  11. st-web list\n" +
                    "1. Turn off the web panel\n" +
                    "2. Turn on the web panel\n" +
                    "3. Add a client id to the web panel list. Id must be 6-30 chars in length\n" +
@@ -35,11 +33,9 @@ namespace ServerTools
                    "6. Reset all clients. Clear all existing sessions. All clients must relog\n" +
                    "7. Add a IP address to the timeout list, restricting all access for five minutes\n" +
                    "8. Remove a IP from the timeout list\n" +
-                   "9. Shows all IP on the timeout list\n" +
-                   "10. Add a IP address to the ban list, restricting all access\n" +
-                   "11. Remove a IP from the ban list\n" +
-                   "12. Shows all IP on the ban list\n" +
-                   "13. Shows a list of client id that has been added. Also shows banned and timed out IP address\n";
+                   "9. Add a IP address to the ban list, restricting all access\n" +
+                   "10. Remove a IP from the ban list\n" +
+                   "11. Shows a list of client id that has been added. Also shows banned and timed out IP address\n";
         }
 
         public override string[] GetCommands()

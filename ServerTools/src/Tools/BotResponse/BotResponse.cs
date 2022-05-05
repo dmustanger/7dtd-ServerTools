@@ -8,7 +8,7 @@ namespace ServerTools
 {
     class BotResponse
     {
-        public static bool IsEnabled = false, IsRunning = false;
+        public static bool IsEnabled = false, IsRunning = false, Whisper = false;
 
         public static Dictionary<string, string> Dict = new Dictionary<string, string>();
 

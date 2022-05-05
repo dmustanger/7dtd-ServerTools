@@ -244,12 +244,12 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Reserved3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Reserved4", out phrase))
                     {
-                        phrase = "Your reserved status expires on {DateTime}";
+                        phrase = "Your reserved status expires at {DateTime}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Reserved4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Reserved5", out phrase))
                     {
-                        phrase = "Your reserved status has expired on {DateTime}";
+                        phrase = "Your reserved status expired at {DateTime}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Reserved5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Reserved6", out phrase))
@@ -713,7 +713,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery8\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lottery9", out phrase))
                     {
-                        phrase = "A lottery draw will begin in five minutes. Type {Command_Prefix1}{Command_lottery_enter} to join the draw";
+                        phrase = "A lottery draw will begin in one minute. Type {Command_Prefix1}{Command_lottery_enter} to join";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery9\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lottery10", out phrase))
@@ -1229,7 +1229,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"FriendTeleport3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("FriendTeleport4", out phrase))
                     {
-                        phrase = "{PlayerName} would like to teleport to you. Type {Command_Prefix1}{Command_friend} in chat to accept the request";
+                        phrase = "{PlayerName} would like to teleport to you. Type {Command_Prefix1}{Command_accept} in chat to accept the request";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"FriendTeleport4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("FriendTeleport5", out phrase))
@@ -1554,6 +1554,11 @@ namespace ServerTools
                         phrase = "Removed {Id} from your vehicle list";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall15\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("VehicleRecall16", out phrase))
+                    {
+                        phrase = "You are not using a vehicle. Unable to save";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall16\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* World_Radius ********************* -->");
@@ -1827,7 +1832,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("Auction1", out phrase))
                     {
-                        phrase = "Your auction item {Name} has been removed from the secure loot and added to the auction as id {value}";
+                        phrase = "Your auction item {Name} has been removed from the secure loot and added to the auction as id {Value}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Auction2", out phrase))
@@ -1915,6 +1920,11 @@ namespace ServerTools
                         phrase = "You must remove modifications and cosmetics from the item you wish to enter the auction";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction18\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Auction19", out phrase))
+                    {
+                        phrase = "The following {Value} items are yours";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Auction19\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************* Bank ************************* -->");
@@ -3134,6 +3144,15 @@ namespace ServerTools
                         phrase = "Family share accounts are forbidden without permission";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"FamilyShare1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ********************** Login_Notice ******************** -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("LoginNotice1", out phrase))
+                    {
+                        phrase = "Your login notice expires at {DateTime}";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"LoginNotice1\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");

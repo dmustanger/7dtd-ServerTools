@@ -11,7 +11,7 @@ namespace ServerTools
         {
             string fps = GameManager.Instance.fps.Counter.ToString();
             int playerCount = ConnectionManager.Instance.ClientCount();
-            int zombies = 0, animals = 0, bicycles = 0, miniBikes = 0, motorcycles = 0, _fourByFour = 0, gyros = 0, supplyCrates = 0;
+            int zombies = 0, animals = 0, bicycles = 0, miniBikes = 0, motorcycles = 0, fourByFour = 0, gyros = 0, supplyCrates = 0;
             int daysRemaining = DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
             List<Entity> _entities = GameManager.Instance.World.Entities.list;
             foreach (Entity _e in _entities)
@@ -46,7 +46,7 @@ namespace ServerTools
                     }
                     else if (_name == "vehicle4x4Truck")
                     {
-                        _fourByFour++;
+                        fourByFour++;
                     }
                     else if (_name == "vehicleGyrocopter")
                     {
@@ -58,7 +58,7 @@ namespace ServerTools
                     }
                 }
             }
-            Response(_cInfo, fps, daysRemaining, playerCount, zombies, animals, bicycles, miniBikes, motorcycles, _fourByFour, gyros, supplyCrates);
+            Response(_cInfo, fps, daysRemaining, playerCount, zombies, animals, bicycles, miniBikes, motorcycles, fourByFour, gyros, supplyCrates);
         }
 
         public static void Response(ClientInfo _cInfo, string _fps, int _daysRemaining, int _playerCount, int _zombies, int _animals, int _bicycles, int _miniBikes, int _motorcycles, int _4x4, int _gyros, int _supplyCrates)

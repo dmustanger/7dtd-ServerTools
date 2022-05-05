@@ -15,7 +15,7 @@ namespace ServerTools
             return "Usage:\n" +
                    "  1. st-at off\n" +
                    "  2. st-at on\n" +
-                   "  3. st-at reset <steamId/entityId/playerName>\n" +
+                   "  3. st-at reset <id/entityId/playerName>\n" +
                    "1. Turn off animal tracking\n" +
                    "2. Turn on animal tracking\n" +
                    "3. Reset the delay status of a player for the animal tracking command\n";
@@ -85,12 +85,12 @@ namespace ServerTools
                     }
                     else
                     {
-                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                        if (_cInfo != null)
+                        ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                        if (cInfo != null)
                         {
                             PersistentContainer.Instance.Players[_params[1]].LastAnimal = DateTime.Now.AddYears(-1);
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking delay reset for {0}", _cInfo.playerName));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Animal tracking delay reset for {0}", cInfo.playerName));
                         }
                         else
                         {

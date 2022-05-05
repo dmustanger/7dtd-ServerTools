@@ -411,7 +411,7 @@ namespace ServerTools
             }
         }
 
-        private static void ProcessCommand(ClientInfo _cInfo, string _command)
+        public static void ProcessCommand(ClientInfo _cInfo, string _command)
         {
             try
             {

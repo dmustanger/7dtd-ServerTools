@@ -179,16 +179,38 @@ namespace ServerTools
                             {
                                 OldPlayerJoined(_cInfo, player);
                             }
-                            if (AutoPartyInvite.IsEnabled)
-                            {
-                                AutoPartyInvite.Exec(_cInfo, player);
-                            }
                         }
                         else if (_respawnReason == RespawnType.Died)
                         {
                             if (player.AttachedToEntity != null)
                             {
                                 player.Detach();
+                            }
+                            if (Zones.IsEnabled && Zones.ZonePlayer.ContainsKey(_cInfo.entityId))
+                            {
+                                Zones.ZonePlayer.TryGetValue(player.entityId, out string[] zone);
+                                Zones.ZonePlayer.Remove(player.entityId);
+                                Zones.Reminder.Remove(player.entityId);
+                                if (zone[9] != PersistentOperations.Player_Killing_Mode.ToString())
+                                {
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup(string.Format("sgs PlayerKillingMode {0}", PersistentOperations.Player_Killing_Mode), true));
+                                }
+                                if (Zones.Zone_Message && zone[5] != "")
+                                {
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + zone[5] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                                if (zone[7] != "")
+                                {
+                                    Zones.ProcessCommand(_cInfo, zone[7]);
+                                }
+                            }
+                            if (InfiniteAmmo.IsEnabled && InfiniteAmmo.Dict.ContainsKey(_cInfo.entityId))
+                            {
+                                InfiniteAmmo.Dict.Remove(_cInfo.entityId);
+                            }
+                            if (Bloodmoon.IsEnabled && Bloodmoon.Show_On_Respawn)
+                            {
+                                Bloodmoon.Exec(_cInfo);
                             }
                         }
                         else if (_respawnReason == RespawnType.Teleport)
@@ -471,7 +493,7 @@ namespace ServerTools
                     }
                     else if (!PersistentContainer.Instance.Players[id].HardcoreEnabled)
                     {
-                        string[] hardcoreStats = { _cInfo.playerName, XUiM_Player.GetDeaths(_player).ToString(), "0" };
+                        string[] hardcoreStats = { _cInfo.playerName, "0", "0" };
                         PersistentContainer.Instance.Players[id].HardcoreStats = hardcoreStats;
                         PersistentContainer.Instance.Players[id].HardcoreEnabled = true;
                         PersistentContainer.DataChange = true;
@@ -501,14 +523,14 @@ namespace ServerTools
                     }
                     else if (!PersistentContainer.Instance.Players[id].HardcoreEnabled)
                     {
-                        string[] hardcoreStats = { _cInfo.playerName, XUiM_Player.GetDeaths(_player).ToString(), "0" };
+                        string[] hardcoreStats = { _cInfo.playerName, "0", "0" };
                         PersistentContainer.Instance.Players[id].HardcoreStats = hardcoreStats;
                         PersistentContainer.Instance.Players[id].HardcoreEnabled = true;
                         PersistentContainer.DataChange = true;
                         Hardcore.Check(_cInfo, _player);
                     }
                 }
-                if (LoginNotice.IsEnabled && LoginNotice.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || LoginNotice.Dict.ContainsKey(id))
+                if (LoginNotice.IsEnabled && LoginNotice.Dict1.ContainsKey(_cInfo.PlatformId.CombinedString) || LoginNotice.Dict1.ContainsKey(id))
                 {
                     LoginNotice.PlayerNotice(_cInfo);
                 }
@@ -544,29 +566,36 @@ namespace ServerTools
                         }
                     }
                 }
+                if (PersistentContainer.Instance.Players[id] != null)
+                {
+                    if (PersistentContainer.Instance.Players[id].EventSpawn)
+                    {
+                        PersistentContainer.Instance.Players[id].EventSpawn = false;
+                        PersistentContainer.DataChange = true;
+                    }
+                    if (Wallet.IsEnabled && PersistentContainer.Instance.Players[id].PlayerWallet > 0)
+                    {
+                        Wallet.AddCurrency(id, PersistentContainer.Instance.Players[id].PlayerWallet);
+                        PersistentContainer.Instance.Players[id].PlayerWallet = 0;
+                        PersistentContainer.DataChange = true;
+                    }
+                    if (PersistentContainer.Instance.Players[id].JailRelease)
+                    {
+                        PersistentContainer.Instance.Players[id].JailRelease = false;
+                        PersistentContainer.DataChange = true;
+                        Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), null, false));
+                        Phrases.Dict.TryGetValue("Jail2", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                }
+                if (AutoPartyInvite.IsEnabled)
+                {
+                    AutoPartyInvite.Exec(_cInfo, _player);
+                }
                 if (Event.Open && Event.Teams.ContainsKey(id) && PersistentContainer.Instance.Players[id] != null && PersistentContainer.Instance.Players[id].EventSpawn)
                 {
                     Event.Spawn(_cInfo);
-                }
-                else if (PersistentContainer.Instance.Players[id] != null && PersistentContainer.Instance.Players[id].EventSpawn)
-                {
-                    PersistentContainer.Instance.Players[id].EventSpawn = false;
-                    PersistentContainer.DataChange = true;
-                }
-                if (PersistentContainer.Instance.Players[id] != null && PersistentContainer.Instance.Players[id].PlayerWallet > 0)
-                {
-                    Wallet.AddCurrency(id, PersistentContainer.Instance.Players[id].PlayerWallet);
-                    PersistentContainer.Instance.Players[id].PlayerWallet = 0;
-                    PersistentContainer.DataChange = true;
-                }
-                if (PersistentContainer.Instance.Players[id].JailRelease)
-                {
-                    PersistentContainer.Instance.Players[id].JailRelease = false;
-                    PersistentContainer.DataChange = true;
-                    Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), null, false));
-                    Phrases.Dict.TryGetValue("Jail2", out string phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

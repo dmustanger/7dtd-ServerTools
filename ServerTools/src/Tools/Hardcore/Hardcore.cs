@@ -17,7 +17,7 @@ namespace ServerTools
             {
                 if (int.TryParse(stats[2], out int extraLives))
                 {
-                    int lives = Max_Deaths - (XUiM_Player.GetDeaths(_player) - deaths) + extraLives;
+                    int lives = Max_Deaths - deaths + extraLives;
                     if (lives > 0)
                     {
                         Phrases.Dict.TryGetValue("Hardcore5", out string phrase);
@@ -41,18 +41,17 @@ namespace ServerTools
                 TimeSpan varTime = DateTime.Now - time;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int timepassed = (int)fractionalMinutes;
-                int oldSession = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].SessionTime;
-                int newSession = oldSession + timepassed;
-                int.TryParse(_stats[2], out int _extraLives);
-                string[] _newStats = { _cInfo.playerName, newSession.ToString(), _player.KilledPlayers.ToString(), _player.KilledZombies.ToString(), Max_Deaths + _extraLives.ToString(), _player.Score.ToString() };
+                int finalSession = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].SessionTime += timepassed;
+                int.TryParse(_stats[2], out int extraLives);
+                string[] newStats = { _cInfo.playerName, finalSession.ToString(), _player.KilledPlayers.ToString(), _player.KilledZombies.ToString(), Max_Deaths + extraLives.ToString(), _player.Score.ToString() };
                 if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats.Count > 0)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats.Add(_newStats);
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats.Add(newStats);
                 }
                 else
                 {
                     List<string[]> SavedStats = new List<string[]>();
-                    SavedStats.Add(_newStats);
+                    SavedStats.Add(newStats);
                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats = SavedStats;
                 }
                 p.Auction = new Dictionary<int, ItemDataSerializable>();
@@ -109,95 +108,95 @@ namespace ServerTools
                 p.WebPass = "";
                 p.ZoneDeathTime = new DateTime();
                 PersistentContainer.DataChange = true;
-                Hardcore.Disconnect(_cInfo, _newStats);
+                Hardcore.Disconnect(_cInfo, newStats);
             }
         }
 
         public static void TopThree(ClientInfo _cInfo)
         {
-            int _topSession1 = 0, _topSession2 = 0, _topSession3 = 0, _topScore1 = 0, _topScore2 = 0, _topScore3 = 0;
-            string _sessionName1 = "", _sessionName2 = "", _sessionName3 = "", _ScoreName1 = "", _ScoreName2 = "", _ScoreName3 = "";
-            List<string> _persistentPlayers = PersistentContainer.Instance.Players.IDs;
-            for (int i = 0; i < _persistentPlayers.Count; i++)
+            int topSession1 = 0, topSession2 = 0, topSession3 = 0, topScore1 = 0, topScore2 = 0, topScore3 = 0;
+            string sessionName1 = "", sessionName2 = "", sessionName3 = "", scoreName1 = "", scoreName2 = "", scoreName3 = "";
+            List<string> persistentPlayers = PersistentContainer.Instance.Players.IDs;
+            for (int i = 0; i < persistentPlayers.Count; i++)
             {
                 if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats.Count > 0)
                 {
-                    List<string[]> _hardcoreSavedStats = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats;
-                    for (int j = 0; j < _hardcoreSavedStats.Count; j++)
+                    List<string[]> hardcoreSavedStats = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats;
+                    for (int j = 0; j < hardcoreSavedStats.Count; j++)
                     {
-                        string[] _stats = _hardcoreSavedStats[j];
-                        int.TryParse(_stats[1], out int _sessionTime);
-                        if (_sessionTime > _topSession1)
+                        string[] stats = hardcoreSavedStats[j];
+                        int.TryParse(stats[1], out int sessionTime);
+                        if (sessionTime > topSession1)
                         {
-                            _topSession3 = _topSession2;
-                            _sessionName3 = _sessionName2;
-                            _topSession2 = _topSession1;
-                            _sessionName2 = _sessionName1;
-                            _topSession1 = _sessionTime;
-                            _sessionName1 = _stats[0];
+                            topSession3 = topSession2;
+                            sessionName3 = sessionName2;
+                            topSession2 = topSession1;
+                            sessionName2 = sessionName1;
+                            topSession1 = sessionTime;
+                            sessionName1 = stats[0];
                         }
-                        else if (_sessionTime > _topSession2)
+                        else if (sessionTime > topSession2)
                         {
-                            _topSession3 = _topSession2;
-                            _sessionName3 = _sessionName2;
-                            _topSession2 = _sessionTime;
-                            _sessionName2 = _stats[0];
+                            topSession3 = topSession2;
+                            sessionName3 = sessionName2;
+                            topSession2 = sessionTime;
+                            sessionName2 = stats[0];
                         }
-                        else if (_sessionTime > _topSession3)
+                        else if (sessionTime > topSession3)
                         {
-                            _topSession3 = _sessionTime;
-                            _sessionName3 = _stats[0];
+                            topSession3 = sessionTime;
+                            sessionName3 = stats[0];
                         }
-                        int.TryParse(_stats[4], out int _score);
-                        if (_score > _topScore1)
+                        int.TryParse(stats[4], out int score);
+                        if (score > topScore1)
                         {
-                            _topScore3 = _topScore2;
-                            _ScoreName3 = _ScoreName2;
-                            _topScore2 = _topScore1;
-                            _ScoreName2 = _ScoreName1;
-                            _topScore1 = _score;
-                            _ScoreName1 = _stats[0];
+                            topScore3 = topScore2;
+                            scoreName3 = scoreName2;
+                            topScore2 = topScore1;
+                            scoreName2 = scoreName1;
+                            topScore1 = score;
+                            scoreName1 = stats[0];
                         }
-                        else if (_score > _topScore2)
+                        else if (score > topScore2)
                         {
-                            _topScore3 = _topScore2;
-                            _ScoreName3 = _ScoreName2;
-                            _topScore2 = _score;
-                            _ScoreName2 = _stats[0];
+                            topScore3 = topScore2;
+                            scoreName3 = scoreName2;
+                            topScore2 = score;
+                            scoreName2 = stats[0];
                         }
-                        else if (_score > _topScore3)
+                        else if (score > topScore3)
                         {
-                            _topScore3 = _score;
-                            _ScoreName3 = _stats[0];
+                            topScore3 = score;
+                            scoreName3 = stats[0];
                         }
                     }
                 }
             }
-            if (_sessionName1 != "" || _ScoreName1 != null)
+            if (sessionName1 != "" || scoreName1 != null)
             {
-                Phrases.Dict.TryGetValue("Hardcore1", out string _phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                Phrases.Dict.TryGetValue("Hardcore2", out _phrase);
-                _phrase = _phrase.Replace("{Name1}", _sessionName1);
-                _phrase = _phrase.Replace("{Session1}", _topSession1.ToString());
-                _phrase = _phrase.Replace("{Name2}", _sessionName2);
-                _phrase = _phrase.Replace("{Session2}", _topSession2.ToString());
-                _phrase = _phrase.Replace("{Name3}", _sessionName3);
-                _phrase = _phrase.Replace("{Session3}", _topSession3.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                Phrases.Dict.TryGetValue("Hardcore3", out _phrase);
-                _phrase = _phrase.Replace("{Name1}", _ScoreName1);
-                _phrase = _phrase.Replace("{Score1}", _topScore1.ToString());
-                _phrase = _phrase.Replace("{Name2}", _ScoreName2);
-                _phrase = _phrase.Replace("{Score2}", _topScore2.ToString());
-                _phrase = _phrase.Replace("{Name3}", _ScoreName3);
-                _phrase = _phrase.Replace("{Score3}", _topScore3.ToString());
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Hardcore1", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Hardcore2", out phrase);
+                phrase = phrase.Replace("{Name1}", sessionName1);
+                phrase = phrase.Replace("{Session1}", topSession1.ToString());
+                phrase = phrase.Replace("{Name2}", sessionName2);
+                phrase = phrase.Replace("{Session2}", topSession2.ToString());
+                phrase = phrase.Replace("{Name3}", sessionName3);
+                phrase = phrase.Replace("{Session3}", topSession3.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Hardcore3", out phrase);
+                phrase = phrase.Replace("{Name1}", scoreName1);
+                phrase = phrase.Replace("{Score1}", topScore1.ToString());
+                phrase = phrase.Replace("{Name2}", scoreName2);
+                phrase = phrase.Replace("{Score2}", topScore2.ToString());
+                phrase = phrase.Replace("{Name3}", scoreName3);
+                phrase = phrase.Replace("{Score3}", topScore3.ToString());
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                Phrases.Dict.TryGetValue("Hardcore6", out string _phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Hardcore6", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

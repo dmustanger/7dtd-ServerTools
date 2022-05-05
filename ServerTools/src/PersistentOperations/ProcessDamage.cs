@@ -75,10 +75,10 @@ namespace ServerTools
                                                 return true;
                                             }
                                         }
-                                        if (Zones.IsEnabled && PersistentOperations.Player_Killing_Mode == 3 && !Zones.IsValid(cInfoVictim, cInfoAttacker))
-                                        {
-                                            return true;
-                                        }
+                                        //if (Zones.IsEnabled && !Zones.IsValid(cInfoVictim, cInfoAttacker))
+                                        //{
+                                        //    return true;
+                                        //}
                                         if (Lobby.IsEnabled && Lobby.PvE && (Lobby.LobbyPlayers.Contains(victimPlayer.entityId) || Lobby.LobbyPlayers.Contains(attackingPlayer.entityId)))
                                         {
                                             Lobby.PvEViolation(cInfoAttacker);

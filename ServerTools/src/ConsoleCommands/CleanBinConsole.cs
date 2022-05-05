@@ -18,7 +18,7 @@ namespace ServerTools
                    "  3. st-cb now\n" +
                    "1. Turn off clean bin\n" +
                    "2. Turn on clean bin\n" +
-                   "3. Cleans out the current ServerTools.bin\n";
+                   "3. Cleans out the current ServerTools.bin using the settings from ServerToolsConfig.xml\n";
         }
 
         public override string[] GetCommands()

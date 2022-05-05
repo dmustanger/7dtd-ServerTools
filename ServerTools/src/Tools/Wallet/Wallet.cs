@@ -106,57 +106,8 @@ namespace ServerTools
             }
             else
             {
-                PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromId(_id);
-                if (pdf != null)
-                {
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(PersistentOperations.Currency_Item).type);
-                    if (itemValue != null)
-                    {
-                        int remaining = _amount;
-                        ItemStack[] stacks = pdf.bag;
-                        bool update = false;
-                        for (int i = 0; i < stacks.Length; i++)
-                        {
-                            if (stacks[i].IsEmpty())
-                            {
-                                if (remaining > stacks[i].itemValue.ItemClass.Stacknumber.Value)
-                                {
-                                    stacks[i] = new ItemStack(ItemClass.GetItem(PersistentOperations.Currency_Item, false), itemValue.ItemClass.Stacknumber.Value);
-                                    remaining -= itemValue.ItemClass.Stacknumber.Value;
-                                    update = true;
-                                    continue;
-                                }
-                                else
-                                {
-                                    stacks[i] = new ItemStack(ItemClass.GetItem(PersistentOperations.Currency_Item, false), remaining);
-                                    update = true;
-                                    break;
-                                }
-                            }
-                            else if (stacks[i].itemValue.ItemClass.Name == PersistentOperations.Currency_Item && stacks[i].count < itemValue.ItemClass.Stacknumber.Value)
-                            {
-                                int maxAllowed = itemValue.ItemClass.Stacknumber.Value - stacks[i].count;
-                                if (remaining > maxAllowed)
-                                {
-                                    stacks[i] = new ItemStack(ItemClass.GetItem(PersistentOperations.Currency_Item, false), stacks[i].count + maxAllowed);
-                                    update = true;
-                                    continue;
-                                }
-                                else
-                                {
-                                    stacks[i] = new ItemStack(ItemClass.GetItem(PersistentOperations.Currency_Item, false), stacks[i].count + remaining);
-                                    update = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (update)
-                        {
-                            pdf.bag = stacks;
-                            pdf.Save(GameIO.GetPlayerDataDir(), _id);
-                        }
-                    }
-                }
+                PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].PlayerWallet += _amount;
+                PersistentContainer.DataChange = true;
             }
         }
 

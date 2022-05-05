@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.3.4";
+        public const string Version = "20.4.0";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -552,6 +552,16 @@ namespace ServerTools
                                                 if (!bool.TryParse(line.GetAttribute("Enable"), out BotResponse.IsEnabled))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bot_Response entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!line.HasAttribute("Whisper"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bot_Response entry in ServerToolsConfig.xml because of missing 'Whisper' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!bool.TryParse(line.GetAttribute("Whisper"), out BotResponse.Whisper))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bot_Response entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Whisper' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 break;
@@ -1841,6 +1851,26 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hordes entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
+                                                if (!line.HasAttribute("Players"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hordes entry in ServerToolsConfig.xml because of missing 'Players' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!int.TryParse(line.GetAttribute("Players"), out Hordes.Players))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hordes entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Players' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!line.HasAttribute("Zombies"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hordes entry in ServerToolsConfig.xml because of missing 'Zombies' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!int.TryParse(line.GetAttribute("Zombies"), out Hordes.Zombies))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Hordes entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Zombies' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
                                                 break;
                                             case "Infinite_Ammo":
                                                 if (!line.HasAttribute("Enable"))
@@ -2254,6 +2284,16 @@ namespace ServerTools
                                                 if (!bool.TryParse(line.GetAttribute("Enable"), out Lottery.IsEnabled))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lottery entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!line.HasAttribute("Time"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lottery entry in ServerToolsConfig.xml because of missing 'Time' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!int.TryParse(line.GetAttribute("Time"), out Lottery.Time))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lottery entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Time' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 if (!line.HasAttribute("Bonus"))
@@ -3075,9 +3115,9 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry in ServerToolsConfig.xml because of missing 'Bonus_Exp' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!bool.TryParse(line.GetAttribute("Bonus_Exp"), out ReservedSlots.Bonus_Exp))
+                                                if (!int.TryParse(line.GetAttribute("Bonus_Exp"), out ReservedSlots.Bonus_Exp))
                                                 {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Bonus_Exp' attribute: {0}", line.OuterXml));
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Bonus_Exp' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 break;
@@ -4037,6 +4077,25 @@ namespace ServerTools
             }
             if (upgrade)
             {
+                string[] files = Directory.GetFiles(API.ConfigPath, "*.xml");
+                if (!Directory.Exists(API.ConfigPath + "/XMLBackups"))
+                {
+                    Directory.CreateDirectory(API.ConfigPath + "/XMLBackups");
+                }
+                if (files != null && files.Length > 0)
+                {
+                    if (!Directory.Exists(API.ConfigPath + "/XMLBackups/" + Version))
+                    {
+                        Directory.CreateDirectory(API.ConfigPath + "/XMLBackups/" + Version);
+                    }
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        string fileName = files[i];
+                        string fileNameShort = fileName.Substring(fileName.IndexOf("ServerTools") + 11);
+                        File.Copy(fileName, API.ConfigPath + "/XMLBackups/" + Version + fileNameShort);
+                    }
+                    Log.Out("[SERVERTOOLS] Created backup of xml files for version {0}", Version);
+                }
                 XmlElement element = xmlDoc.DocumentElement;
                 File.Delete(ConfigFilePath);
                 WriteXml();
@@ -4092,7 +4151,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Logger\" Enable=\"{0}\" />", BlockLogger.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Delay=\"{1}\" Show_On_Respawn=\"{2}\" />", Bloodmoon.IsEnabled, Bloodmoon.Delay, Bloodmoon.Show_On_Respawn));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon_Warrior\" Enable=\"{0}\" Zombie_Kills=\"{1}\" Chance=\"{2}\" Reduce_Death_Count=\"{3}\" Reward_Count=\"{4}\" />", BloodmoonWarrior.IsEnabled, BloodmoonWarrior.Zombie_Kills, BloodmoonWarrior.Chance, BloodmoonWarrior.Reduce_Death_Count, BloodmoonWarrior.Reward_Count));
-                sw.WriteLine(string.Format("        <Tool Name=\"Bot_Response\" Enable=\"{0}\" />", BotResponse.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Bot_Response\" Enable=\"{0}\" Whisper=\"{1}\" />", BotResponse.IsEnabled, BotResponse.Whisper));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bounties\" Enable=\"{0}\" Minimum_Bounty=\"{1}\" Kill_Streak=\"{2}\" Bonus=\"{3}\" />", Bounties.IsEnabled, Bounties.Minimum_Bounty, Bounties.Kill_Streak, Bounties.Bonus));
                 sw.WriteLine(string.Format("        <Tool Name=\"Break_Reminder\" Enable=\"{0}\" Break_Time=\"{1}\" Message=\"{2}\" />", BreakTime.IsEnabled, BreakTime.Delay, BreakTime.Message));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Color\" Enable=\"{0}\" Rotate=\"{1}\" Custom_Color=\"{2}\" />", ChatColor.IsEnabled, ChatColor.Rotate, ChatColor.Custom_Color));
@@ -4127,18 +4186,18 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"High_Ping_Kicker\" Enable=\"{0}\" Max_Ping=\"{1}\" Flags=\"{2}\" />", HighPingKicker.IsEnabled, HighPingKicker.Max_Ping, HighPingKicker.Flags));
                 sw.WriteLine(string.Format("        <Tool Name=\"Homes\" Enable=\"{0}\" Max_Homes =\"{1}\" Reserved_Max_Homes=\"{2}\" Command_Cost =\"{3}\" Delay_Between_Uses=\"{4}\" />", Homes.IsEnabled, Homes.Max_Homes, Homes.Reserved_Max_Homes, Homes.Command_Cost, Homes.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Homes_Extended\" Player_Check =\"{0}\" Zombie_Check=\"{1}\" Vehicle=\"{2}\" />", Homes.Player_Check, Homes.Zombie_Check, Homes.Vehicle_Check));
-                sw.WriteLine(string.Format("        <Tool Name=\"Hordes\" Enable=\"{0}\" />", Hordes.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Hordes\" Enable=\"{0}\" Players=\"{1}\" Zombies=\"{2}\" />", Hordes.IsEnabled, Hordes.Players, Hordes.Zombies));
                 sw.WriteLine(string.Format("        <Tool Name=\"Info_Ticker\" Enable=\"{0}\" Delay=\"{1}\" Random=\"{2}\" />", InfoTicker.IsEnabled, InfoTicker.Delay, InfoTicker.Random));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kick_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", KickVote.IsEnabled, KickVote.Players_Online, KickVote.Votes_Needed));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice\" Enable=\"{0}\" PvP=\"{1}\" Zombie_Kills=\"{2}\" Animal_Kills=\"{3}\" Show_Level=\"{4}\" />", KillNotice.IsEnabled, KillNotice.PvP, KillNotice.Zombie_Kills, KillNotice.Animal_Kills, KillNotice.Show_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice_Extended\" Show_Damage=\"{0}\" />", KillNotice.Show_Damage));
-                sw.WriteLine(string.Format("        <Tool Name=\"Level_Up\" Enable=\"{0}\" Xml_Only=\"{1}\" />", LevelUp.IsEnabled, LevelUp.Xml_Only));
+                sw.WriteLine(string.Format("        <Tool Name=\"Level_Up\" Enable=\"{0}\" Xml_Only=\"{1}\" Announce=\"{2}\" />", LevelUp.IsEnabled, LevelUp.Xml_Only, LevelUp.Announce));
                 sw.WriteLine(string.Format("        <Tool Name=\"Lobby\" Enable=\"{0}\" Return=\"{1}\" Delay_Between_Uses=\"{2}\" Lobby_Size=\"{3}\" Lobby_Position=\"{4}\" />", Lobby.IsEnabled, Lobby.Return, Lobby.Delay_Between_Uses, Lobby.Lobby_Size, Lobby.Lobby_Position));
                 sw.WriteLine(string.Format("        <Tool Name=\"Lobby_Extended\" Reserved_Only=\"{0}\" Command_Cost=\"{1}\" Player_Check=\"{2}\" Zombie_Check=\"{3}\" PvE=\"{4}\" />", Lobby.Reserved_Only, Lobby.Command_Cost, Lobby.Player_Check, Lobby.Zombie_Check, Lobby.PvE));
                 sw.WriteLine(string.Format("        <Tool Name=\"Location\" Enable=\"{0}\" />", Loc.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Login_Notice\" Enable=\"{0}\" />", LoginNotice.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Logs\" Days_Before_Log_Delete=\"{0}\" />", LoadProcess.Days_Before_Log_Delete));
-                sw.WriteLine(string.Format("        <Tool Name=\"Lottery\" Enable=\"{0}\" Bonus=\"{1}\" />", Lottery.IsEnabled, Lottery.Bonus));
+                sw.WriteLine(string.Format("        <Tool Name=\"Lottery\" Enable=\"{0}\" Time=\"{1}\" Bonus=\"{2}\" />", Lottery.IsEnabled, Lottery.Time, Lottery.Bonus));
                 sw.WriteLine(string.Format("        <Tool Name=\"Market\" Enable=\"{0}\" Return=\"{1}\" Delay_Between_Uses=\"{2}\" Market_Size=\"{3}\" Market_Position=\"{4}\" />", Market.IsEnabled, Market.Return, Market.Delay_Between_Uses, Market.Market_Size, Market.Market_Position));
                 sw.WriteLine(string.Format("        <Tool Name=\"Market_Extended\" Reserved_Only=\"{0}\" Command_Cost=\"{1}\" Player_Check=\"{2}\" Zombie_Check=\"{3}\" PvE=\"{4}\" />", Market.Reserved_Only, Market.Command_Cost, Market.Player_Check, Market.Zombie_Check, Market.PvE));
                 sw.WriteLine(string.Format("        <Tool Name=\"Message_Color\" Enable=\"{0}\" Color=\"{1}\" />", ChatHook.Message_Color_Enabled, ChatHook.Message_Color));

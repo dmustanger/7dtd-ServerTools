@@ -90,16 +90,15 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo)
         {
-            int _currentCoins = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-            if (_currentCoins >= Command_Cost)
+            if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
             {
                 TeleportPlayer(_cInfo);
             }
             else
             {
-                Phrases.Dict.TryGetValue("Died3", out string _phrase);
-                _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Died3", out string phrase);
+                phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -170,23 +169,23 @@ namespace ServerTools
         {
             if (!DeathTime.ContainsKey(_entity2.entityId))
             {
-                Vector3 _position = _entity2.GetPosition();
-                int x = (int)_position.x;
-                int y = (int)_position.y;
-                int z = (int)_position.z;
-                string _dposition = x + "," + y + "," + z;
+                Vector3 position = _entity2.GetPosition();
+                int x = (int)position.x;
+                int y = (int)position.y;
+                int z = (int)position.z;
+                string dposition = x + "," + y + "," + z;
                 DeathTime.Add(_entity2.entityId, DateTime.Now);
-                LastDeathPos.Add(_entity2.entityId, _dposition);
+                LastDeathPos.Add(_entity2.entityId, dposition);
             }
             else
             {
-                Vector3 _position = _entity2.GetPosition();
-                int x = (int)_position.x;
-                int y = (int)_position.y;
-                int z = (int)_position.z;
-                string _dposition = x + "," + y + "," + z;
+                Vector3 position = _entity2.GetPosition();
+                int x = (int)position.x;
+                int y = (int)position.y;
+                int z = (int)position.z;
+                string dposition = x + "," + y + "," + z;
                 DeathTime[_entity2.entityId] = DateTime.Now;
-                LastDeathPos[_entity2.entityId] = _dposition;
+                LastDeathPos[_entity2.entityId] = dposition;
             }
         }
     }

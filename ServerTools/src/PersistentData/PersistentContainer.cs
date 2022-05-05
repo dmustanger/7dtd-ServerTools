@@ -17,6 +17,7 @@ namespace ServerTools
 
         private Dictionary<int, int> auctionPrices;
         private Dictionary<int, int> backpacks;
+        private string bannedCountries;
         private Dictionary<int, List<int>> clientMuteList;
         private Dictionary<string, byte[]> connections;
         private Dictionary<string, DateTime> connectionTimeOut;
@@ -144,6 +145,18 @@ namespace ServerTools
             set
             {
                 backpacks = value;
+            }
+        }
+
+        public string BannedCountries
+        {
+            get
+            {
+                return bannedCountries;
+            }
+            set
+            {
+                bannedCountries = value;
             }
         }
 
