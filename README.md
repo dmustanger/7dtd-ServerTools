@@ -21,8 +21,6 @@ The mod will auto create a new folder named ServerTools. Inside this folder is t
 Enable each part of the mod you want via ServerToolsConfig.xml<br>
 Once a module/tool is enabled, if it has an xml it will be generated and placed in the same ServerTools folder.<br>
 <br>
-<br>
-<br>
 
 # AntiCheat
 
@@ -2337,3 +2335,13 @@ Reminder notice is the message the player receives if they stay in the same zone
 Remove zombies from zones by setting No_Zombie to true.
 
 Set_Home controls whether players can set a home inside of zones.
+
+# Console Commands
+ 
+Type help to get a list of available console commands.
+Type help 'command name' to get more detailed information about a specific command.
+Type help * st- for a list of ServerTools commands only.
+ 
+# Chat commands
+ 
+Type /commands in chat to get a list of available chat commands. It will only display commands relevent and enabled for the player.
