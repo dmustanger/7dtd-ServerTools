@@ -22,6 +22,7 @@ namespace ServerTools
         private Dictionary<string, byte[]> connections;
         private Dictionary<string, DateTime> connectionTimeOut;
         private bool countryBan;
+        private Dictionary<string, DateTime> blockPickUp;
         private DateTime lastWeather;
         private List<string> protectedZones;
         private string[] pollData;
@@ -205,6 +206,18 @@ namespace ServerTools
             set
             {
                 countryBan = value;
+            }
+        }
+
+        public Dictionary<string, DateTime> BlockPickUp
+        {
+            get
+            {
+                return blockPickUp;
+            }
+            set
+            {
+                blockPickUp = value;
             }
         }
 

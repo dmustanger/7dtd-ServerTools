@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -33,33 +35,64 @@ namespace ServerTools
                                 if (newBlockInfo != null && oldBlock != null && newBlockInfo.bChangeBlockValue)//has new block value
                                 {
                                     Block newBlock = newBlockInfo.blockValue.Block;
-                                    if (newBlock != null)
+                                    if (newBlock != null && !oldBlockValue.Equals(newBlockInfo.blockValue) && oldBlockValue.Equals(BlockValue.Air))
                                     {
                                         if (newBlock is BlockSleepingBag)//placed a sleeping bag
                                         {
-                                            if (POIProtection.IsEnabled && POIProtection.Bed && world.IsPositionWithinPOI(newBlockInfo.pos.ToVector3(), 8))
+                                            if (POIProtection.IsEnabled && POIProtection.Bed && world.IsPositionWithinPOI(newBlockInfo.pos.ToVector3(), POIProtection.Extra_Distance))
                                             {
                                                 GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
-                                                PersistentOperations.ReturnBlock(cInfo, newBlock.GetBlockName(), 1);
+                                                PersistentOperations.ReturnBlock(cInfo, newBlock.GetBlockName(), 1, "GiveItem1");
                                                 Phrases.Dict.TryGetValue("POI1", out string phrase);
+                                                phrase = phrase.Replace("{Distance}", POIProtection.Extra_Distance.ToString());
                                                 ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 return false;
                                             }
                                         }
                                         else if (newBlock is BlockLandClaim)//placed a land claim
                                         {
-                                            if (POIProtection.IsEnabled && POIProtection.Claim && world.IsPositionWithinPOI(newBlockInfo.pos.ToVector3(), 5))
+                                            if (POIProtection.IsEnabled && POIProtection.Claim && world.IsPositionWithinPOI(newBlockInfo.pos.ToVector3(), POIProtection.Extra_Distance))
                                             {
                                                 GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
-                                                PersistentOperations.ReturnBlock(cInfo, newBlock.GetBlockName(), 1);
-                                                Phrases.Dict.TryGetValue("POI2", out string _phrase);
-                                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                PersistentOperations.ReturnBlock(cInfo, newBlock.GetBlockName(), 1, "GiveItem1");
+                                                Phrases.Dict.TryGetValue("POI2", out string phrase);
+                                                phrase = phrase.Replace("{Distance}", POIProtection.Extra_Distance.ToString());
+                                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 return false;
                                             }
                                         }
-                                        if (BlockLogger.IsEnabled && !_blocksToChange[i].blockValue.Equals(BlockValue.Air))
+                                        if (BlockLogger.IsEnabled)
                                         {
                                             BlockLogger.PlacedBlock(cInfo, newBlock, newBlockInfo.pos);
+                                        }
+                                        if (Wall.IsEnabled && Wall.WallEnabled.ContainsKey(cInfo.entityId))
+                                        {
+                                            if (newBlock.GetBlockName().ToLower().Contains("cube"))
+                                            {
+                                                Wall.WallEnabled.TryGetValue(cInfo.entityId, out Vector3i vector);
+                                                if (PersistentOperations.ClaimedByWho(_persistentPlayerId, newBlockInfo.pos) == EnumLandClaimOwner.Self)
+                                                {
+                                                    if (vector.Equals(Vector3i.zero))
+                                                    {
+                                                        Wall.WallEnabled[cInfo.entityId] = newBlockInfo.pos;
+                                                    }
+                                                    else
+                                                    {
+                                                        Wall.WallEnabled.Remove(cInfo.entityId);
+                                                        Wall.BuildWall(cInfo, player, vector, newBlockInfo.pos, newBlockInfo.blockValue);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Phrases.Dict.TryGetValue("Wall4", out string phrase);
+                                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Phrases.Dict.TryGetValue("Wall5", out string phrase);
+                                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                            }
                                         }
                                     }
                                     if (oldBlockValue.Block is BlockTrapDoor)
@@ -72,13 +105,33 @@ namespace ServerTools
                                         {
                                             if (PersistentOperations.ClaimedByWho(_persistentPlayerId, newBlockInfo.pos) == EnumLandClaimOwner.None)
                                             {
+                                                if (Pickup.IsEnabled)
+                                                {
+                                                    if (PersistentContainer.Instance.BlockPickUp != null)
+                                                    {
+                                                        if (!PersistentContainer.Instance.BlockPickUp.ContainsKey(newBlockInfo.pos.ToString()))
+                                                        {
+                                                            PersistentContainer.Instance.BlockPickUp.Add(newBlockInfo.pos.ToString(), DateTime.Now.AddHours(24));
+                                                        }
+                                                        else
+                                                        {
+                                                            PersistentContainer.Instance.BlockPickUp[newBlockInfo.pos.ToString()] = DateTime.Now.AddHours(24);
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Dictionary<string, DateTime> editBlock = new Dictionary<string, DateTime>();
+                                                        editBlock.Add(newBlockInfo.pos.ToString(), DateTime.Now.AddHours(24));
+                                                        PersistentContainer.Instance.BlockPickUp = editBlock;
+                                                    }
+                                                    PersistentContainer.DataChange = true;
+                                                }
                                                 if (DamageDetector.IsEnabled)
                                                 {
                                                     int total = oldBlock.MaxDamage - oldBlockValue.damage;
-                                                    if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
-                                                        GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level))
+                                                    if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
+                                                        GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                                                     {
-
                                                         Penalty(total, player, cInfo);
                                                         return false;
                                                     }
@@ -106,8 +159,8 @@ namespace ServerTools
                                                 if (DamageDetector.IsEnabled)
                                                 {
                                                     int total = oldBlock.MaxDamage - oldBlockValue.damage;
-                                                    if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
-                                                        GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level))
+                                                    if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
+                                                        GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                                                     {
                                                         Penalty(total, player, cInfo);
                                                         return false;
@@ -124,11 +177,70 @@ namespace ServerTools
                                     {
                                         if (newBlockInfo.bChangeDamage)//block took damage
                                         {
+                                            if (Pickup.IsEnabled && Pickup.PickupEnabled.Contains(player.entityId) &&
+                                                player.inventory.holdingItemItemValue.GetItemId() == PersistentOperations.MeleeHandPlayer &&
+                                                !oldBlock.shape.IsTerrain())
+                                            {
+                                                if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) <= Pickup.Admin_Level ||
+                                                    GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) <= Pickup.Admin_Level)
+                                                {
+                                                    GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
+                                                    PersistentOperations.ReturnBlock(cInfo, oldBlock.GetBlockName(), 1, "Pickup5");
+                                                    return false;
+                                                }
+                                                if (PersistentOperations.ClaimedByWho(cInfo.CrossplatformId, new Vector3i(player.position)) == EnumLandClaimOwner.Self)
+                                                {
+                                                    if (oldBlockValue.damage == 0)
+                                                    {
+                                                        if (PersistentContainer.Instance.BlockPickUp != null && PersistentContainer.Instance.BlockPickUp.Count > 0)
+                                                        {
+                                                            int claimSize = GameStats.GetInt(EnumGameStats.LandClaimSize);
+                                                            List<string> vectors = PersistentContainer.Instance.BlockPickUp.Keys.ToList();
+                                                            for (int j = 0; j < vectors.Count; j++)
+                                                            {
+                                                                Vector3i position = Vector3i.Parse(vectors[j]);
+                                                                if (position != null)
+                                                                {
+                                                                    float distance = (position.ToVector3() - player.position).magnitude;
+                                                                    if (distance <= claimSize / 2)
+                                                                    {
+                                                                        PersistentContainer.Instance.BlockPickUp.TryGetValue(vectors[j], out DateTime time);
+                                                                        if (DateTime.Now <= time)
+                                                                        {
+                                                                            Phrases.Dict.TryGetValue("Pickup6", out string phrase);
+                                                                            phrase = phrase.Replace("{DateTime}", time.ToString());
+                                                                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                                            return true;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            PersistentContainer.Instance.BlockPickUp.Remove(vectors[j]);
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
+                                                        PersistentOperations.ReturnBlock(cInfo, oldBlock.GetBlockName(), 1, "Pickup5");
+                                                        return false;
+                                                    }
+                                                    else
+                                                    {
+                                                        Phrases.Dict.TryGetValue("Pickup4", out string phrase);
+                                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Phrases.Dict.TryGetValue("Pickup3", out string phrase);
+                                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                }
+                                            }
                                             if (DamageDetector.IsEnabled)
                                             {
                                                 int total = newBlockInfo.blockValue.damage - oldBlockValue.damage;
-                                                if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
-                                                    GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level))
+                                                if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
+                                                    GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                                                 {
                                                     Penalty(total, player, cInfo);
                                                     return false;
@@ -155,8 +267,8 @@ namespace ServerTools
                                         if (DamageDetector.IsEnabled)
                                         {
                                             int total = oldBlock.MaxDamage - oldBlockValue.damage + newBlockInfo.blockValue.damage;
-                                            if (total >= DamageDetector.Block_Damage_Limit && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
-                                                GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level))
+                                            if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
+                                                GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                                             {
                                                 Penalty(total, player, cInfo);
                                                 return false;

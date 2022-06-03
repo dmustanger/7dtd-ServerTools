@@ -11,6 +11,8 @@ namespace ServerTools
 
         public static void Load()
         {
+            PersistentOperations.SetFolders();
+
             if (!Directory.Exists(API.ConfigPath))
             {
                 Directory.CreateDirectory(API.ConfigPath);
@@ -99,9 +101,9 @@ namespace ServerTools
             CommandList.BuildList();
             CommandList.Load();
 
-            PersistentOperations.SetFolders();
             PersistentOperations.CreateCustomXUi();
             PersistentOperations.GetCurrencyName();
+            PersistentOperations.GetMeleeHandPlayer();
             PersistentOperations.EntityIdList();
             PersistentOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
 

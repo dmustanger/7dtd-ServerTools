@@ -12,6 +12,7 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, No_Admins = false;
         public static int Admin_Level = 0, Total_Items = 1, Tax;
         public static string Command_auction = "auction", Command_auction_cancel = "auction cancel", Command_auction_buy = "auction buy", Command_auction_sell = "auction sell";
+
         public static Dictionary<int, string> AuctionItems = new Dictionary<int, string>();
 
         private static readonly string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
@@ -65,8 +66,7 @@ namespace ServerTools
                                     tiles = chunks[i].GetTileEntities();
                                     foreach (TileEntity tile in tiles.dict.Values)
                                     {
-                                        TileEntityType type = tile.GetTileEntityType();
-                                        if (type.ToString().Equals("SecureLoot"))
+                                        if (tile is TileEntitySecureLootContainer)
                                         {
                                             TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
                                             Vector3i vec3i = SecureLoot.ToWorldPos();
@@ -74,7 +74,7 @@ namespace ServerTools
                                             {
                                                 if (vec3i.y >= (int)player.position.y - 3 && vec3i.y <= (int)player.position.y + 3)
                                                 {
-                                                    if (SecureLoot.IsUserAllowed(_cInfo.InternalId) && !SecureLoot.IsUserAccessing())
+                                                    if ((SecureLoot.IsUserAllowed(_cInfo.PlatformId) || SecureLoot.IsUserAllowed(_cInfo.CrossplatformId)) && !SecureLoot.IsUserAccessing())
                                                     {
                                                         ItemStack[] items = SecureLoot.items;
                                                         ItemStack item = items[0];

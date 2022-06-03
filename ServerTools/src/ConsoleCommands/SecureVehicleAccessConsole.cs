@@ -38,19 +38,15 @@ namespace ServerTools
                     {
                         for (int i = 0; i < Entities.Count; i++)
                         {
-                            Entity _entity = Entities[i];
-                            if (_entity != null && !_entity.IsClientControlled() && _entity.IsSpawned())
+                            Entity entity = Entities[i];
+                            if (entity != null && entity is EntityVehicle)
                             {
-                                string _name = EntityClass.list[_entity.entityClass].entityClassName;
-                                if (_name == "vehicleBicycle" || _name == "vehicleMinibike" || _name == "vehicleMotorcycle" || _name == "vehicle4x4Truck" || _name == "vehicleGyrocopter")
+                                EntityVehicle vehicle = entity as EntityVehicle;
+                                if (!vehicle.IsUserAllowed(_senderInfo.RemoteClientInfo.CrossplatformId))
                                 {
-                                    EntityVehicle _vehicle = _entity as EntityVehicle;
-                                    if (!_vehicle.IsUserAllowed(_senderInfo.RemoteClientInfo.CrossplatformId))
-                                    {
-                                        List<PlatformUserIdentifierAbs> _users = _vehicle.GetUsers();
-                                        _users.Add(_senderInfo.RemoteClientInfo.CrossplatformId);
-                                        _vehicle.bPlayerStatsChanged = true;
-                                    }
+                                    List<PlatformUserIdentifierAbs> users = vehicle.GetUsers();
+                                    users.Add(_senderInfo.RemoteClientInfo.CrossplatformId);
+                                    vehicle.bPlayerStatsChanged = true;
                                 }
                             }
                         }

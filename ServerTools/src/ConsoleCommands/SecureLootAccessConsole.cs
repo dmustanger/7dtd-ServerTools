@@ -33,26 +33,35 @@ namespace ServerTools
                 }
                 if (!string.IsNullOrEmpty(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
                 {
-                    LinkedList<Chunk> chunkArray = new LinkedList<Chunk>();
+                    LinkedList<Chunk> array = new LinkedList<Chunk>();
                     DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
                     ChunkClusterList chunklist = GameManager.Instance.World.ChunkClusters;
                     for (int i = 0; i < chunklist.Count; i++)
                     {
-                        ChunkCluster chunk = chunklist[i];
-                        chunkArray = chunk.GetChunkArray();
-                        foreach (Chunk _c in chunkArray)
+                        ChunkCluster cluster = chunklist[i];
+                        array = cluster.GetChunkArray();
+                        foreach (Chunk chunk in array)
                         {
-                            tiles = _c.GetTileEntities();
+                            tiles = chunk.GetTileEntities();
                             foreach (TileEntity tile in tiles.dict.Values)
                             {
-                                TileEntityType type = tile.GetTileEntityType();
-                                if (type.ToString().Equals("SecureLoot"))
+                                if (tile is TileEntitySecureLootContainer)
                                 {
                                     TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
                                     if (!SecureLoot.IsUserAllowed(_senderInfo.RemoteClientInfo.CrossplatformId))
                                     {
-                                        List<PlatformUserIdentifierAbs> _users = SecureLoot.GetUsers();
-                                        _users.Add(_senderInfo.RemoteClientInfo.CrossplatformId);
+                                        List<PlatformUserIdentifierAbs> users = SecureLoot.GetUsers();
+                                        users.Add(_senderInfo.RemoteClientInfo.CrossplatformId);
+                                        SecureLoot.SetModified();
+                                    }
+                                }
+                                else if (tile is TileEntitySecureLootContainerSigned)
+                                {
+                                    TileEntitySecureLootContainerSigned SecureLoot = (TileEntitySecureLootContainerSigned)tile;
+                                    if (!SecureLoot.IsUserAllowed(_senderInfo.RemoteClientInfo.CrossplatformId))
+                                    {
+                                        List<PlatformUserIdentifierAbs> users = SecureLoot.GetUsers();
+                                        users.Add(_senderInfo.RemoteClientInfo.CrossplatformId);
                                         SecureLoot.SetModified();
                                     }
                                 }

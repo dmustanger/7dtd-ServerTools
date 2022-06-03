@@ -81,9 +81,11 @@ public static class Injections
             if (FallingBlocks.IsEnabled && _blockPos != null)
             {
                 BlockValue blockValue = __instance.GetBlock(_blockPos);
-                if (!(blockValue.Block is BlockSleepingBag) && !(blockValue.Block is BlockPlant) && !(blockValue.Block is BlockDoor)
-                    && !(blockValue.Block is BlockCropsGrown) && !(blockValue.Block is BlockBackpack) && !(blockValue.Block is BlockDrawBridge)
-                    && !blockValue.Block.IsTerrainDecoration && !blockValue.Block.GetBlockName().ToLower().Contains("fence"))
+                if (blockValue.ischild || blockValue.Block.StabilityIgnore || blockValue.isair)
+                {
+                    return;
+                }
+                else
                 {
                     GameManager.Instance.World.SetBlockRPC(_blockPos, BlockValue.Air);
                 }
@@ -104,9 +106,11 @@ public static class Injections
                 for (int i = 0; i < _list.Count; i++)
                 {
                     BlockValue blockValue = __instance.GetBlock(_list[i]);
-                    if (!(blockValue.Block is BlockSleepingBag) && !(blockValue.Block is BlockPlant) && !(blockValue.Block is BlockDoor)
-                        && !(blockValue.Block is BlockCropsGrown) && !(blockValue.Block is BlockBackpack) && !(blockValue.Block is BlockDrawBridge)
-                        && !blockValue.Block.IsTerrainDecoration && !blockValue.Block.GetBlockName().ToLower().Contains("fence"))
+                    if (blockValue.ischild || blockValue.Block.StabilityIgnore || blockValue.isair)
+                    {
+                        return;
+                    }
+                    else
                     {
                         GameManager.Instance.World.SetBlockRPC(_list[i], BlockValue.Air);
                     }
@@ -210,8 +214,8 @@ public static class Injections
         {
             if (PersistentOperations.No_Vehicle_Pickup)
             {
-                Entity _entity = PersistentOperations.GetEntity(_entityId);
-                if (_entity != null && _entity is EntityVehicle)
+                Entity entity = PersistentOperations.GetEntity(_entityId);
+                if (entity != null && entity is EntityVehicle)
                 {
                     return false;
                 }
@@ -527,21 +531,22 @@ public static class Injections
 
     public static bool NetPackagePlayerStats_ProcessPackage_Prefix(NetPackagePlayerStats __instance)
     {
-        if (PersistentOperations.Net_Package_Detector && __instance.Sender != null)
+        if (__instance.Sender != null && PersistentOperations.Net_Package_Detector && !PlayerStatsPackage.IsValid(__instance))
         {
-            if (!PlayerStatsPackage.IsValid(__instance))
-            {
-                return false;
-            }
+            return false;
         }
         return true;
     }
 
-    public static bool NetPackageEntityAddScoreClient_ProcessPackage_Prefix(NetPackageEntityAddScoreClient __instance)
+    public static bool NetPackageEntityAddScoreServer_ProcessPackage_Prefix(NetPackageEntityAddScoreServer __instance)
     {
-        if (PersistentOperations.Net_Package_Detector && __instance.Sender != null)
+        if (__instance.Sender != null)
         {
-            if (!EntityAddScoreClientPackage.IsValid(__instance))
+            if (PersistentOperations.Net_Package_Detector && !EntityAddScoreServerPackage.IsValid(__instance))
+            {
+                return false;
+            }
+            if (MagicBullet.IsEnabled && MagicBullet.Exec(__instance))
             {
                 return false;
             }
@@ -551,36 +556,27 @@ public static class Injections
 
     public static bool NetPackageChat_ProcessPackage_Prefix(NetPackageChat __instance)
     {
-        if (PersistentOperations.Net_Package_Detector && __instance.Sender != null)
+        if (__instance.Sender != null && PersistentOperations.Net_Package_Detector && !ChatPackage.IsValid(__instance))
         {
-            if (!ChatPackage.IsValid(__instance))
-            {
-                return false;
-            }
+            return false;
         }
         return true;
     }
 
     public static bool NetPackageEntityPosAndRot_ProcessPackage_Prefix(NetPackageEntityPosAndRot __instance)
     {
-        if (PersistentOperations.Net_Package_Detector && __instance.Sender != null)
+        if (__instance.Sender != null && PersistentOperations.Net_Package_Detector && !EntityPosAndRotPackage.IsValid(__instance))
         {
-            if (!EntityPosAndRotPackage.IsValid(__instance))
-            {
-                return false;
-            }
+            return false;
         }
         return true;
     }
 
     public static bool NetPackagePlayerData_ProcessPackage_Prefix(NetPackagePlayerData __instance)
     {
-        if (PersistentOperations.Net_Package_Detector && __instance.Sender != null)
+        if (__instance.Sender != null && PersistentOperations.Net_Package_Detector && !PlayerDataPackage.IsValid(__instance))
         {
-            if (!PlayerDataPackage.IsValid(__instance))
-            {
-                return false;
-            }
+            return false;
         }
         return true;
     }

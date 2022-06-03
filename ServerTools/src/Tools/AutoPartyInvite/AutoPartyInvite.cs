@@ -33,7 +33,7 @@ namespace ServerTools
         {
             if (GameManager.Instance.World.Players.dict.Count > 1)
             {
-                foreach (KeyValuePair<int, EntityPlayer> player in GameManager.Instance.World.Players.dict)
+                foreach (KeyValuePair<int, EntityPlayer> player in PersistentOperations.GetEntityPlayers())
                 {
                     if (_player.entityId != player.Value.entityId)
                     {
@@ -42,7 +42,7 @@ namespace ServerTools
                             return;
                         }
                         PersistentPlayerData ppd2 = PersistentOperations.GetPersistentPlayerDataFromEntityId(player.Key);
-                        if (ppd2 != null)
+                        if (ppd2 != null && ppd2.ACL != null)
                         {
                             if (PersistentContainer.Instance.Players[ppd2.UserIdentifier.CombinedString].AutoPartyInvite != null &&
                                 PersistentContainer.Instance.Players[ppd2.UserIdentifier.CombinedString].AutoPartyInvite.Count > 0)
@@ -53,7 +53,7 @@ namespace ServerTools
                                     if (autoInvites[i][0] == _cInfo.entityId.ToString())
                                     {
                                         PersistentPlayerData ppd1 = PersistentOperations.GetPersistentPlayerDataFromEntityId(_player.entityId);
-                                        if (ppd1 != null && ppd1.ACL.Contains(ppd2.UserIdentifier) && ppd2.ACL.Contains(ppd1.UserIdentifier))
+                                        if (ppd1 != null && ppd1.ACL != null && ppd1.ACL.Contains(ppd2.UserIdentifier) && ppd2.ACL.Contains(ppd1.UserIdentifier))
                                         {
                                             EntityPlayer player2 = player.Value;
                                             if ((player2.IsInParty() && player2.IsPartyLead() == player2 && player2.Party != null && player2.Party.MemberList.Count < Constants.cMaxPartySize) || !player2.IsInParty())

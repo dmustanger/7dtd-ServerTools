@@ -65,7 +65,7 @@ namespace ServerTools
                 flags++;
                 if (flags == Flag_Limit)
                 {
-                    List<EntityPlayer> playerList = PersistentOperations.PlayerList();
+                    List<EntityPlayer> playerList = PersistentOperations.ListPlayers();
                     for (int j = 0; j < playerList.Count; j++)
                     {
                         if (playerList[j].entityId != _player.entityId && (int)playerList[j].position.x == (int)_player.position.x && (int)playerList[j].position.z == (int)_player.position.z)

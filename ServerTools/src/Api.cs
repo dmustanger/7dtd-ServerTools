@@ -1,5 +1,4 @@
-﻿using Platform.Steam;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -9,9 +8,21 @@ namespace ServerTools
 {
     public class API : IModApi
     {
-        public static string GamePath = Directory.GetCurrentDirectory();
+        public static string GamePath = Path();
         public static string ConfigPath = string.Format("{0}/ServerTools", GamePath);
         public static List<string> Verified = new List<string>();
+
+        public static string Path()
+        {
+            if (!GamePrefs.IsDefault(EnumGamePrefs.UserDataFolder))
+            {
+                return GamePrefs.GetString(EnumGamePrefs.UserDataFolder);
+            }
+            else
+            {
+                return Directory.GetCurrentDirectory();
+            }
+        }
 
         public void InitMod(Mod _modInstance)
         {
@@ -61,6 +72,10 @@ namespace ServerTools
                 Phrases.Unload();
                 CommandList.Unload();
                 OutputLog.Shutdown();
+                if (AutoRestart.IsEnabled)
+                {
+                    Utils.RestartGame();
+                }
             }
             catch (Exception e)
             {
@@ -115,10 +130,7 @@ namespace ServerTools
 
         private static void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)//Setting player view and profile
         {
-            if (FamilyShare.IsEnabled && _cInfo.PlatformId is UserIdentifierSteam)
-            {
-                FamilyShare.Exec(_cInfo);
-            }
+            
         }
 
         private static void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)//Spawning player
@@ -212,6 +224,10 @@ namespace ServerTools
                             {
                                 Bloodmoon.Exec(_cInfo);
                             }
+                            if (ProcessDamage.lastEntityKilled == _cInfo.entityId)
+                            {
+                                ProcessDamage.lastEntityKilled = 0;
+                            }
                         }
                         else if (_respawnReason == RespawnType.Teleport)
                         {
@@ -233,8 +249,8 @@ namespace ServerTools
                             SpeedDetector.Flags.Remove(_cInfo.entityId);
                         }
                     }
-                    if (ExitCommand.IsEnabled && !ExitCommand.Players.ContainsKey(_cInfo.entityId) && (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > ExitCommand.Admin_Level &&
-                        GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > ExitCommand.Admin_Level))
+                    if (ExitCommand.IsEnabled && !ExitCommand.Players.ContainsKey(_cInfo.entityId) && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > ExitCommand.Admin_Level &&
+                        GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > ExitCommand.Admin_Level)
                     {
                         ExitCommand.Players.Add(_cInfo.entityId, player.position);
                     }
@@ -398,6 +414,14 @@ namespace ServerTools
                     {
                         InfiniteAmmo.Dict.Remove(_cInfo.entityId);
                     }
+                    if (Pickup.PickupEnabled.Contains(_cInfo.entityId))
+                    {
+                        Pickup.PickupEnabled.Remove(_cInfo.entityId);
+                    }
+                    if (Wall.WallEnabled.ContainsKey(_cInfo.entityId))
+                    {
+                        Wall.WallEnabled.Remove(_cInfo.entityId);
+                    }
                     if (PersistentOperations.NewPlayerQue.Contains(_cInfo))
                     {
                         PersistentOperations.NewPlayerQue.Remove(_cInfo);
@@ -419,6 +443,19 @@ namespace ServerTools
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerDisconnected: {0}", e.Message));
+            }
+        }
+
+        public static void SetDirectory()
+        {
+            string userDirectory = GamePrefs.GetString(EnumGamePrefs.UserDataFolder);
+            if (!string.IsNullOrEmpty(userDirectory))
+            {
+                GamePath = userDirectory;
+            }
+            else
+            {
+                GamePath = Directory.GetCurrentDirectory();
             }
         }
 

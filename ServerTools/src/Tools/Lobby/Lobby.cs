@@ -281,19 +281,19 @@ namespace ServerTools
                     PersistentOperations.PvEViolations[_cInfo2.entityId] = _violations;
                     if (PersistentOperations.Jail_Violation > 0 && _violations == PersistentOperations.Jail_Violation)
                     {
-                        PersistentOperations.Jail(_cInfo2);
+                        PersistentOperations.JailPlayer(_cInfo2);
                     }
                     if (PersistentOperations.Kill_Violation > 0 && _violations == PersistentOperations.Kill_Violation)
                     {
-                        PersistentOperations.Kill(_cInfo2);
+                        PersistentOperations.KillPlayer(_cInfo2);
                     }
                     if (PersistentOperations.Kick_Violation > 0 && _violations == PersistentOperations.Kick_Violation)
                     {
-                        PersistentOperations.Kick(_cInfo2);
+                        PersistentOperations.KickPlayer(_cInfo2);
                     }
                     else if (PersistentOperations.Ban_Violation > 0 && _violations == PersistentOperations.Ban_Violation)
                     {
-                        PersistentOperations.Ban(_cInfo2);
+                        PersistentOperations.BanPlayer(_cInfo2);
                     }
                 }
                 else

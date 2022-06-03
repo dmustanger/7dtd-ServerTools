@@ -38,6 +38,7 @@ namespace ServerTools
         private int jailTime;
         private bool jailRelease;
         private DateTime lastAnimal;
+        private DateTime lastBed;
         private DateTime lastDied;
         private DateTime lastFriendTele;
         private DateTime lastGamble;
@@ -424,6 +425,18 @@ namespace ServerTools
             set
             {
                 lastAnimal = value;
+            }
+        }
+
+        public DateTime LastBed
+        {
+            get
+            {
+                return lastBed;
+            }
+            set
+            {
+                lastBed = value;
             }
         }
 

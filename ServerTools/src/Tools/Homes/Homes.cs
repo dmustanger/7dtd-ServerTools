@@ -107,8 +107,8 @@ namespace ServerTools
                     {
                         if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastHome != null)
                         {
-                            DateTime lastWaypoint = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastHome;
-                            TimeSpan varTime = DateTime.Now - lastWaypoint;
+                            DateTime lastHome = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastHome;
+                            TimeSpan varTime = DateTime.Now - lastHome;
                             double fractionalMinutes = varTime.TotalMinutes;
                             int timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -188,12 +188,11 @@ namespace ServerTools
                 EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
-                    if (Vehicle_Check)
+                    if (Zombie_Check)
                     {
-                        Entity attachedEntity = player.AttachedToEntity;
-                        if (attachedEntity != null)
+                        if (Teleportation.ZCheck(_cInfo, player))
                         {
-                            Phrases.Dict.TryGetValue("Teleport3", out string phrase);
+                            Phrases.Dict.TryGetValue("Teleport1", out string phrase);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             return;
                         }
@@ -202,13 +201,18 @@ namespace ServerTools
                     {
                         if (Teleportation.PCheck(_cInfo, player))
                         {
+                            Phrases.Dict.TryGetValue("Teleport2", out string phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             return;
                         }
                     }
-                    if (Zombie_Check)
+                    if (Vehicle_Check)
                     {
-                        if (Teleportation.ZCheck(_cInfo, player))
+                        Entity attachedEntity = player.AttachedToEntity;
+                        if (attachedEntity != null)
                         {
+                            Phrases.Dict.TryGetValue("Teleport3", out string phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             return;
                         }
                     }
@@ -261,16 +265,24 @@ namespace ServerTools
                         int.TryParse(cords[0], out int x);
                         int.TryParse(cords[1], out int y);
                         int.TryParse(cords[2], out int z);
-                        if (_friends)
+                        if (PersistentOperations.ClaimedBySelfOrAlly(_cInfo, new Vector3i(x, y, z)))
                         {
-                            FriendInvite(_cInfo, _position, homePos);
+                            if (_friends)
+                            {
+                                FriendInvite(_cInfo, _position, homePos);
+                            }
+                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastHome = DateTime.Now;
+                            PersistentContainer.DataChange = true;
+                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
+                            }
                         }
-                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastHome = DateTime.Now;
-                        PersistentContainer.DataChange = true;
-                        if (Wallet.IsEnabled && Command_Cost >= 1)
+                        else
                         {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
+                            Phrases.Dict.TryGetValue("Homes5", out string phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else

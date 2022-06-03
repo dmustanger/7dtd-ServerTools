@@ -34,7 +34,7 @@ namespace ServerTools
         {
             try
             {
-                if (Schedule.Count > 0)
+                if (Schedule != null && Schedule.Count > 0)
                 {
                     foreach (var entry in Schedule.ToArray())
                     {

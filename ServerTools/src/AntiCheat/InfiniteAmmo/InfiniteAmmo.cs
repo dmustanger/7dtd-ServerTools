@@ -31,7 +31,7 @@ namespace ServerTools
                 if (slot == ammoData[0] && _itemValue.ItemClass.Id == ammoData[1])
                 {
                     ammoData[2] -= 1;
-                    if (ammoData[2] < -3)
+                    if (ammoData[2] < -8)
                     {
                         Dict.Remove(_cInfo.entityId);
                         using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))

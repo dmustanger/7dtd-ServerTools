@@ -13,7 +13,7 @@ They have been separated to reduce the size of ServerTools since not all servers
 <br>
 Download and extract the files.<br>
 <br>
-Copy the Mods folder to the root directory of your server.<br>
+Copy the Mods folder to the root directory of your server or the user data directory if you prefer.<br>
 <br>
 Start the server.<br>
 <br>
@@ -56,8 +56,10 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Auto_Save_World](#auto_save_world)
   - [Bad_Word_Filter](#bad_word_filter)
   - [Bank](#bank)
+  - [Bed](#bed)
   - [Black_Jack](#black_jack)
   - [Block_Logger](#block_logger)
+  - [Block_Pickup](#block_pickup)
   - [Bloodmoon](#bloodmoon)
   - [Bloodmoon_Warrior](#bloodmoon_warrior)
   - [Bot_Response](#bot_response)
@@ -142,6 +144,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
 ```xml
 <Tool Name="Damage_Detector" Enable="False" Entity_Damage_Limit="1000" Block_Damage_Limit="2000" Player_Damage_Limit="2000" Admin_Level="0" />
 ```
+
 ### Attributes
 * __Enable__  
 Set True or False for Enable
@@ -151,6 +154,7 @@ Set a numeric value for Entity_Damage_Limit
 Set a numeric value for Block_Damage_Limit
 * __Admin_Level__  
 Set a numeric value for Admin_Level
+
 ### Description
 Watches for damage done to players and blocks.
 
@@ -165,6 +169,7 @@ Admins will be skipped if they are the right permission level.
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 If a player adds a duplicate item or stack into their inventory, it will be logged for review.
 
@@ -183,6 +188,7 @@ Creates a file named DuplicateItems.xml. Items in this list will not be logged w
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Once enabled, clients using a family share account will be banned from the server upon joining.
 
@@ -199,6 +205,7 @@ Set True or False for Flying_Detector
 Set a numeric value for Admin_Level
 * __Flags__  
 Set a numeric value for Flags
+
 ### Description
 Automatically detects players flying in the air or using no collision underground.
 Players are automatically banned and given the reason detected for flying.
@@ -215,6 +222,7 @@ Flags controls how many times a player can be flagged as flying in a row before 
 Set True or False for Enable
 * __Admin_Level__  
 Set a numeric value for Admin_Level
+
 ### Description
 Starts an automatic check for players using god mode.
 
@@ -227,8 +235,9 @@ Set the admin level required to use god mode.
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
-```????No documentation```
+Detects players using a hack to never run out of ammo in their guns and bans them.
 
 ## Invalid_Items
 ```xml
@@ -243,6 +252,7 @@ Set True or False for Ban
 Set a numeric value for Admin_Level
 * __Check_Storage__  
 Set True or False for Check_Storage
+
 ### Description
 Enabling will create a InvalidItems.xml in your main installation folder in a ServerTools folder
 
@@ -265,6 +275,7 @@ Check_Storage will check inside secure chests for invalid items and remove them 
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Automatically checks players inventory for invalid stack sizes. The player will receive a message telling them they have an invalid stack and a log will be made to the output_log.
 
@@ -281,6 +292,7 @@ Set a numeric value for Jail_Size
 Set a numeric value set of x, y, z position for Jail_Position
 * __Jail_Shock__  
 Set True or False for Jail_Shock
+
 ### Description
 Enables the jail system for naughty players. This must be enabled to utilize other tools that send a player to jail.
 
@@ -299,9 +311,10 @@ If you send a player to jail via chat commands, are sent to jail for 60 minutes.
 
 ### Attributes
 * __Enable__  
-### Description
-```???No documentation```
+Set True or False for Enable
 
+### Description
+Automatically detects some of the modified net packages hackers can send to servers and bans them
 
 ## Player_Logs
 ```xml
@@ -312,6 +325,7 @@ If you send a player to jail via chat commands, are sent to jail for 60 minutes.
 Set True or False for Enable
 * __Interval__  
 Set a numeric value for Interval
+
 ### Description
 Starts a log that will keep track of multi stats and the player inventory.
 
@@ -325,6 +339,7 @@ Setting the Interval will control how often these checks and logs and written to
 <Tool Name="Player_Stats_Extended" Height="1.8" Admin_Level="0" Kick_Enabled="False" Ban_Enabled="False" />
 ```
 ### Attributes
+
 #### Normal
 * __Enable__  
 Set True or False for Enable
@@ -336,6 +351,7 @@ Set a numeric value for Health
 Set a numeric value for Stamina
 * __Jump_Strength__  
 Set a numeric value for Jump_Strength
+
 #### Extended
 * __Height__  
 Set a numeric value for Height
@@ -343,6 +359,7 @@ Set a numeric value for Height
 Set True or False for Kick
 * __Ban__  
 Set True or False for Ban
+
 ### Description
 Automatically checks if a player has an illegal value for their speed, health, stamina or jump strength.
 
@@ -366,6 +383,7 @@ Setting Ban_Enabled to true will ban the detected player.
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Enabling will create an xml file named ProtectedZones.xml.
 
@@ -396,6 +414,7 @@ Set a numeric value for Kill
 Set a numeric value for Kick
 * __Ban__  
 Set a numeric value for Ban
+
 ### Description
 Players that violate PvE Lobby or Market space will be hit with a strike. If they get too many of them, it will apply a penalty.
 
@@ -420,6 +439,7 @@ Ban will ban the player from the server.
 Set True or False for Enable
 * __Admin_Level__  
 Set a numeric value for Admin_Level
+
 ### Description
 Automatically detects players using spectator mode without authorization.
 Admins lower or equal to tier Admin_Level are immune to the spectator check.
@@ -437,6 +457,7 @@ Set True or False for Enable
 Set a numeric value for Admin_Level
 * __Flags__  
 Set a numeric value for Flags
+
 ### Description
 Automatically detects players moving at speeds exceeding that of a flying admin.
 
@@ -451,6 +472,7 @@ Set the number of flags required to trigger the detection. This helps with lag a
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Enables the tracking logger to create a database log of player positions.
 
@@ -466,6 +488,7 @@ Use console commands to see the players and their positions from a specified loc
 Set True or False for Enable
 * __Admin_Level__  
 Set a numeric value for Admin_Level
+
 ### Description
 Enabling will automatically check players head location and sets their screen black until it stops colliding with blocks.
 Admin_Level controls the tier required for the tool to skip specific players and allow them to view inside blocks.
@@ -618,6 +641,7 @@ Set the compression level from 0-9. 0 is none, 9 is maximum.
 ### Attributes
 * __Enable__   
 Set True or False for Enable
+
 ### Description
 Allows a player to make a list of other players in game using entity id.
 It is recommended that you enable Player_List tool so players can view a list of other players entity id.
@@ -631,6 +655,7 @@ If a player on this list joins the game while the list creator is the leader of 
 ### Attributes  
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Automatically begins a timer on world start that will start a world save every time the Delay_Between_Saves expires.
 
@@ -643,6 +668,7 @@ Automatically begins a timer on world start that will start a world save every t
 Set True or False for Enable
 * __Invalid_Name__  
 Set True or False for Invalid_Name
+
 ### Description
 Enabling will create a BadWords.xml in your main installation folder in a ServerTools folder.
 
@@ -661,6 +687,7 @@ Set True or False for Inside_Claim
 Set a numeric value for Deposit_Fee_Percent
 * __Player_Transfers__ 
 Set True or False for Player_Transfers
+
 ### Description
 Inside_Claim controls whether players must be inside their own claim to use the bank commands.
 
@@ -676,6 +703,28 @@ Transferring from the Wallet to the Bank will take currency from the players bag
 
 /deposit # takes from the players bag and adds it to their bank.
 
+## Bed
+```xml
+<Tool Name="Bed" Enable="False" Delay_Between_Uses="60" Command_Cost="10" />
+```
+
+### Attributes
+* __Enable__  
+Set True or False for Enable
+* __Delay_Between_Uses__  
+Set a numeric value for Delay_Between_Uses
+* __Command_Cost__  
+Set a numeric value for Command_Cost
+
+### Description
+Bed can be used to teleport to a players bed position.
+
+The delay between using the command is controled with Delay_Between_Uses. This is in minutes.
+
+Command_Cost controls the amount needed to run the command.
+
+Players type /bed to activate it
+
 ## Black_Jack
 ```xml
 <Tool Name="Black_Jack" Enable="False" Buy_In="300" />
@@ -684,7 +733,9 @@ Transferring from the Wallet to the Bank will take currency from the players bag
 ### Attributes
 * __Enable__  
 Turn Black_Jack on/off by setting this to true/false.
-* __Buy_In__  
+* __Buy_In__ 
+Set a numeric value to control the cost of entry
+ 
 ## Block_Logger
 ```xml
 <Tool Name="Block_Logger" Enable="False" />
@@ -692,7 +743,23 @@ Turn Black_Jack on/off by setting this to true/false.
 ### Attributes
 * __Enable__   
 Set True or False for Enable
+
 ### Description
+Keeps a log of the blocks placed in the world. Their location, who placed them and what the block name is.
+
+## Block_Pickup
+```xml
+<Tool Name="Block_Pickup" Enable="False" />
+```
+### Attributes
+* __Enable__   
+Set True or False for Enable
+
+### Description
+Allows players to pick up blocks that are not terrain, full health and inside of their claimed space.
+
+Players must type /pickup in chat to active it and then punch the block they desire to pickup.
+
 ## Bloodmoon
 ```xml
 <Tool Name="Bloodmoon" Enable="True" Delay="60" Show_On_Respawn="True" />
@@ -706,6 +773,7 @@ Set True or False for Show_On_Respawn
 Set True or False for Auto_Show
 * __Delay__  
 Set a numeric value for Delay
+
 ### Description
 Displays the amount of days before the next bloodmoon in chat.
 Typing /bloodmoon in chat will respond with the remaining days until the next bloodmoon.
@@ -730,6 +798,7 @@ i.e. 50=50% chance to win something
 * __Reduce_Death_Count__  
 Set True or False for Reduce_Death_Count.  
 Subtracts 1 from the winning players total death count.
+
 ### Description
 Players online during the start of the bloodmoon may randomly be invited to an event.
 They must survive the entire bloodmoon, can not die and must kill enough zombies.
@@ -748,6 +817,7 @@ If Reduce_Death_Count is set to true, their death count will reduce by one if su
 ### Attributes
 * __Enable__   
 Set True or False for Enable
+
 ### Description
 Creates a BotResponse.xml to customize bot responses.
 
@@ -764,6 +834,7 @@ Set a numeric value for Minimum_Bounty
 Set a numeric value for Kill_Streak
 * __Bonus__  
 Set a numeric value for Bonus
+
 ### Description
 Players can see the online players and their id by using /bounty. It also shows the current bounty on each player.
 
@@ -784,6 +855,7 @@ Set True or False for Enable
 Set a numeric value for Break_Time
 * __Message__  
 Set your desired message sent to players
+
 ### Description
 Players will be reminded every set amount of minutes to take a break.
 Break_Time is in minutes.
@@ -796,9 +868,10 @@ Break_Time is in minutes.
 * __Enable__  
 Set True or False for Enable
 * __Rotate__  
-```????Missing docs```
+Set True or False for Rotate
 * ___Custom_Color___  
-```????Missing Docs```
+Set True or False for Custom_Color
+
 ### Description
 Enabling will create a ChatColor.xml file. Use this define each players html color tags and prefix as desired.
 
@@ -807,22 +880,32 @@ Example: [FF0000] or [FF0000],[FFCC00] or Red
 
 Expiration date controls when their prefix and color will stop working in chat.
 
+Rotate can be used in combination with the ColorList.xml, so that players can rotate between colors from the list.
+
+Custom_Color allows players to type an html color in the chat and sets their color to it
+
 ## Chat_Command_Log
 ```xml
 <Tool Name="Chat_Command_Log" Enable="True" />
 ```
+
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
+
 ## Chat_Command_Response
+
 ## Chat_Command_Response_Extended
 
 ```xml
 <Tool Name="Chat_Command_Response" Server_Response_Name="[FFCC00]Tartarus" Main_Color="[00FF00]" Chat_Command_Prefix1="/" Chat_Command_Prefix2="!" />
 <Tool Name="Chat_Command_Response_Extended" Friend_Chat_Color="[33CC33]" Party_Chat_Color="[FFCC00]" Passthrough="True" />
 ```
+
 ### Attributes
+
 #### Normal
 * __Server_Response_Name__  
 Set a server response name to Chat_Command_Response
@@ -832,6 +915,7 @@ Set a color using a html value in brackets for Main_Color
 Set a symbol ServerTools will use for chat based commands
 * __Chat_Command_Prefix2__  
 Set a symbol ServerTools will use for chat based commands
+
 #### Extended
 * __Friend_Chat_Color__  
 Set a color using a html value in brackets for Friend_Chat_Color
@@ -866,6 +950,7 @@ Set a numeric value for Max_Length
 Set a numeric value for Messages_Per_Min
 * __Wait_Time__  
 Set a numeric value for Wait_Time
+
 ### Description
 Protect the chat from being flooded from a player's chat spam.
 Set the maximum amount of characters that can be in a single chat message.
@@ -879,7 +964,9 @@ Set the maximum amount of message a player can send in a single minute.
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
+
 ## Clan_Manager
 ```xml
 <Tool Name="Clan_Manager" Enable="False" Max_Name_Length="6" Private_Chat_Color="[00FF00]" />
@@ -891,6 +978,7 @@ Set True or False for Enable
 ```????Maximum length of clan name?```
 * __Private_Chat_Color__  
 Set a color using a html value in brackets for Private_Chat_Color
+
 ### Description
 Enables the clan manager. 
 
@@ -907,6 +995,7 @@ Players can create and manage a clan with these various commands.
 <Tool Name="Clean_Bin_Extended2" Poll="False" Protected_Zones="False" Vehicles="False" Waypoints="False" />
 ```
 ### Attributes
+
 #### Normal
 * __Enable__  
 Set True or False for Enable
@@ -918,6 +1007,7 @@ Set True or False for Bank
 Set True or False for Bounties
 * __Delays__  
 Set True or False for Delays
+
 #### Extended 1
 * __Homes__  
 Set True or False for Homes
@@ -941,12 +1031,14 @@ Set True or False for Vehicles
 Set True or False for Wallet
 * __Waypoints__  
 Set True or False for Waypoints
+
 ### Description
 Enabling will clean the ServerTools.bin file on the next server start and then disable the tool automatically.
 
 Each option controls which data is removed from the ServerTools.bin file.
 
 The options are labeled by the tool name the data corresponds to, e.g. Bank, Auction.
+
 ## Console_Command_Log
 ```xml
 <Tool Name="Console_Command_Log" Enable="True" />
@@ -955,6 +1047,7 @@ The options are labeled by the tool name the data corresponds to, e.g. Bank, Auc
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 All console commands will be logged to its own file.
 
@@ -962,6 +1055,7 @@ All console commands will be logged to its own file.
 
 Set True or False for Enable
 Add what countries you do not want to allow to join the server separated with a comma
+
 ## Custom_Commands
 ```xml
 <Tool Name="Custom_Commands" Enable="True" />
@@ -970,6 +1064,7 @@ Add what countries you do not want to allow to join the server separated with a 
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Enabling will create a CustomCommands.xml in your main installation folder in a ServerTools folder.
 
@@ -989,7 +1084,6 @@ Whisper will send it to the player that triggers the command, while global will 
 
 {SetReturn} will save the users current location with the trigger name. {Return} 'trigger' will teleport the user to the saved location
 
-
 ## Day7
 ```xml
 <Tool Name="Day7" Enable="True" />
@@ -998,10 +1092,13 @@ Whisper will send it to the player that triggers the command, while global will 
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Enables the chat commands /day and /day7. 
 
-Using these will respond with the days left until a horde night as well as the current server FPS, count of mobs, animals, minibikes, and supply crates ## Died
+Using these will respond with the days left until a horde night as well as the current server FPS, count of mobs, animals, minibikes, and supply crates 
+
+## Died
 ```xml
 <Tool Name="Died" Enable="True" Time="2" Delay_Between_Uses="15" Command_Cost="0" />
 ```
@@ -1015,6 +1112,7 @@ Set a numeric value for Time
 Set a numeric value for Delay_Between_Uses
 * __Command_Cost__  
 Set a numeric values for Command_Cost
+
 ### Description
 After a player dies, they have to type /died within the Time limit you have set to be brought back to their death position.
 
@@ -1027,6 +1125,7 @@ Delay_Between_Uses controls the time a player must wait before being able to use
 ```
 
 ### Attributes
+
 #### Normal
 * __Enable__  
 Set True or False for Enable
@@ -1042,6 +1141,7 @@ Set a value for Prefix_Color
 Set a value for Name_Color
 * __Message_Color__  
 Set a value for Message_Color
+
 ### Description
 Enables communications through Discordian discord bot.
 
@@ -1065,13 +1165,13 @@ Prefix_Color controls the color of the prefix shown in chat.
 Set True or False for Enable
 * __Friend_Access__  
 Set True or False for Friend_Acceess
+
 ### Description
 Enables protection on dropped bags when a player dies. Other players can not open this bag until someone with permission does.
 
 Friend_Acceess allows friends of the bag owner to access it.
 
 The tool must be enabled to apply. Bags dropped before enabling will not be protected.
-
 
 ## Entity_Cleanup & Entity_Cleanup_Extended
 ```xml
@@ -1080,6 +1180,7 @@ The tool must be enabled to apply. Bags dropped before enabling will not be prot
 ```
 
 ### Attributes
+
 #### Normal
 * __Enable__   
 Set True or False for Enable
@@ -1091,6 +1192,7 @@ Set True or False for Falling_Tree
 Set True or False for Entity_Underground
 * __Delete_Bicycles__  
 Set True or False for Delete_Bicycles
+
 #### Extended
 * __Delete_MiniBikes__  
 Set True or False for Delete_MiniBikes
@@ -1100,6 +1202,7 @@ Set True or False for Delete_MotorBikes
 Set True or False for Delete_Jeeps
 * __Delete_Gyros__  
 Set True or False for Delete_Gyros
+
 ### Description
 If any of these are active, they are triggered every 15 seconds.
 
@@ -1122,6 +1225,7 @@ Delete_Jeeps will automatically remove a jeep if found in the world.
 <Tool Name="Exit_Command" Enable="False" All="False" Belt="False" Bag="False" Equipment="False" />
 <Tool Name="Exit_Command_Extended" Admin_Level="0" Exit_Time="15" />
 ```
+
 ### Attributes
 #### Normal
 * __Enable__  
@@ -1160,6 +1264,7 @@ Admins do not require typing /exit to leave. No penalty is applied to them.
 ```xml
 <Tool Name="Falling_Blocks_Remover" Enable="True" Log="False" Max_Blocks="25" />
 ```
+
 ### Attributes
 * __Enable__  
 Set True or False for Enable
@@ -1167,6 +1272,7 @@ Set True or False for Enable
 Set True or False for Log
 * __Max_Blocks__  
 Set a numeric value for Max_Blocks
+
 ### Description
 Attempts to remove all falling blocks in the game for performance improvements.
 
@@ -1183,6 +1289,7 @@ Set the Max_Blocks to control how many blocks must be detected falling at one ti
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Players can type /claim to receive a claim block but only once.
 
@@ -1192,7 +1299,6 @@ Recommend removing the claim block given to new players by the base game when in
 
 It will not interfere with the initial item spawn.
 
-
 ## FPS
 ```xml
 <Tool Name="FPS" Enable="False" Set_Target="60" Low_FPS="5" />
@@ -1200,6 +1306,7 @@ It will not interfere with the initial item spawn.
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Players can type /fps to show the fps read out from /day7 command.
 
@@ -1221,6 +1328,7 @@ Set a numeric values for Command_Cost
 Set True or False for Player_Check
 * __Zombie_Check__  
 Set True or False for Zombie_Check
+
 ### Description
 Friends can type /friend to see a list of their current online friends and their Id #.
 
@@ -1246,6 +1354,7 @@ Set True or False for Enable
 Set a numeric value for Delay_Between_Uses
 * __Command_Cost__  
 Set a numeric values for Command_Cost
+
 ### Description
 Allows players to gamble Wallet currency using chat commands.
 
@@ -1269,6 +1378,7 @@ Set True or False for Zombies
 Set a numeric value for Zombie_Id
 * __Command_Cost__  
 Set a numeric values for Command_Cost
+
 ### Description
 Enabling will create a Gimme.xml in your main installation folder in a ServerTools folder.
 
@@ -1289,6 +1399,7 @@ Command cost controls how much must be in a player's wallet to use the command.
 ```xml
 <Tool Name="Hardcore" Enable="False" Optional="True" Max_Deaths="9" Max_Extra_Lives="3" Life_Price="2000" />
 ```
+
 ### Attributes
 * __Enable__  
 Set True or False for Enable
@@ -1300,6 +1411,7 @@ Set a numeric value for Max_Deaths
 Set a numeric value for Max_Extra_Lives
 * __Life_Price__  
 Set a numeric value for Life_Price
+
 ### Description
 ___Be careful if enabling this feature.___
 
@@ -1324,6 +1436,7 @@ Set True or False for Enable
 Set a numeric value for Max_Ping
 * __Flags__  
 Set a numeric value for Flags
+
 ### Description
 Players who have too high of a ping will be kicked from the server automatically.
 
@@ -1347,6 +1460,7 @@ Set a numeric value for Reserved_Max_Homes
 Set a numeric value for Delay_Between_Uses
 * __Command_Cost__  
 Set a numeric values for Command_Cost
+
 #### Extended
 * __Player_Check__  
 Set True or False for Player_Check
@@ -1354,6 +1468,7 @@ Set True or False for Player_Check
 Set True or False for Zombie_Check
 * __Vehicle__  
 Set True or False for Vehicle
+
 ### Description
 While enabled, players can use chat commands /sethome 'name', /home save 'name', /home, /fhome 'name' and /home del 'name'.
 
@@ -1380,6 +1495,7 @@ Set Player_Check to true so they must be far enough from players to use this com
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Automatically starts a horde every 20 minutes if player count is over 5 and zombie count is less than 30.
 
@@ -1387,6 +1503,7 @@ Automatically starts a horde every 20 minutes if player count is over 5 and zomb
 ```xml
 <Tool Name="Info_Ticker" Enable="True" Delay="60" Random="False" />
 ```
+
 ### Attributes
 * __Enable__  
 Set True or False for Enable
@@ -1394,6 +1511,7 @@ Set True or False for Enable
 Set a numeric value for Delay_Between_Messages
 * __Random__  
 Set True or False for Random
+
 ### Description
 Enabling will create a InfoTicker.xml in your main installation folder in a ServerTools folder.
 
@@ -1405,13 +1523,6 @@ Setting Random to true will show the messages in a random order until all have b
 
 Leaving Random to false will display each message in order of the list until all have been displayed. The list will repeat.
 
-
-
-
-
-
-
-
 ## Kick_Vote
 
 Set True or False for Enable
@@ -1421,6 +1532,7 @@ Set True or False for Votes_Needed
 Allows players to start a vote to kick a player from the game.
 Can only start a vote if 10 or more players and 8 must vote yes.
 Players_Online is the amount needed to start a vote.
+
 ## Kill_Notice
 ```xml
 <Tool Name="Kill_Notice" Enable="True" PvP="True" Zombie_Kills="True" Animal_Kills="True" Show_Level="False" />
@@ -1440,11 +1552,13 @@ Set True or False for Show_Level
 #### Extended
 * __Show_Damage__  
 Set True or False for Show_Damage
+
 ### Description
 If a player kills another player or zombie kills a player, a chat notice will show it.
 PvP controls whether it shows players killing a player.
 Zombie_Kills controls whether it shows zombies killing a player.
 Show_Level controls if the player level is shown in the notice.
+
 ## Level_Up
 ```xml
 <Tool Name="Level_Up" Enable="True" Xml_Only="True" />
@@ -1454,6 +1568,7 @@ Show_Level controls if the player level is shown in the notice.
 Set True or False for Enable
 * __Xml_Only__  
 Set True or False for Xml_Only
+
 ### Description
 Enabling will create a LevelUp.xml.
 
@@ -1480,6 +1595,7 @@ Set a numeric value for Delay_Between_Uses
 Set a numeric value for Lobby_Size
 * __Lobby_Position__  
 Set a numeric value set of x, y, z position for Lobby_Position
+
 #### Extended
 * __Reserved_Only__  
 Set True or False for Reserved_Only
@@ -1518,6 +1634,7 @@ Set Zombie_Check to true so they must be far enough from zombies to use this com
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Players can type /loc to show their x, y, z coordinates in chat.
 
@@ -1528,6 +1645,7 @@ Players can type /loc to show their x, y, z coordinates in chat.
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Enabling will create a file named LoginNotice.xml in your main installation folder in a ServerTools folder.
 
@@ -1537,9 +1655,11 @@ Add players Id to the id field and whatever message of your choice in the xml fi
 ```xml
 <Tool Name="Logs" Days_Before_Log_Delete="5" />
 ```
+
 ### Attributes
 * __Days_Before_Log_Delete__  
 Set a numeric value for Delay_Between_Uses
+
 ### Description
 ## Lottery
 ```xml
@@ -1550,6 +1670,7 @@ Set a numeric value for Delay_Between_Uses
 Set True or False for Enable
 * __Bonus__  
 Set a numeric value for Bonus
+
 ### Description
 Players can start a new lottery by typing /lottery #. They can check the current lotto with /lottery.
 
@@ -1561,6 +1682,7 @@ When an hour has passed or ten players have entered the lottery, it will draw th
 ```xml
 <Tool Name="Market" Enable="False" Return="False" Delay_Between_Uses="5" Market_Size="25" Market_Position="0,0,0" />
 ```
+
 ### Attributes
 #### Normal
 * __Enable__  
@@ -1573,6 +1695,7 @@ Set a numeric value for Delay_Between_Uses
 Set a numeric value for Market_Size
 * __Market_Position__ 
 Set a numeric value set of x,y,z position for Market_Position
+
 #### Extended
 * __Reserved_Only__  
 Set True or False for Reserved_Only
@@ -1584,6 +1707,7 @@ Set True or False for Player_Check
 Set True or False for Zombie_Check
 * __PvE__  
 Set True or False for PvE
+
 ### Description
 Typing /market will send a player to the market if the position is set.
 
@@ -1604,15 +1728,18 @@ Set Player_Check to true so they must be far enough from players to use this com
 Set Zombie_Check to true so they must be far enough from zombies to use this command.
 
 Set PvE to true so they can not damage each other while inside the market.
+
 ## Message_Color
 ```xml
 <Tool Name="Message_Color" Enable="True" Color="[bbbbbb]" />
 ```
+
 ### Attributes
 * __Enable__  
 Set True or False for Enable
 * __Color__  
 Set a color using a html value in brackets for Color
+
 ### Description
 General chat message color can be controlled with this.
 
@@ -1629,6 +1756,7 @@ This does not effect their name or add a prefix to it. It only changes the color
 Set True or False for Enable
 * __Show_On_Respawn__  
 Set True or False for Show_On_Respawn
+
 ### Description
 Enabling will create a Motd.xml in your main installation folder in a ServerTools folder.
 
@@ -1641,7 +1769,9 @@ Message of the day or Motd entries will show to the player upon joining the serv
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
+
 ## Mute_Vote
 ```xml
 <Tool Name="Mute_Vote" Enable="False" Players_Online="5" Votes_Needed="3" />
@@ -1653,6 +1783,7 @@ Set True or False for Enable
 Set a numeric value for Players_Online
 * __Votes_Needed__  
 Set a numeric value for Votes_Needed
+
 ### Description
 Allows players to start a vote to mute a player in game from chat for 60 minutes.
 
@@ -1664,24 +1795,30 @@ Players_Online is the amount needed to start a vote.
 <Tool Name="New_Player_Extended" Block_During_Bloodmoon="False" />
 ```
 ### Attributes
+
 #### Normal
 * __Enable__  
 Set True or False for Enable
 * __Entry_Message__  
 Create an entry message for Entry_Message
+
 #### Extended
 * __Block_During_Bloodmoon__  
 Set True or False for Block_During_Bloodmoon
+
 ### Description
+
 ## New_Player_Protection
 ```xml
 <Tool Name="New_Player_Protection" Enable="False" Level="5" />
 ```
+
 ### Attributes
 * __Enable__  
 Set True or False for Enable
 * __Level__  
 Set a numeric value for Level
+
 ### Description
 This will block all PvP damages until the player reaches the desired level.
 
@@ -1698,6 +1835,7 @@ Set True or False for Enable
 Set a numeric value for New_Spawn_Tele_Position
 * __Return__  
 Set True or False for Return
+
 ### Description
 Teleports a new player upon joining to the New_Spawn_Tele_Position.
 
@@ -1716,6 +1854,7 @@ Enabling return will alert players upon teleport that they can type /ready to go
 Set True or False for Enable
 * __Delay__  
 Set a numeric value for Delay
+
 ### Description
 Enabling will automatically show the hours left until night time.
 
@@ -1728,6 +1867,7 @@ Use Delay to control how often it shows.
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 ## Normal_Player_Color_Prefix
 ```xml
@@ -1740,6 +1880,7 @@ Set True or False for Enable
 Set a value of your choice in parenthesis for Prefix
 * __Color__  
 Set a color using a html value in brackets for Color
+
 ### Description
 Enabling makes all standard players chat message show with a prefix and color.
 
@@ -1752,6 +1893,7 @@ Prefix controls the prefix for the message.
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Enabling lets players type /list to see all the current online player names and entity id.
 
@@ -1766,6 +1908,7 @@ Set True or False for Enable
 Set True or False for Bed
 * __Claim__  
 Set True or False for Claim
+
 ### Description
 Enable protection from placement of beds and claims on a POI(Place of interest).
 
@@ -1776,7 +1919,9 @@ Enable protection from placement of beds and claims on a POI(Place of interest).
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
+
 ## Prayer
 ```xml
 <Tool Name="Prayer" Enable="True" Delay_Between_Uses="30" Command_Cost="10" />
@@ -1788,6 +1933,7 @@ Set True or False for Enable
 Set a numeric value for Delay_Between_Uses
 * __Command_Cost__  
 Set a numeric value for Command_Cost
+
 ### Description
 Players can type /pray to receive a buff from a custom list called Prayer.xml.
 
@@ -1800,6 +1946,7 @@ Set the time delay before players can use this command again. Time is in minutes
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Players can send a private message to each other by using their id or name in chat.
 
@@ -1816,6 +1963,7 @@ Example: /rm Sounds good. Lets meet by the town in the morning.
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Allows you to setup a list of waypoints that all players can access.
 
@@ -1835,6 +1983,7 @@ Set a numeric value for Delay
 Set a string value for Time_Zone
 * __Adjustment__  
 Set a numeric value for Adjustment
+
 ### Description
 Enabling will show the real world time periodically based on the delay.
 
@@ -1853,6 +2002,7 @@ Set True or False for Enable
 Set a numeric value for Delay_Between_Uses
 * __Admin_Level__  
 Set a numeric value for Admin_Level
+
 ### Description
 Enabling will allow a player to type /report and their message.
 
@@ -1877,6 +2027,7 @@ Set a numeric value for Admin_Level
 Set a numeric value for Admin_Slots
 * __Reduced_Delay__  
 Set True or False for Reduced_Delay
+
 ### Description
 Enabling will create a ReservedSlots.xml in your main installation folder in the ServerTools folder.
 
@@ -1905,6 +2056,7 @@ Set True or False for Players_Online
 Set True or False for Votes_Needed
 * __Admin_Level__  
 Set a numeric value for Admin_Level
+
 ### Description
 Allows players to vote for a server restart. Initiates stopserver 1 if successful.
 
@@ -1919,6 +2071,7 @@ Votes_Needed is the amount of players that must vote yes.
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 ## Shop
 ```xml
@@ -1931,6 +2084,7 @@ Set True or False for Enable
 Set True or False for Inside_Market
 * __Inside_Traders__  
 Set True or False for Inside_Traders
+
 ### Description
 While enabled, players can use chat command /shop while anywhere on the map.
 
@@ -1944,6 +2098,7 @@ Players can buy an item multiple times from the shop with /buy # #. The second n
 <Tool Name="Shutdown_Extended" UI_Lock="True" Interrupt_Bloodmoon="False" />
 ```
 ### Attributes
+
 #### Normal
 * __Enable__  
 Set True or False for Enable
@@ -1955,9 +2110,11 @@ Set a numeric value for Time
 Set True or False for Alert_On_Login
 * __Alert_Count__  
 Set a numeric value for Alert_Count
+
 #### Extended
 * __UI_Lock__    
 Set True or False for UI_Lock
+
 ### Description
 Automatically begins the shutdown process for the server after the Time runs out or has been met.
 
@@ -1974,6 +2131,7 @@ Alert_Count controls how many times the alert messages post in chat on each even
 Bloodmoon nights and events are automatically detected. The shutdown will be extended. When the bloodmoon or event ends, the shutdown process will commence.
 
 UI_Lock Closes and locks access to all loot, storage, vendor, trader and workstations for the last 45 seconds of the shutdown process.
+
 ## Sleeper_Respawn
 ```xml
 <Tool Name="Sleeper_Respawn" Enable="True" />
@@ -1981,6 +2139,7 @@ UI_Lock Closes and locks access to all loot, storage, vendor, trader and worksta
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Sleeper spawn points will be reset on server restart.
 
@@ -1992,6 +2151,7 @@ Sleeper spawn points will be reset on server restart.
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Enabling will create a StartingItems.xml in your main installation folder inside the ServerTools folder.
 
@@ -2026,6 +2186,7 @@ Set a numeric value for Delay_Between_Uses
 Set True or False for Player_Check
 * __Zombie_Check__  
 Set True or False for Zombie_Check
+
 ### Description
 Enables the chat commands /killme, /suicide, /wrist and /hang so players can kill themselves.
 
@@ -2039,6 +2200,7 @@ Set Zombie_Check to true so they must be far enough from zombies to use this com
 ```xml
 <Tool Name="Travel" Enable="True" Delay_Between_Uses="60" Command_Cost="0" Player_Check="False" Zombie_Check="False" />
 ```
+
 ### Attributes
 * __Enable__  
 Set True or False for Enable
@@ -2050,6 +2212,7 @@ Set a numeric values for Command_Cost
 Set True or False for Player_Check
 * __Zombie_Check__  
 Set True or False for Zombie_Check
+
 ### Description
 Enabling will create a TravelLocations.xml in your main installation folder in the ServerTools folder.
 
@@ -2071,6 +2234,7 @@ Set Player_Check to true so they must be far enough from players to use this com
 <Tool Name="Vehicle_Recall_Extended" Normal_Max="2" Reserved_Max="4" />
 ```
 ### Attributes
+
 #### Normal
 * __Enable__  
 Set True or False for Enable
@@ -2082,11 +2246,13 @@ Set a numeric value for Distance
 Set a numeric value for Delay_Between_Uses
 * __Command_Cost__  
 Set a numeric values for Command_Cost
+
 #### Extended
 * __Normal_Max__  
 Set a numeric value for Normal_Max
 * __Reserved_Max__  
 Set a numeric value for Reserved_Max
+
 ### Description
 Inside_Claim controls whether they must be inside their claim space to save the vehicle.
 
@@ -2117,6 +2283,7 @@ Set a numeric value for Reward_Count
 Set True or False for Reward_Entity
 * __Entity_Id__  
 Set a numeric value for Entity_Id
+
 #### Extended
 * __Reward_Entity__  
 Set True or False for Reward_Entity
@@ -2124,6 +2291,7 @@ Set True or False for Reward_Entity
 Set a numeric value for Entity_Id
 * __Weekly_Votes__  
 Set a numeric value for Weekly_Votes
+
 ### Description
 Enabling allows players to use chat command /reward after voting at https://7daystodie-servers.com for your server.
 
@@ -2140,12 +2308,30 @@ Setting Reward_Entity to true will not use the VoteReward.xml. Instead it will s
 
 Set Reward_Entity to true so that players receive an entity spawned for their reward.
 
+## Wall
+```xml
+<Tool Name="Wall" Enable="True" />
+```
+### Attributes
+* __Enable__  
+Set True or False for Enable
+
+### Description
+Wall helps players create walls faster.
+
+The player can enable and disable wall mode using command /wall.
+
+While enabled, players can place two blocks in the corner points of an intended wall. It will automatically check nearby chests for matching blocks and fill the space between the corners with them.
+
+Players must be inside of their own claimed space.
+
 ## Wallet
 ```xml
 <Tool Name="Wallet" Enable="True" PVP="False" Zombie_Kill="10" Player_Kill="25" Bank_Transfers="False" />
 <Tool Name="Wallet_Extended" Session_Bonus="5" Currency_Name="coin" />
 ```
 ### Attributes
+
 #### Normal
 * __Enable__  
 Set True or False for Enable
@@ -2157,11 +2343,13 @@ Set a numeric value for Zombie_Kill
 Set a numeric value for Player_Kill
 * __Bank_Transfers__  
 Set True or False for Bank_Transfers
+
 #### Extended
 * __Session_Bonus__  
 Set a numeric value for Session_Bonus
 * __Coin_Name__  
 Set a value of your choice for Coin_Name
+
 ### Description
 The Wallet will use the casinoCoin by default but this can be changed via the items.xml provided in the Config folder with the latest release.
 
@@ -2177,6 +2365,7 @@ Bank_Transfers let a player send and receive wallet funds with the bank.
 ```xml
 <Tool Name="Watch_List" Enable="False" Admin_Level="0" Delay="5" />
 ```
+
 ### Attributes
 * __Enable__  
 Set True or False for Enable
@@ -2184,6 +2373,7 @@ Set True or False for Enable
 Set a numeric value for Admin_Level
 * __Alert_Delay__  
 Set a numeric value for Alert_Delay
+
 ### Description
 Enabling will create a Watchlist.xml in your main installation folder in a ServerTools folder.
 
@@ -2196,6 +2386,7 @@ All user Id that matches those listed in the watchlist will trigger an ingame al
 ```
 
 ### Attributes
+
 #### Normal
 * __Enable__  
 Set True or False for Enable
@@ -2207,6 +2398,7 @@ Set a numeric value for Reserved_Max_Waypoints
 Set a numeric value for Command_Cost
 * __Delay_Between_Uses__  
 Set a numeric value for Delay_Between_Uses
+
 #### Extended
 * __Player_Check__  
 Set True or False for Player_Check
@@ -2214,6 +2406,7 @@ Set True or False for Player_Check
 Set True or False for Zombie_Check
 * __Vehicle__  
 Set True or False for Vehicle
+
 ### Description
 Allows players to save a waypoint for teleport.
 
@@ -2235,21 +2428,26 @@ Command options are as follows. Waypoint 'name', way 'name', wp 'name', fwaypoin
 ```xml
 <Tool Name="Web_API" Enable="False" Port="8084" />
 ```
+
 ### Attributes
 * __Enable__  
 Set True or False for Enable
 * __Port__  
 Set a value of your choice for Port
+
 ### Description
 Enabling will allow the Web Panel and Discord bot to communicate through the web api.
 Requires port forwarding. The web api requires an open port to function.
+
 ## Web_Panel
 ```xml
 <Tool Name="Web_Panel" Enable="False" />
 ```
+
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 Enabling will start the web panel.
 
@@ -2277,6 +2475,7 @@ Clients can alter the ServerToolsConfig.xml
 ### Attributes
 * __Enable__  
 Set True or False for Enable
+
 ### Description
 While enabled, players can only access a workstation inside of a claimed space if they are the owner or allied with the claim owner.
 
@@ -2284,6 +2483,7 @@ While enabled, players can only access a workstation inside of a claimed space i
 ```xml
 <Tool Name="World_Radius" Enable="False" Normal_Player="8000" Reserved="10000" Admin_Level="0" />
 ```
+
 ### Attributes
 * __Enable__  
 Set True or False for Enable
@@ -2293,6 +2493,7 @@ Set a numeric value for Normal_Player
 Set a numeric value for Reserved
 * __Admin_Level__  
 Set a numeric value for Admin_Level
+
 ### Description
 Enabling will automatically check player locations vs specified block ranges from center.
 
@@ -2306,6 +2507,7 @@ Admin_Level controls the admin level required for the tool to skip them and allo
 ```xml
 <Tool Name="Zones" Enable="False" Zone_Message="False" Reminder_Delay="20" Set_Home="False"  />
 ```
+
 ### Attributes
 * __Enable__  
 Set True or False for Enable
@@ -2315,6 +2517,7 @@ Set True or False for Zone_Message
 Set a numeric value for Reminder_Notice_Delay
 * __Set_Home__  
 Set True or False for Set_Home
+
 ### Description
 Enabling will create a Zones.xml in your main installation folder in a ServerTools folder.
 

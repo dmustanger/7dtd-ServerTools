@@ -9,7 +9,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Inside_Claim = false;
         public static int Delay_Between_Uses = 120, Distance = 50, Normal_Max = 2, Reserved_Max = 4, Command_Cost = 0;
-        public static string Command_vehicle = "vehicle", Command_vehicle_save = "vehicle save", Command_vehicle_del = "vehicle del";
+        public static string Command_vehicle = "vehicle", Command_vehicle_save = "vehicle save", Command_vehicle_remove = "vehicle remove";
 
         private static AccessTools.FieldRef<VehicleManager, List<EntityVehicle>> vehiclesActive = AccessTools.FieldRefAccess<VehicleManager, List<EntityVehicle>>("vehiclesActive");
         private static AccessTools.FieldRef<VehicleManager, List<EntityCreationData>> vehiclesUnloaded = AccessTools.FieldRefAccess<VehicleManager, List<EntityCreationData>>("vehiclesUnloaded");
@@ -80,7 +80,11 @@ namespace ServerTools
                                 Phrases.Dict.TryGetValue("VehicleRecall4", out string phrase);
                                 phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
                                 phrase = phrase.Replace("{Command_vehicle}", Command_vehicle);
-                                phrase = phrase.Replace("{DelayBetweenUses}", delay.ToString());
+                                phrase = phrase.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                                TimeSpan varTime = delay - DateTime.Now;
+                                double fractionalMinutes = varTime.TotalMinutes;
+                                int timepassed = (int)fractionalMinutes;
+                                phrase = phrase.Replace("{TimeRemaining}", timepassed.ToString());
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }

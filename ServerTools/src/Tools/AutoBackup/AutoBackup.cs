@@ -85,7 +85,7 @@ namespace ServerTools
                     th = new Thread(new ThreadStart(Prepare))
                     {
                         IsBackground = true,
-                        Priority = ThreadPriority.Lowest
+                        Priority = ThreadPriority.BelowNormal
                     };
                     th.Start();
                 }
@@ -218,7 +218,7 @@ namespace ServerTools
                 {
                     OutputStream.SetLevel(Compression_Level);
                 }
-                byte[] buffer = new byte[4096];
+                byte[] buffer = new byte[8192];
                 for (int i = 0; i < fileNames.Length; i++)
                 {
                     string file = fileNames[i];

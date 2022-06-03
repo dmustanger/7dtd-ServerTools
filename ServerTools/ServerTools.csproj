@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ServerTools</RootNamespace>
     <AssemblyName>ServerTools</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -46,7 +46,6 @@
     <Compile Include="src\AntiCheat\DupeLog\DupeLog.cs" />
     <Compile Include="src\AntiCheat\BlockChange\BlockChange.cs" />
     <Compile Include="src\AntiCheat\DamageDetector\DamageDetector.cs" />
-    <Compile Include="src\AntiCheat\FamilyShare\FamilyShare.cs" />
     <Compile Include="src\AntiCheat\InfiniteAmmo\InfiniteAmmo.cs" />
     <Compile Include="src\AntiCheat\MagicBullet\MagicBullet.cs" />
     <Compile Include="src\AntiCheat\NetPackages\NetPackageChat.cs" />
@@ -62,7 +61,6 @@
     <Compile Include="src\ConsoleCommands\ClientConsoleCommandConsole.cs" />
     <Compile Include="src\ConsoleCommands\CvarConsole.cs" />
     <Compile Include="src\ConsoleCommands\DeletePlayerDataConsole.cs" />
-    <Compile Include="src\ConsoleCommands\FamilyShareConsole.cs" />
     <Compile Include="src\ConsoleCommands\FlyingConsole.cs" />
     <Compile Include="src\ConsoleCommands\GiveExpConsole.cs" />
     <Compile Include="src\ConsoleCommands\GodmodeDetectorConsole.cs" />
@@ -91,12 +89,15 @@
     <Compile Include="src\Functions\EventSchedule.cs" />
     <Compile Include="src\Harmony\RunTimePatch.cs" />
     <Compile Include="src\Harmony\Injections.cs" />
+    <Compile Include="src\PersistentData\SQLite.cs" />
     <Compile Include="src\PersistentOperations\ActiveTools.cs" />
     <Compile Include="src\PersistentOperations\ProcessDamage.cs" />
     <Compile Include="src\Serialize\ItemStackSerializable.cs" />
     <Compile Include="src\Tools\AllocsMap\AllocsMap.cs" />
     <Compile Include="src\Tools\AutoBackup\AutoBackup.cs" />
     <Compile Include="src\Tools\AutoPartyInvite\AutoPartyInvite.cs" />
+    <Compile Include="src\Tools\AutoRestart\AutoRestart.cs" />
+    <Compile Include="src\Tools\Bed\Bed.cs" />
     <Compile Include="src\Tools\BlackJack\BlackJack.cs" />
     <Compile Include="src\Tools\BotResponse\BotResponse.cs" />
     <Compile Include="src\Tools\DiscordLink\DiscordLink.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="src\Tools\CleanBin\CleanBin.cs" />
     <Compile Include="src\Tools\ConsoleCommandLog\Console_Command_Log.cs" />
     <Compile Include="src\Tools\DiscordBot\DiscordBot.cs" />
+    <Compile Include="src\Tools\PickUp\PickUp.cs" />
     <Compile Include="src\Tools\FallingBlocks\FallingBlocks.cs" />
     <Compile Include="src\AntiCheat\FlyingDetector\FlyingDetector.cs" />
     <Compile Include="src\Tools\Gamble\Gamble.cs" />
@@ -206,6 +208,7 @@
     <Compile Include="src\Tools\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\TeleportCheck\TeleportCheck.cs" />
     <Compile Include="src\Tools\SleeperRespawn\SleeperRespawn.cs" />
+    <Compile Include="src\Tools\Wall\Wall.cs" />
     <Compile Include="src\Tools\WebPanel\WebPanel.cs" />
     <Compile Include="src\Tools\WorkstationLock\WorkstationLock.cs" />
     <Compile Include="src\Tools\WorldRadius\WorldRadius.cs" />
@@ -305,9 +308,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lib.Harmony.2.1.1\lib\net472\0Harmony.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="0Harmony, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lib.Harmony.2.2.1\lib\net48\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\7dtd-binaries\Assembly-CSharp.dll</HintPath>
@@ -331,6 +333,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">

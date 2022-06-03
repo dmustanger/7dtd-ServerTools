@@ -6,7 +6,7 @@ namespace ServerTools
 {
     class DamageDetector
     {
-        public static bool IsEnabled = false;
+        public static bool IsEnabled = false, LogEnabled = false;
         public static int Admin_Level = 0, Entity_Damage_Limit = 1000, Player_Damage_Limit = 2000, Block_Damage_Limit = 2000;
 
         private static readonly string file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
@@ -22,12 +22,15 @@ namespace ServerTools
                     Phrases.Dict.TryGetValue("DamageDetector2", out string phrase);
                     phrase = phrase.Replace("{Value}", _strength.ToString());
                     SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
-                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                    if (LogEnabled)
                     {
-                        sw.WriteLine(string.Format("Detected Id '{0}' '{1}' named '{2}' @ '{3}' using item '{4}' exceeding the player damage limit. Target location '{5}'. Damage total '{6}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _cInfo.latestPlayerData.ecd.pos, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _player.position, _strength));
-                        sw.WriteLine();
-                        sw.Flush();
-                        sw.Close();
+                        using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                        {
+                            sw.WriteLine(string.Format("Detected Id '{0}' '{1}' named '{2}' @ '{3}' using item '{4}' exceeding the player damage limit. Target location '{5}'. Damage total '{6}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _cInfo.latestPlayerData.ecd.pos, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _player.position, _strength));
+                            sw.WriteLine();
+                            sw.Flush();
+                            sw.Close();
+                        }
                     }
                     Phrases.Dict.TryGetValue("DamageDetector1", out string phrase1);
                     phrase1 = phrase1.Replace("{PlayerName}", _cInfo.playerName);
@@ -52,12 +55,15 @@ namespace ServerTools
                     Phrases.Dict.TryGetValue("DamageDetector2", out string phrase);
                     phrase = phrase.Replace("{Value}", _strength.ToString());
                     SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
-                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                    if (LogEnabled)
                     {
-                        sw.WriteLine(string.Format("Detected Id '{0}' '{1}' named '{2}' @ '{3}' using item '{4}' exceeding the entity damage limit. Target location '{5}'. Damage total '{6}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _cInfo.latestPlayerData.ecd.pos, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _entity.position, _strength));
-                        sw.WriteLine();
-                        sw.Flush();
-                        sw.Close();
+                        using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                        {
+                            sw.WriteLine(string.Format("Detected Id '{0}' '{1}' named '{2}' @ '{3}' using item '{4}' exceeding the entity damage limit. Target location '{5}'. Damage total '{6}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _cInfo.latestPlayerData.ecd.pos, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _entity.position, _strength));
+                            sw.WriteLine();
+                            sw.Flush();
+                            sw.Close();
+                        }
                     }
                     Phrases.Dict.TryGetValue("DamageDetector1", out string phrase1);
                     phrase1 = phrase1.Replace("{PlayerName}", _cInfo.playerName);

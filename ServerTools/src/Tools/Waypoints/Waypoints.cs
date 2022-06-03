@@ -500,16 +500,24 @@ namespace ServerTools
                     int.TryParse(cords[0], out int x);
                     int.TryParse(cords[1], out int y);
                     int.TryParse(cords[2], out int z);
-                    if (_friends)
+                    if (PersistentOperations.ClaimedByNone(new Vector3i(x, y, z)))
                     {
-                        FriendInvite(_cInfo, _position, waypointPos);
+                        if (_friends)
+                        {
+                            FriendInvite(_cInfo, _position, waypointPos);
+                        }
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint = DateTime.Now;
+                        PersistentContainer.DataChange = true;
+                        if (Wallet.IsEnabled && _cost >= 1)
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
+                        }
                     }
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint = DateTime.Now;
-                    PersistentContainer.DataChange = true;
-                    if (Wallet.IsEnabled && _cost >= 1)
+                    else
                     {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
+                        Phrases.Dict.TryGetValue("Waypoints2", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else if (Dict.ContainsKey(_waypoint))
@@ -519,16 +527,24 @@ namespace ServerTools
                     int.TryParse(cords[0], out int x);
                     int.TryParse(cords[1], out int y);
                     int.TryParse(cords[2], out int z);
-                    if (_friends)
+                    if (PersistentOperations.ClaimedByNone(new Vector3i(x, y, z)))
                     {
-                        FriendInvite(_cInfo, _position, waypointData[0]);
+                        if (_friends)
+                        {
+                            FriendInvite(_cInfo, _position, waypointData[0]);
+                        }
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint = DateTime.Now;
+                        PersistentContainer.DataChange = true;
+                        if (Wallet.IsEnabled && _cost >= 1)
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
+                        }
                     }
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint = DateTime.Now;
-                    PersistentContainer.DataChange = true;
-                    if (Wallet.IsEnabled && _cost >= 1)
+                    else
                     {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
+                        Phrases.Dict.TryGetValue("Waypoints2", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else

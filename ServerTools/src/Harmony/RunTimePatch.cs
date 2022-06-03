@@ -318,17 +318,17 @@ namespace ServerTools
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
-                original = AccessTools.Method(typeof(NetPackageEntityAddScoreClient), "ProcessPackage");
+                original = AccessTools.Method(typeof(NetPackageEntityAddScoreServer), "ProcessPackage");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityAddScoreClient.ProcessPackage Class.Method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityAddScoreServer.ProcessPackage Class.Method was not found"));
                 }
                 else
                 {
-                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackageEntityAddScoreClient_ProcessPackage_Prefix");
+                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackageEntityAddScoreServer_ProcessPackage_Prefix");
                     if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityAddScoreClient_ProcessPackage_Prefix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityAddScoreServer_ProcessPackage_Prefix"));
                         return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);

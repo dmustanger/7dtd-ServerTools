@@ -263,7 +263,7 @@ namespace ServerTools
                 {
                     if (Delay_Between_Uses < 1)
                     {
-                        if (Wallet.IsEnabled && Command_Cost >= 1)
+                        if (Wallet.IsEnabled && Command_Cost > 0)
                         {
                             CommandCost(_cInfo);
                         }
@@ -322,7 +322,7 @@ namespace ServerTools
             {
                 if (_timepassed >= _delay)
                 {
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    if (Wallet.IsEnabled && Command_Cost > 0)
                     {
                         CommandCost(_cInfo);
                     }
@@ -352,22 +352,15 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.IsEnabled && Command_Cost > 0)
+                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
                 {
-                    if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
-                    {
-                        ZCheck(_cInfo);
-                    }
-                    else
-                    {
-                        Phrases.Dict.TryGetValue("Gimme3", out string phrase);
-                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    ZCheck(_cInfo);
                 }
                 else
                 {
-                    ZCheck(_cInfo);
+                    Phrases.Dict.TryGetValue("Gimme3", out string phrase);
+                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

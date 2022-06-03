@@ -3155,6 +3155,93 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"LoginNotice1\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ************************* Pickup *********************** -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("Pickup1", out phrase))
+                    {
+                        phrase = "Pickup mode enabled";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Pickup1\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Pickup2", out phrase))
+                    {
+                        phrase = "Pickup mode disabled";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Pickup2\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Pickup3", out phrase))
+                    {
+                        phrase = "Unable to pickup block. It is outside of your claimed space";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Pickup3\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Pickup4", out phrase))
+                    {
+                        phrase = "Unable to pickup block. Repair it first";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Pickup4\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Pickup5", out phrase))
+                    {
+                        phrase = "Picked up block {BlockName}";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Pickup5\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Pickup6", out phrase))
+                    {
+                        phrase = "Pickup is blocked in this area until {DateTime}";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Pickup6\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ************************** Wall ************************ -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("Wall1", out phrase))
+                    {
+                        phrase = "Wall mode enabled";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Wall1\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Wall2", out phrase))
+                    {
+                        phrase = "Wall mode disabled";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Wall2\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Wall3", out phrase))
+                    {
+                        phrase = "Wall corners do not line up, unable to form a wall";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Wall3\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Wall4", out phrase))
+                    {
+                        phrase = "Walls can only be built inside your claimed space. Position not saved";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Wall4\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Wall5", out phrase))
+                    {
+                        phrase = "Walls can only be constructed out of cube shaped blocks. Position not saved";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Wall5\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ************************** Bed ************************* -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("Bed1", out phrase))
+                    {
+                        phrase = "You do not have any bedroll positions";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Bed1\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Bed2", out phrase))
+                    {
+                        phrase = "You can only use {Command_Prefix1}{Command_bed} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minute";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Bed2\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Bed3", out phrase))
+                    {
+                        phrase = "You do not have enough {CoinName} to run this command";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Bed3\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Bed4", out phrase))
+                    {
+                        phrase = "You have gone to bed. zzz";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Bed4\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("</Phrases>");

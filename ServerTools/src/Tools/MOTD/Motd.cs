@@ -143,9 +143,9 @@ namespace ServerTools
                     sw.WriteLine();
                     if (Dict.Count > 0)
                     {
-                        foreach (string _message in Dict)
+                        foreach (string message in Dict)
                         {
-                            sw.WriteLine(string.Format("    <Server Message=\"{0}\" />", _message));
+                            sw.WriteLine(string.Format("    <Server Message=\"{0}\" />", message));
                         }
                     }
                     sw.WriteLine("</Motds>");

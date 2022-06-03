@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ServerTools
 {
-    class EntityAddScoreClientPackage
+    class EntityAddScoreServerPackage
     {
 
         private static AccessTools.FieldRef<NetPackageEntityAddScoreClient, int> entityId = AccessTools.FieldRefAccess<NetPackageEntityAddScoreClient, int>("entityId");
@@ -36,7 +36,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in EntityAddScorePackage.IsValid: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in EntityAddScoreClientPackage.IsValid: {0}", e.Message));
             }
             return true;
         }

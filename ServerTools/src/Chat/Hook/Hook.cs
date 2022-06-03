@@ -302,9 +302,9 @@ namespace ServerTools
                                 Mute.Remove(_cInfo, _message);
                                 return false;
                             }
-                            if (messageLowerCase == CustomCommands.Command_commands)
+                            if (messageLowerCase == PersistentOperations.Command_commands)
                             {
-                                CustomCommands.CommandList(_cInfo);
+                                PersistentOperations.CommandList(_cInfo);
                                 if (CustomCommands.IsEnabled)
                                 {
                                     CustomCommands.CustomCommandList(_cInfo);
@@ -312,7 +312,7 @@ namespace ServerTools
                                 if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) <= Admin_Level ||
                                     GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) <= Admin_Level)
                                 {
-                                    CustomCommands.AdminCommandList(_cInfo);
+                                    PersistentOperations.AdminCommandList(_cInfo);
                                 }
                                 return false;
                             }
@@ -845,9 +845,9 @@ namespace ServerTools
                             }
                             if (VehicleRecall.IsEnabled)
                             {
-                                if (messageLowerCase.StartsWith(VehicleRecall.Command_vehicle_del + " "))
+                                if (messageLowerCase.StartsWith(VehicleRecall.Command_vehicle_remove + " "))
                                 {
-                                    messageLowerCase = messageLowerCase.Replace(VehicleRecall.Command_vehicle_del + " ", "");
+                                    messageLowerCase = messageLowerCase.Replace(VehicleRecall.Command_vehicle_remove + " ", "");
                                     VehicleRecall.RemoveVehicle(_cInfo, messageLowerCase);
                                     return false;
                                 }
@@ -1310,6 +1310,30 @@ namespace ServerTools
                                     return false;
                                 }
                             }
+                            if (Pickup.IsEnabled)
+                            {
+                                if (messageLowerCase == Pickup.Command_pickup)
+                                {
+                                    Pickup.Exec(_cInfo);
+                                    return false;
+                                }
+                            }
+                            if (Wall.IsEnabled)
+                            {
+                                if (messageLowerCase == Wall.Command_wall)
+                                {
+                                    Wall.Exec(_cInfo);
+                                    return false;
+                                }
+                            }
+                            if (Bed.IsEnabled)
+                            {
+                                if (messageLowerCase == Bed.Command_bed)
+                                {
+                                    Bed.Exec(_cInfo);
+                                    return false;
+                                }
+                            }
                             if (BlackJack.IsEnabled && WebAPI.IsEnabled)
                             {
                                 if (messageLowerCase == BlackJack.Command_blackjack)
@@ -1541,7 +1565,7 @@ namespace ServerTools
                         {
                             if (_recipientEntityIds.Count == 0)
                             {
-                                List<EntityPlayer> players = PersistentOperations.PlayerList();
+                                List<EntityPlayer> players = PersistentOperations.ListPlayers();
                                 for (int i = 0; i < players.Count; i++)
                                 {
                                     _recipientEntityIds.Add(players[i].entityId);
@@ -1551,7 +1575,7 @@ namespace ServerTools
                         else
                         {
                             List<int> recipients = new List<int>();
-                            List<EntityPlayer> players = PersistentOperations.PlayerList();
+                            List<EntityPlayer> players = PersistentOperations.ListPlayers();
                             for (int i = 0; i < players.Count; i++)
                             {
                                 recipients.Add(players[i].entityId);

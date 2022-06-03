@@ -12,8 +12,8 @@ namespace ServerTools
         public static int Admin_Level = 0, Days_Before_Log_Delete = 5;
 
         private static readonly List<string> Dict = new List<string>();
-
         private static readonly Dictionary<int, int> Flags = new Dictionary<int, int>();
+
         private static readonly string file = "InvalidItems.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static readonly string DetectionFile = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
@@ -472,29 +472,58 @@ namespace ServerTools
                             {
                                 foreach (TileEntity tile in tiles.dict.Values)
                                 {
-                                    if (tile.GetTileEntityType().ToString().Equals("SecureLoot"))
+                                    if (tile is TileEntitySecureLootContainer)
                                     {
                                         TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
                                         if (GameManager.Instance.adminTools.GetUserPermissionLevel(SecureLoot.GetOwner()) > Admin_Level)
                                         {
                                             ItemStack[] items = SecureLoot.items;
                                             int slotNumber = 0;
-                                            foreach (ItemStack item in items)
+                                            for (int j = 0; j < items.Length; j++)
                                             {
-                                                if (!item.IsEmpty())
+                                                if (items[j] != null && !items[j].IsEmpty())
                                                 {
-                                                    string itemName = ItemClass.list[item.itemValue.type].Name;
+                                                    string itemName = ItemClass.list[items[j].itemValue.type].Name;
                                                     if (Dict.Contains(itemName))
                                                     {
                                                         ItemStack itemStack = new ItemStack();
                                                         SecureLoot.UpdateSlot(slotNumber, itemStack.Clone());
                                                         tile.SetModified();
-                                                        Vector3i _chestPos = SecureLoot.localChunkPos;
+                                                        Vector3i chestPos = SecureLoot.localChunkPos;
                                                         using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
                                                         {
-                                                            sw.WriteLine("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", item.count, itemName, _chestPos, SecureLoot.GetOwner().CombinedString);
+                                                            sw.WriteLine("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", items[j].count, itemName, chestPos, SecureLoot.GetOwner().CombinedString);
                                                         }
-                                                        Log.Out(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", item.count, itemName, _chestPos, SecureLoot.GetOwner().CombinedString));
+                                                        Log.Out(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", items[j].count, itemName, chestPos, SecureLoot.GetOwner().CombinedString));
+                                                    }
+                                                }
+                                                slotNumber++;
+                                            }
+                                        }
+                                    }
+                                    else if (tile is TileEntitySecureLootContainerSigned)
+                                    {
+                                        TileEntitySecureLootContainerSigned SecureLoot = (TileEntitySecureLootContainerSigned)tile;
+                                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(SecureLoot.GetOwner()) > Admin_Level)
+                                        {
+                                            ItemStack[] items = SecureLoot.items;
+                                            int slotNumber = 0;
+                                            for (int j = 0; j < items.Length; j++)
+                                            {
+                                                if (items[j] != null && !items[j].IsEmpty())
+                                                {
+                                                    string itemName = ItemClass.list[items[j].itemValue.type].Name;
+                                                    if (Dict.Contains(itemName))
+                                                    {
+                                                        ItemStack itemStack = new ItemStack();
+                                                        SecureLoot.UpdateSlot(slotNumber, itemStack.Clone());
+                                                        tile.SetModified();
+                                                        Vector3i chestPos = SecureLoot.localChunkPos;
+                                                        using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
+                                                        {
+                                                            sw.WriteLine("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", items[j].count, itemName, chestPos, SecureLoot.GetOwner().CombinedString);
+                                                        }
+                                                        Log.Out(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", items[j].count, itemName, chestPos, SecureLoot.GetOwner().CombinedString));
                                                     }
                                                 }
                                                 slotNumber++;

@@ -30,7 +30,7 @@ namespace ServerTools
                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
-                ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
+                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[0]);
                 if (cInfo != null)
                 {
                     EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);

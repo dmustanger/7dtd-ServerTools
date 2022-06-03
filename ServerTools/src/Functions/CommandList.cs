@@ -238,7 +238,7 @@ namespace ServerTools
                             Mute.Command_mutelist = kvp.Value;
                             continue;
                         case "commands":
-                            CustomCommands.Command_commands = kvp.Value;
+                            PersistentOperations.Command_commands = kvp.Value;
                             continue;
                         case "day7":
                             Day7.Command_day7 = kvp.Value;
@@ -426,8 +426,8 @@ namespace ServerTools
                         case "vehicle save":
                             VehicleRecall.Command_vehicle_save = kvp.Value;
                             continue;
-                        case "vehicle del":
-                            VehicleRecall.Command_vehicle_del = kvp.Value;
+                        case "vehicle remove":
+                            VehicleRecall.Command_vehicle_remove = kvp.Value;
                             continue;
                         case "report":
                             Report.Command_report = kvp.Value;
@@ -576,6 +576,15 @@ namespace ServerTools
                         case "expire":
                             PersistentOperations.Command_expire = kvp.Value;
                             continue;
+                        case "pickup":
+                            Pickup.Command_pickup = kvp.Value;
+                            continue;
+                        case "wall":
+                            Wall.Command_wall = kvp.Value;
+                            continue;
+                        case "bed":
+                            Bed.Command_bed = kvp.Value;
+                            continue;
                     }
                 }
             }
@@ -665,7 +674,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"loc\" Replacement=\"loc\" />");
             Commands.Add("    <Command Default=\"vehicle\" Replacement=\"vehicle\" />");
             Commands.Add("    <Command Default=\"vehicle save\" Replacement=\"vehicle save\" />");
-            Commands.Add("    <Command Default=\"vehicle del\" Replacement=\"vehicle del\" />");
+            Commands.Add("    <Command Default=\"vehicle remove\" Replacement=\"vehicle remove\" />");
             Commands.Add("    <Command Default=\"report\" Replacement=\"report\" />");
             Commands.Add("    <Command Default=\"bounty\" Replacement=\"bounty\" />");
             Commands.Add("    <Command Default=\"lottery\" Replacement=\"lottery\" />");
@@ -715,6 +724,9 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"party add\" Replacement=\"party add\" />");
             Commands.Add("    <Command Default=\"party remove\" Replacement=\"party remove\" />");
             Commands.Add("    <Command Default=\"expire\" Replacement=\"expire\" />");
+            Commands.Add("    <Command Default=\"pickup\" Replacement=\"pickup\" />");
+            Commands.Add("    <Command Default=\"wall\" Replacement=\"wall\" />");
+            Commands.Add("    <Command Default=\"bed\" Replacement=\"bed\" />");
         }
 
         private static void UpgradeXml()
@@ -734,8 +746,8 @@ namespace ServerTools
                     {
                         for (int i = 0; i < OldNodeList.Count; i++)
                         {
-                            if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("    <!-- All capital letters in commands") &&
-                                !OldNodeList[i].OuterXml.Contains("    <!-- Leave the default alone."))
+                            if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- All capital letters in commands") &&
+                                !OldNodeList[i].OuterXml.Contains("<!-- Leave the default alone."))
                             {
                                 sw.WriteLine(OldNodeList[i].OuterXml);
                             }

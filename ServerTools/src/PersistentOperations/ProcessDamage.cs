@@ -43,9 +43,23 @@ namespace ServerTools
                                         EntityPlayer attackingPlayer = attacker as EntityPlayer;
                                         if (attackingItem(__instance) != null)
                                         {
-                                            if (DamageDetector.IsEnabled && !DamageDetector.IsValidPvP(victim as EntityPlayer, cInfoAttacker, strength(__instance), attackingItem(__instance)))
+                                            if (DamageDetector.IsEnabled)
                                             {
-                                                return true;
+                                                if (DamageDetector.LogEnabled)
+                                                {
+                                                    float distance = attackingPlayer.GetDistance(victimPlayer);
+                                                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                                                    {
+                                                        sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' '{6}' named '{7}' @ '{8}' using '{9}' for '{10}' damage. Distance '{11}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, cInfoVictim.PlatformId.CombinedString, cInfoVictim.CrossplatformId.CombinedString, cInfoVictim.playerName, cInfoVictim.latestPlayerData.ecd.pos, attackingItem(__instance).ItemClass.GetLocalizedItemName() ?? attackingItem(__instance).ItemClass.GetItemName(), strength(__instance), distance));
+                                                        sw.WriteLine();
+                                                        sw.Flush();
+                                                        sw.Close();
+                                                    }
+                                                }
+                                                if (!DamageDetector.IsValidPvP(victim as EntityPlayer, cInfoAttacker, strength(__instance), attackingItem(__instance)))
+                                                {
+                                                    return true;
+                                                }
                                             }
                                             if (InfiniteAmmo.IsEnabled && attackingItem(__instance).ItemClass.IsGun())
                                             {
@@ -88,14 +102,6 @@ namespace ServerTools
                                         {
                                             Market.PvEViolation(cInfoAttacker);
                                             return true;
-                                        }
-                                        float distance = attackingPlayer.GetDistance(victimPlayer);
-                                        using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
-                                        {
-                                            sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' '{6}' named '{7}' @ '{8}' using '{9}' for '{10}' damage. Distance '{11}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, cInfoVictim.PlatformId.CombinedString, cInfoVictim.CrossplatformId.CombinedString, cInfoVictim.playerName, cInfoVictim.latestPlayerData.ecd.pos, attackingItem(__instance).ItemClass.GetLocalizedItemName() ?? attackingItem(__instance).ItemClass.GetItemName(), strength(__instance), distance));
-                                            sw.WriteLine();
-                                            sw.Flush();
-                                            sw.Close();
                                         }
                                         if (bFatal(__instance) && victimPlayer.IsAlive() && lastEntityKilled != victimPlayer.entityId)
                                         {
@@ -167,9 +173,23 @@ namespace ServerTools
                                 EntityPlayer attackingPlayer = attacker as EntityPlayer;
                                 if (attackingItem(__instance) != null)
                                 {
-                                    if (DamageDetector.IsEnabled && !DamageDetector.IsValidEntityDamage(attackingPlayer, cInfoAttacker, strength(__instance), attackingItem(__instance)))
+                                    if (DamageDetector.IsEnabled)
                                     {
-                                        return true;
+                                        if (DamageDetector.LogEnabled)
+                                        {
+                                            int distance = (int)attackingPlayer.GetDistance(victim);
+                                            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                                            {
+                                                sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' named '{6}' @ '{7}' using '{8}' for '{9}' damage. Distance '{10}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, victim.entityId, victim.EntityClass.entityClassName, victim.position, attackingItem(__instance).ItemClass.GetLocalizedItemName() ?? attackingItem(__instance).ItemClass.GetItemName(), strength(__instance), distance));
+                                                sw.WriteLine();
+                                                sw.Flush();
+                                                sw.Close();
+                                            }
+                                        }
+                                        if (!DamageDetector.IsValidEntityDamage(attackingPlayer, cInfoAttacker, strength(__instance), attackingItem(__instance)))
+                                        {
+                                            return true;
+                                        }
                                     }
                                     if (InfiniteAmmo.IsEnabled && attackingItem(__instance).ItemClass.IsGun())
                                     {
@@ -214,14 +234,6 @@ namespace ServerTools
                                     Phrases.Dict.TryGetValue("Lobby12", out string phrase);
                                     ChatHook.ChatMessage(cInfoAttacker, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return true;
-                                }
-                                int distance = (int)attackingPlayer.GetDistance(victim);
-                                using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
-                                {
-                                    sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' named '{6}' @ '{7}' using '{8}' for '{9}' damage. Distance '{10}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, victim.entityId, victim.EntityClass.entityClassName, victim.position, attackingItem(__instance).ItemClass.GetLocalizedItemName() ?? attackingItem(__instance).ItemClass.GetItemName(), strength(__instance), distance));
-                                    sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
                                 }
                             }
                         }
