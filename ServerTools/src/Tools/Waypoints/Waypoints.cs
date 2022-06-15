@@ -464,22 +464,25 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.IsEnabled && _cost >= 1)
+                int currency = 0;
+                int bankValue = 0;
+                if (Wallet.IsEnabled)
                 {
-                    if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= _cost)
-                    {
-                        Exec(_cInfo, _waypoint, _position, _friends, _cost);
-                    }
-                    else
-                    {
-                        Phrases.Dict.TryGetValue("Waypoints14", out string phrase);
-                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (Bank.IsEnabled && Bank.Payments)
+                {
+                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (currency + bankValue >= _cost)
+                {
+                    Exec(_cInfo, _waypoint, _position, _friends, _cost);
                 }
                 else
                 {
-                    Exec(_cInfo, _waypoint, _position, _friends, 0);
+                    Phrases.Dict.TryGetValue("Waypoints14", out string phrase);
+                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -507,12 +510,19 @@ namespace ServerTools
                             FriendInvite(_cInfo, _position, waypointPos);
                         }
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                        if (Command_Cost >= 1 && Wallet.IsEnabled)
+                        {
+                            if (Bank.IsEnabled && Bank.Payments)
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
+                            }
+                            else
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
+                            }
+                        }
                         PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint = DateTime.Now;
                         PersistentContainer.DataChange = true;
-                        if (Wallet.IsEnabled && _cost >= 1)
-                        {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
-                        }
                     }
                     else
                     {
@@ -534,12 +544,19 @@ namespace ServerTools
                             FriendInvite(_cInfo, _position, waypointData[0]);
                         }
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                        if (Command_Cost >= 1 && Wallet.IsEnabled)
+                        {
+                            if (Bank.IsEnabled && Bank.Payments)
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
+                            }
+                            else
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
+                            }
+                        }
                         PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint = DateTime.Now;
                         PersistentContainer.DataChange = true;
-                        if (Wallet.IsEnabled && _cost >= 1)
-                        {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
-                        }
                     }
                     else
                     {

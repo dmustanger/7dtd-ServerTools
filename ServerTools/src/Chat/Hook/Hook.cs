@@ -69,7 +69,7 @@ namespace ServerTools
                         {
                             if (ChatLog.IsEnabled)
                             {
-                                ChatLog.Exec(_message, _mainName);
+                                ChatLog.Exec(_message, _mainName, _type);
                             }
                             if (ChatFlood)
                             {

@@ -8,21 +8,9 @@ namespace ServerTools
 {
     public class API : IModApi
     {
-        public static string GamePath = Path();
+        public static string GamePath = GamePrefs.GetString(EnumGamePrefs.UserDataFolder);
         public static string ConfigPath = string.Format("{0}/ServerTools", GamePath);
         public static List<string> Verified = new List<string>();
-
-        public static string Path()
-        {
-            if (!GamePrefs.IsDefault(EnumGamePrefs.UserDataFolder))
-            {
-                return GamePrefs.GetString(EnumGamePrefs.UserDataFolder);
-            }
-            else
-            {
-                return Directory.GetCurrentDirectory();
-            }
-        }
 
         public void InitMod(Mod _modInstance)
         {

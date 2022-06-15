@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Xml;
 using UnityEngine;
 
 namespace ServerTools
@@ -6,10 +8,43 @@ namespace ServerTools
     class Wallet
     {
         public static bool IsEnabled = false, Bank_Transfers = false, PVP = false;
-        public static string Currency_Name = "coin";
+        public static string Currency_Name = "coin", Item_Name = "casinoCoin";
         public static int Zombie_Kill = 10, Player_Kill = 25, Session_Bonus = 5;
 
         public static Dictionary<int, int> UpdateRequired = new Dictionary<int, int>();
+
+        public static void SetItem(string _item)
+        {
+            try
+            {
+                if (File.Exists(API.GamePath + "/Mods/ServerTools/Config/items.xml"))
+                {
+                    string[] arrLines = File.ReadAllLines(API.GamePath + "/Mods/ServerTools/Config/items.xml");
+                    int lineNumber = 0;
+                    for (int i = 0; i < arrLines.Length; i++)
+                    {
+                        if (arrLines[i].Contains("set xpath"))
+                        {
+                            if (arrLines[i].Contains(_item))
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                arrLines[lineNumber] = string.Format("<set xpath=\"/items/item[@name='{0}']/property[@name='Tags']/@value\">dukes,currency</set>", _item);
+                                File.WriteAllLines(API.GamePath + "/Mods/ServerTools/Config/items.xml", arrLines);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (XmlException e)
+            {
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", API.GamePath + "/Mods/ServerTools/Config/items.xml", e.Message));
+                return;
+            }
+        }
 
         public static int GetCurrency(string _id)
         {
@@ -111,7 +146,7 @@ namespace ServerTools
             }
         }
 
-        public static void RemoveCurrency(string _steamid, int _amount)
+        public static void RemoveCurrency(string _steamid, int _amount, bool _bankPayment)
         {
             int count = 0;
             ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_steamid);
@@ -123,6 +158,8 @@ namespace ServerTools
                     if (player.IsSpawned())
                     {
                         count = GetCurrency(cInfo.CrossplatformId.CombinedString);
+                        GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
+                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
                         if (count > _amount)
                         {
                             count -= _amount;
@@ -130,19 +167,17 @@ namespace ServerTools
                             if (stack != null)
                             {
                                 UpdateRequired.Add(cInfo.entityId, count);
-                                GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
-                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
                             }
                         }
-                        else if (count == _amount)
+                        else if (count < _amount && _bankPayment)
                         {
-                            GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
-                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
+                            PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank -= _amount;
+                            PersistentContainer.DataChange = true;
                         }
                     }
                     else
                     {
-                        Timers.Wallet_Remove_SingleUseTimer(cInfo.CrossplatformId.CombinedString, count);
+                        Timers.Wallet_Remove_SingleUseTimer(cInfo.CrossplatformId.CombinedString, count, _bankPayment);
                     }
                 }
             }

@@ -11,84 +11,112 @@ namespace ServerTools
 
         public static void Load()
         {
-            PersistentOperations.SetFolders();
-
-            if (!Directory.Exists(API.ConfigPath))
+            string assemblyVersionNoDecimal = Config.Version.Replace(".", "");
+            int.TryParse(assemblyVersionNoDecimal, out int assemblyVersion);
+            for (int i = 0; i < ModManager.GetLoadedMods().Count; i++)
             {
-                Directory.CreateDirectory(API.ConfigPath);
-                Log.Out(string.Format("[SERVERTOOLS] Created new directory '{0}'", API.ConfigPath));
+                Mod mod = ModManager.GetLoadedMods()[i];
+                if (mod.ModInfo.Name.Value.Contains("ServerTools") && mod.ModInfo.Version != null)
+                {
+                    string versionNoDecimal = mod.ModInfo.Version.Value.Replace(".", "");
+                    int.TryParse(versionNoDecimal, out int version);
+                    if (assemblyVersion < version)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Disabled version '{0}' of ServerTools. Version '{1}' was detected operating simultaneously", Config.Version, version));
+                        return;
+                    }
+                }
+            }
+
+            string configPath = API.ConfigPath;
+            if (!Directory.Exists(configPath))
+            {
+                Directory.CreateDirectory(configPath);
+                Log.Out(string.Format("[SERVERTOOLS] Created new directory '{0}'", configPath));
             }
             else
             {
-                Log.Out(string.Format("[SERVERTOOLS] Located directory '{0}'", API.ConfigPath));
+                Log.Out(string.Format("[SERVERTOOLS] Located directory '{0}'", configPath));
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/ChatLogs"))
+            if (!Directory.Exists(configPath + "/Logs/ChatLogs"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/ChatLogs");
+                Directory.CreateDirectory(configPath + "/Logs/ChatLogs");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/DetectionLogs"))
+            if (!Directory.Exists(configPath + "/Logs/DetectionLogs"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/DetectionLogs");
+                Directory.CreateDirectory(configPath + "/Logs/DetectionLogs");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/BountyLogs"))
+            if (!Directory.Exists(configPath + "/Logs/BountyLogs"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/BountyLogs");
+                Directory.CreateDirectory(configPath + "/Logs/BountyLogs");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/AuctionLog"))
+            if (!Directory.Exists(configPath + "/Logs/AuctionLog"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/AuctionLogs");
+                Directory.CreateDirectory(configPath + "/Logs/AuctionLogs");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/BankLogs"))
+            if (!Directory.Exists(configPath + "/Logs/BankLogs"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/BankLogs");
+                Directory.CreateDirectory(configPath + "/Logs/BankLogs");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/DupeLogs"))
+            if (!Directory.Exists(configPath + "/Logs/DupeLogs"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/DupeLogs");
+                Directory.CreateDirectory(configPath + "/Logs/DupeLogs");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/PlayerLogs"))
+            if (!Directory.Exists(configPath + "/Logs/PlayerLogs"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/PlayerLogs");
+                Directory.CreateDirectory(configPath + "/Logs/PlayerLogs");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/PlayerReports"))
+            if (!Directory.Exists(configPath + "/Logs/PlayerReports"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/PlayerReports");
+                Directory.CreateDirectory(configPath + "/Logs/PlayerReports");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/PollLogs"))
+            if (!Directory.Exists(configPath + "/Logs/PollLogs"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/PollLogs");
+                Directory.CreateDirectory(configPath + "/Logs/PollLogs");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/ChatCommandLogs"))
+            if (!Directory.Exists(configPath + "/Logs/ChatCommandLogs"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/ChatCommandLogs");
+                Directory.CreateDirectory(configPath + "/Logs/ChatCommandLogs");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/DamageLogs"))
+            if (!Directory.Exists(configPath + "/Logs/DamageLogs"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/DamageLogs");
+                Directory.CreateDirectory(configPath + "/Logs/DamageLogs");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/BlockLogs"))
+            if (!Directory.Exists(configPath + "/Logs/BlockLogs"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/BlockLogs");
+                Directory.CreateDirectory(configPath + "/Logs/BlockLogs");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/ConsoleCommandLogs"))
+            if (!Directory.Exists(configPath + "/Logs/ConsoleCommandLogs"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/ConsoleCommandLogs");
+                Directory.CreateDirectory(configPath + "/Logs/ConsoleCommandLogs");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/WebPanelLogs"))
+            if (!Directory.Exists(configPath + "/Logs/WebPanelLogs"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/WebPanelLogs");
+                Directory.CreateDirectory(configPath + "/Logs/WebPanelLogs");
             }
-            if (!Directory.Exists(API.ConfigPath + "/Logs/OutputLogs"))
+            if (!Directory.Exists(configPath + "/Logs/OutputLogs"))
             {
-                Directory.CreateDirectory(API.ConfigPath + "/Logs/OutputLogs");
+                Directory.CreateDirectory(configPath + "/Logs/OutputLogs");
             }
-            if (!Directory.Exists(API.GamePath + "/Mods/ServerTools/Config"))
+            if (!Directory.Exists(configPath + "/Mods/ServerTools/Config"))
             {
-                Directory.CreateDirectory(API.GamePath + "/Mods/ServerTools/Config");
+                Directory.CreateDirectory(configPath + "/Mods/ServerTools/Config");
             }
-            if (!Directory.Exists(API.GamePath + "/Mods/ServerTools/Config/XUi"))
+            if (!Directory.Exists(configPath + "/Mods/ServerTools/Config/XUi"))
             {
-                Directory.CreateDirectory(API.GamePath + "/Mods/ServerTools/Config/XUi");
+                Directory.CreateDirectory(configPath + "/Mods/ServerTools/Config/XUi");
+            }
+            string gamePath = API.GamePath;
+            if (Directory.Exists(gamePath + "/Mods/ServerTools"))
+            {
+                if (Directory.Exists(gamePath + "/Mods/ServerTools/WebAPI"))
+                {
+                    WebAPI.Directory = gamePath + "/Mods/ServerTools/WebAPI/";
+                }
+                if (Directory.Exists(gamePath + "/Mods/ServerTools/Config"))
+                {
+                    PersistentOperations.XPathDir = gamePath + "/Mods/ServerTools/Config/";
+                }
             }
 
             StateManager.Awake();
@@ -96,7 +124,7 @@ namespace ServerTools
             RunTimePatch.PatchAll();
 
             Config.Load();
-            Log.Out("[SERVERTOOLS] Running ServerTools v.{0}", Config.Version);
+            Log.Out("[SERVERTOOLS] Running ServerTools Config v.{0}", Config.Version);
 
             CommandList.BuildList();
             CommandList.Load();

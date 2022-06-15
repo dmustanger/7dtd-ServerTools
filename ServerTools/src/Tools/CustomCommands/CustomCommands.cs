@@ -283,7 +283,7 @@ namespace ServerTools
                 if (Dict.TryGetValue(_command, out string[] c))
                 {
                     int.TryParse(c[1], out int delay);
-                    int.TryParse(c[4], out int cost);
+                    int.TryParse(c[5], out int cost);
                     bool.TryParse(c[3], out bool reserved);
                     if (reserved && !ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) && !ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                     {
@@ -401,13 +401,21 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.IsEnabled && _cost > 0)
+                if (_cost > 0 && Wallet.IsEnabled)
                 {
-                    int currentCoins = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                    if (currentCoins >= _cost)
+                    int currency = 0;
+                    int bankValue = 0;
+                    if (Wallet.IsEnabled)
                     {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
-                        ProcessCommand(_cInfo, _command);
+                        currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                    }
+                    if (Bank.IsEnabled && Bank.Payments)
+                    {
+                        bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                    }
+                    if (currency + bankValue >= _cost)
+                    {
+                        ProcessCommand(_cInfo, _command, _cost);
                     }
                     else
                     {
@@ -418,7 +426,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    ProcessCommand(_cInfo, _command);
+                    ProcessCommand(_cInfo, _command, 0);
                 }
             }
             catch (Exception e)
@@ -427,7 +435,7 @@ namespace ServerTools
             }
         }
 
-        private static void ProcessCommand(ClientInfo _cInfo, string _command)
+        private static void ProcessCommand(ClientInfo _cInfo, string _command, int _cost)
         {
             try
             {
@@ -482,6 +490,17 @@ namespace ServerTools
                     else
                     {
                         CommandExec(_cInfo, commandData[0], _command);
+                    }
+                    if (_cost >= 1 && Wallet.IsEnabled)
+                    {
+                        if (Bank.IsEnabled && Bank.Payments)
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost, true);
+                        }
+                        else
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost, false);
+                        }
                     }
                 }
             }

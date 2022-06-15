@@ -9,7 +9,7 @@ namespace ServerTools
 {
     class Bank
     {
-        public static bool IsEnabled = false, Inside_Claim = false, Player_Transfers = false;
+        public static bool IsEnabled = false, Inside_Claim = false, Player_Transfers = false, Direct_Deposit = false, Payments = false;
         public static string Command_bank = "bank", Command_deposit = "deposit", Command_withdraw = "withdraw", Command_transfer = "transfer";
         public static int Deposit_Fee_Percent = 5;
 
@@ -17,9 +17,8 @@ namespace ServerTools
 
         private static readonly string file = string.Format("Bank_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static readonly string Filepath = string.Format("{0}/Logs/BankLogs/{1}", API.ConfigPath, file);
-        private static readonly System.Random Random = new System.Random();
 
-        public static int GetCurrent(string _steamid)
+        public static int GetCurrency(string _steamid)
         {
             int bankValue = PersistentContainer.Instance.Players[_steamid].Bank;
             if (bankValue < 0)
@@ -53,7 +52,7 @@ namespace ServerTools
         {
             try
             {
-                int bank = GetCurrent(_cInfo.CrossplatformId.CombinedString);
+                int bank = GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 if (TransferId.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
                     TransferId.TryGetValue(_cInfo.CrossplatformId.CombinedString, out int id);
@@ -85,7 +84,7 @@ namespace ServerTools
 
         private static int GenerateTransferId()
         {
-            int id = Random.Next(1000, 8001);
+            int id = new System.Random().Next(1000, 8001);
             if (!TransferId.ContainsValue(id))
             {
                 return id;
@@ -142,7 +141,7 @@ namespace ServerTools
                     {
                         if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= value)
                         {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, value);
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, value, false);
                             if (Deposit_Fee_Percent > 0)
                             {
                                 float fee = value * ((float)Deposit_Fee_Percent / 100);
@@ -211,7 +210,7 @@ namespace ServerTools
                     {
                         if (int.TryParse(_amount, out int value))
                         {
-                            if (GetCurrent(_cInfo.CrossplatformId.CombinedString) >= value)
+                            if (GetCurrency(_cInfo.CrossplatformId.CombinedString) >= value)
                             {
                                 int maxAllowed;
                                 if (itemValue.ItemClass.Stacknumber != null)
@@ -300,7 +299,7 @@ namespace ServerTools
                         {
                             if (TransferId.ContainsValue(id))
                             {
-                                if (GetCurrent(_cInfo.CrossplatformId.CombinedString) >= value)
+                                if (GetCurrency(_cInfo.CrossplatformId.CombinedString) >= value)
                                 {
                                     foreach (KeyValuePair<string, int> bankData in TransferId)
                                     {

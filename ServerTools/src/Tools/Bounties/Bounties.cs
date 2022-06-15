@@ -73,12 +73,31 @@ namespace ServerTools
                                 {
                                     bounty = Minimum_Bounty;
                                 }
-                                int currentCoins = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                                if (currentCoins >= bounty)
+                                int currency = 0;
+                                int bankValue = 0;
+                                if (Wallet.IsEnabled)
                                 {
-                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, bounty);
-                                    int _currentbounty = PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].Bounty;
-                                    PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].Bounty = _currentbounty + bounty;
+                                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                                }
+                                if (Bank.IsEnabled && Bank.Payments)
+                                {
+                                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                                }
+                                if (currency + bankValue >= bounty)
+                                {
+                                    if (bounty >= 1)
+                                    {
+                                        if (Bank.IsEnabled && Bank.Payments)
+                                        {
+                                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, bounty, true);
+                                        }
+                                        else
+                                        {
+                                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, bounty, false);
+                                        }
+                                    }
+                                    int currentbounty = PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].Bounty;
+                                    PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].Bounty = currentbounty + bounty;
                                     PersistentContainer.DataChange = true;
                                     using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                     {
@@ -114,10 +133,29 @@ namespace ServerTools
                         ClientInfo cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_id);
                         if (cInfo2 != null)
                         {
-                            int currentCoins = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                            if (currentCoins >= Minimum_Bounty)
+                            int currency = 0;
+                            int bankValue = 0;
+                            if (Wallet.IsEnabled)
                             {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Minimum_Bounty);
+                                currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                            }
+                            if (Bank.IsEnabled && Bank.Payments)
+                            {
+                                bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                            }
+                            if (currency + bankValue >= Minimum_Bounty)
+                            {
+                                if (Minimum_Bounty >= 1)
+                                {
+                                    if (Bank.IsEnabled && Bank.Payments)
+                                    {
+                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Minimum_Bounty, true);
+                                    }
+                                    else
+                                    {
+                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Minimum_Bounty, false);
+                                    }
+                                }
                                 int _currentbounty = PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].Bounty;
                                 PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].Bounty = _currentbounty + Minimum_Bounty;
                                 PersistentContainer.DataChange = true;

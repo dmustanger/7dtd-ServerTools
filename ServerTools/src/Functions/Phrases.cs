@@ -1690,6 +1690,11 @@ namespace ServerTools
                         phrase = "{Name1} has been ate by {Name2}. Nom nom nom";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"KillNotice8\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("KillNotice9", out phrase))
+                    {
+                        phrase = "{Name} has died from {DamageType}";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"KillNotice9\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************ Stuck ************************* -->");
@@ -3187,6 +3192,11 @@ namespace ServerTools
                         phrase = "Pickup is blocked in this area until {DateTime}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Pickup6\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Pickup7", out phrase))
+                    {
+                        phrase = "Invalid block type. Unable to pickup";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Pickup7\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************** Wall ************************ -->");

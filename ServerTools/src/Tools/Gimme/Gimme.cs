@@ -263,7 +263,7 @@ namespace ServerTools
                 {
                     if (Delay_Between_Uses < 1)
                     {
-                        if (Wallet.IsEnabled && Command_Cost > 0)
+                        if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
                         {
                             CommandCost(_cInfo);
                         }
@@ -322,7 +322,7 @@ namespace ServerTools
             {
                 if (_timepassed >= _delay)
                 {
-                    if (Wallet.IsEnabled && Command_Cost > 0)
+                    if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
                     {
                         CommandCost(_cInfo);
                     }
@@ -352,7 +352,17 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
+                int currency = 0;
+                int bankValue = 0;
+                if (Wallet.IsEnabled)
+                {
+                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (Bank.IsEnabled && Bank.Payments)
+                {
+                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (currency + bankValue >= Command_Cost)
                 {
                     ZCheck(_cInfo);
                 }
@@ -410,9 +420,16 @@ namespace ServerTools
                             int.TryParse(item[1], out int minCount);
                             int.TryParse(item[2], out int maxCount);
                             int count = Random.Next(minCount, maxCount + 1);
-                            if (Command_Cost >= 1)
+                            if (Command_Cost >= 1 && Wallet.IsEnabled)
                             {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
+                                if (Bank.IsEnabled && Bank.Payments)
+                                {
+                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
+                                }
+                                else
+                                {
+                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
+                                }
                             }
                             Wallet.AddCurrency(_cInfo.CrossplatformId.CombinedString, count);
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
@@ -466,9 +483,16 @@ namespace ServerTools
                         world.SpawnEntityInWorld(entityItem);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                         world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                        if (Wallet.IsEnabled && Command_Cost >= 1)
+                        if (Command_Cost >= 1 && Wallet.IsEnabled)
                         {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
+                            if (Bank.IsEnabled && Bank.Payments)
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
+                            }
+                            else
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
+                            }
                         }
                         PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
                         PersistentContainer.DataChange = true;
@@ -507,9 +531,16 @@ namespace ServerTools
                         {
                             SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("st-Ser {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, zombieId), null);
                             Log.Out(string.Format("[SERVERTOOLS] Gimme result spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
-                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            if (Command_Cost >= 1 && Wallet.IsEnabled)
                             {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
+                                if (Bank.IsEnabled && Bank.Payments)
+                                {
+                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
+                                }
+                                else
+                                {
+                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
+                                }
                             }
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
                             PersistentContainer.DataChange = true;
@@ -527,9 +558,16 @@ namespace ServerTools
                         {
                             SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("st-Ser {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, _zombieId), null);
                             Log.Out(string.Format("[SERVERTOOLS] Gimme result spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
-                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            if (Command_Cost >= 1 && Wallet.IsEnabled)
                             {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
+                                if (Bank.IsEnabled && Bank.Payments)
+                                {
+                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
+                                }
+                                else
+                                {
+                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
+                                }
                             }
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
                             PersistentContainer.DataChange = true;

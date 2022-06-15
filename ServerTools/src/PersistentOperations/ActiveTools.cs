@@ -470,6 +470,19 @@ namespace ServerTools
                 Dict.Remove("Block logger");
                 Log.Out("Block logger disabled");
             }
+            if (Pickup.IsEnabled)
+            {
+                if (!Dict.Contains("Block pickup"))
+                {
+                    Dict.Add("Block pickup");
+                    Log.Out("Block pickup enabled");
+                }
+            }
+            else if (Dict.Contains("Block pickup") && !_initiating)
+            {
+                Dict.Remove("Block pickup");
+                Log.Out("Block pickup disabled");
+            }
             if (Bloodmoon.IsEnabled)
             {
                 if (!Dict.Contains("Bloodmoon"))
@@ -1055,19 +1068,6 @@ namespace ServerTools
                 Dict.Remove("No vehicle pickup");
                 Log.Out("No vehicle pickup disabled");
             }
-            if (Pickup.IsEnabled)
-            {
-                if (!Dict.Contains("Pickup"))
-                {
-                    Dict.Add("Pickup");
-                    Log.Out("Pickup enabled");
-                }
-            }
-            else if (Dict.Contains("Pickup") && !_initiating)
-            {
-                Dict.Remove("Pickup");
-                Log.Out("Pickup disabled");
-            }
             if (POIProtection.IsEnabled)
             {
                 if (!Dict.Contains("POI protection"))
@@ -1409,7 +1409,7 @@ namespace ServerTools
             }
             else
             {
-                Log.Out("--------------------------------");
+                Log.Out("[SERVERTOOLS] Config updated");
             }
         }
     }

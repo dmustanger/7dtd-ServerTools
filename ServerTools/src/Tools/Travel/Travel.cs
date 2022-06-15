@@ -224,7 +224,7 @@ namespace ServerTools
             {
                 if (Delay_Between_Uses < 1)
                 {
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
                     {
                         CommandCost(_cInfo);
                     }
@@ -278,7 +278,7 @@ namespace ServerTools
             {
                 if (_timepassed >= _delay)
                 {
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
                     {
                         CommandCost(_cInfo);
                     }
@@ -308,7 +308,17 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
+                int currency = 0;
+                int bankValue = 0;
+                if (Wallet.IsEnabled)
+                {
+                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (Bank.IsEnabled && Bank.Payments)
+                {
+                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (currency + bankValue >= Command_Cost)
                 {
                     Tele(_cInfo);
                 }
@@ -368,9 +378,16 @@ namespace ServerTools
                                 int.TryParse(destination[1], out int destinationY);
                                 int.TryParse(destination[2], out int destinationZ);
                                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(destinationX, destinationY, destinationZ), null, false));
-                                if (Wallet.IsEnabled && Command_Cost >= 1)
+                                if (Command_Cost >= 1 && Wallet.IsEnabled)
                                 {
-                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
+                                    if (Bank.IsEnabled && Bank.Payments)
+                                    {
+                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
+                                    }
+                                    else
+                                    {
+                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
+                                    }
                                 }
                                 PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastTravel = DateTime.Now;
                                 PersistentContainer.DataChange = true;

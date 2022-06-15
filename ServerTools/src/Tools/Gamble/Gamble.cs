@@ -46,7 +46,17 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) < Command_Cost)
+                int currency = 0;
+                int bankValue = 0;
+                if (Wallet.IsEnabled)
+                {
+                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (Bank.IsEnabled && Bank.Payments)
+                {
+                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (currency + bankValue < Command_Cost)
                 {
                     Phrases.Dict.TryGetValue("Gamble3", out string phrase);
                     phrase = phrase.Replace("{Value}", Command_Cost.ToString());
@@ -93,7 +103,17 @@ namespace ServerTools
                         {
                             pot = new int[] { 1, 0 };
                         }
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
+                        if (Command_Cost >= 1 && Wallet.IsEnabled)
+                        {
+                            if (Bank.IsEnabled && Bank.Payments)
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
+                            }
+                            else
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
+                            }
+                        }
                         int gamble = Random.Next(pot[0] + 1);
                         if (gamble == 1)
                         {

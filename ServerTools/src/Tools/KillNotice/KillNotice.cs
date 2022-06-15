@@ -8,7 +8,8 @@ namespace ServerTools
 {
     class KillNotice
     {
-        public static bool IsEnabled = false, IsRunning = false, PvP = false, Zombie_Kills = false, Animal_Kills = false, Show_Level = false, Show_Damage = false;
+        public static bool IsEnabled = false, IsRunning = false, PvP = false, Zombie_Kills = false, 
+            Animal_Kills = false, Show_Level = false, Show_Damage = false, Misc = false;
         public static Dictionary<int, int[]> Damage = new Dictionary<int, int[]>();
 
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();
@@ -368,6 +369,14 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in KillNotice.AnimalKilledPlayer: {0}", e.Message));
             }
+        }
+
+        public static void MiscDeath(ClientInfo _cInfo, EnumDamageTypes _type)
+        {
+            Phrases.Dict.TryGetValue("KillNotice9", out string phrase);
+            phrase = phrase.Replace("{Name}", _cInfo.playerName);
+            phrase = phrase.Replace("{DamageType}", _type.ToString());
+            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
         private static void UpgradeXml()

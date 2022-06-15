@@ -21,7 +21,7 @@ namespace ServerTools
                     ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId(__instance));
                     if (cInfo != null)
                     {
-                        GameUtils.KickPlayerForClientInfo(__instance.Sender, new GameUtils.KickPlayerData(GameUtils.EKickReason.Banned, 0, DateTime.Now.AddDays(1095), "Auto detection has banned you for packet manipulation"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for packet manipulation\"", __instance.Sender.CrossplatformId.CombinedString), null);
                         using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                         {
                             sw.WriteLine(string.Format("Detected invalid player stat update by '{0}' '{1}' named '{2}' against '{3}' '{4}' named '{5}'", __instance.Sender.PlatformId.CombinedString, __instance.Sender.CrossplatformId.CombinedString, __instance.Sender.playerName, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));

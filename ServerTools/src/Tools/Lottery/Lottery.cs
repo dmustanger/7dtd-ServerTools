@@ -52,12 +52,32 @@ namespace ServerTools
                     {
                         if (_lottoValue > 0)
                         {
-                            if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= _lottoValue)
+                            int currency = 0;
+                            int bankValue = 0;
+                            if (Wallet.IsEnabled)
+                            {
+                                currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                            }
+                            if (Bank.IsEnabled && Bank.Payments)
+                            {
+                                bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                            }
+                            if (currency + bankValue >= _lottoValue)
                             {
                                 OpenLotto = true;
                                 LottoValue = _lottoValue;
                                 LottoEntries.Add(_cInfo);
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, LottoValue);
+                                if (LottoValue >= 1 && Wallet.IsEnabled)
+                                {
+                                    if (Bank.IsEnabled && Bank.Payments)
+                                    {
+                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, LottoValue, true);
+                                    }
+                                    else
+                                    {
+                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, LottoValue, false);
+                                    }
+                                }
                                 Phrases.Dict.TryGetValue("Lottery4", out string phrase);
                                 phrase = phrase.Replace("{Value}", _lottoValue.ToString());
                                 phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
@@ -95,12 +115,32 @@ namespace ServerTools
         {
             if (OpenLotto)
             {
-                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= LottoValue)
+                int currency = 0;
+                int bankValue = 0;
+                if (Wallet.IsEnabled)
+                {
+                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (Bank.IsEnabled && Bank.Payments)
+                {
+                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (currency + bankValue >= LottoValue)
                 {
                     if (!LottoEntries.Contains(_cInfo))
                     {
                         LottoEntries.Add(_cInfo);
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, LottoValue);
+                        if (LottoValue >= 1 && Wallet.IsEnabled)
+                        {
+                            if (Bank.IsEnabled && Bank.Payments)
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, LottoValue, true);
+                            }
+                            else
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, LottoValue, false);
+                            }
+                        }
                         Phrases.Dict.TryGetValue("Lottery7", out string phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         if (LottoEntries.Count == 8)

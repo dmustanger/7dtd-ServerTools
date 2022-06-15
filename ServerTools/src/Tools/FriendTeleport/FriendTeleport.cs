@@ -122,7 +122,7 @@ namespace ServerTools
         {
             if (_timepassed >= _delay)
             {
-                if (Wallet.IsEnabled && Command_Cost >= 1)
+                if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
                 {
                     CommandCost(_cInfo, _friend);
                 }
@@ -143,22 +143,25 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo, ClientInfo _friend)
         {
-            if (Command_Cost >= 1)
+            int currency = 0;
+            int bankValue = 0;
+            if (Wallet.IsEnabled)
             {
-                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
-                {
-                    MessageFriend(_cInfo, _friend);
-                }
-                else
-                {
-                    Phrases.Dict.TryGetValue("FriendTeleport10", out string phrase);
-                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                }
+                currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+            }
+            if (Bank.IsEnabled && Bank.Payments)
+            {
+                bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+            }
+            if (currency + bankValue >= Command_Cost)
+            {
+                MessageFriend(_cInfo, _friend);
             }
             else
             {
-                MessageFriend(_cInfo, _friend);
+                Phrases.Dict.TryGetValue("FriendTeleport10", out string phrase);
+                phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -194,18 +197,15 @@ namespace ServerTools
                 EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    if (Command_Cost >= 1 && Wallet.IsEnabled)
                     {
-                        if (Wallet.GetCurrency(cInfo2.CrossplatformId.CombinedString) >= Command_Cost)
+                        if (Bank.IsEnabled && Bank.Payments)
                         {
-                            Wallet.RemoveCurrency(cInfo2.CrossplatformId.CombinedString, Command_Cost);
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
                         }
                         else
                         {
-                            Phrases.Dict.TryGetValue("FriendTeleport10", out string phrase);
-                            phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                            ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            return;
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
                         }
                     }
                     Phrases.Dict.TryGetValue("FriendTeleport7", out string phrase1);

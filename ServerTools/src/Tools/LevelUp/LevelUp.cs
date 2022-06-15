@@ -409,7 +409,7 @@ namespace ServerTools
                                 {
                                     command = line.GetAttribute("Command");
                                 }
-                                sw.WriteLine(string.Format("    <Level Required=\"\" Command=\"{1}\"  />", level, command));
+                                sw.WriteLine(string.Format("    <Level Required=\"{0}\" Command=\"{1}\"  />", level, command));
                             }
                         }
                     }

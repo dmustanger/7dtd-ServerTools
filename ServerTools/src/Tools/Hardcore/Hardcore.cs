@@ -206,24 +206,24 @@ namespace ServerTools
             {
                 if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats.Count > 0)
                 {
-                    List<string[]> _hardcoreSavedStats = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats;
-                    for (int i = 0; i < _hardcoreSavedStats.Count; i++)
+                    List<string[]> hardcoreSavedStats = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats;
+                    for (int i = 0; i < hardcoreSavedStats.Count; i++)
                     {
-                        string[] _stats = _hardcoreSavedStats[i];
-                        Phrases.Dict.TryGetValue("Hardcore4", out string _phrase);
-                        _phrase = _phrase.Replace("{PlayerName}", _stats[0]);
-                        _phrase = _phrase.Replace("{PlayTime}", _stats[1]);
-                        _phrase = _phrase.Replace("{PlayerKills}", _stats[2]);
-                        _phrase = _phrase.Replace("{ZombieKills}", _stats[3]);
-                        _phrase = _phrase.Replace("{Deaths}", _stats[4]);
-                        _phrase = _phrase.Replace("{Score}", _stats[5]);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        string[] stats = hardcoreSavedStats[i];
+                        Phrases.Dict.TryGetValue("Hardcore4", out string phrase);
+                        phrase = phrase.Replace("{PlayerName}", stats[0]);
+                        phrase = phrase.Replace("{PlayTime}", stats[1]);
+                        phrase = phrase.Replace("{PlayerKills}", stats[2]);
+                        phrase = phrase.Replace("{ZombieKills}", stats[3]);
+                        phrase = phrase.Replace("{Deaths}", stats[4]);
+                        phrase = phrase.Replace("{Score}", stats[5]);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("Hardcore6", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Hardcore6", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -252,9 +252,29 @@ namespace ServerTools
                                     Life_Price = 0;
                                 }
                                 int cost = Life_Price * extraLives++;
-                                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= cost)
+                                int currency = 0;
+                                int bankValue = 0;
+                                if (Wallet.IsEnabled)
                                 {
-                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                                }
+                                if (Bank.IsEnabled && Bank.Payments)
+                                {
+                                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                                }
+                                if (currency + bankValue >= cost)
+                                {
+                                    if (cost >= 1 && Wallet.IsEnabled)
+                                    {
+                                        if (Bank.IsEnabled && Bank.Payments)
+                                        {
+                                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost, true);
+                                        }
+                                        else
+                                        {
+                                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost, false);
+                                        }
+                                    }
                                     stats[2] = (extraLives + 1).ToString();
                                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats = stats;
                                     PersistentContainer.DataChange = true;
@@ -399,14 +419,14 @@ namespace ServerTools
             {
                 if (_cInfo != null)
                 {
-                    Phrases.Dict.TryGetValue("Hardcore4", out string _phrase);
-                    _phrase = _phrase.Replace("{PlayerName}", _stats[0]);
-                    _phrase = _phrase.Replace("{PlayTime}", _stats[1]);
-                    _phrase = _phrase.Replace("{PlayerKills}", _stats[2]);
-                    _phrase = _phrase.Replace("{ZombieKills}", _stats[3]);
-                    _phrase = _phrase.Replace("{Deaths}", _stats[4]);
-                    _phrase = _phrase.Replace("{Score}", _stats[5]);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Hardcore4", out string phrase);
+                    phrase = phrase.Replace("{PlayerName}", _stats[0]);
+                    phrase = phrase.Replace("{PlayTime}", _stats[1]);
+                    phrase = phrase.Replace("{PlayerKills}", _stats[2]);
+                    phrase = phrase.Replace("{ZombieKills}", _stats[3]);
+                    phrase = phrase.Replace("{Deaths}", _stats[4]);
+                    phrase = phrase.Replace("{Score}", _stats[5]);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     Timers.DisconnectHardcorePlayer(_cInfo);
                 }
             }

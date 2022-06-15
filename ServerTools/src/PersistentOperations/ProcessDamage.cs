@@ -13,6 +13,8 @@ namespace ServerTools
         public static AccessTools.FieldRef<NetPackageDamageEntity, bool> bFatal = AccessTools.FieldRefAccess<NetPackageDamageEntity, bool>("bFatal");
         public static AccessTools.FieldRef<NetPackageDamageEntity, int> entityId = AccessTools.FieldRefAccess<NetPackageDamageEntity, int>("entityId");
 
+        private static AccessTools.FieldRef<NetPackageDamageEntity, EnumDamageTypes> damageTyp = AccessTools.FieldRefAccess<NetPackageDamageEntity, EnumDamageTypes>("damageTyp");
+        private static AccessTools.FieldRef<NetPackageDamageEntity, int> hitBodyPart = AccessTools.FieldRefAccess<NetPackageDamageEntity, int>("hitBodyPart");
         private static AccessTools.FieldRef<NetPackageDamageEntity, int> attackerEntityId = AccessTools.FieldRefAccess<NetPackageDamageEntity, int>("attackerEntityId");
         private static AccessTools.FieldRef<NetPackageDamageEntity, ItemValue> attackingItem = AccessTools.FieldRefAccess<NetPackageDamageEntity, ItemValue>("attackingItem");
 
@@ -89,10 +91,6 @@ namespace ServerTools
                                                 return true;
                                             }
                                         }
-                                        //if (Zones.IsEnabled && !Zones.IsValid(cInfoVictim, cInfoAttacker))
-                                        //{
-                                        //    return true;
-                                        //}
                                         if (Lobby.IsEnabled && Lobby.PvE && (Lobby.LobbyPlayers.Contains(victimPlayer.entityId) || Lobby.LobbyPlayers.Contains(attackingPlayer.entityId)))
                                         {
                                             Lobby.PvEViolation(cInfoAttacker);
@@ -259,6 +257,15 @@ namespace ServerTools
                                     }
                                 }
                             }
+                        }
+                    }
+                    else if (KillNotice.IsEnabled && KillNotice.Misc && bFatal(__instance) && victim.IsAlive())
+                    {
+                        lastEntityKilled = victim.entityId;
+                        ClientInfo cInfoVictim = PersistentOperations.GetClientInfoFromEntityId(victim.entityId);
+                        if (cInfoVictim != null)
+                        {
+                            KillNotice.MiscDeath(cInfoVictim, damageTyp(__instance));
                         }
                     }
                 }

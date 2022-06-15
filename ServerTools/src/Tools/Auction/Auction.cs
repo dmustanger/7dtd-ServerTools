@@ -310,14 +310,23 @@ namespace ServerTools
                     {
                         auctionPrices.TryGetValue(_purchase, out price);
                     }
-                    int currentCoins = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                    if (currentCoins >= price)
+                    int currency = 0;
+                    int bankValue = 0;
+                    if (Wallet.IsEnabled)
+                    {
+                        currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                    }
+                    if (Bank.IsEnabled && Bank.Payments)
+                    {
+                        bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                    }
+                    if (currency + bankValue >= price)
                     {
                         BuyAuction(_cInfo, _purchase, price);
                     }
                     else
                     {
-                        int missing = price - currentCoins;
+                        int missing = price - (currency + bankValue);
                         Phrases.Dict.TryGetValue("Auction7", out string phrase);
                         phrase = phrase.Replace("{Value}", missing.ToString());
                         phrase = phrase.Replace("{Name}", Wallet.Currency_Name);
@@ -380,7 +389,17 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[id].Auction.Remove(_purchase);
                         PersistentContainer.Instance.AuctionPrices.Remove(_purchase);
                         PersistentContainer.DataChange = true;
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price);
+                        if (_price >= 1)
+                        {
+                            if (Bank.IsEnabled && Bank.Payments)
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price, true);
+                            }
+                            else
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price, false);
+                            }
+                        }
                         float fee = _price * ((float)Tax / 100);
                         int adjustedPrice = _price - (int)fee;
                         Wallet.AddCurrency(id, adjustedPrice);

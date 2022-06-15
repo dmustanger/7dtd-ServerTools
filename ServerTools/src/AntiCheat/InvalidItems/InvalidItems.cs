@@ -203,10 +203,10 @@ namespace ServerTools
                             int count = _playerDataFile.inventory[i].count;
                             if (count > 0 && itemValue != null && !itemValue.Equals(ItemValue.None))
                             {
-                                string name = ItemClass.list[itemValue.type].Name;
+                                string name = itemValue.ItemClass.GetItemName();
                                 if (Invalid_Stack)
                                 {
-                                    int maxAllowed = ItemClass.list[itemValue.type].Stacknumber.Value;
+                                    int maxAllowed = itemValue.ItemClass.Stacknumber.Value;
                                     if (count > maxAllowed)
                                     {
                                         MaxStack(_cInfo, name, count, maxAllowed);
@@ -250,10 +250,10 @@ namespace ServerTools
                             int count = _playerDataFile.bag[i].count;
                             if (count > 0 && itemValue != null && !itemValue.Equals(ItemValue.None))
                             {
-                                string name = ItemClass.list[itemValue.type].Name;
+                                string name = itemValue.ItemClass.GetItemName();
                                 if (Invalid_Stack)
                                 {
-                                    int maxAllowed = ItemClass.list[itemValue.type].Stacknumber.Value;
+                                    int maxAllowed = itemValue.ItemClass.Stacknumber.Value;
                                     if (count > maxAllowed)
                                     {
                                         MaxStack(_cInfo, name, count, maxAllowed);
@@ -295,7 +295,7 @@ namespace ServerTools
                             ItemValue itemValue = _playerDataFile.equipment.GetSlotItem(i);
                             if (itemValue != null && !itemValue.Equals(ItemValue.None))
                             {
-                                string name = ItemClass.list[itemValue.type].Name;
+                                string name = itemValue.ItemClass.GetItemName();
                                 if (Dict.Contains(name))
                                 {
                                     if (Ban_Player)

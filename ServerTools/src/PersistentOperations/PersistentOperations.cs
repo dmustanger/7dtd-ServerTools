@@ -9,8 +9,10 @@ namespace ServerTools
 {
     public class PersistentOperations
     {
-        public static bool ZoneRunning = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false, No_Currency = false, Net_Package_Detector = false;
-        public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0, MeleeHandPlayer = 0;
+        public static bool ZoneRunning = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false, 
+            No_Currency = false, Net_Package_Detector = false;
+        public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0, 
+            MeleeHandPlayer = 0;
         public static string Currency_Item, XPathDir, Command_expire = "expire", Command_commands = "commands";
 
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
@@ -24,21 +26,6 @@ namespace ServerTools
         public static readonly char[] InvalidPrefix = new char[] { '!', '@', '#', '$', '%', '&', '/', '\\' };
 
         public static DateTime StartTime = DateTime.Now;
-
-        public static void SetFolders()
-        {
-            if (Directory.Exists(API.GamePath + "/Mods/ServerTools"))
-            {
-                if (Directory.Exists(API.GamePath + "/Mods/ServerTools/WebAPI"))
-                {
-                    WebAPI.Directory = API.GamePath + "/Mods/ServerTools/WebAPI/";
-                }
-                if (Directory.Exists(API.GamePath + "/Mods/ServerTools/Config"))
-                {
-                    XPathDir = API.GamePath + "/Mods/ServerTools/Config/";
-                }
-            }
-        }
 
         public static void CreateCustomXUi()
         {
@@ -326,44 +313,36 @@ namespace ServerTools
 
         public static EntityPlayer GetEntityPlayer(int _id)
         {
-            if (GameManager.Instance.World.Players.dict.ContainsKey(_id))
-            {
-                return GameManager.Instance.World.Players.dict[_id];
-            }
-            return null;
+            EntityPlayer entityPlayer;
+            GameManager.Instance.World.Players.dict.TryGetValue(_id, out entityPlayer);
+            return entityPlayer;
         }
 
         public static Entity GetEntity(int _id)
         {
-            if (GameManager.Instance.World.Entities.dict.ContainsKey(_id))
-            {
-                return GameManager.Instance.World.Entities.dict[_id];
-            }
-            return null;
+            Entity entity;
+            GameManager.Instance.World.Entities.dict.TryGetValue(_id, out entity);
+            return entity;
         }
 
         public static EntityZombie GetZombie(int _id)
         {
-            if (GameManager.Instance.World.Entities.dict.ContainsKey(_id))
+            Entity entity;
+            GameManager.Instance.World.Entities.dict.TryGetValue(_id, out entity);
+            if (entity != null && entity is EntityZombie)
             {
-                Entity entity = GameManager.Instance.World.Entities.dict[_id];
-                if (entity != null && entity is EntityZombie)
-                {
-                    return entity as EntityZombie;
-                }
+                return entity as EntityZombie;
             }
             return null;
         }
 
         public static EntityAnimal GetAnimal(int _id)
         {
-            if (GameManager.Instance.World.Entities.dict.ContainsKey(_id))
+            Entity entity;
+            GameManager.Instance.World.Entities.dict.TryGetValue(_id, out entity);
+            if (entity != null && entity is EntityAnimal)
             {
-                Entity entity = GameManager.Instance.World.Entities.dict[_id];
-                if (entity != null && entity is EntityAnimal)
-                {
-                    return entity as EntityAnimal;
-                }
+                return entity as EntityAnimal;
             }
             return null;
         }
@@ -643,61 +622,6 @@ namespace ServerTools
                 }
             }
             return false;
-        }
-
-        public static void ClearChunkProtection(ClientInfo _cInfo)
-        {
-            try
-            {
-                List<Chunk> chunkList = new List<Chunk>();
-                EntityPlayer player = GetEntityPlayer(_cInfo.entityId);
-                if (player != null)
-                {
-                    Vector3 position = player.position;
-                    int x = (int)position.x, z = (int)position.z;
-                    if (GameManager.Instance.World.IsChunkAreaLoaded(x, 1, z))
-                    {
-                        Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(x, 1, z);
-                        if (!chunkList.Contains(chunk))
-                        {
-                            chunkList.Add(chunk);
-                        }
-                        Bounds bounds = chunk.GetAABB();
-                        for (int i = (int)bounds.min.x; i < (int)bounds.max.x; i++)
-                        {
-                            for (int j = (int)bounds.min.z; j < (int)bounds.max.z; j++)
-                            {
-                                x = i - (int)bounds.min.x;
-                                z = j - (int)bounds.min.z;
-                                chunk.SetTraderArea(x, z, false);
-                            }
-                        }
-                    }
-                }
-                if (chunkList.Count > 0)
-                {
-                    for (int k = 0; k < chunkList.Count; k++)
-                    {
-                        Chunk chunk = chunkList[k];
-                        List<ClientInfo> clientList = ClientList();
-                        if (clientList != null)
-                        {
-                            for (int l = 0; l < clientList.Count; l++)
-                            {
-                                ClientInfo cInfo2 = clientList[l];
-                                if (cInfo2 != null)
-                                {
-                                    cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(chunk, true));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.ClearChunkProtection: {0}", e.Message));
-            }
         }
 
         public static void EntityIdList()

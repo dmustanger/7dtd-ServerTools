@@ -223,7 +223,7 @@ namespace ServerTools
             };
         }
 
-        public static void Wallet_Remove_SingleUseTimer(string _playerId, int _amount)
+        public static void Wallet_Remove_SingleUseTimer(string _playerId, int _amount, bool _bankPayment)
         {
             System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
             {
@@ -232,7 +232,7 @@ namespace ServerTools
             singleUseTimer.Start();
             singleUseTimer.Elapsed += (sender, e) =>
             {
-                Init10(_playerId, _amount);
+                Init10(_playerId, _amount, _bankPayment);
                 singleUseTimer.Stop();
                 singleUseTimer.Close();
                 singleUseTimer.Dispose();
@@ -586,9 +586,9 @@ namespace ServerTools
             }
         }
 
-        private static void Init10(string _playerId, int _amount)
+        private static void Init10(string _playerId, int _amount, bool _bankPayment)
         {
-            Wallet.RemoveCurrency(_playerId, _amount);
+            Wallet.RemoveCurrency(_playerId, _amount, _bankPayment);
         }
 
         private static void Init11(string _ip)

@@ -98,7 +98,7 @@ namespace ServerTools
                                     {
                                         if (Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString) >= adjustCoins)
                                         {
-                                            Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, adjustCoins);
+                                            Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, adjustCoins, false);
                                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from Id '{2}' named '{3}'", _params[1], Wallet.Currency_Name, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                         }
                                         else
@@ -143,7 +143,7 @@ namespace ServerTools
                         {
                             if (negative)
                             {
-                                Wallet.RemoveCurrency(_params[0], adjustCoins);
+                                Wallet.RemoveCurrency(_params[0], adjustCoins, false);
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from Id '{2}'", _params[1], Wallet.Currency_Name, _params[0]));
                             }
                             else

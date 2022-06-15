@@ -1,14 +1,44 @@
 ﻿CHANGELOG
 
+20.5.1
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added console command st-ProtectedZones remove chunks. This
+will remove protection from the nine chunks surrounding the
+command user
+-Added option Direct_Deposit to Bank. This will send currency
+to the player's bank instead of their backpack
+-Added option Payments to Bank. This will allow command costs
+to be taken from a player's bank directly
+-Added option Item_Name to Wallet. Controls the item used for
+exchange. Impacts the Bank tool. Changes to this require a server 
+restart
+-Added option Link to Allocs_Map. Set the link to the desired
+web address players can access the map
+-Added option Misc to Kill_Notice tool. Displays the damage type
+last received when a player dies from something other than
+zombies, players and animals. This includes drowning and falling
+-Changed Block_Pickup to ignore specific types of blocks
+-Changed Chat_Log to record chat type. Global, Friend, Party
+-Fixed a bug in st-ProtectedZones console commands
+-Fixed xml backups saving under the wrong version number
+-Fixed Custom_Commands command cost not functioning
+-Fixed Level_Up dropping the required level during the xml update
+-Fixed Invalid_Items kick message to reflect the proper item name
+*all files must now be located in your user data folder/app data*
+
 20.5.0
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions
 
+-Added Bed tool. Players can type /bed to teleport to their
+currently active bed position if they have one
 -Added Auto_Restart tool. As the name says, it will restart
 your server when shutdown. This may not work or interfere
 with hosts that provide their own restart function
--Added Edit tool. Allows players to type /edit to enter the
-mode. While enabled, they can punch a block inside their claim
+-Added Block_Pickup tool. Allows players to type /pickup to enter
+the mode. While enabled, they can punch a block inside their claim
 to pick it up. Claims broken by other players will create a
 dead zone for editing that lasts 24 hours real time
 -Added Wall tool. Players can type /wall to enable the mode.
@@ -24,6 +54,9 @@ to kill other players instantly from anywhere on the map
 the distance outside of the POI that can not be built on
 -Added option Log to Damage_Detector. Controls whether a log is
 kept for each hit
+-Fixed possible cause of 'InvalidItems.CheckStorage: Value cannot
+be null'
+-Fixed Falling_Blocks_Remover not functioning as intended
 -Fixed console command st-SecureLootAccess to work with new
 secure storage types
 -Fixed console command st-SecureVehicleAccess to work with all
@@ -36,9 +69,6 @@ ability to be modified
 -Changed code for response to /commands to prevent doubling up
 and alphabetized most of the commands
 -Changed Auto_Backup thread priority and buffer size
--Changed Infinite_Ammo_Detector to avoid false positives
-caused by buckshot spread and/or ammo penetration hitting
-multiple targets
 -Changed chat command /vehicle del to /vehicle remove
 -Removed Family_Share tool. The base game already has this
 built in

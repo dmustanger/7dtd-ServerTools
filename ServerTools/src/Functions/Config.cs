@@ -7,11 +7,12 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.5.0";
+        public const string Version = "20.5.1";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
         private const string ConfigFile = "ServerToolsConfig.xml";
+        private static string OldVersion;
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, ConfigFile);
 
         public static void Load()
@@ -51,10 +52,17 @@ namespace ServerTools
                                 XmlElement line = (XmlElement)childNodes[i].ChildNodes[j];
                                 if (line.HasAttributes)
                                 {
-                                    if (line.HasAttribute("Version") && line.GetAttribute("Version") == Version)
+                                    if (line.HasAttribute("Version"))
                                     {
-                                        upgrade = false;
-                                        continue;
+                                        if (line.GetAttribute("Version") == Version)
+                                        {
+                                            upgrade = false;
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            OldVersion = line.GetAttribute("Version");
+                                        }
                                     }
                                 }
                             }
@@ -125,11 +133,14 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Allocs_Map entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (AllocsMap.IsEnabled && PersistentOperations.ThirtySeconds)
+                                                if (!line.HasAttribute("Link"))
                                                 {
-                                                    string ip = GamePrefs.GetString(EnumGamePrefs.ServerIP);
-                                                    int controlPort = GamePrefs.GetInt(EnumGamePrefs.ControlPanelPort);
-                                                    string link = string.Format("http://{0}:{1}", ip, controlPort + 2);
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Allocs_Map entry in ServerToolsConfig.xml because of missing 'Link' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (line.HasAttribute("Link"))
+                                                {
+                                                    string link = line.GetAttribute("Link");
                                                     if (AllocsMap.Link != link)
                                                     {
                                                         AllocsMap.Link = link;
@@ -427,6 +438,16 @@ namespace ServerTools
                                                 if (!bool.TryParse(line.GetAttribute("Player_Transfers"), out Bank.Player_Transfers))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Player_Transfers' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!line.HasAttribute("Direct_Deposit"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of missing 'Direct_Deposit' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!bool.TryParse(line.GetAttribute("Direct_Deposit"), out Bank.Direct_Deposit))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Direct_Deposit' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 break;
@@ -2189,6 +2210,16 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Show_Damage' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
+                                                if (!line.HasAttribute("Misc"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice_Extended entry in ServerToolsConfig.xml because of missing 'Misc' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!bool.TryParse(line.GetAttribute("Misc"), out KillNotice.Misc))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Misc' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
                                                 break;
                                             case "Level_Up":
                                                 if (!line.HasAttribute("Enable"))
@@ -3894,6 +3925,20 @@ namespace ServerTools
                                                     Wallet.Currency_Name = line.GetAttribute("Currency_Name");
                                                     continue;
                                                 }
+                                                if (!line.HasAttribute("Item_Name"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet_Extended entry in ServerToolsConfig.xml because of missing 'Item_Name' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (line.HasAttribute("Item_Name"))
+                                                {
+                                                    string itemName = line.GetAttribute("Item_Name");
+                                                    if (Wallet.Item_Name != itemName)
+                                                    {
+                                                        Wallet.Item_Name = itemName;
+                                                        Wallet.SetItem(itemName);
+                                                    }
+                                                }
                                                 break;
                                             case "Watch_List":
                                                 if (!line.HasAttribute("Enable"))
@@ -4204,23 +4249,23 @@ namespace ServerTools
                 }
                 if (files != null && files.Length > 0)
                 {
-                    if (!Directory.Exists(API.ConfigPath + "/XMLBackups/" + Version))
+                    if (!Directory.Exists(API.ConfigPath + "/XMLBackups/" + OldVersion))
                     {
-                        Directory.CreateDirectory(API.ConfigPath + "/XMLBackups/" + Version);
+                        Directory.CreateDirectory(API.ConfigPath + "/XMLBackups/" + OldVersion);
                     }
                     for (int i = 0; i < files.Length; i++)
                     {
                         string fileName = files[i];
                         string fileNameShort = fileName.Substring(fileName.IndexOf("ServerTools") + 11);
-                        File.Copy(fileName, API.ConfigPath + "/XMLBackups/" + Version + fileNameShort);
+                        File.Copy(fileName, API.ConfigPath + "/XMLBackups/" + OldVersion + fileNameShort);
                     }
-                    Log.Out("[SERVERTOOLS] Created backup of xml files for version {0}", Version);
+                    Log.Out("[SERVERTOOLS] Created backup of xml files for version {0}", OldVersion);
                 }
                 XmlElement element = xmlDoc.DocumentElement;
                 File.Delete(ConfigFilePath);
                 WriteXml();
                 UpgradeXml(element);
-                Log.Out(string.Format("[SERVERTOOLS] The existing ServerToolsConfig.xml was rebuilt for version '{0}'", Version));
+                Log.Out(string.Format("[SERVERTOOLS] The existing ServerToolsConfig.xml has been rebuilt for version '{0}'", Version));
             }
         }
 
@@ -4259,7 +4304,7 @@ namespace ServerTools
                 sw.WriteLine("    <Tools>");
                 sw.WriteLine(string.Format("        <Tool Name=\"Admin_Chat_Commands\" Enable=\"{0}\" />", AdminChat.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Admin_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Moderator_Level=\"{2}\" />", AdminList.IsEnabled, AdminList.Admin_Level, AdminList.Mod_Level));
-                sw.WriteLine(string.Format("        <Tool Name=\"Allocs_Map\" Enable=\"{0}\" />", AllocsMap.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Allocs_Map\" Enable=\"{0}\" Link=\"{1}\" />", AllocsMap.IsEnabled, AllocsMap.Link));
                 sw.WriteLine(string.Format("        <Tool Name=\"Animal_Tracking\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Minimum_Spawn_Radius=\"{2}\" Maximum_Spawn_Radius=\"{3}\" Animal_Ids=\"{4}\" />", AnimalTracking.IsEnabled, AnimalTracking.Delay_Between_Uses, AnimalTracking.Minimum_Spawn_Radius, AnimalTracking.Maximum_Spawn_Radius, AnimalTracking.Animal_Ids));
                 sw.WriteLine(string.Format("        <Tool Name=\"Animal_Tracking_Extended\" Command_Cost=\"{0}\" />", AnimalTracking.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auction\" Enable=\"{0}\" No_Admins=\"{1}\" Admin_Level=\"{2}\" Total_Items=\"{3}\" Tax=\"{4}\" />", Auction.IsEnabled, Auction.No_Admins, Auction.Admin_Level, Auction.Total_Items, Auction.Tax));
@@ -4268,7 +4313,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Restart\" Enable=\"{0}\" />", AutoRestart.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Save_World\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" />", AutoSaveWorld.IsEnabled, AutoSaveWorld.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name));
-                sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Deposit_Fee_Percent=\"{2}\" Player_Transfers=\"{3}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Deposit_Fee_Percent, Bank.Player_Transfers));
+                sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Deposit_Fee_Percent=\"{2}\" Player_Transfers=\"{3}\" Direct_Deposit=\"{4}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Deposit_Fee_Percent, Bank.Player_Transfers, Bank.Direct_Deposit));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bed\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", Bed.IsEnabled, Bed.Delay_Between_Uses, Bed.Command_Cost));
                 //sw.WriteLine(string.Format("        <Tool Name=\"Black_Jack\" Enable=\"{0}\" Buy_In=\"{1}\" />", BlackJack.IsEnabled, BlackJack.Buy_In));
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Logger\" Enable=\"{0}\" />", BlockLogger.IsEnabled));
@@ -4314,7 +4359,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Info_Ticker\" Enable=\"{0}\" Delay=\"{1}\" Random=\"{2}\" />", InfoTicker.IsEnabled, InfoTicker.Delay, InfoTicker.Random));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kick_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", KickVote.IsEnabled, KickVote.Players_Online, KickVote.Votes_Needed));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice\" Enable=\"{0}\" PvP=\"{1}\" Zombie_Kills=\"{2}\" Animal_Kills=\"{3}\" Show_Level=\"{4}\" />", KillNotice.IsEnabled, KillNotice.PvP, KillNotice.Zombie_Kills, KillNotice.Animal_Kills, KillNotice.Show_Level));
-                sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice_Extended\" Show_Damage=\"{0}\" />", KillNotice.Show_Damage));
+                sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice_Extended\" Show_Damage=\"{0}\" Misc=\"{1}\" />", KillNotice.Show_Damage, KillNotice.Misc));
                 sw.WriteLine(string.Format("        <Tool Name=\"Level_Up\" Enable=\"{0}\" Xml_Only=\"{1}\" Announce=\"{2}\" />", LevelUp.IsEnabled, LevelUp.Xml_Only, LevelUp.Announce));
                 sw.WriteLine(string.Format("        <Tool Name=\"Lobby\" Enable=\"{0}\" Return=\"{1}\" Delay_Between_Uses=\"{2}\" Lobby_Size=\"{3}\" Lobby_Position=\"{4}\" />", Lobby.IsEnabled, Lobby.Return, Lobby.Delay_Between_Uses, Lobby.Lobby_Size, Lobby.Lobby_Position));
                 sw.WriteLine(string.Format("        <Tool Name=\"Lobby_Extended\" Reserved_Only=\"{0}\" Command_Cost=\"{1}\" Player_Check=\"{2}\" Zombie_Check=\"{3}\" PvE=\"{4}\" />", Lobby.Reserved_Only, Lobby.Command_Cost, Lobby.Player_Check, Lobby.Zombie_Check, Lobby.PvE));
@@ -4360,7 +4405,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting_Extended\" Reward_Count=\"{0}\" Reward_Entity=\"{1}\" Entity_Id=\"{2}\" Weekly_Votes=\"{3}\" />", VoteReward.Reward_Count, VoteReward.Reward_Entity, VoteReward.Entity_Id, VoteReward.Weekly_Votes));
                 sw.WriteLine(string.Format("        <Tool Name=\"Wall\" Enable=\"{0}\" Player_Check =\"{1}\" />", Wall.IsEnabled, Wall.Player_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Wallet\" Enable=\"{0}\" PVP=\"{1}\" Zombie_Kill=\"{2}\" Player_Kill=\"{3}\" Bank_Transfers=\"{4}\" />", Wallet.IsEnabled, Wallet.PVP, Wallet.Zombie_Kill, Wallet.Player_Kill, Wallet.Bank_Transfers));
-                sw.WriteLine(string.Format("        <Tool Name=\"Wallet_Extended\" Session_Bonus=\"{0}\" Currency_Name=\"{1}\" />", Wallet.Session_Bonus, Wallet.Currency_Name));
+                sw.WriteLine(string.Format("        <Tool Name=\"Wallet_Extended\" Session_Bonus=\"{0}\" Currency_Name=\"{1}\" Item_Name=\"{2}\" />", Wallet.Session_Bonus, Wallet.Currency_Name, Wallet.Item_Name));
                 sw.WriteLine(string.Format("        <Tool Name=\"Watch_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Delay=\"{2}\" />", WatchList.IsEnabled, WatchList.Admin_Level, WatchList.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints =\"{1}\" Reserved_Max_Waypoints=\"{2}\" Command_Cost =\"{3}\" Delay_Between_Uses=\"{4}\" />", Waypoints.IsEnabled, Waypoints.Max_Waypoints, Waypoints.Reserved_Max_Waypoints, Waypoints.Command_Cost, Waypoints.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Waypoints_Extended\" Player_Check =\"{0}\" Zombie_Check=\"{1}\" Vehicle=\"{2}\" No_POI=\"{3}\" />", Waypoints.Player_Check, Waypoints.Zombie_Check, Waypoints.Vehicle, Waypoints.No_POI));

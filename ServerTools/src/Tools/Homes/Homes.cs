@@ -229,22 +229,25 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.IsEnabled && Command_Cost >= 1)
+                int currency = 0;
+                int bankValue = 0;
+                if (Wallet.IsEnabled)
                 {
-                    if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
-                    {
-                        Exec(_cInfo, _homeName, _position, _friends);
-                    }
-                    else
-                    {
-                        Phrases.Dict.TryGetValue("Homes6", out string phrase);
-                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (Bank.IsEnabled && Bank.Payments)
+                {
+                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (currency + bankValue >= Command_Cost)
+                {
+                    Exec(_cInfo, _homeName, _position, _friends);
                 }
                 else
                 {
-                    Exec(_cInfo, _homeName, _position, _friends);
+                    Phrases.Dict.TryGetValue("Homes6", out string phrase);
+                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -272,12 +275,19 @@ namespace ServerTools
                                 FriendInvite(_cInfo, _position, homePos);
                             }
                             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                            if (Command_Cost >= 1 && Wallet.IsEnabled)
+                            {
+                                if (Bank.IsEnabled && Bank.Payments)
+                                {
+                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
+                                }
+                                else
+                                {
+                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
+                                }
+                            }
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastHome = DateTime.Now;
                             PersistentContainer.DataChange = true;
-                            if (Wallet.IsEnabled && Command_Cost >= 1)
-                            {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                            }
                         }
                         else
                         {

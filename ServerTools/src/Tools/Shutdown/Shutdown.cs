@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Alert_On_Login = false, NoEntry = false, ShuttingDown = false, UI_Lock = false, UI_Locked = false, Interrupt_Bloodmoon = false;
         public static int Countdown = 2, Alert_Count = 2;
-        public static string Command_shutdown = "shutdown", Time = "120";
+        public static string Command_shutdown = "shutdown", Time = "240";
 
         public static void SetDelay()
         {

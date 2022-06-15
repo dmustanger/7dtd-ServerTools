@@ -12,13 +12,16 @@ namespace ServerTools
 
         public static void Add(string _classMethod, DateTime _time)
         {
-            if (Schedule.ContainsKey(_classMethod))
+            if (_time != null)
             {
-                Schedule[_classMethod] = _time;
-            }
-            else
-            {
-                Schedule.Add(_classMethod, _time);
+                if (Schedule.ContainsKey(_classMethod))
+                {
+                    Schedule[_classMethod] = _time;
+                }
+                else
+                {
+                    Schedule.Add(_classMethod, _time);
+                }
             }
         }
 

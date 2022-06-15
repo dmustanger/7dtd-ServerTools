@@ -20,17 +20,19 @@ namespace ServerTools
                    "  5. st-pz cancel\n" +
                    "  6. st-pz remove\n" +
                    "  7. st-pz remove <#>\n" +
-                   "  8. st-pz list\n" +
-                   "  9. st-pz active <#>\n" +
-                   "1. Turn off ProtectedZones\n" +
-                   "2. Turn on ProtectedZones\n" +
+                   "  8. st-pz remove chunks\n" +
+                   "  9. st-pz list\n" +
+                   "  10. st-pz active <#>\n" +
+                   "1. Turn off Protected_Zones\n" +
+                   "2. Turn on Protected_Zones\n" +
                    "3. Add a protected zone. Stand in the south west corner, use add, stand in the north east corner and use add again\n" +
                    "4. Add a protected zone. Set the south west corner and north east corner using specific coordinates\n" +
                    "5. Cancels the saved corner positions\n" +
-                   "6. Remove the protection to the chunk you are standing in\n" +
+                   "6. Remove protection from the chunk you are standing in\n" +
                    "7. Remove a protected zone from the list. The number is shown in the list\n" +
-                   "8. Shows the protected zones list\n" +
-                   "9. Activates and deactivates the protection from the entry in the list\n" +
+                   "8. Removes protection from the nine chunks surrounding you. Note that this will likely effect entries on the list but not remove them\n" +
+                   "9. Shows the protected zones list\n" +
+                   "10. Activates and deactivates the protection from the entry in the list\n" +
                    "*Make sure the corners used are opposite each other. Example NW with SE or SW with NE*\n";
         }
     
@@ -55,12 +57,12 @@ namespace ServerTools
                         ProtectedZones.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces has been set to off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected zones has been set to off"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces is already off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected zones is already off"));
                         return;
                     }
                 }
@@ -71,12 +73,12 @@ namespace ServerTools
                         ProtectedZones.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces has been set to on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected zones has been set to on"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces is already on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected zones is already on"));
                         return;
                     }
                 }
@@ -135,12 +137,13 @@ namespace ServerTools
                                 {
                                     ProtectedZones.ProtectedList.Add(vectors);
                                     ProtectedZones.UpdateXml();
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added protected space from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3], vectors[4]));
+                                    ProtectedZones.LoadXml();
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added protected zone from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3], vectors[4]));
                                     return;
                                 }
                                 else
                                 {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] This protected space is already on the list"));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] This protected zone is already on the list"));
                                     return;
                                 }
                             }
@@ -194,12 +197,13 @@ namespace ServerTools
                         {
                             ProtectedZones.ProtectedList.Add(vectors);
                             ProtectedZones.UpdateXml();
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added protected space from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3], vectors[4]));
+                            ProtectedZones.LoadXml();
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added protected zone from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3], vectors[4]));
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] This protected space is already on the list"));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] This protected zone is already on the list"));
                             return;
                         }
                     }
@@ -219,7 +223,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have no saved position for a protected space. Use add in the first corner you want to protect"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have no saved position for a protected zone. Use add in the first corner you want to protect"));
                         return;
                     }
                 }
@@ -229,14 +233,23 @@ namespace ServerTools
                     {
                         if (ProtectedZones.ProtectedList.Count > 0)
                         {
-                            if (int.TryParse(_params[1], out int _listNum))
+                            if (_params[1].ToLower().Equals("chunks"))
+                            {
+                                if (_senderInfo.RemoteClientInfo != null)
+                                {
+                                    ProtectedZones.ClearNineChunkProtection(_senderInfo.RemoteClientInfo);
+                                    return;
+                                }
+                            }
+                            else if (int.TryParse(_params[1], out int _listNum))
                             {
                                 if (ProtectedZones.ProtectedList.Count >= _listNum)
                                 {
                                     int[] _vectors = ProtectedZones.ProtectedList[_listNum - 1];
                                     ProtectedZones.ProtectedList.Remove(_vectors);
                                     ProtectedZones.UpdateXml();
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed protected space {0}: {1}x,{2}z to {3}x,{4}z", _listNum, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                                    ProtectedZones.LoadXml();
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed protected zone {0}: {1}x,{2}z to {3}x,{4}z", _listNum, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
                                     return;
                                 }
                                 else
@@ -253,13 +266,13 @@ namespace ServerTools
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no protected spaces"));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no protected zones"));
                             return;
                         }
                     }
                     else if (_senderInfo.RemoteClientInfo != null)
                     {
-                        PersistentOperations.ClearChunkProtection(_senderInfo.RemoteClientInfo);
+                        ProtectedZones.ClearSingleChunkProtection(_senderInfo.RemoteClientInfo);
                         return;
                     }
                 }
@@ -267,7 +280,7 @@ namespace ServerTools
                 {
                     if (ProtectedZones.ProtectedList.Count > 0)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected spaces list:"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Protected zones list:"));
                         for (int i = 0; i < ProtectedZones.ProtectedList.Count; i++)
                         {
                             int[] _vectors = ProtectedZones.ProtectedList[i];
@@ -284,7 +297,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no protected spaces"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no protected zones"));
                         return;
                     }
                 }
@@ -303,19 +316,21 @@ namespace ServerTools
                         {
                             _protectedSpace[4] = 0;
                             ProtectedZones.UpdateXml();
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Deactivated protected space #{0}", _listEntry));
+                            ProtectedZones.LoadXml();
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Deactivated protected zone #{0}", _listEntry));
                         }
                         else
                         {
                             _protectedSpace[4] = 1;
                             ProtectedZones.UpdateXml();
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Activated protected space #{0}", _listEntry));
+                            ProtectedZones.LoadXml();
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Activated protected zone #{0}", _listEntry));
                         }
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] This number does not exist on the protected spaces list. Unable to active or deactivate"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] This number does not exist on the protected zones list. Unable to active or deactivate"));
                         return;
                     }
                 }
@@ -326,7 +341,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedSpaceConsole.Execute: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedZonesConsole.Execute: {0}", e.Message));
             }
         }
     }

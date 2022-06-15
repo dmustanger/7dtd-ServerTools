@@ -379,6 +379,128 @@ namespace ServerTools
             }
         }
 
+        public static void ClearSingleChunkProtection(ClientInfo _cInfo)
+        {
+            try
+            {
+                List<Chunk> chunkList = new List<Chunk>();
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                if (player != null)
+                {
+                    Vector3 position = player.position;
+                    int x = (int)position.x, z = (int)position.z;
+                    if (GameManager.Instance.World.IsChunkAreaLoaded(x, 1, z))
+                    {
+                        Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(x, 1, z);
+                        if (!chunkList.Contains(chunk))
+                        {
+                            chunkList.Add(chunk);
+                        }
+                        Bounds bounds = chunk.GetAABB();
+                        for (int i = (int)bounds.min.x; i < (int)bounds.max.x; i++)
+                        {
+                            for (int j = (int)bounds.min.z; j < (int)bounds.max.z; j++)
+                            {
+                                x = i - (int)bounds.min.x;
+                                z = j - (int)bounds.min.z;
+                                chunk.SetTraderArea(x, z, false);
+                            }
+                        }
+                    }
+                }
+                if (chunkList.Count > 0)
+                {
+                    for (int k = 0; k < chunkList.Count; k++)
+                    {
+                        Chunk chunk = chunkList[k];
+                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        if (clientList != null)
+                        {
+                            for (int l = 0; l < clientList.Count; l++)
+                            {
+                                ClientInfo cInfo2 = clientList[l];
+                                if (cInfo2 != null)
+                                {
+                                    cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(chunk, true));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedZones.ClearChunkProtection: {0}", e.Message));
+            }
+        }
+
+        public static void ClearNineChunkProtection(ClientInfo _cInfo)
+        {
+            try
+            {
+                List<Chunk> chunkList = new List<Chunk>();
+                List<int[]> positionList = new List<int[]>();
+                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                if (player != null)
+                {
+                    positionList.Add(new int[] { (int)player.position.x, (int)player.position.z });
+                    positionList.Add(new int[] { (int)player.position.x + 16, (int)player.position.z });
+                    positionList.Add(new int[] { (int)player.position.x + 16, (int)player.position.z - 16 });
+                    positionList.Add(new int[] { (int)player.position.x, (int)player.position.z - 16 });
+                    positionList.Add(new int[] { (int)player.position.x - 16, (int)player.position.z - 16 });
+                    positionList.Add(new int[] { (int)player.position.x - 16, (int)player.position.z });
+                    positionList.Add(new int[] { (int)player.position.x - 16, (int)player.position.z + 16 });
+                    positionList.Add(new int[] { (int)player.position.x, (int)player.position.z + 16 });
+                    positionList.Add(new int[] { (int)player.position.x + 16, (int)player.position.z + 16 });
+                    for (int i = 0; i < positionList.Count; i++)
+                    {
+                        int x = positionList[i][0], z = positionList[i][1];
+                        if (GameManager.Instance.World.IsChunkAreaLoaded(x, 1, z))
+                        {
+                            Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(x, 1, z);
+                            if (!chunkList.Contains(chunk))
+                            {
+                                chunkList.Add(chunk);
+                            }
+                            Bounds bounds = chunk.GetAABB();
+                            for (int j = (int)bounds.min.x; j < (int)bounds.max.x; j++)
+                            {
+                                for (int k = (int)bounds.min.z; k < (int)bounds.max.z; k++)
+                                {
+                                    x = j - (int)bounds.min.x;
+                                    z = k - (int)bounds.min.z;
+                                    chunk.SetTraderArea(x, z, false);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (chunkList.Count > 0)
+                {
+                    for (int k = 0; k < chunkList.Count; k++)
+                    {
+                        Chunk chunk = chunkList[k];
+                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        if (clientList != null)
+                        {
+                            for (int l = 0; l < clientList.Count; l++)
+                            {
+                                ClientInfo cInfo2 = clientList[l];
+                                if (cInfo2 != null)
+                                {
+                                    cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(chunk, true));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedZones.ClearNineChunkProtection: {0}", e.Message));
+            }
+        }
+
         private static void UpgradeXml()
         {
             try

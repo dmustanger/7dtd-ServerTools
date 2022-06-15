@@ -47,7 +47,7 @@ namespace ServerTools
                     {
                         GC.Collect();
                         MemoryPools.Cleanup();
-                        ResetProfileExec(ppd.UserIdentifier.ReadablePlatformUserIdentifier);
+                        ResetProfileExec(ppd.UserIdentifier.CombinedString);
                     }
                     else
                     {
@@ -94,19 +94,21 @@ namespace ServerTools
                 string filepath2 = string.Format("{0}/Player/{1}.ttp", GameIO.GetSaveGameDir(), _id);
                 if (!File.Exists(filepath1))
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Could not find file {0}.map", _id));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Could not find file '{0}' for player profile reset", filepath1));
                 }
                 else
                 {
                     File.Delete(filepath1);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] File '{0}' deleted for player profile reset", filepath1));
                 }
                 if (!File.Exists(filepath2))
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Could not find file {0}.ttp", _id));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Could not find file '{0}' for player profile reset", filepath2));
                 }
                 else
                 {
                     File.Delete(filepath2);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] File '{0}' deleted for player profile reset", filepath2));
                 }
             }
             catch (Exception e)

@@ -412,9 +412,18 @@ namespace ServerTools
                     string[] _itemData = Dict[i];
                     if (int.Parse(_itemData[0]) == _item)
                     {
-                        int _currentCoins = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                        int currency = 0;
+                        int bankValue = 0;
+                        if (Wallet.IsEnabled)
+                        {
+                            currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                        }
+                        if (Bank.IsEnabled && Bank.Payments)
+                        {
+                            bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                        }
                         int _cost = int.Parse(_itemData[5]) * _count;
-                        if (_currentCoins >= _cost)
+                        if (currency + bankValue >= _cost)
                         {
                             _count = int.Parse(_itemData[3]) * _count;
                             ShopPurchase(_cInfo, _itemData[1], _itemData[2], _count, int.Parse(_itemData[4]), _cost);
@@ -423,7 +432,7 @@ namespace ServerTools
                         {
                             Phrases.Dict.TryGetValue("Shop5", out string _phrase);
                             _phrase = _phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                            _phrase = _phrase.Replace("{Value}", _currentCoins.ToString());
+                            _phrase = _phrase.Replace("{Value}", currency + bankValue.ToString());
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                         return;
@@ -465,7 +474,17 @@ namespace ServerTools
                 world.SpawnEntityInWorld(entityItem);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price);
+                if (_price >= 1 && Wallet.IsEnabled)
+                {
+                    if (Bank.IsEnabled && Bank.Payments)
+                    {
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price, true);
+                    }
+                    else
+                    {
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price, false);
+                    }
+                }
                 Log.Out(string.Format("Sold '{0}' to '{1}' '{2}' named '{3}' through the shop", itemValue.ItemClass.Name, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                 Phrases.Dict.TryGetValue("Shop16", out string _phrase);
                 _phrase = _phrase.Replace("{Count}", _count.ToString());

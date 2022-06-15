@@ -178,8 +178,7 @@ namespace ServerTools
                                         if (newBlockInfo.bChangeDamage)//block took damage
                                         {
                                             if (Pickup.IsEnabled && Pickup.PickupEnabled.Contains(player.entityId) &&
-                                                player.inventory.holdingItemItemValue.GetItemId() == PersistentOperations.MeleeHandPlayer &&
-                                                !oldBlock.shape.IsTerrain())
+                                                player.inventory.holdingItemItemValue.GetItemId() == PersistentOperations.MeleeHandPlayer)
                                             {
                                                 if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) <= Pickup.Admin_Level ||
                                                     GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) <= Pickup.Admin_Level)
@@ -188,41 +187,48 @@ namespace ServerTools
                                                     PersistentOperations.ReturnBlock(cInfo, oldBlock.GetBlockName(), 1, "Pickup5");
                                                     return false;
                                                 }
+                                                if (oldBlock.shape.IsTerrain() || oldBlock.IsTerrainDecoration || oldBlock.IsPlant() || oldBlock.isMultiBlock 
+                                                    || oldBlockValue.ischild || oldBlock.shape is BlockShapeModelEntity || oldBlock.shape is BlockShapeWater)
+                                                {
+                                                    Phrases.Dict.TryGetValue("Pickup7", out string phrase);
+                                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                    return true;
+                                                }
                                                 if (PersistentOperations.ClaimedByWho(cInfo.CrossplatformId, new Vector3i(player.position)) == EnumLandClaimOwner.Self)
                                                 {
                                                     if (oldBlockValue.damage == 0)
                                                     {
-                                                        if (PersistentContainer.Instance.BlockPickUp != null && PersistentContainer.Instance.BlockPickUp.Count > 0)
-                                                        {
-                                                            int claimSize = GameStats.GetInt(EnumGameStats.LandClaimSize);
-                                                            List<string> vectors = PersistentContainer.Instance.BlockPickUp.Keys.ToList();
-                                                            for (int j = 0; j < vectors.Count; j++)
+                                                            if (PersistentContainer.Instance.BlockPickUp != null && PersistentContainer.Instance.BlockPickUp.Count > 0)
                                                             {
-                                                                Vector3i position = Vector3i.Parse(vectors[j]);
-                                                                if (position != null)
+                                                                int claimSize = GameStats.GetInt(EnumGameStats.LandClaimSize);
+                                                                List<string> vectors = PersistentContainer.Instance.BlockPickUp.Keys.ToList();
+                                                                for (int j = 0; j < vectors.Count; j++)
                                                                 {
-                                                                    float distance = (position.ToVector3() - player.position).magnitude;
-                                                                    if (distance <= claimSize / 2)
+                                                                    Vector3i position = Vector3i.Parse(vectors[j]);
+                                                                    if (position != null)
                                                                     {
-                                                                        PersistentContainer.Instance.BlockPickUp.TryGetValue(vectors[j], out DateTime time);
-                                                                        if (DateTime.Now <= time)
+                                                                        float distance = (position.ToVector3() - player.position).magnitude;
+                                                                        if (distance <= claimSize / 2)
                                                                         {
-                                                                            Phrases.Dict.TryGetValue("Pickup6", out string phrase);
-                                                                            phrase = phrase.Replace("{DateTime}", time.ToString());
-                                                                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                                                            return true;
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            PersistentContainer.Instance.BlockPickUp.Remove(vectors[j]);
+                                                                            PersistentContainer.Instance.BlockPickUp.TryGetValue(vectors[j], out DateTime time);
+                                                                            if (DateTime.Now <= time)
+                                                                            {
+                                                                                Phrases.Dict.TryGetValue("Pickup6", out string phrase);
+                                                                                phrase = phrase.Replace("{DateTime}", time.ToString());
+                                                                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                                                return true;
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                PersistentContainer.Instance.BlockPickUp.Remove(vectors[j]);
+                                                                            }
                                                                         }
                                                                     }
                                                                 }
                                                             }
-                                                        }
-                                                        GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
-                                                        PersistentOperations.ReturnBlock(cInfo, oldBlock.GetBlockName(), 1, "Pickup5");
-                                                        return false;
+                                                            GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
+                                                            PersistentOperations.ReturnBlock(cInfo, oldBlock.GetBlockName(), 1, "Pickup5");
+                                                            return false;
                                                     }
                                                     else
                                                     {

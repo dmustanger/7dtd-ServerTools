@@ -193,7 +193,7 @@ namespace ServerTools
             {
                 if (Delay_Between_Uses < 1)
                 {
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
                     {
                         CommandCost(_cInfo);
                     }
@@ -240,7 +240,7 @@ namespace ServerTools
             {
                 if (_timepassed >= _delay)
                 {
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
                     {
                         CommandCost(_cInfo);
                     }
@@ -270,22 +270,25 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.IsEnabled && Command_Cost > 0)
+                int currency = 0;
+                int bankValue = 0;
+                if (Wallet.IsEnabled)
                 {
-                    if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
-                    {
-                        SetBuff(_cInfo);
-                    }
-                    else
-                    {
-                        Phrases.Dict.TryGetValue("Prayer2", out string phrase);
-                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (Bank.IsEnabled && Bank.Payments)
+                {
+                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (currency + bankValue >= Command_Cost)
+                {
+                    SetBuff(_cInfo);
                 }
                 else
                 {
-                    SetBuff(_cInfo);
+                    Phrases.Dict.TryGetValue("Prayer2", out string phrase);
+                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -305,9 +308,16 @@ namespace ServerTools
                     string message = Dict[randomKey];
                     SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, randomKey), null);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    if (Command_Cost >= 1 && Wallet.IsEnabled)
                     {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
+                        if (Bank.IsEnabled && Bank.Payments)
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
+                        }
+                        else
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
+                        }
                     }
                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastPrayer = DateTime.Now;
                     PersistentContainer.DataChange = true;
