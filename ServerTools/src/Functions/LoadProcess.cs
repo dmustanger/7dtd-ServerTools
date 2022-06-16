@@ -98,25 +98,23 @@ namespace ServerTools
             {
                 Directory.CreateDirectory(configPath + "/Logs/OutputLogs");
             }
-            if (!Directory.Exists(configPath + "/Mods/ServerTools/Config"))
-            {
-                Directory.CreateDirectory(configPath + "/Mods/ServerTools/Config");
-            }
-            if (!Directory.Exists(configPath + "/Mods/ServerTools/Config/XUi"))
-            {
-                Directory.CreateDirectory(configPath + "/Mods/ServerTools/Config/XUi");
-            }
+
             string gamePath = API.GamePath;
-            if (Directory.Exists(gamePath + "/Mods/ServerTools"))
+            if (!Directory.Exists(gamePath + "/Mods/ServerTools/Config"))
             {
-                if (Directory.Exists(gamePath + "/Mods/ServerTools/WebAPI"))
-                {
-                    WebAPI.Directory = gamePath + "/Mods/ServerTools/WebAPI/";
-                }
-                if (Directory.Exists(gamePath + "/Mods/ServerTools/Config"))
-                {
-                    PersistentOperations.XPathDir = gamePath + "/Mods/ServerTools/Config/";
-                }
+                Directory.CreateDirectory(gamePath + "/Mods/ServerTools/Config");
+            }
+            if (!Directory.Exists(gamePath + "/Mods/ServerTools/Config/XUi"))
+            {
+                Directory.CreateDirectory(gamePath + "/Mods/ServerTools/Config/XUi");
+            }
+            if (Directory.Exists(gamePath + "/Mods/ServerTools/WebAPI"))
+            {
+                WebAPI.Directory = gamePath + "/Mods/ServerTools/WebAPI/";
+            }
+            if (Directory.Exists(gamePath + "/Mods/ServerTools/Config"))
+            {
+                PersistentOperations.XPathDir = gamePath + "/Mods/ServerTools/Config/";
             }
 
             StateManager.Awake();

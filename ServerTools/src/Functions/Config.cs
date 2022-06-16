@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.5.1";
+        public const string Version = "20.5.2";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -448,6 +448,18 @@ namespace ServerTools
                                                 if (!bool.TryParse(line.GetAttribute("Direct_Deposit"), out Bank.Direct_Deposit))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Direct_Deposit' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                break;
+                                            case "Bank_Extended":
+                                                if (!line.HasAttribute("Payments"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank_Extended entry in ServerToolsConfig.xml because of missing 'Payments' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!bool.TryParse(line.GetAttribute("Payments"), out Bank.Payments))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Payments' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 break;
@@ -4252,14 +4264,14 @@ namespace ServerTools
                     if (!Directory.Exists(API.ConfigPath + "/XMLBackups/" + OldVersion))
                     {
                         Directory.CreateDirectory(API.ConfigPath + "/XMLBackups/" + OldVersion);
+                        for (int i = 0; i < files.Length; i++)
+                        {
+                            string fileName = files[i];
+                            string fileNameShort = fileName.Substring(fileName.IndexOf("ServerTools") + 11);
+                            File.Copy(fileName, API.ConfigPath + "/XMLBackups/" + OldVersion + fileNameShort);
+                        }
+                        Log.Out("[SERVERTOOLS] Created backup of xml files for version {0}", OldVersion);
                     }
-                    for (int i = 0; i < files.Length; i++)
-                    {
-                        string fileName = files[i];
-                        string fileNameShort = fileName.Substring(fileName.IndexOf("ServerTools") + 11);
-                        File.Copy(fileName, API.ConfigPath + "/XMLBackups/" + OldVersion + fileNameShort);
-                    }
-                    Log.Out("[SERVERTOOLS] Created backup of xml files for version {0}", OldVersion);
                 }
                 XmlElement element = xmlDoc.DocumentElement;
                 File.Delete(ConfigFilePath);
@@ -4314,6 +4326,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Save_World\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" />", AutoSaveWorld.IsEnabled, AutoSaveWorld.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Deposit_Fee_Percent=\"{2}\" Player_Transfers=\"{3}\" Direct_Deposit=\"{4}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Deposit_Fee_Percent, Bank.Player_Transfers, Bank.Direct_Deposit));
+                sw.WriteLine(string.Format("        <Tool Name=\"Bank_Extended\" Payments=\"{0}\" />", Bank.Payments));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bed\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", Bed.IsEnabled, Bed.Delay_Between_Uses, Bed.Command_Cost));
                 //sw.WriteLine(string.Format("        <Tool Name=\"Black_Jack\" Enable=\"{0}\" Buy_In=\"{1}\" />", BlackJack.IsEnabled, BlackJack.Buy_In));
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Logger\" Enable=\"{0}\" />", BlockLogger.IsEnabled));
@@ -4483,9 +4496,9 @@ namespace ServerTools
                                                             {
                                                                 for (int l = 0; l < oldChildNodeList.Count; l++)
                                                                 {
-                                                                    if (childNodeList[l].NodeType != XmlNodeType.Comment)
+                                                                    if (oldChildNodeList[l].NodeType != XmlNodeType.Comment)
                                                                     {
-                                                                        XmlElement oldLine = (XmlElement)childNodeList[l];
+                                                                        XmlElement oldLine = (XmlElement)oldChildNodeList[l];
                                                                         if (oldLine.HasAttributes && oldLine.Name == "Tool" && newLine.Attributes[0].Value == oldLine.Attributes[0].Value)
                                                                         {
                                                                             XmlAttributeCollection oldAttributes = oldLine.Attributes;
@@ -4493,10 +4506,9 @@ namespace ServerTools
                                                                             {
                                                                                 for (int n = 1; n < oldAttributes.Count; n++)
                                                                                 {
-                                                                                    if (newAttributes[m].Name == oldAttributes[n].Name && newAttributes[m].Value != oldAttributes[n].Value)
+                                                                                    if (newAttributes[m] != null && oldAttributes[n] != null && newAttributes[m].Name == oldAttributes[n].Name && newAttributes[m].Value != oldAttributes[n].Value)
                                                                                     {
                                                                                         newAttributes[m].Value = oldAttributes[n].Value;
-                                                                                        continue;
                                                                                     }
                                                                                 }
                                                                             }

@@ -120,9 +120,24 @@ namespace ServerTools
 
         public static void TimeRemaining(int _newCount)
         {
+            if (PersistentOperations.IsBloodmoon() && !Interrupt_Bloodmoon)
+            {
+                EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(10));
+                if (Event.Open && !Event.OperatorWarned)
+                {
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(Event.Operator);
+                    if (cInfo != null)
+                    {
+                        Event.OperatorWarned = true;
+                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + "A scheduled shutdown is set to begin but is on hold until the bloodmoon ends" + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                }
+                ShuttingDown = false;
+                return;
+            }
             Phrases.Dict.TryGetValue("StopServer1", out string phrase);
             phrase = phrase.Replace("{Value}", _newCount.ToString());
-            Alert(phrase, Shutdown.Alert_Count);
+            Alert(phrase, Alert_Count);
         }
 
         public static void OneMinute()

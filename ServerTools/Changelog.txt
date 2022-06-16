@@ -1,5 +1,26 @@
 ﻿CHANGELOG
 
+20.5.2
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Fixed Payment option missing from Bank tool
+-Fixed .../Mods/ServerTools/Config folder generating in the 
+wrong location
+-Fixed .../Mods/ServerTools/WebAPI folder generating in the 
+wrong location
+-Fixed .../Mods/ServerTools/Config/XUi folder generating in the 
+wrong location
+-Fixed xpath documents generating in the wrong location
+-Fixed Shutdown overlapping with the Bloodmoon due to the
+countdown period
+-Fixed update process reporting an error for ServerToolsConfig.xml
+*ServerTools should only be installed to one location which
+must now be the user data/app data folder.
+If you have a previous installation located in another folder, 
+transfer the xml files for your settings, remove the old
+files and then restart the server*
+
 20.5.1
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

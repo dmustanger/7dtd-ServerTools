@@ -53,7 +53,7 @@ namespace ServerTools
                         }
                     }
                     TokenLoaded = true;
-                    Log.Out("[SERVERTOOLS] Loaded security token for the discord bot");
+                    Log.Out("[SERVERTOOLS] Loaded security token for Discordian bot");
                 }
             }
             catch (Exception e)
