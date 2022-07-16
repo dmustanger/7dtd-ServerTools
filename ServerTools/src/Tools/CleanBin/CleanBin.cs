@@ -18,10 +18,6 @@ namespace ServerTools
                 PersistentContainer.Instance.PollOpen = false;
                 PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
             }
-            if (Auction)
-            {
-                PersistentContainer.Instance.AuctionPrices = new Dictionary<int, int>();
-            }
             List<string> id = PersistentContainer.Instance.Players.IDs;
             for (int i = 0; i < id.Count; i++)
             {

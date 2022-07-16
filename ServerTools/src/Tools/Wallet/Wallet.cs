@@ -17,9 +17,9 @@ namespace ServerTools
         {
             try
             {
-                if (File.Exists(API.GamePath + "/Mods/ServerTools/Config/items.xml"))
+                if (File.Exists(PersistentOperations.XPathDir + "items.xml"))
                 {
-                    string[] arrLines = File.ReadAllLines(API.GamePath + "/Mods/ServerTools/Config/items.xml");
+                    string[] arrLines = File.ReadAllLines(PersistentOperations.XPathDir + "items.xml");
                     int lineNumber = 0;
                     for (int i = 0; i < arrLines.Length; i++)
                     {
@@ -32,7 +32,7 @@ namespace ServerTools
                             else
                             {
                                 arrLines[lineNumber] = string.Format("<set xpath=\"/items/item[@name='{0}']/property[@name='Tags']/@value\">dukes,currency</set>", _item);
-                                File.WriteAllLines(API.GamePath + "/Mods/ServerTools/Config/items.xml", arrLines);
+                                File.WriteAllLines(PersistentOperations.XPathDir + "items.xml", arrLines);
                                 break;
                             }
                         }
@@ -41,7 +41,7 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", API.GamePath + "/Mods/ServerTools/Config/items.xml", e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", PersistentOperations.XPathDir + "items.xml", e.Message));
                 return;
             }
         }
@@ -89,6 +89,15 @@ namespace ServerTools
                 {
                     if (player.IsSpawned())
                     {
+                        if (Bank.IsEnabled && Bank.Direct_Deposit)
+                        {
+                            Bank.AddCurrencyToBank(cInfo.CrossplatformId.CombinedString, _amount);
+                            Phrases.Dict.TryGetValue("Bank11", out string phrase);
+                            phrase = phrase.Replace("{Value}", _amount.ToString());
+                            phrase = phrase.Replace("{CoinName}", Currency_Name);
+                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            return;
+                        }
                         ItemValue itemValue = ItemClass.GetItem(PersistentOperations.Currency_Item, false);
                         if (itemValue != null)
                         {

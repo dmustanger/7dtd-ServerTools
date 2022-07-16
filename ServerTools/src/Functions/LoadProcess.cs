@@ -11,23 +11,6 @@ namespace ServerTools
 
         public static void Load()
         {
-            string assemblyVersionNoDecimal = Config.Version.Replace(".", "");
-            int.TryParse(assemblyVersionNoDecimal, out int assemblyVersion);
-            for (int i = 0; i < ModManager.GetLoadedMods().Count; i++)
-            {
-                Mod mod = ModManager.GetLoadedMods()[i];
-                if (mod.ModInfo.Name.Value.Contains("ServerTools") && mod.ModInfo.Version != null)
-                {
-                    string versionNoDecimal = mod.ModInfo.Version.Value.Replace(".", "");
-                    int.TryParse(versionNoDecimal, out int version);
-                    if (assemblyVersion < version)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Disabled version '{0}' of ServerTools. Version '{1}' was detected operating simultaneously", Config.Version, version));
-                        return;
-                    }
-                }
-            }
-
             string configPath = API.ConfigPath;
             if (!Directory.Exists(configPath))
             {
@@ -90,9 +73,9 @@ namespace ServerTools
             {
                 Directory.CreateDirectory(configPath + "/Logs/ConsoleCommandLogs");
             }
-            if (!Directory.Exists(configPath + "/Logs/WebPanelLogs"))
+            if (!Directory.Exists(configPath + "/Logs/WebAPILogs"))
             {
-                Directory.CreateDirectory(configPath + "/Logs/WebPanelLogs");
+                Directory.CreateDirectory(configPath + "/Logs/WebAPILogs");
             }
             if (!Directory.Exists(configPath + "/Logs/OutputLogs"))
             {
@@ -121,17 +104,17 @@ namespace ServerTools
 
             RunTimePatch.PatchAll();
 
-            Config.Load();
-            Log.Out("[SERVERTOOLS] Running ServerTools Config v.{0}", Config.Version);
-
-            CommandList.BuildList();
-            CommandList.Load();
-
             PersistentOperations.CreateCustomXUi();
             PersistentOperations.GetCurrencyName();
             PersistentOperations.GetMeleeHandPlayer();
             PersistentOperations.EntityIdList();
             PersistentOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
+
+            Config.Load();
+            Log.Out("[SERVERTOOLS] Running ServerTools Config v.{0}", Config.Version);
+
+            CommandList.BuildList();
+            CommandList.Load();
 
             Mods.Load();
 
@@ -157,21 +140,22 @@ namespace ServerTools
             }
             try
             {
-                DeleteFiles("DetectionLogs");
-                DeleteFiles("BountyLogs");
                 DeleteFiles("AuctionLogs");
                 DeleteFiles("BankLogs");
+                DeleteFiles("BlockLogs");
+                DeleteFiles("BountyLogs");
+                DeleteFiles("ChatCommandLogs");
+                DeleteFiles("ChatLogs");
+                DeleteFiles("ConsoleCommandLogs");
+                DeleteFiles("DamageLogs");
+                DeleteFiles("DetectionLogs");
                 DeleteFiles("DupeLogs");
+                DeleteFiles("OutputLogs");
                 DeleteFiles("PlayerLogs");
                 DeleteFiles("PlayerReports");
                 DeleteFiles("PollLogs");
-                DeleteFiles("ChatLogs");
-                DeleteFiles("ChatCommandLogs");
-                DeleteFiles("DamageLogs");
-                DeleteFiles("BlockLogs");
-                DeleteFiles("ConsoleCommandLogs");
-                DeleteFiles("WebPanelLogs");
-                DeleteFiles("OutputLogs");
+                DeleteFiles("WebAPILogs");
+                
                 Log.Out(string.Format("[SERVERTOOLS] Xml log clean up complete"));
             }
             catch (XmlException e)

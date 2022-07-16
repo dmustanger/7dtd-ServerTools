@@ -75,7 +75,6 @@ namespace ServerTools
                             _p.ZoneDeathTime = new DateTime();
                         }
                     }
-                    PersistentContainer.Instance.AuctionPrices = new Dictionary<int, int>();
                     PersistentContainer.Instance.ClientMuteList = new Dictionary<int, List<int>>();
                     PersistentContainer.Instance.LastWeather = new DateTime();
                     PersistentContainer.Instance.PollData = new string[0];

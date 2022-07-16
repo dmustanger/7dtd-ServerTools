@@ -367,13 +367,19 @@ namespace ServerTools
                     int maxQuality = int.Parse(item[4]);
                     int count = Random.Next(minCount, maxCount + 1);
                     int quality = Random.Next(minCount, maxCount + 1);
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type);
+                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type, 1, 1, true, null, 1f);
                     if (itemValue.HasQuality)
                     {
                         itemValue.Quality = 1;
                         if (quality > 0)
                         {
                             itemValue.Quality = quality;
+                        }
+                        int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
+                        if (modSlots > 0)
+                        {
+                            itemValue.Modifications = new ItemValue[modSlots];
+                            itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
                         }
                     }
                     World world = GameManager.Instance.World;

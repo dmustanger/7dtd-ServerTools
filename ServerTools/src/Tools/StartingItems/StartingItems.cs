@@ -225,7 +225,7 @@ namespace ServerTools
                 string item = _items[0];
                 if (Dict.TryGetValue(item, out int[] itemData))
                 {
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(item).type);
+                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(item, false).type);
                     if (itemValue.HasQuality)
                     {
                         itemValue.Quality = 1;
@@ -233,6 +233,8 @@ namespace ServerTools
                         {
                             itemValue.Quality = itemData[1];
                         }
+                        itemValue.Modifications = new ItemValue[(int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1)];
+                        itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
                     }
                     EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                     {
@@ -262,7 +264,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in StartingItems.SpawnItems: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in StartingItems.Exec: {0}", e.Message));
             }
         }
 

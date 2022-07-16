@@ -114,7 +114,15 @@ namespace ServerTools
                                             }
                                             if (Wallet.IsEnabled && Wallet.PVP && Wallet.Player_Kill > 0)
                                             {
-                                                Wallet.AddCurrency(cInfoAttacker.CrossplatformId.CombinedString, Wallet.Player_Kill);
+                                                if (Bank.IsEnabled && Bank.Direct_Deposit)
+                                                {
+                                                    PersistentContainer.Instance.Players[cInfoAttacker.CrossplatformId.CombinedString].Bank += Wallet.Player_Kill;
+                                                    PersistentContainer.DataChange = true;
+                                                }
+                                                else
+                                                {
+                                                    Wallet.AddCurrency(cInfoAttacker.CrossplatformId.CombinedString, Wallet.Player_Kill);
+                                                }
                                             }
                                             if (MagicBullet.IsEnabled && !MagicBullet.Kill.Contains(cInfoAttacker.entityId))
                                             {
@@ -202,7 +210,15 @@ namespace ServerTools
                                         lastEntityKilled = victim.entityId;
                                         if (Wallet.IsEnabled && Wallet.Zombie_Kill > 0)
                                         {
-                                            Wallet.AddCurrency(cInfoAttacker.CrossplatformId.CombinedString, Wallet.Zombie_Kill);
+                                            if (Bank.IsEnabled && Bank.Direct_Deposit)
+                                            {
+                                                PersistentContainer.Instance.Players[cInfoAttacker.CrossplatformId.CombinedString].Bank += Wallet.Zombie_Kill;
+                                                PersistentContainer.DataChange = true;
+                                            }
+                                            else
+                                            {
+                                                Wallet.AddCurrency(cInfoAttacker.CrossplatformId.CombinedString, Wallet.Zombie_Kill);
+                                            }
                                         }
                                         if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.BloodmoonStarted && BloodmoonWarrior.WarriorList.Contains(cInfoAttacker.entityId))
                                         {

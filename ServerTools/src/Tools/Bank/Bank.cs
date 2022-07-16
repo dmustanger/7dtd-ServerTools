@@ -30,15 +30,15 @@ namespace ServerTools
             return bankValue;
         }
 
-        public static void AddCoinsToBank(string _steamid, int _amount)
+        public static void AddCurrencyToBank(string _id, int _amount)
         {
-            PersistentContainer.Instance.Players[_steamid].Bank += _amount;
+            PersistentContainer.Instance.Players[_id].Bank += _amount;
             PersistentContainer.DataChange = true;
         }
 
-        public static void SubtractCoinsFromBank(string _steamid, int _amount)
+        public static void SubtractCurrencyFromBank(string _id, int _amount)
         {
-            PersistentContainer.Instance.Players[_steamid].Bank -= _amount;
+            PersistentContainer.Instance.Players[_id].Bank -= _amount;
             PersistentContainer.DataChange = true;
         }
 
@@ -146,7 +146,7 @@ namespace ServerTools
                             {
                                 float fee = value * ((float)Deposit_Fee_Percent / 100);
                                 int adjustedDeposit = value - (int)fee;
-                                AddCoinsToBank(_cInfo.CrossplatformId.CombinedString, adjustedDeposit);
+                                AddCurrencyToBank(_cInfo.CrossplatformId.CombinedString, adjustedDeposit);
                                 using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: '{1}' '{2}' added '{3}' to their bank", DateTime.Now, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, adjustedDeposit));
@@ -162,7 +162,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                AddCoinsToBank(_cInfo.CrossplatformId.CombinedString, value);
+                                AddCurrencyToBank(_cInfo.CrossplatformId.CombinedString, value);
                                 using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("{0}: '{1}' '{2}' added '{3}' to their bank", DateTime.Now, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, value));
@@ -226,7 +226,7 @@ namespace ServerTools
                                     ItemStack itemStack = new ItemStack(itemValue, value);
                                     if (itemStack != null)
                                     {
-                                        SubtractCoinsFromBank(_cInfo.CrossplatformId.CombinedString, value);
+                                        SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, value);
                                         using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                         {
                                             sw.WriteLine(string.Format("{0}: '{1}' removed '{2}' from their bank", DateTime.Now, _cInfo.playerName, value));
@@ -309,8 +309,8 @@ namespace ServerTools
                                             ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(bankData.Key);
                                             if (cInfo2 != null)
                                             {
-                                                SubtractCoinsFromBank(_cInfo.CrossplatformId.CombinedString, value);
-                                                AddCoinsToBank(cInfo2.CrossplatformId.CombinedString, value);
+                                                SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, value);
+                                                AddCurrencyToBank(cInfo2.CrossplatformId.CombinedString, value);
                                                 using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                                 {
                                                     sw.WriteLine(string.Format("{0}: Bank transfer '{1}' '{2}' named '{3}' to '{4}' '{5}' named '{6}' of '{7}' currency", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, cInfo2.PlatformId.CombinedString, cInfo2.CrossplatformId.CombinedString, cInfo2.playerName, value));

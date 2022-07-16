@@ -15,7 +15,6 @@ namespace ServerTools
         private PersistentPlayers players;
         private static bool Saving = false;
 
-        private Dictionary<int, int> auctionPrices;
         private Dictionary<int, int> backpacks;
         private string bannedCountries;
         private Dictionary<int, List<int>> clientMuteList;
@@ -32,7 +31,7 @@ namespace ServerTools
         private bool proxyBan;
         private List<string> regionReset;
         private List<string[]> track;
-        private Dictionary<string, string[]> webAuthorizedIVKeyList;
+        private Dictionary<string, string> webAuthorizedList;
         private Dictionary<string, DateTime> webAuthorizedTimeList;
         private List<string> webBanList;
         private Dictionary<string, DateTime> webTimeoutList;
@@ -123,18 +122,6 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Exception in PersistentContainer.Load: {0}", e.Message));
             }
             return false;
-        }
-
-        public Dictionary<int, int> AuctionPrices
-        {
-            get
-            {
-                return auctionPrices;
-            }
-            set
-            {
-                auctionPrices = value;
-            }
         }
 
         public Dictionary<int, int> Backpacks
@@ -329,15 +316,15 @@ namespace ServerTools
             }
         }
 
-        public Dictionary<string, string[]> WebAuthorizedIVKeyList
+        public Dictionary<string, string> WebAuthorizedList
         {
             get
             {
-                return webAuthorizedIVKeyList;
+                return webAuthorizedList;
             }
             set
             {
-                webAuthorizedIVKeyList = value;
+                webAuthorizedList = value;
             }
         }
 

@@ -557,41 +557,44 @@ namespace ServerTools
                                 Lobby.Exec(_cInfo);
                                 return false;
                             }
-                            if (Shop.IsEnabled && Wallet.IsEnabled && messageLowerCase.StartsWith(Shop.Command_shop_buy + " "))
+                            if (Shop.IsEnabled && Wallet.IsEnabled)
                             {
-                                _message = _message.Replace(Shop.Command_shop_buy + " ", "");
-                                if (!_message.Contains(" "))
+                                if (messageLowerCase.StartsWith(Shop.Command_shop_buy + " "))
                                 {
-                                    Shop.PosCheck(_cInfo, _message, 3, 1);
+                                    _message = _message.Replace(Shop.Command_shop_buy + " ", "");
+                                    if (!_message.Contains(" "))
+                                    {
+                                        Shop.PosCheck(_cInfo, _message, 3, 1);
+                                    }
+                                    else if (_message.Contains(" "))
+                                    {
+                                        string[] _split = _message.Split(' ');
+                                        string _id = _split[0];
+                                        if (int.TryParse(_split[1], out int _count))
+                                        {
+                                            Shop.PosCheck(_cInfo, _id, 3, _count);
+                                        }
+                                        else
+                                        {
+                                            Phrases.Dict.TryGetValue("Shop13", out string phrase);
+                                            phrase = phrase.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
+                                            phrase = phrase.Replace("{Command_shop_buy}", Shop.Command_shop_buy);
+                                            ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        }
+                                    }
+                                    return false;
                                 }
-                                else if (_message.Contains(" "))
+                                if (messageLowerCase.StartsWith(Shop.Command_shop + " "))
                                 {
-                                    string[] _split = _message.Split(' ');
-                                    string _id = _split[0];
-                                    if (int.TryParse(_split[1], out int _count))
-                                    {
-                                        Shop.PosCheck(_cInfo, _id, 3, _count);
-                                    }
-                                    else
-                                    {
-                                        Phrases.Dict.TryGetValue("Shop13", out string _phrase);
-                                        _phrase = _phrase.Replace("{Command_Prefix1}", Chat_Command_Prefix1);
-                                        _phrase = _phrase.Replace("{Command_shop_buy}", Shop.Command_shop_buy);
-                                        ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    }
+                                    string _category = messageLowerCase.Replace(Shop.Command_shop + " ", "");
+                                    Shop.PosCheck(_cInfo, _category, 2, 0);
+                                    return false;
                                 }
-                                return false;
-                            }
-                            if (Shop.IsEnabled && Wallet.IsEnabled && messageLowerCase.StartsWith(Shop.Command_shop + " "))//show specific category
-                            {
-                                string _category = messageLowerCase.Replace(Shop.Command_shop + " ", "");
-                                Shop.PosCheck(_cInfo, _category, 2, 0);
-                                return false;
-                            }
-                            if (Shop.IsEnabled && Wallet.IsEnabled && messageLowerCase == Shop.Command_shop)//show all categories
-                            {
-                                Shop.PosCheck(_cInfo, _message, 1, 0);
-                                return false;
+                                if (messageLowerCase == Shop.Command_shop)
+                                {
+                                    Shop.PosCheck(_cInfo, _message, 1, 0);
+                                    return false;
+                                }
                             }
                             if (FriendTeleport.IsEnabled && messageLowerCase == FriendTeleport.Command_friend)
                             {

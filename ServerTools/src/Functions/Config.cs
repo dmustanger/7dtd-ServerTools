@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.5.2";
+        public const string Version = "20.5.3";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -261,6 +261,41 @@ namespace ServerTools
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Tax' attribute: {0}", line.OuterXml));
                                                     continue;
+                                                }
+                                                break;
+                                            case "Auction_Extended":
+                                                if (!line.HasAttribute("Panel"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction_Extended entry in ServerToolsConfig.xml because of missing 'Panel' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!bool.TryParse(line.GetAttribute("Panel"), out Auction.Panel))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Panel' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!line.HasAttribute("Panel_Name"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction_Extended entry in ServerToolsConfig.xml because of missing 'Panel_Name' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (line.HasAttribute("Panel_Name"))
+                                                {
+                                                    Auction.Panel_Name = line.GetAttribute("Panel_Name");
+                                                }
+                                                if (!line.HasAttribute("Link"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction_Extended entry in ServerToolsConfig.xml because of missing 'Link' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (line.HasAttribute("Link"))
+                                                {
+                                                    string link = line.GetAttribute("Link");
+                                                    if (Auction.Link != link)
+                                                    {
+                                                        Auction.Link = link;
+                                                        Auction.SetLink(link);
+                                                    }
                                                 }
                                                 break;
                                             case "Auto_Backup":
@@ -3370,6 +3405,41 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Inside_Traders' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
+                                                if (!line.HasAttribute("Panel"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry in ServerToolsConfig.xml because of missing 'Panel' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!bool.TryParse(line.GetAttribute("Panel"), out Shop.Panel))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Panel' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!line.HasAttribute("Link"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry in ServerToolsConfig.xml because of missing 'Link' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (line.HasAttribute("Link"))
+                                                {
+                                                    string link = line.GetAttribute("Link");
+                                                    if (Shop.Link != link)
+                                                    {
+                                                        Shop.Link = link;
+                                                        Shop.SetLink(link);
+                                                    }
+                                                }
+                                                break;
+                                            case "Shop_Extended":
+                                                if (!line.HasAttribute("Panel_Name"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop_Extended entry in ServerToolsConfig.xml because of missing 'Panel_Name' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (line.HasAttribute("Panel_Name"))
+                                                {
+                                                    Shop.Panel_Name = line.GetAttribute("Panel_Name");
+                                                }
                                                 break;
                                             case "Shutdown":
                                                 if (!line.HasAttribute("Enable"))
@@ -3770,11 +3840,11 @@ namespace ServerTools
                                                 }
                                                 if (line.HasAttribute("Your_Voting_Site"))
                                                 {
-                                                    string voteSite = line.GetAttribute("Your_Voting_Site");
-                                                    if (VoteReward.Your_Voting_Site != voteSite)
+                                                    string link = line.GetAttribute("Your_Voting_Site");
+                                                    if (VoteReward.Your_Voting_Site != link)
                                                     {
-                                                        VoteReward.Your_Voting_Site = voteSite;
-                                                        VoteReward.SetLink(voteSite);
+                                                        VoteReward.Your_Voting_Site = link;
+                                                        VoteReward.SetLink(link);
                                                     }
                                                 }
                                                 if (!line.HasAttribute("API_Key"))
@@ -4106,6 +4176,15 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_API entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Port' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
+                                                if (!line.HasAttribute("Icon_Folder"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_API entry in ServerToolsConfig.xml because of missing 'Icon_Folder' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (line.HasAttribute("Icon_Folder"))
+                                                {
+                                                    WebAPI.Icon_Folder = line.GetAttribute("Icon_Folder");
+                                                }
                                                 break;
                                             case "Web_Panel":
                                                 if (!line.HasAttribute("Enable"))
@@ -4117,6 +4196,20 @@ namespace ServerTools
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_Panel entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                                     continue;
+                                                }
+                                                if (!line.HasAttribute("Timeout"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_Panel entry in ServerToolsConfig.xml because of missing 'Timeout' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!int.TryParse(line.GetAttribute("Timeout"), out WebPanel.Timeout))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_Panel entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Timeout' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (WebPanel.Timeout < 5)
+                                                {
+                                                    WebPanel.Timeout = 5;
                                                 }
                                                 break;
                                             case "Workstation_Lock":
@@ -4320,6 +4413,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Animal_Tracking\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Minimum_Spawn_Radius=\"{2}\" Maximum_Spawn_Radius=\"{3}\" Animal_Ids=\"{4}\" />", AnimalTracking.IsEnabled, AnimalTracking.Delay_Between_Uses, AnimalTracking.Minimum_Spawn_Radius, AnimalTracking.Maximum_Spawn_Radius, AnimalTracking.Animal_Ids));
                 sw.WriteLine(string.Format("        <Tool Name=\"Animal_Tracking_Extended\" Command_Cost=\"{0}\" />", AnimalTracking.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auction\" Enable=\"{0}\" No_Admins=\"{1}\" Admin_Level=\"{2}\" Total_Items=\"{3}\" Tax=\"{4}\" />", Auction.IsEnabled, Auction.No_Admins, Auction.Admin_Level, Auction.Total_Items, Auction.Tax));
+                sw.WriteLine(string.Format("        <Tool Name=\"Auction_Extended\" Panel=\"{0}\" Panel_Name=\"{1}\" Link=\"{2}\" />", Auction.Panel, Auction.Panel_Name, Auction.Link));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Backup\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" Destination=\"{2}\" Compression_Level=\"{3}\" Backup_Count=\"{4}\" />", AutoBackup.IsEnabled, AutoBackup.Delay, AutoBackup.Destination, AutoBackup.Compression_Level, AutoBackup.Backup_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Party_Invite\" Enable=\"{0}\" />", AutoPartyInvite.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Restart\" Enable=\"{0}\" />", AutoRestart.IsEnabled));
@@ -4404,7 +4498,8 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Reserved_Slots\" Enable=\"{0}\" Session_Time=\"{1}\" Admin_Level=\"{2}\" Reduced_Delay=\"{3}\" Bonus_Exp=\"{4}\" />", ReservedSlots.IsEnabled, ReservedSlots.Session_Time, ReservedSlots.Admin_Level, ReservedSlots.Reduced_Delay, ReservedSlots.Bonus_Exp));
                 sw.WriteLine(string.Format("        <Tool Name=\"Restart_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" Admin_Level=\"{3}\" />", RestartVote.IsEnabled, RestartVote.Players_Online, RestartVote.Votes_Needed, RestartVote.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Scout_Player\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", ScoutPlayer.IsEnabled, ScoutPlayer.Delay_Between_Uses, ScoutPlayer.Command_Cost));
-                sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Inside_Market=\"{1}\" Inside_Traders=\"{2}\" />", Shop.IsEnabled, Shop.Inside_Market, Shop.Inside_Traders));
+                sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Inside_Market=\"{1}\" Inside_Traders=\"{2}\" Panel=\"{3}\" Link=\"{4}\" />", Shop.IsEnabled, Shop.Inside_Market, Shop.Inside_Traders, Shop.Panel, Shop.Link));
+                sw.WriteLine(string.Format("        <Tool Name=\"Shop_Extended\" Panel_Name=\"{0}\" />", Shop.Panel_Name));
                 sw.WriteLine(string.Format("        <Tool Name=\"Shutdown\" Enable=\"{0}\" Countdown=\"{1}\" Time=\"{2}\" Alert_On_Login=\"{3}\" Alert_Count=\"{4}\" />", Shutdown.IsEnabled, Shutdown.Countdown, Shutdown.Time, Shutdown.Alert_On_Login, Shutdown.Alert_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Shutdown_Extended\" UI_Lock=\"{0}\" Interrupt_Bloodmoon=\"{1}\" />", Shutdown.UI_Lock, Shutdown.Interrupt_Bloodmoon));
                 sw.WriteLine(string.Format("        <Tool Name=\"Sleeper_Respawn\" Enable=\"{0}\" />", SleeperRespawn.IsEnabled));
@@ -4416,14 +4511,14 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Recall_Extended\" Normal_Max=\"{0}\" Reserved_Max=\"{1}\" />", VehicleRecall.Normal_Max, VehicleRecall.Reserved_Max));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Your_Voting_Site=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" />", VoteReward.IsEnabled, VoteReward.Your_Voting_Site, VoteReward.API_Key, VoteReward.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting_Extended\" Reward_Count=\"{0}\" Reward_Entity=\"{1}\" Entity_Id=\"{2}\" Weekly_Votes=\"{3}\" />", VoteReward.Reward_Count, VoteReward.Reward_Entity, VoteReward.Entity_Id, VoteReward.Weekly_Votes));
-                sw.WriteLine(string.Format("        <Tool Name=\"Wall\" Enable=\"{0}\" Player_Check =\"{1}\" />", Wall.IsEnabled, Wall.Player_Check));
+                sw.WriteLine(string.Format("        <Tool Name=\"Wall\" Enable=\"{0}\" Player_Check=\"{1}\" />", Wall.IsEnabled, Wall.Player_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Wallet\" Enable=\"{0}\" PVP=\"{1}\" Zombie_Kill=\"{2}\" Player_Kill=\"{3}\" Bank_Transfers=\"{4}\" />", Wallet.IsEnabled, Wallet.PVP, Wallet.Zombie_Kill, Wallet.Player_Kill, Wallet.Bank_Transfers));
                 sw.WriteLine(string.Format("        <Tool Name=\"Wallet_Extended\" Session_Bonus=\"{0}\" Currency_Name=\"{1}\" Item_Name=\"{2}\" />", Wallet.Session_Bonus, Wallet.Currency_Name, Wallet.Item_Name));
                 sw.WriteLine(string.Format("        <Tool Name=\"Watch_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Delay=\"{2}\" />", WatchList.IsEnabled, WatchList.Admin_Level, WatchList.Delay));
-                sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints =\"{1}\" Reserved_Max_Waypoints=\"{2}\" Command_Cost =\"{3}\" Delay_Between_Uses=\"{4}\" />", Waypoints.IsEnabled, Waypoints.Max_Waypoints, Waypoints.Reserved_Max_Waypoints, Waypoints.Command_Cost, Waypoints.Delay_Between_Uses));
+                sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints=\"{1}\" Reserved_Max_Waypoints=\"{2}\" Command_Cost=\"{3}\" Delay_Between_Uses=\"{4}\" />", Waypoints.IsEnabled, Waypoints.Max_Waypoints, Waypoints.Reserved_Max_Waypoints, Waypoints.Command_Cost, Waypoints.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Waypoints_Extended\" Player_Check =\"{0}\" Zombie_Check=\"{1}\" Vehicle=\"{2}\" No_POI=\"{3}\" />", Waypoints.Player_Check, Waypoints.Zombie_Check, Waypoints.Vehicle, Waypoints.No_POI));
-                sw.WriteLine(string.Format("        <Tool Name=\"Web_API\" Enable=\"{0}\" Port=\"{1}\" />", WebAPI.IsEnabled, WebAPI.Port));
-                sw.WriteLine(string.Format("        <Tool Name=\"Web_Panel\" Enable=\"{0}\" />", WebPanel.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Web_API\" Enable=\"{0}\" Port=\"{1}\" Icon_Folder=\"{2}\" />", WebAPI.IsEnabled, WebAPI.Port, WebAPI.Icon_Folder));
+                sw.WriteLine(string.Format("        <Tool Name=\"Web_Panel\" Enable=\"{0}\" Timeout=\"{1}\" />", WebPanel.IsEnabled, WebPanel.Timeout));
                 sw.WriteLine(string.Format("        <Tool Name=\"Workstation_Lock\" Enable=\"{0}\" />", WorkstationLock.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"World_Radius\" Enable=\"{0}\" Normal_Player=\"{1}\" Reserved=\"{2}\" Admin_Level=\"{3}\" />", WorldRadius.IsEnabled, WorldRadius.Normal_Player, WorldRadius.Reserved, WorldRadius.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Zones\" Enable=\"{0}\" Zone_Message=\"{1}\" Reminder_Delay=\"{2}\" Set_Home=\"{3}\"  />", Zones.IsEnabled, Zones.Zone_Message, Zones.Reminder_Delay, Zones.Set_Home));

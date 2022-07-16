@@ -10,7 +10,7 @@ namespace ServerTools
 {
     class Zones
     {
-        public static bool IsEnabled = false, IsRunning = false, Zone_Message = false, Set_Home = false;
+        public static bool IsEnabled = false, IsRunning = false, Zone_Message = false, Set_Home = false, BuffProtection = false;
         public static string Reminder_Delay = "20";
 
         public static Dictionary<int, DateTime> Reminder = new Dictionary<int, DateTime>();
@@ -44,6 +44,10 @@ namespace ServerTools
         {
             try
             {
+                if (BuffManager.Buffs.ContainsKey("pve_zone") && BuffManager.Buffs.ContainsKey("pvp_damage"))
+                {
+                    BuffProtection = true;
+                }
                 if (!File.Exists(FilePath))
                 {
                     UpdateXml();
@@ -327,21 +331,35 @@ namespace ServerTools
                             {
                                 ZonePlayer[_player.entityId] = zone;
                                 Reminder[_player.entityId] = DateTime.Now;
-                                if (zone[9] == "0")
+                                if (BuffProtection)
                                 {
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
+                                    switch (zone[9])
+                                    {
+                                        case "0":
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
+                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
+                                            break;
+                                        case "1":
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
+                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
+                                            break;
+                                        case "2":
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
+                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
+                                            break;
+                                        case "3":
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
+                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
+                                            break;
+                                    }
                                 }
-                                else if (zone[9] == "1")
+                                if (Zone_Message && info[5] != "")
                                 {
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + info[5] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
-                                else if (zone[9] == "2")
+                                if (info[7] != "")
                                 {
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
+                                    ProcessCommand(_cInfo, info[7]);
                                 }
                                 if (Zone_Message && zone[4] != "")
                                 {
@@ -357,21 +375,27 @@ namespace ServerTools
                         {
                             ZonePlayer.Add(_player.entityId, zone);
                             Reminder.Add(_player.entityId, DateTime.Now);
-                            if (zone[9] == "0")
+                            if (BuffProtection)
                             {
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
-                            }
-                            else if (zone[9] == "1")
-                            {
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
-                            }
-                            else if (zone[9] == "2")
-                            {
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
+                                switch (zone[9])
+                                {
+                                    case "0":
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
+                                        break;
+                                    case "1":
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
+                                        break;
+                                    case "2":
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
+                                        break;
+                                    case "3":
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
+                                        break;
+                                }
                             }
                             if (Zone_Message && zone[4] != "")
                             {
@@ -390,9 +414,38 @@ namespace ServerTools
                     ZonePlayer.TryGetValue(_player.entityId, out string[] zone);
                     ZonePlayer.Remove(_player.entityId);
                     Reminder.Remove(_player.entityId);
-                    if (zone[9] != PersistentOperations.Player_Killing_Mode.ToString())
+                    if (BuffProtection)
                     {
-                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup(string.Format("sgs PlayerKillingMode {0}", PersistentOperations.Player_Killing_Mode), true));
+                        switch (zone[9])
+                        {
+                            case "0":
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
+                                break;
+                            case "1":
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
+                                break;
+                            case "2":
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
+                                break;
+                            case "3":
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
+                                break;
+                        }
+                        switch (PersistentOperations.Player_Killing_Mode)
+                        {
+                            case 0:
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
+                                break;
+                            case 1:
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
+                                break;
+                            case 2:
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
+                                break;
+                            case 3:
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
+                                break;
+                        }
                     }
                     if (Zone_Message && zone[5] != "")
                     {
@@ -402,7 +455,6 @@ namespace ServerTools
                     {
                         ProcessCommand(_cInfo, zone[7]);
                     }
-                    return;
                 }
             }
             catch (Exception e)
@@ -627,9 +679,10 @@ namespace ServerTools
                             for (int j = 0; j < Entities.Count; j++)
                             {
                                 Entity entity = Entities[j];
-                                if (entity != null && !entity.IsDead())
+                                if (entity != null)
                                 {
-                                    if (entity is EntityZombie || entity is EntityEnemyAnimal)
+                                    if (entity is EntityZombie || entity is EntityEnemyAnimal || entity is EntityVulture || entity is EntityZombieCop ||
+                                        entity is EntityZombieDog)
                                     {
                                         Vector3 vec = entity.position;
                                         int X = (int)entity.position.x;
@@ -791,14 +844,14 @@ namespace ServerTools
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Do not use decimals in the corner positions -->");
                     sw.WriteLine("    <!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
-                    sw.WriteLine("    <!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
+                    sw.WriteLine("    <!-- PvP: True/False will set a buff that blocks or allows damage from player to player -->");
                     sw.WriteLine("    <!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
                     sw.WriteLine("    <!-- Possible variables for commands include {PlayerName}, {EntityId}, {Id}, {EOS}, {Delay}, whisper, global -->");
-                    sw.WriteLine("    <!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
+                    sw.WriteLine("    <!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvP=\"0\" NoZombie=\"True\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Do not use decimals") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- Overlapping zones:") && !OldNodeList[i].OuterXml.Contains("<!-- PvPvE: 0 = No Killing") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- Overlapping zones:") && !OldNodeList[i].OuterXml.Contains("<!-- PvP: True/False") &&
                             !OldNodeList[i].OuterXml.Contains("<!-- EntryCommand and ExitCommand") && !OldNodeList[i].OuterXml.Contains("<!-- Possible variables for commands") &&
                             !OldNodeList[i].OuterXml.Contains("<!-- <Zone Name=\"Example\"") && !OldNodeList[i].OuterXml.Contains("<!-- <Zone Name=\"\""))
                         {
@@ -815,7 +868,7 @@ namespace ServerTools
                             if (line.HasAttributes && line.Name == "Zone")
                             {
                                 string name = "", corner1 = "", corner2 = "", circle = "", entryMessage = "", exitMessage = "", entryCommand = "",
-                                    exitCommand = "", reminder = "", pvpve = "", noZ = "";
+                                    exitCommand = "", reminder = "", pve = "", noZ = "";
                                 if (line.HasAttribute("Name"))
                                 {
                                     name = line.GetAttribute("Name");
@@ -852,15 +905,15 @@ namespace ServerTools
                                 {
                                     reminder = line.GetAttribute("ReminderNotice");
                                 }
-                                if (line.HasAttribute("PvPvE"))
+                                if (line.HasAttribute("PvE"))
                                 {
-                                    pvpve = line.GetAttribute("PvPvE");
+                                    pve = line.GetAttribute("PvE");
                                 }
                                 if (line.HasAttribute("NoZombie"))
                                 {
                                     noZ = line.GetAttribute("NoZombie");
                                 }
-                                sw.WriteLine(string.Format("    <Zone Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Circle=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" EntryCommand=\"{6}\" ExitCommand=\"{7}\" ReminderNotice=\"{8}\" PvPvE=\"{9}\" NoZombie=\"{10}\" />", name, corner1, corner2, circle, entryMessage, exitMessage, entryCommand, exitCommand, reminder, pvpve, noZ));
+                                sw.WriteLine(string.Format("    <Zone Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Circle=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" EntryCommand=\"{6}\" ExitCommand=\"{7}\" ReminderNotice=\"{8}\" PvE=\"{9}\" NoZombie=\"{10}\" />", name, corner1, corner2, circle, entryMessage, exitMessage, entryCommand, exitCommand, reminder, pve, noZ));
                             }
                         }
                     }

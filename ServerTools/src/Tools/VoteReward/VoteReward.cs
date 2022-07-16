@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Xml;
@@ -470,13 +471,19 @@ namespace ServerTools
                     else
                     {
                         int quality = Random.Next(itemData[2], itemData[3] + 1);
-                        ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem).type);
+                        ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type);
                         if (itemValue.HasQuality)
                         {
                             itemValue.Quality = 1;
                             if (quality > 0)
                             {
                                 itemValue.Quality = quality;
+                            }
+                            int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
+                            if (modSlots > 0)
+                            {
+                                itemValue.Modifications = new ItemValue[modSlots];
+                                itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
                             }
                         }
                         Give(_cInfo, itemValue, count);
@@ -640,34 +647,56 @@ namespace ServerTools
             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserVote", true));
         }
 
-        public static void SetLink(string _voteSite)
+        public static void SetLink(string _link)
         {
             try
             {
-                if (File.Exists(API.GamePath + "/Mods/ServerTools/Config/XUi/windows.xml"))
+                if (File.Exists(PersistentOperations.XPathDir + "XUi/windows.xml"))
                 {
-                    string[] arrLines = File.ReadAllLines(API.GamePath + "/Mods/ServerTools/Config/XUi/windows.xml");
-                    int lineNumber = 0;
-                    for (int i = 0; i < arrLines.Length; i++)
+                    List<string> lines = File.ReadAllLines(PersistentOperations.XPathDir + "XUi/windows.xml").ToList();
+                    for (int i = 0; i < lines.Count; i++)
                     {
-                        if (arrLines[i].Contains("browserVote"))
+                        if (lines[i].Contains("browserVote"))
                         {
-                            lineNumber = i + 7;
-                            if (arrLines[lineNumber].Contains(_voteSite))
+                            if (!lines[i + 7].Contains(_link))
                             {
-                                return;
+                                lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", _link);
+                                File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
                             }
-                            break;
+                            return;
                         }
                     }
-                    arrLines[lineNumber] = string.Format("<label depth=\"4\" pos=\"0,-40\" height=\"30\" width=\"257\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"30\" upper_case=\"false\" />", _voteSite);
-                    File.WriteAllLines(API.GamePath + "/Mods/ServerTools/Config/XUi/windows.xml", arrLines);
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        if (lines[i].Contains("/append"))
+                        {
+                            lines.RemoveRange(i, 3);
+                            lines.Add("  <window name=\"browserVote\" controller=\"ServerInfo\">");
+                            lines.Add("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                            lines.Add("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Voting Site\" />");
+                            lines.Add("      </panel>");
+                            lines.Add("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                            lines.Add("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                            lines.Add("          <label name=\"ServerDescription\" />");
+                            lines.Add(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", _link));
+                            lines.Add("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                            lines.Add("          <sprite depth=\"4\" name=\"computerIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_computer\" />");
+                            lines.Add("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
+                            lines.Add("          <!-- Change the text IP and Port to the one needed by ServerTools web api -->");
+                            lines.Add("      </panel>");
+                            lines.Add("  </window>");
+                            lines.Add("");
+                            lines.Add("</append>");
+                            lines.Add("");
+                            lines.Add("</configs>");
+                            File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
+                        }
+                    }
                 }
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", API.GamePath + "/Mods/ServerTools/Config/XUi/windows.xml", e.Message));
-                return;
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", PersistentOperations.XPathDir + "XUi/windows.xml", e.Message));
             }
         }
 

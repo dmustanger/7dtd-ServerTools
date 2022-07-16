@@ -90,30 +90,47 @@ namespace ServerTools
         {
             try
             {
-                string filepath1 = string.Format("{0}/Player/{1}.map", GameIO.GetSaveGameDir(), _id);
-                string filepath2 = string.Format("{0}/Player/{1}.ttp", GameIO.GetSaveGameDir(), _id);
-                if (!File.Exists(filepath1))
+                string filepath = string.Format("{0}/Player/{1}.map", GameIO.GetSaveGameDir(), _id);
+                if (!File.Exists(filepath))
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Could not find file '{0}' for player profile reset", filepath1));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Could not find file '{0}' for player profile reset", filepath));
+                    Log.Out(string.Format("[SERVERTOOLS] Could not find file '{0}' for player profile reset", filepath));
                 }
                 else
                 {
-                    File.Delete(filepath1);
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] File '{0}' deleted for player profile reset", filepath1));
+                    File.Delete(filepath);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] File '{0}' deleted for player profile reset", filepath));
+                    Log.Out(string.Format("[SERVERTOOLS] File '{0}' deleted for player profile reset", filepath));
                 }
-                if (!File.Exists(filepath2))
-                {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Could not find file '{0}' for player profile reset", filepath2));
-                }
-                else
-                {
-                    File.Delete(filepath2);
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] File '{0}' deleted for player profile reset", filepath2));
-                }
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removing .ttp file in two seconds"));
+                Timers.ResetPlayerProfileDelayTimer(_id);
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in ResetPlayerConsole.RemoveProfile: {0}", e.Message));
+            }
+        }
+
+        public static void DelayedProfileDeletion(string _id)
+        {
+            try
+            {
+                string filepath = string.Format("{0}/Player/{1}.ttp", GameIO.GetSaveGameDir(), _id);
+                if (!File.Exists(filepath))
+                {
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Could not find file '{0}' for player profile reset", filepath));
+                    Log.Out(string.Format("[SERVERTOOLS] Could not find file '{0}' for player profile reset", filepath));
+                }
+                else
+                {
+                    File.Delete(filepath);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] File '{0}' deleted for player profile reset", filepath));
+                    Log.Out(string.Format("[SERVERTOOLS] File '{0}' deleted for player profile reset", filepath));
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in ResetPlayerConsole.DelayedProfileDeletion: {0}", e.Message));
             }
         }
 
@@ -193,9 +210,9 @@ namespace ServerTools
                     p.ZoneDeathTime = new DateTime();
                     PersistentContainer.DataChange = true;
                 }
-                Phrases.Dict.TryGetValue("ResetPlayer2", out string _phrase);
-                _phrase = _phrase.Replace("{SteamId}", _id);
-                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("{0}", _phrase));
+                Phrases.Dict.TryGetValue("ResetPlayer2", out string phrase);
+                phrase = phrase.Replace("{Id}", _id);
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("{0}", phrase));
             }
             catch (Exception e)
             {

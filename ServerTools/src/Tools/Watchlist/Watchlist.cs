@@ -254,18 +254,21 @@ namespace ServerTools
                     for (int i = 0; i < clients.Count; i++)
                     {
                         ClientInfo cInfo = clients[i];
-                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
-                            GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
+                        if (cInfo != null)
                         {
-                            if (Dict.ContainsKey(cInfo.PlatformId.ReadablePlatformUserIdentifier) ||
-                            Dict.ContainsKey(cInfo.CrossplatformId.ReadablePlatformUserIdentifier))
+                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
+                                GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                             {
-                                player.Add(cInfo);
+                                if (Dict.ContainsKey(cInfo.PlatformId.ReadablePlatformUserIdentifier) ||
+                                Dict.ContainsKey(cInfo.CrossplatformId.ReadablePlatformUserIdentifier))
+                                {
+                                    player.Add(cInfo);
+                                }
                             }
-                        }
-                        else
-                        {
-                            admin.Add(cInfo);
+                            else
+                            {
+                                admin.Add(cInfo);
+                            }
                         }
                     }
                     if (admin.Count > 0 && player.Count > 0)

@@ -195,6 +195,11 @@ public static class Injections
     {
         try
         {
+            if (AutoRestart.IsEnabled)
+            {
+                Log.Out("[SERVERTOOLS] Auto restart initialized");
+                Utils.RestartGame();
+            }
             Log.Out("[SERVERTOOLS] SHUTDOWN");
             Process process = Process.GetCurrentProcess();
             if (process != null)

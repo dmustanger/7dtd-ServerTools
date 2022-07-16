@@ -73,8 +73,8 @@ namespace ServerTools
                                 {
                                     string buff = line.GetAttribute("Name");
                                     string message = line.GetAttribute("Message");
-                                    BuffClass _class = BuffManager.GetBuff(buff);
-                                    if (_class == null)
+                                    BuffClass buffClass = BuffManager.GetBuff(buff);
+                                    if (buffClass == null)
                                     {
                                         Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer.xml entry. Buff is not valid: {0}", line.OuterXml));
                                         continue;

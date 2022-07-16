@@ -7,7 +7,7 @@ namespace ServerTools
 {
     class Market
     {
-        public static bool IsEnabled = false, Return = false, Player_Check = false, Zombie_Check = false, Reserved_Only = false, PvE = false;
+        public static bool IsEnabled = false, Return = false, Player_Check = false, Zombie_Check = false, Reserved_Only = false, PvE = true;
         public static int Delay_Between_Uses = 5, Market_Size = 25, Command_Cost = 0;
         public static string Market_Position = "0,0,0", Command_marketback = "marketback", Command_mback = "mback", Command_set = "setmarket", Command_market = "market";
         public static List<int> MarketPlayers = new List<int>();

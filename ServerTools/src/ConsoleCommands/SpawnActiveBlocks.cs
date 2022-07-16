@@ -23,8 +23,8 @@ namespace ServerTools
                    "  4. st-sab undo\n" +
                    "1. Spawns the block where you are standing if no corners have been set. If corners are set, this block will spawn from corner to corner\n" +
                    "2. Saves the position you are standing as corner 1 if no other has been set. Saves corner 2 if the first has been set\n" +
-                   "4. Cancels the saved corner positions\n" +
-                   "5. Reverts the last spawned blocks to their previous value\n" +
+                   "3. Cancels the saved corner positions\n" +
+                   "4. Reverts the last spawned blocks to their previous value\n" +
                    "*Notes*\n" +
                    "You must build on top or next to existing blocks to avoid collapse\n" +
                    "There is an intentional pause of one second during block spawn. If blocks have collapsed, it will automatically spawn a replacement\n" +
@@ -51,34 +51,34 @@ namespace ServerTools
                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] No client info found. Join the server as a client before using this command"));
                     return;
                 }
-                World _world = GameManager.Instance.World;
-                if (_world.Players.dict.ContainsKey(_senderInfo.RemoteClientInfo.entityId))
+                World world = GameManager.Instance.World;
+                if (world.Players.dict.ContainsKey(_senderInfo.RemoteClientInfo.entityId))
                 {
-                    EntityPlayer _player = _world.Players.dict[_senderInfo.RemoteClientInfo.entityId];
-                    if (_player != null)
+                    EntityPlayer player = world.Players.dict[_senderInfo.RemoteClientInfo.entityId];
+                    if (player != null)
                     {
-                        Vector3i _playerPos = new Vector3i(_player.position);
+                        Vector3i playerPos = new Vector3i(player.position);
                         if (_params[0].ToLower() == "save")
                         {
-                            if (_player.position.y < 3)
+                            if (player.position.y < 3)
                             {
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Your position is too low. Unable to generate blocks at this world height"));
                                 return;
                             }
-                            if (!Vectors.ContainsKey(_player.entityId))
+                            if (!Vectors.ContainsKey(player.entityId))
                             {
-                                Vector3i[] _vectors = new Vector3i[2];
-                                _vectors[0] = _playerPos;
-                                Vectors.Add(_player.entityId, _vectors);
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Set corner 1 to your position '{0}'", _playerPos));
+                                Vector3i[] vectors = new Vector3i[2];
+                                vectors[0] = playerPos;
+                                Vectors.Add(player.entityId, vectors);
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Set corner 1 to your position '{0}'", playerPos));
                                 return;
                             }
                             else
                             {
-                                Vectors.TryGetValue(_player.entityId, out Vector3i[] _vectors);
-                                _vectors[1] = _playerPos;
-                                Vectors[_player.entityId] = _vectors;
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Set corner 2 to your position '{0}'", _playerPos));
+                                Vectors.TryGetValue(player.entityId, out Vector3i[] vectors);
+                                vectors[1] = playerPos;
+                                Vectors[player.entityId] = vectors;
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Set corner 2 to your position '{0}'", playerPos));
                                 return;
                             }
                         }
@@ -98,12 +98,12 @@ namespace ServerTools
                         }
                         else if (_params[0].ToLower().Equals("undo"))
                         {
-                            if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier))
+                            if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
                             {
-                                Undo.TryGetValue(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier, out Dictionary<Vector3i, BlockValue> _undo);
+                                Undo.TryGetValue(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString, out Dictionary<Vector3i, BlockValue> _undo);
                                 foreach (var _block in _undo)
                                 {
-                                    if (!_world.IsChunkAreaLoaded(_block.Key.x, _block.Key.y, _block.Key.z))
+                                    if (!world.IsChunkAreaLoaded(_block.Key.x, _block.Key.y, _block.Key.z))
                                     {
                                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Area is not loaded. Unable to undo maze blocks"));
                                         return;
@@ -116,13 +116,13 @@ namespace ServerTools
                                 Thread.Sleep(1000);
                                 foreach (var _block in _undo)
                                 {
-                                    BlockValue _newBlockValue = _world.GetBlock(_block.Key);
-                                    if (!_newBlockValue.Equals(_block.Value))
+                                    BlockValue newBlockValue = world.GetBlock(_block.Key);
+                                    if (!newBlockValue.Equals(_block.Value))
                                     {
                                         GameManager.Instance.World.SetBlockRPC(_block.Key, _block.Value);
                                     }
                                 }
-                                Undo.Remove(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier);
+                                Undo.Remove(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString);
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The blocks you last spawned have been set to their original value"));
                                 return;
                             }
@@ -137,9 +137,9 @@ namespace ServerTools
                             Block _block = Block.GetBlockByName(_params[0], false);
                             if (_block != null)
                             {
-                                bool _fallingBlocks = FallingBlocks.IsEnabled;
+                                bool fallingBlocks = FallingBlocks.IsEnabled;
                                 FallingBlocks.IsEnabled = true;
-                                BlockValue _blockValue = Block.GetBlockValue(_params[0]);
+                                BlockValue blockValue = Block.GetBlockValue(_params[0]);
                                 if (Vectors.ContainsKey(_senderInfo.RemoteClientInfo.entityId))
                                 {
                                     Vectors.TryGetValue(_senderInfo.RemoteClientInfo.entityId, out Vector3i[] _vectors);
@@ -168,24 +168,24 @@ namespace ServerTools
                                             for (int y = _vectorPointY1; y <= _vectorPointY2; y++)
                                             {
                                                 Vector3i _processVector = new Vector3i(x, y, z);
-                                                if (!_world.IsChunkAreaLoaded(_processVector.x, _processVector.y, _processVector.z))
+                                                if (!world.IsChunkAreaLoaded(_processVector.x, _processVector.y, _processVector.z))
                                                 {
                                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The blocks you are trying to spawn are outside of a loaded chunk area. Unable to spawn block"));
                                                     return;
                                                 }
-                                                BlockValue _oldBlockValue = _world.GetBlock(_processVector);
-                                                _undo.Add(_processVector, _oldBlockValue);
-                                                GameManager.Instance.World.SetBlockRPC(_processVector, _blockValue);
+                                                BlockValue oldBlockValue = world.GetBlock(_processVector);
+                                                _undo.Add(_processVector, oldBlockValue);
+                                                GameManager.Instance.World.SetBlockRPC(_processVector, blockValue);
                                             }
                                         }
                                     }
-                                    if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier))
+                                    if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
                                     {
-                                        Undo[_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier] = _undo;
+                                        Undo[_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString] = _undo;
                                     }
                                     else
                                     {
-                                        Undo.Add(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier, _undo);
+                                        Undo.Add(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString, _undo);
                                     }
                                     Thread.Sleep(1000);
                                     for (int x = _vectorPointX1; x <= _vectorPointX2; x++)
@@ -194,11 +194,11 @@ namespace ServerTools
                                         {
                                             for (int y = _vectorPointY1; y <= _vectorPointY2; y++)
                                             {
-                                                Vector3i _processVector = new Vector3i(x, y, z);
-                                                BlockValue _newBlockValue = _world.GetBlock(_processVector);
-                                                if (!_newBlockValue.Equals(_blockValue))
+                                                Vector3i processVector = new Vector3i(x, y, z);
+                                                BlockValue _newBlockValue = world.GetBlock(processVector);
+                                                if (!_newBlockValue.Equals(blockValue))
                                                 {
-                                                    GameManager.Instance.World.SetBlockRPC(_processVector, _blockValue);
+                                                    GameManager.Instance.World.SetBlockRPC(processVector, blockValue);
                                                 }
                                             }
                                         }
@@ -208,27 +208,27 @@ namespace ServerTools
                                 else
                                 {
                                     Dictionary<Vector3i, BlockValue> _undo = new Dictionary<Vector3i, BlockValue>();
-                                    BlockValue _oldBlockValue = _world.GetBlock(_playerPos);
-                                    if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier))
+                                    BlockValue oldBlockValue = world.GetBlock(playerPos);
+                                    if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
                                     {
-                                        _undo.Add(_playerPos, _oldBlockValue);
-                                        Undo[_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier] = _undo;
+                                        _undo.Add(playerPos, oldBlockValue);
+                                        Undo[_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString] = _undo;
                                     }
                                     else
                                     {
-                                        _undo.Add(_playerPos, _oldBlockValue);
-                                        Undo.Add(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier, _undo);
+                                        _undo.Add(playerPos, oldBlockValue);
+                                        Undo.Add(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString, _undo);
                                     }
-                                    GameManager.Instance.World.SetBlockRPC(_playerPos, _blockValue);
+                                    GameManager.Instance.World.SetBlockRPC(playerPos, blockValue);
                                     Thread.Sleep(1000);
-                                    BlockValue _newBlockValue = _world.GetBlock(_playerPos);
-                                    if (!_newBlockValue.Equals(_blockValue))
+                                    BlockValue _newBlockValue = world.GetBlock(playerPos);
+                                    if (!_newBlockValue.Equals(blockValue))
                                     {
-                                        GameManager.Instance.World.SetBlockRPC(_playerPos, _blockValue);
+                                        GameManager.Instance.World.SetBlockRPC(playerPos, blockValue);
                                     }
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Spawned active block. Double check integrity of block before continuing"));
                                 }
-                                FallingBlocks.IsEnabled = _fallingBlocks;
+                                FallingBlocks.IsEnabled = fallingBlocks;
                             }
                             else
                             {

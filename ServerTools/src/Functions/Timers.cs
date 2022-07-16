@@ -287,6 +287,22 @@ namespace ServerTools
             };
         }
 
+        public static void ResetPlayerProfileDelayTimer(string _id)
+        {
+            System.Timers.Timer startingItemsDelayTimer = new System.Timers.Timer(2000)
+            {
+                AutoReset = false
+            };
+            startingItemsDelayTimer.Start();
+            startingItemsDelayTimer.Elapsed += (sender, e) =>
+            {
+                Init14(_id);
+                startingItemsDelayTimer.Stop();
+                startingItemsDelayTimer.Close();
+                startingItemsDelayTimer.Dispose();
+            };
+        }
+
         public static void PersistentDataSave()
         {
             System.Timers.Timer saveDelay = new System.Timers.Timer(120000)
@@ -569,17 +585,6 @@ namespace ServerTools
         private static void Init9()
         {
             PersistentOperations.ThirtySeconds = true;
-            if (AllocsMap.IsEnabled)
-            {
-                string ip = GamePrefs.GetString(EnumGamePrefs.ServerIP);
-                int controlPort = GamePrefs.GetInt(EnumGamePrefs.ControlPanelPort);
-                string link = string.Format("http://{0}:{1}", ip, controlPort + 2);
-                if (AllocsMap.Link != link)
-                {
-                    AllocsMap.Link = link;
-                    AllocsMap.SetLink(link);
-                }
-            }
             if (WebAPI.IsEnabled && !WebAPI.IsRunning)
             {
                 WebAPI.Load();
@@ -604,6 +609,11 @@ namespace ServerTools
         private static void Init13(ClientInfo _cInfo, List<string> _items)
         {
             StartingItems.Exec(_cInfo, _items);
+        }
+
+        private static void Init14(string _id)
+        {
+            ResetPlayerConsole.DelayedProfileDeletion(_id);
         }
     }
 }

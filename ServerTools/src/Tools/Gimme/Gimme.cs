@@ -468,6 +468,12 @@ namespace ServerTools
                             {
                                 itemValue.Quality = quality;
                             }
+                            int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
+                            if (modSlots > 0)
+                            {
+                                itemValue.Modifications = new ItemValue[modSlots];
+                                itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
+                            }
                         }
                         World world = GameManager.Instance.World;
                         EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData

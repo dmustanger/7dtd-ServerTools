@@ -537,7 +537,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"ResetPlayer1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("ResetPlayer2", out phrase))
                     {
-                        phrase = "You have reset the profile for player {SteamId}";
+                        phrase = "You have reset the profile for player {Id}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"ResetPlayer2\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
@@ -1145,7 +1145,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Shop3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Shop4", out phrase))
                     {
-                        phrase = "";
+                        phrase = "Shop security code set to {Value}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Shop4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Shop5", out phrase))
@@ -1930,6 +1930,11 @@ namespace ServerTools
                         phrase = "The following {Value} items are yours";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction19\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Auction20", out phrase))
+                    {
+                        phrase = "Auction security code set to {Value}";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Auction20\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************* Bank ************************* -->");
@@ -2015,6 +2020,11 @@ namespace ServerTools
                         phrase = "You have received a bank transfer of {Value} from player {PlayerName}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank16\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Bank17", out phrase))
+                    {
+                        phrase = "{Value} {CoinName} added to your bank";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank17\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* Exit_Command ********************* -->");

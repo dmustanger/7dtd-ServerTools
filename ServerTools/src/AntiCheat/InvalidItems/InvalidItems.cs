@@ -346,7 +346,7 @@ namespace ServerTools
             {
                 using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
                 {
-                    sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' with an invalid stack of '{3}' '{4}'. Player has been warned", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _cInfo.PlatformId.CombinedString, _count, _name));
+                    sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' with an invalid stack of '{3}' '{4}'. Player has been warned", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _count, _name));
                     sw.WriteLine();
                     sw.Flush();
                     sw.Close();

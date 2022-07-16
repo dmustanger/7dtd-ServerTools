@@ -48,7 +48,7 @@
 			</div>
 			<div id="SubheaderRight" oncontextmenu="return false">
 				<div id="LogoContainer">
-					<h3 id="Version">V. 0.0.2</h3>
+					<h3 id="Version">V. 0.0.3</h3>
 				</div>
 			</div>
 		</header>
@@ -69,8 +69,8 @@
 				<h3 class="DisclaimerInfo">Lost password can not be recovered. Contact an administrator for reset</h3>
 				<h3 class="DisclaimerInfo">Do not share your password with other clients or friends</h3>
 				<h3 class="DisclaimerInfo">Reloading the panel will reset your security credentials, requiring you to sign in again</h3>
-				<h3 class="DisclaimerInfo">Reloading too often without logging in will put you in timeout for 10 minutes</h3>
-				<h3 class="DisclaimerInfo">AES encryption protocols are active</h3>
+				<h3 class="DisclaimerInfo">Reloading too often without logging in will put you in timeout for five minutes</h3>
+				<h3 class="DisclaimerInfo">AES and SHA security protocols are active</h3>
 			</div>
 			<div id="ConfigContainer">
 				<input type="checkbox" id="AcceptSave" />
@@ -116,9 +116,9 @@
 					<br />
 					<br />
 					<h1 class="Developer">Dmustanger</h1>
-					<h2>Structure design and development. Logistics analysis and adaptation. Report handling.</h2>
+					<h2>Structural design and development. Logistic analysis. Original author</h2>
 					<h1 class="Developer">Obsessive Compulsive</h1>
-					<h2>Creative, logistic and modular design. Webapi. Discord bot. Report handling. Debug and play tester</h2>
+					<h2>Creative, logistic and modular design. Bug reports/Debugging. Web design</h2>
 					<h1 class="Developer">Android_Data</h1>
 					<h2>Website art and layout</h2>
 					<h1 class="Developer">Thunderbolt</h1>
@@ -127,7 +127,7 @@
 				</div>
 			</div>
 			<div id="PlayersContainer">
-				<input type="text" placeholder="Steam Id" id="PlayersSteamId" minlength="17" maxlength="17" required />
+				<input type="text" placeholder="Id" id="PlayerId" />
 				<input type="button" value="KICK" onclick="Kick()" class="PlayersEdit" />
 				<input type="button" value="BAN" onclick="Ban()" class="PlayersEdit" />
 				<input type="button" value="MUTE" onclick="Mute()" class="PlayersEdit" />
@@ -137,7 +137,7 @@
 				<table id="PlayersTable">
 					<thead id="PlayersHeader">
 						<tr>
-							<th>Steam Id/Entity Id</th>
+							<th>Id/Entity Id</th>
 							<th>Player Name</th>
 							<th>Health/Stamina</th>
 							<th>Level</th>

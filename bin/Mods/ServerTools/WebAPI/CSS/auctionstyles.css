@@ -1,0 +1,56 @@
+:root
+{
+	font-family:"seven_days_later";
+	background:linear-gradient(to bottom right,rgba(0,0,0,.70),rgba(0,0,0,1)) fixed;
+}
+
+@font-face
+{
+	font-family:"seven_days_later";
+	src:url(../Font/7DaysLater.woff2) format("woff2");
+	font-display:swap;
+}
+
+@font-face
+{
+	font-family:"morgan_chalk";
+	src:url(../Font/MorganChalk.woff) format("woff");
+	font-display:swap;
+}
+
+#Header
+{
+	position:absolute;
+	width:100%;
+	height:20%;
+}
+
+#SubheaderLeft
+{
+	position:relative;
+	width:40%;
+	height:100%;
+	float:left;
+	text-align:left;
+	color:#FFF;
+}
+
+#SubheaderRight
+{
+	position:relative;
+	width:50%;
+	height:100%;
+	float:right;
+	text-align:center;
+	color:#FFF;
+}
+
+#GeneralBody
+{
+	position:absolute;
+	width:100%;
+	height:100%;
+	margin:60;
+	padding:0;
+	overflow:hidden;
+}

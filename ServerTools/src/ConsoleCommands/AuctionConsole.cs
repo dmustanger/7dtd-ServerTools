@@ -117,7 +117,6 @@ namespace ServerTools
                                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                                                 Auction.AuctionItems.Remove(_id);
                                                 PersistentContainer.Instance.Players[playerId].Auction.Remove(_id);
-                                                PersistentContainer.Instance.AuctionPrices.Remove(_id);
                                                 PersistentContainer.DataChange = true;
                                                 using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                 {
@@ -132,7 +131,6 @@ namespace ServerTools
                                             {
                                                 Auction.AuctionItems.Remove(_id);
                                                 PersistentContainer.Instance.Players[playerId].Auction.Remove(_id);
-                                                PersistentContainer.Instance.AuctionPrices.Remove(_id);
                                                 PersistentContainer.DataChange = true;
                                             }
                                         }
@@ -150,18 +148,17 @@ namespace ServerTools
                                             }
                                             Auction.AuctionItems.Remove(_id);
                                             PersistentContainer.Instance.Players[playerId].Auction.Remove(_id);
-                                            PersistentContainer.Instance.AuctionPrices.Remove(_id);
                                             PersistentContainer.DataChange = true;
                                         }
 
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id {0} has been removed from the auction list", _id));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] ID {0} has been removed from the auction list", _id));
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Could not find this id listed in the auction. Unable to cancel[-]");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Could not find this ID listed in the auction. Unable to cancel[-]");
                         }
                     }
                     else
@@ -186,16 +183,12 @@ namespace ServerTools
                             {
                                 PersistentContainer.Instance.Players[_playerId].Auction.Remove(_id);
                             }
-                            if (PersistentContainer.Instance.AuctionPrices != null && PersistentContainer.Instance.AuctionPrices.Count > 0)
-                            {
-                                PersistentContainer.Instance.AuctionPrices.Remove(_id);
-                            }
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id {0} has been removed from the auction", _id));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] ID {0} has been removed from the auction", _id));
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Auction does not contain id {0}", _id));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Auction does not contain ID {0}", _id));
                         }
                     }
                     else
@@ -216,7 +209,6 @@ namespace ServerTools
                         if (PersistentContainer.Instance.Players.IDs.Count > 0)
                         {
                             List<string> playerlist = PersistentContainer.Instance.Players.IDs;
-                            Dictionary<int, int> _auctionPrices = PersistentContainer.Instance.AuctionPrices;
                             for (int i = 0; i < playerlist.Count; i++)
                             {
                                 string id = playerlist[i];
@@ -224,14 +216,13 @@ namespace ServerTools
                                 {
                                     foreach (var auctionItem in PersistentContainer.Instance.Players[id].Auction)
                                     {
-                                        _auctionPrices.TryGetValue(auctionItem.Key, out int _price);
                                         string _message = "# {Id}: {Count} {Item} at {Quality} quality, {Durability} durability for {Price} {Name}";
                                         _message = _message.Replace("{Id}", auctionItem.Key.ToString());
                                         _message = _message.Replace("{Count}", auctionItem.Value.count.ToString());
                                         _message = _message.Replace("{Item}", auctionItem.Value.name);
                                         _message = _message.Replace("{Quality}", auctionItem.Value.quality.ToString());
                                         _message = _message.Replace("{Durability}", (100 - auctionItem.Value.useTimes).ToString());
-                                        _message = _message.Replace("{Price}", _price.ToString());
+                                        _message = _message.Replace("{Price}", auctionItem.Value.price.ToString());
                                         _message = _message.Replace("{Name}", Wallet.Currency_Name);
                                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(_message);
                                     }

@@ -7,7 +7,7 @@ namespace ServerTools
 {
     class Lobby
     {
-        public static bool IsEnabled = false, Return = false, Player_Check = false, Zombie_Check = false, Reserved_Only = false, PvE = false;
+        public static bool IsEnabled = false, Return = false, Player_Check = false, Zombie_Check = false, Reserved_Only = false, PvE = true;
         public static int Delay_Between_Uses = 5, Lobby_Size = 25, Command_Cost = 0, Player_Killing_Mode = 0;
         public static string Lobby_Position = "0,0,0", Command_lobbyback = "lobbyback", Command_lback = "lback", Command_set = "setlobby", Command_lobby = "lobby";
         public static List<int> LobbyPlayers = new List<int>();

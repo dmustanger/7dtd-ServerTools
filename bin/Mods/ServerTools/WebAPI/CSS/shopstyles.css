@@ -1,0 +1,195 @@
+:root
+{
+	font-family:"seven_days_later";
+	background:linear-gradient(to bottom right,rgba(0,0,0,.70),rgba(0,0,0,1)) fixed;
+}
+
+@font-face
+{
+	font-family:"seven_days_later";
+	src:url(../Font/7DaysLater.woff2) format("woff2");
+	font-display:swap;
+}
+
+@font-face
+{
+	font-family:"morgan_chalk";
+	src:url(../Font/MorganChalk.woff) format("woff");
+	font-display:swap;
+}
+
+#Header
+{
+	position:absolute;
+	width:100%;
+	height:20%;
+}
+
+#SubheaderLeft
+{
+	position:relative;
+	width:40%;
+	height:100%;
+	float:left;
+	text-align:left;
+	color:#FFF;
+}
+
+#SubheaderRight
+{
+	position:relative;
+	width:50%;
+	height:100%;
+	float:right;
+	text-align:center;
+	color:#FFF;
+}
+
+#GeneralBody
+{
+	position:absolute;
+	width:100%;
+	height:100%;
+	margin:60;
+	padding:0;
+	overflow:hidden;
+}
+
+#SecurityId
+{
+	text-align:center;
+	color:#FFF;
+}
+
+#Balance
+{
+	padding:50px;
+	display:inline;
+}
+
+#Total
+{
+	padding:30px;
+	display:inline;
+}
+
+#Buttons
+{
+	color:#FFF;
+	background-color:#AB1700;
+	margin-top:10px;
+	border:1px solid #FFF;
+	border-radius:5px;
+}
+
+#PlayerName
+{
+	color:#FFF;
+}
+
+#FilterContainer {
+    position:relative;
+	padding-left:20px;
+	padding-right:20px;
+}
+
+#Filters {
+	bottom:0px;
+	text-decoration:underline;
+	color:#FFF;
+	padding-left:20px;
+}
+
+#SecuritySync {
+    text-align:center;
+	z-index:3;
+}
+
+#Body {
+	z-index:1;
+}
+
+#ContentContainer {
+	position:relative;
+	padding-top:10px;
+	display:inline;
+}
+
+#ShopName {
+	padding-left:20px;
+}
+
+#InfoContainer
+{
+	height:300px;
+	width:170px;
+	padding-left:20px;
+	color:#FFF;
+	font-size:16px;
+	float:left;
+}
+
+#Items {
+	height:auto;
+	width:75%;
+	max-height:600px;
+	max-width:1200px;
+	padding-bottom:40px;
+	float:left;
+	overflow:hidden;
+}
+
+#ItemInfo {
+	height:auto;
+	width:50%;
+	top:30px;
+	padding-left:20px;
+	text-decoration:underline;
+	color:#FFF;
+}
+
+#Counter {
+	height:auto;
+	width:50px;
+	padding:10px;
+}
+
+.FilterIcons {
+	font-family:"morgan_chalk";
+	font-size:20px;
+	padding:10px;
+	color:#FFF;
+	display:inline;	
+}
+
+.IconContainer {
+	height:160px; 
+    width:100px;
+	top:30px;
+	padding:10px;
+	float:left;
+}
+
+.Icon
+{
+	margin:30px;
+	height:80px; 
+    width:80px;
+}
+
+.ItemHeader
+{
+	bottom:0px;
+	height:20%; 
+    width:97%;
+	color:#FFF;
+	font-size:16px;
+}
+
+.PageHeader
+{
+	position:relative;
+	color:#A3A3C2;
+	font-size:64px;
+	top:-60px;
+}

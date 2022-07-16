@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<link rel="preload" href="Font/7DaysLater.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="Font/MorganChalk.woff" as="font" type="font/woff" crossorigin/>
+		<link href="CSS/shopstyles.css" rel="stylesheet" type="text/css" />
+		<meta charset="utf-8" />
+		<script src="JS/crypto-js.js" type="text/javascript"></script>
+		<script src="JS/core.js" type="text/javascript"></script>
+		<script src="JS/x64-core.js" type="text/javascript"></script>
+		<script src="JS/enc-base64.js" type="text/javascript"></script>
+		<script src="JS/md5.js" type="text/javascript"></script>
+		<script src="JS/evpkdf.js" type="text/javascript"></script>
+		<script src="JS/cipher-core.js" type="text/javascript"></script>
+		<script src="JS/aes.js" type="text/javascript"></script>
+		<script src="JS/sha512.js" type="text/javascript"></script>
+		<script src="JS/shopscripts.js" type="text/javascript"></script>
+		<title>Shop</title>
+	</head>
+	<body onload="FreshPage()" id="GeneralBody">
+		<header id="Header">
+			<div id="SubheaderLeft" oncontextmenu="return false">
+				<h1 id="ShopName">Shop</h1>
+			</div>
+			<div id="SubheaderRight" oncontextmenu="return false">
+				<h3 id="PlayerName"><img src="Img/UserIcon.webp" alt="usericon" />CLIENT</h3>
+				<h4 id="Balance">Balance: 0<h4>
+				<h4 id="Total">Total: 0</h4>
+				<input type="number" value="1" id="Counter" min="1" max="100" onclick="UpdateTotal()">
+				<input type="checkbox" id="ConfirmPurchase" />
+				<input type="button" value="Purchase" onclick="Purchase()" id="Buttons" />
+				<input type="checkbox" id="ConfirmExit" />
+				<input type="button" value="Exit Shop" onclick="ExitShop()" id="Buttons" />
+			</div>
+		</header>
+		<div id="SecuritySync" oncontextmenu="return false">
+				<h2 id="SecurityId">Security Id</h2>
+				<input type="text" placeholder="Enter secure ID here" id="SecureId" />
+				<input type="checkbox" id="ConfirmEnter" />
+				<input type="button" value="Enter Shop" onclick="EnterShop()" id="Buttons" />
+		</div>
+		<div id="Body">
+			<h3 id="Filters">FILTERS</h3>
+			<div id="FilterContainer" oncontextmenu="return false">
+				
+			</div>
+			<div id="ContentContainer" oncontextmenu="return false">
+				<h3 id="ItemInfo">ITEM INFO</h3>
+				<div id="InfoContainer">
+					...
+				</div>
+				<div id="Items">
+					
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

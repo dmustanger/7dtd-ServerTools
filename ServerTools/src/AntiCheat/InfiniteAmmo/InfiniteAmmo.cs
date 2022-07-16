@@ -42,6 +42,7 @@ namespace ServerTools
                             sw.Close();
                         }
                         Phrases.Dict.TryGetValue("AntiCheat2", out string phrase);
+                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
                         SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                         return true;
                     }

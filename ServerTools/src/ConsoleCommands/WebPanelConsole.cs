@@ -98,7 +98,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        string password = PersistentOperations.CreatePassword(16);
+                        string password = PersistentOperations.CreatePassword(8);
                         if (!PersistentContainer.Instance.Players.Players.ContainsKey(_params[1]))
                         {
                             PersistentContainer.Instance.Players.Players.Add(_params[1], new PersistentPlayer(_params[1]));
@@ -152,7 +152,7 @@ namespace ServerTools
                     {
                         if (PersistentContainer.Instance.Players[_params[1]].WebPass != null && PersistentContainer.Instance.Players[_params[1]].WebPass != "")
                         {
-                            string password = PersistentOperations.CreatePassword(16);
+                            string password = PersistentOperations.CreatePassword(8);
                             PersistentContainer.Instance.Players[_params[1]].WebPass = password;
                             PersistentContainer.DataChange = true;
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Client '{0}' has been reset. Their password is '{1}'", _params[1], password));
@@ -169,7 +169,7 @@ namespace ServerTools
                 {
                     if (WebAPI.IsEnabled)
                     {
-                        WebAPI.AuthorizedIvKey.Clear();
+                        WebAPI.Authorized.Clear();
                         WebAPI.AuthorizedTime.Clear();
                         WebAPI.Visitor.Clear();
                         WebAPI.PageHits.Clear();

@@ -29,7 +29,7 @@ namespace ServerTools
 
         public static void CreateCustomXUi()
         {
-            if (XPathDir != "")
+            if (!string.IsNullOrEmpty(XPathDir))
             {
                 if (!File.Exists(XPathDir + "gameevents.xml"))
                 {
@@ -96,7 +96,7 @@ namespace ServerTools
                         sw.WriteLine();
                         sw.WriteLine("<set xpath=\"/items/item[@name='casinoCoin']/property[@name='Tags']/@value\">dukes,currency</set>");
                         sw.WriteLine("<!-- ..... Wallet and Bank currency ^ ..... -->");
-                        sw.WriteLine("<!-- Replace with custom item name from items.xml if desired -->");
+                        sw.WriteLine("<!-- Replace with item name from servers items.xml if desired -->");
                         sw.WriteLine();
                         sw.WriteLine("</configs>");
                         sw.Flush();
@@ -112,49 +112,91 @@ namespace ServerTools
                         sw.WriteLine("<append xpath=\"/windows\">");
                         sw.WriteLine();
                         sw.WriteLine("  <window name=\"browserMap\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" bordercolor=\"[white]\" borderthickness=\"5\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"257\" text=\"World Map\" />");
+                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"World Map\" />");
                         sw.WriteLine("      </panel>");
                         sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"260\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"4\" pos=\"0,-40\" height=\"30\" width=\"257\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8082\" justify=\"center\" style=\"press,hover\" font_size=\"30\" upper_case=\"false\" />");
+                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8082\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                        sw.WriteLine("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
+                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                         sw.WriteLine("          <!-- Change the text IP and Port to the one needed by Allocs web map. Check it functions through a web browser first -->");
                         sw.WriteLine("      </panel>");
                         sw.WriteLine("  </window>");
                         sw.WriteLine();
                         sw.WriteLine("  <window name=\"browserDiscord\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" bordercolor=\"[white]\" borderthickness=\"5\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"257\" text=\"Discord Invite\" />");
+                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Discord Link\" />");
                         sw.WriteLine("      </panel>");
                         sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"260\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"4\" pos=\"0,-40\" height=\"30\" width=\"257\" name=\"ServerWebsiteURL\" text=\"http://discord.gg/linkHere\" justify=\"center\" style=\"press,hover\" font_size=\"30\" upper_case=\"false\" />");
+                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://discord.gg/linkHere\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                        sw.WriteLine("          <sprite depth=\"4\" name=\"microphoneIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_mic\" />");
+                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                         sw.WriteLine("          <!-- Change the text to a Discord invite link of your choice. Check it functions through a web browser first -->");
                         sw.WriteLine("      </panel>");
                         sw.WriteLine("  </window>");
                         sw.WriteLine();
                         sw.WriteLine("  <window name=\"browserVote\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" bordercolor=\"[white]\" borderthickness=\"5\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"257\" text=\"Voting Site\" />");
+                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Voting Site\" />");
                         sw.WriteLine("      </panel>");
                         sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"260\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"4\" pos=\"0,-40\" height=\"30\" width=\"257\" name=\"ServerWebsiteURL\" text=\"https://7daystodie-servers.com/server/12345\" justify=\"center\" style=\"press,hover\" font_size=\"30\" upper_case=\"false\" />");
+                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"https://7daystodie-servers.com/server/12345\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                        sw.WriteLine("          <sprite depth=\"4\" name=\"computerIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_computer\" />");
+                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                         sw.WriteLine("          <!-- Change the text to a voting link of your choice. Check it functions through a web browser first -->");
                         sw.WriteLine("      </panel>");
                         sw.WriteLine("  </window>");
                         sw.WriteLine();
                         sw.WriteLine("  <window name=\"browserBlackJack\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" bordercolor=\"[white]\" borderthickness=\"5\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"257\" text=\"Black Jack\" />");
+                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Black Jack\" />");
                         sw.WriteLine("      </panel>");
                         sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"260\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"4\" pos=\"0,-40\" height=\"30\" width=\"257\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/blackJack.html\" justify=\"center\" style=\"press,hover\" font_size=\"30\" upper_case=\"false\" />");
+                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/blackJack.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                        sw.WriteLine("          <sprite depth=\"4\" name=\"coinIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_coin\" />");
+                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
+                        sw.WriteLine("          <!-- Change the text IP and Port to the one needed by ServerTools web api -->");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("  </window>");
+                        sw.WriteLine();
+                        sw.WriteLine("  <window name=\"browserShop\" controller=\"ServerInfo\">");
+                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Shop\" />");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                        sw.WriteLine("          <label name=\"ServerDescription\" />");
+                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/shop.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                        sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
+                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
+                        sw.WriteLine("          <!-- Change the text IP and Port to the one needed by ServerTools web api -->");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("  </window>");
+                        sw.WriteLine();
+                        sw.WriteLine("  <window name=\"browserAuction\" controller=\"ServerInfo\">");
+                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Auction\" />");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                        sw.WriteLine("          <label name=\"ServerDescription\" />");
+                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/auction.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                        sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
+                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                         sw.WriteLine("          <!-- Change the text IP and Port to the one needed by ServerTools web api -->");
                         sw.WriteLine("      </panel>");
                         sw.WriteLine("  </window>");
@@ -162,6 +204,141 @@ namespace ServerTools
                         sw.WriteLine("</append>");
                         sw.WriteLine();
                         sw.WriteLine("</configs>");
+                    }
+                }
+                if (!File.Exists(XPathDir + "buffs.xml"))
+                {
+                    using (StreamWriter sw = new StreamWriter(XPathDir + "buffs.xml", false, Encoding.UTF8))
+                    {
+                        sw.WriteLine("<configs>");
+                        sw.WriteLine();
+                        sw.WriteLine("<append xpath=\"/buffs\">");
+                        sw.WriteLine();
+                        sw.WriteLine("<buff name=\"pve_zone\" name_key=\"PvE_Zone\" description=\"You are inside a PvE area\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"0,102,153\">");
+                        sw.WriteLine("	<stack_type value=\"replace\"/>");
+                        sw.WriteLine("	<effect_group>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
+                        sw.WriteLine("	</effect_group>");
+                        sw.WriteLine("</buff>");
+                        sw.WriteLine();
+                        sw.WriteLine("<buff name=\"pvp_ally_zone\" name_key=\"PvP_Ally_Zone\" description=\"Player damage is active for allies\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,204,0\">");
+                        sw.WriteLine("	<stack_type value=\"replace\"/>");
+                        sw.WriteLine("	<effect_group>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_ally_damage\">");
+                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target_tags=\"ally\"/>");
+                        sw.WriteLine("		</triggered_effect>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_ally_damage\">");
+                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target_tags=\"ally\"/>");
+                        sw.WriteLine("		</triggered_effect>");
+                        sw.WriteLine("	</effect_group>");
+                        sw.WriteLine("</buff>");
+                        sw.WriteLine();
+                        sw.WriteLine("<buff name=\"pvp_stranger_zone\" name_key=\"PvP_Stranger_Zone\" description=\"Player damage is active for strangers\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"255,153,0\">");
+                        sw.WriteLine("	<stack_type value=\"replace\"/>");
+                        sw.WriteLine("	<effect_group>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_stranger_damage\">");
+                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
+                        sw.WriteLine("		</triggered_effect>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_stranger_damage\">");
+                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
+                        sw.WriteLine("		</triggered_effect>");
+                        sw.WriteLine("	</effect_group>");
+                        sw.WriteLine("</buff>");
+                        sw.WriteLine();
+                        sw.WriteLine("<buff name=\"pvp_zone\" name_key=\"PvP_Zone\" description=\"Player damage is active for everyone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,0,0\">");
+                        sw.WriteLine("	<stack_type value=\"replace\"/>");
+                        sw.WriteLine("	<effect_group>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_damage\">");
+                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
+                        sw.WriteLine("		</triggered_effect>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_damage\">");
+                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
+                        sw.WriteLine("		</triggered_effect>");
+                        sw.WriteLine("	</effect_group>");
+                        sw.WriteLine("</buff>");
+                        sw.WriteLine();
+                        sw.WriteLine("<buff name=\"pvp_ally_damage\" hidden=\"true\">");
+                        sw.WriteLine("	<stack_type value=\"replace\"/>");
+                        sw.WriteLine("	<duration value=\"1\"/>");
+                        sw.WriteLine("      <requirements>");
+                        sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
+                        sw.WriteLine("	    </requirements>");
+                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"base_set\" value=\"0\"/>");
+                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_set\" value=\"0\"/>");
+                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                        sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"base_set\" value=\"0\" tags=\"explosive\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_set\" value=\"0\" tags=\"explosive\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\" tags=\"explosive\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_damage\"/>");
+                        sw.WriteLine("	</effect_group>");
+                        sw.WriteLine("</buff>");
+                        sw.WriteLine();
+                        sw.WriteLine("<buff name=\"pvp_stranger_damage\" hidden=\"true\">");
+                        sw.WriteLine("	<stack_type value=\"replace\"/>");
+                        sw.WriteLine("	<duration value=\"1\"/>");
+                        sw.WriteLine("      <requirements>");
+                        sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
+                        sw.WriteLine("	    </requirements>");
+                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"base_set\" value=\"0\"/>");
+                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_set\" value=\"0\"/>");
+                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                        sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"base_set\" value=\"0\" tags=\"explosive\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_set\" value=\"0\" tags=\"explosive\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\" tags=\"explosive\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_damage\"/>");
+                        sw.WriteLine("	</effect_group>");
+                        sw.WriteLine("</buff>");
+                        sw.WriteLine();
+                        sw.WriteLine("<buff name=\"pvp_damage\" hidden=\"true\">");
+                        sw.WriteLine("	<stack_type value=\"replace\"/>");
+                        sw.WriteLine("	<duration value=\"1\"/>");
+                        sw.WriteLine("      <requirements>");
+                        sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
+                        sw.WriteLine("	    </requirements>");
+                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"base_set\" value=\"0\"/>");
+                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_set\" value=\"0\"/>");
+                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                        sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"base_set\" value=\"0\" tags=\"explosive\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_set\" value=\"0\" tags=\"explosive\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\" tags=\"explosive\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_damage\"/>");
+                        sw.WriteLine("	</effect_group>");
+                        sw.WriteLine("</buff>");
+                        sw.WriteLine();
+                        sw.WriteLine("<buff name=\"block_protection\" name_key=\"Block_Protection\" description=\"Blocks are protected from damage\" icon=\"ui_game_symbol_brick\" icon_color=\"102,102,153\">");
+                        sw.WriteLine("	<stack_type value=\"replace\"/>");
+                        sw.WriteLine("	<effect_group>");
+                        sw.WriteLine("		<passive_effect name=\"BlockDamage\" operation=\"perc_add\" value=\"-1\"/>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"block_protection\"/>");
+                        sw.WriteLine("	</effect_group>");
+                        sw.WriteLine("</buff>");
+                        sw.WriteLine();
+                        sw.WriteLine("</append>");
+                        sw.WriteLine();
+                        sw.WriteLine("</configs>");
+                        sw.Flush();
+                        sw.Close();
                     }
                 }
                 if (!File.Exists(XPathDir + "XUi/xui.xml"))
@@ -188,9 +365,54 @@ namespace ServerTools
                         sw.WriteLine("      <window name=\"browserBlackJack\" />");
                         sw.WriteLine("  </window_group>");
                         sw.WriteLine();
+                        sw.WriteLine("  <window_group name=\"browserShop\">");
+                        sw.WriteLine("      <window name=\"browserShop\" />");
+                        sw.WriteLine("  </window_group>");
+                        sw.WriteLine();
+                        sw.WriteLine("  <window_group name=\"browserAuction\">");
+                        sw.WriteLine("      <window name=\"browserAuction\" />");
+                        sw.WriteLine("  </window_group>");
+                        sw.WriteLine();
                         sw.WriteLine("</append>");
                         sw.WriteLine();
                         sw.WriteLine("</configs>");
+                    }
+                }
+                else
+                {
+                    string[] lines = File.ReadAllLines(XPathDir + "XUi/xui.xml");
+                    int entries = 0;
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        if (lines[i].Contains("browserMap"))
+                        {
+                            entries++;
+                        }
+                        else if (lines[i].Contains("browserDiscord"))
+                        {
+                            entries++;
+                        }
+                        else if (lines[i].Contains("browserVote"))
+                        {
+                            entries++;
+                        }
+                        else if (lines[i].Contains("browserBlackJack"))
+                        {
+                            entries++;
+                        }
+                        else if (lines[i].Contains("browserShop"))
+                        {
+                            entries++;
+                        }
+                        else if (lines[i].Contains("browserAuction"))
+                        {
+                            entries++;
+                        }
+                    }
+                    if (entries != 6)
+                    {
+                        File.Delete(XPathDir + "XUi/xui.xml");
+                        CreateCustomXUi();
                     }
                 }
             }
@@ -401,7 +623,7 @@ namespace ServerTools
         public static PlayerDataFile GetPlayerDataFileFromUId(PlatformUserIdentifierAbs _uId)
         {
             PlayerDataFile playerDatafile = new PlayerDataFile();
-            playerDatafile.Load(GameIO.GetPlayerDataDir(), _uId.CombinedString.Trim());
+            playerDatafile.Load(GameIO.GetPlayerDataDir(), _uId.CombinedString);
             if (playerDatafile != null)
             {
                 return playerDatafile;
@@ -688,7 +910,7 @@ namespace ServerTools
 
         public static string CreatePassword(int _length)
         {
-            string pass = String.Empty;
+            string pass = string.Empty;
             try
             {
                 System.Random rnd = new System.Random();
@@ -699,7 +921,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.SetPassword: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.CreatePassword: {0}", e.Message));
             }
             return pass;
         }
@@ -710,16 +932,16 @@ namespace ServerTools
             if (itemClassCurrency != null && itemClassCurrency.Count > 0)
             {
                 Currency_Item = itemClassCurrency[0].Name;
-                Log.Out(string.Format("[SERVERTOOLS] Wallet and Bank tool set to utilize item named '{0}'", Currency_Item));
+                Log.Out(string.Format("[SERVERTOOLS] Game currency and exchange set to item named '{0}'", Currency_Item));
             }
             else
             {
                 No_Currency = true;
-                Wallet.IsEnabled = false;
                 Bank.IsEnabled = false;
+                Wallet.IsEnabled = false;
                 Config.WriteXml();
                 Config.LoadXml();
-                Log.Out(string.Format("[SERVERTOOLS] Unable to find an item with the tag 'currency' in the item list. Wallet and Bank tool are disabled until server restart"));
+                Log.Out(string.Format("[SERVERTOOLS] Unable to find an item with the tag 'currency' in the item list. Bank and Wallet tools have been disabled"));
             }
         }
 
@@ -845,13 +1067,6 @@ namespace ServerTools
                     if (Bed.Command_bed != "")
                     {
                         commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Bed.Command_bed);
-                    }
-                }
-                if (Pickup.IsEnabled)
-                {
-                    if (Pickup.Command_pickup != "")
-                    {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Pickup.Command_pickup);
                     }
                 }
                 if (Bloodmoon.IsEnabled)
@@ -1145,6 +1360,13 @@ namespace ServerTools
                     if (MuteVote.Command_mutevote != "")
                     {
                         commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, MuteVote.Command_mutevote);
+                    }
+                }
+                if (Pickup.IsEnabled)
+                {
+                    if (Pickup.Command_pickup != "")
+                    {
+                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Pickup.Command_pickup);
                     }
                 }
                 if (PlayerList.IsEnabled)

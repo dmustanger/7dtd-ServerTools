@@ -238,7 +238,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ChatColor.UpgradeXml: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ColorList.UpgradeXml: {0}", e.Message));
             }
             FileWatcher.EnableRaisingEvents = true;
             LoadXml();

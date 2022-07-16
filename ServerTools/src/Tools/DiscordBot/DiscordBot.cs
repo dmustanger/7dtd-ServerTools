@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace ServerTools
@@ -10,12 +9,11 @@ namespace ServerTools
     public class DiscordBot
     {
         public static bool IsEnabled = false, TokenLoaded = false;
-        public static byte[] TokenBytes;
         public static string TokenKey, Webhook = "", LastEntry = "", LastPlayer = "", Prefix = "[Discord]",
             Prefix_Color = "[FFFFFF]", Name_Color = "[FFFFFF]", Message_Color = "[FFFFFF]";
         public static List<string> Queue = new List<string>();
 
-        private const string file = "DiscordToken.txt";
+        private const string file = "ServerToolsToken.txt";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
 
         public static void BuildToken()
@@ -24,22 +22,13 @@ namespace ServerTools
             {
                 if (!File.Exists(FilePath))
                 {
-                    using (Aes aes = Aes.Create())
-                    {
-                        aes.BlockSize = 128;
-                        aes.KeySize = 256;
-                        aes.Mode = CipherMode.CBC;
-                        aes.Padding = PaddingMode.PKCS7;
-                        aes.GenerateKey();
-                        TokenBytes = aes.Key;
-                        TokenKey = Convert.ToBase64String(aes.Key);
-                    }
+                    TokenKey = PersistentOperations.CreatePassword(22);
                     using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                     {
                         sw.WriteLine(TokenKey);
                     }
                     TokenLoaded = true;
-                    Log.Out("[SERVERTOOLS] Created and loaded security token for the discord bot");
+                    Log.Out("[SERVERTOOLS] Created and loaded security token for Discordian bot");
                 }
                 else if (!TokenLoaded)
                 {
@@ -47,9 +36,7 @@ namespace ServerTools
                     {
                         using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
                         {
-                            string token = sr.ReadToEnd().RemoveLineBreaks().Trim();
-                            TokenBytes = Convert.FromBase64String(token);
-                            TokenKey = Convert.ToBase64String(TokenBytes);
+                            TokenKey = sr.ReadToEnd().RemoveLineBreaks().Trim();
                         }
                     }
                     TokenLoaded = true;
@@ -58,7 +45,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in DiscordBot.Token: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in DiscordBot.BuildToken: {0}", e.Message));
             }
         }
 

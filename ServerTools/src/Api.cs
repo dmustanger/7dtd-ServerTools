@@ -60,10 +60,6 @@ namespace ServerTools
                 Phrases.Unload();
                 CommandList.Unload();
                 OutputLog.Shutdown();
-                if (AutoRestart.IsEnabled)
-                {
-                    Utils.RestartGame();
-                }
             }
             catch (Exception e)
             {
@@ -236,11 +232,11 @@ namespace ServerTools
                         {
                             SpeedDetector.Flags.Remove(_cInfo.entityId);
                         }
-                    }
-                    if (ExitCommand.IsEnabled && !ExitCommand.Players.ContainsKey(_cInfo.entityId) && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > ExitCommand.Admin_Level &&
+                        if (ExitCommand.IsEnabled && !ExitCommand.Players.ContainsKey(_cInfo.entityId) && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > ExitCommand.Admin_Level &&
                         GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > ExitCommand.Admin_Level)
-                    {
-                        ExitCommand.Players.Add(_cInfo.entityId, player.position);
+                        {
+                            ExitCommand.Players.Add(_cInfo.entityId, player.position);
+                        }
                     }
                 }
             }
@@ -434,19 +430,6 @@ namespace ServerTools
             }
         }
 
-        public static void SetDirectory()
-        {
-            string userDirectory = GamePrefs.GetString(EnumGamePrefs.UserDataFolder);
-            if (!string.IsNullOrEmpty(userDirectory))
-            {
-                GamePath = userDirectory;
-            }
-            else
-            {
-                GamePath = Directory.GetCurrentDirectory();
-            }
-        }
-
         public static void NewPlayerExec(ClientInfo _cInfo)
         {
             try
@@ -487,6 +470,11 @@ namespace ServerTools
             try
             {
                 string id = _cInfo.CrossplatformId.CombinedString;
+                if (!PersistentContainer.Instance.Players.Players.ContainsKey(id))
+                {
+                    PersistentContainer.Instance.Players.Players.Add(id, new PersistentPlayer(id));
+                    PersistentContainer.DataChange = true;
+                }
                 if (NewPlayer.IsEnabled)
                 {
                     NewPlayer.Exec(_cInfo);
@@ -536,7 +524,13 @@ namespace ServerTools
         {
             try
             {
+                
                 string id = _cInfo.CrossplatformId.CombinedString;
+                if (!PersistentContainer.Instance.Players.Players.ContainsKey(id))
+                {
+                    PersistentContainer.Instance.Players.Players.Add(id, new PersistentPlayer(id));
+                    PersistentContainer.DataChange = true;
+                }
                 if (Hardcore.IsEnabled && PersistentContainer.Instance.Players[id] != null)
                 {
                     if (Hardcore.Optional)
@@ -598,7 +592,7 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[id].EventSpawn = false;
                         PersistentContainer.DataChange = true;
                     }
-                    if (Wallet.IsEnabled && PersistentContainer.Instance.Players[id].PlayerWallet > 0)
+                    if ((Wallet.IsEnabled || Bank.IsEnabled && Bank.Direct_Deposit) && PersistentContainer.Instance.Players[id].PlayerWallet > 0)
                     {
                         Wallet.AddCurrency(id, PersistentContainer.Instance.Players[id].PlayerWallet);
                         PersistentContainer.Instance.Players[id].PlayerWallet = 0;

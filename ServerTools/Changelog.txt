@@ -1,5 +1,40 @@
 ﻿CHANGELOG
 
+20.5.3
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added buffs through xpath to mitigate all damage to blocks
+inside of protected zones
+-Added buffs through xpath to mitigate all damage between Zone
+types PvE/Ally/Stranger/PvP
+-Added option Timeout to Web_Panel. Controls how long a client
+can stay idle before needing to login again
+-Added some missing types to zombie removal for Zones.xml. All 
+hostile animals will also be removed while enabled
+-Changed Market and Lobby PvE option to True by default
+-Changed the point the Auto_Restart function is triggered to
+the latest possible state
+-Changed encryption process for Web_API
+-Changed encryption process for Web_Panel to match Web_API
+-Changed encryption process for Discordian to match Web_API
+-Changed Shop tool to integrate with the Web_API and provide
+an interactive browser based interface while in game
+-Changed IP allocation process to look for an available
+dynamic address when no other is found
+-Changed window UI design for pop up links to chat commands
+-Fixed Wallet_Extended option Item_Name not setting the xpath
+document automatically when changed
+-Fixed console command st-ResetPlayerProfile deleting files
+too soon before the final save could complete
+-Fixed Bank option Direct_Deposit not functioning as intended
+-Fixed various tools spawning weapons that were unable to be 
+modified
+-Fixed overlap of Allocs Map link setting improperly on some
+systems
+-Fixed Invalid_Stack log report
+*Recommend deleting your existing WebAPI folder before installation*
+
 20.5.2
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions
