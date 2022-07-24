@@ -227,7 +227,7 @@ namespace ServerTools
                                             response.StatusCode = 414;
                                         }
                                         else if (uri.Contains("script") && !uri.Contains("JS/scripts.js") && !uri.Contains("JS/shopscripts.js") &&
-                                            !uri.Contains("JS/blackjackscripts.js"))
+                                            !uri.Contains("JS/blackjackscripts.js") && !uri.Contains("JS/auctionscripts.js"))
                                         {
                                             if (!Ban.Contains(ip))
                                             {
@@ -304,51 +304,15 @@ namespace ServerTools
                 {
                     if (_request.HttpMethod == "GET")
                     {
-                        if (WebPanel.IsEnabled || BlackJack.IsEnabled || Shop.IsEnabled)
+                        if (WebPanel.IsEnabled || BlackJack.IsEnabled || Shop.IsEnabled || Auction.IsEnabled)
                         {
-                            _uri = _uri.Remove(0, _uri.IndexOf(Port.ToString()) + Port.ToString().Length + 1);
-                            if (_uri == "st.html" || _uri == "st.html/")
+                            if (_uri.EndsWith("/"))
                             {
-                                if (_uri.EndsWith("/"))
-                                {
-                                    _response.Redirect(Panel_Address);
-                                    _response.StatusCode = 308;
-                                }
-                                else if (PageHits.ContainsKey(_ip))
-                                {
-                                    PageHits[_ip] += 1;
-                                    if (PageHits[_ip] >= 8)
-                                    {
-                                        PageHits.Remove(_ip);
-                                        TimeOut.Add(_ip, DateTime.Now.AddMinutes(5));
-                                        if (PersistentContainer.Instance.WebTimeoutList != null)
-                                        {
-                                            PersistentContainer.Instance.WebTimeoutList.Add(_ip, DateTime.Now.AddMinutes(5));
-                                        }
-                                        else
-                                        {
-                                            Dictionary<string, DateTime> timeouts = new Dictionary<string, DateTime>();
-                                            timeouts.Add(_ip, DateTime.Now.AddMinutes(5));
-                                            PersistentContainer.Instance.WebTimeoutList = timeouts;
-                                        }
-                                        PersistentContainer.DataChange = true;
-                                        Writer(string.Format("Homepage request denied for IP '{0}'. Client is now in time out for five minutes", _ip));
-                                    }
-                                    else
-                                    {
-                                        GET(_response, Directory + _uri, _ip);
-                                        Writer(string.Format("Homepage request granted for IP '{0}'", _ip));
-                                    }
-                                }
-                                else
-                                {
-                                    PageHits.Add(_ip, 1);
-                                    GET(_response, Directory + _uri, _ip);
-                                    Writer(string.Format("Homepage request granted for IP '{0}'", _ip));
-                                }
+                                _uri = _uri.Remove(_uri.Length - 1);
                             }
-                            else if (_uri == "blackJack.html" && BlackJack.Player.ContainsKey(_ip))
+                            if (_uri.EndsWith("st.html") || _uri.EndsWith("blackJack.html") || _uri.EndsWith("shop.html") || _uri.EndsWith("auction.html"))
                             {
+                                _uri = _uri.Remove(0, _uri.IndexOf(Port.ToString()) + Port.ToString().Length + 1);
                                 if (PageHits.ContainsKey(_ip))
                                 {
                                     PageHits[_ip] += 1;
@@ -367,107 +331,40 @@ namespace ServerTools
                                             PersistentContainer.Instance.WebTimeoutList = timeouts;
                                         }
                                         PersistentContainer.DataChange = true;
-                                        Writer(string.Format("Black jack request denied for IP '{0}'. Client is now in time out for five minutes", _ip));
+                                        Writer(string.Format("Request denied for IP '{0}' to '{1}'. Client is now in time out for five minutes", _ip, _uri));
                                     }
                                     else
                                     {
                                         GET(_response, Directory + _uri, _ip);
-                                        Writer(string.Format("Black jack request granted for IP '{0}'", _ip));
+                                        Writer(string.Format("Request granted for IP '{0}' to '{1}'", _ip, _uri));
                                     }
                                 }
                                 else
                                 {
                                     PageHits.Add(_ip, 1);
                                     GET(_response, Directory + _uri, _ip);
-                                    Writer(string.Format("Black jack request granted for IP '{0}'", _ip));
+                                    Writer(string.Format("Request granted for IP '{0}' to '{1}'", _ip, _uri));
                                 }
                             }
-                            else if (_uri == "shop.html")
+                            else if ((_uri.Contains("CSS/") && _uri.EndsWith(".css")) ||
+                                (_uri.Contains("Font/") && _uri.EndsWith(".woff2")) || (_uri.Contains("Font/") && _uri.EndsWith(".woff")) ||
+                                (_uri.Contains("JS/") && _uri.EndsWith(".js")) ||
+                                (_uri.Contains("Img/") && _uri.EndsWith(".webp")) || (_uri.Contains("Img/") && _uri.EndsWith(".png")) ||
+                                _uri.EndsWith("favicon.ico"))
                             {
-                                if (PageHits.ContainsKey(_ip))
-                                {
-                                    PageHits[_ip] += 1;
-                                    if (PageHits[_ip] >= 8)
-                                    {
-                                        PageHits.Remove(_ip);
-                                        TimeOut.Add(_ip, DateTime.Now.AddMinutes(5));
-                                        if (PersistentContainer.Instance.WebTimeoutList != null)
-                                        {
-                                            PersistentContainer.Instance.WebTimeoutList.Add(_ip, DateTime.Now.AddMinutes(5));
-                                        }
-                                        else
-                                        {
-                                            Dictionary<string, DateTime> timeouts = new Dictionary<string, DateTime>();
-                                            timeouts.Add(_ip, DateTime.Now.AddMinutes(5));
-                                            PersistentContainer.Instance.WebTimeoutList = timeouts;
-                                        }
-                                        PersistentContainer.DataChange = true;
-                                        Writer(string.Format("Shop request denied for IP '{0}'. Client is now in time out for five minutes", _ip));
-                                    }
-                                    else
-                                    {
-                                        GET(_response, Directory + _uri, _ip);
-                                        Writer(string.Format("Shop request granted for IP '{0}'", _ip));
-                                    }
-                                }
-                                else
-                                {
-                                    PageHits.Add(_ip, 1);
-                                    GET(_response, Directory + _uri, _ip);
-                                    Writer(string.Format("Shop request granted for IP '{0}'", _ip));
-                                }
-                            }
-                            else if (_uri == "auction.html")
-                            {
-                                if (PageHits.ContainsKey(_ip))
-                                {
-                                    PageHits[_ip] += 1;
-                                    if (PageHits[_ip] >= 8)
-                                    {
-                                        PageHits.Remove(_ip);
-                                        TimeOut.Add(_ip, DateTime.Now.AddMinutes(5));
-                                        if (PersistentContainer.Instance.WebTimeoutList != null)
-                                        {
-                                            PersistentContainer.Instance.WebTimeoutList.Add(_ip, DateTime.Now.AddMinutes(5));
-                                        }
-                                        else
-                                        {
-                                            Dictionary<string, DateTime> timeouts = new Dictionary<string, DateTime>();
-                                            timeouts.Add(_ip, DateTime.Now.AddMinutes(5));
-                                            PersistentContainer.Instance.WebTimeoutList = timeouts;
-                                        }
-                                        PersistentContainer.DataChange = true;
-                                        Writer(string.Format("Auction request denied for IP '{0}'. Client is now in time out for five minutes", _ip));
-                                    }
-                                    else
-                                    {
-                                        GET(_response, Directory + _uri, _ip);
-                                        Writer(string.Format("Auction request granted for IP '{0}'", _ip));
-                                    }
-                                }
-                                else
-                                {
-                                    PageHits.Add(_ip, 1);
-                                    GET(_response, Directory + _uri, _ip);
-                                    Writer(string.Format("Auction request granted for IP '{0}'", _ip));
-                                }
-                            }
-                            else if ((_uri.StartsWith("CSS/") && _uri.EndsWith(".css")) ||
-                                (_uri.StartsWith("Font/") && _uri.EndsWith(".woff2")) || (_uri.StartsWith("Font/") && _uri.EndsWith(".woff")) ||
-                                (_uri.StartsWith("JS/") && _uri.EndsWith(".js")) ||
-                                (_uri.StartsWith("Img/") && _uri.EndsWith(".webp")) || (_uri.StartsWith("Img/") && _uri.EndsWith(".png")) ||
-                                _uri == "favicon.ico")
-                            {
+                                _uri = _uri.Remove(0, _uri.IndexOf(Port.ToString()) + Port.ToString().Length + 1);
                                 GET(_response, Directory + _uri, _ip);
                             }
-                            else if (_uri == "Config" && PassThrough.ContainsKey(_ip) && PassThrough[_ip] == "Config")
+                            else if (_uri.EndsWith("Config") && PassThrough.ContainsKey(_ip) && PassThrough[_ip] == "Config")
                             {
+                                _uri = _uri.Remove(0, _uri.IndexOf(Port.ToString()) + Port.ToString().Length + 1);
                                 PassThrough.Remove(_ip);
                                 _uri = API.ConfigPath + "/ServerToolsConfig.xml";
                                 GET(_response, _uri, _ip);
                             }
-                            else if (_uri.StartsWith("Icon/") && _uri.EndsWith(".png"))
+                            else if (_uri.Contains("Icon/") && _uri.EndsWith(".png"))
                             {
+                                _uri = _uri.Remove(0, _uri.IndexOf(Port.ToString()) + Port.ToString().Length + 1);
                                 _uri = Icon_Folder + "/" + _uri.Replace("Icon/", "");
                                 GET(_response, _uri, _ip);
                             }
@@ -580,7 +477,7 @@ namespace ServerTools
                                                     {
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            string salt = PersistentOperations.CreatePassword(2);
+                                                            string salt = PersistentOperations.CreatePassword(4);
                                                             if (!Authorized.ContainsValue(DiscordBot.TokenKey + salt))
                                                             {
                                                                 Authorized.Add(clientData[0], DiscordBot.TokenKey + salt);
@@ -619,7 +516,7 @@ namespace ServerTools
                                                     {
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            string salt = PersistentOperations.CreatePassword(2);
+                                                            string salt = PersistentOperations.CreatePassword(4);
                                                             if (!Authorized.ContainsValue(pass + salt))
                                                             {
                                                                 Authorized[clientData[0]] = pass + salt;
@@ -662,7 +559,7 @@ namespace ServerTools
                                                     {
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            string salt = PersistentOperations.CreatePassword(2);
+                                                            string salt = PersistentOperations.CreatePassword(4);
                                                             if (!Authorized.ContainsValue(pass + salt))
                                                             {
                                                                 Authorized[clientData[0]] = pass + salt;
@@ -705,7 +602,7 @@ namespace ServerTools
                             else if (_uri == "SignIn" || _uri == "SignOut" || _uri == "NewPass" || _uri == "Console" ||
                             _uri == "Command" || _uri == "Players" || _uri == "Config" || _uri == "SaveConfig" || _uri == "Kick" ||
                             _uri == "Ban" || _uri == "Mute" || _uri == "Jail" || _uri == "Reward" || _uri == "EnterShop" || _uri == "ExitShop" || 
-                            _uri == "ShopPurchase" || _uri == "EnterAuction" || _uri == "ExitAuction" || _uri == "AuctionPurchase")
+                            _uri == "ShopPurchase" || _uri == "EnterAuction" || _uri == "ExitAuction" || _uri == "AuctionPurchase" || _uri == "AuctionCancel")
                             {
                                 if (WebPanel.IsEnabled || (Shop.IsEnabled && Shop.Panel) || (Auction.IsEnabled && Auction.Panel))
                                 {
@@ -720,7 +617,8 @@ namespace ServerTools
                                             if (postMessage.Contains('☼'))
                                             {
                                                 string[] clientData = postMessage.Split('☼');
-                                                if (PersistentContainer.Instance.Players[clientData[0]].WebPass != null &&
+                                                if (PersistentContainer.Instance.Players[clientData[0]] != null &&
+                                                    PersistentContainer.Instance.Players[clientData[0]].WebPass != null &&
                                                     PersistentContainer.Instance.Players[clientData[0]].WebPass != "")
                                                 {
                                                     string pass = PersistentContainer.Instance.Players[clientData[0]].WebPass;
@@ -731,7 +629,7 @@ namespace ServerTools
                                                         string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                         if (clientData[1].ToUpper() == keyHash)
                                                         {
-                                                            string salt = PersistentOperations.CreatePassword(2);
+                                                            string salt = PersistentOperations.CreatePassword(4);
                                                             pass += salt;
                                                             if (!Authorized.ContainsKey(clientData[0]))
                                                             {
@@ -828,7 +726,7 @@ namespace ServerTools
                                                                     passCut + passCut + passCut + passCut);
                                                                 PersistentContainer.Instance.Players[clientData[0]].WebPass = newPass;
                                                                 PersistentContainer.DataChange = true;
-                                                                string salt = PersistentOperations.CreatePassword(2);
+                                                                string salt = PersistentOperations.CreatePassword(4);
                                                                 newPass += salt;
                                                                 Authorized[clientData[0]] = newPass;
                                                                 AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -876,7 +774,7 @@ namespace ServerTools
                                                             string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                             if (clientData[1].ToUpper() == keyHash)
                                                             {
-                                                                string salt = PersistentOperations.CreatePassword(2);
+                                                                string salt = PersistentOperations.CreatePassword(4);
                                                                 pass += salt;
                                                                 Authorized[clientData[0]] = pass;
                                                                 AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -933,7 +831,7 @@ namespace ServerTools
                                                             string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                             if (clientData[1].ToUpper() == keyHash)
                                                             {
-                                                                string salt = PersistentOperations.CreatePassword(2);
+                                                                string salt = PersistentOperations.CreatePassword(4);
                                                                 pass += salt;
                                                                 Authorized[clientData[0]] = pass;
                                                                 AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -1010,7 +908,7 @@ namespace ServerTools
                                                             string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                             if (clientData[1].ToUpper() == keyHash)
                                                             {
-                                                                string salt = PersistentOperations.CreatePassword(2);
+                                                                string salt = PersistentOperations.CreatePassword(4);
                                                                 pass += salt;
                                                                 Authorized[clientData[0]] = pass;
                                                                 AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -1107,7 +1005,7 @@ namespace ServerTools
                                                             string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                             if (clientData[1].ToUpper() == keyHash)
                                                             {
-                                                                string salt = PersistentOperations.CreatePassword(2);
+                                                                string salt = PersistentOperations.CreatePassword(4);
                                                                 pass += salt;
                                                                 Authorized[clientData[0]] = pass;
                                                                 AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -1162,7 +1060,7 @@ namespace ServerTools
                                                             string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                             if (clientData[1].ToUpper() == keyHash)
                                                             {
-                                                                string salt = PersistentOperations.CreatePassword(2);
+                                                                string salt = PersistentOperations.CreatePassword(4);
                                                                 pass += salt;
                                                                 Authorized[clientData[0]] = pass;
                                                                 AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -1262,7 +1160,7 @@ namespace ServerTools
                                                             string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                             if (clientData[1].ToUpper() == keyHash)
                                                             {
-                                                                string salt = PersistentOperations.CreatePassword(2);
+                                                                string salt = PersistentOperations.CreatePassword(4);
                                                                 pass += salt;
                                                                 Authorized[clientData[0]] = pass;
                                                                 AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -1319,7 +1217,7 @@ namespace ServerTools
                                                             string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                             if (clientData[1].ToUpper() == keyHash)
                                                             {
-                                                                string salt = PersistentOperations.CreatePassword(2);
+                                                                string salt = PersistentOperations.CreatePassword(4);
                                                                 pass += salt;
                                                                 Authorized[clientData[0]] = pass;
                                                                 AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -1382,7 +1280,7 @@ namespace ServerTools
                                                             string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                             if (clientData[1].ToUpper() == keyHash)
                                                             {
-                                                                string salt = PersistentOperations.CreatePassword(2);
+                                                                string salt = PersistentOperations.CreatePassword(4);
                                                                 pass += salt;
                                                                 Authorized[clientData[0]] = pass;
                                                                 AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -1484,7 +1382,7 @@ namespace ServerTools
                                                             string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                             if (clientData[1].ToUpper() == keyHash)
                                                             {
-                                                                string salt = PersistentOperations.CreatePassword(2);
+                                                                string salt = PersistentOperations.CreatePassword(4);
                                                                 pass += salt;
                                                                 Authorized[clientData[0]] = pass;
                                                                 AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -1616,17 +1514,17 @@ namespace ServerTools
                                                             string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                             if (clientData[1].ToUpper() == keyHash)
                                                             {
-                                                                string salt = PersistentOperations.CreatePassword(2);
+                                                                string salt = PersistentOperations.CreatePassword(4);
                                                                 pass += salt;
                                                                 Authorized[clientData[0]] = pass;
                                                                 AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
                                                                 responseMessage += salt;
-                                                                if (VoteReward.IsEnabled)
+                                                                if (Voting.IsEnabled)
                                                                 {
                                                                     ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(clientData[2]);
                                                                     if (cInfo != null)
                                                                     {
-                                                                        VoteReward.ItemOrBlockCounter(cInfo, VoteReward.Reward_Count);
+                                                                        Voting.ItemOrBlockCounter(cInfo, Voting.Reward_Count);
                                                                         Writer(string.Format("Client {0} at IP {1} has rewarded {2} named {3}", clientData[0], _ip, cInfo.PlatformId.CombinedString, cInfo.playerName));
                                                                         _response.StatusCode = 200;
                                                                     }
@@ -1692,11 +1590,11 @@ namespace ServerTools
                                                                     AuthorizedTime.Remove(customers[i].Key);
                                                                     for (int j = 0; j < 10; j++)
                                                                     {
-                                                                        string salt = PersistentOperations.CreatePassword(2);
+                                                                        string salt = PersistentOperations.CreatePassword(4);
                                                                         bytes = Encoding.UTF8.GetBytes(customers[i].Key + salt);
-                                                                        using (SHA512 sha512_2 = SHA512.Create())
+                                                                        using (SHA512 sha512 = SHA512.Create())
                                                                         {
-                                                                            hashBytes = sha512_2.ComputeHash(bytes);
+                                                                            hashBytes = sha512.ComputeHash(bytes);
                                                                             keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                                         }
                                                                         if (!Authorized.ContainsKey(keyHash))
@@ -1755,9 +1653,15 @@ namespace ServerTools
                                                 if (Authorized.ContainsKey(postUppercase))
                                                 {
                                                     Authorized.TryGetValue(postUppercase, out string id);
+                                                    Shop.PanelAccess.TryGetValue(id, out int entityId);
                                                     Shop.PanelAccess.Remove(id);
                                                     Authorized.Remove(postUppercase);
                                                     AuthorizedTime.Remove(postUppercase);
+                                                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                    if (cInfo != null)
+                                                    {
+                                                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close browserShop", true));
+                                                    }
                                                     _response.StatusCode = 200;
                                                 }
                                                 else
@@ -1784,11 +1688,11 @@ namespace ServerTools
                                                         string keyHash = "", salt = "";
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            salt = PersistentOperations.CreatePassword(2);
+                                                            salt = PersistentOperations.CreatePassword(4);
                                                             byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
-                                                            using (SHA512 sha512_2 = SHA512.Create())
+                                                            using (SHA512 sha512 = SHA512.Create())
                                                             {
-                                                                byte[] hashBytes = sha512_2.ComputeHash(bytes);
+                                                                byte[] hashBytes = sha512.ComputeHash(bytes);
                                                                 keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                             }
                                                             if (!Authorized.ContainsKey(keyHash))
@@ -1835,7 +1739,7 @@ namespace ServerTools
                                                                         if (itemValue.HasQuality)
                                                                         {
                                                                             itemValue.Quality = 1;
-                                                                            if (quality > 0)
+                                                                            if (quality > 1)
                                                                             {
                                                                                 itemValue.Quality = quality;
                                                                             }
@@ -1901,16 +1805,396 @@ namespace ServerTools
                                             }
                                             break;
                                         case "EnterAuction":
-
-
+                                            if (postMessage.Length > 127)
+                                            {
+                                                bool Found = false;
+                                                var customers = Auction.PanelAccess.ToArray();
+                                                for (int i = 0; i < customers.Length; i++)
+                                                {
+                                                    byte[] bytes = Encoding.UTF8.GetBytes(customers[i].Key);
+                                                    using (SHA512 sha512_1 = SHA512.Create())
+                                                    {
+                                                        byte[] hashBytes = sha512_1.ComputeHash(bytes);
+                                                        string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                        if (postMessage.ToUpper() == keyHash)
+                                                        {
+                                                            Found = true;
+                                                            AuthorizedTime.TryGetValue(customers[i].Key, out DateTime remainingTime);
+                                                            if (DateTime.Now <= remainingTime)
+                                                            {
+                                                                Auction.PanelAccess.TryGetValue(customers[i].Key, out int entityId);
+                                                                ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                                if (cInfo != null)
+                                                                {
+                                                                    if (PageHits.ContainsKey(_ip))
+                                                                    {
+                                                                        PageHits.Remove(_ip);
+                                                                    }
+                                                                    AuthorizedTime.Remove(customers[i].Key);
+                                                                    for (int j = 0; j < 10; j++)
+                                                                    {
+                                                                        string salt = PersistentOperations.CreatePassword(4);
+                                                                        bytes = Encoding.UTF8.GetBytes(customers[i].Key + salt);
+                                                                        using (SHA512 sha512_2 = SHA512.Create())
+                                                                        {
+                                                                            hashBytes = sha512_2.ComputeHash(bytes);
+                                                                            keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                                        }
+                                                                        if (!Authorized.ContainsKey(keyHash))
+                                                                        {
+                                                                            Authorized.Add(keyHash, customers[i].Key);
+                                                                            AuthorizedTime.Add(keyHash, DateTime.Now.AddMinutes(5));
+                                                                            int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
+                                                                            if (Bank.IsEnabled && Bank.Payments)
+                                                                            {
+                                                                                currency += PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank;
+                                                                            }
+                                                                            responseMessage += cInfo.playerName + "☼" + "Balance: " + currency + "☼" + Wallet.Currency_Name +
+                                                                                "☼" + Auction.Panel_Name + "☼" + Auction.GetItems(cInfo.CrossplatformId.CombinedString) + "☼" + salt;
+                                                                            _response.StatusCode = 200;
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    Auction.PanelAccess.Remove(customers[i].Key);
+                                                                    AuthorizedTime.Remove(customers[i].Key);
+                                                                    _response.StatusCode = 403;
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                Auction.PanelAccess.Remove(customers[i].Key);
+                                                                AuthorizedTime.Remove(customers[i].Key);
+                                                                _response.StatusCode = 402;
+                                                            }
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                if (!Found)
+                                                {
+                                                    _response.StatusCode = 401;
+                                                }
+                                            }
+                                            else if (postMessage == "DBUG")
+                                            {
+                                                if (PageHits.ContainsKey(_ip))
+                                                {
+                                                    PageHits.Remove(_ip);
+                                                }
+                                                responseMessage += "DBUG" + "☼" + "Balance: " + 0 + "☼" + Wallet.Currency_Name +
+                                                    "☼" + Auction.Panel_Name + "☼" + Auction.GetItems("DBUG") + "☼" + "";
+                                                _response.StatusCode = 200;
+                                            }
                                             break;
                                         case "ExitAuction":
-
-
+                                            if (postMessage.Length > 127)
+                                            {
+                                                string postUppercase = postMessage.ToUpper();
+                                                if (Authorized.ContainsKey(postUppercase))
+                                                {
+                                                    Authorized.TryGetValue(postUppercase, out string id);
+                                                    Auction.PanelAccess.TryGetValue(id, out int entityId);
+                                                    Auction.PanelAccess.Remove(id);
+                                                    Authorized.Remove(postUppercase);
+                                                    AuthorizedTime.Remove(postUppercase);
+                                                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                    if (cInfo != null)
+                                                    {
+                                                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close browserAuction", true));
+                                                    }
+                                                    _response.StatusCode = 200;
+                                                }
+                                                else
+                                                {
+                                                    _response.StatusCode = 401;
+                                                }
+                                            }
+                                            else if (postMessage == "DBUG")
+                                            {
+                                                _response.StatusCode = 200;
+                                            }
                                             break;
                                         case "AuctionPurchase":
-
-
+                                            if (postMessage.Length > 127 && postMessage.Contains('☼'))
+                                            {
+                                                string[] purchaseData = postMessage.Split('☼');
+                                                string purchaseDataUppercase = purchaseData[0].ToUpper();
+                                                if (Authorized.ContainsKey(purchaseDataUppercase))
+                                                {
+                                                    AuthorizedTime.TryGetValue(purchaseDataUppercase, out DateTime remainingTime);
+                                                    if (DateTime.Now <= remainingTime)
+                                                    {
+                                                        Authorized.TryGetValue(purchaseDataUppercase, out string id);
+                                                        string keyHash = "", salt = "";
+                                                        for (int i = 0; i < 10; i++)
+                                                        {
+                                                            salt = PersistentOperations.CreatePassword(4);
+                                                            byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
+                                                            using (SHA512 sha512 = SHA512.Create())
+                                                            {
+                                                                byte[] hashBytes = sha512.ComputeHash(bytes);
+                                                                keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                            }
+                                                            if (!Authorized.ContainsKey(keyHash))
+                                                            {
+                                                                Authorized.Remove(purchaseDataUppercase);
+                                                                AuthorizedTime.Remove(purchaseDataUppercase);
+                                                                Authorized.Add(keyHash, id);
+                                                                AuthorizedTime.Add(keyHash, DateTime.Now.AddMinutes(5));
+                                                                break;
+                                                            }
+                                                        }
+                                                        int.TryParse(purchaseData[1], out int itemId);
+                                                        if (Auction.AuctionItems.ContainsKey(itemId))
+                                                        {
+                                                            Auction.AuctionItems.TryGetValue(itemId, out string playerId);
+                                                            Auction.PanelAccess.TryGetValue(id, out int entityId);
+                                                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                            if (cInfo != null)
+                                                            {
+                                                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                                                                if (player != null)
+                                                                {
+                                                                    if (cInfo.CrossplatformId.CombinedString != playerId)
+                                                                    {
+                                                                        if (PersistentContainer.Instance.Players[playerId].Auction != null &&
+                                                                            PersistentContainer.Instance.Players[playerId].Auction.ContainsKey(itemId))
+                                                                        {
+                                                                            PersistentContainer.Instance.Players[playerId].Auction.TryGetValue(itemId, out ItemDataSerializable itemData);
+                                                                            int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
+                                                                            if (Bank.IsEnabled && Bank.Payments)
+                                                                            {
+                                                                                currency += PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank;
+                                                                            }
+                                                                            if (currency >= itemData.price)
+                                                                            {
+                                                                                if (Bank.IsEnabled && Bank.Payments)
+                                                                                {
+                                                                                    Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, itemData.price, true);
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, itemData.price, false);
+                                                                                }
+                                                                                ItemValue itemValue = new ItemValue(ItemClass.GetItem(itemData.name, false).type);
+                                                                                if (itemValue != null)
+                                                                                {
+                                                                                    if (itemValue.HasQuality)
+                                                                                    {
+                                                                                        itemValue.Quality = 1;
+                                                                                        if (itemData.quality > 1)
+                                                                                        {
+                                                                                            itemValue.Quality = itemData.quality;
+                                                                                        }
+                                                                                    }
+                                                                                    itemValue.UseTimes = itemData.useTimes;
+                                                                                    itemValue.Seed = itemData.seed;
+                                                                                    if (itemData.modSlots > 0)
+                                                                                    {
+                                                                                        itemValue.Modifications = new ItemValue[itemData.modSlots];
+                                                                                    }
+                                                                                    if (itemData.cosmeticSlots > 0)
+                                                                                    {
+                                                                                        itemValue.CosmeticMods = new ItemValue[itemData.cosmeticSlots];
+                                                                                    }
+                                                                                    World world = GameManager.Instance.World;
+                                                                                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                                                                                    {
+                                                                                        entityClass = EntityClass.FromString("item"),
+                                                                                        id = EntityFactory.nextEntityID++,
+                                                                                        itemStack = new ItemStack(itemValue, itemData.count),
+                                                                                        pos = player.position,
+                                                                                        rot = new Vector3(20f, 0f, 20f),
+                                                                                        lifetime = 60f,
+                                                                                        belongsPlayerId = cInfo.entityId
+                                                                                    });
+                                                                                    world.SpawnEntityInWorld(entityItem);
+                                                                                    cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
+                                                                                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                                                                    Auction.AuctionItems.Remove(itemId);
+                                                                                    PersistentContainer.Instance.Players[playerId].Auction.Remove(itemId);
+                                                                                    PersistentContainer.DataChange = true;
+                                                                                    using (StreamWriter sw = new StreamWriter(Auction.Filepath, true, Encoding.UTF8))
+                                                                                    {
+                                                                                        sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' has purchased auction entry number '{4}'", DateTime.Now, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, itemId));
+                                                                                        sw.WriteLine();
+                                                                                        sw.Flush();
+                                                                                        sw.Close();
+                                                                                    }
+                                                                                    Phrases.Dict.TryGetValue("Auction11", out string phrase);
+                                                                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                                                }
+                                                                                responseMessage += salt;
+                                                                                _response.StatusCode = 200;
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                responseMessage += salt + "☼" + "You do not have enough to make this purchase";
+                                                                                _response.StatusCode = 402;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        responseMessage += salt + "☼" + "You own this item. You can not purchase your own";
+                                                                        _response.StatusCode = 402;
+                                                                    }
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                responseMessage += salt + "☼" + "You are not in game. Login to the game and try again";
+                                                                _response.StatusCode = 402;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            responseMessage += salt;
+                                                            _response.StatusCode = 401;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Authorized.TryGetValue(purchaseDataUppercase, out string id);
+                                                        Auction.PanelAccess.Remove(id);
+                                                        Authorized.Remove(purchaseDataUppercase);
+                                                        AuthorizedTime.Remove(purchaseDataUppercase);
+                                                        _response.StatusCode = 400;
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case "AuctionCancel":
+                                            if (postMessage.Length > 127 && postMessage.Contains('☼'))
+                                            {
+                                                string[] cancelData = postMessage.Split('☼');
+                                                string cancelDataUppercase = cancelData[0].ToUpper();
+                                                if (Authorized.ContainsKey(cancelDataUppercase))
+                                                {
+                                                    AuthorizedTime.TryGetValue(cancelDataUppercase, out DateTime remainingTime);
+                                                    if (DateTime.Now <= remainingTime)
+                                                    {
+                                                        Authorized.TryGetValue(cancelDataUppercase, out string id);
+                                                        string keyHash = "", salt = "";
+                                                        for (int i = 0; i < 10; i++)
+                                                        {
+                                                            salt = PersistentOperations.CreatePassword(4);
+                                                            byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
+                                                            using (SHA512 sha512 = SHA512.Create())
+                                                            {
+                                                                byte[] hashBytes = sha512.ComputeHash(bytes);
+                                                                keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                            }
+                                                            if (!Authorized.ContainsKey(keyHash))
+                                                            {
+                                                                Authorized.Remove(cancelDataUppercase);
+                                                                AuthorizedTime.Remove(cancelDataUppercase);
+                                                                Authorized.Add(keyHash, id);
+                                                                AuthorizedTime.Add(keyHash, DateTime.Now.AddMinutes(5));
+                                                                break;
+                                                            }
+                                                        }
+                                                        int.TryParse(cancelData[1], out int itemId);
+                                                        if (Auction.AuctionItems.ContainsKey(itemId))
+                                                        {
+                                                            Auction.AuctionItems.TryGetValue(itemId, out string playerId);
+                                                            if (PersistentContainer.Instance.Players[playerId].Auction != null && 
+                                                                PersistentContainer.Instance.Players[playerId].Auction.ContainsKey(itemId))
+                                                            {
+                                                                Auction.PanelAccess.TryGetValue(id, out int entityId);
+                                                                ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                                if (cInfo != null)
+                                                                {
+                                                                    EntityPlayer player = PersistentOperations.GetEntityPlayer(entityId);
+                                                                    if (player != null)
+                                                                    {
+                                                                        if (PersistentContainer.Instance.Players[playerId].Auction.TryGetValue(itemId, out ItemDataSerializable itemData))
+                                                                        {
+                                                                            ItemValue itemValue = new ItemValue(ItemClass.GetItem(itemData.name, false).type);
+                                                                            if (itemValue != null)
+                                                                            {
+                                                                                if (itemValue.HasQuality)
+                                                                                {
+                                                                                    itemValue.Quality = 1;
+                                                                                    if (itemData.quality > 1)
+                                                                                    {
+                                                                                        itemValue.Quality = itemData.quality;
+                                                                                    }
+                                                                                }
+                                                                                itemValue.UseTimes = itemData.useTimes;
+                                                                                itemValue.Seed = itemData.seed;
+                                                                                if (itemData.modSlots > 0)
+                                                                                {
+                                                                                    itemValue.Modifications = new ItemValue[itemData.modSlots];
+                                                                                }
+                                                                                if (itemData.cosmeticSlots > 0)
+                                                                                {
+                                                                                    itemValue.CosmeticMods = new ItemValue[itemData.cosmeticSlots];
+                                                                                }
+                                                                                World world = GameManager.Instance.World;
+                                                                                var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                                                                                {
+                                                                                    entityClass = EntityClass.FromString("item"),
+                                                                                    id = EntityFactory.nextEntityID++,
+                                                                                    itemStack = new ItemStack(itemValue, itemData.count),
+                                                                                    pos = player.position,
+                                                                                    rot = new Vector3(20f, 0f, 20f),
+                                                                                    lifetime = 60f,
+                                                                                    belongsPlayerId = cInfo.entityId
+                                                                                });
+                                                                                world.SpawnEntityInWorld(entityItem);
+                                                                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
+                                                                                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                                                                Auction.AuctionItems.Remove(itemId);
+                                                                                PersistentContainer.Instance.Players[playerId].Auction.Remove(itemId);
+                                                                                PersistentContainer.DataChange = true;
+                                                                                using (StreamWriter sw = new StreamWriter(Auction.Filepath, true, Encoding.UTF8))
+                                                                                {
+                                                                                    sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' has cancelled their auction entry number '{4}'", DateTime.Now, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, itemId));
+                                                                                    sw.WriteLine();
+                                                                                    sw.Flush();
+                                                                                    sw.Close();
+                                                                                }
+                                                                                Phrases.Dict.TryGetValue("Auction11", out string phrase);
+                                                                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                                            }
+                                                                            responseMessage += salt;
+                                                                            _response.StatusCode = 200;
+                                                                        }
+                                                                        
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    responseMessage += salt + "☼" + "You are not in game. Login to the game and try again";
+                                                                    _response.StatusCode = 402;
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                responseMessage += salt + "☼" + "Unable to cancel. Item data not found";
+                                                                _response.StatusCode = 402;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            responseMessage += salt;
+                                                            _response.StatusCode = 401;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Authorized.TryGetValue(cancelDataUppercase, out string id);
+                                                        Auction.PanelAccess.Remove(id);
+                                                        Authorized.Remove(cancelDataUppercase);
+                                                        AuthorizedTime.Remove(cancelDataUppercase);
+                                                        _response.StatusCode = 400;
+                                                    }
+                                                }
+                                            }
                                             break;
                                     }
                                     byte[] c = Encoding.UTF8.GetBytes(responseMessage);
@@ -1932,7 +2216,19 @@ namespace ServerTools
                             }
                             else
                             {
-                                Writer(string.Format("Detected {0} attempting to access an invalid address {1}", _ip, _uri));
+                                Ban.Add(_ip);
+                                if (PersistentContainer.Instance.WebBanList != null)
+                                {
+                                    PersistentContainer.Instance.WebBanList.Add(_ip);
+                                }
+                                else
+                                {
+                                    List<string> bannedIP = new List<string>();
+                                    bannedIP.Add(_ip);
+                                    PersistentContainer.Instance.WebBanList = bannedIP;
+                                }
+                                PersistentContainer.DataChange = true;
+                                Writer(string.Format("Banned IP '{0}'. Detected attempting to access an invalid address '{1}'", _ip, _uri));
                             }
                         }
                     }

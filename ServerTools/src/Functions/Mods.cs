@@ -69,13 +69,13 @@ namespace ServerTools
             {
                 Zones.Unload();
             }
-            if (!VoteReward.IsRunning && VoteReward.IsEnabled)
+            if (!Voting.IsRunning && Voting.IsEnabled)
             {
-                VoteReward.Load();
+                Voting.Load();
             }
-            if (VoteReward.IsRunning && !VoteReward.IsEnabled)
+            if (Voting.IsRunning && !Voting.IsEnabled)
             {
-                VoteReward.Unload();
+                Voting.Unload();
             }
             if (!WatchList.IsRunning && WatchList.IsEnabled)
             {

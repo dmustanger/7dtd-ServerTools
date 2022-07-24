@@ -398,9 +398,9 @@ namespace ServerTools
                     {
                         InfiniteAmmo.Dict.Remove(_cInfo.entityId);
                     }
-                    if (Pickup.PickupEnabled.Contains(_cInfo.entityId))
+                    if (BlockPickup.PickupEnabled.Contains(_cInfo.entityId))
                     {
-                        Pickup.PickupEnabled.Remove(_cInfo.entityId);
+                        BlockPickup.PickupEnabled.Remove(_cInfo.entityId);
                     }
                     if (Wall.WallEnabled.ContainsKey(_cInfo.entityId))
                     {

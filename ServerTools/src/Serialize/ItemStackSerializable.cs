@@ -10,6 +10,7 @@ namespace ServerTools
         public ItemDataSerializable()
         {
             this.name = "";
+            this.localName = "";
             this.iconName = "";
             this.count = 0;
             this.useTimes = 0f;
@@ -23,6 +24,8 @@ namespace ServerTools
         }
 
         public string name;
+
+        public string localName;
 
         public string iconName;
 

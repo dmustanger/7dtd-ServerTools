@@ -21,221 +21,221 @@ namespace ServerTools
                 if (!Dict.Contains("Damage detector"))
                 {
                     Dict.Add("Damage detector");
-                    Log.Out("Damage detector enabled");
+                    Log.Out("[ServerTools] Damage detector enabled");
                 }
             }
             else if (Dict.Contains("Damage detector") && !_initiating)
             {
                 Dict.Remove("Damage detector");
-                Log.Out("Damage detector disabled");
+                Log.Out("[ServerTools] Damage detector disabled");
             }
             if (DupeLog.IsEnabled)
             {
                 if (!Dict.Contains("Dupe log"))
                 {
                     Dict.Add("Dupe log");
-                    Log.Out("Dupe log enabled");
+                    Log.Out("[ServerTools] Dupe log enabled");
                 }
             }
             else if (Dict.Contains("Dupe log") && !_initiating)
             {
                 Dict.Remove("Dupe log");
-                Log.Out("Dupe log disabled");
+                Log.Out("[ServerTools] Dupe log disabled");
             }
             if (FlyingDetector.IsEnabled)
             {
                 if (!Dict.Contains("Flying detector"))
                 {
                     Dict.Add("Flying detector");
-                    Log.Out("Flying detector enabled");
+                    Log.Out("[ServerTools] Flying detector enabled");
                 }
             }
             else if (Dict.Contains("Flying detector") && !_initiating)
             {
                 Dict.Remove("Flying detector");
-                Log.Out("Flying detector disabled");
+                Log.Out("[ServerTools] Flying detector disabled");
             }
             if (PlayerChecks.GodEnabled)
             {
                 if (!Dict.Contains("God mode"))
                 {
                     Dict.Add("God mode");
-                    Log.Out("God mode enabled");
+                    Log.Out("[ServerTools] God mode enabled");
                 }
             }
             else if (Dict.Contains("God mode") && !_initiating)
             {
                 Dict.Remove("God mode");
-                Log.Out("God mode disabled");
+                Log.Out("[ServerTools] God mode disabled");
             }
             if (InvalidItems.IsEnabled)
             {
                 if (!Dict.Contains("Invalid items"))
                 {
                     Dict.Add("Invalid items");
-                    Log.Out("Invalid items enabled");
+                    Log.Out("[ServerTools] Invalid items enabled");
                 }
             }
             else if (Dict.Contains("Invalid items") && !_initiating)
             {
                 Dict.Remove("Invalid items");
-                Log.Out("Invalid items disabled");
+                Log.Out("[ServerTools] Invalid items disabled");
             }
             if (InvalidItems.IsEnabled)
             {
                 if (!Dict.Contains("Infinite ammo"))
                 {
                     Dict.Add("Infinite ammo");
-                    Log.Out("Infinite ammo enabled");
+                    Log.Out("[ServerTools] Infinite ammo enabled");
                 }
             }
             else if (Dict.Contains("Infinite ammo") && !_initiating)
             {
                 Dict.Remove("Infinite ammo");
-                Log.Out("Infinite ammo disabled");
+                Log.Out("[ServerTools] Infinite ammo disabled");
             }
             if (Jail.IsEnabled)
             {
                 if (!Dict.Contains("Jail"))
                 {
                     Dict.Add("Jail");
-                    Log.Out("Jail enabled");
+                    Log.Out("[ServerTools] Jail enabled");
                 }
             }
             else if (Dict.Contains("Jail") && !_initiating)
             {
                 Dict.Remove("Jail");
-                Log.Out("Jail disabled");
+                Log.Out("[ServerTools] Jail disabled");
             }
             if (MagicBullet.IsEnabled)
             {
                 if (!Dict.Contains("Magic bullet"))
                 {
                     Dict.Add("Magic bullet");
-                    Log.Out("Magic bullet enabled");
+                    Log.Out("[ServerTools] Magic bullet enabled");
                 }
             }
             else if (Dict.Contains("Magic bullet") && !_initiating)
             {
                 Dict.Remove("Magic bullet");
-                Log.Out("Magic bullet disabled");
+                Log.Out("[ServerTools] Magic bullet disabled");
             }
             if (PersistentOperations.Net_Package_Detector)
             {
                 if (!Dict.Contains("Net package detector"))
                 {
                     Dict.Add("Net package detector");
-                    Log.Out("Net package detector enabled");
+                    Log.Out("[ServerTools] Net package detector enabled");
                 }
             }
             else if (Dict.Contains("Net package detector") && !_initiating)
             {
                 Dict.Remove("Net package detector");
-                Log.Out("Net package detector disabled");
+                Log.Out("[ServerTools] Net package detector disabled");
             }
             if (PlayerStats.IsEnabled)
             {
                 if (!Dict.Contains("Player stats"))
                 {
                     Dict.Add("Player stats");
-                    Log.Out("Player stats enabled");
+                    Log.Out("[ServerTools] Player stats enabled");
                 }
             }
             else if (Dict.Contains("Player stats") && !_initiating)
             {
                 Dict.Remove("Player stats");
-                Log.Out("Player stats disabled");
+                Log.Out("[ServerTools] Player stats disabled");
             }
             if (PlayerLogs.IsEnabled)
             {
                 if (!Dict.Contains("Player logs"))
                 {
                     Dict.Add("Player logs");
-                    Log.Out("Player logs enabled");
+                    Log.Out("[ServerTools] Player logs enabled");
                 }
             }
             else if (Dict.Contains("Player logs") && !_initiating)
             {
                 Dict.Remove("Player logs");
-                Log.Out("Player logs disabled");
+                Log.Out("[ServerTools] Player logs disabled");
             }
             if (ProtectedZones.IsEnabled)
             {
                 if (!Dict.Contains("Protected zones"))
                 {
                     Dict.Add("Protected zones");
-                    Log.Out("Protected zones enabled");
+                    Log.Out("[ServerTools] Protected zones enabled");
                 }
             }
             else if (Dict.Contains("Protected zones") && !_initiating)
             {
                 Dict.Remove("Protected zones");
-                Log.Out("Protected zones disabled");
+                Log.Out("[ServerTools] Protected zones disabled");
             }
             if (PlayerChecks.SpectatorEnabled)
             {
                 if (!Dict.Contains("Spectator detector"))
                 {
                     Dict.Add("Spectator detector");
-                    Log.Out("Spectator detector enabled");
+                    Log.Out("[ServerTools] Spectator detector enabled");
                 }
             }
             else if (Dict.Contains("Spectator detector") && !_initiating)
             {
                 Dict.Remove("Spectator detector");
-                Log.Out("Spectator detector disabled");
+                Log.Out("[ServerTools] Spectator detector disabled");
             }
             if (SpeedDetector.IsEnabled)
             {
                 if (!Dict.Contains("Speed detector"))
                 {
                     Dict.Add("Speed detector");
-                    Log.Out("Speed detector enabled");
+                    Log.Out("[ServerTools] Speed detector enabled");
                 }
             }
             else if (Dict.Contains("Speed detector") && !_initiating)
             {
                 Dict.Remove("Speed detector");
-                Log.Out("Speed detector disabled");
+                Log.Out("[ServerTools] Speed detector disabled");
             }
             if (WatchList.IsEnabled)
             {
                 if (!Dict.Contains("Watch list"))
                 {
                     Dict.Add("Watch list");
-                    Log.Out("Watch list enabled");
+                    Log.Out("[ServerTools] Watch list enabled");
                 }
             }
             else if (Dict.Contains("Watch list") && !_initiating)
             {
                 Dict.Remove("Watch list");
-                Log.Out("Watch list disabled");
+                Log.Out("[ServerTools] Watch list disabled");
             }
             if (WorldRadius.IsEnabled)
             {
                 if (!Dict.Contains("World radius"))
                 {
                     Dict.Add("World radius");
-                    Log.Out("World radius enabled");
+                    Log.Out("[ServerTools] World radius enabled");
                 }
             }
             else if (Dict.Contains("World radius") && !_initiating)
             {
                 Dict.Remove("World radius");
-                Log.Out("World radius disabled");
+                Log.Out("[ServerTools] World radius disabled");
             }
             if (XRayDetector.IsEnabled)
             {
                 if (!Dict.Contains("XRay"))
                 {
                     Dict.Add("XRay");
-                    Log.Out("XRay detector enabled");
+                    Log.Out("[ServerTools] XRay detector enabled");
                 }
             }
             else if (Dict.Contains("XRay") && !_initiating)
             {
                 Dict.Remove("XRay");
-                Log.Out("XRay detector disabled");
+                Log.Out("[ServerTools] XRay detector disabled");
             }
             if (_initiating)
             {
@@ -248,39 +248,39 @@ namespace ServerTools
                 if (!Dict.Contains("Chat color"))
                 {
                     Dict.Add("Chat color");
-                    Log.Out("Chat color enabled");
+                    Log.Out("[ServerTools] Chat color enabled");
                 }
             }
             else if (Dict.Contains("Chat color") && !_initiating)
             {
                 Dict.Remove("Chat color");
-                Log.Out("Chat color disabled");
+                Log.Out("[ServerTools] Chat color disabled");
             }
             if (ChatHook.Normal_Player_Color_Prefix)
             {
                 if (!Dict.Contains("Normal player color prefix"))
                 {
                     Dict.Add("Normal player color prefix");
-                    Log.Out("Normal player color prefix enabled");
+                    Log.Out("[ServerTools] Normal player color prefix enabled");
                 }
             }
             else if (Dict.Contains("Normal player color prefix") && !_initiating)
             {
                 Dict.Remove("Normal player color prefix");
-                Log.Out("Normal player color prefix disabled");
+                Log.Out("[ServerTools] Normal player color prefix disabled");
             }
             if (ChatHook.Message_Color_Enabled)
             {
                 if (!Dict.Contains("Message color"))
                 {
                     Dict.Add("Message color");
-                    Log.Out("Message color enabled");
+                    Log.Out("[ServerTools] Message color enabled");
                 }
             }
             else if (Dict.Contains("Message color") && !_initiating)
             {
                 Dict.Remove("Message color");
-                Log.Out("Message color disabled");
+                Log.Out("[ServerTools] Message color disabled");
             }
             if (_initiating)
             {
@@ -293,787 +293,787 @@ namespace ServerTools
                 if (!Dict.Contains("Admin chat commands"))
                 {
                     Dict.Add("Admin chat commands");
-                    Log.Out("Admin chat commands enabled");
+                    Log.Out("[ServerTools] Admin chat commands enabled");
                 }
             }
             else if (Dict.Contains("Admin chat commands") && !_initiating)
             {
                 Dict.Remove("Admin chat commands");
-                Log.Out("Admin chat commands disabled");
+                Log.Out("[ServerTools] Admin chat commands disabled");
             }
             if (AdminList.IsEnabled)
             {
                 if (!Dict.Contains("Admin list"))
                 {
                     Dict.Add("Admin list");
-                    Log.Out("Admin list enabled");
+                    Log.Out("[ServerTools] Admin list enabled");
                 }
             }
             else if (Dict.Contains("Admin list") && !_initiating)
             {
                 Dict.Remove("Admin list");
-                Log.Out("Admin list disabled");
+                Log.Out("[ServerTools] Admin list disabled");
             }
             if (AnimalTracking.IsEnabled)
             {
                 if (!Dict.Contains("Animal tracking"))
                 {
                     Dict.Add("Animal tracking");
-                    Log.Out("Animal tracking enabled");
+                    Log.Out("[ServerTools] Animal tracking enabled");
                 }
             }
             else if (Dict.Contains("Animal tracking") && !_initiating)
             {
                 Dict.Remove("Animal tracking");
-                Log.Out("Animal tracking disabled");
+                Log.Out("[ServerTools] Animal tracking disabled");
             }
             if (Auction.IsEnabled)
             {
                 if (!Dict.Contains("Auction"))
                 {
                     Dict.Add("Auction");
-                    Log.Out("Auction enabled");
+                    Log.Out("[ServerTools] Auction enabled");
                 }
             }
             else if (Dict.Contains("Auction") && !_initiating)
             {
                 Dict.Remove("Auction");
-                Log.Out("Auction disabled");
+                Log.Out("[ServerTools] Auction disabled");
             }
             if (AutoBackup.IsEnabled)
             {
                 if (!Dict.Contains("Auto backup"))
                 {
                     Dict.Add("Auto backup");
-                    Log.Out("Auto backup enabled");
+                    Log.Out("[ServerTools] Auto backup enabled");
                 }
             }
             else if (Dict.Contains("Auto backup") && !_initiating)
             {
                 Dict.Remove("Auto backup");
-                Log.Out("Auto backup disabled");
+                Log.Out("[ServerTools] Auto backup disabled");
             }
             if (AutoPartyInvite.IsEnabled)
             {
                 if (!Dict.Contains("Auto party invite"))
                 {
                     Dict.Add("Auto party invite");
-                    Log.Out("Auto party invite enabled");
+                    Log.Out("[ServerTools] Auto party invite enabled");
                 }
             }
             else if (Dict.Contains("Auto party invite") && !_initiating)
             {
                 Dict.Remove("Auto party invite");
-                Log.Out("Auto party invite disabled");
+                Log.Out("[ServerTools] Auto party invite disabled");
             }
             if (AutoRestart.IsEnabled)
             {
                 if (!Dict.Contains("Auto restart"))
                 {
                     Dict.Add("Auto restart");
-                    Log.Out("Auto restart enabled");
+                    Log.Out("[ServerTools] Auto restart enabled");
                 }
             }
             else if (Dict.Contains("Auto restart") && !_initiating)
             {
                 Dict.Remove("Auto restart");
-                Log.Out("Auto restart disabled");
+                Log.Out("[ServerTools] Auto restart disabled");
             }
             if (AutoSaveWorld.IsEnabled)
             {
                 if (!Dict.Contains("Auto save world"))
                 {
                     Dict.Add("Auto save world");
-                    Log.Out("Auto save world enabled");
+                    Log.Out("[ServerTools] Auto save world enabled");
                 }
             }
             else if (Dict.Contains("Auto save world") && !_initiating)
             {
                 Dict.Remove("Auto save world");
-                Log.Out("Auto save world disabled");
+                Log.Out("[ServerTools] Auto save world disabled");
             }
             if (Badwords.IsEnabled)
             {
                 if (!Dict.Contains("Badword filter"))
                 {
                     Dict.Add("Badword filter");
-                    Log.Out("Badword filter enabled");
+                    Log.Out("[ServerTools] Badword filter enabled");
                 }
             }
             else if (Dict.Contains("Badword filter") && !_initiating)
             {
                 Dict.Remove("Badword filter");
-                Log.Out("Badword filter disabled");
+                Log.Out("[ServerTools] Badword filter disabled");
             }
             if (Bank.IsEnabled)
             {
                 if (!Dict.Contains("Bank"))
                 {
                     Dict.Add("Bank");
-                    Log.Out("Bank enabled");
+                    Log.Out("[ServerTools] Bank enabled");
                 }
             }
             else if (Dict.Contains("Bank") && !_initiating)
             {
                 Dict.Remove("Bank");
-                Log.Out("Bank disabled");
+                Log.Out("[ServerTools] Bank disabled");
             }
             if (ExitCommand.IsEnabled)
             {
                 if (!Dict.Contains("Battle logger"))
                 {
                     Dict.Add("Battle logger");
-                    Log.Out("Battle logger enabled");
+                    Log.Out("[ServerTools] Battle logger enabled");
                 }
             }
             else if (Dict.Contains("Battle logger") && !_initiating)
             {
                 Dict.Remove("Battle logger");
-                Log.Out("Battle logger disabled");
+                Log.Out("[ServerTools] Battle logger disabled");
             }
             if (Bed.IsEnabled)
             {
                 if (!Dict.Contains("Bed"))
                 {
                     Dict.Add("Bed");
-                    Log.Out("Bed enabled");
+                    Log.Out("[ServerTools] Bed enabled");
                 }
             }
             else if (Dict.Contains("Bed") && !_initiating)
             {
                 Dict.Remove("Bed");
-                Log.Out("Bed disabled");
+                Log.Out("[ServerTools] Bed disabled");
             }
             if (BlackJack.IsEnabled)
             {
                 if (!Dict.Contains("Black jack"))
                 {
                     Dict.Add("Black jack");
-                    Log.Out("Black jack enabled");
+                    Log.Out("[ServerTools] Black jack enabled");
                 }
             }
             else if (Dict.Contains("Black jack") && !_initiating)
             {
                 Dict.Remove("Black jack");
-                Log.Out("Black jack disabled");
+                Log.Out("[ServerTools] Black jack disabled");
             }
             if (BlockLogger.IsEnabled)
             {
                 if (!Dict.Contains("Block logger"))
                 {
                     Dict.Add("Block logger");
-                    Log.Out("Block logger enabled");
+                    Log.Out("[ServerTools] Block logger enabled");
                 }
             }
             else if (Dict.Contains("Block logger") && !_initiating)
             {
                 Dict.Remove("Block logger");
-                Log.Out("Block logger disabled");
+                Log.Out("[ServerTools] Block logger disabled");
             }
-            if (Pickup.IsEnabled)
+            if (BlockPickup.IsEnabled)
             {
                 if (!Dict.Contains("Block pickup"))
                 {
                     Dict.Add("Block pickup");
-                    Log.Out("Block pickup enabled");
+                    Log.Out("[ServerTools] Block pickup enabled");
                 }
             }
             else if (Dict.Contains("Block pickup") && !_initiating)
             {
                 Dict.Remove("Block pickup");
-                Log.Out("Block pickup disabled");
+                Log.Out("[ServerTools] Block pickup disabled");
             }
             if (Bloodmoon.IsEnabled)
             {
                 if (!Dict.Contains("Bloodmoon"))
                 {
                     Dict.Add("Bloodmoon");
-                    Log.Out("Bloodmoon enabled");
+                    Log.Out("[ServerTools] Bloodmoon enabled");
                 }
             }
             else if (Dict.Contains("Bloodmoon") && !_initiating)
             {
                 Dict.Remove("Bloodmoon");
-                Log.Out("Bloodmoon disabled");
+                Log.Out("[ServerTools] Bloodmoon disabled");
             }
             if (BloodmoonWarrior.IsEnabled)
             {
                 if (!Dict.Contains("Bloodmoon warrior"))
                 {
                     Dict.Add("Bloodmoon warrior");
-                    Log.Out("Bloodmoon warrior enabled");
+                    Log.Out("[ServerTools] Bloodmoon warrior enabled");
                 }
             }
             else if (Dict.Contains("Bloodmoon warrior") && !_initiating)
             {
                 Dict.Remove("Bloodmoon warrior");
-                Log.Out("Bloodmoon warrior disabled");
+                Log.Out("[ServerTools] Bloodmoon warrior disabled");
             }
             if (BotResponse.IsEnabled)
             {
                 if (!Dict.Contains("Bot response"))
                 {
                     Dict.Add("Bot response");
-                    Log.Out("Bot response enabled");
+                    Log.Out("[ServerTools] Bot response enabled");
                 }
             }
             else if (Dict.Contains("Bot response") && !_initiating)
             {
                 Dict.Remove("Bot response");
-                Log.Out("Bot response disabled");
+                Log.Out("[ServerTools] Bot response disabled");
             }
             if (Bounties.IsEnabled)
             {
                 if (!Dict.Contains("Bounties"))
                 {
                     Dict.Add("Bounties");
-                    Log.Out("Bounties enabled");
+                    Log.Out("[ServerTools] Bounties enabled");
                 }
             }
             else if (Dict.Contains("Bounties") && !_initiating)
             {
                 Dict.Remove("Bounties");
-                Log.Out("Bounties disabled");
+                Log.Out("[ServerTools] Bounties disabled");
             }
             if (BreakTime.IsEnabled)
             {
                 if (!Dict.Contains("Break time"))
                 {
                     Dict.Add("Break time");
-                    Log.Out("Break time enabled");
+                    Log.Out("[ServerTools] Break time enabled");
                 }
             }
             else if (Dict.Contains("Break time") && !_initiating)
             {
                 Dict.Remove("Break time");
-                Log.Out("Break time disabled");
+                Log.Out("[ServerTools] Break time disabled");
             }
             if (ChatCommandLog.IsEnabled)
             {
                 if (!Dict.Contains("Chat command log"))
                 {
                     Dict.Add("Chat command log");
-                    Log.Out("Chat command log enabled");
+                    Log.Out("[ServerTools] Chat command log enabled");
                 }
             }
             else if (Dict.Contains("Chat command log") && !_initiating)
             {
                 Dict.Remove("Chat command log");
-                Log.Out("Chat command log disabled");
+                Log.Out("[ServerTools] Chat command log disabled");
             }
             if (ChatHook.ChatFlood)
             {
                 if (!Dict.Contains("Chat flood protection"))
                 {
                     Dict.Add("Chat flood protection");
-                    Log.Out("Chat flood protection enabled");
+                    Log.Out("[ServerTools] Chat flood protection enabled");
                 }
             }
             else if (Dict.Contains("Chat flood protection") && !_initiating)
             {
                 Dict.Remove("Chat flood protection");
-                Log.Out("Chat flood protection disabled");
+                Log.Out("[ServerTools] Chat flood protection disabled");
             }
             if (ChatLog.IsEnabled)
             {
                 if (!Dict.Contains("Chat log"))
                 {
                     Dict.Add("Chat log");
-                    Log.Out("Chat log enabled");
+                    Log.Out("[ServerTools] Chat log enabled");
                 }
             }
             else if (Dict.Contains("Chat log") && !_initiating)
             {
                 Dict.Remove("Chat log");
-                Log.Out("Chat log disabled");
+                Log.Out("[ServerTools] Chat log disabled");
             }
             if (ClanManager.IsEnabled)
             {
                 if (!Dict.Contains("Clan manager"))
                 {
                     Dict.Add("Clan manager");
-                    Log.Out("Clan manager enabled");
+                    Log.Out("[ServerTools] Clan manager enabled");
                 }
             }
             else if (Dict.Contains("Clan manager") && !_initiating)
             {
                 Dict.Remove("Clan manager");
-                Log.Out("Clan manager disabled");
+                Log.Out("[ServerTools] Clan manager disabled");
             }
             if (CleanBin.IsEnabled)
             {
                 if (!Dict.Contains("Clean bin"))
                 {
                     Dict.Add("Clean bin");
-                    Log.Out("Clean bin enabled");
+                    Log.Out("[ServerTools] Clean bin enabled");
                 }
             }
             else if (Dict.Contains("Clean bin") && !_initiating)
             {
                 Dict.Remove("Clean bin");
-                Log.Out("Clean bin disabled");
+                Log.Out("[ServerTools] Clean bin disabled");
             }
             if (ConsoleCommandLog.IsEnabled)
             {
                 if (!Dict.Contains("Console command log"))
                 {
                     Dict.Add("Console command log");
-                    Log.Out("Console command log enabled");
+                    Log.Out("[ServerTools] Console command log enabled");
                 }
             }
             else if (Dict.Contains("Console command log") && !_initiating)
             {
                 Dict.Remove("Console command log");
-                Log.Out("Console command log disabled");
+                Log.Out("[ServerTools] Console command log disabled");
             }
             if (CustomCommands.IsEnabled)
             {
                 if (!Dict.Contains("Custom commands"))
                 {
                     Dict.Add("Custom commands");
-                    Log.Out("Custom commands enabled");
+                    Log.Out("[ServerTools] Custom commands enabled");
                 }
             }
             else if (Dict.Contains("Custom commands") && !_initiating)
             {
                 Dict.Remove("Custom commands");
-                Log.Out("Custom commands disabled");
+                Log.Out("[ServerTools] Custom commands disabled");
             }
             if (Day7.IsEnabled)
             {
                 if (!Dict.Contains("Day 7"))
                 {
                     Dict.Add("Day 7");
-                    Log.Out("Day 7 enabled");
+                    Log.Out("[ServerTools] Day 7 enabled");
                 }
             }
             else if (Dict.Contains("Day 7") && !_initiating)
             {
                 Dict.Remove("Day 7");
-                Log.Out("Day 7 disabled");
+                Log.Out("[ServerTools] Day 7 disabled");
             }
             if (Died.IsEnabled)
             {
                 if (!Dict.Contains("Died"))
                 {
                     Dict.Add("Died");
-                    Log.Out("Died enabled");
+                    Log.Out("[ServerTools] Died enabled");
                 }
             }
             else if (Dict.Contains("Died") && !_initiating)
             {
                 Dict.Remove("Died");
-                Log.Out("Died disabled");
+                Log.Out("[ServerTools] Died disabled");
             }
             if (DiscordBot.IsEnabled)
             {
                 if (!Dict.Contains("Discord bot"))
                 {
                     Dict.Add("Discord bot");
-                    Log.Out("Discord bot enabled");
+                    Log.Out("[ServerTools] Discord bot enabled");
                 }
             }
             else if (Dict.Contains("Discord bot") && !_initiating)
             {
                 Dict.Remove("Discord bot");
-                Log.Out("Discord bot disabled");
+                Log.Out("[ServerTools] Discord bot disabled");
             }
             if (DiscordLink.IsEnabled)
             {
                 if (!Dict.Contains("Discord link"))
                 {
                     Dict.Add("Discord link");
-                    Log.Out("Discord link enabled");
+                    Log.Out("[ServerTools] Discord link enabled");
                 }
             }
             else if (Dict.Contains("Discord link") && !_initiating)
             {
                 Dict.Remove("Discord link");
-                Log.Out("Discord link disabled");
+                Log.Out("[ServerTools] Discord link disabled");
             }
             if (DroppedBagProtection.IsEnabled)
             {
                 if (!Dict.Contains("Dropped bag protection"))
                 {
                     Dict.Add("Dropped bag protection");
-                    Log.Out("Dropped bag protection enabled");
+                    Log.Out("[ServerTools] Dropped bag protection enabled");
                 }
             }
             else if (Dict.Contains("Dropped bag protection") && !_initiating)
             {
                 Dict.Remove("Dropped bag protection");
-                Log.Out("Dropped bag protection disabled");
+                Log.Out("[ServerTools] Dropped bag protection disabled");
             }
             if (EntityCleanup.IsEnabled)
             {
                 if (!Dict.Contains("Entity cleanup"))
                 {
                     Dict.Add("Entity cleanup");
-                    Log.Out("Entity cleanup enabled");
+                    Log.Out("[ServerTools] Entity cleanup enabled");
                 }
             }
             else if (Dict.Contains("Entity cleanup") && !_initiating)
             {
                 Dict.Remove("Entity cleanup");
-                Log.Out("Entity cleanup disabled");
+                Log.Out("[ServerTools] Entity cleanup disabled");
             }
             if (EntityCleanup.Underground)
             {
                 if (!Dict.Contains("Entity cleanup underground"))
                 {
                     Dict.Add("Entity cleanup underground");
-                    Log.Out("Entity cleanup underground enabled");
+                    Log.Out("[ServerTools] Entity cleanup underground enabled");
                 }
             }
             else if (Dict.Contains("Entity cleanup underground") && !_initiating)
             {
                 Dict.Remove("Entity cleanup underground");
-                Log.Out("Entity cleanup underground disabled");
+                Log.Out("[ServerTools] Entity cleanup underground disabled");
             }
             if (EntityCleanup.FallingTreeEnabled)
             {
                 if (!Dict.Contains("Entity falling tree cleanup"))
                 {
                     Dict.Add("Entity falling tree cleanup");
-                    Log.Out("Entity falling tree cleanup enabled");
+                    Log.Out("[ServerTools] Entity falling tree cleanup enabled");
                 }
             }
             else if (Dict.Contains("Entity falling tree cleanup") && !_initiating)
             {
                 Dict.Remove("Entity falling tree cleanup");
-                Log.Out("Entity falling tree cleanup disabled");
+                Log.Out("[ServerTools] Entity falling tree cleanup disabled");
             }
             if (FallingBlocks.IsEnabled)
             {
                 if (!Dict.Contains("Falling blocks remover"))
                 {
                     Dict.Add("Falling blocks remover");
-                    Log.Out("Falling blocks remover enabled");
+                    Log.Out("[ServerTools] Falling blocks remover enabled");
                 }
             }
             else if (Dict.Contains("Falling blocks remover") && !_initiating)
             {
                 Dict.Remove("Falling blocks remover");
-                Log.Out("Falling blocks remover disabled");
+                Log.Out("[ServerTools] Falling blocks remover disabled");
             }
             if (FirstClaimBlock.IsEnabled)
             {
                 if (!Dict.Contains("First claim block"))
                 {
                     Dict.Add("First claim block");
-                    Log.Out("First claim block enabled");
+                    Log.Out("[ServerTools] First claim block enabled");
                 }
             }
             else if (Dict.Contains("First claim block") && !_initiating)
             {
                 Dict.Remove("First claim block");
-                Log.Out("First claim block disabled");
+                Log.Out("[ServerTools] First claim block disabled");
             }
             if (Fps.IsEnabled)
             {
                 if (!Dict.Contains("FPS"))
                 {
                     Dict.Add("FPS");
-                    Log.Out("FPS enabled");
+                    Log.Out("[ServerTools] FPS enabled");
                 }
             }
             else if (Dict.Contains("FPS") && !_initiating)
             {
                 Dict.Remove("FPS");
-                Log.Out("FPS disabled");
+                Log.Out("[ServerTools] FPS disabled");
             }
             if (FriendTeleport.IsEnabled)
             {
                 if (!Dict.Contains("Friend teleport"))
                 {
                     Dict.Add("Friend teleport");
-                    Log.Out("Friend teleport enabled");
+                    Log.Out("[ServerTools] Friend teleport enabled");
                 }
             }
             else if (Dict.Contains("Friend teleport") && !_initiating)
             {
                 Dict.Remove("Friend teleport");
-                Log.Out("Friend teleport disabled");
+                Log.Out("[ServerTools] Friend teleport disabled");
             }
             if (Gamble.IsEnabled)
             {
                 if (!Dict.Contains("Gamble"))
                 {
                     Dict.Add("Gamble");
-                    Log.Out("Gamble enabled");
+                    Log.Out("[ServerTools] Gamble enabled");
                 }
             }
             else if (Dict.Contains("Gamble") && !_initiating)
             {
                 Dict.Remove("Gamble");
-                Log.Out("Gamble disabled");
+                Log.Out("[ServerTools] Gamble disabled");
             }
             if (Gimme.IsEnabled)
             {
                 if (!Dict.Contains("Gimme"))
                 {
                     Dict.Add("Gimme");
-                    Log.Out("Gimme enabled");
+                    Log.Out("[ServerTools] Gimme enabled");
                 }
             }
             else if (Dict.Contains("Gimme") && !_initiating)
             {
                 Dict.Remove("Gimme");
-                Log.Out("Gimme disabled");
+                Log.Out("[ServerTools] Gimme disabled");
             }
             if (HighPingKicker.IsEnabled)
             {
                 if (!Dict.Contains("High ping kicker"))
                 {
                     Dict.Add("High ping kicker");
-                    Log.Out("High ping kicker enabled");
+                    Log.Out("[ServerTools] High ping kicker enabled");
                 }
             }
             else if (Dict.Contains("High ping kicker") && !_initiating)
             {
                 Dict.Remove("High ping kicker");
-                Log.Out("High ping kicker disabled");
+                Log.Out("[ServerTools] High ping kicker disabled");
             }
             if (Hordes.IsEnabled)
             {
                 if (!Dict.Contains("Hordes"))
                 {
                     Dict.Add("Hordes");
-                    Log.Out("Hordes enabled");
+                    Log.Out("[ServerTools] Hordes enabled");
                 }
             }
             else if (Dict.Contains("Hordes") && !_initiating)
             {
                 Dict.Remove("Hordes");
-                Log.Out("Hordes disabled");
+                Log.Out("[ServerTools] Hordes disabled");
             }
             if (InfoTicker.IsEnabled)
             {
                 if (!Dict.Contains("Info ticker"))
                 {
                     Dict.Add("Info ticker");
-                    Log.Out("Info ticker enabled");
+                    Log.Out("[ServerTools] Info ticker enabled");
                 }
             }
             else if (Dict.Contains("Info ticker") && !_initiating)
             {
                 Dict.Remove("Info ticker");
-                Log.Out("Info ticker disabled");
+                Log.Out("[ServerTools] Info ticker disabled");
             }
             if (KickVote.IsEnabled)
             {
                 if (!Dict.Contains("Kick vote"))
                 {
                     Dict.Add("Kick vote");
-                    Log.Out("Kick vote enabled");
+                    Log.Out("[ServerTools] Kick vote enabled");
                 }
             }
             else if (Dict.Contains("Kick vote") && !_initiating)
             {
                 Dict.Remove("Kick vote");
-                Log.Out("Kick vote disabled");
+                Log.Out("[ServerTools] Kick vote disabled");
             }
             if (KillNotice.IsEnabled)
             {
                 if (!Dict.Contains("Kill notice"))
                 {
                     Dict.Add("Kill notice");
-                    Log.Out("Kill notice enabled");
+                    Log.Out("[ServerTools] Kill notice enabled");
                 }
             }
             else if (Dict.Contains("Kill notice") && !_initiating)
             {
                 Dict.Remove("Kill notice");
-                Log.Out("Kill notice disabled");
+                Log.Out("[ServerTools] Kill notice disabled");
             }
             if (LevelUp.IsEnabled)
             {
                 if (!Dict.Contains("Level up"))
                 {
                     Dict.Add("Level up");
-                    Log.Out("Level up enabled");
+                    Log.Out("[ServerTools] Level up enabled");
                 }
             }
             else if (Dict.Contains("Level up") && !_initiating)
             {
                 Dict.Remove("Level up");
-                Log.Out("Level up disabled");
+                Log.Out("[ServerTools] Level up disabled");
             }
             if (Lobby.IsEnabled)
             {
                 if (!Dict.Contains("Lobby"))
                 {
                     Dict.Add("Lobby");
-                    Log.Out("Lobby enabled");
+                    Log.Out("[ServerTools] Lobby enabled");
                 }
             }
             else if (Dict.Contains("Lobby") && !_initiating)
             {
                 Dict.Remove("Lobby");
-                Log.Out("Lobby disabled");
+                Log.Out("[ServerTools] Lobby disabled");
             }
             if (Loc.IsEnabled)
             {
                 if (!Dict.Contains("Location"))
                 {
                     Dict.Add("Location");
-                    Log.Out("Location enabled");
+                    Log.Out("[ServerTools] Location enabled");
                 }
             }
             else if (Dict.Contains("Location") && !_initiating)
             {
                 Dict.Remove("Location");
-                Log.Out("Location disabled");
+                Log.Out("[ServerTools] Location disabled");
             }
             if (LoginNotice.IsEnabled)
             {
                 if (!Dict.Contains("Login notice"))
                 {
                     Dict.Add("Login notice");
-                    Log.Out("Login notice enabled");
+                    Log.Out("[ServerTools] Login notice enabled");
                 }
             }
             else if (Dict.Contains("Login notice") && !_initiating)
             {
                 Dict.Remove("Login notice");
-                Log.Out("Login notice disabled");
+                Log.Out("[ServerTools] Login notice disabled");
             }
             if (Lottery.IsEnabled)
             {
                 if (!Dict.Contains("Lottery"))
                 {
                     Dict.Add("Lottery");
-                    Log.Out("Lottery enabled");
+                    Log.Out("[ServerTools] Lottery enabled");
                 }
             }
             else if (Dict.Contains("Lottery") && !_initiating)
             {
                 Dict.Remove("Lottery");
-                Log.Out("Lottery disabled");
+                Log.Out("[ServerTools] Lottery disabled");
             }
             if (Market.IsEnabled)
             {
                 if (!Dict.Contains("Market"))
                 {
                     Dict.Add("Market");
-                    Log.Out("Market enabled");
+                    Log.Out("[ServerTools] Market enabled");
                 }
             }
             else if (Dict.Contains("Market") && !_initiating)
             {
                 Dict.Remove("Market");
-                Log.Out("Market disabled");
+                Log.Out("[ServerTools] Market disabled");
             }
             if (Motd.IsEnabled)
             {
                 if (!Dict.Contains("Motd"))
                 {
                     Dict.Add("Motd");
-                    Log.Out("Motd enabled");
+                    Log.Out("[ServerTools] Motd enabled");
                 }
             }
             else if (Dict.Contains("Motd") && !_initiating)
             {
                 Dict.Remove("Motd");
-                Log.Out("Motd disabled");
+                Log.Out("[ServerTools] Motd disabled");
             }
             if (Mute.IsEnabled)
             {
                 if (!Dict.Contains("Mute"))
                 {
                     Dict.Add("Mute");
-                    Log.Out("Mute enabled");
+                    Log.Out("[ServerTools] Mute enabled");
                 }
             }
             else if (Dict.Contains("Mute") && !_initiating)
             {
                 Dict.Remove("Mute");
-                Log.Out("Mute disabled");
+                Log.Out("[ServerTools] Mute disabled");
             }
             if (MuteVote.IsEnabled)
             {
                 if (!Dict.Contains("Mute vote"))
                 {
                     Dict.Add("Mute vote");
-                    Log.Out("Mute vote enabled");
+                    Log.Out("[ServerTools] Mute vote enabled");
                 }
             }
             else if (Dict.Contains("Mute vote") && !_initiating)
             {
                 Dict.Remove("Mute vote");
-                Log.Out("Mute vote disabled");
+                Log.Out("[ServerTools] Mute vote disabled");
             }
             if (NewPlayer.IsEnabled)
             {
                 if (!Dict.Contains("New player"))
                 {
                     Dict.Add("New player");
-                    Log.Out("New player enabled");
+                    Log.Out("[ServerTools] New player enabled");
                 }
             }
             else if (Dict.Contains("New player") && !_initiating)
             {
                 Dict.Remove("New player");
-                Log.Out("New player disabled");
+                Log.Out("[ServerTools] New player disabled");
             }
             if (NewPlayerProtection.IsEnabled)
             {
                 if (!Dict.Contains("New player protection"))
                 {
                     Dict.Add("New player protection");
-                    Log.Out("New player protection enabled");
+                    Log.Out("[ServerTools] New player protection enabled");
                 }
             }
             else if (Dict.Contains("New player protection") && !_initiating)
             {
                 Dict.Remove("New player protection");
-                Log.Out("New player protection disabled");
+                Log.Out("[ServerTools] New player protection disabled");
             }
             if (NewSpawnTele.IsEnabled)
             {
                 if (!Dict.Contains("New player teleport"))
                 {
                     Dict.Add("New player teleport");
-                    Log.Out("New player teleport enabled");
+                    Log.Out("[ServerTools] New player teleport enabled");
                 }
             }
             else if (Dict.Contains("New player teleport") && !_initiating)
             {
                 Dict.Remove("New player teleport");
-                Log.Out("New player teleport disabled");
+                Log.Out("[ServerTools] New player teleport disabled");
             }
             if (NightAlert.IsEnabled)
             {
                 if (!Dict.Contains("Night alert"))
                 {
                     Dict.Add("Night alert");
-                    Log.Out("Night alert enabled");
+                    Log.Out("[ServerTools] Night alert enabled");
                 }
             }
             else if (Dict.Contains("Night alert") && !_initiating)
             {
                 Dict.Remove("Night alert");
-                Log.Out("Night alert disabled");
+                Log.Out("[ServerTools] Night alert disabled");
             }
             if (PersistentOperations.No_Vehicle_Pickup)
             {
                 if (!Dict.Contains("No vehicle pickup"))
                 {
                     Dict.Add("No vehicle pickup");
-                    Log.Out("No vehicle pickup enabled");
+                    Log.Out("[ServerTools] No vehicle pickup enabled");
                 }
             }
             else if (Dict.Contains("No vehicle pickup") && !_initiating)
             {
                 Dict.Remove("No vehicle pickup");
-                Log.Out("No vehicle pickup disabled");
+                Log.Out("[ServerTools] No vehicle pickup disabled");
             }
             if (POIProtection.IsEnabled)
             {
                 if (!Dict.Contains("POI protection"))
                 {
                     Dict.Add("POI protection");
-                    Log.Out("POI protection enabled");
+                    Log.Out("[ServerTools] POI protection enabled");
                 }
             }
             if (PlayerList.IsEnabled)
@@ -1081,325 +1081,325 @@ namespace ServerTools
                 if (!Dict.Contains("Player list"))
                 {
                     Dict.Add("Player list");
-                    Log.Out("Player list enabled");
+                    Log.Out("[ServerTools] Player list enabled");
                 }
             }
             else if (Dict.Contains("Player list") && !_initiating)
             {
                 Dict.Remove("Player list");
-                Log.Out("Player list disabled");
+                Log.Out("[ServerTools] Player list disabled");
             }
             if (POIProtection.IsEnabled)
             {
                 if (!Dict.Contains("POI protection"))
                 {
                     Dict.Add("POI protection");
-                    Log.Out("POI protection enabled");
+                    Log.Out("[ServerTools] POI protection enabled");
                 }
             }
             else if (Dict.Contains("POI protection") && !_initiating)
             {
                 Dict.Remove("POI protection");
-                Log.Out("POI protection disabled");
+                Log.Out("[ServerTools] POI protection disabled");
             }
             if (Prayer.IsEnabled)
             {
                 if (!Dict.Contains("Prayer"))
                 {
                     Dict.Add("Prayer");
-                    Log.Out("Prayer enabled");
+                    Log.Out("[ServerTools] Prayer enabled");
                 }
             }
             else if (Dict.Contains("Prayer") && !_initiating)
             {
                 Dict.Remove("Prayer");
-                Log.Out("Prayer disabled");
+                Log.Out("[ServerTools] Prayer disabled");
             }
             if (Whisper.IsEnabled)
             {
                 if (!Dict.Contains("Private message"))
                 {
                     Dict.Add("Private message");
-                    Log.Out("Private message enabled");
+                    Log.Out("[ServerTools] Private message enabled");
                 }
             }
             else if (Dict.Contains("Private message") && !_initiating)
             {
                 Dict.Remove("Private message");
-                Log.Out("Private message disabled");
+                Log.Out("[ServerTools] Private message disabled");
             }
             if (Waypoints.Public_Waypoints)
             {
                 if (!Dict.Contains("Public waypoints"))
                 {
                     Dict.Add("Public waypoints");
-                    Log.Out("Public waypoints enabled");
+                    Log.Out("[ServerTools] Public waypoints enabled");
                 }
             }
             else if (Dict.Contains("Public waypoints") && !_initiating)
             {
                 Dict.Remove("Public waypoints");
-                Log.Out("Public waypoints disabled");
+                Log.Out("[ServerTools] Public waypoints disabled");
             }
             if (RealWorldTime.IsEnabled)
             {
                 if (!Dict.Contains("Real world time"))
                 {
                     Dict.Add("Real world time");
-                    Log.Out("Real world time enabled");
+                    Log.Out("[ServerTools] Real world time enabled");
                 }
             }
             else if (Dict.Contains("Real world time") && !_initiating)
             {
                 Dict.Remove("Real world time");
-                Log.Out("Real world time disabled");
+                Log.Out("[ServerTools] Real world time disabled");
             }
             if (ReservedSlots.IsEnabled)
             {
                 if (!Dict.Contains("Reserved slots"))
                 {
                     Dict.Add("Reserved slots");
-                    Log.Out("Reserved slots enabled");
+                    Log.Out("[ServerTools] Reserved slots enabled");
                 }
             }
             else if (Dict.Contains("Reserved slots") && !_initiating)
             {
                 Dict.Remove("Reserved slots");
-                Log.Out("Reserved slots disabled");
+                Log.Out("[ServerTools] Reserved slots disabled");
             }
             if (ScoutPlayer.IsEnabled)
             {
                 if (!Dict.Contains("Scout player"))
                 {
                     Dict.Add("Scout player");
-                    Log.Out("Scout player enabled");
+                    Log.Out("[ServerTools] Scout player enabled");
                 }
             }
             else if (Dict.Contains("Scout player") && !_initiating)
             {
                 Dict.Remove("Scout player");
-                Log.Out("Scout player disabled");
+                Log.Out("[ServerTools] Scout player disabled");
             }
             if (Shutdown.IsEnabled)
             {
                 if (!Dict.Contains("Shutdown"))
                 {
                     Dict.Add("Shutdown");
-                    Log.Out("Shutdown enabled");
+                    Log.Out("[ServerTools] Shutdown enabled");
                 }
             }
             else if (Dict.Contains("Shutdown") && !_initiating)
             {
                 Dict.Remove("Shutdown");
-                Log.Out("Shutdown disabled");
+                Log.Out("[ServerTools] Shutdown disabled");
             }
             if (Homes.IsEnabled)
             {
                 if (!Dict.Contains("Homes"))
                 {
                     Dict.Add("Homes");
-                    Log.Out("Homes enabled");
+                    Log.Out("[ServerTools] Homes enabled");
                 }
             }
             else if (Dict.Contains("Homes") && !_initiating)
             {
                 Dict.Remove("Homes");
-                Log.Out("Homes disabled");
+                Log.Out("[ServerTools] Homes disabled");
             }
             if (Shop.IsEnabled)
             {
                 if (!Dict.Contains("Shop"))
                 {
                     Dict.Add("Shop");
-                    Log.Out("Shop enabled");
+                    Log.Out("[ServerTools] Shop enabled");
                 }
             }
             else if (Dict.Contains("Shop") && !_initiating)
             {
                 Dict.Remove("Shop");
-                Log.Out("Shop disabled");
+                Log.Out("[ServerTools] Shop disabled");
             }
             if (SleeperRespawn.IsEnabled)
             {
                 if (!Dict.Contains("Sleeper respawn"))
                 {
                     Dict.Add("Sleeper respawn");
-                    Log.Out("Sleeper respawn enabled");
+                    Log.Out("[ServerTools] Sleeper respawn enabled");
                 }
             }
             else if (Dict.Contains("Sleeper respawn") && !_initiating)
             {
                 Dict.Remove("Sleeper respawn");
-                Log.Out("Sleeper respawn disabled");
+                Log.Out("[ServerTools] Sleeper respawn disabled");
             }
             if (StartingItems.IsEnabled)
             {
                 if (!Dict.Contains("Starting items"))
                 {
                     Dict.Add("Starting items");
-                    Log.Out("Starting items enabled");
+                    Log.Out("[ServerTools] Starting items enabled");
                 }
             }
             else if (Dict.Contains("Starting items") && !_initiating)
             {
                 Dict.Remove("Starting items");
-                Log.Out("Starting items disabled");
+                Log.Out("[ServerTools] Starting items disabled");
             }
             if (Suicide.IsEnabled)
             {
                 if (!Dict.Contains("Suicide"))
                 {
                     Dict.Add("Suicide");
-                    Log.Out("Suicide enabled");
+                    Log.Out("[ServerTools] Suicide enabled");
                 }
             }
             else if (Dict.Contains("Suicide") && !_initiating)
             {
                 Dict.Remove("Suicide");
-                Log.Out("Suicide disabled");
+                Log.Out("[ServerTools] Suicide disabled");
             }
             if (Track.IsEnabled)
             {
                 if (!Dict.Contains("Tracking"))
                 {
                     Dict.Add("Tracking");
-                    Log.Out("Tracking enabled");
+                    Log.Out("[ServerTools] Tracking enabled");
                 }
             }
             else if (Dict.Contains("Tracking") && !_initiating)
             {
                 Dict.Remove("Tracking");
-                Log.Out("Tracking disabled");
+                Log.Out("[ServerTools] Tracking disabled");
             }
             if (Travel.IsEnabled)
             {
                 if (!Dict.Contains("Travel"))
                 {
                     Dict.Add("Travel");
-                    Log.Out("Travel enabled");
+                    Log.Out("[ServerTools] Travel enabled");
                 }
             }
             else if (Dict.Contains("Travel") && !_initiating)
             {
                 Dict.Remove("Travel");
-                Log.Out("Travel disabled");
+                Log.Out("[ServerTools] Travel disabled");
             }
             if (VehicleRecall.IsEnabled)
             {
                 if (!Dict.Contains("Vehicle recall"))
                 {
                     Dict.Add("Vehicle recall");
-                    Log.Out("Vehicle recall enabled");
+                    Log.Out("[ServerTools] Vehicle recall enabled");
                 }
             }
             else if (Dict.Contains("Vehicle recall") && !_initiating)
             {
                 Dict.Remove("Vehicle recall");
-                Log.Out("Vehicle recall disabled");
+                Log.Out("[ServerTools] Vehicle recall disabled");
             }
-            if (VoteReward.IsEnabled)
+            if (Voting.IsEnabled)
             {
-                if (!Dict.Contains("Vote reward"))
+                if (!Dict.Contains("Voting"))
                 {
-                    Dict.Add("Vote reward");
-                    Log.Out("Vote reward enabled");
+                    Dict.Add("Voting");
+                    Log.Out("[ServerTools] Voting enabled");
                 }
             }
-            else if (Dict.Contains("Vote reward") && !_initiating)
+            else if (Dict.Contains("Voting") && !_initiating)
             {
-                Dict.Remove("Vote reward");
-                Log.Out("Vote reward disabled");
+                Dict.Remove("Voting");
+                Log.Out("[ServerTools] Voting disabled");
             }
             if (Wall.IsEnabled)
             {
                 if (!Dict.Contains("Wall"))
                 {
                     Dict.Add("Wall");
-                    Log.Out("Wall enabled");
+                    Log.Out("[ServerTools] Wall enabled");
                 }
             }
             else if (Dict.Contains("Wall") && !_initiating)
             {
                 Dict.Remove("Wall");
-                Log.Out("Wall disabled");
+                Log.Out("[ServerTools] Wall disabled");
             }
             if (Wallet.IsEnabled)
             {
                 if (!Dict.Contains("Wallet"))
                 {
                     Dict.Add("Wallet");
-                    Log.Out("Wallet enabled");
+                    Log.Out("[ServerTools] Wallet enabled");
                 }
             }
             else if (Dict.Contains("Wallet") && !_initiating)
             {
                 Dict.Remove("Wallet");
-                Log.Out("Wallet disabled");
+                Log.Out("[ServerTools] Wallet disabled");
             }
             if (Waypoints.IsEnabled)
             {
                 if (!Dict.Contains("Waypoints"))
                 {
                     Dict.Add("Waypoints");
-                    Log.Out("Waypoints enabled");
+                    Log.Out("[ServerTools] Waypoints enabled");
                 }
             }
             else if (Dict.Contains("Waypoints") && !_initiating)
             {
                 Dict.Remove("Waypoints");
-                Log.Out("Waypoints disabled");
+                Log.Out("[ServerTools] Waypoints disabled");
             }
             if (WebAPI.IsEnabled)
             {
                 if (!Dict.Contains("Web API"))
                 {
                     Dict.Add("Web API");
-                    Log.Out("Web API enabled");
+                    Log.Out("[ServerTools] Web API enabled");
                 }
             }
             else if (Dict.Contains("Web API") && !_initiating)
             {
                 Dict.Remove("Web API");
-                Log.Out("Web API disabled");
+                Log.Out("[ServerTools] Web API disabled");
             }
             if (WebPanel.IsEnabled)
             {
                 if (!Dict.Contains("Web panel"))
                 {
                     Dict.Add("Web panel");
-                    Log.Out("Web panel enabled");
+                    Log.Out("[ServerTools] Web panel enabled");
                 }
             }
             else if (Dict.Contains("Web panel") && !_initiating)
             {
                 Dict.Remove("Web panel");
-                Log.Out("Web panel disabled");
+                Log.Out("[ServerTools] Web panel disabled");
             }
             if (WorkstationLock.IsEnabled)
             {
                 if (!Dict.Contains("Workstation lock"))
                 {
                     Dict.Add("Workstation lock");
-                    Log.Out("Workstation lock enabled");
+                    Log.Out("[ServerTools] Workstation lock enabled");
                 }
             }
             else if (Dict.Contains("Workstation lock") && !_initiating)
             {
                 Dict.Remove("Workstation lock");
-                Log.Out("Workstation lock disabled");
+                Log.Out("[ServerTools] Workstation lock disabled");
             }
             if (Zones.IsEnabled)
             {
                 if (!Dict.Contains("Zones"))
                 {
                     Dict.Add("Zones");
-                    Log.Out("Zones enabled");
+                    Log.Out("[ServerTools] Zones enabled");
                 }
             }
             else if (Dict.Contains("Zones") && !_initiating)
             {
                 Dict.Remove("Zones");
-                Log.Out("Zones disabled");
+                Log.Out("[ServerTools] Zones disabled");
             }
             if (_initiating)
             {

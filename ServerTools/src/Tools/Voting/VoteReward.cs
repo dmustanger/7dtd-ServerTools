@@ -9,11 +9,11 @@ using UnityEngine;
 
 namespace ServerTools
 {
-    class VoteReward
+    class Voting
     {
         public static bool IsEnabled = false, IsRunning = false, RandomListRunning = false, Reward_Entity = false;
         public static int Reward_Count = 1, Delay_Between_Uses = 24, Entity_Id = 73, Weekly_Votes = 5;
-        public static string Your_Voting_Site = "https://7daystodie-servers.com/server/12345", API_Key = "xxxxxxxx", Command_reward = "reward", Command_vote = "vote";
+        public static string Link = "https://7daystodie-servers.com/server/12345", API_Key = "xxxxxxxx", Command_reward = "reward", Command_vote = "vote";
         
         private static bool PosFound = false;
 
@@ -363,7 +363,7 @@ namespace ServerTools
         {
             Phrases.Dict.TryGetValue("VoteReward4", out string phrase);
             phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-            phrase = phrase.Replace("{VoteSite}", Your_Voting_Site);
+            phrase = phrase.Replace("{VoteSite}", Link);
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 

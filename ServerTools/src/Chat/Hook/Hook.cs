@@ -501,9 +501,9 @@ namespace ServerTools
                                     return false;
                                 }
                             }
-                            if (VoteReward.IsEnabled && messageLowerCase == VoteReward.Command_reward)
+                            if (Voting.IsEnabled && messageLowerCase == Voting.Command_reward)
                             {
-                                VoteReward.Check(_cInfo);
+                                Voting.Check(_cInfo);
                                 return false;
                             }
                             if (Shutdown.IsEnabled && messageLowerCase == Shutdown.Command_shutdown)
@@ -815,7 +815,7 @@ namespace ServerTools
                                             GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > Admin_Level)
                                         {
                                             _message = messageLowerCase.Replace(Auction.Command_auction_sell + " ", "");
-                                            Auction.CheckBox(_cInfo, _message);
+                                            Auction.SellItem(_cInfo, _message);
                                         }
                                         else
                                         {
@@ -826,7 +826,7 @@ namespace ServerTools
                                     else
                                     {
                                         _message = messageLowerCase.Replace(Auction.Command_auction_sell + " ", "");
-                                        Auction.CheckBox(_cInfo, _message);
+                                        Auction.SellItem(_cInfo, _message);
                                     }
                                 }
                                 else
@@ -1305,19 +1305,19 @@ namespace ServerTools
                                     return false;
                                 }
                             }
-                            if (VoteReward.IsEnabled)
+                            if (Voting.IsEnabled)
                             {
-                                if (messageLowerCase == VoteReward.Command_vote)
+                                if (messageLowerCase == Voting.Command_vote)
                                 {
-                                    VoteReward.Exec(_cInfo);
+                                    Voting.Exec(_cInfo);
                                     return false;
                                 }
                             }
-                            if (Pickup.IsEnabled)
+                            if (BlockPickup.IsEnabled)
                             {
-                                if (messageLowerCase == Pickup.Command_pickup)
+                                if (messageLowerCase == BlockPickup.Command_pickup)
                                 {
-                                    Pickup.Exec(_cInfo);
+                                    BlockPickup.Exec(_cInfo);
                                     return false;
                                 }
                             }

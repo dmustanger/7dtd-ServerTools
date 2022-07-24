@@ -110,7 +110,7 @@
     <Compile Include="src\Tools\CleanBin\CleanBin.cs" />
     <Compile Include="src\Tools\ConsoleCommandLog\Console_Command_Log.cs" />
     <Compile Include="src\Tools\DiscordBot\DiscordBot.cs" />
-    <Compile Include="src\Tools\PickUp\PickUp.cs" />
+    <Compile Include="src\Tools\BlockPickup\BlockPickup.cs" />
     <Compile Include="src\Tools\FallingBlocks\FallingBlocks.cs" />
     <Compile Include="src\AntiCheat\FlyingDetector\FlyingDetector.cs" />
     <Compile Include="src\Tools\Gamble\Gamble.cs" />
@@ -292,7 +292,7 @@
     <Compile Include="src\Tools\StartingItems\StartingItems.cs" />
     <Compile Include="src\Tools\StopServer\StopServer.cs" />
     <Compile Include="src\Tools\Teleportation\Teleportation.cs" />
-    <Compile Include="src\Tools\VoteReward\VoteReward.cs" />
+    <Compile Include="src\Tools\Voting\VoteReward.cs" />
     <Compile Include="src\Tools\WatchList\WatchList.cs" />
     <Compile Include="src\Tools\Waypoints\Waypoints.cs" />
     <Compile Include="src\WebAPI\MimeType.cs" />

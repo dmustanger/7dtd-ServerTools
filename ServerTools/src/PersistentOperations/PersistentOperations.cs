@@ -31,62 +31,63 @@ namespace ServerTools
         {
             if (!string.IsNullOrEmpty(XPathDir))
             {
-                if (!File.Exists(XPathDir + "gameevents.xml"))
+                if (File.Exists(XPathDir + "gameevents.xml"))
                 {
-                    using (StreamWriter sw = new StreamWriter(XPathDir + "gameevents.xml", false, Encoding.UTF8))
-                    {
-                        sw.WriteLine("<configs>");
-                        sw.WriteLine();
-                        sw.WriteLine("<append xpath=\"/gameevents\">");
-                        sw.WriteLine();
-                        sw.WriteLine("  <action_sequence name=\"action_admin\">");
-                        sw.WriteLine();
-                        sw.WriteLine("      <action class=\"RemoveItems\">");
-                        sw.WriteLine("          <property name=\"items_location\" value=\"Backpack\" />");
-                        sw.WriteLine("          <property name=\"remove_item_tag\" value=\"admin\" />");
-                        sw.WriteLine("      </action>");
-                        sw.WriteLine();
-                        sw.WriteLine("      <action class=\"PlaySound\">");
-                        sw.WriteLine("          <property name=\"sound\" value=\"ui_trader_purchase\" />");
-                        sw.WriteLine("          <property name=\"inside_head\" value=\"true\" />");
-                        sw.WriteLine("      </action>");
-                        sw.WriteLine();
-                        sw.WriteLine("  </action_sequence>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <action_sequence name=\"action_dukes\">");
-                        sw.WriteLine();
-                        sw.WriteLine("      <action class=\"RemoveItems\">");
-                        sw.WriteLine("          <property name=\"items_location\" value=\"Backpack\" />");
-                        sw.WriteLine("          <property name=\"remove_item_tag\" value=\"dukes\" />");
-                        sw.WriteLine("      </action>");
-                        sw.WriteLine();
-                        sw.WriteLine("      <action class=\"PlaySound\">");
-                        sw.WriteLine("          <property name=\"sound\" value=\"ui_trader_purchase\" />");
-                        sw.WriteLine("          <property name=\"inside_head\" value=\"true\" />");
-                        sw.WriteLine("      </action>");
-                        sw.WriteLine();
-                        sw.WriteLine("  </action_sequence>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <action_sequence name=\"action_currency\">");
-                        sw.WriteLine();
-                        sw.WriteLine("      <action class=\"RemoveItems\">");
-                        sw.WriteLine("          <property name=\"items_location\" value=\"Backpack\" />");
-                        sw.WriteLine("          <property name=\"remove_item_tag\" value=\"currency\" />");
-                        sw.WriteLine("      </action>");
-                        sw.WriteLine();
-                        sw.WriteLine("      <action class=\"PlaySound\">");
-                        sw.WriteLine("          <property name=\"sound\" value=\"ui_trader_purchase\" />");
-                        sw.WriteLine("          <property name=\"inside_head\" value=\"true\" />");
-                        sw.WriteLine("      </action>");
-                        sw.WriteLine();
-                        sw.WriteLine("  </action_sequence>");
-                        sw.WriteLine();
-                        sw.WriteLine("</append>");
-                        sw.WriteLine();
-                        sw.WriteLine("</configs>");
-                        sw.Flush();
-                        sw.Close();
-                    }
+                    File.Delete(XPathDir + "gameevents.xml");
+                }
+                using (StreamWriter sw = new StreamWriter(XPathDir + "gameevents.xml", false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<configs>");
+                    sw.WriteLine();
+                    sw.WriteLine("<append xpath=\"/gameevents\">");
+                    sw.WriteLine();
+                    sw.WriteLine("  <action_sequence name=\"action_admin\">");
+                    sw.WriteLine();
+                    sw.WriteLine("      <action class=\"RemoveItems\">");
+                    sw.WriteLine("          <property name=\"items_location\" value=\"Backpack\" />");
+                    sw.WriteLine("          <property name=\"remove_item_tag\" value=\"admin\" />");
+                    sw.WriteLine("      </action>");
+                    sw.WriteLine();
+                    sw.WriteLine("      <action class=\"PlaySound\">");
+                    sw.WriteLine("          <property name=\"sound\" value=\"ui_trader_purchase\" />");
+                    sw.WriteLine("          <property name=\"inside_head\" value=\"true\" />");
+                    sw.WriteLine("      </action>");
+                    sw.WriteLine();
+                    sw.WriteLine("  </action_sequence>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <action_sequence name=\"action_dukes\">");
+                    sw.WriteLine();
+                    sw.WriteLine("      <action class=\"RemoveItems\">");
+                    sw.WriteLine("          <property name=\"items_location\" value=\"Backpack\" />");
+                    sw.WriteLine("          <property name=\"remove_item_tag\" value=\"dukes\" />");
+                    sw.WriteLine("      </action>");
+                    sw.WriteLine();
+                    sw.WriteLine("      <action class=\"PlaySound\">");
+                    sw.WriteLine("          <property name=\"sound\" value=\"ui_trader_purchase\" />");
+                    sw.WriteLine("          <property name=\"inside_head\" value=\"true\" />");
+                    sw.WriteLine("      </action>");
+                    sw.WriteLine();
+                    sw.WriteLine("  </action_sequence>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <action_sequence name=\"action_currency\">");
+                    sw.WriteLine();
+                    sw.WriteLine("      <action class=\"RemoveItems\">");
+                    sw.WriteLine("          <property name=\"items_location\" value=\"Backpack\" />");
+                    sw.WriteLine("          <property name=\"remove_item_tag\" value=\"currency\" />");
+                    sw.WriteLine("      </action>");
+                    sw.WriteLine();
+                    sw.WriteLine("      <action class=\"PlaySound\">");
+                    sw.WriteLine("          <property name=\"sound\" value=\"ui_trader_purchase\" />");
+                    sw.WriteLine("          <property name=\"inside_head\" value=\"true\" />");
+                    sw.WriteLine("      </action>");
+                    sw.WriteLine();
+                    sw.WriteLine("  </action_sequence>");
+                    sw.WriteLine();
+                    sw.WriteLine("</append>");
+                    sw.WriteLine();
+                    sw.WriteLine("</configs>");
+                    sw.Flush();
+                    sw.Close();
                 }
                 if (!File.Exists(XPathDir + "items.xml"))
                 {
@@ -118,7 +119,7 @@ namespace ServerTools
                         sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                         sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8082\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                        sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", AllocsMap.Link));
                         sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                         sw.WriteLine("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
                         sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
@@ -133,7 +134,7 @@ namespace ServerTools
                         sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                         sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://discord.gg/linkHere\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                        sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", DiscordLink.Invitation_Link));
                         sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                         sw.WriteLine("          <sprite depth=\"4\" name=\"microphoneIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_mic\" />");
                         sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
@@ -148,7 +149,7 @@ namespace ServerTools
                         sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                         sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"https://7daystodie-servers.com/server/12345\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                        sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", Voting.Link));
                         sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                         sw.WriteLine("          <sprite depth=\"4\" name=\"computerIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_computer\" />");
                         sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
@@ -178,7 +179,7 @@ namespace ServerTools
                         sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                         sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/shop.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                        sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", Shop.Link));
                         sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                         sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
                         sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
@@ -193,7 +194,7 @@ namespace ServerTools
                         sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                         sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/auction.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                        sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", Auction.Link));
                         sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                         sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
                         sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
@@ -206,214 +207,182 @@ namespace ServerTools
                         sw.WriteLine("</configs>");
                     }
                 }
-                if (!File.Exists(XPathDir + "buffs.xml"))
+                if (File.Exists(XPathDir + "buffs.xml"))
                 {
-                    using (StreamWriter sw = new StreamWriter(XPathDir + "buffs.xml", false, Encoding.UTF8))
-                    {
-                        sw.WriteLine("<configs>");
-                        sw.WriteLine();
-                        sw.WriteLine("<append xpath=\"/buffs\">");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pve_zone\" name_key=\"PvE_Zone\" description=\"You are inside a PvE area\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"0,102,153\">");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pvp_ally_zone\" name_key=\"PvP_Ally_Zone\" description=\"Player damage is active for allies\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,204,0\">");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_ally_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target_tags=\"ally\"/>");
-                        sw.WriteLine("		</triggered_effect>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_ally_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target_tags=\"ally\"/>");
-                        sw.WriteLine("		</triggered_effect>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pvp_stranger_zone\" name_key=\"PvP_Stranger_Zone\" description=\"Player damage is active for strangers\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"255,153,0\">");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_stranger_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
-                        sw.WriteLine("		</triggered_effect>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_stranger_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
-                        sw.WriteLine("		</triggered_effect>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pvp_zone\" name_key=\"PvP_Zone\" description=\"Player damage is active for everyone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,0,0\">");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
-                        sw.WriteLine("		</triggered_effect>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
-                        sw.WriteLine("		</triggered_effect>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pvp_ally_damage\" hidden=\"true\">");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<duration value=\"1\"/>");
-                        sw.WriteLine("      <requirements>");
-                        sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
-                        sw.WriteLine("	    </requirements>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"base_set\" value=\"0\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_set\" value=\"0\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"base_set\" value=\"0\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_set\" value=\"0\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_damage\"/>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pvp_stranger_damage\" hidden=\"true\">");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<duration value=\"1\"/>");
-                        sw.WriteLine("      <requirements>");
-                        sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
-                        sw.WriteLine("	    </requirements>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"base_set\" value=\"0\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_set\" value=\"0\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"base_set\" value=\"0\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_set\" value=\"0\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_damage\"/>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pvp_damage\" hidden=\"true\">");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<duration value=\"1\"/>");
-                        sw.WriteLine("      <requirements>");
-                        sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
-                        sw.WriteLine("	    </requirements>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"base_set\" value=\"0\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_set\" value=\"0\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"base_set\" value=\"0\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_set\" value=\"0\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_damage\"/>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"block_protection\" name_key=\"Block_Protection\" description=\"Blocks are protected from damage\" icon=\"ui_game_symbol_brick\" icon_color=\"102,102,153\">");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<passive_effect name=\"BlockDamage\" operation=\"perc_add\" value=\"-1\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"block_protection\"/>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("</append>");
-                        sw.WriteLine();
-                        sw.WriteLine("</configs>");
-                        sw.Flush();
-                        sw.Close();
-                    }
+                    File.Delete(XPathDir + "buffs.xml");
                 }
-                if (!File.Exists(XPathDir + "XUi/xui.xml"))
+                using (StreamWriter sw = new StreamWriter(XPathDir + "buffs.xml", false, Encoding.UTF8))
                 {
-                    using (StreamWriter sw = new StreamWriter(XPathDir + "XUi/xui.xml", false, Encoding.UTF8))
-                    {
-                        sw.WriteLine("<configs>");
-                        sw.WriteLine();
-                        sw.WriteLine("<append xpath=\"/xui/ruleset\">");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window_group name=\"browserMap\">");
-                        sw.WriteLine("      <window name=\"browserMap\" />");
-                        sw.WriteLine("  </window_group>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window_group name=\"browserDiscord\">");
-                        sw.WriteLine("      <window name=\"browserDiscord\" />");
-                        sw.WriteLine("  </window_group>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window_group name=\"browserVote\">");
-                        sw.WriteLine("      <window name=\"browserVote\" />");
-                        sw.WriteLine("  </window_group>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window_group name=\"browserBlackJack\">");
-                        sw.WriteLine("      <window name=\"browserBlackJack\" />");
-                        sw.WriteLine("  </window_group>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window_group name=\"browserShop\">");
-                        sw.WriteLine("      <window name=\"browserShop\" />");
-                        sw.WriteLine("  </window_group>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window_group name=\"browserAuction\">");
-                        sw.WriteLine("      <window name=\"browserAuction\" />");
-                        sw.WriteLine("  </window_group>");
-                        sw.WriteLine();
-                        sw.WriteLine("</append>");
-                        sw.WriteLine();
-                        sw.WriteLine("</configs>");
-                    }
+                    sw.WriteLine("<configs>");
+                    sw.WriteLine();
+                    sw.WriteLine("<append xpath=\"/buffs\">");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pve_zone\" name_key=\"PvE_Zone\" description=\"You are inside a PvE area\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"0,102,153\">");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pvp_ally_zone\" name_key=\"PvP_Ally_Zone\" description=\"Player damage is active for allies\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,204,0\">");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_ally_damage\">");
+                    sw.WriteLine("			<requirement name=\"EntityTagCompare\" target_tags=\"ally\"/>");
+                    sw.WriteLine("		</triggered_effect>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_ally_damage\">");
+                    sw.WriteLine("			<requirement name=\"EntityTagCompare\" target_tags=\"ally\"/>");
+                    sw.WriteLine("		</triggered_effect>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pvp_stranger_zone\" name_key=\"PvP_Stranger_Zone\" description=\"Player damage is active for strangers\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"255,153,0\">");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_stranger_damage\">");
+                    sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
+                    sw.WriteLine("		</triggered_effect>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_stranger_damage\">");
+                    sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
+                    sw.WriteLine("		</triggered_effect>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pvp_zone\" name_key=\"PvP_Zone\" description=\"Player damage is active for everyone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,0,0\">");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_damage\">");
+                    sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
+                    sw.WriteLine("		</triggered_effect>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_damage\">");
+                    sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
+                    sw.WriteLine("		</triggered_effect>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pvp_ally_damage\" hidden=\"true\">");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<duration value=\"1\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("      <requirements>");
+                    sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
+                    sw.WriteLine("	    </requirements>");
+                    sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"base_set\" value=\"0\"/>");
+                    sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_set\" value=\"0\"/>");
+                    sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                    sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"base_set\" value=\"0\" tags=\"explosive\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_set\" value=\"0\" tags=\"explosive\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\" tags=\"explosive\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_damage\"/>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pvp_stranger_damage\" hidden=\"true\">");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<duration value=\"1\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("      <requirements>");
+                    sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
+                    sw.WriteLine("	    </requirements>");
+                    sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"base_set\" value=\"0\"/>");
+                    sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_set\" value=\"0\"/>");
+                    sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                    sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"base_set\" value=\"0\" tags=\"explosive\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_set\" value=\"0\" tags=\"explosive\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\" tags=\"explosive\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_damage\"/>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pvp_damage\" hidden=\"true\">");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<duration value=\"1\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("      <requirements>");
+                    sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
+                    sw.WriteLine("	    </requirements>");
+                    sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"base_set\" value=\"0\"/>");
+                    sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_set\" value=\"0\"/>");
+                    sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                    sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"base_set\" value=\"0\" tags=\"explosive\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_set\" value=\"0\" tags=\"explosive\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\" tags=\"explosive\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_damage\"/>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"block_protection\" name_key=\"Block_Protection\" description=\"Blocks are protected from damage\" icon=\"ui_game_symbol_brick\" icon_color=\"102,102,153\">");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("		<passive_effect name=\"BlockDamage\" operation=\"perc_add\" value=\"-1\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"block_protection\"/>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("</append>");
+                    sw.WriteLine();
+                    sw.WriteLine("</configs>");
+                    sw.Flush();
+                    sw.Close();
                 }
-                else
+                if (File.Exists(XPathDir + "XUi/xui.xml"))
                 {
-                    string[] lines = File.ReadAllLines(XPathDir + "XUi/xui.xml");
-                    int entries = 0;
-                    for (int i = 0; i < lines.Length; i++)
-                    {
-                        if (lines[i].Contains("browserMap"))
-                        {
-                            entries++;
-                        }
-                        else if (lines[i].Contains("browserDiscord"))
-                        {
-                            entries++;
-                        }
-                        else if (lines[i].Contains("browserVote"))
-                        {
-                            entries++;
-                        }
-                        else if (lines[i].Contains("browserBlackJack"))
-                        {
-                            entries++;
-                        }
-                        else if (lines[i].Contains("browserShop"))
-                        {
-                            entries++;
-                        }
-                        else if (lines[i].Contains("browserAuction"))
-                        {
-                            entries++;
-                        }
-                    }
-                    if (entries != 6)
-                    {
-                        File.Delete(XPathDir + "XUi/xui.xml");
-                        CreateCustomXUi();
-                    }
+                    File.Delete(XPathDir + "XUi/xui.xml");
+                }
+                using (StreamWriter sw = new StreamWriter(XPathDir + "XUi/xui.xml", false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<configs>");
+                    sw.WriteLine();
+                    sw.WriteLine("<append xpath=\"/xui/ruleset\">");
+                    sw.WriteLine();
+                    sw.WriteLine("  <window_group name=\"browserMap\">");
+                    sw.WriteLine("      <window name=\"browserMap\" />");
+                    sw.WriteLine("  </window_group>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <window_group name=\"browserDiscord\">");
+                    sw.WriteLine("      <window name=\"browserDiscord\" />");
+                    sw.WriteLine("  </window_group>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <window_group name=\"browserVote\">");
+                    sw.WriteLine("      <window name=\"browserVote\" />");
+                    sw.WriteLine("  </window_group>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <window_group name=\"browserBlackJack\">");
+                    sw.WriteLine("      <window name=\"browserBlackJack\" />");
+                    sw.WriteLine("  </window_group>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <window_group name=\"browserShop\">");
+                    sw.WriteLine("      <window name=\"browserShop\" />");
+                    sw.WriteLine("  </window_group>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <window_group name=\"browserAuction\">");
+                    sw.WriteLine("      <window name=\"browserAuction\" />");
+                    sw.WriteLine("  </window_group>");
+                    sw.WriteLine();
+                    sw.WriteLine("</append>");
+                    sw.WriteLine();
+                    sw.WriteLine("</configs>");
                 }
             }
         }
@@ -855,7 +824,10 @@ namespace ServerTools
                 {
                     if (entityClass.Value.bAllowUserInstantiate)
                     {
-                        EntityId.Add(count, entityClass.Key);
+                        if (!EntityId.ContainsKey(count))
+                        {
+                            EntityId.Add(count, entityClass.Key);
+                        }
                         count++;
                     }
                 }
@@ -1362,11 +1334,11 @@ namespace ServerTools
                         commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, MuteVote.Command_mutevote);
                     }
                 }
-                if (Pickup.IsEnabled)
+                if (BlockPickup.IsEnabled)
                 {
-                    if (Pickup.Command_pickup != "")
+                    if (BlockPickup.Command_pickup != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Pickup.Command_pickup);
+                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, BlockPickup.Command_pickup);
                     }
                 }
                 if (PlayerList.IsEnabled)
@@ -1449,15 +1421,15 @@ namespace ServerTools
                         commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, VehicleRecall.Command_vehicle_remove);
                     }
                 }
-                if (VoteReward.IsEnabled)
+                if (Voting.IsEnabled)
                 {
-                    if (VoteReward.Command_reward != "")
+                    if (Voting.Command_reward != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, VoteReward.Command_reward);
+                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Voting.Command_reward);
                     }
-                    if (VoteReward.Command_vote != "")
+                    if (Voting.Command_vote != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, VoteReward.Command_vote);
+                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Voting.Command_vote);
                     }
                 }
                 if (Wall.IsEnabled)

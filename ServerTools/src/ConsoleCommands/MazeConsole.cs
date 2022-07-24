@@ -20,10 +20,11 @@ namespace ServerTools
                    "  2. st-mz add {Blocks} {Floors} {BlockName}\n" +
                    "  3. st-mz undo\n" +
                    "1. Generate a maze with this width of blocks and this many floors\n" +
-                   "2. Generate a maze with this width of blocks, floors and inner block name that forms the walls" +
+                   "2. Generate a maze with this width of blocks and this many floors using a particular block for the inner walls\n" +
                    "3. Revert the maze last generated to the original blocks" +
                    "*Note*" +
-                   "Undo command is limited to the user that spawned the maze. Server shutdown will clear the undo data";
+                   "Undo command is limited to the user that spawned the maze. Server shutdown will clear the undo data" +
+                   "Use wood, cobblestone, steel, brick or glass for the block name. It will default to concrete if the block can not be found";
         }
 
         public override string[] GetCommands()
@@ -53,22 +54,22 @@ namespace ServerTools
                                     if (blocks < 30)
                                     {
                                         blocks = 30;
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze size is too small. Maze size increased to 30"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze size is too small. Maze size increased to 30x30"));
                                     }
                                     else if (blocks > 120)
                                     {
                                         blocks = 120;
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze size is too big. Maze size decreased to 120"));
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze size is too big. Maze size decreased to 120x120"));
                                     }
                                     if (floors < 1)
                                     {
                                         floors = 1;
                                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Floor count is too low. Floor count set to 1"));
                                     }
-                                    else if (floors > 10)
+                                    else if (floors > 11)
                                     {
-                                        floors = 10;
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Floor count is too high. Floor count decreased to 10"));
+                                        floors = 11;
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Floor count is too high. Floor count decreased to 11"));
                                     }
                                     if (floors >= 2 && blocks > 110)
                                     {
@@ -105,15 +106,20 @@ namespace ServerTools
                                         floors = 7;
                                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 7"));
                                     }
-                                    else if (floors >= 9 && blocks > 52)
+                                    else if (floors >= 9 && blocks > 50)
                                     {
                                         floors = 8;
                                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 8"));
                                     }
-                                    else if (floors == 10 && blocks > 50)
+                                    else if (floors >= 10 && blocks > 45)
                                     {
                                         floors = 9;
                                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 9"));
+                                    }
+                                    else if (floors == 11 && blocks > 35)
+                                    {
+                                        floors = 10;
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 10"));
                                     }
                                     World world = GameManager.Instance.World;
                                     EntityPlayer player = world.Players.dict[_senderInfo.RemoteClientInfo.entityId];
@@ -156,6 +162,43 @@ namespace ServerTools
                                                                 BlockValue glassCeilingBlockValue = Block.GetBlockValue("glassBusinessBlock");
                                                                 BlockValue glassBlockValue = Block.GetBlockValue("glassBulletproofBlock");
                                                                 BlockValue ladderValue = Block.GetBlockValue("ladderMetal");
+                                                                if (_params.Count == 4)
+                                                                {
+                                                                    switch (_params[3].ToLower())
+                                                                    {
+                                                                        case "wood":
+                                                                            Block customBlock = Block.GetBlockByName("woodShapes:cube");
+                                                                            if (customBlock != null)
+                                                                            {
+                                                                                concreteBlockValue = Block.GetBlockValue("woodShapes:cube");
+                                                                            }
+                                                                            break;
+                                                                        case "cobblestone":
+                                                                            customBlock = Block.GetBlockByName("cobblestoneShapes:cube");
+                                                                            if (customBlock != null)
+                                                                            {
+                                                                                concreteBlockValue = Block.GetBlockValue("cobblestoneShapes:cube");
+                                                                            }
+                                                                            break;
+                                                                        case "steel":
+                                                                            customBlock = Block.GetBlockByName("steelShapes:cube");
+                                                                            if (customBlock != null)
+                                                                            {
+                                                                                concreteBlockValue = Block.GetBlockValue("steelShapes:cube");
+                                                                            }
+                                                                            break;
+                                                                        case "brick":
+                                                                            customBlock = Block.GetBlockByName("brickShapes:cube");
+                                                                            if (customBlock != null)
+                                                                            {
+                                                                                concreteBlockValue = Block.GetBlockValue("brickShapes:cube");
+                                                                            }
+                                                                            break;
+                                                                        case "glass":
+                                                                            concreteBlockValue = Block.GetBlockValue("glassBusinessBlock");
+                                                                            break;
+                                                                    }
+                                                                }
                                                                 Vector3i vectors = new Vector3i();
                                                                 vectors.x = (int)player.position.x - blocks / 2;
                                                                 vectors.y = (int)player.position.y - 1;
@@ -166,9 +209,9 @@ namespace ServerTools
                                                                 Dictionary<Vector3i, BlockValue> undo = new Dictionary<Vector3i, BlockValue>();
                                                                 List<Chunk> chunks = new List<Chunk>();
                                                                 BlockValue oldBlockValue = BlockValue.Air;
-                                                                for (int i = 0; i < blocks; i ++)
+                                                                for (int i = 0; i < blocks; i++)
                                                                 {
-                                                                    for (int j = 0; j < blocks; j ++)
+                                                                    for (int j = 0; j < blocks; j++)
                                                                     {
                                                                         if (world.IsChunkAreaLoaded(vectors.x, vectors.y, vectors.z))
                                                                         {
@@ -192,332 +235,101 @@ namespace ServerTools
                                                                 }
                                                                 vectors.x -= blocks;
                                                                 vectors.z -= blocks;
-                                                                if (_params.Count == 3)
+                                                                int levels = floors * 3;
+                                                                for (int i = 1; i <= levels; i++)
                                                                 {
-                                                                    int levels = floors * 3;
-                                                                    for (int i = 1; i <= levels; i++)
+                                                                    foreach (var vector in template)
                                                                     {
-                                                                        foreach (var vector in template)
+                                                                        if (vector.Value[0] == 0 || vector.Value[1] == 0 || vector.Value[0] == blocks - 1 || vector.Value[1] == blocks - 1)
                                                                         {
-                                                                            if (vector.Value[0] == 0 || vector.Value[1] == 0 || vector.Value[0] == blocks - 1 || vector.Value[1] == blocks - 1)
+                                                                            blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glassWall");
+                                                                        }
+                                                                        else if (i % 3 == 0)
+                                                                        {
+                                                                            if (i == levels)
                                                                             {
-                                                                                blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glassWall");
-                                                                            }
-                                                                            else if (i % 3 == 0)
-                                                                            {
-                                                                                if (i == levels)
-                                                                                {
-                                                                                    blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glass");
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glassWall");
-                                                                                }
+                                                                                blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glass");
                                                                             }
                                                                             else
                                                                             {
-                                                                                blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "...");
+                                                                                blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glassWall");
                                                                             }
                                                                         }
-                                                                    }
-                                                                    blockValues = FormPath(blockValues, pathStart, blocks, floors);
-                                                                    if (blockValues == null)
-                                                                    {
-                                                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to form the maze. Try again"));
-                                                                        return;
-                                                                    }
-                                                                    List<BlockChangeInfo> blockList = new List<BlockChangeInfo>();
-                                                                    foreach (var blockValue in blockValues)
-                                                                    {
-                                                                        oldBlockValue = world.GetBlock(blockValue.Key);
-                                                                        undo.Add(blockValue.Key, oldBlockValue);
-                                                                        Block block = oldBlockValue.Block;
-                                                                        if (block is BlockPlant || block.CanPickup)
+                                                                        else
                                                                         {
-                                                                            GameManager.Instance.World.SetBlockRPC(blockValue.Key, BlockValue.Air);
-                                                                        }
-                                                                        if (blockValue.Value == "...")
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, stoneBlockValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "steel")
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, steelBlockValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "glassWall")
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassBlockValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "wall")
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, concreteBlockValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "wallPassage")
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, concreteBlockValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "air")
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
-                                                                        }
-                                                                        else if (blockValue.Value == "path")
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
-                                                                        }
-                                                                        else if (blockValue.Value == "ladder1")
-                                                                        {
-                                                                            ladderValue.rotation = 1;
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "ladder2")
-                                                                        {
-                                                                            ladderValue.rotation = 2;
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "ladder3")
-                                                                        {
-                                                                            ladderValue.rotation = 3;
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "ladder4")
-                                                                        {
-                                                                            ladderValue.rotation = 4;
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "glass")
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassCeilingBlockValue));
+                                                                            blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "...");
                                                                         }
                                                                     }
-                                                                    GameManager.Instance.SetBlocksRPC(blockList, null);
-                                                                    blockList.Clear();
-                                                                    foreach (var blockValue in blockValues)
-                                                                    {
-                                                                        oldBlockValue = world.GetBlock(blockValue.Key);
-                                                                        if (blockValue.Value == "..." && !oldBlockValue.Equals(stoneBlockValue))
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, stoneBlockValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "steel" && !oldBlockValue.Equals(steelBlockValue))
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, steelBlockValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "glassWall" && !oldBlockValue.Equals(glassBlockValue))
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassBlockValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "wall" && !oldBlockValue.Equals(concreteBlockValue))
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, concreteBlockValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "wallPassage" && !oldBlockValue.Equals(concreteBlockValue))
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, concreteBlockValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "air" && !oldBlockValue.Equals(BlockValue.Air))
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
-                                                                        }
-                                                                        else if (blockValue.Value == "path" && !oldBlockValue.Equals(BlockValue.Air))
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
-                                                                        }
-                                                                        else if (blockValue.Value == "ladder1" && !oldBlockValue.Equals(ladderValue))
-                                                                        {
-                                                                            ladderValue.rotation = 1;
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "ladder2" && !oldBlockValue.Equals(ladderValue))
-                                                                        {
-                                                                            ladderValue.rotation = 2;
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "ladder3" && !oldBlockValue.Equals(ladderValue))
-                                                                        {
-                                                                            ladderValue.rotation = 3;
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "ladder4" && !oldBlockValue.Equals(ladderValue))
-                                                                        {
-                                                                            ladderValue.rotation = 4;
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                        }
-                                                                        else if (blockValue.Value == "glass" && !oldBlockValue.Equals(glassCeilingBlockValue))
-                                                                        {
-                                                                            blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassCeilingBlockValue));
-                                                                        }
-                                                                    }
-                                                                    GameManager.Instance.SetBlocksRPC(blockList, null);
-                                                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze has been formed. The start of the maze is at {0}", pathStart));
                                                                 }
-                                                                else if (_params.Count == 4)
+                                                                blockValues[new Vector3i(pathStart.x - 1, pathStart.y, pathStart.z)] = "air";
+                                                                blockValues[new Vector3i(pathStart.x - 1, pathStart.y + 1, pathStart.z)] = "air";
+                                                                blockValues = FormPath(blockValues, pathStart, blocks, floors);
+                                                                if (blockValues == null)
                                                                 {
-                                                                    Block customWall = Block.GetBlockByName(_params[3], false);
-                                                                    if (customWall != null)
+                                                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to form the maze. Try again"));
+                                                                    return;
+                                                                }
+                                                                List<BlockChangeInfo> blockList = new List<BlockChangeInfo>();
+                                                                foreach (var blockValue in blockValues)
+                                                                {
+                                                                    oldBlockValue = world.GetBlock(blockValue.Key);
+                                                                    undo.Add(blockValue.Key, oldBlockValue);
+                                                                    if (blockValue.Value == "...")
                                                                     {
-                                                                        BlockValue customBlockValue = Block.GetBlockValue(_params[3]);
-                                                                        int levels = floors * 3;
-                                                                        for (int i = 1; i <= levels; i++)
-                                                                        {
-                                                                            foreach (var vector in template)
-                                                                            {
-                                                                                if (vector.Value[0] == 1 || vector.Value[1] == 1 || vector.Value[0] == blocks -1 || vector.Value[1] == blocks - 1)
-                                                                                {
-                                                                                    blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glassWall");
-                                                                                }
-                                                                                else if (i % 3 == 0)
-                                                                                {
-                                                                                    if (i == levels)
-                                                                                    {
-                                                                                        blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glass");
-                                                                                    }
-                                                                                    else
-                                                                                    {
-                                                                                        blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glassWall");
-                                                                                    }
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "...");
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                        blockValues = FormPath(blockValues, pathStart, blocks, floors);
-                                                                        if (blockValues == null)
-                                                                        {
-                                                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to form the maze. Try again"));
-                                                                            return;
-                                                                        }
-                                                                        List<BlockChangeInfo> blockList = new List<BlockChangeInfo>();
-                                                                        foreach (var blockValue in blockValues)
-                                                                        {
-                                                                            oldBlockValue = world.GetBlock(blockValue.Key);
-                                                                            undo.Add(blockValue.Key, oldBlockValue);
-                                                                            Block block = oldBlockValue.Block;
-                                                                            if (block is BlockPlant || block.CanPickup)
-                                                                            {
-                                                                                GameManager.Instance.World.SetBlockRPC(blockValue.Key, BlockValue.Air);
-                                                                            }
-                                                                            if (blockValue.Value == "...")
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, stoneBlockValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "steel")
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, steelBlockValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "glassWall")
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassBlockValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "wall")
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, customBlockValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "wallPassage")
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, customBlockValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "air")
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
-                                                                            }
-                                                                            else if (blockValue.Value == "path")
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
-                                                                            }
-                                                                            else if (blockValue.Value == "ladder1")
-                                                                            {
-                                                                                ladderValue.rotation = 1;
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "ladder2")
-                                                                            {
-                                                                                ladderValue.rotation = 2;
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "ladder3")
-                                                                            {
-                                                                                ladderValue.rotation = 3;
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "ladder4")
-                                                                            {
-                                                                                ladderValue.rotation = 4;
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "glass")
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassCeilingBlockValue));
-                                                                            }
-                                                                        }
-                                                                        GameManager.Instance.SetBlocksRPC(blockList, null);
-                                                                        blockList.Clear();
-                                                                        foreach (var blockValue in blockValues)
-                                                                        {
-                                                                            oldBlockValue = world.GetBlock(blockValue.Key);
-                                                                            if (blockValue.Value == "..." && !oldBlockValue.Equals(stoneBlockValue))
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, stoneBlockValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "steel" && !oldBlockValue.Equals(steelBlockValue))
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, steelBlockValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "glassWall" && !oldBlockValue.Equals(glassBlockValue))
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassBlockValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "wall" && !oldBlockValue.Equals(customBlockValue))
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, customBlockValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "wallPassage" && !oldBlockValue.Equals(customBlockValue))
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, customBlockValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "air" && !oldBlockValue.Equals(BlockValue.Air))
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
-                                                                            }
-                                                                            else if (blockValue.Value == "path" && !oldBlockValue.Equals(BlockValue.Air))
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
-                                                                            }
-                                                                            else if (blockValue.Value == "ladder1" && !oldBlockValue.Equals(ladderValue))
-                                                                            {
-                                                                                ladderValue.rotation = 1;
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "ladder2" && !oldBlockValue.Equals(ladderValue))
-                                                                            {
-                                                                                ladderValue.rotation = 2;
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "ladder3" && !oldBlockValue.Equals(ladderValue))
-                                                                            {
-                                                                                ladderValue.rotation = 3;
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "ladder4" && !oldBlockValue.Equals(ladderValue))
-                                                                            {
-                                                                                ladderValue.rotation = 4;
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                                                            }
-                                                                            else if (blockValue.Value == "glass" && !oldBlockValue.Equals(glassCeilingBlockValue))
-                                                                            {
-                                                                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassCeilingBlockValue));
-                                                                            }
-                                                                        }
-                                                                        GameManager.Instance.SetBlocksRPC(blockList, null);
-                                                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze has been spawned. The start of the maze is at {0}", pathStart));
+                                                                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, stoneBlockValue));
                                                                     }
-                                                                    else
+                                                                    else if (blockValue.Value == "steel")
                                                                     {
-                                                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: {0}", _params[3]));
-                                                                        return;
+                                                                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, steelBlockValue));
+                                                                    }
+                                                                    else if (blockValue.Value == "glassWall")
+                                                                    {
+                                                                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassBlockValue));
+                                                                    }
+                                                                    else if (blockValue.Value == "wall")
+                                                                    {
+                                                                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, concreteBlockValue));
+                                                                    }
+                                                                    else if (blockValue.Value == "wallPassage")
+                                                                    {
+                                                                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, concreteBlockValue));
+                                                                    }
+                                                                    else if (blockValue.Value == "air")
+                                                                    {
+                                                                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
+                                                                    }
+                                                                    else if (blockValue.Value == "path")
+                                                                    {
+                                                                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
+                                                                    }
+                                                                    else if (blockValue.Value == "ladder1")
+                                                                    {
+                                                                        ladderValue.rotation = 1;
+                                                                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
+                                                                    }
+                                                                    else if (blockValue.Value == "ladder2")
+                                                                    {
+                                                                        ladderValue.rotation = 2;
+                                                                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
+                                                                    }
+                                                                    else if (blockValue.Value == "ladder3")
+                                                                    {
+                                                                        ladderValue.rotation = 3;
+                                                                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
+                                                                    }
+                                                                    else if (blockValue.Value == "ladder4")
+                                                                    {
+                                                                        ladderValue.rotation = 4;
+                                                                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
+                                                                    }
+                                                                    else if (blockValue.Value == "glass")
+                                                                    {
+                                                                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassCeilingBlockValue));
                                                                     }
                                                                 }
+                                                                GameManager.Instance.SetBlocksRPC(blockList, null);
+                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Inital maze has been formed. Wait five seconds for auto corrections to complete"));
+                                                                Timers.MazeGenerationDelayTimer(blockValues, steelBlockValue, concreteBlockValue, stoneBlockValue, glassCeilingBlockValue, glassBlockValue, ladderValue);
                                                                 if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
                                                                 {
                                                                     Undo[_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString] = undo;
@@ -544,7 +356,7 @@ namespace ServerTools
                                                                         }
                                                                     }
                                                                 }
-                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Use command maze undo to reset the maze space"));
+                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Use command maze undo to reset the maze space after it completes"));
                                                                 return;
                                                             }
                                                             else
@@ -609,7 +421,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 4 or 5, found {0}", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found {0}", _params.Count));
                         return;
                     }
                 }
@@ -619,9 +431,9 @@ namespace ServerTools
                     {
                         if (_senderInfo.RemoteClientInfo != null)
                         {
-                            if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier))
+                            if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
                             {
-                                Undo.TryGetValue(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier, out Dictionary<Vector3i, BlockValue> undo);
+                                Undo.TryGetValue(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString, out Dictionary<Vector3i, BlockValue> undo);
                                 World world = GameManager.Instance.World;
                                 foreach (var block in undo)
                                 {
@@ -637,7 +449,7 @@ namespace ServerTools
                                     blockList.Add(new BlockChangeInfo(0, block.Key, block.Value));
                                 }
                                 GameManager.Instance.SetBlocksRPC(blockList, null);
-                                Undo.Remove(_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier);
+                                Undo.Remove(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString);
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The maze you last spawned has been undone"));
                                 return;
                             }
@@ -1035,6 +847,79 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in MazeConsole.FormPath: {0}", e.Message));
             }
             return null;
+        }
+
+        public static void Corrections(Dictionary<Vector3i, string> _blockValues, BlockValue _steelBlockValue,
+            BlockValue _concreteBlockValue, BlockValue _stoneBlockValue, BlockValue _glassCeilingBlockValue, BlockValue _glassBlockValue,
+            BlockValue _ladderValue)
+        {
+            try
+            {
+                World world = GameManager.Instance.World;
+                List<BlockChangeInfo> blockList = new List<BlockChangeInfo>();
+                foreach (var blockValue in _blockValues)
+                {
+                    BlockValue oldBlockValue = world.GetBlock(blockValue.Key);
+                    if (blockValue.Value == "..." && !oldBlockValue.Equals(_stoneBlockValue))
+                    {
+                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, _stoneBlockValue));
+                    }
+                    else if (blockValue.Value == "steel" && !oldBlockValue.Equals(_steelBlockValue))
+                    {
+                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, _steelBlockValue));
+                    }
+                    else if (blockValue.Value == "glassWall" && !oldBlockValue.Equals(_glassBlockValue))
+                    {
+                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, _glassBlockValue));
+                    }
+                    else if (blockValue.Value == "wall" && !oldBlockValue.Equals(_concreteBlockValue))
+                    {
+                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, _concreteBlockValue));
+                    }
+                    else if (blockValue.Value == "wallPassage" && !oldBlockValue.Equals(_concreteBlockValue))
+                    {
+                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, _concreteBlockValue));
+                    }
+                    else if (blockValue.Value == "air" && !oldBlockValue.Equals(BlockValue.Air))
+                    {
+                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
+                    }
+                    else if (blockValue.Value == "path" && !oldBlockValue.Equals(BlockValue.Air))
+                    {
+                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
+                    }
+                    else if (blockValue.Value == "ladder1" && !oldBlockValue.Equals(_ladderValue))
+                    {
+                        _ladderValue.rotation = 1;
+                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, _ladderValue));
+                    }
+                    else if (blockValue.Value == "ladder2" && !oldBlockValue.Equals(_ladderValue))
+                    {
+                        _ladderValue.rotation = 2;
+                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, _ladderValue));
+                    }
+                    else if (blockValue.Value == "ladder3" && !oldBlockValue.Equals(_ladderValue))
+                    {
+                        _ladderValue.rotation = 3;
+                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, _ladderValue));
+                    }
+                    else if (blockValue.Value == "ladder4" && !oldBlockValue.Equals(_ladderValue))
+                    {
+                        _ladderValue.rotation = 4;
+                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, _ladderValue));
+                    }
+                    else if (blockValue.Value == "glass" && !oldBlockValue.Equals(_glassCeilingBlockValue))
+                    {
+                        blockList.Add(new BlockChangeInfo(0, blockValue.Key, _glassCeilingBlockValue));
+                    }
+                }
+                GameManager.Instance.SetBlocksRPC(blockList, null);
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze has been formed. One entrance/exit is on top and the other is in the south west corner"));
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in MazeConsole.MazeCorrections: {0}", e.Message));
+            }
         }
     }
 }

@@ -29,7 +29,7 @@
 {
 	position:relative;
 	width:40%;
-	height:100%;
+	height:60%;
 	float:left;
 	text-align:left;
 	color:#FFF;
@@ -39,7 +39,7 @@
 {
 	position:relative;
 	width:50%;
-	height:100%;
+	height:80%;
 	float:right;
 	text-align:center;
 	color:#FFF;
@@ -53,4 +53,106 @@
 	margin:60;
 	padding:0;
 	overflow:hidden;
+}
+
+#SecuritySync {
+    text-align:center;
+	z-index:3;
+}
+
+#SecurityId
+{
+	text-align:center;
+	color:#FFF;
+}
+
+#Balance
+{
+	padding:50px;
+	display:inline;
+}
+
+#Price
+{
+	padding:30px;
+	display:inline;
+}
+
+#ItemInfo {
+	height:auto;
+	width:50%;
+	top:30px;
+	padding-left:20px;
+	text-decoration:underline;
+	color:#FFF;
+}
+
+#SearchContainer {
+    position:relative;
+	width:30%;
+	padding:20px;
+}
+
+#FilterHeader {
+	position:relative;
+	text-decoration:underline;
+	color:#FFF;
+}
+
+#SearchFilter
+{
+	padding-left:20px;
+}
+
+#ContentContainer {
+	position:relative;
+	padding-top:10px;
+	display:inline;
+}
+
+#AuctionName {
+	padding-left:20px;
+}
+
+#InfoContainer
+{
+	height:300px;
+	width:170px;
+	padding-left:20px;
+	color:#FFF;
+	font-size:16px;
+	float:left;
+}
+
+.IconContainer {
+	height:160px; 
+    width:100px;
+	top:30px;
+	padding:10px;
+	float:left;
+}
+
+.Icon
+{
+	margin:30px;
+	height:80px; 
+    width:80px;
+}
+
+.ItemHeader
+{
+	bottom:0px;
+	height:20%; 
+    width:97%;
+	color:#FFF;
+	font-size:16px;
+}
+
+.Buttons
+{
+	color:#FFF;
+	background-color:#AB1700;
+	margin-top:10px;
+	border:1px solid #FFF;
+	border-radius:5px;
 }

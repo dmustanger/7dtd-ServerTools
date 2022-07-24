@@ -59,6 +59,7 @@ namespace ServerTools
                             lines.Add("");
                             lines.Add("</configs>");
                             File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
+                            return;
                         }
                     }
                 }

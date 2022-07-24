@@ -33,6 +33,7 @@ namespace ServerTools
         private bool highPingImmune;
         private string highPingImmuneName;
         private Dictionary<string, string> homes;
+        private int homeSpots;
         private DateTime jailDate;
         private string jailName;
         private int jailTime;
@@ -77,6 +78,7 @@ namespace ServerTools
         private Dictionary<int, string[]> vehicles;
         private int voteWeekCount;
         private Dictionary<string, string> waypoints;
+        private int waypointSpots;
         private string webPass;
         private DateTime zoneDeathTime;
 
@@ -377,6 +379,18 @@ namespace ServerTools
             set
             {
                 homes = value;
+            }
+        }
+
+        public int HomeSpots
+        {
+            get
+            {
+                return homeSpots;
+            }
+            set
+            {
+                homeSpots = value;
             }
         }
 
@@ -905,6 +919,18 @@ namespace ServerTools
             set
             {
                 waypoints = value;
+            }
+        }
+
+        public int WaypointSpots
+        {
+            get
+            {
+                return waypointSpots;
+            }
+            set
+            {
+                waypointSpots = value;
             }
         }
 

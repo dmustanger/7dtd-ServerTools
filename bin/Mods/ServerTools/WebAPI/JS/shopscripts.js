@@ -249,35 +249,29 @@ function EnterShop() {
 
 
 function ExitShop() {
-	if (document.getElementById("ConfirmExit").checked) {
-		let request = new XMLHttpRequest();
-		request.open('POST', window.location.href.replace('shop.html', 'ExitShop'), false);
-		request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
-		request.onerror = function() {
-			alert("Error");
-		};
-		request.onload = function () {
-			if (request.status == 200 && request.readyState == 4) {
-				ClientId = "";
-				Pin = "";
-				Items = new Object();
-				Categories = new Object();
-				ActiveFilter = 0;
-				PurchaseNumber = -1;
-				Page = 1;
-				PerPage = 10;
-				window.location.href = "";
-			}
-		};
-		if (ClientId != "DBUG") {
-			request.send(Pin);
+	let request = new XMLHttpRequest();
+	request.open('POST', window.location.href.replace('shop.html', 'ExitShop'), false);
+	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+	request.onerror = function() {
+		alert("Error");
+	};
+	request.onload = function () {
+		if (request.status == 200 && request.readyState == 4) {
+			ClientId = "";
+			Pin = "";
+			Items = new Object();
+			Categories = new Object();
+			ActiveFilter = 0;
+			PurchaseNumber = -1;
+			Page = 1;
+			window.location.href = "";
 		}
-		else {
-			request.send(ClientId);
-		}
+	};
+	if (ClientId != "DBUG") {
+		request.send(Pin);
 	}
 	else {
-		alert("Click the confirmation checkbox first");
+		request.send(ClientId);
 	}
 };
 

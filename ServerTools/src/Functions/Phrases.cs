@@ -1124,6 +1124,11 @@ namespace ServerTools
                         phrase = "You are not on the reserved list. Unable to run this command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"CustomCommands4\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("CustomCommands5", out phrase))
+                    {
+                        phrase = "It is currently a bloodmoon. Unable to run this command";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"CustomCommands5\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************* Shop ************************* -->");
@@ -1837,7 +1842,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("Auction1", out phrase))
                     {
-                        phrase = "Your auction item {Name} has been removed from the secure loot and added to the auction as id {Value}";
+                        phrase = "The auction item {Name} has been removed from your inventory and added as id {Value}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Auction2", out phrase))
@@ -1857,7 +1862,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Auction5", out phrase))
                     {
-                        phrase = "# {Id}: {Count} {Item} at {Quality} quality, {Durability} percent durability for {Price} {Coin}";
+                        phrase = "# {Id}: {Count} {Item} at {Quality} quality, {Durability} percent durability for {Price} {CoinName}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Auction6", out phrase))
@@ -1867,7 +1872,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction6\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Auction7", out phrase))
                     {
-                        phrase = "You can not make this purchase. You need {Value} more {Name}";
+                        phrase = "You can not make this purchase. You need {Value} more {CoinName}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction7\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Auction8", out phrase))
@@ -1917,7 +1922,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction16\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Auction17", out phrase))
                     {
-                        phrase = "# {Id}: {Count} {Item} for {Price} {Coin}";
+                        phrase = "# {Id}: {Count} {Item} for {Price} {CoinName}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction17\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Auction18", out phrase))
@@ -1935,6 +1940,11 @@ namespace ServerTools
                         phrase = "Auction security code set to {Value}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Auction20\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Auction21", out phrase))
+                    {
+                        phrase = "Auction failed. No item found in the first slot of near by chest";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Auction21\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************* Bank ************************* -->");
@@ -3207,6 +3217,16 @@ namespace ServerTools
                         phrase = "Invalid block type. Unable to pickup";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Pickup7\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Pickup8", out phrase))
+                    {
+                        phrase = "Command restricted to reserved only";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Pickup8\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Pickup9", out phrase))
+                    {
+                        phrase = "Unable to pickup blocks inside of a POI";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Pickup9\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************** Wall ************************ -->");
@@ -3236,6 +3256,11 @@ namespace ServerTools
                         phrase = "Walls can only be constructed out of cube shaped blocks. Position not saved";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Wall5\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Wall6", out phrase))
+                    {
+                        phrase = "Command restricted to reserved only";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Wall6\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************** Bed ************************* -->");

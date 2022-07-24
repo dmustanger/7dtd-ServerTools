@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.5.3";
+        public const string Version = "20.5.4";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -570,7 +570,7 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Block_Pickup entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!bool.TryParse(line.GetAttribute("Enable"), out Pickup.IsEnabled))
+                                                if (!bool.TryParse(line.GetAttribute("Enable"), out BlockPickup.IsEnabled))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Block_Pickup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                                     continue;
@@ -580,7 +580,7 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Block_Pickup entry in ServerToolsConfig.xml because of missing 'Admin_Only' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!bool.TryParse(line.GetAttribute("Admin_Only"), out Pickup.Admin_Only))
+                                                if (!bool.TryParse(line.GetAttribute("Admin_Only"), out BlockPickup.Admin_Only))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Block_Pickup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Admin_Only' attribute: {0}", line.OuterXml));
                                                     continue;
@@ -590,9 +590,19 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Block_Pickup entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out Pickup.Admin_Level))
+                                                if (!int.TryParse(line.GetAttribute("Admin_Level"), out BlockPickup.Admin_Level))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Block_Pickup entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!line.HasAttribute("Reserved"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Block_Pickup entry in ServerToolsConfig.xml because of missing 'Reserved' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!bool.TryParse(line.GetAttribute("Reserved"), out BlockPickup.Reserved))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Block_Pickup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Reserved' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 break;
@@ -3828,23 +3838,23 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!bool.TryParse(line.GetAttribute("Enable"), out VoteReward.IsEnabled))
+                                                if (!bool.TryParse(line.GetAttribute("Enable"), out Voting.IsEnabled))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!line.HasAttribute("Your_Voting_Site"))
+                                                if (!line.HasAttribute("Link"))
                                                 {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry in ServerToolsConfig.xml because of missing 'Your_Voting_Site' attribute: {0}", line.OuterXml));
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry in ServerToolsConfig.xml because of missing 'Link' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (line.HasAttribute("Your_Voting_Site"))
+                                                if (line.HasAttribute("Link"))
                                                 {
-                                                    string link = line.GetAttribute("Your_Voting_Site");
-                                                    if (VoteReward.Your_Voting_Site != link)
+                                                    string link = line.GetAttribute("Link");
+                                                    if (Voting.Link != link)
                                                     {
-                                                        VoteReward.Your_Voting_Site = link;
-                                                        VoteReward.SetLink(link);
+                                                        Voting.Link = link;
+                                                        Voting.SetLink(link);
                                                     }
                                                 }
                                                 if (!line.HasAttribute("API_Key"))
@@ -3854,14 +3864,14 @@ namespace ServerTools
                                                 }
                                                 if (line.HasAttribute("API_Key"))
                                                 {
-                                                    VoteReward.API_Key = line.GetAttribute("API_Key");
+                                                    Voting.API_Key = line.GetAttribute("API_Key");
                                                 }
                                                 if (!line.HasAttribute("Delay_Between_Uses"))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry in ServerToolsConfig.xml because of missing 'Delay_Between_Uses' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out VoteReward.Delay_Between_Uses))
+                                                if (!int.TryParse(line.GetAttribute("Delay_Between_Uses"), out Voting.Delay_Between_Uses))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", line.OuterXml));
                                                     continue;
@@ -3873,7 +3883,7 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of missing 'Reward_Count' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!int.TryParse(line.GetAttribute("Reward_Count"), out VoteReward.Reward_Count))
+                                                if (!int.TryParse(line.GetAttribute("Reward_Count"), out Voting.Reward_Count))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Reward_Count' attribute: {0}", line.OuterXml));
                                                     continue;
@@ -3883,7 +3893,7 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of missing 'Reward_Entity' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!bool.TryParse(line.GetAttribute("Reward_Entity"), out VoteReward.Reward_Entity))
+                                                if (!bool.TryParse(line.GetAttribute("Reward_Entity"), out Voting.Reward_Entity))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Reward_Entity' attribute: {0}", line.OuterXml));
                                                     continue;
@@ -3893,7 +3903,7 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of missing 'Entity_Id' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!int.TryParse(line.GetAttribute("Entity_Id"), out VoteReward.Entity_Id))
+                                                if (!int.TryParse(line.GetAttribute("Entity_Id"), out Voting.Entity_Id))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Entity_Id' attribute: {0}", line.OuterXml));
                                                     continue;
@@ -3903,7 +3913,7 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of missing 'Weekly_Votes' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!int.TryParse(line.GetAttribute("Weekly_Votes"), out VoteReward.Weekly_Votes))
+                                                if (!int.TryParse(line.GetAttribute("Weekly_Votes"), out Voting.Weekly_Votes))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Weekly_Votes' attribute: {0}", line.OuterXml));
                                                     continue;
@@ -3928,6 +3938,16 @@ namespace ServerTools
                                                 if (!bool.TryParse(line.GetAttribute("Player_Check"), out Wall.Player_Check))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wall entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Player_Check' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!line.HasAttribute("Reserved"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wall entry in ServerToolsConfig.xml because of missing 'Reserved' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!bool.TryParse(line.GetAttribute("Reserved"), out Wall.Reserved))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wall entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Reserved' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 break;
@@ -4424,7 +4444,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Bed\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", Bed.IsEnabled, Bed.Delay_Between_Uses, Bed.Command_Cost));
                 //sw.WriteLine(string.Format("        <Tool Name=\"Black_Jack\" Enable=\"{0}\" Buy_In=\"{1}\" />", BlackJack.IsEnabled, BlackJack.Buy_In));
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Logger\" Enable=\"{0}\" />", BlockLogger.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Block_Pickup\" Enable=\"{0}\" Admin_Only=\"{1}\" Admin_Level=\"{2}\" />", Pickup.IsEnabled, Pickup.Admin_Only, Pickup.Admin_Level));
+                sw.WriteLine(string.Format("        <Tool Name=\"Block_Pickup\" Enable=\"{0}\" Admin_Only=\"{1}\" Admin_Level=\"{2}\" Reserved=\"{3}\" />", BlockPickup.IsEnabled, BlockPickup.Admin_Only, BlockPickup.Admin_Level, BlockPickup.Reserved));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Delay=\"{1}\" Show_On_Respawn=\"{2}\" />", Bloodmoon.IsEnabled, Bloodmoon.Delay, Bloodmoon.Show_On_Respawn));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon_Warrior\" Enable=\"{0}\" Zombie_Kills=\"{1}\" Chance=\"{2}\" Reduce_Death_Count=\"{3}\" Reward_Count=\"{4}\" />", BloodmoonWarrior.IsEnabled, BloodmoonWarrior.Zombie_Kills, BloodmoonWarrior.Chance, BloodmoonWarrior.Reduce_Death_Count, BloodmoonWarrior.Reward_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bot_Response\" Enable=\"{0}\" Whisper=\"{1}\" />", BotResponse.IsEnabled, BotResponse.Whisper));
@@ -4509,9 +4529,9 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Travel\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" Player_Check=\"{3}\" Zombie_Check=\"{4}\" />", Travel.IsEnabled, Travel.Delay_Between_Uses, Travel.Command_Cost, Travel.Player_Check, Travel.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Recall\" Enable=\"{0}\" Inside_Claim=\"{1}\" Distance=\"{2}\" Delay_Between_Uses=\"{3}\" Command_Cost=\"{4}\" />", VehicleRecall.IsEnabled, VehicleRecall.Inside_Claim, VehicleRecall.Distance, VehicleRecall.Delay_Between_Uses, VehicleRecall.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Recall_Extended\" Normal_Max=\"{0}\" Reserved_Max=\"{1}\" />", VehicleRecall.Normal_Max, VehicleRecall.Reserved_Max));
-                sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Your_Voting_Site=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" />", VoteReward.IsEnabled, VoteReward.Your_Voting_Site, VoteReward.API_Key, VoteReward.Delay_Between_Uses));
-                sw.WriteLine(string.Format("        <Tool Name=\"Voting_Extended\" Reward_Count=\"{0}\" Reward_Entity=\"{1}\" Entity_Id=\"{2}\" Weekly_Votes=\"{3}\" />", VoteReward.Reward_Count, VoteReward.Reward_Entity, VoteReward.Entity_Id, VoteReward.Weekly_Votes));
-                sw.WriteLine(string.Format("        <Tool Name=\"Wall\" Enable=\"{0}\" Player_Check=\"{1}\" />", Wall.IsEnabled, Wall.Player_Check));
+                sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Link=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" />", Voting.IsEnabled, Voting.Link, Voting.API_Key, Voting.Delay_Between_Uses));
+                sw.WriteLine(string.Format("        <Tool Name=\"Voting_Extended\" Reward_Count=\"{0}\" Reward_Entity=\"{1}\" Entity_Id=\"{2}\" Weekly_Votes=\"{3}\" />", Voting.Reward_Count, Voting.Reward_Entity, Voting.Entity_Id, Voting.Weekly_Votes));
+                sw.WriteLine(string.Format("        <Tool Name=\"Wall\" Enable=\"{0}\" Player_Check=\"{1}\" Reserved=\"{2}\" />", Wall.IsEnabled, Wall.Player_Check, Wall.Reserved));
                 sw.WriteLine(string.Format("        <Tool Name=\"Wallet\" Enable=\"{0}\" PVP=\"{1}\" Zombie_Kill=\"{2}\" Player_Kill=\"{3}\" Bank_Transfers=\"{4}\" />", Wallet.IsEnabled, Wallet.PVP, Wallet.Zombie_Kill, Wallet.Player_Kill, Wallet.Bank_Transfers));
                 sw.WriteLine(string.Format("        <Tool Name=\"Wallet_Extended\" Session_Bonus=\"{0}\" Currency_Name=\"{1}\" Item_Name=\"{2}\" />", Wallet.Session_Bonus, Wallet.Currency_Name, Wallet.Item_Name));
                 sw.WriteLine(string.Format("        <Tool Name=\"Watch_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Delay=\"{2}\" />", WatchList.IsEnabled, WatchList.Admin_Level, WatchList.Delay));

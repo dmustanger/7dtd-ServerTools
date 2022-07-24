@@ -1,5 +1,36 @@
 ﻿CHANGELOG
 
+20.5.4
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added Reserved option to Wall and Pickup tools. Limits the
+commands to people on the Reserved_Slots list
+-Added console command st-Auction Add Slot and Remove Slot. Adds
+or removes one extra Auction slot
+-Added console command st-Home Add Spot and Remove Spot. Adds or 
+removes one extra Home spot for a player
+-Added console command st-Waypoint Add Spot and Remove Spot. 
+Adds or removes one extra Waypoint spot for a player
+-Added Bloodmoon option to CustomCommands.xml. When set to
+false, the command will not be available during bloodmoon
+-Changed Block_Pickup to prevent pickup inside a POI space
+-Changed Wall tool to allow the container holding the blocks
+to be a non secure chest
+-Changed Auction tool to integrate with the Web_API and provide
+an interactive browser based interface while in game
+-Fixed load process triggering an existing key exception due
+to users installing the mod to multiple locations
+-Fixed Shop panel showing improper category when updated on a
+live server
+-Fixed xpath generation and alteration of various windows
+-Fixed console command Maze undo not reverting back to the 
+prior state
+-Fixed console command Maze failing to generate properly when
+a custom block name is provided
+-Updated multiple Auction phrases
+-Updated HowToSetup.txt
+
 20.5.3
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

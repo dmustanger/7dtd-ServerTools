@@ -337,10 +337,10 @@ namespace ServerTools
                             ClanManager.Command_clan_list = kvp.Value;
                             continue;
                         case "reward":
-                            VoteReward.Command_reward = kvp.Value;
+                            Voting.Command_reward = kvp.Value;
                             continue;
                         case "vote":
-                            VoteReward.Command_vote = kvp.Value;
+                            Voting.Command_vote = kvp.Value;
                             continue;
                         case "shutdown":
                             Shutdown.Command_shutdown = kvp.Value;
@@ -577,7 +577,7 @@ namespace ServerTools
                             PersistentOperations.Command_expire = kvp.Value;
                             continue;
                         case "pickup":
-                            Pickup.Command_pickup = kvp.Value;
+                            BlockPickup.Command_pickup = kvp.Value;
                             continue;
                         case "wall":
                             Wall.Command_wall = kvp.Value;

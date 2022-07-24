@@ -167,21 +167,24 @@ namespace ServerTools
                     if (player.IsSpawned())
                     {
                         count = GetCurrency(cInfo.CrossplatformId.CombinedString);
-                        GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
-                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
-                        if (count > _amount)
+                        if (GameEventManager.GameEventSequences.ContainsKey("action_currency"))
                         {
-                            count -= _amount;
-                            ItemStack stack = new ItemStack(ItemClass.GetItem(PersistentOperations.Currency_Item, false), count);
-                            if (stack != null)
+                            GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
+                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
+                            if (count > _amount)
                             {
-                                UpdateRequired.Add(cInfo.entityId, count);
+                                count -= _amount;
+                                ItemStack stack = new ItemStack(ItemClass.GetItem(PersistentOperations.Currency_Item, false), count);
+                                if (stack != null)
+                                {
+                                    UpdateRequired.Add(cInfo.entityId, count);
+                                }
                             }
-                        }
-                        else if (count < _amount && _bankPayment)
-                        {
-                            PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank -= _amount;
-                            PersistentContainer.DataChange = true;
+                            else if (count < _amount && _bankPayment)
+                            {
+                                PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank -= _amount;
+                                PersistentContainer.DataChange = true;
+                            }
                         }
                     }
                     else

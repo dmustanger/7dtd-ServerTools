@@ -303,6 +303,24 @@ namespace ServerTools
             };
         }
 
+        public static void MazeGenerationDelayTimer(Dictionary<Vector3i, string> _blockList, BlockValue _steelBlockValue,
+            BlockValue _concreteBlockValue, BlockValue _stoneBlockValue, BlockValue _glassCeilingBlockValue, BlockValue _glassBlockValue,
+            BlockValue _ladderValue)
+        {
+            System.Timers.Timer startingItemsDelayTimer = new System.Timers.Timer(5000)
+            {
+                AutoReset = false
+            };
+            startingItemsDelayTimer.Start();
+            startingItemsDelayTimer.Elapsed += (sender, e) =>
+            {
+                Init15(_blockList, _steelBlockValue, _concreteBlockValue, _stoneBlockValue, _glassCeilingBlockValue, _glassBlockValue, _ladderValue);
+                startingItemsDelayTimer.Stop();
+                startingItemsDelayTimer.Close();
+                startingItemsDelayTimer.Dispose();
+            };
+        }
+
         public static void PersistentDataSave()
         {
             System.Timers.Timer saveDelay = new System.Timers.Timer(120000)
@@ -614,6 +632,14 @@ namespace ServerTools
         private static void Init14(string _id)
         {
             ResetPlayerConsole.DelayedProfileDeletion(_id);
+        }
+
+        private static void Init15(Dictionary<Vector3i, string> _blockList, BlockValue _steelBlockValue,
+            BlockValue _concreteBlockValue, BlockValue _stoneBlockValue, BlockValue _glassCeilingBlockValue, BlockValue _glassBlockValue,
+            BlockValue _ladderValue)
+        {
+            MazeConsole.Corrections(_blockList, _steelBlockValue, _concreteBlockValue, _stoneBlockValue, _glassCeilingBlockValue, _glassBlockValue, 
+                _ladderValue);
         }
     }
 }

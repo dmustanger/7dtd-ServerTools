@@ -6,14 +6,37 @@ namespace ServerTools
 {
     class Wall
     {
-        public static bool IsEnabled = false, Player_Check = false;
+        public static bool IsEnabled = false, Player_Check = false, Reserved = false;
         public static string Command_wall = "wall";
 
         public static Dictionary<int, Vector3i> WallEnabled = new Dictionary<int, Vector3i>();
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (!WallEnabled.ContainsKey(_cInfo.entityId))
+            if (Reserved)
+            {
+                if (ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+                {
+                    if (!WallEnabled.ContainsKey(_cInfo.entityId))
+                    {
+                        WallEnabled.Add(_cInfo.entityId, new Vector3i(Vector3i.zero));
+                        Phrases.Dict.TryGetValue("Wall1", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                    else
+                    {
+                        WallEnabled.Remove(_cInfo.entityId);
+                        Phrases.Dict.TryGetValue("Wall2", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                }
+                else
+                {
+                    Phrases.Dict.TryGetValue("Wall6", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
+            else if (!WallEnabled.ContainsKey(_cInfo.entityId))
             {
                 WallEnabled.Add(_cInfo.entityId, new Vector3i(Vector3i.zero));
                 Phrases.Dict.TryGetValue("Wall1", out string phrase);
@@ -124,16 +147,24 @@ namespace ServerTools
                             foreach (TileEntity tile in tiles.dict.Values)
                             {
                                 bool modified = false;
-                                if (blockPositions.Count > 0 && tile is TileEntitySecureLootContainer)
+                                if (blockPositions.Count > 0)
                                 {
-                                    TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
-                                    if ((SecureLoot.IsUserAllowed(_cInfo.PlatformId) || SecureLoot.IsUserAllowed(_cInfo.CrossplatformId)) && !SecureLoot.IsUserAccessing())
+                                    TileEntitySecureLootContainer SecureLootContainer = null;
+                                    if (tile is TileEntitySecureLootContainer)
                                     {
-                                        ItemStack[] items = SecureLoot.items;
+                                        SecureLootContainer = (TileEntitySecureLootContainer)tile;
+                                    }
+                                    else if (tile is TileEntitySecureLootContainerSigned)
+                                    {
+                                        SecureLootContainer = (TileEntitySecureLootContainerSigned)tile;
+                                    }
+                                    if (SecureLootContainer != null && (SecureLootContainer.IsUserAllowed(_cInfo.PlatformId) || SecureLootContainer.IsUserAllowed(_cInfo.CrossplatformId)) && !SecureLootContainer.IsUserAccessing())
+                                    {
+                                        ItemStack[] items = SecureLootContainer.items;
                                         for (int j = 0; j < items.Length; j++)
                                         {
                                             ItemStack item = items[j];
-                                            if (blockPositions.Count > 0 && item != null && !item.IsEmpty())
+                                            if (item != null && !item.IsEmpty())
                                             {
                                                 if (item.itemValue.ItemClass.GetItemName().Contains(blockName))
                                                 {
@@ -164,6 +195,50 @@ namespace ServerTools
                                             else
                                             {
                                                 break;
+                                            }
+                                        }
+                                    }
+                                    else if (tile.GetType().ToString() == "TileEntityLootContainer")
+                                    {
+                                        TileEntityLootContainer LootContainer = (TileEntityLootContainer)tile;
+                                        if (LootContainer != null && !LootContainer.IsUserAccessing())
+                                        {
+                                            ItemStack[] items = LootContainer.items;
+                                            for (int j = 0; j < items.Length; j++)
+                                            {
+                                                ItemStack item = items[j];
+                                                if (item != null && !item.IsEmpty())
+                                                {
+                                                    if (item.itemValue.ItemClass.GetItemName().Contains(blockName))
+                                                    {
+                                                        int count = item.count;
+                                                        for (int k = 0; k < count; k++)
+                                                        {
+                                                            if (blockPositions.Count > 0)
+                                                            {
+                                                                blockList.Add(new BlockChangeInfo(0, blockPositions[0], _value));
+                                                                blockPositions.RemoveAt(0);
+                                                                if (items[j].count > 1)
+                                                                {
+                                                                    items[j].count -= 1;
+                                                                }
+                                                                else
+                                                                {
+                                                                    items[j] = ItemStack.Empty.Clone();
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                break;
+                                                            }
+                                                        }
+                                                        modified = true;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
                                             }
                                         }
                                     }

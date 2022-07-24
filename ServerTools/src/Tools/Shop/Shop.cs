@@ -14,17 +14,16 @@ namespace ServerTools
             Panel= false;
         public static int Delay_Between_Uses = 60;
         public static string Command_shop = "shop", Command_shop_buy = "shop buy", Link = "http://0.0.0.0:8084/shop.html", 
-            Panel_Name = "Super Shop", PanelItems = "";
+            Panel_Name = "Super Shop", PanelItems = "", CategoryString = "";
 
         public static Dictionary<string, int> PanelAccess = new Dictionary<string, int>();
         public static List<string[]> Dict = new List<string[]>();
         public static List<string> Categories = new List<string>();
-        public static string CategoryString = "";
 
         private const string file = "Shop.xml";
         private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static readonly string AlphaNumSet = "JKQR9L3WBYZ0MPSN5O6DE1FTAC2GH7IU48VX";
+        private static readonly string AlphaNumSet = "JKQRLWBYZMPSNODHEFXTACGIUV";
 
         private static XmlNodeList OldNodeList;
 
@@ -38,6 +37,8 @@ namespace ServerTools
         {
             Dict.Clear();
             Categories.Clear();
+            PanelItems = "";
+            CategoryString = "";
             FileWatcher.Dispose();
             IsRunning = false;
         }
@@ -67,6 +68,7 @@ namespace ServerTools
                     Dict.Clear();
                     Categories.Clear();
                     PanelItems = "";
+                    CategoryString = "";
                     string tierCategories = "";
                     Dictionary<string, int> itemList = new Dictionary<string, int>();
                     for (int i = 0; i < childNodes.Count; i++)
@@ -1179,6 +1181,7 @@ namespace ServerTools
                             lines.Add("");
                             lines.Add("</configs>");
                             File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
+                            return;
                         }
                     }
                 }
@@ -1297,16 +1300,20 @@ namespace ServerTools
                             }
                             else
                             {
-                                foreach (var client in PanelAccess)
+                                if (PanelAccess.Count > 0)
                                 {
-                                    if (client.Value == _cInfo.entityId)
+                                    foreach (var client in PanelAccess)
                                     {
-                                        PanelAccess.Remove(client.Key);
-                                        break;
+                                        if (client.Value == _cInfo.entityId)
+                                        {
+                                            PanelAccess.Remove(client.Key);
+                                            WebAPI.AuthorizedTime.Remove(client.Key);
+                                            break;
+                                        }
                                     }
                                 }
                                 PanelAccess.Add(securityId, _cInfo.entityId);
-                                WebAPI.AuthorizedTime[securityId] = DateTime.Now.AddMinutes(5);
+                                WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
                             }
                             break;
                         }
@@ -1451,7 +1458,7 @@ namespace ServerTools
                 if (itemValue.HasQuality)
                 {
                     itemValue.Quality = 1;
-                    if (_quality > 0)
+                    if (_quality > 1)
                     {
                         itemValue.Quality = _quality;
                     }
@@ -1505,17 +1512,10 @@ namespace ServerTools
         public static string CreatePassword(int _length)
         {
             string pass = string.Empty;
-            try
+            System.Random rnd = new System.Random();
+            for (int i = 0; i < _length; i++)
             {
-                System.Random rnd = new System.Random();
-                for (int i = 0; i < _length; i++)
-                {
-                    pass += AlphaNumSet.ElementAt(rnd.Next(0, 36));
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Shop.CreatePassword: {0}", e.Message));
+                pass += AlphaNumSet.ElementAt(rnd.Next(0, 26));
             }
             return pass;
         }

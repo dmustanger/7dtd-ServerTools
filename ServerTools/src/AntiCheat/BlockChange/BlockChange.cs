@@ -105,7 +105,7 @@ namespace ServerTools
                                         {
                                             if (PersistentOperations.ClaimedByWho(_persistentPlayerId, newBlockInfo.pos) == EnumLandClaimOwner.None)
                                             {
-                                                if (Pickup.IsEnabled)
+                                                if (BlockPickup.IsEnabled)
                                                 {
                                                     if (PersistentContainer.Instance.BlockPickUp != null)
                                                     {
@@ -177,20 +177,29 @@ namespace ServerTools
                                     {
                                         if (newBlockInfo.bChangeDamage)//block took damage
                                         {
-                                            if (Pickup.IsEnabled && Pickup.PickupEnabled.Contains(player.entityId) &&
+                                            if (BlockPickup.IsEnabled && BlockPickup.PickupEnabled.Contains(player.entityId) &&
                                                 player.inventory.holdingItemItemValue.GetItemId() == PersistentOperations.MeleeHandPlayer)
                                             {
-                                                if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) <= Pickup.Admin_Level ||
-                                                    GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) <= Pickup.Admin_Level)
+                                                if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) <= BlockPickup.Admin_Level ||
+                                                    GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) <= BlockPickup.Admin_Level)
                                                 {
                                                     GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
                                                     PersistentOperations.ReturnBlock(cInfo, oldBlock.GetBlockName(), 1, "Pickup5");
                                                     return false;
                                                 }
-                                                if (oldBlock.shape.IsTerrain() || oldBlock.IsTerrainDecoration || oldBlock.IsPlant() || oldBlock.isMultiBlock 
-                                                    || oldBlockValue.ischild || oldBlock.shape is BlockShapeModelEntity || oldBlock.shape is BlockShapeWater)
+                                                if (!world.IsPositionWithinPOI(newBlockInfo.pos.ToVector3(), 2))
                                                 {
-                                                    Phrases.Dict.TryGetValue("Pickup7", out string phrase);
+                                                    if (oldBlock.shape.IsTerrain() || oldBlock.IsTerrainDecoration || oldBlock.IsPlant() || oldBlock.isMultiBlock
+                                                        || oldBlockValue.ischild || oldBlock.shape is BlockShapeModelEntity || oldBlock.shape is BlockShapeWater)
+                                                    {
+                                                        Phrases.Dict.TryGetValue("Pickup7", out string phrase);
+                                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                        return true;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Phrases.Dict.TryGetValue("Pickup9", out string phrase);
                                                     ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                     return true;
                                                 }

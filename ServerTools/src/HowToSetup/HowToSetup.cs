@@ -13,7 +13,7 @@ namespace ServerTools
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine("This was drafted for version 20.5.3");
+                sw.WriteLine("This was drafted for version 20.5.4");
                 sw.WriteLine();
                 sw.WriteLine("If you find mistakes or the file is out of date, let the dev team know.");
                 sw.WriteLine();
@@ -22,8 +22,23 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("You can also report bugs at the main Discord guild for ServerTools. This is the invitation link https://discord.gg/6G8VZQg");
                 sw.WriteLine();
-                sw.WriteLine("After running your server with ServerTools installed, you will be able to access the ServerToolsConfig.xml found in the ServerTools folder located in your dedicated server installation directory.");
-                sw.WriteLine("You will need to enable and set each tools options to match your server preferences. Changes to this file are live and typically do not require the Server to be restarted.");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine("Installation:");
+                sw.WriteLine();
+                sw.WriteLine("Download and extract the contents of the latest release which will be packaged as a .zip file.");
+                sw.WriteLine("Copy the Mods folder you extracted from the.zip to your user data folder. If you have not specified a custom location, it should be located under your app data folder.");
+                sw.WriteLine("If this Mods folder already exists, you can take the ServerTools folder found inside of the Mods folder from the latest release and place it inside of your existing Mods directory.");
+                sw.WriteLine("Double check any new files were copied over properly. Some hosts do not allow .dll files to be transferred without permission.");
+                sw.WriteLine();
+                sw.WriteLine("Start the server as you normally would.");
+                sw.WriteLine();
+                sw.WriteLine("The mod will auto create or update the basic XML files required in a folder named ServerTools.");
+                sw.WriteLine("Various logs will be placed inside of this folder.");
+                sw.WriteLine("The folder will be located in the user data folder / app data folder depending which you are using.");
+                sw.WriteLine();
+                sw.WriteLine("You will need to enable and set each tools options to match your server preferences.");
+                sw.WriteLine("Changes to the ServerToolsConfig.xml file are live and typically do not require the server to be restarted.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -562,11 +577,11 @@ namespace ServerTools
                 sw.WriteLine("Allows custom commands to be used via chat. Example: The player can type /tpmarket and it runs \"tele {EOS} 0 -1 5\" based on the response the admin has setup.");
                 sw.WriteLine("Separate command response with a ^. Example: tele {EntityId} 10 -1 50 ^ whisper You are now in the market.");
                 sw.WriteLine("A delay in the operation of the response can be done with {Delay} #. Example: tele {EntityId} 10 -1 50 ^ {Delay} 3 ^ whisper {PlayerName} you are now in the market.");
-                sw.WriteLine("Delays between command use are available for the first twenty entries in the list only.");
                 sw.WriteLine("Run a permission check on the player using the command by setting it via the xml file to true or false. Users must be the right permission level in the serveradmin.xml");
                 sw.WriteLine("Responses in chat can include whisper or global with a message. Whisper will send it to the player that triggers the command, while global will send the message");
                 sw.WriteLine("to the entire server.");
-                sw.WriteLine("{SetReturn} will save the users current location with the trigger name. {Return} 'trigger' will teleport the user to the saved location");
+                sw.WriteLine("{SetReturn} will save the users current location with the trigger name. {Return} 'trigger' will teleport the user to the saved location.");
+                sw.WriteLine("Bloodmoon option in CustomCommands.xml controls whether the command can be used during a bloodmoon.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

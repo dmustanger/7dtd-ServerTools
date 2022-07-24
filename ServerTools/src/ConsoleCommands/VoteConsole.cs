@@ -39,9 +39,9 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (VoteReward.IsEnabled)
+                    if (Voting.IsEnabled)
                     {
-                        VoteReward.IsEnabled = false;
+                        Voting.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vote reward has been set to off"));
@@ -55,9 +55,9 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (!VoteReward.IsEnabled)
+                    if (!Voting.IsEnabled)
                     {
-                        VoteReward.IsEnabled = true;
+                        Voting.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vote reward has been set to on"));

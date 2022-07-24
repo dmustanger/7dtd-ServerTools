@@ -26,24 +26,36 @@
 			<div id="SubheaderRight" oncontextmenu="return false">
 				<h3 id="PlayerName"><img src="Img/UserIcon.webp" alt="usericon" />CLIENT</h3>
 				<h4 id="Balance">Balance: 0<h4>
-				<h4 id="Price">Total: 0</h4>
+				<h4 id="Price">Price: 0</h4>
+				<input type="checkbox" id="CancelItem" />
+				<input type="button" value="Cancel" onclick="Cancel()" class="Buttons" id="CancelButton" />
 				<input type="checkbox" id="ConfirmPurchase" />
-				<input type="button" value="Purchase" onclick="Purchase()" id="Buttons" />
-				<input type="checkbox" id="ConfirmExit" />
-				<input type="button" value="Exit Auction" onclick="ExitAuction()" id="Buttons" />
+				<input type="button" value="Purchase" onclick="Purchase()" class="Buttons" />
+				<input type="button" value="Exit" onclick="ExitAuction()" class="Buttons" />
 			</div>
 		</header>
 		<div id="SecuritySync" oncontextmenu="return false">
-				<h2 id="SecurityId">Security Id</h2>
-				<input type="text" placeholder="Enter secure ID here" id="SecureId" />
-				<input type="checkbox" id="ConfirmEnter" />
-				<input type="button" value="Enter Auction" onclick="EnterAuction()" id="Buttons" />
+			<h2 id="SecurityId">Security Id</h2>
+			<input type="text" placeholder="Enter secure ID here" id="SecureId" />
+			<input type="checkbox" id="ConfirmEnter" />
+			<input type="button" value="Enter" onclick="EnterAuction()" class="Buttons" />
 		</div>
 		<div id="Body">
+			<div id="SearchContainer" oncontextmenu="return false">
+				<h3 id="FilterHeader">Filter</h3>
+				<input type="text" placeholder="Key word search" id="SearchFilter" />
+				<input type="button" value="Search" onclick="RunSearch()" class="Buttons" />
+				<select name="PerPage" title="Items Per Page" id="PerPage" >
+					<option value="20">20</option>
+					<option value="15">15</option>
+					<option value="10">10</option>
+					<option value="5">5</option>
+				</select>
+			</div>
 			<div id="ContentContainer" oncontextmenu="return false">
 				<h3 id="ItemInfo">ITEM INFO</h3>
 				<div id="InfoContainer">
-					
+					...
 				</div>
 				<div id="Items">
 					

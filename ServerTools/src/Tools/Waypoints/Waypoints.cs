@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using UnityEngine;
@@ -239,30 +240,28 @@ namespace ServerTools
                 {
                     waypoints = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints;
                 }
-                int count = 0;
-                if (waypoints.Count > 0)
+                int extraSpots = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].WaypointSpots;
+                if (waypoints.Count + extraSpots > 0)
                 {
-                    foreach (var waypoint in waypoints)
+                    var waypointList = waypoints.ToArray();
+                    for (int i = 0; i < _waypointLimit; i++)
                     {
-                        count += 1;
-                        if (count <= _waypointLimit)
-                        {
-                            Phrases.Dict.TryGetValue("Waypoints12", out string phrase);
-                            phrase = phrase.Replace("{Name}", waypoint.Key);
-                            phrase = phrase.Replace("{Position}", waypoint.Value);
-                            phrase = phrase.Replace("{Cost}", Command_Cost.ToString());
-                            phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        }
+                        Phrases.Dict.TryGetValue("Waypoints12", out string phrase);
+                        phrase = phrase.Replace("{Name}", waypointList[i].Key);
+                        phrase = phrase.Replace("{Position}", waypointList[i].Value);
+                        phrase = phrase.Replace("{Cost}", Command_Cost.ToString());
+                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                     if (Public_Waypoints && Dict.Count > 0)
                     {
-                        foreach (var waypoint in Dict)
+                        var waypoint = Dict.ToArray();
+                        for (int i = 0; i < waypoint.Length; i++)
                         {
                             Phrases.Dict.TryGetValue("Waypoints12", out string phrase);
-                            phrase = phrase.Replace("{Name}", waypoint.Key);
-                            phrase = phrase.Replace("{Position}", waypoint.Value[0]);
-                            phrase = phrase.Replace("{Cost}", waypoint.Value[1]);
+                            phrase = phrase.Replace("{Name}", waypoint[i].Key);
+                            phrase = phrase.Replace("{Position}", waypoint[i].Value[0]);
+                            phrase = phrase.Replace("{Cost}", waypoint[i].Value[1]);
                             phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
@@ -270,12 +269,13 @@ namespace ServerTools
                 }
                 else if (Public_Waypoints && Dict.Count > 0)
                 {
-                    foreach (var waypoint in Dict)
+                    var waypoint = Dict.ToArray();
+                    for (int i = 0; i < waypoint.Length; i++)
                     {
                         Phrases.Dict.TryGetValue("Waypoints12", out string phrase);
-                        phrase = phrase.Replace("{Name}", waypoint.Key);
-                        phrase = phrase.Replace("{Position}", waypoint.Value[0]);
-                        phrase = phrase.Replace("{Cost}", waypoint.Value[1]);
+                        phrase = phrase.Replace("{Name}", waypoint[i].Key);
+                        phrase = phrase.Replace("{Position}", waypoint[i].Value[0]);
+                        phrase = phrase.Replace("{Cost}", waypoint[i].Value[1]);
                         phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -315,10 +315,10 @@ namespace ServerTools
                     {
                         if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint != null)
                         {
-                            DateTime _lastWaypoint = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint;
-                            TimeSpan varTime = DateTime.Now - _lastWaypoint;
+                            DateTime lastWaypoint = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint;
+                            TimeSpan varTime = DateTime.Now - lastWaypoint;
                             double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
+                            int timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
                                 if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
@@ -328,7 +328,7 @@ namespace ServerTools
                                         if (DateTime.Now < dt)
                                         {
                                             int delay = Delay_Between_Uses / 2;
-                                            Time(_cInfo, _waypoint, _timepassed, delay, _friends);
+                                            Time(_cInfo, _waypoint, timepassed, delay, _friends);
                                             return;
                                         }
                                     }
@@ -337,13 +337,13 @@ namespace ServerTools
                                         if (DateTime.Now < dt)
                                         {
                                             int delay = Delay_Between_Uses / 2;
-                                            Time(_cInfo, _waypoint, _timepassed, delay, _friends);
+                                            Time(_cInfo, _waypoint, timepassed, delay, _friends);
                                             return;
                                         }
                                     }
                                 }
                             }
-                            Time(_cInfo, _waypoint, _timepassed, Delay_Between_Uses, _friends);
+                            Time(_cInfo, _waypoint, timepassed, Delay_Between_Uses, _friends);
                         }
                         else
                         {

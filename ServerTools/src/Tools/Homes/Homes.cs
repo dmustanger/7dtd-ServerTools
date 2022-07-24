@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -56,21 +57,18 @@ namespace ServerTools
                 {
                     homes = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes;
                 }
-                int count = 0;
-                if (homes.Count > 0)
+                int extraSpots = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HomeSpots;
+                if (homes.Count + extraSpots > 0)
                 {
-                    foreach (var home in homes)
+                    var homeList = homes.ToArray();
+                    for (int i = 0; i < _homeLimit; i++)
                     {
-                        count += 1;
-                        if (count <= _homeLimit)
-                        {
-                            Phrases.Dict.TryGetValue("Homes2", out string phrase);
-                            phrase = phrase.Replace("{Name}", home.Key);
-                            phrase = phrase.Replace("{Position}", home.Value);
-                            phrase = phrase.Replace("{Cost}", Command_Cost.ToString());
-                            phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        }
+                        Phrases.Dict.TryGetValue("Homes2", out string phrase);
+                        phrase = phrase.Replace("{Name}", homeList[i].Key);
+                        phrase = phrase.Replace("{Position}", homeList[i].Value);
+                        phrase = phrase.Replace("{Cost}", Command_Cost.ToString());
+                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
