@@ -90,14 +90,14 @@ namespace ServerTools
                             {
                                 PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].WaypointSpots += 1;
                                 PersistentContainer.DataChange = true;
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added a Waypoint spot for '{0}'", _params[1]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added a Waypoint spot for '{0}' named '{1}'", _params[1], cInfo.playerName));
                             }
                         }
                         else if (PersistentContainer.Instance.Players[_params[1]] != null)
                         {
                             PersistentContainer.Instance.Players[_params[1]].WaypointSpots += 1;
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added a Waypoint spot for '{0}'", _params[1]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added a Waypoint spot for '{0}' named '{1}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
                         }
                         else
                         {
@@ -189,11 +189,11 @@ namespace ServerTools
                                 {
                                     PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].WaypointSpots -= 1;
                                     PersistentContainer.DataChange = true;
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed a Waypoint spot for '{0}'", _params[1]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed a Waypoint spot for '{0}' named '{1}'", _params[1], cInfo.playerName));
                                 }
                                 else
                                 {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' has no Waypoint spots to remove", _params[1]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no Waypoint spots to remove", _params[1], cInfo.playerName));
                                 }
                             }
                         }
@@ -203,11 +203,11 @@ namespace ServerTools
                             {
                                 PersistentContainer.Instance.Players[_params[1]].WaypointSpots -= 1;
                                 PersistentContainer.DataChange = true;
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed a Waypoint spot for '{0}'", _params[1]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed a Waypoint spot for '{0}' named '{1}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' has no Waypoint spots to remove", _params[1]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no Waypoint spots to remove", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
                             }
                         }
                         else

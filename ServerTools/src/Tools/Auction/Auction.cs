@@ -94,7 +94,7 @@ namespace ServerTools
                                 PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction = auctionItems;
                                 PersistentContainer.DataChange = true;
                             }
-                            if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.Count < Total_Items)
+                            if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.Count < Total_Items + PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AuctionCount)
                             {
                                 List<Chunk> chunks = new List<Chunk>();
                                 DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
@@ -237,12 +237,8 @@ namespace ServerTools
                                                             {
                                                                 Phrases.Dict.TryGetValue("Auction16", out string phrase);
                                                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                                return;
                                                             }
-                                                        }
-                                                        else
-                                                        {
-                                                            Phrases.Dict.TryGetValue("Auction21", out string phrase);
-                                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                         }
                                                     }
                                                 }
@@ -257,19 +253,24 @@ namespace ServerTools
                                 phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
                                 phrase = phrase.Replace("{Command_auction_cancel}", Command_auction_cancel);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                return;
                             }
                         }
                         else
                         {
                             Phrases.Dict.TryGetValue("Auction3", out string phrase);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            return;
                         }
                     }
                     else
                     {
                         Phrases.Dict.TryGetValue("Auction4", out string phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        return;
                     }
+                    Phrases.Dict.TryGetValue("Auction21", out string phrase1);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

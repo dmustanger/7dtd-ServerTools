@@ -57,11 +57,11 @@ namespace ServerTools
                 {
                     homes = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes;
                 }
-                int extraSpots = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HomeSpots;
-                if (homes.Count + extraSpots > 0)
+                if (homes.Count > 0)
                 {
+                    int count = _homeLimit + PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HomeSpots;
                     var homeList = homes.ToArray();
-                    for (int i = 0; i < _homeLimit; i++)
+                    for (int i = 0; i < count; i++)
                     {
                         Phrases.Dict.TryGetValue("Homes2", out string phrase);
                         phrase = phrase.Replace("{Name}", homeList[i].Key);
@@ -387,8 +387,8 @@ namespace ServerTools
                     return;
                 }
                 if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.Count > 0)
-                {
-                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.Count < _homeTotal)
+                {      
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.Count < _homeTotal + PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HomeSpots)
                     {
                         EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                         if (player != null)

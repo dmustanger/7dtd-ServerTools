@@ -1016,6 +1016,10 @@ namespace ServerTools
                                             quality + "§" + price + "§" + stats + "§" + (id - 1) + "§" + panelMessage + "╚", price);
                                     }
                                 }
+                                else
+                                {
+                                    Log.Out(string.Format("[SERVERTOOLS] Shop.xml entry has missing data. 'Item Name=\"\" SecondaryName=\"\" Count=\"\" Quality=\"\" Price=\"\" Category=\"\" PanelMessage=\"\"'"));
+                                }
                             }
                         }
                     }
@@ -1550,7 +1554,7 @@ namespace ServerTools
                             XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && (line.Name == "Shop" || line.Name == "Item"))
                             {
-                                string name = "", secondaryName = "", count = "", quality = "", price = "", category = "";
+                                string name = "", secondaryName = "", count = "", quality = "", price = "", category = "", panelMessage = "";
                                 if (line.HasAttribute("Name"))
                                 {
                                     name = line.GetAttribute("Name");
@@ -1575,7 +1579,11 @@ namespace ServerTools
                                 {
                                     category = line.GetAttribute("Category");
                                 }
-                                sw.WriteLine(string.Format("    <Item Name=\"{0}\" SecondaryName=\"{1}\" Count=\"{2}\" Quality=\"{3}\" Price=\"{4}\" Category=\"{5}\" />", name, secondaryName, count, quality, price, category));
+                                if (line.HasAttribute("PanelMessage"))
+                                {
+                                    panelMessage = line.GetAttribute("PanelMessage");
+                                }
+                                sw.WriteLine(string.Format("    <Item Name=\"{0}\" SecondaryName=\"{1}\" Count=\"{2}\" Quality=\"{3}\" Price=\"{4}\" Category=\"{5}\" PanelMessage=\"{6}\" />", name, secondaryName, count, quality, price, category, panelMessage));
                             }
                         }
                     }

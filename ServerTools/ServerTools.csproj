@@ -61,6 +61,7 @@
     <Compile Include="src\ConsoleCommands\ClientConsoleCommandConsole.cs" />
     <Compile Include="src\ConsoleCommands\CvarConsole.cs" />
     <Compile Include="src\ConsoleCommands\DeletePlayerDataConsole.cs" />
+    <Compile Include="src\ConsoleCommands\ExperienceBoostConsole.cs" />
     <Compile Include="src\ConsoleCommands\FlyingConsole.cs" />
     <Compile Include="src\ConsoleCommands\GiveExpConsole.cs" />
     <Compile Include="src\ConsoleCommands\GodmodeDetectorConsole.cs" />

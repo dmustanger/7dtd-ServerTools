@@ -9,6 +9,7 @@ namespace ServerTools
     {
         private readonly string id;
         private Dictionary<int, ItemDataSerializable> auction;
+        private int auctionCount;
         private Dictionary<int, ItemDataSerializable> auctionReturn;
         private List<string[]> autoPartyInvite;
         private int bank;
@@ -25,6 +26,7 @@ namespace ServerTools
         private string eventReturnPosition;
         private bool eventSpawn;
         private List<List<string>> events;
+        private int experienceBoost;
         private bool familyShareImmune;
         private bool firstClaimBlock;
         private bool hardcoreEnabled;
@@ -91,6 +93,18 @@ namespace ServerTools
             set
             {
                 auction = value;
+            }
+        }
+
+        public int AuctionCount
+        {
+            get
+            {
+                return auctionCount;
+            }
+            set
+            {
+                auctionCount = value;
             }
         }
 
@@ -283,6 +297,18 @@ namespace ServerTools
             set
             {
                 events = value;
+            }
+        }
+
+        public int ExperienceBoost
+        {
+            get
+            {
+                return experienceBoost;
+            }
+            set
+            {
+                experienceBoost = value;
             }
         }
 

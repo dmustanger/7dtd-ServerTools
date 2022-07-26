@@ -15,7 +15,7 @@ namespace ServerTools
         {
             if (Reserved)
             {
-                if (ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+                if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
                     if (!WallEnabled.ContainsKey(_cInfo.entityId))
                     {
@@ -191,10 +191,6 @@ namespace ServerTools
                                                     }
                                                     modified = true;
                                                 }
-                                            }
-                                            else
-                                            {
-                                                break;
                                             }
                                         }
                                     }

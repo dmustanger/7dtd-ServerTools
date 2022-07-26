@@ -332,13 +332,14 @@ public static class Injections
     {
         try
         {
-            if (ReservedSlots.Bonus_Exp > 0 && __instance is EntityZombie)
+            
+            EntityAlive entityAlive = __instance.GetAttackTarget();
+            if (entityAlive != null && entityAlive is EntityPlayer)
             {
-                EntityAlive entityAlive = __instance.GetAttackTarget();
-                if (entityAlive != null && entityAlive is EntityPlayer)
+                ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityAlive.entityId);
+                if (cInfo != null && ReservedSlots.IsEnabled && (ReservedSlots.Dict.ContainsKey(cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(cInfo.CrossplatformId.CombinedString)))
                 {
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityAlive.entityId);
-                    if (cInfo != null && ReservedSlots.IsEnabled && (ReservedSlots.Dict.ContainsKey(cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(cInfo.CrossplatformId.CombinedString)))
+                    if (ReservedSlots.Bonus_Exp > 0 && __instance is EntityZombie)
                     {
                         if (ReservedSlots.Bonus_Exp > 100)
                         {
@@ -350,6 +351,12 @@ public static class Injections
                         experience = (int)bonus;
                         cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityAddExpClient>().Setup(entityAlive.entityId, experience, Progression.XPTypes.Kill));
                         Log.Out(string.Format("[SERVERTOOLS] Added bonus experience of '{0}' to reserved player '{1}' '{2}' named '{3}'", experience, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                    }
+                    int experienceBoost = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ExperienceBoost;
+                    if (experienceBoost > 0)
+                    {
+                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityAddExpClient>().Setup(entityAlive.entityId, experienceBoost, Progression.XPTypes.Kill));
+                        Log.Out(string.Format("[SERVERTOOLS] Added bonus experience of '{0}' to '{1}' '{2}' named '{3}'", experienceBoost, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                     }
                 }
             }

@@ -240,11 +240,11 @@ namespace ServerTools
                 {
                     waypoints = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints;
                 }
-                int extraSpots = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].WaypointSpots;
-                if (waypoints.Count + extraSpots > 0)
+                if (waypoints.Count > 0)
                 {
+                    int count = _waypointLimit + PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].WaypointSpots;
                     var waypointList = waypoints.ToArray();
-                    for (int i = 0; i < _waypointLimit; i++)
+                    for (int i = 0; i < count; i++)
                     {
                         Phrases.Dict.TryGetValue("Waypoints12", out string phrase);
                         phrase = phrase.Replace("{Name}", waypointList[i].Key);
@@ -653,7 +653,7 @@ namespace ServerTools
                 }
                 if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.Count > 0)
                 {
-                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.Count < _waypointTotal)
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.Count < _waypointTotal + PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].WaypointSpots)
                     {
                         EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
                         if (player != null)
