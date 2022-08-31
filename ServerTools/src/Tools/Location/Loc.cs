@@ -14,7 +14,7 @@ namespace ServerTools
             Entity player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
             if (player != null)
             {
-                Vector3 position = player.position;
+                Vector3i position = new Vector3i(player.position.x, player.position.y, player.position.z);
                 if (Zones.IsEnabled && Zones.ZonePlayer.ContainsKey(_cInfo.entityId))
                 {
                     Zones.ZonePlayer.TryGetValue(_cInfo.entityId, out string[] zone);

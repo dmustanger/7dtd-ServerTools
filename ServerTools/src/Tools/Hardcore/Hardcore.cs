@@ -251,7 +251,7 @@ namespace ServerTools
                                 {
                                     Life_Price = 0;
                                 }
-                                int cost = Life_Price * extraLives++;
+                                int cost = Life_Price * (extraLives + 1);
                                 int currency = 0;
                                 int bankValue = 0;
                                 if (Wallet.IsEnabled)

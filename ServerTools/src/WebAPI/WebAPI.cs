@@ -15,7 +15,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Shutdown = false, Connected = false;
         public static int Port = 8084;
-        public static string Directory = "", Panel_Address = "", Icon_Folder = ".../DedicatedServer/Data/ItemIcons";
+        public static string Directory = "", Panel_Address = "", BaseAddress = "", Icon_Folder = "../Data/ItemIcons";
 
         public static Dictionary<string, string> Authorized = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> AuthorizedTime = new Dictionary<string, DateTime>();
@@ -25,9 +25,11 @@ namespace ServerTools
         public static Dictionary<string, int> LoginAttempts = new Dictionary<string, int>();
         public static Dictionary<string, DateTime> TimeOut = new Dictionary<string, DateTime>();
         public static List<string> Ban = new List<string>();
+        
 
-        private static string Redirect = "", BaseAddress = "";
-        private static HttpListener Listener = new HttpListener();
+        private static string Redirect = "";
+        private static List<string> PostURI = new List<string>();
+        private static HttpListener Listener;
         private static Thread Thread;
         private static readonly Version HttpVersion = new Version(1, 1);
 
@@ -71,23 +73,23 @@ namespace ServerTools
         {
             try
             {
-                string ip = GamePrefs.GetString(EnumGamePrefs.ServerIP);
-                if (!string.IsNullOrEmpty(ip))
+                string externalIpString = new WebClient().DownloadString("https://ipinfo.io/ip?token=c31843916e5fd7").Trim();
+                if (!string.IsNullOrEmpty(externalIpString))
                 {
-                    BaseAddress = ip;
+                    BaseAddress = externalIpString;
                     return true;
                 }
                 else
                 {
-                    ip = Dns.GetHostEntry(Dns.GetHostName()).AddressList[0].ToString();
-                    if (!string.IsNullOrEmpty(ip))
+                    externalIpString = new WebClient().DownloadString("https://api.ipify.org").Trim();
+                    if (!string.IsNullOrEmpty(externalIpString))
                     {
-                        BaseAddress = ip;
+                        BaseAddress = externalIpString;
                         return true;
                     }
-                    Writer(string.Format("The host ip could not be determined. Web_API and Discordian will not function without this"));
-                    Log.Out(string.Format("[SERVERTOOLS] The host ip could not be determined. Web_API and Discordian will not function without this"));
                 }
+                Writer(string.Format("The host ip could not be determined. Web_API and Discordian will not function without this"));
+                Log.Out(string.Format("[SERVERTOOLS] The host ip could not be determined. Web_API and Discordian will not function without this"));
             }
             catch (Exception e)
             {
@@ -141,6 +143,39 @@ namespace ServerTools
                     AuthorizedTime = authorizedTimeList;
                     Authorized = AuthorizedList;
                 }
+                if (!PostURI.Contains("SignIn"))
+                {
+                    PostURI.Add("SignIn");
+                    PostURI.Add("SignOut");
+                    PostURI.Add("NewPass");
+                    PostURI.Add("Console");
+                    PostURI.Add("Command");
+                    PostURI.Add("Players");
+                    PostURI.Add("Config");
+                    PostURI.Add("SaveConfig");
+                    PostURI.Add("Kick");
+                    PostURI.Add("Ban");
+                    PostURI.Add("Mute");
+                    PostURI.Add("Jail");
+                    PostURI.Add("Reward");
+                    PostURI.Add("EnterShop");
+                    PostURI.Add("ExitShop");
+                    PostURI.Add("ShopPurchase");
+                    PostURI.Add("EnterAuction");
+                    PostURI.Add("ExitAuction");
+                    PostURI.Add("AuctionPurchase");
+                    PostURI.Add("AuctionCancel");
+                    PostURI.Add("EnterRio");
+                    PostURI.Add("UpdateRio");
+                    PostURI.Add("ExitRio");
+                    PostURI.Add("StartGameRio");
+                    PostURI.Add("ClosedRio");
+                    PostURI.Add("RollRio");
+                    PostURI.Add("ClaimRio");
+                    PostURI.Add("EndTurnRio");
+                    PostURI.Add("AddAIRio");
+                    PostURI.Add("RemoveAIRio");
+                }
             }
             catch (Exception e)
             {
@@ -165,25 +200,26 @@ namespace ServerTools
                 {
                     if (HttpListener.IsSupported)
                     {
-                        if (Listener != null && !Listener.IsListening)
-                        {
-                            Listener.Prefixes.Clear();
-                            if (!Listener.Prefixes.Contains(string.Format("http://*:{0}/", Port)))
-                            {
-                                Listener.Prefixes.Add(string.Format("http://*:{0}/", Port));
-                                Listener.Start();
-                            }
-                            else
-                            {
-                                Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel was unable to connect due to the prefix already in us @ {0}", Panel_Address));
-                            }
-                        }
                         if (SetBaseAddress())
                         {
                             Redirect = "http://" + BaseAddress + ":" + Port;
-                            Log.Out(string.Format("[SERVERTOOLS] ServerTools web api has opened @ {0}", Redirect));
                             Panel_Address = "http://" + BaseAddress + ":" + Port + "/st.html";
-                            Connected = true;
+                            if (Listener != null && !Listener.IsListening)
+                            {
+                                Listener.Prefixes.Clear();
+                                if (!Listener.Prefixes.Contains(string.Format("http://*:{0}/", Port)))
+                                {
+                                    Listener.Prefixes.Add(string.Format("http://*:{0}/", Port));
+                                    Listener.Start();
+                                    Connected = true;
+                                    Log.Out(string.Format("[SERVERTOOLS] ServerTools web api has opened @ {0}", Redirect));
+                                }
+                                else
+                                {
+                                    Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel was unable to connect due to the prefix already in use @ '{0}'", Panel_Address));
+                                    return;
+                                }
+                            }
                             if (WebPanel.IsEnabled)
                             {
                                 Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel is available @ {0}", Panel_Address));
@@ -226,8 +262,8 @@ namespace ServerTools
                                             Allowed = false;
                                             response.StatusCode = 414;
                                         }
-                                        else if (uri.Contains("script") && !uri.Contains("JS/scripts.js") && !uri.Contains("JS/shopscripts.js") &&
-                                            !uri.Contains("JS/blackjackscripts.js") && !uri.Contains("JS/auctionscripts.js"))
+                                        else if (uri.ToLower().Contains("script") && !uri.Contains("JS/scripts.js") && !uri.Contains("JS/shopscripts.js") &&
+                                            !uri.Contains("JS/rioscripts.js") && !uri.Contains("JS/auctionscripts.js"))
                                         {
                                             if (!Ban.Contains(ip))
                                             {
@@ -280,19 +316,19 @@ namespace ServerTools
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Error in WebAPI.Exec: {0}", e.Message));
                 }
-            }
-            Connected = false;
-            if (Thread != null && Thread.IsAlive)
-            {
-                Thread.Abort();
-            }
-            if (Listener != null && Listener.IsListening)
-            {
-                Listener.Stop();
-            }
-            if (IsEnabled && IsRunning && !PersistentOperations.Shutdown_Initiated)
-            {
-                Start();
+                Connected = false;
+                if (Thread != null && Thread.IsAlive)
+                {
+                    Thread.Abort();
+                }
+                if (Listener != null && Listener.IsListening)
+                {
+                    Listener.Stop();
+                }
+                if (IsEnabled && IsRunning && !PersistentOperations.Shutdown_Initiated)
+                {
+                    Start();
+                }
             }
         }
 
@@ -304,13 +340,16 @@ namespace ServerTools
                 {
                     if (_request.HttpMethod == "GET")
                     {
-                        if (WebPanel.IsEnabled || BlackJack.IsEnabled || Shop.IsEnabled || Auction.IsEnabled)
+                        if (WebPanel.IsEnabled || RIO.IsEnabled || (Shop.IsEnabled && Shop.Panel) || (Auction.IsEnabled && Shop.Panel))
                         {
                             if (_uri.EndsWith("/"))
                             {
                                 _uri = _uri.Remove(_uri.Length - 1);
                             }
-                            if (_uri.EndsWith("st.html") || _uri.EndsWith("blackJack.html") || _uri.EndsWith("shop.html") || _uri.EndsWith("auction.html"))
+                            if (_uri.ToLower().EndsWith("st.html") && WebPanel.IsEnabled ||
+                                _uri.ToLower().EndsWith("rio.html") && RIO.IsEnabled ||
+                                _uri.ToLower().EndsWith("shop.html") && Shop.IsEnabled ||
+                                _uri.ToLower().EndsWith("auction.html") && Auction.IsEnabled)
                             {
                                 _uri = _uri.Remove(0, _uri.IndexOf(Port.ToString()) + Port.ToString().Length + 1);
                                 if (PageHits.ContainsKey(_ip))
@@ -319,18 +358,21 @@ namespace ServerTools
                                     if (PageHits[_ip] >= 8)
                                     {
                                         PageHits.Remove(_ip);
-                                        TimeOut.Add(_ip, DateTime.Now.AddMinutes(5));
-                                        if (PersistentContainer.Instance.WebTimeoutList != null)
+                                        if (!TimeOut.ContainsKey(_ip))
                                         {
-                                            PersistentContainer.Instance.WebTimeoutList.Add(_ip, DateTime.Now.AddMinutes(5));
+                                            TimeOut.Add(_ip, DateTime.Now.AddMinutes(5));
+                                            if (PersistentContainer.Instance.WebTimeoutList != null)
+                                            {
+                                                PersistentContainer.Instance.WebTimeoutList.Add(_ip, DateTime.Now.AddMinutes(5));
+                                            }
+                                            else
+                                            {
+                                                Dictionary<string, DateTime> timeouts = new Dictionary<string, DateTime>();
+                                                timeouts.Add(_ip, DateTime.Now.AddMinutes(5));
+                                                PersistentContainer.Instance.WebTimeoutList = timeouts;
+                                            }
+                                            PersistentContainer.DataChange = true;
                                         }
-                                        else
-                                        {
-                                            Dictionary<string, DateTime> timeouts = new Dictionary<string, DateTime>();
-                                            timeouts.Add(_ip, DateTime.Now.AddMinutes(5));
-                                            PersistentContainer.Instance.WebTimeoutList = timeouts;
-                                        }
-                                        PersistentContainer.DataChange = true;
                                         Writer(string.Format("Request denied for IP '{0}' to '{1}'. Client is now in time out for five minutes", _ip, _uri));
                                     }
                                     else
@@ -350,7 +392,7 @@ namespace ServerTools
                                 (_uri.Contains("Font/") && _uri.EndsWith(".woff2")) || (_uri.Contains("Font/") && _uri.EndsWith(".woff")) ||
                                 (_uri.Contains("JS/") && _uri.EndsWith(".js")) ||
                                 (_uri.Contains("Img/") && _uri.EndsWith(".webp")) || (_uri.Contains("Img/") && _uri.EndsWith(".png")) ||
-                                _uri.EndsWith("favicon.ico"))
+                                (_uri.Contains("Audio/") && _uri.EndsWith(".mp3")) || _uri.EndsWith("favicon.ico"))
                             {
                                 _uri = _uri.Remove(0, _uri.IndexOf(Port.ToString()) + Port.ToString().Length + 1);
                                 GET(_response, Directory + _uri, _ip);
@@ -368,25 +410,33 @@ namespace ServerTools
                                 _uri = Icon_Folder + "/" + _uri.Replace("Icon/", "");
                                 GET(_response, _uri, _ip);
                             }
+                            else if (_uri.EndsWith("undefined"))
+                            {
+                                Writer(string.Format("IP '{0}' requested undefined file '{1}'", _ip, _uri));
+                                _response.StatusCode = 400;
+                            }
                             else
                             {
-                                Ban.Add(_ip);
-                                if (PersistentContainer.Instance.WebBanList != null)
+                                if (!TimeOut.ContainsKey(_ip))
                                 {
-                                    PersistentContainer.Instance.WebBanList.Add(_ip);
+                                    TimeOut.Add(_ip, DateTime.Now.AddMinutes(30));
+                                    if (PersistentContainer.Instance.WebTimeoutList != null)
+                                    {
+                                        PersistentContainer.Instance.WebTimeoutList.Add(_ip, DateTime.Now.AddMinutes(30));
+                                    }
+                                    else
+                                    {
+                                        Dictionary<string, DateTime> timeouts = new Dictionary<string, DateTime>();
+                                        timeouts.Add(_ip, DateTime.Now.AddMinutes(30));
+                                        PersistentContainer.Instance.WebTimeoutList = timeouts;
+                                    }
+                                    PersistentContainer.DataChange = true;
                                 }
-                                else
-                                {
-                                    List<string> bannedIP = new List<string>();
-                                    bannedIP.Add(_ip);
-                                    PersistentContainer.Instance.WebBanList = bannedIP;
-                                }
-                                PersistentContainer.DataChange = true;
-                                Writer(string.Format("Banned IP '{0}' for requesting invalid file '{1}'", _ip, _uri));
+                                Writer(string.Format("Request denied for IP '{0}' to '{1}'. File could not be found. Client is now in time out for 30 minutes", _ip, _uri));
                             }
                         }
                     }
-                    else if (_request.HttpMethod == "POST" && (WebPanel.IsEnabled || DiscordBot.IsEnabled))
+                    else if (_request.HttpMethod == "POST" && (WebPanel.IsEnabled || DiscordBot.IsEnabled || Auction.Panel || Shop.Panel || RIO.IsEnabled))
                     {
                         if (_request.HasEntityBody)
                         {
@@ -599,12 +649,9 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            else if (_uri == "SignIn" || _uri == "SignOut" || _uri == "NewPass" || _uri == "Console" ||
-                            _uri == "Command" || _uri == "Players" || _uri == "Config" || _uri == "SaveConfig" || _uri == "Kick" ||
-                            _uri == "Ban" || _uri == "Mute" || _uri == "Jail" || _uri == "Reward" || _uri == "EnterShop" || _uri == "ExitShop" || 
-                            _uri == "ShopPurchase" || _uri == "EnterAuction" || _uri == "ExitAuction" || _uri == "AuctionPurchase" || _uri == "AuctionCancel")
+                            else if (PostURI.Contains(_uri))
                             {
-                                if (WebPanel.IsEnabled || (Shop.IsEnabled && Shop.Panel) || (Auction.IsEnabled && Auction.Panel))
+                                if (WebPanel.IsEnabled || (Shop.IsEnabled && Shop.Panel) || (Auction.IsEnabled && Auction.Panel) || RIO.IsEnabled)
                                 {
                                     string responseMessage = "", postMessage = "";
                                     using (StreamReader read = new StreamReader(body, Encoding.UTF8))
@@ -2101,7 +2148,7 @@ namespace ServerTools
                                                         if (Auction.AuctionItems.ContainsKey(itemId))
                                                         {
                                                             Auction.AuctionItems.TryGetValue(itemId, out string playerId);
-                                                            if (PersistentContainer.Instance.Players[playerId].Auction != null && 
+                                                            if (PersistentContainer.Instance.Players[playerId].Auction != null &&
                                                                 PersistentContainer.Instance.Players[playerId].Auction.ContainsKey(itemId))
                                                             {
                                                                 Auction.PanelAccess.TryGetValue(id, out int entityId);
@@ -2164,7 +2211,7 @@ namespace ServerTools
                                                                             responseMessage += salt;
                                                                             _response.StatusCode = 200;
                                                                         }
-                                                                        
+
                                                                     }
                                                                 }
                                                                 else
@@ -2192,6 +2239,874 @@ namespace ServerTools
                                                         Authorized.Remove(cancelDataUppercase);
                                                         AuthorizedTime.Remove(cancelDataUppercase);
                                                         _response.StatusCode = 400;
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case "EnterRio":
+                                            if (postMessage.Length > 127)
+                                            {
+                                                var allPlayers = RIO.Access.ToArray();
+                                                for (int i = 0; i < allPlayers.Length; i++)
+                                                {
+                                                    byte[] bytes = Encoding.UTF8.GetBytes(allPlayers[i].Key);
+                                                    using (SHA512 sha512_1 = SHA512.Create())
+                                                    {
+                                                        byte[] hashBytes = sha512_1.ComputeHash(bytes);
+                                                        string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                        if (postMessage.ToUpper() == keyHash)
+                                                        {
+                                                            AuthorizedTime.TryGetValue(allPlayers[i].Key, out DateTime remainingTime);
+                                                            if (DateTime.Now <= remainingTime)
+                                                            {
+                                                                if (RIO.Access.TryGetValue(allPlayers[i].Key, out int entityId))
+                                                                {
+                                                                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                                    if (cInfo != null)
+                                                                    {
+                                                                        bool valid = true;
+                                                                        if (PageHits.ContainsKey(_ip))
+                                                                        {
+                                                                            PageHits.Remove(_ip);
+                                                                        }
+                                                                        //if (RIO.Command_Cost > 0)
+                                                                        //{
+                                                                        //    int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
+                                                                        //    if (Bank.IsEnabled && Bank.Payments)
+                                                                        //    {
+                                                                        //        currency += PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank;
+                                                                        //    }
+                                                                        //    if (currency >= RIO.Command_Cost)
+                                                                        //    {
+                                                                        //        if (Bank.IsEnabled && Bank.Payments)
+                                                                        //        {
+                                                                        //            Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, RIO.Command_Cost, true);
+                                                                        //        }
+                                                                        //        else
+                                                                        //        {
+                                                                        //            Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, RIO.Command_Cost, false);
+                                                                        //        }
+                                                                        //    }
+                                                                        //    else
+                                                                        //    {
+                                                                        //        valid = false;
+                                                                        //        RIO.Access.Remove(allPlayers[i].Key);
+                                                                        //        AuthorizedTime.Remove(allPlayers[i].Key);
+                                                                        //        responseMessage += "You do not have enough to play";
+                                                                        //        _response.StatusCode = 401;
+                                                                        //    }
+                                                                        //}
+                                                                        if (valid)
+                                                                        {
+                                                                            AuthorizedTime.Remove(allPlayers[i].Key);
+                                                                            for (int j = 0; j < 10; j++)
+                                                                            {
+                                                                                string salt = RIO.CreatePassword(4);
+                                                                                bytes = Encoding.UTF8.GetBytes(allPlayers[i].Key + salt);
+                                                                                using (SHA512 sha512_2 = SHA512.Create())
+                                                                                {
+                                                                                    hashBytes = sha512_2.ComputeHash(bytes);
+                                                                                    keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                                                }
+                                                                                if (!Authorized.ContainsKey(keyHash))
+                                                                                {
+                                                                                    Authorized.Add(keyHash, allPlayers[i].Key);
+                                                                                    AuthorizedTime.Add(keyHash, DateTime.Now.AddMinutes(2));
+                                                                                    responseMessage += salt + "☼";
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                            bool sitting = false;
+                                                                            if (RIO.Tables.Count > 0)
+                                                                            {
+                                                                                var tables = RIO.Tables.ToArray();//get all tables
+                                                                                for (int j = 0; j < tables.Length; j++)
+                                                                                {
+                                                                                    bool started = false;
+                                                                                    var table = tables[j];
+                                                                                    if (RIO.Tables.TryGetValue(table.Key, out int[] players))//get player ids
+                                                                                    {
+                                                                                        if (RIO.Events.TryGetValue(table.Key, out Dictionary<int, string> events))//get table events
+                                                                                        {
+                                                                                            var eventArray = events.ToArray();
+                                                                                            for (int k = 0; k < eventArray.Length; k++)
+                                                                                            {
+                                                                                                if (eventArray[k].Value.Contains("Start"))//game has started
+                                                                                                {
+                                                                                                    started = true;
+                                                                                                    break;
+                                                                                                }
+                                                                                            }
+                                                                                            if (players.ToString().Contains(entityId.ToString()))//id found at table
+                                                                                            {
+                                                                                                int aiCount = 0;
+                                                                                                int playerCount = 0;
+                                                                                                for (int k = 0; k < 4; k++)
+                                                                                                {
+                                                                                                    if (players[k] == entityId)//if player id match
+                                                                                                    {
+                                                                                                        if (k == 0)//Player is the host
+                                                                                                        {
+                                                                                                            if (!started)
+                                                                                                            {
+                                                                                                                for (int l = 0; l < players.Length; l++)//remove all players from table
+                                                                                                                {
+                                                                                                                    players[l] = -1;
+                                                                                                                }
+                                                                                                                RIO.Tables[table.Key] = players;
+                                                                                                                events.Add(events.Count, "HostLeft");
+                                                                                                                RIO.Events[table.Key] = events;
+                                                                                                            }
+                                                                                                            else
+                                                                                                            {
+                                                                                                                players[k] = -1;//remove player from table
+                                                                                                                RIO.Tables[table.Key] = players;
+                                                                                                                int playerNumber = k + 1;
+                                                                                                                events.Add(events.Count, "Left╚" + playerNumber);
+                                                                                                                RIO.Events[table.Key] = events;
+                                                                                                            }
+                                                                                                        }
+                                                                                                        else
+                                                                                                        {
+                                                                                                            if (!started)
+                                                                                                            {
+                                                                                                                players[k] = 0;//remove player and open slot
+                                                                                                                RIO.Tables[table.Key] = players;
+                                                                                                            }
+                                                                                                            else
+                                                                                                            {
+                                                                                                                players[k] = -1;//remove player and close slot
+                                                                                                                RIO.Tables[table.Key] = players;
+                                                                                                            }
+                                                                                                            int playerNumber = k + 1;
+                                                                                                            events.Add(events.Count, "Left╚" + playerNumber);
+                                                                                                            RIO.Events[table.Key] = events;
+                                                                                                        }
+                                                                                                    }
+                                                                                                    else if (players[k] != -1 && players[k] != 0)//Slot is not closed or empty
+                                                                                                    {
+                                                                                                        playerCount += 1;
+                                                                                                        if (players[k] == -2)//Player is AI
+                                                                                                        {
+                                                                                                            aiCount += 1;
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                                if (playerCount == 0 || playerCount == aiCount)//No players remain
+                                                                                                {
+                                                                                                    RIO.Tables.Remove(table.Key);
+                                                                                                    RIO.Events.Remove(table.Key);
+                                                                                                    RIO.Claims.Remove(table.Key);
+                                                                                                }
+                                                                                                else if (playerCount == 1 && started)//One player remains and game started
+                                                                                                {
+                                                                                                    bool foundWinner = false;
+                                                                                                    int count = 1;
+                                                                                                    for (int k = 0; k < 4; k++)
+                                                                                                    {
+                                                                                                        if (players[k] != -1 && players[k] != -2)
+                                                                                                        {
+                                                                                                            if (!foundWinner)
+                                                                                                            {
+                                                                                                                foundWinner = true;
+                                                                                                                int playerNumber = k + 1;
+                                                                                                                events.Add(events.Count, "Win╚" + playerNumber);
+                                                                                                                RIO.Events[table.Key] = events;
+                                                                                                            }
+                                                                                                        }
+                                                                                                        else
+                                                                                                        {
+                                                                                                            count += 1;
+                                                                                                        }
+                                                                                                    }
+                                                                                                    //if (RIO.Command_Cost > 0)
+                                                                                                    //{
+                                                                                                    //    Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, RIO.Command_Cost * count);
+                                                                                                    //}
+                                                                                                }
+                                                                                            }
+                                                                                            else if (!sitting && !started && players[0] != -1 && players.ToString().Contains("0"))//player is not in a game, this table has not started, host has not left and table has a open slot
+                                                                                            {
+                                                                                                for (int k = 0; k < players.Length; k++)
+                                                                                                {
+                                                                                                    if (players[k] == 0)//slot is open
+                                                                                                    {
+                                                                                                        sitting = true;
+                                                                                                        int playerNumber = k + 1;
+                                                                                                        events.Add(events.Count, "Join╚" + playerNumber + "╚" + cInfo.playerName);
+                                                                                                        RIO.Events[table.Key] = events;
+                                                                                                        responseMessage += table.Key + "☼" + playerNumber;
+                                                                                                        _response.StatusCode = 200;
+                                                                                                        break;
+                                                                                                    }
+                                                                                                }
+                                                                                                break;
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            if (!sitting)
+                                                                            {
+                                                                                string tableId = "";
+                                                                                for (int k = 0; k < 10; k++)
+                                                                                {
+                                                                                    tableId = RIO.CreateTable();
+                                                                                    if (!RIO.Tables.ContainsKey(tableId) && !RIO.Events.ContainsKey(tableId))
+                                                                                    {
+                                                                                        Dictionary<int, string> events = new Dictionary<int, string>();
+                                                                                        RIO.Events.Add(tableId, events);
+                                                                                        Dictionary<string, int> claims = new Dictionary<string, int>();
+                                                                                        RIO.Claims.Add(tableId, claims);
+                                                                                        RIO.Tables.Add(tableId, new int[] { entityId, 0, 0, 0 });
+                                                                                        events.Add(0, "Host╚" + cInfo.playerName);
+                                                                                        RIO.Events[tableId] = events;
+                                                                                        break;
+                                                                                    }
+                                                                                }
+                                                                                responseMessage += tableId + "☼" + 1;
+                                                                                _response.StatusCode = 202;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        RIO.Access.Remove(allPlayers[i].Key);
+                                                                        AuthorizedTime.Remove(allPlayers[i].Key);
+                                                                        _response.StatusCode = 402;
+                                                                    }
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                RIO.Access.Remove(allPlayers[i].Key);
+                                                                AuthorizedTime.Remove(allPlayers[i].Key);
+                                                                _response.StatusCode = 401;
+                                                            }
+                                                            break;
+                                                        }
+                                                        else
+                                                        {
+                                                            _response.StatusCode = 400;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case "UpdateRio":
+                                            if (postMessage.Contains('☼'))
+                                            {
+                                                string[] updateData = postMessage.Split('☼');
+                                                string updateDataUppercase = updateData[0].ToUpper();
+                                                if (Authorized.ContainsKey(updateDataUppercase))
+                                                {
+                                                    AuthorizedTime.TryGetValue(updateDataUppercase, out DateTime remainingTime);
+                                                    if (DateTime.Now <= remainingTime)
+                                                    {
+                                                        Authorized.TryGetValue(updateDataUppercase, out string id);
+                                                        string keyHash = "", salt = "";
+                                                        for (int i = 0; i < 10; i++)
+                                                        {
+                                                            salt = PersistentOperations.CreatePassword(4);
+                                                            byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
+                                                            using (SHA512 sha512 = SHA512.Create())
+                                                            {
+                                                                byte[] hashBytes = sha512.ComputeHash(bytes);
+                                                                keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                            }
+                                                            if (!Authorized.ContainsKey(keyHash))
+                                                            {
+                                                                Authorized.Remove(updateDataUppercase);
+                                                                AuthorizedTime.Remove(updateDataUppercase);
+                                                                Authorized.Add(keyHash, id);
+                                                                AuthorizedTime.Add(keyHash, DateTime.Now.AddMinutes(2));
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (int.TryParse(updateData[2], out int eventCount))
+                                                        {
+                                                            if (RIO.Events.TryGetValue(updateData[1], out Dictionary<int, string> events))
+                                                            {
+                                                                if (events.Count > eventCount)
+                                                                {
+                                                                    responseMessage += salt + "☼";
+                                                                    var eventArray = events.ToArray();
+                                                                    for (int j = eventCount; j < eventArray.Length; j++)
+                                                                    {
+                                                                        responseMessage += eventArray[j].Value + "§";
+                                                                    }
+                                                                    if (responseMessage.Length > 4)
+                                                                    {
+                                                                        responseMessage = responseMessage.Remove(responseMessage.Length - 1);
+                                                                    }
+                                                                    _response.StatusCode = 200;
+                                                                }
+                                                                else
+                                                                {
+                                                                    responseMessage += salt;
+                                                                    _response.StatusCode = 202;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Authorized.TryGetValue(updateDataUppercase, out string id);
+                                                        RIO.Access.TryGetValue(id, out int entityId);
+                                                        RIO.Access.Remove(id);
+                                                        Authorized.Remove(updateDataUppercase);
+                                                        AuthorizedTime.Remove(updateDataUppercase);
+                                                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                        if (cInfo != null)
+                                                        {
+                                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close browserRio", true));
+                                                        }
+                                                        _response.StatusCode = 401;
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case "ExitRio":
+                                            if (postMessage.Contains('☼'))
+                                            {
+                                                string[] exitRioData = postMessage.Split('☼');
+                                                string exitRioDataUppercase = exitRioData[0].ToUpper();
+                                                if (Authorized.ContainsKey(exitRioDataUppercase))
+                                                {
+                                                    Authorized.TryGetValue(exitRioDataUppercase, out string id);
+                                                    RIO.Access.TryGetValue(id, out int entityId);
+                                                    if (RIO.Tables.ContainsKey(exitRioData[1]))
+                                                    {
+                                                        if (RIO.Tables.TryGetValue(exitRioData[1], out int[] players))
+                                                        {
+                                                            if (RIO.Events.TryGetValue(exitRioData[1], out Dictionary<int, string> events))
+                                                            {
+                                                                int aiCount = 0;
+                                                                int playerCount = 0;
+                                                                int bets = 0;
+                                                                bool started = false;
+                                                                var eventArray = events.ToArray();
+                                                                for (int i = 0; i < eventArray.Length; i++)
+                                                                {
+                                                                    if (eventArray[i].Value.Contains("Host") || eventArray[i].Value.Contains("Join"))
+                                                                    {
+                                                                        bets += 1;
+                                                                    }
+                                                                    else if (eventArray[i].Value.Contains("Left"))
+                                                                    {
+                                                                        bets -= 1;
+                                                                    }
+                                                                    else if (eventArray[i].Value.Contains("Start"))
+                                                                    {
+                                                                        started = true;
+                                                                        break;
+                                                                    }
+                                                                }
+                                                                if (started)
+                                                                {
+                                                                    for (int i = 0; i < players.Length; i++)
+                                                                    {
+                                                                        if (players[i] == entityId)
+                                                                        {
+                                                                            players[i] = -1;
+                                                                            RIO.Tables[exitRioData[1]] = players;
+                                                                            int playerNumber = i + 1;
+                                                                            events.Add(events.Count, "Left╚" + playerNumber);
+                                                                            RIO.Events[exitRioData[1]] = events;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            playerCount += 1;
+                                                                            if (players[i] == -2)
+                                                                            {
+                                                                                aiCount += 1;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    if (playerCount == 0 || playerCount == aiCount)
+                                                                    {
+                                                                        RIO.Tables.Remove(exitRioData[1]);
+                                                                        RIO.Events.Remove(exitRioData[1]);
+                                                                        RIO.Claims.Remove(exitRioData[1]);
+                                                                    }
+                                                                    else if (playerCount == 1)
+                                                                    {
+                                                                        bool foundWinner = false;
+                                                                        int count = 1;
+                                                                        for (int i = 0; i < 4; i++)
+                                                                        {
+                                                                            if (players[i] != -1 && players[i] != -2)
+                                                                            {
+                                                                                if (!foundWinner)
+                                                                                {
+                                                                                    foundWinner = true;
+                                                                                    int playerNumber = i + 1;
+                                                                                    events.Add(events.Count, "Win╚" + playerNumber);
+                                                                                    RIO.Events[exitRioData[1]] = events;
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                count += 1;
+                                                                            }
+                                                                        }
+                                                                        //if (RIO.Command_Cost > 0)
+                                                                        //{
+                                                                        //    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                                        //    if (cInfo != null)
+                                                                        //    {
+                                                                        //        Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, RIO.Command_Cost * count);
+                                                                        //    }
+                                                                        //}
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    for (int i = 0; i < players.Length; i++)
+                                                                    {
+                                                                        if (players[i] == entityId)
+                                                                        {
+                                                                            if (i == 0)
+                                                                            {
+                                                                                players[i] = -1;
+                                                                                RIO.Tables[exitRioData[1]] = players;
+                                                                                events.Add(events.Count, "HostLeft");
+                                                                                RIO.Events[exitRioData[1]] = events;
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                players[i] = 0;
+                                                                                RIO.Tables[exitRioData[1]] = players;
+                                                                                int playerNumber = i + 1;
+                                                                                events.Add(events.Count, "Left╚" + playerNumber);
+                                                                                RIO.Events[exitRioData[1]] = events;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    RIO.Access.Remove(id);
+                                                    Authorized.Remove(exitRioDataUppercase);
+                                                    AuthorizedTime.Remove(exitRioDataUppercase);
+                                                    ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                    if (cInfo2 != null)
+                                                    {
+                                                        cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close browserRio", true));
+                                                    }
+                                                    _response.StatusCode = 200;
+                                                }
+                                                else
+                                                {
+                                                    _response.StatusCode = 401;
+                                                }
+                                            }
+                                            break;
+                                        case "StartGameRio":
+                                            if (postMessage.Contains('☼'))
+                                            {
+                                                string[] startGameData = postMessage.Split('☼');
+                                                string startGameDataUppercase = startGameData[0].ToUpper();
+                                                if (Authorized.ContainsKey(startGameDataUppercase))
+                                                {
+                                                    AuthorizedTime.TryGetValue(startGameDataUppercase, out DateTime remainingTime);
+                                                    if (DateTime.Now <= remainingTime)
+                                                    {
+                                                        Authorized.TryGetValue(startGameDataUppercase, out string id);
+                                                        string keyHash = "", salt = "";
+                                                        for (int i = 0; i < 10; i++)
+                                                        {
+                                                            salt = PersistentOperations.CreatePassword(4);
+                                                            byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
+                                                            using (SHA512 sha512 = SHA512.Create())
+                                                            {
+                                                                byte[] hashBytes = sha512.ComputeHash(bytes);
+                                                                keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                            }
+                                                            if (!Authorized.ContainsKey(keyHash))
+                                                            {
+                                                                Authorized.Remove(startGameDataUppercase);
+                                                                AuthorizedTime.Remove(startGameDataUppercase);
+                                                                Authorized.Add(keyHash, id);
+                                                                AuthorizedTime.Add(keyHash, DateTime.Now.AddMinutes(2));
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (RIO.Events.TryGetValue(startGameData[1], out Dictionary<int, string> events))
+                                                        {
+                                                            List<int> playerList = new List<int>();
+                                                            if (RIO.Tables.TryGetValue(startGameData[1], out int[] players))
+                                                            {
+                                                                for (int j = 0; j < players.Length; j++)
+                                                                {
+                                                                    if (players[j] != 0)
+                                                                    {
+                                                                        playerList.Add(j);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        players[j] = -1;
+                                                                    }
+                                                                }
+                                                                playerList.RandomizeList();
+                                                                events.Add(events.Count, "Start╚" + (playerList[0] + 1));
+                                                                RIO.Events[startGameData[1]] = events;
+                                                                responseMessage += salt;
+                                                                _response.StatusCode = 200;
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Authorized.TryGetValue(startGameDataUppercase, out string id);
+                                                        RIO.Access.TryGetValue(id, out int entityId);
+                                                        RIO.Access.Remove(id);
+                                                        Authorized.Remove(startGameDataUppercase);
+                                                        AuthorizedTime.Remove(startGameDataUppercase);
+                                                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                        if (cInfo != null)
+                                                        {
+                                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close browserRio", true));
+                                                        }
+                                                        _response.StatusCode = 401;
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case "RollRio":
+                                            if (postMessage.Contains('☼'))
+                                            {
+                                                string[] rollRioData = postMessage.Split('☼');
+                                                string rollRioDataUppercase = rollRioData[0].ToUpper();
+                                                if (Authorized.ContainsKey(rollRioDataUppercase))
+                                                {
+                                                    AuthorizedTime.TryGetValue(rollRioDataUppercase, out DateTime remainingTime);
+                                                    if (DateTime.Now <= remainingTime)
+                                                    {
+                                                        Authorized.TryGetValue(rollRioDataUppercase, out string id);
+                                                        string keyHash = "", salt = "";
+                                                        for (int i = 0; i < 10; i++)
+                                                        {
+                                                            salt = PersistentOperations.CreatePassword(4);
+                                                            byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
+                                                            using (SHA512 sha512 = SHA512.Create())
+                                                            {
+                                                                byte[] hashBytes = sha512.ComputeHash(bytes);
+                                                                keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                            }
+                                                            if (!Authorized.ContainsKey(keyHash))
+                                                            {
+                                                                Authorized.Remove(rollRioDataUppercase);
+                                                                AuthorizedTime.Remove(rollRioDataUppercase);
+                                                                Authorized.Add(keyHash, id);
+                                                                AuthorizedTime.Add(keyHash, DateTime.Now.AddMinutes(2));
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (RIO.Events.TryGetValue(rollRioData[1], out Dictionary<int, string> events))
+                                                        {
+                                                            string newDice = RIO.GetRoll();
+                                                            string diceUpdate = rollRioData[2] + "," + newDice;
+                                                            events.Add(events.Count, "Roll╚" + diceUpdate + "╚" + rollRioData[3]);
+                                                            RIO.Events[rollRioData[1]] = events;
+                                                            responseMessage += salt + "☼" + newDice;
+                                                            _response.StatusCode = 200;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Authorized.TryGetValue(rollRioDataUppercase, out string id);
+                                                        RIO.Access.TryGetValue(id, out int entityId);
+                                                        RIO.Access.Remove(id);
+                                                        Authorized.Remove(rollRioDataUppercase);
+                                                        AuthorizedTime.Remove(rollRioDataUppercase);
+                                                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                        if (cInfo != null)
+                                                        {
+                                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close browserRio", true));
+                                                        }
+                                                        _response.StatusCode = 401;
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case "ClaimRio":
+                                            if (postMessage.Contains('☼'))
+                                            {
+                                                string[] claimRioData = postMessage.Split('☼');
+                                                string claimRioDataUppercase = claimRioData[0].ToUpper();
+                                                if (Authorized.ContainsKey(claimRioDataUppercase))
+                                                {
+                                                    AuthorizedTime.TryGetValue(claimRioDataUppercase, out DateTime remainingTime);
+                                                    if (DateTime.Now <= remainingTime)
+                                                    {
+                                                        Authorized.TryGetValue(claimRioDataUppercase, out string id);
+                                                        string keyHash = "", salt = "";
+                                                        for (int i = 0; i < 10; i++)
+                                                        {
+                                                            salt = PersistentOperations.CreatePassword(4);
+                                                            byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
+                                                            using (SHA512 sha512 = SHA512.Create())
+                                                            {
+                                                                byte[] hashBytes = sha512.ComputeHash(bytes);
+                                                                keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                            }
+                                                            if (!Authorized.ContainsKey(keyHash))
+                                                            {
+                                                                Authorized.Remove(claimRioDataUppercase);
+                                                                AuthorizedTime.Remove(claimRioDataUppercase);
+                                                                Authorized.Add(keyHash, id);
+                                                                AuthorizedTime.Add(keyHash, DateTime.Now.AddMinutes(2));
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (RIO.Events.TryGetValue(claimRioData[1], out Dictionary<int, string> events))
+                                                        {
+                                                            if (RIO.Claims.TryGetValue(claimRioData[1], out Dictionary<string, int> claims))
+                                                            {
+                                                                if (int.TryParse(claimRioData[3], out int playerNumber))
+                                                                {
+                                                                    claims.Add(claimRioData[2], playerNumber);
+                                                                    RIO.Claims[claimRioData[1]] = claims;
+                                                                    if (RIO.Tables.TryGetValue(claimRioData[1], out int[] players))
+                                                                    {
+                                                                        bool NextPlayer = false;
+                                                                        for (int j = 0; j < 4; j++)
+                                                                        {
+                                                                            int number = j + 1;
+                                                                            if (number != playerNumber && number > playerNumber && players[j] != -1 && players[j] != 0)
+                                                                            {
+                                                                                NextPlayer = true;
+                                                                                events.Add(events.Count, "Claim╚" + claimRioData[2] + "╚" + playerNumber + "╚" + number + "╚" + claimRioData[4]);//square-playerNumber-nextPlayerNumber-bool(win or lose)
+                                                                                RIO.Events[claimRioData[1]] = events;
+                                                                                responseMessage += salt;
+                                                                                _response.StatusCode = 200;
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                        if (!NextPlayer)
+                                                                        {
+                                                                            for (int j = 0; j < playerNumber; j++)
+                                                                            {
+                                                                                int number = j + 1;
+                                                                                if (number != playerNumber && number < playerNumber && players[j] != -1 && players[j] != 0)
+                                                                                {
+                                                                                    events.Add(events.Count, "Claim╚" + claimRioData[2] + "╚" + playerNumber + "╚" + number + "╚" + claimRioData[4]);
+                                                                                    RIO.Events[claimRioData[1]] = events;
+                                                                                    responseMessage += salt;
+                                                                                    _response.StatusCode = 200;
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Authorized.TryGetValue(claimRioDataUppercase, out string id);
+                                                        RIO.Access.TryGetValue(id, out int entityId);
+                                                        RIO.Access.Remove(id);
+                                                        Authorized.Remove(claimRioDataUppercase);
+                                                        AuthorizedTime.Remove(claimRioDataUppercase);
+                                                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                        if (cInfo != null)
+                                                        {
+                                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close browserRio", true));
+                                                        }
+                                                        _response.StatusCode = 401;
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case "EndTurnRio":
+                                            if (postMessage.Contains('☼'))
+                                            {
+                                                string[] endTurnData = postMessage.Split('☼');
+                                                string endTurnDataUppercase = endTurnData[0].ToUpper();
+                                                if (Authorized.ContainsKey(endTurnDataUppercase))
+                                                {
+                                                    AuthorizedTime.TryGetValue(endTurnDataUppercase, out DateTime remainingTime);
+                                                    if (DateTime.Now <= remainingTime)
+                                                    {
+                                                        Authorized.TryGetValue(endTurnDataUppercase, out string id);
+                                                        string keyHash = "", salt = "";
+                                                        for (int i = 0; i < 10; i++)
+                                                        {
+                                                            salt = PersistentOperations.CreatePassword(4);
+                                                            byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
+                                                            using (SHA512 sha512 = SHA512.Create())
+                                                            {
+                                                                byte[] hashBytes = sha512.ComputeHash(bytes);
+                                                                keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                            }
+                                                            if (!Authorized.ContainsKey(keyHash))
+                                                            {
+                                                                Authorized.Remove(endTurnDataUppercase);
+                                                                AuthorizedTime.Remove(endTurnDataUppercase);
+                                                                Authorized.Add(keyHash, id);
+                                                                AuthorizedTime.Add(keyHash, DateTime.Now.AddMinutes(2));
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (RIO.Events.TryGetValue(endTurnData[1], out Dictionary<int, string> events))
+                                                        {
+                                                            if (int.TryParse(endTurnData[2], out int playerNumber))
+                                                            {
+                                                                RIO.Tables.TryGetValue(endTurnData[1], out int[] players);
+                                                                bool NextPlayer = false;
+                                                                for (int j = playerNumber; j < players.Length; j++)
+                                                                {
+                                                                    if (j != playerNumber && j > playerNumber && players[j - 1] != -1 && players[j - 1] != 0)
+                                                                    {
+                                                                        NextPlayer = true;
+                                                                        events.Add(events.Count, "Turn╚" + j);
+                                                                        RIO.Events[endTurnData[1]] = events;
+                                                                        responseMessage += salt;
+                                                                        _response.StatusCode = 200;
+                                                                        break;
+                                                                    }
+                                                                }
+                                                                if (!NextPlayer)
+                                                                {
+                                                                    for (int j = 0; j < playerNumber; j++)
+                                                                    {
+                                                                        if (j != playerNumber && j < playerNumber && players[j] != -1 && players[j] != 0)
+                                                                        {
+                                                                            events.Add(events.Count, "Turn╚" + (j + 1));
+                                                                            RIO.Events[endTurnData[1]] = events;
+                                                                            responseMessage += salt;
+                                                                            _response.StatusCode = 200;
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Authorized.TryGetValue(endTurnDataUppercase, out string id);
+                                                        RIO.Access.TryGetValue(id, out int entityId);
+                                                        RIO.Access.Remove(id);
+                                                        Authorized.Remove(endTurnDataUppercase);
+                                                        AuthorizedTime.Remove(endTurnDataUppercase);
+                                                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                        if (cInfo != null)
+                                                        {
+                                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close browserRio", true));
+                                                        }
+                                                        _response.StatusCode = 401;
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case "AddAIRio":
+                                            if (postMessage.Contains('☼'))
+                                            {
+                                                string[] rollRioData = postMessage.Split('☼');
+                                                string rollRioDataUppercase = rollRioData[0].ToUpper();
+                                                if (Authorized.ContainsKey(rollRioDataUppercase))
+                                                {
+                                                    AuthorizedTime.TryGetValue(rollRioDataUppercase, out DateTime remainingTime);
+                                                    if (DateTime.Now <= remainingTime)
+                                                    {
+                                                        Authorized.TryGetValue(rollRioDataUppercase, out string id);
+                                                        string keyHash = "", salt = "";
+                                                        for (int i = 0; i < 10; i++)
+                                                        {
+                                                            salt = PersistentOperations.CreatePassword(4);
+                                                            byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
+                                                            using (SHA512 sha512 = SHA512.Create())
+                                                            {
+                                                                byte[] hashBytes = sha512.ComputeHash(bytes);
+                                                                keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                            }
+                                                            if (!Authorized.ContainsKey(keyHash))
+                                                            {
+                                                                Authorized.Remove(rollRioDataUppercase);
+                                                                AuthorizedTime.Remove(rollRioDataUppercase);
+                                                                Authorized.Add(keyHash, id);
+                                                                AuthorizedTime.Add(keyHash, DateTime.Now.AddMinutes(2));
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (RIO.Tables.TryGetValue(rollRioData[1], out int[] table))
+                                                        {
+                                                            for (int i = 0; i < table.Length; i++)
+                                                            {
+                                                                if (table[i] != 0 && table[i] != -1 && table[i] != -2)
+                                                                {
+
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Authorized.TryGetValue(rollRioDataUppercase, out string id);
+                                                        RIO.Access.TryGetValue(id, out int entityId);
+                                                        RIO.Access.Remove(id);
+                                                        Authorized.Remove(rollRioDataUppercase);
+                                                        AuthorizedTime.Remove(rollRioDataUppercase);
+                                                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                        if (cInfo != null)
+                                                        {
+                                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close browserRio", true));
+                                                        }
+                                                        _response.StatusCode = 401;
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case "RemoveAIRio":
+                                            if (postMessage.Contains('☼'))
+                                            {
+                                                string[] rollRioData = postMessage.Split('☼');
+                                                string rollRioDataUppercase = rollRioData[0].ToUpper();
+                                                if (Authorized.ContainsKey(rollRioDataUppercase))
+                                                {
+                                                    AuthorizedTime.TryGetValue(rollRioDataUppercase, out DateTime remainingTime);
+                                                    if (DateTime.Now <= remainingTime)
+                                                    {
+                                                        Authorized.TryGetValue(rollRioDataUppercase, out string id);
+                                                        string keyHash = "", salt = "";
+                                                        for (int i = 0; i < 10; i++)
+                                                        {
+                                                            salt = PersistentOperations.CreatePassword(4);
+                                                            byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
+                                                            using (SHA512 sha512 = SHA512.Create())
+                                                            {
+                                                                byte[] hashBytes = sha512.ComputeHash(bytes);
+                                                                keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                            }
+                                                            if (!Authorized.ContainsKey(keyHash))
+                                                            {
+                                                                Authorized.Remove(rollRioDataUppercase);
+                                                                AuthorizedTime.Remove(rollRioDataUppercase);
+                                                                Authorized.Add(keyHash, id);
+                                                                AuthorizedTime.Add(keyHash, DateTime.Now.AddMinutes(2));
+                                                                break;
+                                                            }
+                                                        }
+
+                                                    }
+                                                    else
+                                                    {
+                                                        Authorized.TryGetValue(rollRioDataUppercase, out string id);
+                                                        RIO.Access.TryGetValue(id, out int entityId);
+                                                        RIO.Access.Remove(id);
+                                                        Authorized.Remove(rollRioDataUppercase);
+                                                        AuthorizedTime.Remove(rollRioDataUppercase);
+                                                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                                                        if (cInfo != null)
+                                                        {
+                                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close browserRio", true));
+                                                        }
+                                                        _response.StatusCode = 401;
                                                     }
                                                 }
                                             }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ServerTools
 {
@@ -10,12 +9,20 @@ namespace ServerTools
 
         public static void Party(ClientInfo _cInfo)
         {
+            List<string> invites = new List<string>();
             if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite != null &&
                 PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite.Count > 0)
             {
                 List<string[]> autoInvites = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite;
                 for (int i = 0; i < autoInvites.Count; i++)
                 {
+                    if (!int.TryParse(autoInvites[i][0], out int value))
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite.Remove(autoInvites[i]);
+                        PersistentContainer.DataChange = true;
+                        continue;
+                    }
+                    invites.Add(autoInvites[i][0]);
                     Phrases.Dict.TryGetValue("AutoPartyInvite1", out string phrase);
                     phrase = phrase.Replace("{Value}", autoInvites[i][0].ToString());
                     phrase = phrase.Replace("{Name}", autoInvites[i][1].ToString());
@@ -26,6 +33,29 @@ namespace ServerTools
             {
                 Phrases.Dict.TryGetValue("AutoPartyInvite2", out string phrase);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            }
+            PersistentPlayerData ppd1 = PersistentOperations.GetPersistentPlayerDataFromEntityId(_cInfo.entityId);
+            if (ppd1 != null)
+            {
+                List<ClientInfo> clients = PersistentOperations.ClientList();
+                for (int i = 0; i < clients.Count; i++)
+                {
+                    ClientInfo client = clients[i];
+                    if (_cInfo.entityId != client.entityId && !invites.Contains(client.entityId.ToString()))
+                    {
+                        PersistentPlayerData ppd2 = PersistentOperations.GetPersistentPlayerDataFromEntityId(client.entityId);
+                        if (ppd2 != null)
+                        {
+                            if (ppd1.ACL.Contains(client.CrossplatformId) && ppd2.ACL.Contains(_cInfo.CrossplatformId))
+                            {
+                                Phrases.Dict.TryGetValue("AutoPartyInvite8", out string phrase);
+                                phrase = phrase.Replace("{Value}", client.entityId.ToString());
+                                phrase = phrase.Replace("{Name}", client.playerName);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -76,7 +106,12 @@ namespace ServerTools
 
         public static void Add(ClientInfo _cInfo, string _target)
         {
-            int.TryParse(_target, out int entityId);
+            if (!int.TryParse(_target, out int entityId))
+            {
+                Phrases.Dict.TryGetValue("AutoPartyInvite6", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                return;
+            }
             ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromEntityId(entityId);
             if (cInfo2 != null)
             {
@@ -92,7 +127,7 @@ namespace ServerTools
                             return;
                         }
                     }
-                    autoInvites.Add(new string[] { cInfo2.CrossplatformId.CombinedString, cInfo2.playerName });
+                    autoInvites.Add(new string[] { cInfo2.entityId.ToString(), cInfo2.playerName });
                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite = autoInvites;
                     PersistentContainer.DataChange = true;
                     Phrases.Dict.TryGetValue("AutoPartyInvite4", out string phrase1);

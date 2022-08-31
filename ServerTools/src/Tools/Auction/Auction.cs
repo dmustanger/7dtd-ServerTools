@@ -13,7 +13,7 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, No_Admins = false, Panel = false;
         public static int Admin_Level = 0, Total_Items = 1, Tax = 0;
         public static string Command_auction = "auction", Command_auction_cancel = "auction cancel", Command_auction_buy = "auction buy",
-            Command_auction_sell = "auction sell", Link = "http://0.0.0.0:8084/auction.html", Panel_Name = "Awesome Auction";
+            Command_auction_sell = "auction sell", Panel_Name = "Awesome Auction";
 
         public static Dictionary<int, string> AuctionItems = new Dictionary<int, string>();
         public static Dictionary<string, int> PanelAccess = new Dictionary<string, int>();
@@ -23,20 +23,21 @@ namespace ServerTools
         public static readonly string Filepath = string.Format("{0}/Logs/AuctionLogs/{1}", API.ConfigPath, file);
         private static readonly string AlphaNumSet = "JKQRLWBYZMPSNODHEFXTACGIUV";
 
-        public static void SetLink(string _link)
+        public static void SetLink()
         {
             try
             {
                 if (File.Exists(PersistentOperations.XPathDir + "XUi/windows.xml"))
                 {
+                    string link = string.Format("http://{0}:{1}/auction.html", WebAPI.BaseAddress, WebAPI.Port);
                     List<string> lines = File.ReadAllLines(PersistentOperations.XPathDir + "XUi/windows.xml").ToList();
                     for (int i = 0; i < lines.Count; i++)
                     {
                         if (lines[i].Contains("browserAuction"))
                         {
-                            if (!lines[i + 7].Contains(_link))
+                            if (!lines[i + 7].Contains(link))
                             {
-                                lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", _link);
+                                lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", link);
                                 File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
                             }
                             return;
@@ -54,9 +55,9 @@ namespace ServerTools
                             lines.Add("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                             lines.Add("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                             lines.Add("          <label name=\"ServerDescription\" />");
-                            lines.Add(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", _link));
+                            lines.Add(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", link));
                             lines.Add("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                            lines.Add("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
+                            lines.Add("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
                             lines.Add("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                             lines.Add("          <!-- Change the text IP and Port to the one needed by ServerTools web api -->");
                             lines.Add("      </panel>");
@@ -287,83 +288,85 @@ namespace ServerTools
                 {
                     if (Panel && WebAPI.IsEnabled && WebAPI.Connected)
                     {
-                        string securityId = "";
-                        for (int i = 0; i < 10; i++)
+                        if (!PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay)
                         {
-                            securityId = CreatePassword(4);
-                            if (securityId != "DBUG" && !PanelAccess.ContainsKey(securityId))
+                            string securityId = "";
+                            for (int i = 0; i < 10; i++)
                             {
-                                if (!PanelAccess.ContainsValue(_cInfo.entityId))
+                                string pass = CreatePassword(4);
+                                if (pass != "DBUG" && !PanelAccess.ContainsKey(pass))
                                 {
-                                    PanelAccess.Add(securityId, _cInfo.entityId);
-                                    WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
-                                }
-                                else
-                                {
-                                    if (PanelAccess.Count > 0)
+                                    securityId = pass;
+                                    if (!PanelAccess.ContainsValue(_cInfo.entityId))
                                     {
-                                        foreach (var client in PanelAccess)
-                                        {
-                                            if (client.Value == _cInfo.entityId)
-                                            {
-                                                PanelAccess.Remove(client.Key);
-                                                WebAPI.AuthorizedTime.Remove(client.Key);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    PanelAccess.Add(securityId, _cInfo.entityId);
-                                    WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
-                                }
-                                break;
-                            }
-                        }
-                        Phrases.Dict.TryGetValue("Auction20", out string phrase);
-                        phrase = phrase.Replace("{Value}", securityId);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserAuction", true));
-                    }
-                    else
-                    {
-                        List<string> IDs = new List<string>();
-                        var auctionEntries = AuctionItems.ToArray();
-                        for (int i = 0; i < auctionEntries.Length; i++)
-                        {
-                            string id = auctionEntries[i].Value;
-                            if (!IDs.Contains(id) && PersistentContainer.Instance.Players[id].Auction != null && PersistentContainer.Instance.Players[id].Auction.Count > 0)
-                            {
-                                IDs.Add(id);
-                                if (_cInfo.CrossplatformId.CombinedString == id)
-                                {
-                                    Phrases.Dict.TryGetValue("Auction19", out string phrase);
-                                    phrase = phrase.Replace("{Value}", PersistentContainer.Instance.Players[id].Auction.Count.ToString());
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                }
-                                var items = PersistentContainer.Instance.Players[id].Auction.ToArray();
-                                for (int j = 0; j < items.Length; j++)
-                                {
-                                    if (items[j].Value.hasQuality)
-                                    {
-                                        Phrases.Dict.TryGetValue("Auction5", out string phrase);
-                                        phrase = phrase.Replace("{Id}", items[j].Key.ToString());
-                                        phrase = phrase.Replace("{Count}", items[j].Value.count.ToString());
-                                        phrase = phrase.Replace("{Item}", items[j].Value.localName);
-                                        phrase = phrase.Replace("{Quality}", items[j].Value.quality.ToString());
-                                        phrase = phrase.Replace("{Durability}", ((items[j].Value.maxUseTimes - items[j].Value.useTimes) / items[j].Value.maxUseTimes * 100).ToString());
-                                        phrase = phrase.Replace("{Price}", items[j].Value.price.ToString());
-                                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        PanelAccess.Add(securityId, _cInfo.entityId);
+                                        WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
                                     }
                                     else
                                     {
-                                        Phrases.Dict.TryGetValue("Auction17", out string phrase);
-                                        phrase = phrase.Replace("{Id}", items[j].Key.ToString());
-                                        phrase = phrase.Replace("{Count}", items[j].Value.count.ToString());
-                                        phrase = phrase.Replace("{Item}", items[j].Value.localName);
-                                        phrase = phrase.Replace("{Price}", items[j].Value.price.ToString());
-                                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        if (PanelAccess.Count > 0)
+                                        {
+                                            foreach (var client in PanelAccess)
+                                            {
+                                                if (client.Value == _cInfo.entityId)
+                                                {
+                                                    PanelAccess.Remove(client.Key);
+                                                    WebAPI.AuthorizedTime.Remove(client.Key);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        PanelAccess.Add(securityId, _cInfo.entityId);
+                                        WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
                                     }
+                                    break;
+                                }
+                            }
+                            Phrases.Dict.TryGetValue("Auction20", out string phrase);
+                            phrase = phrase.Replace("{Value}", securityId);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserAuction", true));
+                            return;
+                        }
+                    }
+                    List<string> IDs = new List<string>();
+                    var auctionEntries = AuctionItems.ToArray();
+                    for (int i = 0; i < auctionEntries.Length; i++)
+                    {
+                        string id = auctionEntries[i].Value;
+                        if (!IDs.Contains(id) && PersistentContainer.Instance.Players[id].Auction != null && PersistentContainer.Instance.Players[id].Auction.Count > 0)
+                        {
+                            IDs.Add(id);
+                            if (_cInfo.CrossplatformId.CombinedString == id)
+                            {
+                                Phrases.Dict.TryGetValue("Auction19", out string phrase);
+                                phrase = phrase.Replace("{Value}", PersistentContainer.Instance.Players[id].Auction.Count.ToString());
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            }
+                            var items = PersistentContainer.Instance.Players[id].Auction.ToArray();
+                            for (int j = 0; j < items.Length; j++)
+                            {
+                                if (items[j].Value.hasQuality)
+                                {
+                                    Phrases.Dict.TryGetValue("Auction5", out string phrase);
+                                    phrase = phrase.Replace("{Id}", items[j].Key.ToString());
+                                    phrase = phrase.Replace("{Count}", items[j].Value.count.ToString());
+                                    phrase = phrase.Replace("{Item}", items[j].Value.localName);
+                                    phrase = phrase.Replace("{Quality}", items[j].Value.quality.ToString());
+                                    phrase = phrase.Replace("{Durability}", ((items[j].Value.maxUseTimes - items[j].Value.useTimes) / items[j].Value.maxUseTimes * 100).ToString());
+                                    phrase = phrase.Replace("{Price}", items[j].Value.price.ToString());
+                                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                                else
+                                {
+                                    Phrases.Dict.TryGetValue("Auction17", out string phrase);
+                                    phrase = phrase.Replace("{Id}", items[j].Key.ToString());
+                                    phrase = phrase.Replace("{Count}", items[j].Value.count.ToString());
+                                    phrase = phrase.Replace("{Item}", items[j].Value.localName);
+                                    phrase = phrase.Replace("{Price}", items[j].Value.price.ToString());
+                                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }
@@ -634,7 +637,7 @@ namespace ServerTools
                         {
                             auctionItems += items[j].Key + "§" + items[j].Value.count + "§" + items[j].Value.name + "§" + items[j].Value.localName + "§" +
                                 items[j].Value.quality + "§" + (items[j].Value.maxUseTimes - items[j].Value.useTimes) / items[j].Value.maxUseTimes * 100 + "§" +
-                                items[j].Value.price + "§" + items[j].Value.iconName + "§" + "true" + "╚";
+                                items[j].Value.price + "§" + items[j].Value.iconName + "§";
                             if (_crossplatformId == id)
                             {
                                 auctionItems += "true" + "╚";

@@ -4,34 +4,40 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using UnityEngine;
 
 public static class Injections
 {
 
-    public static void PlayerLoginRPC_Prefix(ClientInfo _cInfo, string _playerName, ValueTuple<PlatformUserIdentifierAbs, string> _platformUserAndToken, ValueTuple<PlatformUserIdentifierAbs, string> _crossplatformUserAndToken, out bool __state)
+    public static bool PlayerLoginRPC_Prefix(ClientInfo _cInfo, string _playerName, ValueTuple<PlatformUserIdentifierAbs, string> _platformUserAndToken, ValueTuple<PlatformUserIdentifierAbs, string> _crossplatformUserAndToken, out bool __state)
     {
         __state = false;
         try
         {
-            if (_platformUserAndToken.Item1 != null && _crossplatformUserAndToken.Item1 != null)
+            if (GameManager.Instance != null && GameManager.Instance.World != null)
             {
-                if (ReservedSlots.IsEnabled)
+                if (_platformUserAndToken.Item1 != null && _crossplatformUserAndToken.Item1 != null)
                 {
-                    int maxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
-                    if (ConnectionManager.Instance.ClientCount() > maxPlayers && ReservedSlots.FullServer(_cInfo, _platformUserAndToken.Item1, _crossplatformUserAndToken.Item1))
+                    if (ReservedSlots.IsEnabled)
                     {
-                        GamePrefs.Set(EnumGamePrefs.ServerMaxPlayerCount, maxPlayers + 1);
-                        __state = true;
-                        return;
+                        int maxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
+                        if (ConnectionManager.Instance.ClientCount() > maxPlayers && ReservedSlots.FullServer(_cInfo, _platformUserAndToken.Item1, _crossplatformUserAndToken.Item1))
+                        {
+                            GamePrefs.Set(EnumGamePrefs.ServerMaxPlayerCount, maxPlayers + 1);
+                            __state = true;
+                        }
                     }
                 }
+            }
+            else
+            {
+                return false;
             }
         }
         catch (Exception e)
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.PlayerLoginRPC_Prefix: {0}", e.Message));
         }
+        return true;
     }
 
     public static void PlayerLoginRPC_Postfix(bool __state)
@@ -196,11 +202,6 @@ public static class Injections
     {
         try
         {
-            if (AutoRestart.IsEnabled)
-            {
-                Log.Out("[SERVERTOOLS] Auto restart initialized");
-                Utils.RestartGame();
-            }
             Log.Out("[SERVERTOOLS] SHUTDOWN");
             Process process = Process.GetCurrentProcess();
             if (process != null)
@@ -337,9 +338,9 @@ public static class Injections
             if (entityAlive != null && entityAlive is EntityPlayer)
             {
                 ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityAlive.entityId);
-                if (cInfo != null && ReservedSlots.IsEnabled && (ReservedSlots.Dict.ContainsKey(cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(cInfo.CrossplatformId.CombinedString)))
+                if (cInfo != null)
                 {
-                    if (ReservedSlots.Bonus_Exp > 0 && __instance is EntityZombie)
+                    if (ReservedSlots.IsEnabled && ReservedSlots.Bonus_Exp > 0 && __instance is EntityZombie && (ReservedSlots.Dict.ContainsKey(cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(cInfo.CrossplatformId.CombinedString)))
                     {
                         if (ReservedSlots.Bonus_Exp > 100)
                         {
@@ -348,15 +349,13 @@ public static class Injections
                         int experience = EntityClass.list[__instance.entityClass].ExperienceValue;
                         float percent = ReservedSlots.Bonus_Exp / 100f;
                         float bonus = experience * percent;
-                        experience = (int)bonus;
+                        experience = (int)bonus / 2;
                         cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityAddExpClient>().Setup(entityAlive.entityId, experience, Progression.XPTypes.Kill));
-                        Log.Out(string.Format("[SERVERTOOLS] Added bonus experience of '{0}' to reserved player '{1}' '{2}' named '{3}'", experience, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                     }
                     int experienceBoost = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ExperienceBoost;
                     if (experienceBoost > 0)
                     {
                         cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityAddExpClient>().Setup(entityAlive.entityId, experienceBoost, Progression.XPTypes.Kill));
-                        Log.Out(string.Format("[SERVERTOOLS] Added bonus experience of '{0}' to '{1}' '{2}' named '{3}'", experienceBoost, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                     }
                 }
             }

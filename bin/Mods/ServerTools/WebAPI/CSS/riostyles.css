@@ -1,0 +1,360 @@
+:root
+{
+	font-family:"seven_days_later";
+	background:#404040;
+}
+
+@font-face
+{
+	font-family:"seven_days_later";
+	src:url(../Font/7DaysLater.woff2) format("woff2");
+	font-display:swap;
+}
+
+#Header
+{
+	position:absolute;
+	width:100%;
+	height:10%;
+	min-width:100%;
+	min-height:10%;
+	margin-bottom:30px;
+	top:-2000px;
+}
+
+#SubheaderLeft
+{
+	position:relative;
+	width:15%;
+	height:100%;
+	min-width:15%;
+	min-height:100%;
+	float:left;
+	text-align:left;
+	color:#FFF;
+}
+
+#SubheaderRight
+{
+	position:relative;
+	width:80%;
+	height:100%;
+	min-width:80%;
+	min-height:100%;
+	float:left;
+	text-align:center;
+	color:#FFF;
+}
+
+#GeneralBody
+{
+	position:absolute;
+	width:100%;
+	height:100%;
+	padding:0;
+	overflow:hidden;
+}
+
+#MainContainer
+{
+	position:relative;
+	width:100%;
+	height:auto;
+	top:15%;
+}
+
+#Board
+{
+	position:relative;
+	width:100%;
+	height:98%;
+	z-index:3;
+	margin-top:1%;
+	top:-2000px;
+	background-color:#404040;
+}
+
+#UserContainer
+{
+	float:left;
+	width:45%;
+	height:90%;
+	min-width:45%;
+	min-height:90%;
+}
+
+#Rows
+{
+	position:relative;
+	width:100%;
+	height:10%;
+}
+
+#SecuritySync {
+	position:absolute;
+	width:100%;
+	height:30%;
+    text-align:center;
+	z-index:0;
+	top:0px;
+	color:#FFF;
+}
+
+#ConfirmEnter
+{
+	position:relative;
+	top:5px;
+	margin:20px;
+	width:20px;
+	height:20px;
+}
+
+#LobbyContainer {
+	position:absolute;
+	width:95%;
+	height:auto;
+	z-index:1;
+	margin-top:5%;
+	color:#FFF;
+	top:-2000px;
+}
+
+#Lobby {
+	width:auto;
+	height:auto;
+    text-align:center;
+	color:#FFF;
+	border:30px solid #FFF;
+	border-radius:10px;
+}
+
+#TimerContainer {
+	width:95%;
+	height:10%;
+    text-align:right;
+	color:#FFF;
+	font-size:30px;
+}
+
+#GameLogo {
+    display:block;
+	width:auto;
+	height:100%;
+	min-width:70%;
+	min-height:90%;
+}
+
+#Dice {
+	float:left;
+	width:15%;
+	height:90%;
+	min-width:20%;
+	min-height:90%;
+	margin:10px;
+}
+
+#Roller {
+	float:left;
+	width:70%;
+	height:80%;
+	min-width:70%;
+	min-height:80%;
+	box-shadow:;
+}
+
+#RollNumber {
+	float:left;
+	width:10%;
+	height:10%;
+	min-width:10%;
+	min-height:10%;
+	margin-left:10px;
+}
+
+#RollerContainer {
+	float:left;
+	width:10%;
+	height:auto;
+	margin-top:2%;
+}
+
+#StatusContainer {
+	float:left;
+	width:15%;
+	height:90%;
+	min-width:15%;
+	min-height:90%;
+	margin-left:5%;
+}
+
+#ExitButton {
+	position:relative;
+	float:left;
+}
+
+#HowToPlayButton {
+	position:relative;
+	float:left;
+}
+
+#StartButton {
+	position:relative;
+	float:left;
+	top:-2000px;
+}
+
+#AddAIButton {
+	position:relative;
+	float:left;
+	top:-2000px;
+}
+
+#RemoveAIButton {
+	position:relative;
+	float:left;
+	top:-2000px;
+}
+
+#ConnectionInfo {
+	color:#FFF;
+}
+
+#Status {
+	text-align:center;
+	margin-top:1%;
+	color:#FFF;
+}
+
+#BalloonContainer {
+	position:absolute;
+	width:100%;
+	height:100%;
+	z-index:10;
+}
+
+#Balloon1 {
+	float:left;
+	position:relative;
+	width:10%;
+	height:auto;
+	top:-800px;
+	margin-top:5%;
+	margin-right:20%;
+	margin-left:5%;
+}
+
+#Balloon2 {
+	float:left;
+	position:relative;
+	width:15%;
+	height:auto;
+	top:-800px;
+	margin-right:20%;
+}
+
+#Balloon3 {
+	float:left;
+	position:relative;
+	width:12%;
+	height:auto;
+	top:-800px;
+	margin-top:6%;
+}
+
+#HowToPlayContainer {
+	position:absolute;
+	width:95%;
+	height:auto;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size:20px;
+	color:#FFF;
+	z-index:9;
+	margin-top:5%;
+	padding:10px;
+	background-color:grey;
+	border:15px solid black;
+	top:-2000px;
+}
+
+.Squares
+{
+	position:relative;
+	width:10%;
+	height:auto%;
+	float:left;
+	border:1px solid gray;
+	border-radius:5px;
+}
+
+.Image
+{
+	position:relative;
+	width:80%;
+	height:auto%;
+}
+
+.Sequence
+{
+	display:block;
+	margin-left:30%;
+	margin-right:30%;
+	width:50%;
+	height:50%;
+}
+
+.UserIcons
+{
+	position:relative;
+	float:left;
+	margin-bottom:10%;
+	padding:10px;
+	min-height:60%;
+	min-width:9%;
+	height:60%;
+	width:9%;
+}
+
+.UserNames
+{
+	position:relative;
+	float:left;
+	margin-top:10px;
+	margin-left:1%;
+	margin-right:12%;
+	width:5%;
+	height:100%;
+}
+
+.Dots
+{
+	float:left;
+	margin:2%;
+	width:12%;
+	height:auto;
+	min-width:12%;
+	min-height:auto;
+}
+
+.Buttons
+{
+	color:#FFF;
+	background-color:#AB1700;
+	margin-top:10px;
+	border:1px solid #FFF;
+	border-radius:5px;
+}
+
+.Users
+{
+	float:left;
+	width:45%;
+	height:45%;
+	min-width:45%;
+	min-height:45%;
+	font-size:20px;
+}
+
+.ConnectingUser
+{
+	font-size:18px;
+}

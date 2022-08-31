@@ -18,7 +18,6 @@ namespace ServerTools
         private Dictionary<int, int> backpacks;
         private string bannedCountries;
         private Dictionary<int, List<int>> clientMuteList;
-        private Dictionary<string, byte[]> connections;
         private Dictionary<string, DateTime> connectionTimeOut;
         private bool countryBan;
         private Dictionary<string, DateTime> blockPickUp;
@@ -30,6 +29,7 @@ namespace ServerTools
         private Dictionary<string, bool> pollVote;
         private bool proxyBan;
         private List<string> regionReset;
+        private List<string[]> shopLog;
         private List<string[]> track;
         private Dictionary<string, string> webAuthorizedList;
         private Dictionary<string, DateTime> webAuthorizedTimeList;
@@ -157,18 +157,6 @@ namespace ServerTools
             set
             {
                 clientMuteList = value;
-            }
-        }
-
-        public Dictionary<string, byte[]> Connections
-        {
-            get
-            {
-                return connections;
-            }
-            set
-            {
-                connections = value;
             }
         }
 
@@ -301,6 +289,18 @@ namespace ServerTools
             set
             {
                 regionReset = value;
+            }
+        }
+
+        public List<string[]> ShopLog
+        {
+            get
+            {
+                return shopLog;
+            }
+            set
+            {
+                shopLog = value;
             }
         }
 

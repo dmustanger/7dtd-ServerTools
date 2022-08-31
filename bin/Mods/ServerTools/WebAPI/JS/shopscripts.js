@@ -1,244 +1,214 @@
-var ClientId = "";
-var Pin = "";
+var ClientId, Pin;
 var Items = new Object();
 var Categories = new Object();
 var ActiveFilter = 0;
 var PurchaseNumber = -1;
 var Page = 1;
+var FiltersOpen = false;
 
 function FreshPage() {
 	document.getElementById('SecuritySync').style.visibility = "visible";
-	document.getElementById('Header').style.visibility = "hidden";
-	document.getElementById('FilterContainer').style.visibility = "hidden";
-	document.getElementById('ContentContainer').style.visibility = "hidden";
-	document.getElementById('Filters').style.visibility = "hidden";
 };
 
 function EnterShop() {
 	let secureId = document.getElementById("SecureId").value;
 	if (secureId.length > 3 && secureId.length < 5) {
-		if (document.getElementById("ConfirmEnter").checked) {
-			let request = new XMLHttpRequest();
-			request.open('POST', window.location.href.replace('shop.html', 'EnterShop'), false);
-			request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
-			request.onerror = function() {
-				alert("Error");
-			};
-			request.onload = function () {
-				if (request.status == 200 && request.readyState == 4) {
-					ClientId = secureId;
-					let responseSplit = request.responseText.split('☼');
-					Pin = CryptoJS.SHA512(ClientId + responseSplit[6]).toString();
-					
-					document.getElementById('SecuritySync').style.visibility = "hidden";
-					document.getElementById('Header').style.visibility = "visible";
-					document.getElementById('FilterContainer').style.visibility = "visible";
-					document.getElementById('ContentContainer').style.visibility = "visible";
-					document.getElementById('Filters').style.visibility = "visible";
-					document.getElementById("PlayerName").innerHTML = responseSplit[0];
-					document.getElementById("Balance").innerHTML = responseSplit[1] + " " + responseSplit[2];
-					document.getElementById("ShopName").innerHTML = responseSplit[3];
+		let request = new XMLHttpRequest();
+		request.open('POST', window.location.href.replace('shop.html', 'EnterShop'), true);
+		request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+		request.onerror = function() {
+			alert("Error");
+		};
+		request.onload = function () {
+			if (request.status == 200 && request.readyState == 4) {
+				ClientId = secureId;
+				let responseSplit = request.responseText.split('☼');
+				Pin = CryptoJS.SHA512(ClientId + responseSplit[6]).toString();
+				document.getElementById('SecuritySync').style.top = "-2000px"
+				document.getElementById('Header').style.top = "0px"
+				document.getElementById('ContentContainer').style.top = "0px"
+				document.getElementById("PlayerName").innerHTML = responseSplit[0];
+				document.getElementById("Balance").innerHTML = responseSplit[1] + " " + responseSplit[2];
+				document.getElementById("ShopName").innerHTML = responseSplit[3];
 
-					let categorySplit = responseSplit[5].split('§');
-					let categories = new Array(categorySplit.length + 1);
-					
-					categories[0] = "all";
-					let firstFilter = document.createElement('H4');
-					firstFilter.setAttribute("class", "FilterIcons");
-					firstFilter.setAttribute("id", "FilterIcon0");
-					firstFilter.setAttribute("title", "all");
-					firstFilter.innerHTML = 0;
-					firstFilter.onclick = function () {
-						Filter(0);
+				let categorySplit = responseSplit[5].split('§');
+				let categories = new Array(categorySplit.length + 1);
+				
+				categories[0] = "all";
+				let firstFilter = document.createElement('button');
+				firstFilter.setAttribute("class", "Filters");
+				firstFilter.setAttribute("title", "all");
+				firstFilter.innerHTML = "all";
+				firstFilter.onclick = function () {
+					Filter(0);
+				};
+				document.getElementById("FilterContainer").appendChild(firstFilter);
+				
+				for (let i = 0; i < categorySplit.length; i++) {
+					let filter = document.createElement('button');
+					filter.setAttribute("class", "Filters");
+					filter.setAttribute("title", categorySplit[i]);
+					filter.innerHTML = categorySplit[i];
+					filter.onclick = function () {
+						Filter(i + 1);
 					};
-					document.getElementById("FilterContainer").appendChild(firstFilter);
+					document.getElementById("FilterContainer").appendChild(filter);
 					
-					for (let i = 0; i < categorySplit.length; i++) {
-						let filter = document.createElement('H4');
-						filter.setAttribute("class", "FilterIcons");
-						filter.setAttribute("id", "FilterIcon" + i + 1);
-						filter.setAttribute("title", categorySplit[i]);
-						filter.innerHTML = i + 1;
-						filter.onclick = function () {
-							Filter(i + 1);
-						};
-						document.getElementById("FilterContainer").appendChild(filter);
-						
-						if (categorySplit[i].includes("Tier:") == true) {
-							categorySplit[i] = categorySplit[i].replace("Tier:", "");
-						}
-						categories[i + 1] = categorySplit[i];
+					if (categorySplit[i].includes("Quality:") == true) {
+						categorySplit[i] = categorySplit[i].replace("Quality:", "");
 					}
-					
-					Categories = categories;
-					
-					let selection = document.createElement('select');
-					selection.setAttribute("id", "PerPage");
-					selection.setAttribute("title", "Items Per Page");
-					selection.addEventListener('change', (event) => { UpdatePerPage (selection.value) });
-					document.getElementById("FilterContainer").appendChild(selection);
-					let option20 = document.createElement('option');
-					option20.value = 20;
-					option20.text = 20;
-					document.getElementById("PerPage").appendChild(option20);
-					let option15 = document.createElement('option');
-					option15.value = 15;
-					option15.text = 15;
-					document.getElementById("PerPage").appendChild(option15);
-					let option10 = document.createElement('option');
-					option10.value = 10;
-					option10.text = 10;
-					document.getElementById("PerPage").appendChild(option10);
-					let option5 = document.createElement('option');
-					option5.value = 5;
-					option5.text = 5;
-					document.getElementById("PerPage").appendChild(option5);
-					if (responseSplit[4].length > 0) {
-						if (responseSplit[4].includes("╚") == true) {
-							let perPage = document.getElementById("PerPage").value;
-							let itemsSplit = responseSplit[4].split('╚');
-							for (let j = 0; j < itemsSplit.length; j++)
-							{
-								Items[j] = itemsSplit[j];
-								
-								if (j < perPage) {
-									let div = document.createElement("div");
-									div.setAttribute("class", "IconContainer");
-									div.setAttribute("id", j);
-									document.getElementById("Items").appendChild(div);
-									
-									let itemHeader = document.createElement('H3');
-									itemHeader.setAttribute("class", "ItemHeader");
-									
-									let itemSplit = itemsSplit[j].split('§');
-									if (itemSplit[5] == 1) {
-										itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Tier: " + itemSplit[5] + "<span>";
-									}
-									else if (itemSplit[5] == 2) {
-										itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Tier: " + itemSplit[5] + "<span>";
-									}
-									else if (itemSplit[5] == 3) {
-										itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Tier: " + itemSplit[5] + "<span>";
-									}
-									else if (itemSplit[5] == 4) {
-										itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Tier: " + itemSplit[5] + "<span>";
-									}
-									else if (itemSplit[5] == 5) {
-										itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Tier: " + itemSplit[5] + "<span>";
-									}
-									else if (itemSplit[5] == 6) {
-										itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Tier: " + itemSplit[5] + "<span>";
-									}
-									else if (itemSplit[5] == 7) {
-										itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Tier: " + itemSplit[5] + "<span>";
-									}
-									else if (itemSplit[5] == 8) {
-										itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Tier: " + itemSplit[5] + "<span>";
-									}
-									document.getElementById(j).appendChild(itemHeader);
-									
-									let img = document.createElement("img");
-									img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
-									img.setAttribute("class", "Icon");
-									img.setAttribute("title", itemSplit[2]);
-									img.onclick = function () {
-										document.getElementById("Total").innerHTML = "Total: " + document.getElementById("Counter").value * itemSplit[6];
-										document.getElementById("InfoContainer").innerHTML =  itemSplit[2] + " </br> " + itemSplit[7] + " </br> " + itemSplit[9];
-										PurchaseNumber = itemSplit[8];
-									};
-									document.getElementById(j).appendChild(img);
-								}
-							}
-							if (itemsSplit.length > perPage) {
+					categories[i + 1] = categorySplit[i];
+				}
+				
+				Categories = categories;
+				
+				let selection = document.getElementById('PerPage');
+				selection.addEventListener("change", function() {
+					UpdatePerPage (selection.value);
+				});
+				if (responseSplit[4].length > 0) {
+					if (responseSplit[4].includes("╚") == true) {
+						let itemsSplit = responseSplit[4].split('╚');
+						for (let j = 0; j < itemsSplit.length; j++)
+						{
+							Items[j] = itemsSplit[j];
+							
+							if (j < selection.value) {
 								let div = document.createElement("div");
 								div.setAttribute("class", "IconContainer");
-								div.setAttribute("id", ">");
-								div.setAttribute("title", "Next Page");
-								document.getElementById("Items").appendChild(div);
-								let pageHeader = document.createElement('H3');
-								pageHeader.setAttribute("class", "ItemHeader");
-								pageHeader.innerHTML = "Next Page";
-								document.getElementById(">").appendChild(pageHeader);
-								let pageUp = document.createElement('H3');
-								pageUp.setAttribute("class", "PageHeader");
-								pageUp.setAttribute("title", "Next Page");
-								pageUp.innerHTML = ">";
-								pageUp.onclick = function () {
-									NextPage();
+								div.setAttribute("id", j);
+								div.onclick = function () {
+									let number = document.getElementById("Counter").value * itemSplit[6];
+									document.getElementById("Total").innerHTML = "Total: " + number;
+									document.getElementById("InfoContainer").innerHTML =  itemSplit[2] + " </br> " + itemSplit[7] + " </br> " + itemSplit[9];
+									PurchaseNumber = itemSplit[8];
 								};
-								document.getElementById(">").appendChild(pageUp);
+								document.getElementById("Items").appendChild(div);
+								
+								let itemHeader = document.createElement('H3');
+								itemHeader.setAttribute("class", "ItemHeader");
+								
+								let itemSplit = itemsSplit[j].split('§');
+								if (itemSplit[5] == 1) {
+									itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Quality: " + itemSplit[5] + "<span>";
+								}
+								else if (itemSplit[5] == 2) {
+									itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Quality: " + itemSplit[5] + "<span>";
+								}
+								else if (itemSplit[5] == 3) {
+									itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Quality: " + itemSplit[5] + "<span>";
+								}
+								else if (itemSplit[5] == 4) {
+									itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Quality: " + itemSplit[5] + "<span>";
+								}
+								else if (itemSplit[5] == 5) {
+									itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Quality: " + itemSplit[5] + "<span>";
+								}
+								else if (itemSplit[5] == 6) {
+									itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Quality: " + itemSplit[5] + "<span>";
+								}
+								else if (itemSplit[5] == 7) {
+									itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Quality: " + itemSplit[5] + "<span>";
+								}
+								else if (itemSplit[5] == 8) {
+									itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Quality: " + itemSplit[5] + "<span>";
+								}
+								document.getElementById(j).appendChild(itemHeader);
+								
+								let img = document.createElement("img");
+								img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
+								img.setAttribute("class", "Icon");
+								img.setAttribute("title", itemSplit[2]);
+								document.getElementById(j).appendChild(img);
 							}
 						}
-						else {
-							Items[0] = responseSplit[4];
-							
+						if (itemsSplit.length > selection.value) {
 							let div = document.createElement("div");
 							div.setAttribute("class", "IconContainer");
-							div.setAttribute("id", 0);
-							document.getElementById("Items").appendChild(div);
-
-							let itemHeader = document.createElement('H3');
-							itemHeader.setAttribute("class", "ItemHeader");
-							
-							let itemSplit = ItemString.split('§');
-							if (itemSplit[5] == 1) {
-								itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Tier: " + itemSplit[5] + "<span>";
-							}
-							else if (itemSplit[5] == 2) {
-								itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Tier: " + itemSplit[5] + "<span>";
-							}
-							else if (itemSplit[5] == 3) {
-								itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Tier: " + itemSplit[5] + "<span>";
-							}
-							else if (itemSplit[5] == 4) {
-								itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Tier: " + itemSplit[5] + "<span>";
-							}
-							else if (itemSplit[5] == 5) {
-								itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Tier: " + itemSplit[5] + "<span>";
-							}
-							else if (itemSplit[5] == 6) {
-								itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Tier: " + itemSplit[5] + "<span>";
-							}
-							else if (itemSplit[5] == 7) {
-								itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Tier: " + itemSplit[5] + "<span>";
-							}
-							else if (itemSplit[5] == 8) {
-								itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Tier: " + itemSplit[5] + "<span>";
-							}
-							document.getElementById(0).appendChild(itemHeader);
-
-							let img = document.createElement("img");
-							img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
-							img.setAttribute("class", "Icon");
-							img.setAttribute("title", itemSplit[2]);
-							img.onclick = function () {
-								document.getElementById("Total").innerHTML = "Total: " + document.getElementById("Counter").value * itemSplit[6];
-								document.getElementById("InfoContainer").innerHTML = itemSplit[2] + " </br> " + itemSplit[7] + " </br> " + itemSplit[9];
-								PurchaseNumber = itemSplit[8];
+							div.setAttribute("id", ">");
+							div.setAttribute("title", "Next Page");
+							div.onclick = function () {
+								NextPage();
 							};
-							document.getElementById(0).appendChild(img);
+							document.getElementById("Items").appendChild(div);
+							let pageHeader = document.createElement('H3');
+							pageHeader.setAttribute("class", "ItemHeader");
+							pageHeader.innerHTML = "Next Page";
+							document.getElementById(">").appendChild(pageHeader);
+							let pageUp = document.createElement('H3');
+							pageUp.setAttribute("class", "PageHeader");
+							pageUp.setAttribute("title", "Next Page");
+							pageUp.innerHTML = ">";
+							document.getElementById(">").appendChild(pageUp);
 						}
 					}
+					else {
+						Items[0] = responseSplit[4];
+						
+						let div = document.createElement("div");
+						div.setAttribute("class", "IconContainer");
+						div.setAttribute("id", 0);
+						div.onclick = function () {
+							let number = document.getElementById("Counter").value * itemSplit[6];
+							document.getElementById("Total").innerHTML = "Total: " + number;
+							document.getElementById("InfoContainer").innerHTML = itemSplit[2] + " </br> " + itemSplit[7] + " </br> " + itemSplit[9];
+							PurchaseNumber = itemSplit[8];
+						};
+						document.getElementById("Items").appendChild(div);
+
+						let itemHeader = document.createElement('H3');
+						itemHeader.setAttribute("class", "ItemHeader");
+						
+						let itemSplit = ItemString.split('§');
+						if (itemSplit[5] == 1) {
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Quality: " + itemSplit[5] + "<span>";
+						}
+						else if (itemSplit[5] == 2) {
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Quality: " + itemSplit[5] + "<span>";
+						}
+						else if (itemSplit[5] == 3) {
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Quality: " + itemSplit[5] + "<span>";
+						}
+						else if (itemSplit[5] == 4) {
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Quality: " + itemSplit[5] + "<span>";
+						}
+						else if (itemSplit[5] == 5) {
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Quality: " + itemSplit[5] + "<span>";
+						}
+						else if (itemSplit[5] == 6) {
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Quality: " + itemSplit[5] + "<span>";
+						}
+						else if (itemSplit[5] == 7) {
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Quality: " + itemSplit[5] + "<span>";
+						}
+						else if (itemSplit[5] == 8) {
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Quality: " + itemSplit[5] + "<span>";
+						}
+						document.getElementById(0).appendChild(itemHeader);
+
+						let img = document.createElement("img");
+						img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
+						img.setAttribute("class", "Icon");
+						img.setAttribute("title", itemSplit[2]);
+						document.getElementById(0).appendChild(img);
+					}
 				}
-				else if (request.status == 401 && request.readyState == 4) {
-					alert("Invalid security ID");
-				}
-				else if (request.status == 402 && request.readyState == 4) {
-					alert("This security ID has expired. Please acquire a new one");
-				}
-				else if (request.status == 403 && request.readyState == 4) {
-					alert("No response from the server");
-				}
-			};
-			if (secureId != "DBUG") {
-				request.send(CryptoJS.SHA512(secureId).toString())
 			}
-			else {
-				request.send(secureId)
+			else if (request.status == 401 && request.readyState == 4) {
+				alert("Invalid security ID");
 			}
+			else if (request.status == 402 && request.readyState == 4) {
+				alert("This security ID has expired. Please acquire a new one");
+			}
+			else if (request.status == 403 && request.readyState == 4) {
+				alert("No response from the server");
+			}
+		};
+		if (secureId != "DBUG") {
+			request.send(CryptoJS.SHA512(secureId).toString());
 		}
 		else {
-			alert("Click the confirmation checkbox first");
+			request.send(secureId);
 		}
 	}
 	else {
@@ -250,7 +220,7 @@ function EnterShop() {
 
 function ExitShop() {
 	let request = new XMLHttpRequest();
-	request.open('POST', window.location.href.replace('shop.html', 'ExitShop'), false);
+	request.open('POST', window.location.href.replace('shop.html', 'ExitShop'), true);
 	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 	request.onerror = function() {
 		alert("Error");
@@ -279,6 +249,7 @@ function ExitShop() {
 function Filter(filter) {
 	if (ActiveFilter != filter) {
 		ActiveFilter = filter;
+		document.getElementById('FilterContainer').style.top = "-2000px"
 		let ItemCount = Object.keys(Items).length;
 		if (ItemCount > 0) {
 			document.getElementById("Items").innerHTML = "";
@@ -299,43 +270,44 @@ function Filter(filter) {
 						let div = document.createElement("div");
 						div.setAttribute("class", "IconContainer");
 						div.setAttribute("id", counter1);
+						div.onclick = function () {
+							let number = document.getElementById("Counter").value * itemSplit[6];
+							document.getElementById("Total").innerHTML = "Total: " + number;
+							document.getElementById("InfoContainer").innerHTML =  itemSplit[2] + " </br> " + itemSplit[7] + " </br> " + itemSplit[9];
+							PurchaseNumber = itemSplit[8];
+						};
 						document.getElementById("Items").appendChild(div);
 						let itemHeader = document.createElement('H3');
 						itemHeader.setAttribute("class", "ItemHeader");
 						if (itemSplit[5] == 1) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Tier: " + itemSplit[5] + "<span>";
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Quality: " + itemSplit[5] + "<span>";
 						}
 						else if (itemSplit[5] == 2) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Tier: " + itemSplit[5] + "<span>";
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Quality: " + itemSplit[5] + "<span>";
 						}
 						else if (itemSplit[5] == 3) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Tier: " + itemSplit[5] + "<span>";
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Quality: " + itemSplit[5] + "<span>";
 						}
 						else if (itemSplit[5] == 4) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Tier: " + itemSplit[5] + "<span>";
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Quality: " + itemSplit[5] + "<span>";
 						}
 						else if (itemSplit[5] == 5) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Tier: " + itemSplit[5] + "<span>";
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Quality: " + itemSplit[5] + "<span>";
 						}
 						else if (itemSplit[5] == 6) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Tier: " + itemSplit[5] + "<span>";
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Quality: " + itemSplit[5] + "<span>";
 						}
 						else if (itemSplit[5] == 7) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Tier: " + itemSplit[5] + "<span>";
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Quality: " + itemSplit[5] + "<span>";
 						}
 						else if (itemSplit[5] == 8) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Tier: " + itemSplit[5] + "<span>";
+							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Quality: " + itemSplit[5] + "<span>";
 						}
 						document.getElementById(counter1).appendChild(itemHeader);
 						let img = document.createElement("img");
 						img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
 						img.setAttribute("class", "Icon");
 						img.setAttribute("title", itemSplit[2]);
-						img.onclick = function () {
-							document.getElementById("Total").innerHTML = "Total: " + document.getElementById("Counter").value * itemSplit[6];
-							document.getElementById("InfoContainer").innerHTML =  itemSplit[2] + " </br> " + itemSplit[7] + " </br> " + itemSplit[9];
-							PurchaseNumber = itemSplit[8];
-						};
 						document.getElementById(counter1).appendChild(img);
 					}
 					counter2 += 1;
@@ -347,6 +319,9 @@ function Filter(filter) {
 				div.setAttribute("class", "IconContainer");
 				div.setAttribute("id", ">");
 				div.setAttribute("title", "Next Page");
+				div.onclick = function () {
+					NextPage();
+				};
 				document.getElementById("Items").appendChild(div);
 				let pageHeader = document.createElement('H3');
 				pageHeader.setAttribute("class", "ItemHeader");
@@ -356,9 +331,6 @@ function Filter(filter) {
 				pageUp.setAttribute("class", "PageHeader");
 				pageUp.setAttribute("title", "Next Page");
 				pageUp.innerHTML = ">";
-				pageUp.onclick = function () {
-					NextPage();
-				};
 				document.getElementById(">").appendChild(pageUp);
 			}
 		}
@@ -375,7 +347,7 @@ function Purchase() {
 	if (document.getElementById("ConfirmPurchase").checked) {
 		if (PurchaseNumber > -1) {
 			let request = new XMLHttpRequest();
-			request.open('POST', window.location.href.replace('shop.html', 'ShopPurchase'), false);
+			request.open('POST', window.location.href.replace('shop.html', 'ShopPurchase'), true);
 			request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 			request.onerror = function() {
 				alert("Error");
@@ -443,43 +415,44 @@ function UpdatePerPage(number) {
 					let div = document.createElement("div");
 					div.setAttribute("class", "IconContainer");
 					div.setAttribute("id", count);
+					div.onclick = function () {
+						let number = document.getElementById("Counter").value * itemSplit[6];
+						document.getElementById("Total").innerHTML = "Total: " + number;
+						document.getElementById("InfoContainer").innerHTML =  itemSplit[2] + " </br> " + itemSplit[7] + " </br> " + itemSplit[9];
+						PurchaseNumber = itemSplit[8];
+					};
 					document.getElementById("Items").appendChild(div);
 					let itemHeader = document.createElement('H3');
 					itemHeader.setAttribute("class", "ItemHeader");
 					if (itemSplit[5] == 1) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Tier: " + itemSplit[5] + "<span>";
+						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Quality: " + itemSplit[5] + "<span>";
 					}
 					else if (itemSplit[5] == 2) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Tier: " + itemSplit[5] + "<span>";
+						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Quality: " + itemSplit[5] + "<span>";
 					}
 					else if (itemSplit[5] == 3) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Tier: " + itemSplit[5] + "<span>";
+						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Quality: " + itemSplit[5] + "<span>";
 					}
 					else if (itemSplit[5] == 4) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Tier: " + itemSplit[5] + "<span>";
+						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Quality: " + itemSplit[5] + "<span>";
 					}
 					else if (itemSplit[5] == 5) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Tier: " + itemSplit[5] + "<span>";
+						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Quality: " + itemSplit[5] + "<span>";
 					}
 					else if (itemSplit[5] == 6) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Tier: " + itemSplit[5] + "<span>";
+						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Quality: " + itemSplit[5] + "<span>";
 					}
 					else if (itemSplit[5] == 7) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Tier: " + itemSplit[5] + "<span>";
+						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Quality: " + itemSplit[5] + "<span>";
 					}
 					else if (itemSplit[5] == 8) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Tier: " + itemSplit[5] + "<span>";
+						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Quality: " + itemSplit[5] + "<span>";
 					}
 					document.getElementById(count).appendChild(itemHeader);
 					let img = document.createElement("img");
 					img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
 					img.setAttribute("class", "Icon");
 					img.setAttribute("title", itemSplit[2]);
-					img.onclick = function () {
-						document.getElementById("Total").innerHTML = "Total: " + document.getElementById("Counter").value * itemSplit[6];
-						document.getElementById("InfoContainer").innerHTML =  itemSplit[2] + " </br> " + itemSplit[7] + " </br> " + itemSplit[9];
-						PurchaseNumber = itemSplit[8];
-					};
 					document.getElementById(count).appendChild(img);
 				}
 			}
@@ -490,6 +463,9 @@ function UpdatePerPage(number) {
 			div.setAttribute("class", "IconContainer");
 			div.setAttribute("id", ">");
 			div.setAttribute("title", "Next Page");
+			div.onclick = function () {
+				NextPage();
+			};
 			document.getElementById("Items").appendChild(div);
 			let pageHeader = document.createElement('H3');
 			pageHeader.setAttribute("class", "ItemHeader");
@@ -499,9 +475,6 @@ function UpdatePerPage(number) {
 			pageUp.setAttribute("class", "PageHeader");
 			pageUp.setAttribute("title", "Next Page");
 			pageUp.innerHTML = ">";
-			pageUp.onclick = function () {
-				NextPage();
-			};
 			document.getElementById(">").appendChild(pageUp);
 		}
 	}
@@ -526,6 +499,9 @@ function NextPage() {
 	div.setAttribute("class", "IconContainer");
 	div.setAttribute("id", "<");
 	div.setAttribute("title", "Last Page");
+	div.onclick = function () {
+		LastPage();
+	};
 	document.getElementById("Items").appendChild(div);
 	let pageHeader = document.createElement('H3');
 	pageHeader.setAttribute("class", "ItemHeader");
@@ -535,9 +511,6 @@ function NextPage() {
 	pageDown.setAttribute("class", "PageHeader");
 	pageDown.setAttribute("title", "Last Page");
 	pageDown.innerHTML = "<";
-	pageDown.onclick = function () {
-		LastPage();
-	};
 	document.getElementById("<").appendChild(pageDown);
 	for (const [key, value] of Object.entries(Items)) {
 		let itemSplit = value.split('§');
@@ -546,33 +519,39 @@ function NextPage() {
 				let div = document.createElement("div");
 				div.setAttribute("class", "IconContainer");
 				div.setAttribute("id", counter1);
+				div.onclick = function () {
+					let number = document.getElementById("Counter").value * itemSplit[6];
+					document.getElementById("Total").innerHTML = "Total: " + number;
+					document.getElementById("InfoContainer").innerHTML =  itemSplit[2] + " </br> " + itemSplit[7] + " </br> " + itemSplit[9];
+					PurchaseNumber = itemSplit[8];
+				};
 				document.getElementById("Items").appendChild(div);
 				
 				let itemHeader = document.createElement('H3');
 				itemHeader.setAttribute("class", "ItemHeader");
 				if (itemSplit[5] == 1) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 2) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 3) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 4) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 5) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 6) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 7) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 8) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Quality: " + itemSplit[5] + "<span>";
 				}
 				document.getElementById(counter1).appendChild(itemHeader);
 	
@@ -580,11 +559,6 @@ function NextPage() {
 				img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
 				img.setAttribute("class", "Icon");
 				img.setAttribute("title", itemSplit[2]);
-				img.onclick = function () {
-					document.getElementById("Total").innerHTML = "Total: " + document.getElementById("Counter").value * itemSplit[6];
-					document.getElementById("InfoContainer").innerHTML =  itemSplit[2] + " </br> " + itemSplit[7] + " </br> " + itemSplit[9];
-					PurchaseNumber = itemSplit[8];
-				};
 				document.getElementById(counter1).appendChild(img);
 			}
 			counter2 += 1;
@@ -596,6 +570,9 @@ function NextPage() {
 		div.setAttribute("class", "IconContainer");
 		div.setAttribute("id", ">");
 		div.setAttribute("title", "Next Page");
+		div.onclick = function () {
+			NextPage();
+		};
 		document.getElementById("Items").appendChild(div);
 		let pageHeader = document.createElement('H3');
 		pageHeader.setAttribute("class", "ItemHeader");
@@ -605,9 +582,6 @@ function NextPage() {
 		pageUp.setAttribute("class", "PageHeader");
 		pageUp.setAttribute("title", "Next Page");
 		pageUp.innerHTML = ">";
-		pageUp.onclick = function () {
-			NextPage();
-		};
 		document.getElementById(">").appendChild(pageUp);
 	}
 };
@@ -629,6 +603,9 @@ function LastPage() {
 		div.setAttribute("class", "IconContainer");
 		div.setAttribute("id", "<");
 		div.setAttribute("title", "Last Page");
+		div.onclick = function () {
+			LastPage();
+		};
 		document.getElementById("Items").appendChild(div);
 		let pageHeader = document.createElement('H3');
 		pageHeader.setAttribute("class", "ItemHeader");
@@ -638,9 +615,6 @@ function LastPage() {
 		pageDown.setAttribute("class", "PageHeader");
 		pageDown.setAttribute("title", "Last Page");
 		pageDown.innerHTML = "<";
-		pageDown.onclick = function () {
-			LastPage();
-		};
 		document.getElementById("<").appendChild(pageDown);
 	}
 	for (const [key, value] of Object.entries(Items)) {
@@ -650,33 +624,39 @@ function LastPage() {
 				let div = document.createElement("div");
 				div.setAttribute("class", "IconContainer");
 				div.setAttribute("id", counter1);
+				div.onclick = function () {
+					let number = document.getElementById("Counter").value * itemSplit[6];
+					document.getElementById("Total").innerHTML = "Total: " + number;
+					document.getElementById("InfoContainer").innerHTML =  itemSplit[2] + " </br> " + itemSplit[7] + " </br> " + itemSplit[9];
+					PurchaseNumber = itemSplit[8];
+				};
 				document.getElementById("Items").appendChild(div);
 				
 				let itemHeader = document.createElement('H3');
 				itemHeader.setAttribute("class", "ItemHeader");
 				if (itemSplit[5] == 1) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 2) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 3) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 4) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 5) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 6) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 7) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Quality: " + itemSplit[5] + "<span>";
 				}
 				else if (itemSplit[5] == 8) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Tier: " + itemSplit[5] + "<span>";
+					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Quality: " + itemSplit[5] + "<span>";
 				}
 				document.getElementById(counter1).appendChild(itemHeader);
 	
@@ -684,11 +664,6 @@ function LastPage() {
 				img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
 				img.setAttribute("class", "Icon");
 				img.setAttribute("title", itemSplit[2]);
-				img.onclick = function () {
-					document.getElementById("Total").innerHTML = "Total: " + document.getElementById("Counter").value * itemSplit[6];
-					document.getElementById("InfoContainer").innerHTML =  itemSplit[2] + " </br> " + itemSplit[7] + " </br> " + itemSplit[9];
-					PurchaseNumber = itemSplit[8];
-				};
 				document.getElementById(counter1).appendChild(img);
 			}
 			counter2 += 1;
@@ -700,6 +675,9 @@ function LastPage() {
 		div.setAttribute("class", "IconContainer");
 		div.setAttribute("id", ">");
 		div.setAttribute("title", "Next Page");
+		div.onclick = function () {
+			NextPage();
+		};
 		document.getElementById("Items").appendChild(div);
 		let pageHeader = document.createElement('H3');
 		pageHeader.setAttribute("class", "ItemHeader");
@@ -709,16 +687,31 @@ function LastPage() {
 		pageUp.setAttribute("class", "PageHeader");
 		pageUp.setAttribute("title", "Next Page");
 		pageUp.innerHTML = ">";
-		pageUp.onclick = function () {
-			NextPage();
-		};
 		document.getElementById(">").appendChild(pageUp);
 	}
 };
 
 function UpdateTotal() {
-	let item = Items[PurchaseNumber];
-	let itemSplit = item.split('§');
-	let total = document.getElementById("Counter").value * itemSplit[6];
-	document.getElementById("Total").innerHTML = "Total: " + total;
+	let ItemCount = Object.keys(Items).length;
+	if (ItemCount > 0) {
+		for (const [key, value] of Object.entries(Items)) {
+			let itemSplit = value.split('§');
+			if (itemSplit[8] === PurchaseNumber) {
+				let total = document.getElementById("Counter").value * itemSplit[6];
+				document.getElementById("Total").innerHTML = "Total: " + total;
+				break;
+			}
+		}
+	}
+};
+
+function ShowFilters() {
+	if (FiltersOpen) {
+		FiltersOpen = false;
+		document.getElementById("FilterContainer").style.top = "-2000px";
+	}
+	else {
+		FiltersOpen = true;
+		document.getElementById("FilterContainer").style.top = "0px";
+	}
 };

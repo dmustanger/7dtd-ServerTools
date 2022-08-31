@@ -171,17 +171,21 @@ namespace ServerTools
                         {
                             GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
                             cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
-                            if (count > _amount)
+                            if (count >= _amount)
                             {
                                 count -= _amount;
-                                ItemStack stack = new ItemStack(ItemClass.GetItem(PersistentOperations.Currency_Item, false), count);
-                                if (stack != null)
+                                if (count > 0)
                                 {
-                                    UpdateRequired.Add(cInfo.entityId, count);
+                                    ItemStack stack = new ItemStack(ItemClass.GetItem(PersistentOperations.Currency_Item, false), count);
+                                    if (stack != null)
+                                    {
+                                        UpdateRequired.Add(cInfo.entityId, count);
+                                    }
                                 }
                             }
-                            else if (count < _amount && _bankPayment)
+                            else if (_bankPayment)
                             {
+                                _amount -= count;
                                 PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank -= _amount;
                                 PersistentContainer.DataChange = true;
                             }

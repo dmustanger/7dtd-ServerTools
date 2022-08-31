@@ -5,9 +5,9 @@ namespace ServerTools
 {
     class CleanBin
     {
-        public static bool IsEnabled = false, Auction = false, Bank = false, Bounties = false, Delays = false, 
-            Homes = false, Jail = false, Lobby = false, Market = false, New_Spawn_Tele = false, Poll = false, 
-            Protected_Zones = false, Vehicles = false, Waypoints = false;
+        public static bool IsEnabled = false, Auction = false, Bank = false, Bounties = false, Delays = false,
+            Homes = false, Jail = false, Lobby = false, Market = false, New_Spawn_Tele = false, Poll = false,
+            Protected_Zones = false, Shop_Log = false, Vehicles = false, Waypoints = false;
 
         public static void Exec()
         {
@@ -17,6 +17,10 @@ namespace ServerTools
                 PersistentContainer.Instance.PollOld = new Dictionary<string[], string>();
                 PersistentContainer.Instance.PollOpen = false;
                 PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
+            }
+            if (Shop_Log)
+            {
+                PersistentContainer.Instance.ShopLog = new List<string[]>();
             }
             List<string> id = PersistentContainer.Instance.Players.IDs;
             for (int i = 0; i < id.Count; i++)

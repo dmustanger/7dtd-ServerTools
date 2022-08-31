@@ -252,12 +252,12 @@ namespace ServerTools
                 else
                 {
                     int timeleft = _delay - _timepassed;
-                    Phrases.Dict.TryGetValue("Prayer1", out string _phrase);
-                    _phrase = _phrase.Replace("{DelayBetweenUses}", _delay.ToString());
-                    _phrase = _phrase.Replace("{TimeRemaining}", timeleft.ToString());
-                    _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    _phrase = _phrase.Replace("{Command_pray}", Command_pray);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Prayer1", out string phrase);
+                    phrase = phrase.Replace("{DelayBetweenUses}", _delay.ToString());
+                    phrase = phrase.Replace("{TimeRemaining}", timeleft.ToString());
+                    phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    phrase = phrase.Replace("{Command_pray}", Command_pray);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

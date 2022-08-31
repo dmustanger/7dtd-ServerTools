@@ -14,8 +14,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. st-cvar edit <id/entityId/playerName> <cvarName> <value>\n" +
-                   "  2. st-cvar list <id/entityId/playerName>\n" +
+                   "  1. st-cvar edit <ID/EntityId/PlayerName> <CvarName> <Value>\n" +
+                   "  2. st-cvar list <ID/EntityId/PlayerName>\n" +
                    "1. Edit a player's cvar value\n" +
                    "2. Lists the cvars currently applied to a player\n";
         }
@@ -29,8 +29,12 @@ namespace ServerTools
         {
             try
             {
-                
-                if (_params[0].ToLower().Equals("edit"))
+                if (_params.Count != 2 && _params.Count != 4)
+                {
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or 4, found {0}", _params.Count));
+                    return;
+                }
+                else if (_params[0].ToLower().Equals("edit"))
                 {
                     if (_params.Count != 4)
                     {

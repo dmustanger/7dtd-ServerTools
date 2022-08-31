@@ -19,7 +19,7 @@ function EnterAuction() {
 	if (secureId.length > 3 && secureId.length < 5) {
 		if (document.getElementById("ConfirmEnter").checked) {
 			let request = new XMLHttpRequest();
-			request.open('POST', window.location.href.replace('auction.html', 'EnterAuction'), false);
+			request.open('POST', window.location.href.replace('auction.html', 'EnterAuction'), true);
 			request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 			request.onerror = function() {
 				alert("Error");
@@ -29,7 +29,12 @@ function EnterAuction() {
 					ClientId = secureId;
 					let responseSplit = request.responseText.split('☼');
 					ItemString = responseSplit[4];
-					Pin = CryptoJS.SHA512(ClientId + responseSplit[5]).toString();
+					if (ClientId != "DBUG") {
+						Pin = CryptoJS.SHA512(ClientId + responseSplit[5]).toString();
+					}
+					else {
+						Pin = ClientId;
+					}
 					document.getElementById('SecuritySync').style.visibility = "hidden";
 					document.getElementById('Header').style.visibility = "visible";
 					document.getElementById('Body').style.visibility = "visible";
@@ -184,7 +189,7 @@ function EnterAuction() {
 
 function ExitAuction() {
 	let request = new XMLHttpRequest();
-	request.open('POST', window.location.href.replace('auction.html', 'ExitAuction'), false);
+	request.open('POST', window.location.href.replace('auction.html', 'ExitAuction'), true);
 	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 	request.onerror = function() {
 		alert("Error");
@@ -199,12 +204,7 @@ function ExitAuction() {
 			window.location.href = "";
 		}
 	};
-	if (ClientId != "DBUG") {
-		request.send(Pin);
-	}
-	else {
-		request.send(ClientId);
-	}
+	request.send(Pin);
 };
 
 function UpdatePerPage(perPage) {
@@ -363,7 +363,7 @@ function Cancel() {
 				let itemSplit = item.split('§');
 				if (itemSplit[8] == "true") {
 					let request = new XMLHttpRequest();
-					request.open('POST', window.location.href.replace('auction.html', 'AuctionCancel'), false);
+					request.open('POST', window.location.href.replace('auction.html', 'AuctionCancel'), true);
 					request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 					request.onerror = function() {
 						alert("Error");
@@ -415,7 +415,7 @@ function Purchase() {
 	if (document.getElementById("ConfirmPurchase").checked) {
 		if (ItemId != -1) {
 			let request = new XMLHttpRequest();
-			request.open('POST', window.location.href.replace('auction.html', 'AuctionPurchase'), false);
+			request.open('POST', window.location.href.replace('auction.html', 'AuctionPurchase'), true);
 			request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 			request.onerror = function() {
 				alert("Error");

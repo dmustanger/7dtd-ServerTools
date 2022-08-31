@@ -123,7 +123,7 @@ function SignIn() {
 		if (text2.length > 5 && text2.length < 31) {
 			if (document.getElementById("NotBotBox1").checked) {
 				let request = new XMLHttpRequest();
-				request.open('POST', window.location.href.replace('st.html', 'SignIn'), false);
+				request.open('POST', window.location.href.replace('st.html', 'SignIn'), true);
 				request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 				request.onerror = function() {
 					alert("Error");
@@ -166,7 +166,7 @@ function SignIn() {
 function SignOut() {
 	if (document.getElementById("ConfirmSignout").checked) {
 		let request = new XMLHttpRequest();
-		request.open('POST', window.location.href.replace('st.html', 'SignOut'), false);
+		request.open('POST', window.location.href.replace('st.html', 'SignOut'), true);
 		request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 		request.onerror = function() {
 			alert("Error");
@@ -207,7 +207,7 @@ function SetPass() {
 							padding: CryptoJS.pad.Pkcs7
 						});
 						let request = new XMLHttpRequest();
-						request.open('POST', window.location.href.replace('st.html', 'NewPass'), false);
+						request.open('POST', window.location.href.replace('st.html', 'NewPass'), true);
 						request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 						request.onerror = function() {
 							alert("Error");
@@ -251,7 +251,7 @@ function SetPass() {
 
 function Console() {
 	let request = new XMLHttpRequest();
-	request.open('POST', window.location.href.replace('st.html', 'Console'), false);
+	request.open('POST', window.location.href.replace('st.html', 'Console'), true);
 	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 	request.onerror = function() {
 		alert("Error");
@@ -280,7 +280,7 @@ function Command() {
 			command.value = LastCommand;
 		}
 		let request = new XMLHttpRequest();
-		request.open('POST', window.location.href.replace('st.html', 'Command'), false);
+		request.open('POST', window.location.href.replace('st.html', 'Command'), true);
 		request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 		request.onerror = function() {
 			alert("Error");
@@ -313,7 +313,7 @@ function Command() {
 
 function Players() {
 	let request = new XMLHttpRequest();
-	request.open('POST', window.location.href.replace('st.html', 'Players'), false);
+	request.open('POST', window.location.href.replace('st.html', 'Players'), true);
 	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 	request.onerror = function() {
 		alert("Error");
@@ -399,7 +399,7 @@ function ConfigPage() {
 
 function Config() {
 	let request1 = new XMLHttpRequest();
-	request1.open('POST', window.location.href.replace('st.html', 'Config'), false);
+	request1.open('POST', window.location.href.replace('st.html', 'Config'), true);
 	request1.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 	request1.onerror = function() {
 		alert("Error");
@@ -408,7 +408,7 @@ function Config() {
 		if (request1.status == 200 && request1.readyState == 4) {
 			Pin += request1.responseText;
 			let request2 = new XMLHttpRequest();
-			request2.open('GET', window.location.href.replace('st.html', 'Config'), false);
+			request2.open('GET', window.location.href.replace('st.html', 'Config'), true);
 			request2.setRequestHeader('Content-Type', 'text/xml; charset=utf-8');
 			request2.onerror = function() {
 				alert("Error");
@@ -533,7 +533,7 @@ function SaveConfig() {
 				}
 			}
 			let request = new XMLHttpRequest();
-			request.open('POST', window.location.href.replace('st.html', 'SaveConfig'), false);
+			request.open('POST', window.location.href.replace('st.html', 'SaveConfig'), true);
 			request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 			request.onerror = function() {
 				alert("Error");
@@ -561,7 +561,7 @@ function SaveConfig() {
 function Kick() {
 	let id = document.getElementById("PlayerId").value;
 	let request = new XMLHttpRequest();
-	request.open('POST', window.location.href.replace('st.html', 'Kick'), false);
+	request.open('POST', window.location.href.replace('st.html', 'Kick'), true);
 	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 	request.onerror = function() {
 		alert("Error");
@@ -585,7 +585,7 @@ function Kick() {
 function Ban() {
 	let id = document.getElementById("PlayerId").value;
 	let request = new XMLHttpRequest();
-	request.open('POST', window.location.href.replace('st.html', 'Ban'), false);
+	request.open('POST', window.location.href.replace('st.html', 'Ban'), true);
 	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 	request.onerror = function() {
 		alert("Error");
@@ -605,7 +605,7 @@ function Ban() {
 function Mute() {
 	let id = document.getElementById("PlayerId").value;
 	let request = new XMLHttpRequest();
-	request.open('POST', window.location.href.replace('st.html', 'Mute'), false);
+	request.open('POST', window.location.href.replace('st.html', 'Mute'), true);
 	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 	request.onerror = function() {
 		alert("Error");
@@ -633,7 +633,7 @@ function Mute() {
 function Jail() {
 	let id = document.getElementById("PlayersSteamId").value;
 	let request = new XMLHttpRequest();
-	request.open('POST', window.location.href.replace('st.html', 'Jail'), false);
+	request.open('POST', window.location.href.replace('st.html', 'Jail'), true);
 	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 	request.onerror = function() {
 		alert("Error");
@@ -661,7 +661,7 @@ function Jail() {
 function Reward() {
 	let id = document.getElementById("PlayerId").value;
 	let request = new XMLHttpRequest();
-	request.open('POST', window.location.href.replace('st.html', 'Reward'), false);
+	request.open('POST', window.location.href.replace('st.html', 'Reward'), true);
 	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
 	request.onerror = function() {
 		alert("Error");

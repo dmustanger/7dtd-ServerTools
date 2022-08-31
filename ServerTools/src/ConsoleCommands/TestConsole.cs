@@ -35,7 +35,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in TestConsole.Execute: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in TestConsole.Execute: '{0}'", e.Message));
             }
         }
     }

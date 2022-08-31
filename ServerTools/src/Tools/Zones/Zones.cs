@@ -86,16 +86,8 @@ namespace ServerTools
                                     line.HasAttribute("ReminderNotice") && line.HasAttribute("PvPvE") && line.HasAttribute("NoZombie"))
                                 {
                                     string[] zone = { line.GetAttribute("Name"), line.GetAttribute("Corner1"), line.GetAttribute("Corner2"), line.GetAttribute("Circle"),
-                                line.GetAttribute("EntryMessage"), line.GetAttribute("ExitMessage"), line.GetAttribute("EntryCommand"), line.GetAttribute("ExitCommand"),
-                                line.GetAttribute("ReminderNotice"), line.GetAttribute("PvPvE"), line.GetAttribute("NoZombie") };
-                                    if (zone[6] == "")
-                                    {
-                                        zone[6] = "";
-                                    }
-                                    if (zone[7] == "")
-                                    {
-                                        zone[7] = "";
-                                    }
+                                        line.GetAttribute("EntryMessage"), line.GetAttribute("ExitMessage"), line.GetAttribute("EntryCommand"), line.GetAttribute("ExitCommand"),
+                                        line.GetAttribute("ReminderNotice"), line.GetAttribute("PvPvE"), line.GetAttribute("NoZombie") };
                                     if (zone[3].ToLower() == "false")
                                     {
                                         if (zone[1].Contains(",") && zone[2].Contains(","))

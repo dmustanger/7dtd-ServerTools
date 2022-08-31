@@ -13,16 +13,16 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, Inside_Market = false, Inside_Traders = false,
             Panel= false;
         public static int Delay_Between_Uses = 60;
-        public static string Command_shop = "shop", Command_shop_buy = "shop buy", Link = "http://0.0.0.0:8084/shop.html", 
+        public static string Command_shop = "shop", Command_shop_buy = "shop buy", 
             Panel_Name = "Super Shop", PanelItems = "", CategoryString = "";
 
         public static Dictionary<string, int> PanelAccess = new Dictionary<string, int>();
         public static List<string[]> Dict = new List<string[]>();
         public static List<string> Categories = new List<string>();
 
-        private const string file = "Shop.xml";
-        private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static string LogFilePath = string.Format("{0}/Logs/ShopLogs/Shop_{1}.txt", API.ConfigPath, DateTime.Today.ToString("M-d-yyyy:hh:mm:ss"));
+        private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, "Shop.xml");
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, "Shop.xml");
         private static readonly string AlphaNumSet = "JKQRLWBYZMPSNODHEFXTACGIUV";
 
         private static XmlNodeList OldNodeList;
@@ -58,7 +58,7 @@ namespace ServerTools
                 }
                 catch (XmlException e)
                 {
-                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", "Shop.xml", e.Message));
                     return;
                 }
                 bool upgrade = true;
@@ -69,8 +69,9 @@ namespace ServerTools
                     Categories.Clear();
                     PanelItems = "";
                     CategoryString = "";
-                    string tierCategories = "";
+                    string qualityCategories = "";
                     Dictionary<string, int> itemList = new Dictionary<string, int>();
+                    List<string[]> shopLog = PersistentContainer.Instance.ShopLog;
                     for (int i = 0; i < childNodes.Count; i++)
                     {
                         if (childNodes[i].NodeType != XmlNodeType.Comment)
@@ -119,7 +120,7 @@ namespace ServerTools
                                     }
                                     string category = line.GetAttribute("Category").ToLower();
                                     string panelMessage = line.GetAttribute("PanelMessage");
-                                    int id = Dict.Count + 1;
+                                    int id = Dict.Count;
                                     string[] item = new string[] { id.ToString(), name, secondaryname, count.ToString(), quality.ToString(), price.ToString(), category, panelMessage };
                                     if (!Dict.Contains(item))
                                     {
@@ -140,9 +141,9 @@ namespace ServerTools
                                             Categories.Add(category);
                                             CategoryString += category + "§";
                                         }
-                                        if (!tierCategories.Contains("Tier:" + quality.ToString()))
+                                        if (!qualityCategories.Contains("Quality:" + quality.ToString()))
                                         {
-                                            tierCategories += "Tier:" + quality.ToString() + "§";
+                                            qualityCategories += "Quality:" + quality.ToString() + "§";
                                         }
                                         Dict.Add(item);
                                         string stats = "";
@@ -731,7 +732,7 @@ namespace ServerTools
                                                 }
                                                 break;
                                             case "armorLight":
-                                                int damageResistence13 = (int)EffectManager.GetValue(PassiveEffects.PhysicalDamageResist, itemValue, quality - 1);
+                                                int damageResistence13 = (int)EffectManager.GetValue(PassiveEffects.PhysicalDamageResist, itemValue, 0f);
                                                 if (damageResistence13 != 0)
                                                 {
                                                     if (stats.Length > 0)
@@ -740,63 +741,18 @@ namespace ServerTools
                                                     }
                                                     stats += "Light Armor Rating: " + damageResistence13;
                                                 }
-                                                int hypothermalResistence13 = (int)EffectManager.GetValue(PassiveEffects.HypothermalResist, itemValue, quality - 1);
+                                                int hypothermalResistence13 = (int)EffectManager.GetValue(PassiveEffects.HypothermalResist, itemValue, 0f);
                                                 if (hypothermalResistence13 != 0)
                                                 {
                                                     if (stats.Length > 0)
                                                     {
                                                         stats += " </br> ";
                                                     }
-                                                    stats += "Hypothermal Resistence: " + hypothermalResistence13;
-                                                }
-                                                int elementalResistence13 = (int)EffectManager.GetValue(PassiveEffects.ElementalDamageResist, itemValue, quality - 1);
-                                                if (elementalResistence13 != 0)
-                                                {
-                                                    if (stats.Length > 0)
-                                                    {
-                                                        stats += " </br> ";
-                                                    }
-                                                    stats += "Elemental Resistence: " + elementalResistence13;
-                                                }
-                                                int buffResistence13 = (int)EffectManager.GetValue(PassiveEffects.BuffResistance, itemValue, quality - 1);
-                                                if (buffResistence13 != 0)
-                                                {
-                                                    if (stats.Length > 0)
-                                                    {
-                                                        stats += " </br> ";
-                                                    }
-                                                    stats += "Buff Resistence: " + buffResistence13;
-                                                }
-                                                int mobility13 = (int)EffectManager.GetValue(PassiveEffects.Mobility, itemValue, quality - 1);
-                                                if (mobility13 != 0)
-                                                {
-                                                    if (stats.Length > 0)
-                                                    {
-                                                        stats += " </br> ";
-                                                    }
-                                                    stats += "Mobility: " + mobility13;
-                                                }
-                                                int noise13 = (int)EffectManager.GetValue(PassiveEffects.NoiseMultiplier, itemValue, quality - 1);
-                                                if (noise13 != 0)
-                                                {
-                                                    if (stats.Length > 0)
-                                                    {
-                                                        stats += " </br> ";
-                                                    }
-                                                    stats += "Noise: " + noise13;
-                                                }
-                                                int staminaChange13 = (int)EffectManager.GetValue(PassiveEffects.StaminaChangeOT, itemValue, quality - 1);
-                                                if (staminaChange13 != 0)
-                                                {
-                                                    if (stats.Length > 0)
-                                                    {
-                                                        stats += " </br> ";
-                                                    }
-                                                    stats += "Stamina Change: " + staminaChange13;
+                                                    stats += "Hypothermal Resistance: " + hypothermalResistence13;
                                                 }
                                                 break;
                                             case "armorHeavy":
-                                                int damageResistence14 = (int)EffectManager.GetValue(PassiveEffects.PhysicalDamageResist, itemValue, quality - 1);
+                                                int damageResistence14 = (int)EffectManager.GetValue(PassiveEffects.PhysicalDamageResist, itemValue, 0f);
                                                 if (damageResistence14 != 0)
                                                 {
                                                     if (stats.Length > 0)
@@ -805,59 +761,14 @@ namespace ServerTools
                                                     }
                                                     stats += "Heavy Armor Rating: " + damageResistence14;
                                                 }
-                                                int hypothermalResistence14 = (int)EffectManager.GetValue(PassiveEffects.HypothermalResist, itemValue, quality - 1);
+                                                int hypothermalResistence14 = (int)EffectManager.GetValue(PassiveEffects.HypothermalResist, itemValue, 0f);
                                                 if (hypothermalResistence14 != 0)
                                                 {
                                                     if (stats.Length > 0)
                                                     {
                                                         stats += " </br> ";
                                                     }
-                                                    stats += "Hypothermal Resistence: " + hypothermalResistence14;
-                                                }
-                                                int elementalResistence14 = (int)EffectManager.GetValue(PassiveEffects.ElementalDamageResist, itemValue, quality - 1);
-                                                if (elementalResistence14 != 0)
-                                                {
-                                                    if (stats.Length > 0)
-                                                    {
-                                                        stats += " </br> ";
-                                                    }
-                                                    stats += "Elemental Resistence: " + elementalResistence14;
-                                                }
-                                                int buffResistence14 = (int)EffectManager.GetValue(PassiveEffects.BuffResistance, itemValue, quality - 1);
-                                                if (buffResistence14 != 0)
-                                                {
-                                                    if (stats.Length > 0)
-                                                    {
-                                                        stats += " </br> ";
-                                                    }
-                                                    stats += "Buff Resistence: " + buffResistence14;
-                                                }
-                                                int mobility14 = (int)EffectManager.GetValue(PassiveEffects.Mobility, itemValue, quality - 1);
-                                                if (mobility14 != 0)
-                                                {
-                                                    if (stats.Length > 0)
-                                                    {
-                                                        stats += " </br> ";
-                                                    }
-                                                    stats += "Mobility: " + mobility14;
-                                                }
-                                                int noise14 = (int)EffectManager.GetValue(PassiveEffects.NoiseMultiplier, itemValue, quality - 1);
-                                                if (noise14 != 0)
-                                                {
-                                                    if (stats.Length > 0)
-                                                    {
-                                                        stats += " </br> ";
-                                                    }
-                                                    stats += "Noise: " + noise14;
-                                                }
-                                                int staminaChange14 = (int)EffectManager.GetValue(PassiveEffects.StaminaChangeOT, itemValue, quality - 1);
-                                                if (staminaChange14 != 0)
-                                                {
-                                                    if (stats.Length > 0)
-                                                    {
-                                                        stats += " </br> ";
-                                                    }
-                                                    stats += "Stamina Change: " + staminaChange14;
+                                                    stats += "Hypothermal Resistance: " + hypothermalResistence14;
                                                 }
                                                 break;
                                             case "ammoLauncher":
@@ -1011,9 +922,26 @@ namespace ServerTools
                                         {
                                             stats += " </br> ";
                                         }
-                                        stats += "Price: " + price;
+                                        stats += "Price: " + price + " </br> ";
+                                        string sold = "Sold: 0";
+                                        if (shopLog.Count > 0)
+                                        {
+                                            int sellCount = 0;
+                                            for (int j = 0; j < shopLog.Count; j++)
+                                            {
+                                                if (shopLog[j].Contains(name))
+                                                {
+                                                    sellCount += 1;
+                                                }
+                                            }
+                                            if (sellCount > 0)
+                                            {
+                                                sold = "Sold: " + sellCount;
+                                            }
+                                        }
+                                        stats += sold;
                                         itemList.Add(category + "§" + name + "§" + secondaryname + "§" + itemValue.ItemClass.GetIconName() + "§" + count + "§" +
-                                            quality + "§" + price + "§" + stats + "§" + (id - 1) + "§" + panelMessage + "╚", price);
+                                            quality + "§" + price + "§" + stats + "§" + id + "§" + panelMessage + "╚", price);
                                     }
                                 }
                                 else
@@ -1031,10 +959,10 @@ namespace ServerTools
                     {
                         PanelItems = PanelItems.Remove(PanelItems.Length - 1);
                     }
-                    if (tierCategories.Length > 0)
+                    if (qualityCategories.Length > 0)
                     {
-                        tierCategories = tierCategories.Remove(tierCategories.Length - 1);
-                        CategoryString += tierCategories;
+                        qualityCategories = qualityCategories.Remove(qualityCategories.Length - 1);
+                        CategoryString += qualityCategories;
                     }
                     else if (CategoryString.Length > 0)
                     {
@@ -1142,20 +1070,21 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void SetLink(string _link)
+        public static void SetLink()
         {
             try
             {
                 if (File.Exists(PersistentOperations.XPathDir + "XUi/windows.xml"))
                 {
+                    string link = string.Format("http://{0}:{1}/shop.html", WebAPI.BaseAddress, WebAPI.Port);
                     List<string> lines = File.ReadAllLines(PersistentOperations.XPathDir + "XUi/windows.xml").ToList();
                     for (int i = 0; i < lines.Count; i++)
                     {
                         if (lines[i].Contains("browserShop"))
                         {
-                            if (!lines[i + 7].Contains(_link))
+                            if (!lines[i + 7].Contains(link))
                             {
-                                lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", _link);
+                                lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", link);
                                 File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
                             }
                             return;
@@ -1173,9 +1102,9 @@ namespace ServerTools
                             lines.Add("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                             lines.Add("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                             lines.Add("          <label name=\"ServerDescription\" />");
-                            lines.Add(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", _link));
+                            lines.Add(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", link));
                             lines.Add("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                            lines.Add("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
+                            lines.Add("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
                             lines.Add("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                             lines.Add("          <!-- Change the text IP and Port to the one needed by ServerTools web api -->");
                             lines.Add("      </panel>");
@@ -1291,65 +1220,67 @@ namespace ServerTools
             {
                 if (Panel && WebAPI.IsEnabled && WebAPI.Connected)
                 {
-                    string securityId = "";
-                    for (int i = 0; i < 10; i++)
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay)
                     {
-                        securityId = CreatePassword(4);
-                        if (securityId != "DBUG" && !PanelAccess.ContainsKey(securityId))
+                        string securityId = "";
+                        for (int i = 0; i < 10; i++)
                         {
-                            if (!PanelAccess.ContainsValue(_cInfo.entityId))
+                            string pass = CreatePassword(4);
+                            if (pass != "DBUG" && !PanelAccess.ContainsKey(pass))
                             {
-                                PanelAccess.Add(securityId, _cInfo.entityId);
-                                WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
-                            }
-                            else
-                            {
-                                if (PanelAccess.Count > 0)
+                                securityId = pass;
+                                if (!PanelAccess.ContainsValue(_cInfo.entityId))
                                 {
-                                    foreach (var client in PanelAccess)
+                                    PanelAccess.Add(securityId, _cInfo.entityId);
+                                    WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
+                                }
+                                else
+                                {
+                                    if (PanelAccess.Count > 0)
                                     {
-                                        if (client.Value == _cInfo.entityId)
+                                        foreach (var client in PanelAccess)
                                         {
-                                            PanelAccess.Remove(client.Key);
-                                            WebAPI.AuthorizedTime.Remove(client.Key);
-                                            break;
+                                            if (client.Value == _cInfo.entityId)
+                                            {
+                                                PanelAccess.Remove(client.Key);
+                                                WebAPI.AuthorizedTime.Remove(client.Key);
+                                                break;
+                                            }
                                         }
                                     }
+                                    PanelAccess.Add(securityId, _cInfo.entityId);
+                                    WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
                                 }
-                                PanelAccess.Add(securityId, _cInfo.entityId);
-                                WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
+                                break;
                             }
-                            break;
                         }
+                        Phrases.Dict.TryGetValue("Shop4", out string phrase);
+                        phrase = phrase.Replace("{Value}", securityId);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserShop", true));
+                        return;
                     }
-                    Phrases.Dict.TryGetValue("Shop4", out string phrase);
-                    phrase = phrase.Replace("{Value}", securityId);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserShop", true));
+                }
+                Phrases.Dict.TryGetValue("Shop1", out string _phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                string categories = "";
+                if (Categories.Count > 1)
+                {
+                    categories = string.Join(", ", Categories.ToArray());
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("Shop1", out string _phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    string categories = "";
-                    if (Categories.Count > 1)
-                    {
-                        categories = string.Join(", ", Categories.ToArray());
-                    }
-                    else
-                    {
-                        categories = Categories[0];
-                    }
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + categories + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    Phrases.Dict.TryGetValue("Shop2", out string phrase1);
-                    phrase1 = phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    phrase1 = phrase1.Replace("{Command_shop}", Command_shop);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    Phrases.Dict.TryGetValue("Shop13", out phrase1);
-                    phrase1 = phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    phrase1 = phrase1.Replace("{Command_shop_buy}", Command_shop_buy);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    categories = Categories[0];
                 }
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + categories + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Shop2", out string phrase1);
+                phrase1 = phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                phrase1 = phrase1.Replace("{Command_shop}", Command_shop);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Shop13", out phrase1);
+                phrase1 = phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                phrase1 = phrase1.Replace("{Command_shop_buy}", Command_shop_buy);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)
             {
@@ -1494,6 +1425,17 @@ namespace ServerTools
                         Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price, false);
                     }
                 }
+                if (PersistentContainer.Instance.ShopLog != null)
+                {
+                    PersistentContainer.Instance.ShopLog.Add(new string[] { itemValue.ItemClass.Name, _count.ToString(), _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, DateTime.Now.ToString() });
+                }
+                else
+                {
+                    List<string[]> log = new List<string[]>();
+                    log.Add(new string[] { itemValue.ItemClass.Name, _count.ToString(), _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, DateTime.Now.ToString() });
+                    PersistentContainer.Instance.ShopLog = log;
+                }
+                PersistentContainer.DataChange = true;
                 Log.Out(string.Format("Sold '{0}' to '{1}' '{2}' named '{3}' through the shop", itemValue.ItemClass.Name, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                 Phrases.Dict.TryGetValue("Shop16", out string phrase);
                 phrase = phrase.Replace("{Count}", _count.ToString());
@@ -1599,6 +1541,25 @@ namespace ServerTools
             }
             FileWatcher.EnableRaisingEvents = true;
             LoadXml();
+        }
+
+        public static void Writer(string _entry)
+        {
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(LogFilePath, true, Encoding.UTF8))
+                {
+                    sw.WriteLine(_entry);
+                    sw.WriteLine();
+                    sw.Flush();
+                    sw.Close();
+                    sw.Dispose();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("Error in Shop.Writer: {0}", e.Message));
+            }
         }
     }
 }

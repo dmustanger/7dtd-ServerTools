@@ -15,26 +15,60 @@ namespace ServerTools
             if (!Loaded)
             {
                 Loaded = true;
-                string configPath = API.ConfigPath;
-                if (!Directory.Exists(configPath.Replace("ServerTools", "Mods") + "/ServerTools"))
+                string gamePath = API.GamePath;
+                string configPath = gamePath + "/ServerTools";
+                string installPath = gamePath + "/Mods/ServerTools";
+                if (!Directory.Exists(installPath))
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Unable to locate installation files at '{0}'. ServerTools has been disabled", configPath.Replace("ServerTools", "Mods") + "/ServerTools"));
-                    return;
+                    if (!Directory.Exists(gamePath + "/Mods/0ServerTools"))
+                    {
+                        installPath = gamePath + "/Mods/0ServerTools";
+                        if (!Directory.Exists(gamePath + "/Mods/1ServerTools"))
+                        {
+                            installPath = gamePath + "/Mods/1ServerTools";
+                            if (!Directory.Exists(gamePath + "/Mods/2ServerTools"))
+                            {
+                                installPath = gamePath + "/Mods/2ServerTools";
+                                if (!Directory.Exists(gamePath + "/Mods/3ServerTools"))
+                                {
+                                    installPath = gamePath + "/Mods/3ServerTools";
+                                    Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in the mods folder inside the user data folder '{0}'", API.GamePath + "/Mods"));
+                                    return;
+                                }
+                                else if (!File.Exists(gamePath + "/Mods/3ServerTools/ServerTools.dll"))
+                                {
+                                    Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in the mods folder inside the user data folder '{0}'", API.GamePath + "/Mods"));
+                                    return;
+                                }
+                            }
+                            else if (!File.Exists(gamePath + "/Mods/2ServerTools/ServerTools.dll"))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in the mods folder inside the user data folder '{0}'", API.GamePath + "/Mods"));
+                                return;
+                            }
+                        }
+                        else if (!File.Exists(gamePath + "/Mods/1ServerTools/ServerTools.dll"))
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in the mods folder inside the user data folder '{0}'", API.GamePath + "/Mods"));
+                            return;
+                        }
+                    }
+                    else if (!File.Exists(gamePath + "/Mods/0ServerTools/ServerTools.dll"))
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in the mods folder inside the user data folder '{0}'", API.GamePath + "/Mods"));
+                        return;
+                    }
                 }
-                else if (!File.Exists(configPath.Replace("ServerTools", "Mods") + "/ServerTools/ServerTools.dll"))
+                else if (!File.Exists(gamePath + "/Mods/ServerTools/ServerTools.dll"))
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Unable to locate installation files at '{0}'. ServerTools has been disabled", configPath.Replace("ServerTools", "Mods") + "/ServerTools"));
+                    Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in the mods folder inside the user data folder '{0}'", API.GamePath + "/Mods"));
                     return;
-                }
-                else
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Located ServerTools installation files at '{0}'", configPath.Replace("ServerTools", "Mods") + "/ServerTools"));
                 }
                 if (!Directory.Exists(configPath))
                 {
                     Directory.CreateDirectory(configPath);
-                    Log.Out(string.Format("[SERVERTOOLS] Created new directory at '{0}'", configPath));
-                    Log.Out("[SERVERTOOLS] XML and log files for ServerTools will be placed in this folder");
+                    Log.Out(string.Format("[SERVERTOOLS] Created new ServerTools directory at '{0}'", configPath));
+                    Log.Out("[SERVERTOOLS] Tool XML and log files for ServerTools will be placed in this folder");
                 }
                 else
                 {
@@ -100,52 +134,56 @@ namespace ServerTools
                 {
                     Directory.CreateDirectory(configPath + "/Logs/OutputLogs");
                 }
-
-                string gamePath = API.GamePath;
-                if (!Directory.Exists(gamePath + "/Mods/ServerTools/Config"))
+                if (!Directory.Exists(configPath + "/Logs/ShopLogs"))
                 {
-                    Directory.CreateDirectory(gamePath + "/Mods/ServerTools/Config");
-                }
-                if (!Directory.Exists(gamePath + "/Mods/ServerTools/Config/XUi"))
-                {
-                    Directory.CreateDirectory(gamePath + "/Mods/ServerTools/Config/XUi");
-                }
-                if (Directory.Exists(gamePath + "/Mods/ServerTools/WebAPI"))
-                {
-                    WebAPI.Directory = gamePath + "/Mods/ServerTools/WebAPI/";
-                }
-                if (Directory.Exists(gamePath + "/Mods/ServerTools/Config"))
-                {
-                    PersistentOperations.XPathDir = gamePath + "/Mods/ServerTools/Config/";
+                    Directory.CreateDirectory(configPath + "/Logs/ShopLogs");
                 }
 
+                if (!Directory.Exists(installPath + "/Config"))
+                {
+                    Directory.CreateDirectory(installPath + "/Config");
+                }
+                if (!Directory.Exists(installPath + "/Config/XUi"))
+                {
+                    Directory.CreateDirectory(installPath + "/Config/XUi");
+                }
+                if (Directory.Exists(installPath + "/WebAPI"))
+                {
+                    WebAPI.Directory = installPath + "/WebAPI/";
+                }
+                if (Directory.Exists(installPath + "/Config"))
+                {
+                    PersistentOperations.XPathDir = installPath + "/Config/";
+                }
                 StateManager.Awake();
-
                 RunTimePatch.PatchAll();
-
                 PersistentOperations.CreateCustomXUi();
                 PersistentOperations.GetCurrencyName();
                 PersistentOperations.GetMeleeHandPlayer();
                 PersistentOperations.EntityIdList();
                 PersistentOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
-
                 Config.Load();
-                Log.Out("[SERVERTOOLS] Running ServerTools Config v.{0}", Config.Version);
-
                 CommandList.BuildList();
                 CommandList.Load();
-
                 Mods.Load();
-
                 Phrases.Load();
-
                 HowToSetup.Load();
-
+                if (Directory.Exists(GameIO.GetGamePath().Replace("..", "")))
+                {
+                    DirectoryInfo parent = Directory.GetParent(GameIO.GetGamePath().Replace("..", "")).Parent;
+                    if (Directory.Exists(parent.FullName + "/Data/ItemIcons"))
+                    {
+                        Log.Out("[SERVERTOOLS] Located game icons @ '{0}'", parent.FullName + "/Data/ItemIcons");
+                    }
+                    else
+                    {
+                        Log.Out("[SERVERTOOLS] Unable to locate game icons. Falling back to user entry '{0}'", WebAPI.Icon_Folder);
+                    }
+                }
                 if (Fps.IsEnabled)
                 {
                     Fps.SetTarget();
                 }
-
                 if (SleeperRespawn.IsEnabled)
                 {
                     try
@@ -181,7 +219,6 @@ namespace ServerTools
                 {
                     Log.Out("[SERVERTOOLS] Failed to delete old logs. Error = {0}", e.Message);
                 }
-
                 if (PersistentContainer.Instance.WorldSeed == 0)
                 {
                     PersistentContainer.Instance.WorldSeed = GameManager.Instance.World.Seed;
@@ -196,16 +233,18 @@ namespace ServerTools
                         Log.Out("[SERVERTOOLS] Detected a new world. You have old ServerTools data saved from the last map. Run the Clean_Bin tool to remove the data of your choice");
                     }
                 }
-
-                if (PersistentContainer.Instance.Connections == null)
+                if (PersistentContainer.Instance.ConnectionTimeOut == null)
                 {
-                    Dictionary<string, byte[]> connections = new Dictionary<string, byte[]>();
-                    PersistentContainer.Instance.Connections = connections;
                     Dictionary<string, DateTime> timeOuts = new Dictionary<string, DateTime>();
                     PersistentContainer.Instance.ConnectionTimeOut = timeOuts;
                     PersistentContainer.DataChange = true;
                 }
-
+                if (PersistentContainer.Instance.ShopLog == null)
+                {
+                    List<string[]> log = new List<string[]>();
+                    PersistentContainer.Instance.ShopLog = log;
+                    PersistentContainer.DataChange = true;
+                }
                 if (CleanBin.IsEnabled)
                 {
                     CleanBin.Exec();
@@ -214,16 +253,13 @@ namespace ServerTools
                     Config.WriteXml();
                     Config.LoadXml();
                 }
-
                 Track.Cleanup();
-
                 DroppedBagProtection.BuildList();
-                BlackJack.BuildDeck();
-
                 ActiveTools.Exec(true);
-
-                Timers.Thirty_Second_Delay();
+                Timers.Set_Link_Delay();
                 Timers.PersistentDataSave();
+
+                Log.Out("[SERVERTOOLS] Running ServerTools Config v.{0}", Config.Version);
             }
         }
 

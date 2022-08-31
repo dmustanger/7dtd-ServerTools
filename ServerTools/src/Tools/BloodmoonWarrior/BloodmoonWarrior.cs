@@ -272,7 +272,7 @@ namespace ServerTools
                                 if (cInfo != null)
                                 {
                                     EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
-                                    if (player != null && player.IsSpawned() && player.IsAlive() && player.Died > 0 && player.Progression.GetLevel() >= 10 && Random.Next(0, 100) < Chance)
+                                    if (player != null && player.IsSpawned() && player.IsAlive() && player.Died > 0 && player.Progression.GetLevel() >= 10 && Random.Next(0, 100) <= Chance)
                                     {
                                         WarriorList.Add(cInfo.entityId);
                                         KilledZombies.Add(cInfo.entityId, 0);

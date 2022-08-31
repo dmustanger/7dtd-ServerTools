@@ -444,19 +444,6 @@ namespace ServerTools
                 Dict.Remove("Bed");
                 Log.Out("[ServerTools] Bed disabled");
             }
-            if (BlackJack.IsEnabled)
-            {
-                if (!Dict.Contains("Black jack"))
-                {
-                    Dict.Add("Black jack");
-                    Log.Out("[ServerTools] Black jack enabled");
-                }
-            }
-            else if (Dict.Contains("Black jack") && !_initiating)
-            {
-                Dict.Remove("Black jack");
-                Log.Out("[ServerTools] Black jack disabled");
-            }
             if (BlockLogger.IsEnabled)
             {
                 if (!Dict.Contains("Block logger"))
@@ -1166,6 +1153,19 @@ namespace ServerTools
             {
                 Dict.Remove("Reserved slots");
                 Log.Out("[ServerTools] Reserved slots disabled");
+            }
+            if (RIO.IsEnabled)
+            {
+                if (!Dict.Contains("Roll it up"))
+                {
+                    Dict.Add("Roll it up");
+                    Log.Out("[ServerTools] Roll it up enabled");
+                }
+            }
+            else if (Dict.Contains("Roll it up") && !_initiating)
+            {
+                Dict.Remove("Roll it up");
+                Log.Out("[ServerTools] Roll it up disabled");
             }
             if (ScoutPlayer.IsEnabled)
             {

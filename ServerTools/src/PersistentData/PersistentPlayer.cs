@@ -70,6 +70,7 @@ namespace ServerTools
         private bool newSpawn;
         private string newSpawnPosition;
         private bool oldPlayer;
+        private bool overlay;
         private string playerName;
         private int playerWallet;
         private bool proxyBanImmune;
@@ -801,6 +802,18 @@ namespace ServerTools
             set
             {
                 oldPlayer = value;
+            }
+        }
+
+        public bool Overlay
+        {
+            get
+            {
+                return overlay;
+            }
+            set
+            {
+                overlay = value;
             }
         }
 

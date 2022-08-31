@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using UnityEngine;
 
@@ -38,6 +37,7 @@ namespace ServerTools
         {
             try
             {
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + "The server has completed loading" + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 LoadProcess.Load();
             }
             catch (Exception e)
@@ -60,6 +60,11 @@ namespace ServerTools
                 Phrases.Unload();
                 CommandList.Unload();
                 OutputLog.Shutdown();
+                if (AutoRestart.IsEnabled)
+                {
+                    Log.Out("[SERVERTOOLS] Auto restart initialized");
+                    Utils.RestartGame();
+                }
             }
             catch (Exception e)
             {
@@ -332,6 +337,11 @@ namespace ServerTools
                     {
                         Timers.ExitWithoutCommand(_cInfo, _cInfo.ip);
                     }
+                    if (Lottery.IsEnabled && Lottery.LottoEntries.Contains(_cInfo))
+                    {
+                        Wallet.AddCurrency(_cInfo.CrossplatformId.CombinedString, Lottery.LottoValue);
+                        Lottery.LottoEntries.Remove(_cInfo);
+                    }
                     if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
                     {
                         FriendTeleport.Dict.Remove(_cInfo.entityId);
@@ -531,7 +541,7 @@ namespace ServerTools
                     PersistentContainer.Instance.Players.Players.Add(id, new PersistentPlayer(id));
                     PersistentContainer.DataChange = true;
                 }
-                if (Hardcore.IsEnabled && PersistentContainer.Instance.Players[id] != null)
+                if (Hardcore.IsEnabled)
                 {
                     if (Hardcore.Optional)
                     {
@@ -672,6 +682,11 @@ namespace ServerTools
                 if (SpeedDetector.Flags.ContainsKey(cInfo.entityId))
                 {
                     SpeedDetector.Flags.Remove(cInfo.entityId);
+                }
+                if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.WarriorList.Contains(cInfo.entityId))
+                {
+                    BloodmoonWarrior.WarriorList.Remove(cInfo.entityId);
+                    BloodmoonWarrior.KilledZombies.Remove(cInfo.entityId);
                 }
             }
         }

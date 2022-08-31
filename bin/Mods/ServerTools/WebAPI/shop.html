@@ -18,35 +18,43 @@
 		<script src="JS/shopscripts.js" type="text/javascript"></script>
 		<title>Shop</title>
 	</head>
-	<body onload="FreshPage()" id="GeneralBody">
+	<body onload="FreshPage()" id="GeneralBody" oncontextmenu="return false">
 		<header id="Header">
-			<div id="SubheaderLeft" oncontextmenu="return false">
+			<div id="SubheaderLeft">
 				<h1 id="ShopName">Shop</h1>
 			</div>
-			<div id="SubheaderRight" oncontextmenu="return false">
+			<div id="SubheaderRight">
 				<h3 id="PlayerName"><img src="Img/UserIcon.webp" alt="usericon" />CLIENT</h3>
 				<h4 id="Balance">Balance: 0<h4>
+				<input type="button" value="Filters" onclick="ShowFilters()" class="Buttons" />
+				<select title="Items Per Page" id="PerPage">
+					<option value="20">20</option>
+					<option value="15">15</option>
+					<option value="10">10</option>
+					<option value="5">5</option>
+				</select>
 				<h4 id="Total">Total: 0</h4>
-				<input type="number" value="1" id="Counter" min="1" max="100" onclick="UpdateTotal()">
+				<input type="number" value="1" min="1" max="100" onclick="UpdateTotal()" id="Counter">
 				<input type="checkbox" id="ConfirmPurchase" />
-				<input type="button" value="Purchase" onclick="Purchase()" id="Buttons" />
-				<input type="button" value="Exit" onclick="ExitShop()" id="Buttons" />
+				<input type="button" value="Purchase" onclick="Purchase()" class="Buttons" />
+				<input type="button" value="Exit" onclick="ExitShop()" class="Buttons" /></br>
 			</div>
 		</header>
-		<div id="SecuritySync" oncontextmenu="return false">
+		<div id="SecuritySync">
+			</br>
+			</br>
+			</br>
 			<h2 id="SecurityId">Security Id</h2>
 			<input type="text" placeholder="Enter secure ID here" id="SecureId" />
-			<input type="checkbox" id="ConfirmEnter" />
-			<input type="button" value="Enter Shop" onclick="EnterShop()" id="Buttons" />
+			<input type="button" value="Enter Shop" onclick="EnterShop()" class="Buttons" />
+		</div>
+		<div id="FilterContainer">
+			<h1>FILTERS</h1></br>
 		</div>
 		<div id="Body">
-			<h3 id="Filters">FILTERS</h3>
-			<div id="FilterContainer" oncontextmenu="return false">
-				
-			</div>
-			<div id="ContentContainer" oncontextmenu="return false">
-				<h3 id="ItemInfo">ITEM INFO</h3>
+			<div id="ContentContainer">
 				<div id="InfoContainer">
+					<h3 id="ItemInfo">ITEM INFO</h3>
 					...
 				</div>
 				<div id="Items">

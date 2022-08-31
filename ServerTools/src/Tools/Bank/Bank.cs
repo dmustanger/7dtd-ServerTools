@@ -53,18 +53,29 @@ namespace ServerTools
             try
             {
                 int bank = GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                if (TransferId.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+                if (Player_Transfers)
                 {
-                    TransferId.TryGetValue(_cInfo.CrossplatformId.CombinedString, out int id);
-                    Phrases.Dict.TryGetValue("Bank1", out string phrase);
-                    phrase = phrase.Replace("{Value}", bank.ToString());
-                    phrase = phrase.Replace("{Id}", id.ToString());
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    if (TransferId.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+                    {
+                        TransferId.TryGetValue(_cInfo.CrossplatformId.CombinedString, out int id);
+                        Phrases.Dict.TryGetValue("Bank1", out string phrase);
+                        phrase = phrase.Replace("{Value}", bank.ToString());
+                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                        phrase = phrase.Replace("{Id}", id.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                    else
+                    {
+                        AddId(_cInfo);
+                        CurrentBankAndId(_cInfo);
+                    }
                 }
                 else
                 {
-                    AddId(_cInfo);
-                    CurrentBankAndId(_cInfo);
+                    Phrases.Dict.TryGetValue("Bank18", out string phrase);
+                    phrase = phrase.Replace("{Value}", bank.ToString());
+                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -185,10 +196,10 @@ namespace ServerTools
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("Bank6", out string _phrase);
-                        _phrase = _phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                        _phrase = _phrase.Replace("{Command_deposit}", Command_deposit);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Bank6", out string phrase);
+                        phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                        phrase = phrase.Replace("{Command_deposit}", Command_deposit);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -275,7 +286,7 @@ namespace ServerTools
                     {
                         Phrases.Dict.TryGetValue("Bank7", out string phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        Log.Out(string.Format("[SERVERTOOLS] Bank operation failed. Unable to find item {0}. Check the Wallet currency target in .../Mods/ServerTools/Config/items.xml matches the target in the default items.xml", Wallet.Currency_Name));
+                        Log.Out(string.Format("[SERVERTOOLS] Bank operation failed. Unable to find item {0}. Check the Wallet Item_Name option matches an existing item", Wallet.Currency_Name));
                     }
                 }
             }

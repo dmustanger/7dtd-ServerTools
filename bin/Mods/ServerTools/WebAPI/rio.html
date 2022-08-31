@@ -1,0 +1,536 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<link href="CSS/riostyles.css" rel="stylesheet" type="text/css" />
+		<meta charset="utf-8" />
+		<script src="JS/crypto-js.js" type="text/javascript"></script>
+		<script src="JS/core.js" type="text/javascript"></script>
+		<script src="JS/x64-core.js" type="text/javascript"></script>
+		<script src="JS/sha512.js" type="text/javascript"></script>
+		<script src="JS/rioscripts.js"></script>
+		<title>Roll It Out</title>
+	</head>
+	<body onload="FreshPage()" id="GeneralBody">
+		<header id="Header">
+			<div id="SubheaderLeft" oncontextmenu="return false">
+				<img src="Img/Logo.png" id="GameLogo" />
+				<input type="button" value="Exit Game" onclick="ExitGame()" id="ExitButton" class="Buttons" />
+				<input type="button" value="How To Play" onclick="HowToPlay()" id="HowToPlayButton" class="Buttons"/>
+				<input type="button" value="Start Game" onclick="StartGame()" id="StartButton" class="Buttons"/>
+				<input type="button" value="Add AI" onclick="AddAI()" id="AddAIButton" class="Buttons"/>
+				<input type="button" value="Remove AI" onclick="RemoveAI()" id="RemoveAIButton" class="Buttons"/>
+			</div>
+			<div id="SubheaderRight" oncontextmenu="return false">
+				<div id="UserContainer">
+					<div class="Users">
+						<img src="Img/BlueUser.png" class="UserIcons" id="UserIcon1"/>
+						<h4 id="PlayerName1" class="UserNames"></h4>
+					</div>
+					<div class="Users">
+						<img src="Img/RedUser.png" class="UserIcons" id="UserIcon2" />
+						<h4 id="PlayerName2" class="UserNames"></h4>
+					</div>
+					<div class="Users">
+						<img src="Img/GreenUser.png" class="UserIcons" id="UserIcon3" />
+						<h4 id="PlayerName3" class="UserNames"></h4>
+					</div>
+					<div class="Users">
+						<img src="Img/YellowUser.png" class="UserIcons" id="UserIcon4" />
+						<h4 id="PlayerName4" class="UserNames"></h4>
+					</div>
+				</div>
+				<div id="Dice">
+					<img src="Img/Die1.png" id="Die1" class="Dots" onclick="SetDie(1)"/>
+					<img src="Img/Die2.png" id="Die2" class="Dots" onclick="SetDie(2)"/>
+					<img src="Img/Die3.png" id="Die3" class="Dots" onclick="SetDie(3)"/>
+					<img src="Img/Die4.png" id="Die4" class="Dots" onclick="SetDie(4)"/>
+					<img src="Img/Die5.png" id="Die5" class="Dots" onclick="SetDie(5)"/>
+				</div>
+				<div id="RollerContainer">
+					<img src="Img/Roll.png" id="Roller" onclick="RollDice()">
+					<h3 id="RollNumber"></h3>
+				</div>
+				<div id="StatusContainer">
+					<h3 id="Status"></h3>
+				</div>
+			</div>
+		</header>
+		<div id="MainContainer">
+			<div id="Board">
+				<div id="Row1" class="Rows">
+					<div id="1_1" class="Squares" onclick="SetSquare('1_1')">
+						<div class="Sequence">
+							<img src="Img/Super7.png" class="Image"/>
+						</div>
+					</div>
+					<div id="1_2" class="Squares" onclick="SetSquare('1_2')">
+						<div class="Sequence">
+							<img src="Img/FourSixes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="1_3" class="Squares" onclick="SetSquare('1_3')">
+						<div class="Sequence">
+							<img src="Img/TwoThreesTwoTwos.png" class="Image"/>
+						</div>
+					</div>
+					<div id="1_4" class="Squares" onclick="SetSquare('1_4')">
+						<div class="Sequence">
+							<img src="Img/ThreeOnes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="1_5" class="Squares" onclick="SetSquare('1_5')">
+						<div class="Sequence">
+							<img src="Img/Lucky11.png" class="Image"/>
+						</div>
+					</div>
+					<div id="1_6" class="Squares" onclick="SetSquare('1_6')">
+						<div class="Sequence">
+							<img src="Img/TwoFivesTwoTwos.png" class="Image"/>
+						</div>
+					</div>
+					<div id="1_7" class="Squares" onclick="SetSquare('1_7')">
+						<div class="Sequence">
+							<img src="Img/ThreeThrees.png" class="Image"/>
+						</div>
+					</div>
+					<div id="1_8" class="Squares" onclick="SetSquare('1_8')">
+						<div class="Sequence">
+							<img src="Img/TwoSixesTwoOnes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="1_9" class="Squares" onclick="SetSquare('1_9')">
+						<div class="Sequence">
+							<img src="Img/Super7.png" class="Image"/>
+						</div>
+					</div>
+				</div>
+				<div id="Row2" class="Rows">
+					<div id="2_1" class="Squares" onclick="SetSquare('2_1')">
+						<div class="Sequence">
+							<img src="Img/Straight.png" class="Image"/>
+						</div>
+					</div>
+					<div id="2_2" class="Squares" onclick="SetSquare('2_2')">
+						<div class="Sequence">
+							<img src="Img/FullHouse.png" class="Image"/>
+						</div>
+					</div>
+					<div id="2_3" class="Squares" onclick="SetSquare('2_3')">
+						<div class="Sequence">
+							<img src="Img/ThreeFives.png" class="Image"/>
+						</div>
+					</div>
+					<div id="2_4" class="Squares" onclick="SetSquare('2_4')">
+						<div class="Sequence">
+							<img src="Img/TwoSixesTwoThrees.png" class="Image"/>
+						</div>
+					</div>
+					<div id="2_5" class="Squares" onclick="SetSquare('2_5')">
+						<div class="Sequence">
+							<img src="Img/TwoTwosTwoOnes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="2_6" class="Squares" onclick="SetSquare('2_6')">
+						<div class="Sequence">
+							<img src="Img/TwoFivesTwoFours.png" class="Image"/>
+						</div>
+					</div>
+					<div id="2_7" class="Squares" onclick="SetSquare('2_7')">
+						<div class="Sequence">
+							<img src="Img/TwoFoursTwoOnes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="2_8" class="Squares" onclick="SetSquare('2_8')">
+						<div class="Sequence">
+							<img src="Img/FullHouse.png" class="Image"/>
+						</div>
+					</div>
+					<div id="2_9" class="Squares" onclick="SetSquare('2_9')">
+						<div class="Sequence">
+							<img src="Img/Straight.png" class="Image"/>
+						</div>
+					</div>
+				</div>
+				<div id="Row3" class="Rows">
+					<div id="3_1" class="Squares" onclick="SetSquare('3_1')">
+						<div class="Sequence">
+							<img src="Img/ThreeFours.png" class="Image"/>
+						</div>
+					</div>
+					<div id="3_2" class="Squares" onclick="SetSquare('3_2')">
+						<div class="Sequence">
+							<img src="Img/TwoSixesTwoFours.png" class="Image"/>
+						</div>
+					</div>
+					<div id="3_3" class="Squares" onclick="SetSquare('3_3')">
+						<div class="Sequence">
+							<img src="Img/Super7.png" class="Image"/>
+						</div>
+					</div>
+					<div id="3_4" class="Squares" onclick="SetSquare('3_4')">
+						<div class="Sequence">
+							<img src="Img/TwoFoursTwoThrees.png" class="Image"/>
+						</div>
+					</div>
+					<div id="3_5" class="Squares" onclick="SetSquare('3_5')">
+						<div class="Sequence">
+							<img src="Img/FourFives.png" class="Image"/>
+						</div>
+					</div>
+					<div id="3_6" class="Squares" onclick="SetSquare('3_6')">
+						<div class="Sequence">
+							<img src="Img/TwoFoursTwoTwos.png" class="Image"/>
+						</div>
+					</div>
+					<div id="3_7" class="Squares" onclick="SetSquare('3_7')">
+						<div class="Sequence">
+							<img src="Img/Straight.png" class="Image"/>
+						</div>
+					</div>
+					<div id="3_8" class="Squares" onclick="SetSquare('3_8')">
+						<div class="Sequence">
+							<img src="Img/TwoFivesTwoOnes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="3_9" class="Squares" onclick="SetSquare('3_9')">
+						<div class="Sequence">
+							<img src="Img/ThreeSixes.png" class="Image"/>
+						</div>
+					</div>
+				</div>
+				<div id="Row4" class="Rows">
+					<div id="4_1" class="Squares" onclick="SetSquare('4_1')">
+						<div class="Sequence">
+							<img src="Img/FourOnes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="4_2" class="Squares" onclick="SetSquare('4_2')">
+						<div class="Sequence">
+							<img src="Img/ThreeTwos.png" class="Image"/>
+						</div>
+					</div>
+					<div id="4_3" class="Squares" onclick="SetSquare('4_3')">
+						<div class="Sequence">
+							<img src="Img/TwoSixesTwoFives.png" class="Image"/>
+						</div>
+					</div>
+					<div id="4_4" class="Squares" onclick="SetSquare('4_4')">
+						<div class="Sequence">
+							<img src="Img/Straight.png" class="Image"/>
+						</div>
+					</div>
+					<div id="4_5" class="Squares" onclick="SetSquare('4_5')">
+						<div class="Sequence">
+							<img src="Img/FourThrees.png" class="Image"/>
+						</div>
+					</div>
+					<div id="4_6" class="Squares" onclick="SetSquare('4_6')">
+						<div class="Sequence">
+							<img src="Img/Lucky11.png" class="Image"/>
+						</div>
+					</div>
+					<div id="4_7" class="Squares" onclick="SetSquare('4_7')">
+						<div class="Sequence">
+							<img src="Img/TwoThreesTwoOnes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="4_8" class="Squares" onclick="SetSquare('4_8')">
+						<div class="Sequence">
+							<img src="Img/TwoSixesTwoTwos.png" class="Image"/>
+						</div>
+					</div>
+					<div id="4_9" class="Squares" onclick="SetSquare('4_9')">
+						<div class="Sequence">
+							<img src="Img/TwoFivesTwoThrees.png" class="Image"/>
+						</div>
+					</div>
+				</div>
+				<div id="Row5" class="Rows">
+					<div id="5_1" class="Squares" onclick="SetSquare('5_1')">
+						<div class="Sequence">
+							<img src="Img/Lucky11.png" class="Image"/>
+						</div>
+					</div>
+					<div id="5_2" class="Squares" onclick="SetSquare('5_2')">
+						<div class="Sequence">
+							<img src="Img/FourFours.png" class="Image"/>
+						</div>
+					</div>
+					<div id="5_3" class="Squares" onclick="SetSquare('5_3')">
+						<div class="Sequence">
+							<img src="Img/FullHouse.png" class="Image"/>
+						</div>
+					</div>
+					<div id="5_4" class="Squares" onclick="SetSquare('5_4')">
+						<div class="Sequence">
+							<img src="Img/FourTwos.png" class="Image"/>
+						</div>
+					</div>
+					<div id="5_5" class="Squares">
+						<div class="Sequence">
+							<img src="Img/Wild.png" class="Image"/>
+						</div>
+					</div>
+					<div id="5_6" class="Squares" onclick="SetSquare('5_6')">
+						<div class="Sequence">
+							<img src="Img/FourTwos.png" class="Image"/>
+						</div>
+					</div>
+					<div id="5_7" class="Squares" onclick="SetSquare('5_7')">
+						<div class="Sequence">
+							<img src="Img/FullHouse.png" class="Image"/>
+						</div>
+					</div>
+					<div id="5_8" class="Squares" onclick="SetSquare('5_8')">
+						<div class="Sequence">
+							<img src="Img/FourFours.png" class="Image"/>
+						</div>
+					</div>
+					<div id="5_9" class="Squares" onclick="SetSquare('5_9')">
+						<div class="Sequence">
+							<img src="Img/Lucky11.png" class="Image"/>
+						</div>
+					</div>
+				</div>
+				<div id="Row6" class="Rows">
+					<div id="6_1" class="Squares" onclick="SetSquare('6_1')">
+						<div class="Sequence">
+							<img src="Img/TwoFivesTwoThrees.png" class="Image"/>
+						</div>
+					</div>
+					<div id="6_2" class="Squares" onclick="SetSquare('6_2')">
+						<div class="Sequence">
+							<img src="Img/TwoSixesTwoTwos.png" class="Image"/>
+						</div>
+					</div>
+					<div id="6_3" class="Squares" onclick="SetSquare('6_3')">
+						<div class="Sequence">
+							<img src="Img/TwoThreesTwoOnes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="6_4" class="Squares" onclick="SetSquare('6_4')">
+						<div class="Sequence">
+							<img src="Img/Lucky11.png" class="Image"/>
+						</div>
+					</div>
+					<div id="6_5" class="Squares" onclick="SetSquare('6_5')">
+						<div class="Sequence">
+							<img src="Img/FourThrees.png" class="Image"/>
+						</div>
+					</div>
+					<div id="6_6" class="Squares" onclick="SetSquare('6_6')">
+						<div class="Sequence">
+							<img src="Img/Straight.png" class="Image"/>
+						</div>
+					</div>
+					<div id="6_7" class="Squares" onclick="SetSquare('6_7')">
+						<div class="Sequence">
+							<img src="Img/TwoSixesTwoFives.png" class="Image"/>
+						</div>
+					</div>
+					<div id="6_8" class="Squares" onclick="SetSquare('6_8')">
+						<div class="Sequence">
+							<img src="Img/ThreeTwos.png" class="Image"/>
+						</div>
+					</div>
+					<div id="6_9" class="Squares" onclick="SetSquare('6_9')">
+						<div class="Sequence">
+							<img src="Img/FourOnes.png" class="Image"/>
+						</div>
+					</div>
+				</div>
+				<div id="Row7" class="Rows">
+					<div id="7_1" class="Squares" onclick="SetSquare('7_1')">
+						<div class="Sequence">
+							<img src="Img/ThreeSixes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="7_2" class="Squares" onclick="SetSquare('7_2')">
+						<div class="Sequence">
+							<img src="Img/TwoFivesTwoOnes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="7_3" class="Squares" onclick="SetSquare('7_3')">
+						<div class="Sequence">
+							<img src="Img/Straight.png" class="Image"/>
+						</div>
+					</div>
+					<div id="7_4" class="Squares" onclick="SetSquare('7_4')">
+						<div class="Sequence">
+							<img src="Img/TwoFoursTwoTwos.png" class="Image"/>
+						</div>
+					</div>
+					<div id="7_5" class="Squares" onclick="SetSquare('7_5')">
+						<div class="Sequence">
+							<img src="Img/FourFives.png" class="Image"/>
+						</div>
+					</div>
+					<div id="7_6" class="Squares" onclick="SetSquare('7_6')">
+						<div class="Sequence">
+							<img src="Img/TwoFoursTwoThrees.png" class="Image"/>
+						</div>
+					</div>
+					<div id="7_7" class="Squares" onclick="SetSquare('7_7')">
+						<div class="Sequence">
+							<img src="Img/Super7.png" class="Image"/>
+						</div>
+					</div>
+					<div id="7_8" class="Squares" onclick="SetSquare('7_8')">
+						<div class="Sequence">
+							<img src="Img/TwoSixesTwoFours.png" class="Image"/>
+						</div>
+					</div>
+					<div id="7_9" class="Squares" onclick="SetSquare('7_9')">
+						<div class="Sequence">
+							<img src="Img/ThreeFours.png" class="Image"/>
+						</div>
+					</div>
+				</div>
+				<div id="Row8" class="Rows">
+					<div id="8_1" class="Squares" onclick="SetSquare('8_1')">
+						<div class="Sequence">
+							<img src="Img/Straight.png" class="Image"/>
+						</div>
+					</div>
+					<div id="8_2" class="Squares" onclick="SetSquare('8_2')">
+						<div class="Sequence">
+							<img src="Img/FullHouse.png" class="Image"/>
+						</div>
+					</div>
+					<div id="8_3" class="Squares" onclick="SetSquare('8_3')">
+						<div class="Sequence">
+							<img src="Img/TwoFoursTwoOnes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="8_4" class="Squares" onclick="SetSquare('8_4')">
+						<div class="Sequence">
+							<img src="Img/TwoFivesTwoFours.png" class="Image"/>
+						</div>
+					</div>
+					<div id="8_5" class="Squares" onclick="SetSquare('8_5')">
+						<div class="Sequence">
+							<img src="Img/TwoTwosTwoOnes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="8_6" class="Squares" onclick="SetSquare('8_6')">
+						<div class="Sequence">
+							<img src="Img/TwoSixesTwoThrees.png" class="Image"/>
+						</div>
+					</div>
+					<div id="8_7" class="Squares" onclick="SetSquare('8_7')">
+						<div class="Sequence">
+							<img src="Img/ThreeFives.png" class="Image"/>
+						</div>
+					</div>
+					<div id="8_8" class="Squares" onclick="SetSquare('8_8')">
+						<div class="Sequence">
+							<img src="Img/FullHouse.png" class="Image"/>
+						</div>
+					</div>
+					<div id="8_9" class="Squares" onclick="SetSquare('8_9')">
+						<div class="Sequence">
+							<img src="Img/Straight.png" class="Image"/>
+						</div>
+					</div>
+				</div>
+				<div id="Row9" class="Rows">
+					<div id="9_1" class="Squares" onclick="SetSquare('9_1')">
+						<div class="Sequence">
+							<img src="Img/Super7.png" class="Image"/>
+						</div>
+					</div>
+					<div id="9_2" class="Squares" onclick="SetSquare('9_2')">
+						<div class="Sequence">
+							<img src="Img/TwoSixesTwoOnes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="9_3" class="Squares" onclick="SetSquare('9_3')">
+						<div class="Sequence">
+							<img src="Img/ThreeThrees.png" class="Image"/>
+						</div>
+					</div>
+					<div id="9_4" class="Squares" onclick="SetSquare('9_4')">
+						<div class="Sequence">
+							<img src="Img/TwoFivesTwoTwos.png" class="Image"/>
+						</div>
+					</div>
+					<div id="9_5" class="Squares" onclick="SetSquare('9_5')">
+						<div class="Sequence">
+							<img src="Img/Lucky11.png" class="Image"/>
+						</div>
+					</div>
+					<div id="9_6" class="Squares" onclick="SetSquare('9_6')">
+						<div class="Sequence">
+							<img src="Img/ThreeOnes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="9_7" class="Squares" onclick="SetSquare('9_7')">
+						<div class="Sequence">
+							<img src="Img/TwoThreesTwoTwos.png" class="Image"/>
+						</div>
+					</div>
+					<div id="9_8" class="Squares" onclick="SetSquare('9_8')">
+						<div class="Sequence">
+							<img src="Img/FourSixes.png" class="Image"/>
+						</div>
+					</div>
+					<div id="9_9" class="Squares" onclick="SetSquare('9_9')">
+						<div class="Sequence">
+							<img src="Img/Super7.png" class="Image"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="SecuritySync" oncontextmenu="return false">
+				<h1>Roll It Out</h1>
+				<h2>Security Id</h2>
+				<input type="text" placeholder="Enter Secure ID" id="SecureId" />
+				<input type="checkbox" id="ConfirmEnter" title="Click to confirm" />
+				<input type="button" value="Enter Game" onclick="EnterGame()" class="Buttons" />
+			</div>
+			<div id="LobbyContainer" oncontextmenu="return false">
+				<div id="Lobby">
+					<h2>Player lobby</h2>
+					<div class="ConnectingUser" id="ConnectingUser1">
+						Waiting...
+					</div>
+					<div class="ConnectingUser" id="ConnectingUser2">
+						Waiting...
+					</div>
+					<div class="ConnectingUser" id="ConnectingUser3">
+						Waiting...
+					</div>
+					<div class="ConnectingUser" id="ConnectingUser4">
+						Waiting...
+					</div>
+				</div>
+			</div>
+			<div id="BalloonContainer" oncontextmenu="return false">
+				<img src="" id="Balloon1" class="Balloons"/>
+				<img src="" id="Balloon2" class="Balloons"/>
+				<img src="" id="Balloon3" class="Balloons"/>
+			</div>
+			<div id="HowToPlayContainer" oncontextmenu="return false">
+				2 to 4 players</br>
+				Each player is assigned their own color</br>
+				The first player to claim four squares in a row horizontally or vertically wins</br>
+
+				<h3>Instructions:</h3>
+				Players take turns trying to match their dice with the various sequences on the board</br>
+				When their dice match a sequence, it will highlight grey and can be claimed by clicking on it. The square will change to their colour</br>
+				Each player gets up to three rolls per turn. Dice can be held between rolls by clicking them</br>
+				The player can claim a square at any time during their turn, but they must claim a square at the end of three rolls if possible</br>
+				
+				<h3>Sequences:</h3>
+				A straight contains at least one die matching each number from a set. 1 2 3 or 4 5 6</br>
+				A full house contains three of a kind and two of a kind</br>
+				Super 7 is the total of all dice equaling 7</br>
+				Lucky 11 is the total of all dice equaling 11</br>
+				Five of a kind is special and will let the player take any square including one already claimed by another player</br>
+				Wild can be used by any player to connect four of their claimed squares in a row</br>
+				All other sequences are shown on the squares
+			</div>
+		</div>	
+	</body>
+</html>

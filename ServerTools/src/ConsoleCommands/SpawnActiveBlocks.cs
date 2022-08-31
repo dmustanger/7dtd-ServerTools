@@ -17,7 +17,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. st-sab {BlockName}\n" +
+                   "  1. st-sab <BlockName>\n" +
                    "  2. st-sab save\n" +
                    "  3. st-sab cancel\n" +
                    "  4. st-sab undo\n" +

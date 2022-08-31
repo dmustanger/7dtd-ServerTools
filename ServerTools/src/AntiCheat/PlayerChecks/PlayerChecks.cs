@@ -92,9 +92,9 @@ namespace ServerTools
                                                 continue;
                                             }
                                         }
-                                        if (cInfo.ping < 350)
+                                        if (cInfo.ping < 350 && player.IsAlive())
                                         {
-                                            if (SpeedDetector.IsEnabled && (userPlatformPermissionLevel > SpeedDetector.Speed_Admin_Level && userCrossplatformPermissionLevel > SpeedDetector.Speed_Admin_Level))
+                                            if (SpeedDetector.IsEnabled && userPlatformPermissionLevel > SpeedDetector.Speed_Admin_Level && userCrossplatformPermissionLevel > SpeedDetector.Speed_Admin_Level)
                                             {
                                                 if (SpeedDetector.TravelTooFar(oldPosition, player.position))
                                                 {
@@ -105,7 +105,7 @@ namespace ServerTools
                                                     SpeedDetector.Flags.Remove(cInfo.entityId);
                                                 }
                                             }
-                                            if (FlyingDetector.IsEnabled && (userPlatformPermissionLevel > FlyingDetector.Flying_Admin_Level && userCrossplatformPermissionLevel > FlyingDetector.Flying_Admin_Level))
+                                            if (FlyingDetector.IsEnabled && userPlatformPermissionLevel > FlyingDetector.Flying_Admin_Level && userCrossplatformPermissionLevel > FlyingDetector.Flying_Admin_Level)
                                             {
                                                 if (FlyingDetector.IsFlying(player.position))
                                                 {

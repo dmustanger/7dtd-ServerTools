@@ -10,11 +10,12 @@ namespace ServerTools
 {
     public class CustomCommands
     {
-        public static bool IsEnabled = false, IsRunning = false;
+        public static bool IsEnabled = false, IsRunning = false, Permissions = false;
 
         public static Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
+        public static List<string> PermissionQue = new List<string>();
         public static List<int> TeleportCheckProtection = new List<int>();
-
+        
         private const string file = "CustomCommands.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -103,12 +104,17 @@ namespace ServerTools
                                         Dict.Add(trigger, c);
                                         if (!GameManager.Instance.adminTools.GetCommands().ContainsKey(trigger))
                                         {
-                                            GameManager.Instance.adminTools.AddCommandPermission(trigger, 0, true);
+                                            PermissionQue.Add(trigger);
+                                            Permissions = true;
                                         }
                                     }
                                 }
                             }
                         }
+                    }
+                    if (Permissions)
+                    {
+                        Timers.AddPermissionTimer();
                     }
                 }
                 if (upgrade)
@@ -171,7 +177,7 @@ namespace ServerTools
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, {SetReturn}, {Return}, whisper, global -->");
+                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, {SetTeleport}, {Teleport}, whisper, global -->");
                     sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Permission=\"false\" Cost=\"0\" Bloodmoon=\"false\" /> -->");
                     sw.WriteLine("    <!-- <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Reserved=\"false\" Permission=\"\" Cost=\"\" Bloodmoon=\"\" /> -->");
                     sw.WriteLine();
@@ -699,7 +705,8 @@ namespace ServerTools
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, {SetReturn}, {Return}, whisper, global -->");
-                    sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Permission=\"false\" Cost=\"0\" /> -->");
+                    sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Permission=\"false\" Cost=\"0\" Bloodmoon=\"false\" /> -->");
+                    sw.WriteLine("    <!-- <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Reserved=\"false\" Permission=\"\" Cost=\"\" Bloodmoon=\"\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Possible variables") && 
@@ -717,7 +724,7 @@ namespace ServerTools
                             XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && (line.Name == "Custom" || line.Name == "Command"))
                             {
-                                string trigger = "", command = "", delay = "0", hidden = "false", reserved = "false", permission = "false", cost = "0";
+                                string trigger = "", command = "", delay = "0", hidden = "false", reserved = "false", permission = "false", cost = "0", bloodmoon = "false";
                                 if (line.HasAttribute("Trigger"))
                                 {
                                     trigger = line.GetAttribute("Trigger");
@@ -746,7 +753,11 @@ namespace ServerTools
                                 {
                                     cost = line.GetAttribute("Cost");
                                 }
-                                sw.WriteLine(string.Format("    <Custom Trigger=\"{0}\" Command=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Reserved=\"{4}\" Permission=\"{5}\" Cost=\"{6}\" />", trigger, command, delay, hidden, reserved, permission, cost));
+                                if (line.HasAttribute("Bloodmoon"))
+                                {
+                                    bloodmoon = line.GetAttribute("Bloodmoon");
+                                }
+                                sw.WriteLine(string.Format("    <Custom Trigger=\"{0}\" Command=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Reserved=\"{4}\" Permission=\"{5}\" Cost=\"{6}\" Bloodmoon=\"{7}\" />", trigger, command, delay, hidden, reserved, permission, cost, bloodmoon));
                             }
                         }
                     }
@@ -761,6 +772,16 @@ namespace ServerTools
             }
             FileWatcher.EnableRaisingEvents = true;
             LoadXml();
+        }
+
+        public static void AddPermissions()
+        {
+            GameManager.Instance.adminTools.AddCommandPermission(PermissionQue[0], 0, true);
+            PermissionQue.RemoveAt(0);
+            if (PermissionQue.Count > 0)
+            {
+                Timers.AddPermissionTimer();
+            }
         }
     }
 }

@@ -22,11 +22,17 @@ namespace ServerTools
                    "  3. st-auc cancel <Id>\n" +
                    "  4. st-auc clear <Id>\n" +
                    "  5. st-auc list\n" +
+                   "  6. st-auc add <EOS/EntityId/PlayerName>\n" +
+                   "  7. st-auc remove <EOS/EntityId/PlayerName>\n" +
+                   "  8. st-auc show <EOS/EntityId/PlayerName>\n" +
                    "1. Turn off the auction\n" +
                    "2. Turn on the auction\n" +
                    "3. Cancel the auction Id and return it to the owner\n" +
                    "4. Clear the auction Id from the list. It will not return to the owner\n" +
-                   "5. Show the auction list\n";
+                   "5. Show the auction list\n" +
+                   "6. Add one extra auction entry for a player\n" +
+                   "7. Remove one extra auction entry for a player\n" +
+                   "8. Shows how many extra auction entries a player has\n";
         }
 
         public override string[] GetCommands()
@@ -233,6 +239,100 @@ namespace ServerTools
                     else
                     {
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] No items are listed in the auction");
+                    }
+                }
+                else if (_params[0].ToLower().Equals("add"))
+                {
+                    if (_params.Count != 2)
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        return;
+                    }
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                    if (cInfo != null)
+                    {
+                        if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
+                        {
+                            PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].AuctionCount += 1;
+                            PersistentContainer.DataChange = true;
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added a Auction entry for '{0}' named '{1}'", _params[1], cInfo.playerName));
+                        }
+                    }
+                    else if (PersistentContainer.Instance.Players[_params[1]] != null)
+                    {
+                        PersistentContainer.Instance.Players[_params[1]].AuctionCount += 1;
+                        PersistentContainer.DataChange = true;
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added a Auction entry for '{0}' named '{1}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
+                    }
+                    else
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to add a Auction entry", _params[1]));
+                    }
+                }
+                else if (_params[0].ToLower().Equals("remove"))
+                {
+                    if (_params.Count != 3)
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
+                        return;
+                    }
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                    if (cInfo != null)
+                    {
+                        if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
+                        {
+                            if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].AuctionCount > 0)
+                            {
+                                PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].AuctionCount -= 1;
+                                PersistentContainer.DataChange = true;
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed a extra Auction entry for '{0}'", _params[1]));
+                            }
+                            else
+                            {
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no extra Auction entries to remove", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
+                            }
+                        }
+                    }
+                    else if (PersistentContainer.Instance.Players[_params[1]] != null)
+                    {
+                        if (PersistentContainer.Instance.Players[_params[1]].AuctionCount > 0)
+                        {
+                            PersistentContainer.Instance.Players[_params[1]].AuctionCount -= 1;
+                            PersistentContainer.DataChange = true;
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed a extra Auction entry for '{0}' named '{1}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
+                        }
+                        else
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no extra Auction entries to remove", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
+                        }
+                    }
+                    else
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to remove a extra Auction entry", _params[1]));
+                    }
+                }
+                else if (_params[0].ToLower().Equals("show"))
+                {
+                    if (_params.Count != 2)
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        return;
+                    }
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                    if (cInfo != null)
+                    {
+                        if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' extra Auction entries", _params[1], cInfo.playerName, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].AuctionCount));
+                        }
+                    }
+                    else if (PersistentContainer.Instance.Players[_params[1]] != null)
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' extra Auction entries", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, PersistentContainer.Instance.Players[_params[1]].AuctionCount));
+                    }
+                    else
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to show extra Auction entries", _params[1]));
                     }
                 }
                 else

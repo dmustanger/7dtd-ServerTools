@@ -304,7 +304,7 @@ namespace ServerTools
                             }
                             if (messageLowerCase == PersistentOperations.Command_commands)
                             {
-                                PersistentOperations.CommandList(_cInfo);
+                                PersistentOperations.CommandsList(_cInfo);
                                 if (CustomCommands.IsEnabled)
                                 {
                                     CustomCommands.CustomCommandList(_cInfo);
@@ -1145,13 +1145,11 @@ namespace ServerTools
                             {
                                 if (Hardcore.Optional)
                                 {
-                                    EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
-                                    if (_player != null)
+                                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                                    if (player != null)
                                     {
-                                        int deaths = XUiM_Player.GetDeaths(_player);
-                                        int lifeTime = (int)_player.lifetime;
-                                        string[] harcorestats = { _cInfo.playerName, _player.Score.ToString(), lifeTime.ToString(), deaths.ToString(), "0" };
-                                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats = harcorestats;
+                                        string[] stats = { _cInfo.playerName, "0", "0" };
+                                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats = stats;
                                         PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreEnabled = true;
                                         PersistentContainer.DataChange = true;
                                         Phrases.Dict.TryGetValue("Hardcore11", out string _phrase);
@@ -1337,13 +1335,18 @@ namespace ServerTools
                                     return false;
                                 }
                             }
-                            if (BlackJack.IsEnabled && WebAPI.IsEnabled)
+                            if (RIO.IsEnabled && WebAPI.IsEnabled)
                             {
-                                if (messageLowerCase == BlackJack.Command_blackjack)
+                                if (messageLowerCase == RIO.Command_rio)
                                 {
-                                    BlackJack.Exec(_cInfo);
+                                    RIO.Exec(_cInfo);
                                     return false;
                                 }
+                            }
+                            if (messageLowerCase == PersistentOperations.Command_overlay)
+                            {
+                                PersistentOperations.Overlay(_cInfo);
+                                return false;
                             }
                             if (!Passthrough)
                             {

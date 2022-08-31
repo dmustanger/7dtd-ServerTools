@@ -12,6 +12,11 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
+            if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay)
+            {
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "Overlay is set off. Steam browser is disabled" + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                return;
+            }
             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserMap", true));
         }
 
@@ -48,7 +53,7 @@ namespace ServerTools
                             lines.Add("          <label name=\"ServerDescription\" />");
                             lines.Add(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", _link));
                             lines.Add("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                            lines.Add("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
+                            lines.Add("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
                             lines.Add("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                             lines.Add("          <!-- Change the text IP and Port to the one needed by ServerTools web api -->");
                             lines.Add("      </panel>");

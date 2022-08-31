@@ -15,14 +15,22 @@ namespace ServerTools
             return "Usage:\n" +
                    "  1. st-shop off\n" +
                    "  2. st-shop on\n" +
-                   "  3. st-shop add {itemName} {secondaryName} {count} {quality} {price} {category} \n" +
-                   "  4. st-shop remove {number}\n" +
-                   "  5. st-shop list\n" +
+                   "  3. st-shop add <ItemName> <SecondaryName> <Count> <Quality> <Price> <Category>\n" +
+                   "  4. st-shop add <ItemName> <SecondaryName> <Count> <Quality> <Price> <Category> <PanelMessage>\n" +
+                   "  5. st-shop remove <number>\n" +
+                   "  6. st-shop list\n" +
+                   "  7. st-shop log\n" +
+                   "  8. st-shop log all\n" +
+                   "  9. st-shop log player <EOS/EntityId/PlayerName>\n" +
                    "1. Turn off shop\n" +
                    "2. Turn on shop\n" +
-                   "3. Add item to Shop.xml\n" +
-                   "4. Remove item from Shop.xml\n" +
-                   "5. Show a list of the shop items\n";
+                   "3. Add a item to Shop.xml with no panel message\n" +
+                   "4. Add a item to Shop.xml with a panel message\n" +
+                   "5. Remove item from Shop.xml\n" +
+                   "6. Show a list of the shop items\n" +
+                   "7. Shows a list and creates a text file of the shop sales. Does not include player info\n" +
+                   "8. Shows a list and creates a text file of the shop sales for all players\n" +
+                   "9. Shows a list and creates a text file of the shop sales for a specific player\n";
         }
 
         public override string[] GetCommands()
@@ -34,13 +42,18 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count != 1 && _params.Count != 2 && _params.Count != 7)
+                if (_params.Count != 1 && _params.Count != 2 && _params.Count != 7 && _params.Count != 8)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, 2 or 7, found '{0}'", _params.Count));
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, 2, 7 or 8, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
+                    if (_params.Count != 1)
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        return;
+                    }
                     if (Shop.IsEnabled)
                     {
                         Shop.IsEnabled = false;
@@ -57,6 +70,11 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
+                    if (_params.Count != 1)
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        return;
+                    }
                     if (!Shop.IsEnabled)
                     {
                         Shop.IsEnabled = true;
@@ -73,9 +91,9 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("add"))
                 {
-                    if (_params.Count != 7)
+                    if (_params.Count != 7 && _params.Count != 8)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 7, found '{0}'", _params.Count));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 7 or 8, found '{0}'", _params.Count));
                         return;
                     }
                     else
@@ -119,12 +137,13 @@ namespace ServerTools
                                             {
                                                 _quality = 1;
                                             }
-                                            else if (_quality > 600)
-                                            {
-                                                _quality = 600;
-                                            }
                                             int _id = Shop.Dict.Count + 1;
-                                            string[] _item = new string[] { _id.ToString(), _params[1], _params[2], _params[3], _params[4], _params[5], _params[6] };
+                                            string panelMessage = "";
+                                            if (_params.Count == 8)
+                                            {
+                                                panelMessage = _params[7];
+                                            }
+                                            string[] _item = new string[] { _id.ToString(), _params[1], _params[2], _params[3], _params[4], _params[5], _params[6], panelMessage };
                                             if (!Shop.Dict.Contains(_item))
                                             {
                                                 if (!Shop.Categories.Contains(_params[6]))
@@ -133,7 +152,7 @@ namespace ServerTools
                                                 }
                                                 Shop.Dict.Add(_item);
                                                 Shop.UpdateXml();
-                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Item {0} has been added to the shop", _params[1]));
+                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Item '{0}' has been added to the shop", _params[1]));
                                                 return;
                                             }
                                             else
@@ -209,6 +228,126 @@ namespace ServerTools
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Shop list is empty"));
                             return;
                         }
+                    }
+                }
+                else if (_params[0].ToLower().Equals("log"))
+                {
+                    if (_params.Count < 1 || _params.Count > 3)
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found '{0}'", _params.Count));
+                        return;
+                    }
+                    else if (_params.Count == 1)
+                    {
+                        List<string[]> shopLog = PersistentContainer.Instance.ShopLog;
+                        if (shopLog.Count > 0)
+                        {
+                            Dictionary<string, int> entries = new Dictionary<string, int>();
+                            for (int i = 0; i < shopLog.Count; i++)
+                            {
+                                int.TryParse(shopLog[i][1], out int amountSold);
+                                if (!entries.ContainsKey(shopLog[i][0]))
+                                {
+                                    entries.Add(shopLog[i][0], amountSold);
+                                }
+                                else
+                                {
+                                    entries[shopLog[i][0]] += amountSold;
+                                }
+                            }
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Shop records:"));
+                            foreach (var entry in entries)
+                            {
+                                string logEntry = string.Format("{0} '{1}'", entry.Value, entry.Key);
+                                Shop.Writer(logEntry);
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(logEntry);
+                            }
+                        }
+                        else
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no records of sale from the Shop yet"));
+                        }
+                        return;
+                    }
+                    else if (_params.Count == 2 && _params[1].ToLower().Equals("all"))
+                    {
+                        List<string[]> shopLog = PersistentContainer.Instance.ShopLog;
+                        if (shopLog.Count > 0)
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Shop records:"));
+                            string playerId = "";
+                            List<string> entries = new List<string>();
+                            for (int i = 0; i < shopLog.Count; i++)
+                            {
+                                if (!entries.Contains(shopLog[i][3]))
+                                {
+                                    entries.Add(shopLog[i][3]);
+                                    playerId = shopLog[i][3];
+                                    for (int j = i; j < shopLog.Count; j++)
+                                    {
+                                        if (shopLog[j][3] == playerId)
+                                        {
+                                            string logEntry = string.Format("[SERVERTOOLS] '{0}' '{1}' named '{2}' purchased {3} '{4}' on '{5}'", shopLog[j][2], shopLog[j][3], shopLog[j][4], shopLog[j][1], shopLog[j][0], shopLog[j][5]);
+                                            Shop.Writer(logEntry);
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(logEntry);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no records of sale from the Shop yet"));
+                        }
+                        return;
+                    }
+                    else if (_params[1].ToLower().Equals("player"))
+                    {
+                        List<string[]> shopLog = PersistentContainer.Instance.ShopLog;
+                        if (shopLog.Count > 0)
+                        {
+                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[2]);
+                            if (cInfo != null)
+                            {
+                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                                if (player != null)
+                                {
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Shop records:"));
+                                    string playerId = cInfo.CrossplatformId.CombinedString;
+                                    for (int i = 0; i < shopLog.Count; i++)
+                                    {
+                                        if (shopLog[i][3] == playerId)
+                                        {
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] '{0}' '{1}' named '{2}' purchased {3} '{4}' on '{5}'", shopLog[i][2], shopLog[i][3], shopLog[i][4], shopLog[i][1], shopLog[i][0], shopLog[i][5]));
+                                        }
+                                    }
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Shop records:"));
+                                bool found = false;
+                                string playerId = _params[2];
+                                for (int i = 0; i < shopLog.Count; i++)
+                                {
+                                    if (shopLog[i][3] == playerId)
+                                    {
+                                        found = true;
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] '{0}' '{1}' named '{2}' purchased {3} '{4}' on '{5}'", shopLog[i][2], shopLog[i][3], shopLog[i][4], shopLog[i][1], shopLog[i][0], shopLog[i][5]));
+                                    }
+                                }
+                                if (!found)
+                                {
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' not found", _params[0]));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] There are no records of sale from the Shop yet"));
+                        }
+                        return;
                     }
                 }
                 else

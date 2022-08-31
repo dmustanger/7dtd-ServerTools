@@ -242,14 +242,7 @@ namespace ServerTools
             }
             if (WebAPI.IsEnabled && !WebAPI.IsRunning)
             {
-                if (!PersistentOperations.ThirtySeconds)
-                {
-                    Log.Out("[SERVERTOOLS] Web_API will go live thirty seconds after the server finishes loading");
-                }
-                else
-                {
-                    WebAPI.Load();
-                }
+                WebAPI.Load();
             }
             else if (WebAPI.IsRunning && !WebAPI.IsEnabled)
             {

@@ -13,7 +13,7 @@ namespace ServerTools
             No_Currency = false, Net_Package_Detector = false;
         public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0, 
             MeleeHandPlayer = 0;
-        public static string Currency_Item, XPathDir, Command_expire = "expire", Command_commands = "commands";
+        public static string AppPath, Currency_Item, XPathDir, Command_expire = "expire", Command_commands = "commands", Command_overlay = "overlay";
 
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static Dictionary<int, int> EntityId = new Dictionary<int, int>();
@@ -121,7 +121,7 @@ namespace ServerTools
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
                         sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", AllocsMap.Link));
                         sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
+                        sw.WriteLine("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
                         sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                         sw.WriteLine("          <!-- Change the text IP and Port to the one needed by Allocs web map. Check it functions through a web browser first -->");
                         sw.WriteLine("      </panel>");
@@ -136,7 +136,7 @@ namespace ServerTools
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
                         sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", DiscordLink.Invitation_Link));
                         sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"microphoneIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_mic\" />");
+                        sw.WriteLine("          <sprite depth=\"4\" name=\"microphoneIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_mic\" />");
                         sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                         sw.WriteLine("          <!-- Change the text to a Discord invite link of your choice. Check it functions through a web browser first -->");
                         sw.WriteLine("      </panel>");
@@ -151,22 +151,22 @@ namespace ServerTools
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
                         sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", Voting.Link));
                         sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"computerIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_computer\" />");
+                        sw.WriteLine("          <sprite depth=\"4\" name=\"computerIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_computer\" />");
                         sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                         sw.WriteLine("          <!-- Change the text to a voting link of your choice. Check it functions through a web browser first -->");
                         sw.WriteLine("      </panel>");
                         sw.WriteLine("  </window>");
                         sw.WriteLine();
-                        sw.WriteLine("  <window name=\"browserBlackJack\" controller=\"ServerInfo\">");
+                        sw.WriteLine("  <window name=\"browserRio\" controller=\"ServerInfo\">");
                         sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Black Jack\" />");
+                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Roll It Out\" />");
                         sw.WriteLine("      </panel>");
                         sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                         sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/blackJack.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/rio.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
                         sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"coinIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_coin\" />");
+                        sw.WriteLine("          <sprite depth=\"4\" name=\"coinIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_coin\" />");
                         sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                         sw.WriteLine("          <!-- Change the text IP and Port to the one needed by ServerTools web api -->");
                         sw.WriteLine("      </panel>");
@@ -179,9 +179,9 @@ namespace ServerTools
                         sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                         sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", Shop.Link));
+                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/shop.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
                         sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
+                        sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
                         sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                         sw.WriteLine("          <!-- Change the text IP and Port to the one needed by ServerTools web api -->");
                         sw.WriteLine("      </panel>");
@@ -194,9 +194,9 @@ namespace ServerTools
                         sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                         sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", Auction.Link));
+                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/auction.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
                         sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon28px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
+                        sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
                         sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                         sw.WriteLine("          <!-- Change the text IP and Port to the one needed by ServerTools web api -->");
                         sw.WriteLine("      </panel>");
@@ -217,7 +217,7 @@ namespace ServerTools
                     sw.WriteLine();
                     sw.WriteLine("<append xpath=\"/buffs\">");
                     sw.WriteLine();
-                    sw.WriteLine("<buff name=\"pve_zone\" name_key=\"PvE_Zone\" description=\"You are inside a PvE area\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"0,102,153\">");
+                    sw.WriteLine("<buff name=\"pve_zone\" name_key=\"PvE_Zone\" description_key=\"You are inside a PvE area\" tooltip_key=\"PvE_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"0,102,153\">");
                     sw.WriteLine("	<stack_type value=\"replace\"/>");
                     sw.WriteLine("	<effect_group>");
                     sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
@@ -227,7 +227,7 @@ namespace ServerTools
                     sw.WriteLine("	</effect_group>");
                     sw.WriteLine("</buff>");
                     sw.WriteLine();
-                    sw.WriteLine("<buff name=\"pvp_ally_zone\" name_key=\"PvP_Ally_Zone\" description=\"Player damage is active for allies\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,204,0\">");
+                    sw.WriteLine("<buff name=\"pvp_ally_zone\" name_key=\"PvP_Ally_Zone\" description_key=\"You are inside a area with active damage for allies\" tooltip_key=\"PvP_Ally_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,204,0\">");
                     sw.WriteLine("	<stack_type value=\"replace\"/>");
                     sw.WriteLine("	<effect_group>");
                     sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
@@ -243,7 +243,7 @@ namespace ServerTools
                     sw.WriteLine("	</effect_group>");
                     sw.WriteLine("</buff>");
                     sw.WriteLine();
-                    sw.WriteLine("<buff name=\"pvp_stranger_zone\" name_key=\"PvP_Stranger_Zone\" description=\"Player damage is active for strangers\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"255,153,0\">");
+                    sw.WriteLine("<buff name=\"pvp_stranger_zone\" name_key=\"PvP_Stranger_Zone\" description_key=\"You are inside a area with active damage for strangers\" tooltip_key=\"PvP_Stranger_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"255,153,0\">");
                     sw.WriteLine("	<stack_type value=\"replace\"/>");
                     sw.WriteLine("	<effect_group>");
                     sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
@@ -259,7 +259,7 @@ namespace ServerTools
                     sw.WriteLine("	</effect_group>");
                     sw.WriteLine("</buff>");
                     sw.WriteLine();
-                    sw.WriteLine("<buff name=\"pvp_zone\" name_key=\"PvP_Zone\" description=\"Player damage is active for everyone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,0,0\">");
+                    sw.WriteLine("<buff name=\"pvp_zone\" name_key=\"PvP_Zone\" description_key=\"You are inside a area with active damage for everyone\" tooltip_key=\"PvP_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,0,0\">");
                     sw.WriteLine("	<stack_type value=\"replace\"/>");
                     sw.WriteLine("	<effect_group>");
                     sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
@@ -368,8 +368,8 @@ namespace ServerTools
                     sw.WriteLine("      <window name=\"browserVote\" />");
                     sw.WriteLine("  </window_group>");
                     sw.WriteLine();
-                    sw.WriteLine("  <window_group name=\"browserBlackJack\">");
-                    sw.WriteLine("      <window name=\"browserBlackJack\" />");
+                    sw.WriteLine("  <window_group name=\"browserRio\">");
+                    sw.WriteLine("      <window name=\"browserRio\" />");
                     sw.WriteLine("  </window_group>");
                     sw.WriteLine();
                     sw.WriteLine("  <window_group name=\"browserShop\">");
@@ -913,7 +913,7 @@ namespace ServerTools
                 Wallet.IsEnabled = false;
                 Config.WriteXml();
                 Config.LoadXml();
-                Log.Out(string.Format("[SERVERTOOLS] Unable to find an item with the tag 'currency' in the item list. Bank and Wallet tools have been disabled"));
+                Log.Out(string.Format("[SERVERTOOLS] Unable to find an item with the tag 'currency' in the item list. Bank and Wallet tools have been disabled. If this is the first time running ServerTools or it was recently updated, you may need to restart one more time"));
             }
         }
 
@@ -960,77 +960,209 @@ namespace ServerTools
             ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
-        public static void CommandList(ClientInfo _cInfo)
+        public static void CommandsList(ClientInfo _cInfo)
         {
             try
             {
                 string commands = "";
-                if (AdminList.IsEnabled)
+                if (AdminList.IsEnabled && AdminList.Command_adminlist != "")
                 {
-                    if (AdminList.Command_adminlist != "")
+                    if (CommandList.Dict.TryGetValue(AdminList.Command_adminlist, out string[] values))
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AdminList.Command_adminlist);
+                        if (bool.TryParse(values[1], out bool hidden))
+                        {
+                            if (!hidden)
+                            {
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AdminList.Command_adminlist);
+                            }
+                        }
                     }
                 }
                 if (AllocsMap.IsEnabled)
                 {
-                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AllocsMap.Command_map);
+                    if (CommandList.Dict.TryGetValue(AllocsMap.Command_map, out string[] values))
+                    {
+                        if (bool.TryParse(values[1], out bool hidden))
+                        {
+                            if (!hidden)
+                            {
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AllocsMap.Command_map);
+                            }
+                        }
+                    }
                 }
                 if (AnimalTracking.IsEnabled)
                 {
                     if (AnimalTracking.Command_trackanimal != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AnimalTracking.Command_trackanimal);
+                        if (CommandList.Dict.TryGetValue(AnimalTracking.Command_trackanimal, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AnimalTracking.Command_trackanimal);
+                                }
+                            }
+                        }
                     }
                     if (AnimalTracking.Command_track != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AnimalTracking.Command_track);
+                        if (CommandList.Dict.TryGetValue(AnimalTracking.Command_track, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AnimalTracking.Command_track);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Auction.IsEnabled)
                 {
                     if (Auction.Command_auction != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Auction.Command_auction);
+                        if (CommandList.Dict.TryGetValue(Auction.Command_auction, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Auction.Command_auction);
+                                }
+                            }
+                        }
                     }
                     if (Auction.Command_auction_cancel != "")
                     {
-                        commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Auction.Command_auction_cancel);
+                        if (CommandList.Dict.TryGetValue(Auction.Command_auction_cancel, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Auction.Command_auction_cancel);
+                                }
+                            }
+                        }
                     }
                     if (Auction.Command_auction_buy != "")
                     {
-                        commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Auction.Command_auction_buy);
+                        if (CommandList.Dict.TryGetValue(Auction.Command_auction_buy, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Auction.Command_auction_buy);
+                                }
+                            }
+                        }
                     }
                     if (Auction.Command_auction_sell != "")
                     {
-                        commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Auction.Command_auction_sell);
+                        if (CommandList.Dict.TryGetValue(Auction.Command_auction_sell, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Auction.Command_auction_sell);
+                                }
+                            }
+                        }
                     }
                 }
                 if (AutoPartyInvite.IsEnabled)
                 {
-                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AutoPartyInvite.Command_party_add);
-                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AutoPartyInvite.Command_party_remove);
-                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AutoPartyInvite.Command_party);
+                    if (CommandList.Dict.TryGetValue(AutoPartyInvite.Command_party_add, out string[] values1))
+                    {
+                        if (bool.TryParse(values1[1], out bool hidden))
+                        {
+                            if (!hidden)
+                            {
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AutoPartyInvite.Command_party_add);
+                            }
+                        }
+                    }
+                    if (CommandList.Dict.TryGetValue(AutoPartyInvite.Command_party_remove, out string[] values2))
+                    {
+                        if (bool.TryParse(values2[1], out bool hidden))
+                        {
+                            if (!hidden)
+                            {
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AutoPartyInvite.Command_party_remove);
+                            }
+                        }
+                    }
+                    if (CommandList.Dict.TryGetValue(AutoPartyInvite.Command_party, out string[] values3))
+                    {
+                        if (bool.TryParse(values3[1], out bool hidden))
+                        {
+                            if (!hidden)
+                            {
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AutoPartyInvite.Command_party);
+                            }
+                        }
+                    }
                 }
                 if (Bank.IsEnabled)
                 {
                     if (Bank.Command_bank != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Bank.Command_bank);
+                        if (CommandList.Dict.TryGetValue(Bank.Command_bank, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Bank.Command_bank);
+                                }
+                            }
+                        }
                     }
                     if (Wallet.IsEnabled && Bank.Command_deposit != "")
                     {
-                        commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Bank.Command_deposit);
+                        if (CommandList.Dict.TryGetValue(Bank.Command_deposit, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Bank.Command_deposit);
+                                }
+                            }
+                        }
                     }
                     if (Wallet.IsEnabled && Bank.Command_withdraw != "")
                     {
-                        commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Bank.Command_withdraw);
+                        if (CommandList.Dict.TryGetValue(Bank.Command_withdraw, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Bank.Command_withdraw);
+                                }
+                            }
+                        }
                     }
                     if (Bank.Player_Transfers)
                     {
                         if (Bank.Command_transfer != "")
                         {
-                            commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Bank.Command_transfer);
+                            if (CommandList.Dict.TryGetValue(Bank.Command_transfer, out string[] values))
+                            {
+                                if (bool.TryParse(values[1], out bool hidden))
+                                {
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Bank.Command_transfer);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -1038,53 +1170,134 @@ namespace ServerTools
                 {
                     if (Bed.Command_bed != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Bed.Command_bed);
+                        if (CommandList.Dict.TryGetValue(Bed.Command_bed, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Bed.Command_bed);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Bloodmoon.IsEnabled)
                 {
                     if (Bloodmoon.Command_bloodmoon != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Bloodmoon.Command_bloodmoon);
+                        if (CommandList.Dict.TryGetValue(Bloodmoon.Command_bloodmoon, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Bloodmoon.Command_bloodmoon);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Bounties.IsEnabled)
                 {
                     if (Bounties.Command_bounty != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Bounties.Command_bounty);
+                        if (CommandList.Dict.TryGetValue(Bounties.Command_bounty, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Bounties.Command_bounty);
+                                }
+                            }
+                        }
                     }
                     if (Bounties.Command_bounty != "")
                     {
-                        commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Bounties.Command_bounty);
+                        if (CommandList.Dict.TryGetValue(Bounties.Command_bounty, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Bounties.Command_bounty);
+                                }
+                            }
+                        }
                     }
                 }
                 if (ChatColor.IsEnabled && ChatColor.Players.ContainsKey(_cInfo.PlatformId.ReadablePlatformUserIdentifier))
                 {
                     if (ChatColor.Command_ccc != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ChatColor.Command_ccc);
+                        if (CommandList.Dict.TryGetValue(ChatColor.Command_ccc, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ChatColor.Command_ccc);
+                                }
+                            }
+                        }
                     }
                     if (ChatColor.Rotate)
                     {
                         if (ChatColor.Command_ccpr != "")
                         {
-                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ChatColor.Command_ccpr);
+                            if (CommandList.Dict.TryGetValue(ChatColor.Command_ccpr, out string[] values))
+                            {
+                                if (bool.TryParse(values[1], out bool hidden))
+                                {
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ChatColor.Command_ccpr);
+                                    }
+                                }
+                            }
                         }
                         if (ChatColor.Command_ccnr != "")
                         {
-                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ChatColor.Command_ccnr);
+                            if (CommandList.Dict.TryGetValue(ChatColor.Command_ccnr, out string[] values))
+                            {
+                                if (bool.TryParse(values[1], out bool hidden))
+                                {
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ChatColor.Command_ccnr);
+                                    }
+                                }
+                            }
                         }
                     }
                     if (ChatColor.Custom_Color)
                     {
                         if (ChatColor.Command_ccpr != "")
                         {
-                            commands = string.Format("{0} {1}{2} [******]", commands, ChatHook.Chat_Command_Prefix1, ChatColor.Command_ccpr);
+                            if (CommandList.Dict.TryGetValue(ChatColor.Command_ccpr, out string[] values))
+                            {
+                                if (bool.TryParse(values[1], out bool hidden))
+                                {
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2} [******]", commands, ChatHook.Chat_Command_Prefix1, ChatColor.Command_ccpr);
+                                    }
+                                }
+                            }
                         }
                         if (ChatColor.Command_ccnr != "")
                         {
-                            commands = string.Format("{0} {1}{2} [******]", commands, ChatHook.Chat_Command_Prefix1, ChatColor.Command_ccnr);
+                            if (CommandList.Dict.TryGetValue(ChatColor.Command_ccnr, out string[] values))
+                            {
+                                if (bool.TryParse(values[1], out bool hidden))
+                                {
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2} [******]", commands, ChatHook.Chat_Command_Prefix1, ChatColor.Command_ccnr);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -1092,76 +1305,193 @@ namespace ServerTools
                 {
                     if (ClanManager.Command_chat != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command_chat);
+                        if (CommandList.Dict.TryGetValue(ClanManager.Command_chat, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command_chat);
+                                }
+                            }
+                        }
                     }
                 }
                 if (ClanManager.IsEnabled)
                 {
                     if (ClanManager.Command_clan_list != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command_clan_list);
+                        if (CommandList.Dict.TryGetValue(ClanManager.Command_clan_list, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command_clan_list);
+                                }
+                            }
+                        }
                     }
                 }
                 if (ClanManager.IsEnabled && !ClanManager.ClanMember.Contains(_cInfo.PlatformId.ReadablePlatformUserIdentifier))
                 {
                     if (ClanManager.Command_request != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command_request);
+                        if (CommandList.Dict.TryGetValue(ClanManager.Command_request, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command_request);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Day7.IsEnabled)
                 {
                     if (Day7.Command_day7 != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Day7.Command_day7);
+                        if (CommandList.Dict.TryGetValue(Day7.Command_day7, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Day7.Command_day7);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Died.IsEnabled)
                 {
                     if (Died.Command_died != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Died.Command_died);
+                        if (CommandList.Dict.TryGetValue(Died.Command_died, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Died.Command_died);
+                                }
+                            }
+                        }
                     }
                 }
                 if (DiscordLink.IsEnabled)
                 {
-                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, DiscordLink.Command_discord);
+                    if (CommandList.Dict.TryGetValue(DiscordLink.Command_discord, out string[] values))
+                    {
+                        if (bool.TryParse(values[1], out bool hidden))
+                        {
+                            if (!hidden)
+                            {
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, DiscordLink.Command_discord);
+                            }
+                        }
+                    }
                 }
                 if (ExitCommand.IsEnabled)
                 {
-                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ExitCommand.Command_exit);
+                    if (CommandList.Dict.TryGetValue(ExitCommand.Command_exit, out string[] values))
+                    {
+                        if (bool.TryParse(values[1], out bool hidden))
+                        {
+                            if (!hidden)
+                            {
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ExitCommand.Command_exit);
+                            }
+                        }
+                    }
                 }
                 if (FirstClaimBlock.IsEnabled)
                 {
                     if (FirstClaimBlock.Command_claim != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, FirstClaimBlock.Command_claim);
+                        if (CommandList.Dict.TryGetValue(FirstClaimBlock.Command_claim, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, FirstClaimBlock.Command_claim);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Fps.IsEnabled)
                 {
                     if (Fps.Command_fps != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Fps.Command_fps);
+                        if (CommandList.Dict.TryGetValue(Fps.Command_fps, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Fps.Command_fps);
+                                }
+                            }
+                        }
                     }
                 }
                 if (FriendTeleport.IsEnabled)
                 {
                     if (FriendTeleport.Command_friend != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, FriendTeleport.Command_friend);
-                        commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, FriendTeleport.Command_friend);
+                        if (CommandList.Dict.TryGetValue(FriendTeleport.Command_friend, out string[] values1))
+                        {
+                            if (bool.TryParse(values1[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, FriendTeleport.Command_friend);
+                                }
+                            }
+                        }
+                        if (CommandList.Dict.TryGetValue(FriendTeleport.Command_friend, out string[] values2))
+                        {
+                            if (bool.TryParse(values2[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, FriendTeleport.Command_friend);
+                                }
+                            }
+                        }
                     }
                     if (FriendTeleport.Command_accept != "" && FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, FriendTeleport.Command_accept);
+                        if (CommandList.Dict.TryGetValue(FriendTeleport.Command_accept, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, FriendTeleport.Command_accept);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Gimme.IsEnabled)
                 {
                     if (Gimme.Command_gimme != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Gimme.Command_gimme);
+                        if (CommandList.Dict.TryGetValue(Gimme.Command_gimme, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Gimme.Command_gimme);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Hardcore.IsEnabled)
@@ -1170,21 +1500,57 @@ namespace ServerTools
                     {
                         if (Hardcore.Command_top3 != "")
                         {
-                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_top3);
+                            if (CommandList.Dict.TryGetValue(Hardcore.Command_top3, out string[] values))
+                            {
+                                if (bool.TryParse(values[1], out bool hidden))
+                                {
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_top3);
+                                    }
+                                }
+                            }
                         }
                         if (Hardcore.Command_score != "")
                         {
-                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_score);
+                            if (CommandList.Dict.TryGetValue(Hardcore.Command_score, out string[] values))
+                            {
+                                if (bool.TryParse(values[1], out bool hidden))
+                                {
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_score);
+                                    }
+                                }
+                            }
                         }
                         if (Hardcore.Command_hardcore != "")
                         {
-                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_hardcore);
+                            if (CommandList.Dict.TryGetValue(Hardcore.Command_hardcore, out string[] values))
+                            {
+                                if (bool.TryParse(values[1], out bool hidden))
+                                {
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_hardcore);
+                                    }
+                                }
+                            }
                         }
                         if (Hardcore.Max_Extra_Lives > 0)
                         {
                             if (Hardcore.Command_buy_life != "")
                             {
-                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_buy_life);
+                                if (CommandList.Dict.TryGetValue(Hardcore.Command_buy_life, out string[] values))
+                                {
+                                    if (bool.TryParse(values[1], out bool hidden))
+                                    {
+                                        if (!hidden)
+                                        {
+                                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_buy_life);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -1192,23 +1558,59 @@ namespace ServerTools
                     {
                         if (Hardcore.Command_top3 != "")
                         {
-                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_top3);
+                            if (CommandList.Dict.TryGetValue(Hardcore.Command_top3, out string[] values))
+                            {
+                                if (bool.TryParse(values[1], out bool hidden))
+                                {
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_top3);
+                                    }
+                                }
+                            }
                         }
                         if (Hardcore.Command_score != "")
                         {
-                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_score);
+                            if (CommandList.Dict.TryGetValue(Hardcore.Command_score, out string[] values))
+                            {
+                                if (bool.TryParse(values[1], out bool hidden))
+                                {
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_score);
+                                    }
+                                }
+                            }
                         }
                         if (PersistentContainer.Instance.Players[_cInfo.PlatformId.ReadablePlatformUserIdentifier].HardcoreEnabled)
                         {
                             if (Hardcore.Command_hardcore != "")
                             {
-                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_hardcore);
+                                if (CommandList.Dict.TryGetValue(Hardcore.Command_hardcore, out string[] values))
+                                {
+                                    if (bool.TryParse(values[1], out bool hidden))
+                                    {
+                                        if (!hidden)
+                                        {
+                                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_hardcore);
+                                        }
+                                    }
+                                }
                             }
                             if (Hardcore.Max_Extra_Lives > 0)
                             {
                                 if (Hardcore.Command_buy_life != "")
                                 {
-                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_buy_life);
+                                    if (CommandList.Dict.TryGetValue(Hardcore.Command_buy_life, out string[] values))
+                                    {
+                                        if (bool.TryParse(values[1], out bool hidden))
+                                        {
+                                            if (!hidden)
+                                            {
+                                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_buy_life);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1216,7 +1618,16 @@ namespace ServerTools
                         {
                             if (Hardcore.Command_hardcore_on != "")
                             {
-                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_hardcore_on);
+                                if (CommandList.Dict.TryGetValue(Hardcore.Command_hardcore_on, out string[] values))
+                                {
+                                    if (bool.TryParse(values[1], out bool hidden))
+                                    {
+                                        if (!hidden)
+                                        {
+                                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Hardcore.Command_hardcore_on);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -1225,54 +1636,144 @@ namespace ServerTools
                 {
                     if (Homes.Command_home != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_home);
+                        if (CommandList.Dict.TryGetValue(Homes.Command_home, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_home);
+                                }
+                            }
+                        }
                     }
                     if (Homes.Command_fhome != "")
                     {
-                        commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_fhome);
+                        if (CommandList.Dict.TryGetValue(Homes.Command_fhome, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_fhome);
+                                }
+                            }
+                        }
                     }
                     if (Homes.Command_save != "")
                     {
-                        commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_save);
+                        if (CommandList.Dict.TryGetValue(Homes.Command_save, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_save);
+                                }
+                            }
+                        }
                     }
                     if (Homes.Command_delete != "")
                     {
-                        commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_delete);
+                        if (CommandList.Dict.TryGetValue(Homes.Command_delete, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_delete);
+                                }
+                            }
+                        }
                     }
                     if (Homes.Command_go != "" && Homes.Invite.ContainsKey(_cInfo.entityId))
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_go);
+                        if (CommandList.Dict.TryGetValue(Homes.Command_go, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_go);
+                                }
+                            }
+                        }
                     }
                     if (Homes.Command_set != "")
                     {
-                        commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_set);
+                        if (CommandList.Dict.TryGetValue(Homes.Command_set, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_set);
+                                }
+                            }
+                        }
                     }
                 }
                 if (InfoTicker.IsEnabled)
                 {
                     if (InfoTicker.Command_infoticker != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, InfoTicker.Command_infoticker);
+                        if (CommandList.Dict.TryGetValue(InfoTicker.Command_infoticker, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, InfoTicker.Command_infoticker);
+                                }
+                            }
+                        }
                     }
                 }
                 if (KickVote.IsEnabled)
                 {
                     if (KickVote.Command_kickvote != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, KickVote.Command_kickvote);
+                        if (CommandList.Dict.TryGetValue(KickVote.Command_kickvote, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, KickVote.Command_kickvote);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Lobby.IsEnabled)
                 {
                     if (Lobby.Command_lobby != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Lobby.Command_lobby);
+                        if (CommandList.Dict.TryGetValue(Lobby.Command_lobby, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Lobby.Command_lobby);
+                                }
+                            }
+                        }
                     }
                     if (Lobby.Return && Lobby.LobbyPlayers.Contains(_cInfo.entityId))
                     {
                         if (Lobby.Command_lobbyback != "")
                         {
-                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Lobby.Command_lobbyback);
+                            if (CommandList.Dict.TryGetValue(Lobby.Command_lobbyback, out string[] values))
+                            {
+                                if (bool.TryParse(values[1], out bool hidden))
+                                {
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Lobby.Command_lobbyback);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -1280,35 +1781,89 @@ namespace ServerTools
                 {
                     if (Loc.Command_loc != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Loc.Command_loc);
+                        if (CommandList.Dict.TryGetValue(Loc.Command_loc, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Loc.Command_loc);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Lottery.IsEnabled)
                 {
                     if (Lottery.Command_lottery != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Lottery.Command_lottery);
+                        if (CommandList.Dict.TryGetValue(Lottery.Command_lottery, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Lottery.Command_lottery);
+                                }
+                            }
+                        }
                     }
                     if (Lottery.Command_lottery != "")
                     {
-                        commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Lottery.Command_lottery);
+                        if (CommandList.Dict.TryGetValue(Lottery.Command_lottery, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, Lottery.Command_lottery);
+                                }
+                            }
+                        }
                     }
                     if (Lottery.Command_lottery_enter != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Lottery.Command_lottery_enter);
+                        if (CommandList.Dict.TryGetValue(Lottery.Command_lottery_enter, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Lottery.Command_lottery_enter);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Market.IsEnabled)
                 {
                     if (Market.Command_market != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Market.Command_market);
+                        if (CommandList.Dict.TryGetValue(Market.Command_market, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Market.Command_market);
+                                }
+                            }
+                        }
                     }
                     if (Market.Return && Market.MarketPlayers.Contains(_cInfo.entityId))
                     {
                         if (Market.Command_marketback != "")
                         {
-                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Market.Command_marketback);
+                            if (CommandList.Dict.TryGetValue(Market.Command_marketback, out string[] values))
+                            {
+                                if (bool.TryParse(values[1], out bool hidden))
+                                {
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Market.Command_marketback);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -1316,177 +1871,464 @@ namespace ServerTools
                 {
                     if (Mute.Command_mute != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Mute.Command_mute);
+                        if (CommandList.Dict.TryGetValue(Mute.Command_mute, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Mute.Command_mute);
+                                }
+                            }
+                        }
                     }
                     if (Mute.Command_unmute != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Mute.Command_unmute);
+                        if (CommandList.Dict.TryGetValue(Mute.Command_unmute, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Mute.Command_unmute);
+                                }
+                            }
+                        }
                     }
                     if (Mute.Command_mutelist != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Mute.Command_mutelist);
+                        if (CommandList.Dict.TryGetValue(Mute.Command_mutelist, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Mute.Command_mutelist);
+                                }
+                            }
+                        }
                     }
                 }
                 if (MuteVote.IsEnabled && Mute.IsEnabled)
                 {
                     if (MuteVote.Command_mutevote != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, MuteVote.Command_mutevote);
+                        if (CommandList.Dict.TryGetValue(MuteVote.Command_mutevote, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, MuteVote.Command_mutevote);
+                                }
+                            }
+                        }
                     }
                 }
                 if (BlockPickup.IsEnabled)
                 {
                     if (BlockPickup.Command_pickup != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, BlockPickup.Command_pickup);
+                        if (CommandList.Dict.TryGetValue(BlockPickup.Command_pickup, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, BlockPickup.Command_pickup);
+                                }
+                            }
+                        }
                     }
                 }
                 if (PlayerList.IsEnabled)
                 {
                     if (PlayerList.Command_playerlist != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, PlayerList.Command_playerlist);
+                        if (CommandList.Dict.TryGetValue(PlayerList.Command_playerlist, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, PlayerList.Command_playerlist);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Prayer.IsEnabled)
                 {
                     if (Prayer.Command_pray != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Prayer.Command_pray);
+                        if (CommandList.Dict.TryGetValue(Prayer.Command_pray, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Prayer.Command_pray);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Report.IsEnabled)
                 {
                     if (Report.Command_report != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Report.Command_report);
+                        if (CommandList.Dict.TryGetValue(Report.Command_report, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Report.Command_report);
+                                }
+                            }
+                        }
                     }
                 }
                 if (RestartVote.IsEnabled)
                 {
                     if (RestartVote.Command_restartvote != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, RestartVote.Command_restartvote);
+                        if (CommandList.Dict.TryGetValue(RestartVote.Command_restartvote, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, RestartVote.Command_restartvote);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Shop.IsEnabled)
                 {
                     if (Shop.Command_shop != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Shop.Command_shop);
+                        if (CommandList.Dict.TryGetValue(Shop.Command_shop, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Shop.Command_shop);
+                                }
+                            }
+                        }
                     }
                     if (Shop.Command_shop_buy != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Shop.Command_shop_buy);
+                        if (CommandList.Dict.TryGetValue(Shop.Command_shop_buy, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Shop.Command_shop_buy);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Shutdown.IsEnabled)
                 {
                     if (Shutdown.Command_shutdown != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Shutdown.Command_shutdown);
+                        if (CommandList.Dict.TryGetValue(Shutdown.Command_shutdown, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Shutdown.Command_shutdown);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Stuck.IsEnabled)
                 {
                     if (Stuck.Command_stuck != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Stuck.Command_stuck);
+                        if (CommandList.Dict.TryGetValue(Stuck.Command_stuck, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Stuck.Command_stuck);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Suicide.IsEnabled)
                 {
                     if (Suicide.Command_killme != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Suicide.Command_killme);
+                        if (CommandList.Dict.TryGetValue(Suicide.Command_killme, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Suicide.Command_killme);
+                                }
+                            }
+                        }
                     }
                     if (Suicide.Command_suicide != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Suicide.Command_suicide);
+                        if (CommandList.Dict.TryGetValue(Suicide.Command_suicide, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Suicide.Command_suicide);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Travel.IsEnabled)
                 {
                     if (Travel.Command_travel != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Travel.Command_travel);
+                        if (CommandList.Dict.TryGetValue(Travel.Command_travel, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Travel.Command_travel);
+                                }
+                            }
+                        }
                     }
                 }
                 if (VehicleRecall.IsEnabled)
                 {
-                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, VehicleRecall.Command_vehicle_save);
+                    if (CommandList.Dict.TryGetValue(VehicleRecall.Command_vehicle_save, out string[] values1))
+                    {
+                        if (bool.TryParse(values1[1], out bool hidden))
+                        {
+                            if (!hidden)
+                            {
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, VehicleRecall.Command_vehicle_save);
+                            }
+                        }
+                    }
                     if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Vehicles != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Vehicles.Count > 0)
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, VehicleRecall.Command_vehicle);
-                        commands = string.Format("{0} {1}{2} #", commands, ChatHook.Chat_Command_Prefix1, VehicleRecall.Command_vehicle_remove);
+                        if (CommandList.Dict.TryGetValue(VehicleRecall.Command_vehicle, out string[] values2))
+                        {
+                            if (bool.TryParse(values2[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, VehicleRecall.Command_vehicle);
+                                }
+                            }
+                        }
+                        if (CommandList.Dict.TryGetValue(VehicleRecall.Command_vehicle_remove, out string[] values3))
+                        {
+                            if (bool.TryParse(values3[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, VehicleRecall.Command_vehicle_remove);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Voting.IsEnabled)
                 {
                     if (Voting.Command_reward != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Voting.Command_reward);
+                        if (CommandList.Dict.TryGetValue(Voting.Command_reward, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Voting.Command_reward);
+                                }
+                            }
+                        }
                     }
                     if (Voting.Command_vote != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Voting.Command_vote);
+                        if (CommandList.Dict.TryGetValue(Voting.Command_vote, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Voting.Command_vote);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Wall.IsEnabled)
                 {
                     if (Wall.Command_wall != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Wall.Command_wall);
+                        if (CommandList.Dict.TryGetValue(Wall.Command_wall, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Wall.Command_wall);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Waypoints.IsEnabled)
                 {
                     if (Waypoints.Command_waypoint != "")
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_waypoint);
+                        if (CommandList.Dict.TryGetValue(Waypoints.Command_waypoint, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_waypoint);
+                                }
+                            }
+                        }
                     }
                     if (Waypoints.Command_waypoint != "")
                     {
-                        commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_waypoint);
+                        if (CommandList.Dict.TryGetValue(Waypoints.Command_waypoint, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_waypoint);
+                                }
+                            }
+                        }
                     }
                     if (Waypoints.Command_waypoint_save != "")
                     {
-                        commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_waypoint_save);
+                        if (CommandList.Dict.TryGetValue(Waypoints.Command_waypoint_save, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_waypoint_save);
+                                }
+                            }
+                        }
                     }
                     if (Waypoints.Command_waypoint_del != "")
                     {
-                        commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_waypoint_del);
+                        if (CommandList.Dict.TryGetValue(Waypoints.Command_waypoint_del, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_waypoint_del);
+                                }
+                            }
+                        }
                     }
                     if (Waypoints.Command_fwaypoint != "")
                     {
-                        commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_fwaypoint);
+                        if (CommandList.Dict.TryGetValue(Waypoints.Command_fwaypoint, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_fwaypoint);
+                                }
+                            }
+                        }
                     }
                     if (Waypoints.Command_go_way != "" && Waypoints.Invite.ContainsKey(_cInfo.entityId))
                     {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_go_way);
+                        if (CommandList.Dict.TryGetValue(Waypoints.Command_go_way, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_go_way);
+                                }
+                            }
+                        }
                     }
                 }
                 if (Whisper.IsEnabled)
                 {
                     if (Whisper.Command_rmessage != "")
                     {
-                        commands = string.Format("{0} {1}{2} {3}{4}", commands, ChatHook.Chat_Command_Prefix1, Whisper.Command_pmessage, ChatHook.Chat_Command_Prefix1, Whisper.Command_rmessage);
+                        if (CommandList.Dict.TryGetValue(Whisper.Command_rmessage, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2} {3}{4}", commands, ChatHook.Chat_Command_Prefix1, Whisper.Command_pmessage, ChatHook.Chat_Command_Prefix1, Whisper.Command_rmessage);
+                                }
+                            }
+                        }
                     }
                 }
                 
                 if (ReservedSlots.IsEnabled && (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
                 {
-                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Command_expire);
+                    if (CommandList.Dict.TryGetValue(Command_expire, out string[] values))
+                    {
+                        if (bool.TryParse(values[1], out bool hidden))
+                        {
+                            if (!hidden)
+                            {
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Command_expire);
+                            }
+                        }
+                    }
                 }
                 else if (ChatColor.IsEnabled && (ChatColor.Players.ContainsKey(_cInfo.PlatformId.CombinedString) || ChatColor.Players.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
                 {
-                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Command_expire);
+                    if (CommandList.Dict.TryGetValue(Command_expire, out string[] values))
+                    {
+                        if (bool.TryParse(values[1], out bool hidden))
+                        {
+                            if (!hidden)
+                            {
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Command_expire);
+                            }
+                        }
+                    }
                 }
                 else if (LoginNotice.IsEnabled && (LoginNotice.Dict1.ContainsKey(_cInfo.PlatformId.CombinedString) || LoginNotice.Dict1.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
                 {
-                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Command_expire);
+                    if (CommandList.Dict.TryGetValue(Command_expire, out string[] values))
+                    {
+                        if (bool.TryParse(values[1], out bool hidden))
+                        {
+                            if (!hidden)
+                            {
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Command_expire);
+                            }
+                        }
+                    }
                 }
-
                 if (commands.Length > 100)
                 {
                     for (int i = 0; i < 10; i += 100)
@@ -1546,6 +2388,30 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommands.AdminCommandList: {0}", e.Message));
             }
+        }
+
+        public static void SetWindowLinks()
+        {
+            Auction.SetLink();
+            Shop.SetLink();
+            RIO.SetLink();
+        }
+
+        public static void Overlay(ClientInfo _cInfo)
+        {
+            if (!PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay)
+            {
+                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay = true;
+                Phrases.Dict.TryGetValue("Overlay2", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            }
+            else
+            {
+                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay = false;
+                Phrases.Dict.TryGetValue("Overlay3", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            }
+            PersistentContainer.DataChange = true;
         }
     }
 }

@@ -1951,7 +1951,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("Bank1", out phrase))
                     {
-                        phrase = "Your bank account is worth {Value}. Transfer Id is {Id}";
+                        phrase = "Your bank account holds {Value} {CoinName}. Transfer Id is {Id}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank2", out phrase))
@@ -2035,6 +2035,11 @@ namespace ServerTools
                         phrase = "{Value} {CoinName} added to your bank";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank17\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Bank18", out phrase))
+                    {
+                        phrase = "Your bank account holds {Value} {CoinName}";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank18\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* Exit_Command ********************* -->");
@@ -3055,7 +3060,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"AutoPartyInvite3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("AutoPartyInvite4", out phrase))
                     {
-                        phrase = "Added player id {Value} named {Name} to your party list";
+                        phrase = "Added player id {Value} named {Name} to your auto party list";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"AutoPartyInvite4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("AutoPartyInvite5", out phrase))
@@ -3065,7 +3070,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"AutoPartyInvite5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("AutoPartyInvite6", out phrase))
                     {
-                        phrase = "Player id {Value} was not found on your party list";
+                        phrase = "Player id {Value} was not found on your auto party list";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"AutoPartyInvite6\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("AutoPartyInvite7", out phrase))
@@ -3073,6 +3078,11 @@ namespace ServerTools
                         phrase = "Received auto party invitation from {PlayerName}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"AutoPartyInvite7\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("AutoPartyInvite8", out phrase))
+                    {
+                        phrase = "Player id {Value} named {Name} can be added to your auto party list";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"AutoPartyInvite8\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ***************** Dropped_Bag_Protection *************** -->");
@@ -3285,6 +3295,34 @@ namespace ServerTools
                         phrase = "You have gone to bed. zzz";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bed4\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ********************** Roll_It_Out ********************* -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("Rio1", out phrase))
+                    {
+                        phrase = "Roll it out security code set to {Value}";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Rio1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ********************* Steam_Overlay ******************** -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("Overlay1", out phrase))
+                    {
+                        phrase = "Overlay is set to false. Steam browser is disabled";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Overlay1\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Overlay2", out phrase))
+                    {
+                        phrase = "Overlay has been set to false";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Overlay2\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Overlay3", out phrase))
+                    {
+                        phrase = "Overlay has been set to true";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Overlay3\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");

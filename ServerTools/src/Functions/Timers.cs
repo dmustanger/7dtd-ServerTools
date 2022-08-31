@@ -191,9 +191,9 @@ namespace ServerTools
             };
         }
 
-        public static void Thirty_Second_Delay()
+        public static void Set_Link_Delay()
         {
-            System.Timers.Timer singleUseTimer = new System.Timers.Timer(30000)
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(10000)
             {
                 AutoReset = false
             };
@@ -239,7 +239,7 @@ namespace ServerTools
             };
         }
 
-        public static void Blackjack_SingleUseTimer(string _ip)
+        public static void Rio_SingleUseTimer(string _ip)
         {
             System.Timers.Timer singleUseTimer = new System.Timers.Timer(60000)
             {
@@ -315,6 +315,22 @@ namespace ServerTools
             startingItemsDelayTimer.Elapsed += (sender, e) =>
             {
                 Init15(_blockList, _steelBlockValue, _concreteBlockValue, _stoneBlockValue, _glassCeilingBlockValue, _glassBlockValue, _ladderValue);
+                startingItemsDelayTimer.Stop();
+                startingItemsDelayTimer.Close();
+                startingItemsDelayTimer.Dispose();
+            };
+        }
+
+        public static void AddPermissionTimer()
+        {
+            System.Timers.Timer startingItemsDelayTimer = new System.Timers.Timer(500)
+            {
+                AutoReset = false
+            };
+            startingItemsDelayTimer.Start();
+            startingItemsDelayTimer.Elapsed += (sender, e) =>
+            {
+                Init16();
                 startingItemsDelayTimer.Stop();
                 startingItemsDelayTimer.Close();
                 startingItemsDelayTimer.Dispose();
@@ -602,11 +618,7 @@ namespace ServerTools
 
         private static void Init9()
         {
-            PersistentOperations.ThirtySeconds = true;
-            if (WebAPI.IsEnabled && !WebAPI.IsRunning)
-            {
-                WebAPI.Load();
-            }
+            PersistentOperations.SetWindowLinks();
         }
 
         private static void Init10(string _playerId, int _amount, bool _bankPayment)
@@ -616,7 +628,7 @@ namespace ServerTools
 
         private static void Init11(string _ip)
         {
-            BlackJack.RemovePlayer(_ip);
+            //RIO.RemovePlayer(_ip);
         }
 
         private static void Init12(ClientInfo _cInfo)
@@ -640,6 +652,11 @@ namespace ServerTools
         {
             MazeConsole.Corrections(_blockList, _steelBlockValue, _concreteBlockValue, _stoneBlockValue, _glassCeilingBlockValue, _glassBlockValue, 
                 _ladderValue);
+        }
+
+        private static void Init16()
+        {
+            CustomCommands.AddPermissions();
         }
     }
 }
