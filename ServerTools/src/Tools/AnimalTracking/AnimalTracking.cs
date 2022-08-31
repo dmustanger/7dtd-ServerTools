@@ -17,13 +17,13 @@ namespace ServerTools
             {
                 if (Delay_Between_Uses < 1)
                 {
-                    if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
+                    if (Command_Cost >= 1 && Wallet.IsEnabled)
                     {
                         CommandCost(_cInfo);
                     }
                     else
                     {
-                        GiveAnimals(_cInfo, 0, 0);
+                        GiveAnimals(_cInfo);
                     }
                 }
                 else
@@ -75,13 +75,13 @@ namespace ServerTools
             {
                 if (_timepassed >= _delay)
                 {
-                    if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
+                    if (Command_Cost >= 1 && Wallet.IsEnabled)
                     {
                         CommandCost(_cInfo);
                     }
                     else
                     {
-                        GiveAnimals(_cInfo, 0, 0);
+                        GiveAnimals(_cInfo);
                     }
                 }
                 else
@@ -103,18 +103,13 @@ namespace ServerTools
             try
             {
                 int currency = 0;
-                int bankValue = 0;
                 if (Wallet.IsEnabled)
                 {
                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 }
-                if (Bank.IsEnabled && Bank.Payments)
+                if (currency >= Command_Cost)
                 {
-                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                }
-                if (currency + bankValue >= Command_Cost)
-                {
-                    GiveAnimals(_cInfo, currency, bankValue);
+                    GiveAnimals(_cInfo);
                 }
                 else
                 {
@@ -129,7 +124,7 @@ namespace ServerTools
             }
         }
 
-        public static void GiveAnimals(ClientInfo _cInfo, int _currency, int _bankValue)
+        public static void GiveAnimals(ClientInfo _cInfo)
         {
             try
             {
@@ -182,14 +177,7 @@ namespace ServerTools
                                 {
                                     if (Command_Cost >= 1 && Wallet.IsEnabled)
                                     {
-                                        if (Bank.IsEnabled && Bank.Payments)
-                                        {
-                                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
-                                        }
-                                        else
-                                        {
-                                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
-                                        }
+                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                                     }
                                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastAnimal = DateTime.Now;
                                     PersistentContainer.DataChange = true;

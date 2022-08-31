@@ -144,16 +144,11 @@ namespace ServerTools
         public static void CommandCost(ClientInfo _cInfo, ClientInfo _friend)
         {
             int currency = 0;
-            int bankValue = 0;
             if (Wallet.IsEnabled)
             {
                 currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
             }
-            if (Bank.IsEnabled && Bank.Payments)
-            {
-                bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-            }
-            if (currency + bankValue >= Command_Cost)
+            if (currency >= Command_Cost)
             {
                 MessageFriend(_cInfo, _friend);
             }
@@ -199,14 +194,7 @@ namespace ServerTools
                 {
                     if (Command_Cost >= 1 && Wallet.IsEnabled)
                     {
-                        if (Bank.IsEnabled && Bank.Payments)
-                        {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
-                        }
-                        else
-                        {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
-                        }
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                     }
                     Phrases.Dict.TryGetValue("FriendTeleport7", out string phrase1);
                     ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

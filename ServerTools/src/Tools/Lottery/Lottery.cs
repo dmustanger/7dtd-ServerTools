@@ -69,14 +69,7 @@ namespace ServerTools
                                 LottoEntries.Add(_cInfo);
                                 if (LottoValue >= 1 && Wallet.IsEnabled)
                                 {
-                                    if (Bank.IsEnabled && Bank.Payments)
-                                    {
-                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, LottoValue, true);
-                                    }
-                                    else
-                                    {
-                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, LottoValue, false);
-                                    }
+                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, LottoValue);
                                 }
                                 Phrases.Dict.TryGetValue("Lottery4", out string phrase);
                                 phrase = phrase.Replace("{Value}", _lottoValue.ToString());
@@ -132,14 +125,7 @@ namespace ServerTools
                         LottoEntries.Add(_cInfo);
                         if (LottoValue >= 1 && Wallet.IsEnabled)
                         {
-                            if (Bank.IsEnabled && Bank.Payments)
-                            {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, LottoValue, true);
-                            }
-                            else
-                            {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, LottoValue, false);
-                            }
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, LottoValue);
                         }
                         Phrases.Dict.TryGetValue("Lottery7", out string phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -186,7 +172,7 @@ namespace ServerTools
             }
             LottoValue = 0;
             LottoEntries.Clear();
-            Wallet.AddCurrency(winner.CrossplatformId.CombinedString, winnings);
+            Wallet.AddCurrency(winner.CrossplatformId.CombinedString, winnings, true);
             Phrases.Dict.TryGetValue("Lottery10", out string phrase);
             phrase = phrase.Replace("{PlayerName}", winner.playerName);
             phrase = phrase.Replace("{Value}", winnings.ToString());

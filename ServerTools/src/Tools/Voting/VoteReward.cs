@@ -460,7 +460,7 @@ namespace ServerTools
                     {
                         if (Wallet.IsEnabled)
                         {
-                            Wallet.AddCurrency(_cInfo.CrossplatformId.CombinedString, count);
+                            Wallet.AddCurrency(_cInfo.CrossplatformId.CombinedString, count, true);
                         }
                         else
                         {

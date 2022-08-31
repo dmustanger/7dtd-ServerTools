@@ -490,7 +490,7 @@ public static class Injections
                 ClientInfo cInfo = __instance.Sender;
                 Wallet.UpdateRequired.TryGetValue(cInfo.entityId, out int value);
                 Wallet.UpdateRequired.Remove(cInfo.entityId);
-                Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, value);
+                Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, value, false);
             }
         }
         catch (Exception e)

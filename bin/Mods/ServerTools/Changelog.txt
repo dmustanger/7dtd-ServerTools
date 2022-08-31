@@ -1,5 +1,13 @@
 ﻿CHANGELOG
 
+20.6.1
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Fixed Wallet currency exchange
+-Removed Bank_Payments option from Bank tool
+-Removed Bank_Extended from config
+
 20.6.0
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

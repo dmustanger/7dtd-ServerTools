@@ -271,16 +271,11 @@ namespace ServerTools
             try
             {
                 int currency = 0;
-                int bankValue = 0;
                 if (Wallet.IsEnabled)
                 {
                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 }
-                if (Bank.IsEnabled && Bank.Payments)
-                {
-                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                }
-                if (currency + bankValue >= Command_Cost)
+                if (currency >= Command_Cost)
                 {
                     SetBuff(_cInfo);
                 }
@@ -310,14 +305,7 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     if (Command_Cost >= 1 && Wallet.IsEnabled)
                     {
-                        if (Bank.IsEnabled && Bank.Payments)
-                        {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
-                        }
-                        else
-                        {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
-                        }
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                     }
                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastPrayer = DateTime.Now;
                     PersistentContainer.DataChange = true;

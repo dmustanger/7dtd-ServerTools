@@ -1773,14 +1773,7 @@ namespace ServerTools
                                                                     int total = price * quantity;
                                                                     if (currency >= total)
                                                                     {
-                                                                        if (Bank.IsEnabled && Bank.Payments)
-                                                                        {
-                                                                            Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, total, true);
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, total, false);
-                                                                        }
+                                                                        Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, total);
                                                                         ItemValue itemValue = new ItemValue(ItemClass.GetItem(item[1], false).type);
                                                                         int quality = int.Parse(item[4]);
                                                                         if (itemValue.HasQuality)
@@ -2018,14 +2011,7 @@ namespace ServerTools
                                                                             }
                                                                             if (currency >= itemData.price)
                                                                             {
-                                                                                if (Bank.IsEnabled && Bank.Payments)
-                                                                                {
-                                                                                    Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, itemData.price, true);
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, itemData.price, false);
-                                                                                }
+                                                                                Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, itemData.price);
                                                                                 ItemValue itemValue = new ItemValue(ItemClass.GetItem(itemData.name, false).type);
                                                                                 if (itemValue != null)
                                                                                 {

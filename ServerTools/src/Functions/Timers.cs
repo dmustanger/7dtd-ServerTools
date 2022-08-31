@@ -207,7 +207,7 @@ namespace ServerTools
             };
         }
 
-        public static void Wallet_Add_SingleUseTimer(string _playerId, int _amount)
+        public static void Wallet_Add_SingleUseTimer(string _playerId, int _amount, bool _allowed)
         {
             System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
             {
@@ -216,14 +216,14 @@ namespace ServerTools
             singleUseTimer.Start();
             singleUseTimer.Elapsed += (sender, e) =>
             {
-                Init2(_playerId, _amount);
+                Init2(_playerId, _amount, _allowed);
                 singleUseTimer.Stop();
                 singleUseTimer.Close();
                 singleUseTimer.Dispose();
             };
         }
 
-        public static void Wallet_Remove_SingleUseTimer(string _playerId, int _amount, bool _bankPayment)
+        public static void Wallet_Remove_SingleUseTimer(string _playerId, int _amount)
         {
             System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
             {
@@ -232,7 +232,7 @@ namespace ServerTools
             singleUseTimer.Start();
             singleUseTimer.Elapsed += (sender, e) =>
             {
-                Init10(_playerId, _amount, _bankPayment);
+                Init10(_playerId, _amount);
                 singleUseTimer.Stop();
                 singleUseTimer.Close();
                 singleUseTimer.Dispose();
@@ -581,9 +581,9 @@ namespace ServerTools
             CustomCommands.CustomCommandDelayed(_playerId, _commands, _trigger);
         }
 
-        private static void Init2(string _playerId, int _amount)
+        private static void Init2(string _playerId, int _amount, bool _allowed)
         {
-            Wallet.AddCurrency(_playerId, _amount);
+            Wallet.AddCurrency(_playerId, _amount, _allowed);
         }
 
         private static void Init3(ClientInfo _cInfo)
@@ -621,9 +621,9 @@ namespace ServerTools
             PersistentOperations.SetWindowLinks();
         }
 
-        private static void Init10(string _playerId, int _amount, bool _bankPayment)
+        private static void Init10(string _playerId, int _amount)
         {
-            Wallet.RemoveCurrency(_playerId, _amount, _bankPayment);
+            Wallet.RemoveCurrency(_playerId, _amount);
         }
 
         private static void Init11(string _ip)

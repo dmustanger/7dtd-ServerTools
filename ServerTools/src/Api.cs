@@ -339,7 +339,7 @@ namespace ServerTools
                     }
                     if (Lottery.IsEnabled && Lottery.LottoEntries.Contains(_cInfo))
                     {
-                        Wallet.AddCurrency(_cInfo.CrossplatformId.CombinedString, Lottery.LottoValue);
+                        Wallet.AddCurrency(_cInfo.CrossplatformId.CombinedString, Lottery.LottoValue, true);
                         Lottery.LottoEntries.Remove(_cInfo);
                     }
                     if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
@@ -367,7 +367,7 @@ namespace ServerTools
                                 int sessionBonus = timepassed / 60 * Wallet.Session_Bonus;
                                 if (sessionBonus > 0)
                                 {
-                                    Wallet.AddCurrency(id, sessionBonus);
+                                    Wallet.AddCurrency(id, sessionBonus, true);
                                 }
                             }
                             int timePlayed = PersistentContainer.Instance.Players[id].TotalTimePlayed;
@@ -602,9 +602,9 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[id].EventSpawn = false;
                         PersistentContainer.DataChange = true;
                     }
-                    if ((Wallet.IsEnabled || Bank.IsEnabled && Bank.Direct_Deposit) && PersistentContainer.Instance.Players[id].PlayerWallet > 0)
+                    if (Wallet.IsEnabled && PersistentContainer.Instance.Players[id].PlayerWallet > 0)
                     {
-                        Wallet.AddCurrency(id, PersistentContainer.Instance.Players[id].PlayerWallet);
+                        Wallet.AddCurrency(id, PersistentContainer.Instance.Players[id].PlayerWallet, true);
                         PersistentContainer.Instance.Players[id].PlayerWallet = 0;
                         PersistentContainer.DataChange = true;
                     }

@@ -47,16 +47,11 @@ namespace ServerTools
             try
             {
                 int currency = 0;
-                int bankValue = 0;
                 if (Wallet.IsEnabled)
                 {
                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 }
-                if (Bank.IsEnabled && Bank.Payments)
-                {
-                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                }
-                if (currency + bankValue < Command_Cost)
+                if (currency < Command_Cost)
                 {
                     Phrases.Dict.TryGetValue("Gamble3", out string phrase);
                     phrase = phrase.Replace("{Value}", Command_Cost.ToString());
@@ -105,14 +100,7 @@ namespace ServerTools
                         }
                         if (Command_Cost >= 1 && Wallet.IsEnabled)
                         {
-                            if (Bank.IsEnabled && Bank.Payments)
-                            {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
-                            }
-                            else
-                            {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
-                            }
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                         }
                         int gamble = Random.Next(pot[0] + 1);
                         if (gamble == 1)
@@ -176,7 +164,7 @@ namespace ServerTools
                 if (Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
                     Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out int[] pot);
-                    Wallet.AddCurrency(_cInfo.CrossplatformId.CombinedString, pot[1]);
+                    Wallet.AddCurrency(_cInfo.CrossplatformId.CombinedString, pot[1], true);
                     Dict.Remove(_cInfo.CrossplatformId.CombinedString);
                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGamble = DateTime.Now;
                     PersistentContainer.DataChange = true;

@@ -253,27 +253,15 @@ namespace ServerTools
                                 }
                                 int cost = Life_Price * (extraLives + 1);
                                 int currency = 0;
-                                int bankValue = 0;
                                 if (Wallet.IsEnabled)
                                 {
                                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                                 }
-                                if (Bank.IsEnabled && Bank.Payments)
-                                {
-                                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                                }
-                                if (currency + bankValue >= cost)
+                                if (currency >= cost)
                                 {
                                     if (cost >= 1 && Wallet.IsEnabled)
                                     {
-                                        if (Bank.IsEnabled && Bank.Payments)
-                                        {
-                                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost, true);
-                                        }
-                                        else
-                                        {
-                                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost, false);
-                                        }
+                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
                                     }
                                     stats[2] = (extraLives + 1).ToString();
                                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats = stats;

@@ -124,16 +124,11 @@ namespace ServerTools
         private static void CommandCost(ClientInfo _cInfo)
         {
             int currency = 0;
-            int bankValue = 0;
             if (Wallet.IsEnabled)
             {
                 currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
             }
-            if (Bank.IsEnabled && Bank.Payments)
-            {
-                bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-            }
-            if (currency + bankValue >= Command_Cost)
+            if (currency >= Command_Cost)
             {
                 LobbyTele(_cInfo);
             }
@@ -198,14 +193,7 @@ namespace ServerTools
                                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(i, j, k), null, false));
                                     if (Command_Cost >= 1 && Wallet.IsEnabled)
                                     {
-                                        if (Bank.IsEnabled && Bank.Payments)
-                                        {
-                                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
-                                        }
-                                        else
-                                        {
-                                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
-                                        }
+                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                                     }
                                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastLobby = DateTime.Now;
                                     PersistentContainer.DataChange = true;

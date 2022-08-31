@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.6.0";
+        public const string Version = "20.6.1";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -469,18 +469,6 @@ namespace ServerTools
                                                 if (!bool.TryParse(line.GetAttribute("Direct_Deposit"), out Bank.Direct_Deposit))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Direct_Deposit' attribute: {0}", line.OuterXml));
-                                                    continue;
-                                                }
-                                                break;
-                                            case "Bank_Extended":
-                                                if (!line.HasAttribute("Payments"))
-                                                {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank_Extended entry in ServerToolsConfig.xml because of missing 'Payments' attribute: {0}", line.OuterXml));
-                                                    continue;
-                                                }
-                                                if (!bool.TryParse(line.GetAttribute("Payments"), out Bank.Payments))
-                                                {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Payments' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 break;
@@ -4415,7 +4403,6 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Save_World\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" />", AutoSaveWorld.IsEnabled, AutoSaveWorld.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Deposit_Fee_Percent=\"{2}\" Player_Transfers=\"{3}\" Direct_Deposit=\"{4}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Deposit_Fee_Percent, Bank.Player_Transfers, Bank.Direct_Deposit));
-                sw.WriteLine(string.Format("        <Tool Name=\"Bank_Extended\" Payments=\"{0}\" />", Bank.Payments));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bed\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", Bed.IsEnabled, Bed.Delay_Between_Uses, Bed.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Logger\" Enable=\"{0}\" />", BlockLogger.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Pickup\" Enable=\"{0}\" Admin_Only=\"{1}\" Admin_Level=\"{2}\" Reserved=\"{3}\" />", BlockPickup.IsEnabled, BlockPickup.Admin_Only, BlockPickup.Admin_Level, BlockPickup.Reserved));

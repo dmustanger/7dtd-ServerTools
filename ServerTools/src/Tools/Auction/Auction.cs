@@ -393,24 +393,18 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[id].Auction.TryGetValue(_purchase, out ItemDataSerializable itemData);
                     int currency = 0;
-                    int bankValue = 0;
                     if (Wallet.IsEnabled)
                     {
                         currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                     }
-                    if (Bank.IsEnabled && Bank.Payments)
-                    {
-                        bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                    }
-                    if (currency + bankValue >= itemData.price)
+                    if (currency >= itemData.price)
                     {
                         BuyAuction(_cInfo, _purchase, id, itemData);
                     }
                     else
                     {
-                        int missing = itemData.price - (currency + bankValue);
                         Phrases.Dict.TryGetValue("Auction7", out string phrase);
-                        phrase = phrase.Replace("{Value}", missing.ToString());
+                        phrase = phrase.Replace("{Value}", (itemData.price - currency).ToString());
                         phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -467,18 +461,11 @@ namespace ServerTools
                 PersistentContainer.DataChange = true;
                 if (_itemData.price >= 1)
                 {
-                    if (Bank.IsEnabled && Bank.Payments)
-                    {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _itemData.price, true);
-                    }
-                    else
-                    {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _itemData.price, false);
-                    }
+                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _itemData.price);
                 }
                 float fee = _itemData.price * ((float)Tax / 100);
                 int adjustedPrice = _itemData.price - (int)fee;
-                Wallet.AddCurrency(_id, adjustedPrice);
+                Wallet.AddCurrency(_id, adjustedPrice, true);
                 string playerName = PersistentOperations.GetPlayerDataFileFromId(_id).ecd.entityName;
                 using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                 {

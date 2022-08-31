@@ -439,16 +439,11 @@ namespace ServerTools
                 if (_cost > 0 && Wallet.IsEnabled)
                 {
                     int currency = 0;
-                    int bankValue = 0;
                     if (Wallet.IsEnabled)
                     {
                         currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                     }
-                    if (Bank.IsEnabled && Bank.Payments)
-                    {
-                        bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                    }
-                    if (currency + bankValue >= _cost)
+                    if (currency >= _cost)
                     {
                         ProcessCommand(_cInfo, _command, _cost);
                     }
@@ -528,14 +523,7 @@ namespace ServerTools
                     }
                     if (_cost >= 1 && Wallet.IsEnabled)
                     {
-                        if (Bank.IsEnabled && Bank.Payments)
-                        {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost, true);
-                        }
-                        else
-                        {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost, false);
-                        }
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
                     }
                 }
             }

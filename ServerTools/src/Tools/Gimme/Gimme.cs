@@ -353,16 +353,11 @@ namespace ServerTools
             try
             {
                 int currency = 0;
-                int bankValue = 0;
                 if (Wallet.IsEnabled)
                 {
                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 }
-                if (Bank.IsEnabled && Bank.Payments)
-                {
-                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                }
-                if (currency + bankValue >= Command_Cost)
+                if (currency >= Command_Cost)
                 {
                     ZCheck(_cInfo);
                 }
@@ -422,16 +417,9 @@ namespace ServerTools
                             int count = Random.Next(minCount, maxCount + 1);
                             if (Command_Cost >= 1 && Wallet.IsEnabled)
                             {
-                                if (Bank.IsEnabled && Bank.Payments)
-                                {
-                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
-                                }
-                                else
-                                {
-                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
-                                }
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                             }
-                            Wallet.AddCurrency(_cInfo.CrossplatformId.CombinedString, count);
+                            Wallet.AddCurrency(_cInfo.CrossplatformId.CombinedString, count, true);
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
                             PersistentContainer.DataChange = true;
                             Phrases.Dict.TryGetValue("Gimme2", out string _phrase);
@@ -491,14 +479,7 @@ namespace ServerTools
                         world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                         if (Command_Cost >= 1 && Wallet.IsEnabled)
                         {
-                            if (Bank.IsEnabled && Bank.Payments)
-                            {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
-                            }
-                            else
-                            {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
-                            }
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                         }
                         PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
                         PersistentContainer.DataChange = true;
@@ -539,14 +520,7 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Gimme result spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                             if (Command_Cost >= 1 && Wallet.IsEnabled)
                             {
-                                if (Bank.IsEnabled && Bank.Payments)
-                                {
-                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
-                                }
-                                else
-                                {
-                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
-                                }
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                             }
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
                             PersistentContainer.DataChange = true;
@@ -566,14 +540,7 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Gimme result spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                             if (Command_Cost >= 1 && Wallet.IsEnabled)
                             {
-                                if (Bank.IsEnabled && Bank.Payments)
-                                {
-                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, true);
-                                }
-                                else
-                                {
-                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost, false);
-                                }
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                             }
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
                             PersistentContainer.DataChange = true;

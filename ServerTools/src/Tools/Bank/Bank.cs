@@ -152,7 +152,7 @@ namespace ServerTools
                     {
                         if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= value)
                         {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, value, false);
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, value);
                             if (Deposit_Fee_Percent > 0)
                             {
                                 float fee = value * ((float)Deposit_Fee_Percent / 100);

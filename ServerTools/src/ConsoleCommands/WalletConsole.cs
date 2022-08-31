@@ -107,13 +107,13 @@ namespace ServerTools
                                 {
                                     if (negative)
                                     {
-                                        Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, adjustCoins, false);
+                                        Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, adjustCoins);
                                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from Id '{2}' named '{3}'", _params[1], Wallet.Currency_Name, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                         return;
                                     }
                                     else
                                     {
-                                        Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, adjustCoins);
+                                        Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, adjustCoins, false);
                                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added '{0}' '{1}' to id '{2}' named '{3}'", _params[1], Wallet.Currency_Name, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                         return;
                                     }
@@ -142,12 +142,12 @@ namespace ServerTools
                         {
                             if (negative)
                             {
-                                Wallet.RemoveCurrency(_params[0], adjustCoins, false);
+                                Wallet.RemoveCurrency(_params[0], adjustCoins);
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from Id '{2}'", _params[1], Wallet.Currency_Name, _params[0]));
                             }
                             else
                             {
-                                Wallet.AddCurrency(_params[0], adjustCoins);
+                                Wallet.AddCurrency(_params[0], adjustCoins, false);
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added '{0}' '{1}' to wallet '{2}'", _params[1], Wallet.Currency_Name, _params[0]));
                             }
                         }

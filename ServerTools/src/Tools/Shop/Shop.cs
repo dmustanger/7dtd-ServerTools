@@ -1347,17 +1347,12 @@ namespace ServerTools
                     if (int.Parse(_itemData[0]) == _item)
                     {
                         int currency = 0;
-                        int bankValue = 0;
                         if (Wallet.IsEnabled)
                         {
                             currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                         }
-                        if (Bank.IsEnabled && Bank.Payments)
-                        {
-                            bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                        }
                         int _cost = int.Parse(_itemData[5]) * _count;
-                        if (currency + bankValue >= _cost)
+                        if (currency >= _cost)
                         {
                             _count = int.Parse(_itemData[3]) * _count;
                             ShopPurchase(_cInfo, _itemData[1], _itemData[2], _count, int.Parse(_itemData[4]), _cost);
@@ -1366,7 +1361,7 @@ namespace ServerTools
                         {
                             Phrases.Dict.TryGetValue("Shop5", out string phrase);
                             phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                            phrase = phrase.Replace("{Value}", currency + bankValue.ToString());
+                            phrase = phrase.Replace("{Value}", currency.ToString());
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                         return;
@@ -1416,14 +1411,7 @@ namespace ServerTools
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                 if (_price >= 1 && Wallet.IsEnabled)
                 {
-                    if (Bank.IsEnabled && Bank.Payments)
-                    {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price, true);
-                    }
-                    else
-                    {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price, false);
-                    }
+                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price);
                 }
                 if (PersistentContainer.Instance.ShopLog != null)
                 {

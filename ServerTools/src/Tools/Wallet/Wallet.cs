@@ -79,7 +79,7 @@ namespace ServerTools
             return value;
         }
 
-        public static void AddCurrency(string _id, int _amount)
+        public static void AddCurrency(string _id, int _amount, bool _directAllowed)
         {
             ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_id);
             if (cInfo != null)
@@ -89,7 +89,7 @@ namespace ServerTools
                 {
                     if (player.IsSpawned())
                     {
-                        if (Bank.IsEnabled && Bank.Direct_Deposit)
+                        if (Bank.IsEnabled && Bank.Direct_Deposit && _directAllowed)
                         {
                             Bank.AddCurrencyToBank(cInfo.CrossplatformId.CombinedString, _amount);
                             Phrases.Dict.TryGetValue("Bank11", out string phrase);
@@ -144,7 +144,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Timers.Wallet_Add_SingleUseTimer(cInfo.CrossplatformId.CombinedString, _amount);
+                        Timers.Wallet_Add_SingleUseTimer(cInfo.CrossplatformId.CombinedString, _amount, _directAllowed);
                     }
                 }
             }
@@ -155,7 +155,7 @@ namespace ServerTools
             }
         }
 
-        public static void RemoveCurrency(string _steamid, int _amount, bool _bankPayment)
+        public static void RemoveCurrency(string _steamid, int _amount)
         {
             int count = 0;
             ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_steamid);
@@ -176,24 +176,14 @@ namespace ServerTools
                                 count -= _amount;
                                 if (count > 0)
                                 {
-                                    ItemStack stack = new ItemStack(ItemClass.GetItem(PersistentOperations.Currency_Item, false), count);
-                                    if (stack != null)
-                                    {
-                                        UpdateRequired.Add(cInfo.entityId, count);
-                                    }
+                                    UpdateRequired.Add(cInfo.entityId, count);
                                 }
-                            }
-                            else if (_bankPayment)
-                            {
-                                _amount -= count;
-                                PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank -= _amount;
-                                PersistentContainer.DataChange = true;
                             }
                         }
                     }
                     else
                     {
-                        Timers.Wallet_Remove_SingleUseTimer(cInfo.CrossplatformId.CombinedString, count, _bankPayment);
+                        Timers.Wallet_Remove_SingleUseTimer(cInfo.CrossplatformId.CombinedString, count);
                     }
                 }
             }
