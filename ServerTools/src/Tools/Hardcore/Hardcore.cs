@@ -10,14 +10,25 @@ namespace ServerTools
         public static int Max_Deaths = 9, Max_Extra_Lives = 3, Life_Price = 2000;
         public static string Command_top3 = "top3", Command_score = "score", Command_buy_life = "buy life", Command_hardcore = "hardcore", Command_hardcore_on = "hardcore on";
 
-        public static void Check(ClientInfo _cInfo, EntityPlayer _player)
+        public static void Check(ClientInfo _cInfo, EntityPlayer _player, bool _addDeath)
         {
             string[] stats = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats;
             if (int.TryParse(stats[1], out int deaths))
             {
                 if (int.TryParse(stats[2], out int extraLives))
                 {
-                    int lives = Max_Deaths - deaths + extraLives;
+                    int lives;
+                    if (_addDeath)
+                    {
+                        stats[1] = (deaths + 1).ToString();
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats = stats;
+                        PersistentContainer.DataChange = true;
+                        lives = Max_Deaths - (deaths + 1) + extraLives;
+                    }
+                    else
+                    {
+                        lives = Max_Deaths - deaths + extraLives;
+                    }
                     if (lives > 0)
                     {
                         Phrases.Dict.TryGetValue("Hardcore5", out string phrase);

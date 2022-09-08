@@ -12,6 +12,8 @@ namespace ServerTools
         public static string Market_Position = "0,0,0", Command_marketback = "marketback", Command_mback = "mback", Command_set = "setmarket", Command_market = "market";
         public static List<int> MarketPlayers = new List<int>();
 
+        private static Bounds MarketBounds = new Bounds();
+
         public static void Set(ClientInfo _cInfo)
         {
             string[] command = { Command_set };
@@ -29,6 +31,9 @@ namespace ServerTools
                     int x = (int)position.x;
                     int y = (int)position.y;
                     int z = (int)position.z;
+                    MarketBounds.center = new Vector3(x, y, z);
+                    int size = Market_Size * 2;
+                    MarketBounds.size = new Vector3(size, size, size);
                     string mposition = x + "," + y + "," + z;
                     Market_Position = mposition;
                     Config.WriteXml();
@@ -96,7 +101,7 @@ namespace ServerTools
         {
             if (_timepassed >= _delay)
             {
-                if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
+                if (Command_Cost >= 1 && Wallet.IsEnabled)
                 {
                     CommandCost(_cInfo);
                 }
@@ -158,10 +163,6 @@ namespace ServerTools
                             {
                                 return;
                             }
-                        }
-                        if (!Teleportation.Teleporting.Contains(_cInfo.entityId))
-                        {
-                            Teleportation.Teleporting.Add(_cInfo.entityId);
                         }
                         if (Return)
                         {
@@ -247,7 +248,7 @@ namespace ServerTools
 
         public static void InsideMarket(ClientInfo _cInfo, EntityAlive _player)
         {
-            if (!InsideMarket(_player.position.x, _player.position.z))
+            if (!IsMarket(_player.position))
             {
                 MarketPlayers.Remove(_cInfo.entityId);
                 if (Return)
@@ -262,12 +263,9 @@ namespace ServerTools
             }
         }
 
-        public static bool InsideMarket(float _x, float _z)
+        public static bool IsMarket(Vector3 _position)
         {
-            string[] cords = Market_Position.Split(',').ToArray();
-            int.TryParse(cords[0], out int x);
-            int.TryParse(cords[2], out int z);
-            if ((x - _x) * (x - _x) + (z - _z) * (z - _z) <= Market_Size * Market_Size)
+            if (MarketBounds.Contains(_position))
             {
                 return true;
             }
@@ -313,6 +311,17 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in Market.PvEViolation: {0}", e.Message));
             }
             return true;
+        }
+
+        public static void SetPosition(string _position)
+        {
+            string[] marketPosition = _position.Split(',');
+            int.TryParse(marketPosition[0], out int x);
+            int.TryParse(marketPosition[1], out int y);
+            int.TryParse(marketPosition[2], out int z);
+            MarketBounds.center = new Vector3(x, y, z);
+            int size = Market_Size * 2;
+            MarketBounds.size = new Vector3(size, size, size);
         }
     }
 }

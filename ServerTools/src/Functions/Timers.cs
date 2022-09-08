@@ -354,7 +354,7 @@ namespace ServerTools
         {
             if (Zones.IsEnabled || Lobby.IsEnabled || Market.IsEnabled)
             {
-                PersistentOperations.CheckZone();
+                PersistentOperations.CheckArea();
             }
             if (Jail.IsEnabled)
             {

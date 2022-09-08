@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -135,10 +136,74 @@ namespace ServerTools
                                 vectors[4] = 1;
                                 if (!ProtectedZones.ProtectedList.Contains(vectors))
                                 {
+                                    string saveGameRegionDir = GameIO.GetSaveGameRegionDir();
+                                    RegionFileManager regionFileManager = new RegionFileManager(saveGameRegionDir, saveGameRegionDir, 0, true);
+                                    List<Chunk> chunks = new List<Chunk>();
                                     ProtectedZones.ProtectedList.Add(vectors);
+                                    for (int j = vectors[0]; j <= vectors[2]; j++)
+                                    {
+                                        for (int k = vectors[1]; k <= vectors[3]; k++)
+                                        {
+                                            Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
+                                            if (chunk != null)
+                                            {
+                                                Bounds bounds = chunk.GetAABB();
+                                                int posX = j - (int)bounds.min.x, posZ = k - (int)bounds.min.z;
+                                                if (!chunk.IsTraderArea(posX, posZ))
+                                                {
+                                                    chunk.SetTraderArea(posX, posZ, true);
+                                                    if (!chunks.Contains(chunk))
+                                                    {
+                                                        chunks.Add(chunk);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                int num = World.toChunkXZ(j);
+                                                int num2 = World.toChunkXZ(k);
+                                                long key = WorldChunkCache.MakeChunkKey(num, num2);
+                                                if (regionFileManager.ContainsChunkSync(key))
+                                                {
+                                                    chunk = regionFileManager.GetChunkSync(key);
+                                                    if (chunk != null)
+                                                    {
+                                                        Bounds bounds = chunk.GetAABB();
+                                                        int posX = j - (int)bounds.min.x, posZ = k - (int)bounds.min.z;
+                                                        if (!chunk.IsTraderArea(posX, posZ))
+                                                        {
+                                                            chunk.SetTraderArea(posX, posZ, true);
+                                                        }
+                                                        GameManager.Instance.World.ChunkCache.AddChunkSync(chunk);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (chunks.Count > 0)
+                                    {
+                                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                                        if (clientList != null && clientList.Count > 0)
+                                        {
+                                            for (int i = 0; i < clientList.Count; i++)
+                                            {
+                                                ClientInfo cInfo = clientList[i];
+                                                if (cInfo != null)
+                                                {
+                                                    for (int j = 0; j < chunks.Count; j++)
+                                                    {
+                                                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(chunks[j], true));
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    GameManager.Instance.World.ChunkCache.Save();
+                                    regionFileManager.MakePersistent(GameManager.Instance.World.ChunkCache, true);
+                                    regionFileManager.WaitSaveDone();
+                                    regionFileManager.Cleanup();
                                     ProtectedZones.UpdateXml();
-                                    ProtectedZones.LoadXml();
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added protected zone from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3], vectors[4]));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added protected zone from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3]));
                                     return;
                                 }
                                 else
@@ -195,10 +260,74 @@ namespace ServerTools
                         vectors[4] = 1;
                         if (!ProtectedZones.ProtectedList.Contains(vectors))
                         {
+                            string saveGameRegionDir = GameIO.GetSaveGameRegionDir();
+                            RegionFileManager regionFileManager = new RegionFileManager(saveGameRegionDir, saveGameRegionDir, 0, true);
+                            List<Chunk> chunks = new List<Chunk>();
                             ProtectedZones.ProtectedList.Add(vectors);
+                            for (int j = vectors[0]; j <= vectors[2]; j++)
+                            {
+                                for (int k = vectors[1]; k <= vectors[3]; k++)
+                                {
+                                    Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
+                                    if (chunk != null)
+                                    {
+                                        Bounds bounds = chunk.GetAABB();
+                                        int posX = j - (int)bounds.min.x, posZ = k - (int)bounds.min.z;
+                                        if (!chunk.IsTraderArea(posX, posZ))
+                                        {
+                                            chunk.SetTraderArea(posX, posZ, true);
+                                            if (!chunks.Contains(chunk))
+                                            {
+                                                chunks.Add(chunk);
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        int num = World.toChunkXZ(j);
+                                        int num2 = World.toChunkXZ(k);
+                                        long key = WorldChunkCache.MakeChunkKey(num, num2);
+                                        if (regionFileManager.ContainsChunkSync(key))
+                                        {
+                                            chunk = regionFileManager.GetChunkSync(key);
+                                            if (chunk != null)
+                                            {
+                                                Bounds bounds = chunk.GetAABB();
+                                                int posX = j - (int)bounds.min.x, posZ = k - (int)bounds.min.z;
+                                                if (!chunk.IsTraderArea(posX, posZ))
+                                                {
+                                                    chunk.SetTraderArea(posX, posZ, true);
+                                                }
+                                                GameManager.Instance.World.ChunkCache.AddChunkSync(chunk);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (chunks.Count > 0)
+                            {
+                                List<ClientInfo> clientList = PersistentOperations.ClientList();
+                                if (clientList != null && clientList.Count > 0)
+                                {
+                                    for (int i = 0; i < clientList.Count; i++)
+                                    {
+                                        ClientInfo cInfo = clientList[i];
+                                        if (cInfo != null)
+                                        {
+                                            for (int j = 0; j < chunks.Count; j++)
+                                            {
+                                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(chunks[j], true));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            GameManager.Instance.World.ChunkCache.Save();
+                            regionFileManager.MakePersistent(GameManager.Instance.World.ChunkCache, true);
+                            regionFileManager.WaitSaveDone();
+                            regionFileManager.Cleanup();
                             ProtectedZones.UpdateXml();
-                            ProtectedZones.LoadXml();
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added protected zone from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3], vectors[4]));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added protected zone from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3]));
                             return;
                         }
                         else

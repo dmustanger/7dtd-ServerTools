@@ -9,8 +9,8 @@ namespace ServerTools
 {
     public class PersistentOperations
     {
-        public static bool ZoneRunning = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false, 
-            No_Currency = false, Net_Package_Detector = false;
+        public static bool CheckRunning = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false, 
+            No_Currency = false, Net_Package_Detector = false, Debug = false;
         public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0, 
             MeleeHandPlayer = 0;
         public static string AppPath, Currency_Item, XPathDir, Command_expire = "expire", Command_commands = "commands", Command_overlay = "overlay";
@@ -332,14 +332,6 @@ namespace ServerTools
                     sw.WriteLine("	</effect_group>");
                     sw.WriteLine("</buff>");
                     sw.WriteLine();
-                    sw.WriteLine("<buff name=\"block_protection\" name_key=\"Block_Protection\" description=\"Blocks are protected from damage\" icon=\"ui_game_symbol_brick\" icon_color=\"102,102,153\">");
-                    sw.WriteLine("	<stack_type value=\"replace\"/>");
-                    sw.WriteLine("	<effect_group>");
-                    sw.WriteLine("		<passive_effect name=\"BlockDamage\" operation=\"perc_add\" value=\"-1\"/>");
-                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"block_protection\"/>");
-                    sw.WriteLine("	</effect_group>");
-                    sw.WriteLine("</buff>");
-                    sw.WriteLine();
                     sw.WriteLine("</append>");
                     sw.WriteLine();
                     sw.WriteLine("</configs>");
@@ -387,20 +379,20 @@ namespace ServerTools
             }
         }
 
-        public static void CheckZone()
+        public static void CheckArea()
         {
             try
             {
-                if (!ZoneRunning)
+                if (!CheckRunning)
                 {
-                    ZoneRunning = true;
+                    CheckRunning = true;
                     List<ClientInfo> clientList = ClientList();
                     if (clientList != null)
                     {
                         for (int i = 0; i < clientList.Count; i++)
                         {
                             ClientInfo cInfo = clientList[i];
-                            if (cInfo != null && !Teleportation.Teleporting.Contains(cInfo.entityId))
+                            if (cInfo != null)
                             {
                                 EntityPlayer player = GetEntityPlayer(cInfo.entityId);
                                 if (player != null && !player.IsDead() && player.IsSpawned() && player.position != null)
@@ -427,7 +419,7 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.CheckZone: {0}", e.Message));
             }
-            ZoneRunning = false;
+            CheckRunning = false;
         }
 
         public static void SessionTime(ClientInfo _cInfo)
@@ -450,7 +442,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.IsBLoodmoon: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.IsBloodmoon: {0}", e.Message));
             }
             return false;
         }
@@ -1316,9 +1308,6 @@ namespace ServerTools
                             }
                         }
                     }
-                }
-                if (ClanManager.IsEnabled)
-                {
                     if (ClanManager.Command_clan_list != "")
                     {
                         if (CommandList.Dict.TryGetValue(ClanManager.Command_clan_list, out string[] values))
@@ -1332,18 +1321,31 @@ namespace ServerTools
                             }
                         }
                     }
-                }
-                if (ClanManager.IsEnabled && !ClanManager.ClanMember.Contains(_cInfo.PlatformId.ReadablePlatformUserIdentifier))
-                {
-                    if (ClanManager.Command_request != "")
+                    if (!ClanManager.ClanMember.Contains(_cInfo.PlatformId.ReadablePlatformUserIdentifier))
                     {
-                        if (CommandList.Dict.TryGetValue(ClanManager.Command_request, out string[] values))
+                        if (ClanManager.Command_add != "")
                         {
-                            if (bool.TryParse(values[1], out bool hidden))
+                            if (CommandList.Dict.TryGetValue(ClanManager.Command_add, out string[] values))
                             {
-                                if (!hidden)
+                                if (bool.TryParse(values[1], out bool hidden))
                                 {
-                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command_request);
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2} clanName", commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command_add);
+                                    }
+                                }
+                            }
+                        }
+                        if (ClanManager.Command_request != "")
+                        {
+                            if (CommandList.Dict.TryGetValue(ClanManager.Command_request, out string[] values))
+                            {
+                                if (bool.TryParse(values[1], out bool hidden))
+                                {
+                                    if (!hidden)
+                                    {
+                                        commands = string.Format("{0} {1}{2} clanName", commands, ChatHook.Chat_Command_Prefix1, ClanManager.Command_request);
+                                    }
                                 }
                             }
                         }

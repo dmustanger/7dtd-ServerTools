@@ -12,6 +12,8 @@ namespace ServerTools
         public static string Lobby_Position = "0,0,0", Command_lobbyback = "lobbyback", Command_lback = "lback", Command_set = "setlobby", Command_lobby = "lobby";
         public static List<int> LobbyPlayers = new List<int>();
 
+        private static Bounds LobbyBounds = new Bounds();
+
         public static void Set(ClientInfo _cInfo)
         {
             string[] command = { Command_set };
@@ -29,6 +31,9 @@ namespace ServerTools
                     int x = (int)position.x;
                     int y = (int)position.y;
                     int z = (int)position.z;
+                    LobbyBounds.center = new Vector3(x, y, z);
+                    int size = Lobby_Size * 2;
+                    LobbyBounds.size = new Vector3(size, size, size);
                     string lposition = x + "," + y + "," + z;
                     Lobby_Position = lposition;
                     Config.WriteXml();
@@ -49,7 +54,7 @@ namespace ServerTools
             }
             if (Delay_Between_Uses < 1)
             {
-                if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
+                if (Command_Cost >= 1 && Wallet.IsEnabled)
                 {
                     CommandCost(_cInfo);
                 }
@@ -100,7 +105,7 @@ namespace ServerTools
         {
             if (_timepassed >= _delay)
             {
-                if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
+                if (Command_Cost >= 1 && Wallet.IsEnabled)
                 {
                     CommandCost(_cInfo);
                 }
@@ -162,10 +167,6 @@ namespace ServerTools
                             {
                                 return;
                             }
-                        }
-                        if (!Teleportation.Teleporting.Contains(_cInfo.entityId))
-                        {
-                            Teleportation.Teleporting.Add(_cInfo.entityId);
                         }
                         int x, y, z;
                         if (Return)
@@ -251,7 +252,7 @@ namespace ServerTools
 
         public static void InsideLobby(ClientInfo _cInfo, EntityAlive _player)
         {
-            if (!InsideLobby(_player.position.x, _player.position.z))
+            if (!IsLobby(_player.position))
             {
                 LobbyPlayers.Remove(_cInfo.entityId);
                 PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LobbyReturnPos = "";
@@ -261,12 +262,9 @@ namespace ServerTools
             }
         }
 
-        public static bool InsideLobby(float _x, float _z)
+        public static bool IsLobby(Vector3 _position)
         {
-            string[] cords = Lobby_Position.Split(',').ToArray();
-            int.TryParse(cords[0], out int x);
-            int.TryParse(cords[2], out int z);
-            if ((x - _x) * (x - _x) + (z - _z) * (z - _z) <= Lobby_Size * Lobby_Size)
+            if (LobbyBounds.Contains(_position))
             {
                 return true;
             }
@@ -312,6 +310,17 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in Lobby.PvEViolation: {0}", e.Message));
             }
             return true;
+        }
+
+        public static void SetPosition(string _position)
+        {
+            string[] lobbyPosition = _position.Split(',');
+            int.TryParse(lobbyPosition[0], out int x);
+            int.TryParse(lobbyPosition[1], out int y);
+            int.TryParse(lobbyPosition[2], out int z);
+            LobbyBounds.center = new Vector3(x, y, z);
+            int size = Lobby_Size * 2;
+            LobbyBounds.size = new Vector3(size, size, size);
         }
     }
 }

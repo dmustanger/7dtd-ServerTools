@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 public static class Injections
 {
@@ -245,20 +246,17 @@ public static class Injections
                 if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > 0 &&
                     GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > 0)
                 {
-                    if (DroppedBagProtection.IsEnabled)
+                    if (DroppedBagProtection.IsEnabled && _te is TileEntityLootContainer)
                     {
-                        if (_te is TileEntityLootContainer)
+                        TileEntityLootContainer lootContainer = _te as TileEntityLootContainer;
+                        if (lootContainer.bPlayerBackpack)
                         {
-                            TileEntityLootContainer lootContainer = _te as TileEntityLootContainer;
-                            if (lootContainer.bPlayerBackpack)
+                            if (!DroppedBagProtection.IsAllowed(_entityIdThatOpenedIt, lootContainer))
                             {
-                                if (!DroppedBagProtection.IsAllowed(_entityIdThatOpenedIt, lootContainer))
-                                {
-                                    Phrases.Dict.TryGetValue("DroppedBagProtection1", out string phrase);
-                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    __result = false;
-                                    return false;
-                                }
+                                Phrases.Dict.TryGetValue("DroppedBagProtection1", out string phrase);
+                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                __result = false;
+                                return false;
                             }
                         }
                     }
@@ -333,29 +331,55 @@ public static class Injections
     {
         try
         {
-            
-            EntityAlive entityAlive = __instance.GetAttackTarget();
-            if (entityAlive != null && entityAlive is EntityPlayer)
+            if (__instance is EntityZombie)
             {
-                ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityAlive.entityId);
-                if (cInfo != null)
+                if (ReservedSlots.IsEnabled && ReservedSlots.Bonus_Exp > 0)
                 {
-                    if (ReservedSlots.IsEnabled && ReservedSlots.Bonus_Exp > 0 && __instance is EntityZombie && (ReservedSlots.Dict.ContainsKey(cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(cInfo.CrossplatformId.CombinedString)))
+                    EntityAlive entityAlive = __instance.GetAttackTarget();
+                    if (entityAlive != null && entityAlive is EntityPlayer)
                     {
-                        if (ReservedSlots.Bonus_Exp > 100)
+                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityAlive.entityId);
+                        if (cInfo != null)
                         {
-                            ReservedSlots.Bonus_Exp = 100;
+                            if (ReservedSlots.Dict.ContainsKey(cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(cInfo.CrossplatformId.CombinedString))
+                            {
+                                if (ReservedSlots.Bonus_Exp > 100)
+                                {
+                                    ReservedSlots.Bonus_Exp = 100;
+                                }
+                                int experience = EntityClass.list[__instance.entityClass].ExperienceValue;
+                                float percent = ReservedSlots.Bonus_Exp / 100f;
+                                float bonus = experience * percent;
+                                experience = (int)bonus / 2;
+                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityAddExpClient>().Setup(entityAlive.entityId, experience, Progression.XPTypes.Kill));
+                            }
+                            int experienceBoost = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ExperienceBoost;
+                            if (experienceBoost > 0)
+                            {
+                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityAddExpClient>().Setup(entityAlive.entityId, experienceBoost, Progression.XPTypes.Kill));
+                            }
                         }
-                        int experience = EntityClass.list[__instance.entityClass].ExperienceValue;
-                        float percent = ReservedSlots.Bonus_Exp / 100f;
-                        float bonus = experience * percent;
-                        experience = (int)bonus / 2;
-                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityAddExpClient>().Setup(entityAlive.entityId, experience, Progression.XPTypes.Kill));
                     }
-                    int experienceBoost = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ExperienceBoost;
-                    if (experienceBoost > 0)
+                }
+            }
+            else if (__instance is EntityPlayer)
+            {
+                if (Hardcore.IsEnabled)
+                {
+                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(__instance.entityId);
+                    if (cInfo != null)
                     {
-                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityAddExpClient>().Setup(entityAlive.entityId, experienceBoost, Progression.XPTypes.Kill));
+                        if (Hardcore.Optional)
+                        {
+                            if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].HardcoreEnabled)
+                            {
+                                Hardcore.Check(cInfo, __instance as EntityPlayer, true);
+                            }
+                        }
+                        else
+                        {
+                            Hardcore.Check(cInfo, __instance as EntityPlayer, true);
+                        }
                     }
                 }
             }
@@ -365,38 +389,6 @@ public static class Injections
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.EntityAlive_OnEntityDeath_Prefix: {0}", e.Message));
         }
         return true;
-    }
-
-    public static void ChunkCluster_AddChunkSync_Postfix(Chunk _chunk)
-    {
-        try
-        {
-            if (ProtectedZones.IsEnabled && _chunk != null)
-            {
-                Vector3i vector = _chunk.ChunkPos;
-                string vectorString = _chunk.ChunkPos.ToString();
-                if (ProtectedZones.AddProtection.Contains(vectorString))
-                {
-                    Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(vector);
-                    if (chunk != null)
-                    {
-                        ProtectedZones.Add(chunk, vector, vectorString);
-                    }
-                }
-                else if (ProtectedZones.RemoveProtection.Contains(vectorString))
-                {
-                    Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(vector);
-                    if (chunk != null)
-                    {
-                        ProtectedZones.Remove(chunk, vector, vectorString);
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ChunkCluster_AddChunkSync_Postfix: {0}", e.Message));
-        }
     }
 
     public static void World_SpawnEntityInWorld_Postfix(Entity _entity)
@@ -602,6 +594,17 @@ public static class Injections
                 ProcessDamage.bFatal(__instance) = false;
             }
             ProcessDamage.strength(__instance) = 0;
+        }
+    }
+
+    public static void ClientInfo_SendPackage_Postfix(ClientInfo __instance, NetPackage _package)
+    {
+        if (__instance != null && _package != null && _package is NetPackageTeleportPlayer)
+        {
+            if (!TeleportDetector.Ommissions.Contains(__instance.entityId))
+            {
+                TeleportDetector.Ommissions.Add(__instance.entityId);
+            }
         }
     }
 }

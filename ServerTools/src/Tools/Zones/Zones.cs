@@ -16,6 +16,7 @@ namespace ServerTools
         public static Dictionary<int, DateTime> Reminder = new Dictionary<int, DateTime>();
         public static Dictionary<int, string[]> ZonePlayer = new Dictionary<int, string[]>();
         public static List<string[]> ZoneList = new List<string[]>();
+        public static List<Bounds> ZoneBounds = new List<Bounds>();
         public static Dictionary<int, string[]> ZoneSetup = new Dictionary<int, string[]>();
 
         private const string file = "Zones.xml";
@@ -67,6 +68,7 @@ namespace ServerTools
                 if (childNodes != null)
                 {
                     ZoneList.Clear();
+                    ZoneBounds.Clear();
                     Reminder.Clear();
                     ZonePlayer.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
@@ -85,6 +87,7 @@ namespace ServerTools
                                     line.HasAttribute("EntryMessage") && line.HasAttribute("ExitMessage") && line.HasAttribute("EntryCommand") && line.HasAttribute("ExitCommand") &&
                                     line.HasAttribute("ReminderNotice") && line.HasAttribute("PvPvE") && line.HasAttribute("NoZombie"))
                                 {
+                                    int c1 = 0, c2 = 0, c3 = 0, d1 = 0, d2 = 0, d3 = 0;
                                     string[] zone = { line.GetAttribute("Name"), line.GetAttribute("Corner1"), line.GetAttribute("Corner2"), line.GetAttribute("Circle"),
                                         line.GetAttribute("EntryMessage"), line.GetAttribute("ExitMessage"), line.GetAttribute("EntryCommand"), line.GetAttribute("ExitCommand"),
                                         line.GetAttribute("ReminderNotice"), line.GetAttribute("PvPvE"), line.GetAttribute("NoZombie") };
@@ -92,14 +95,14 @@ namespace ServerTools
                                     {
                                         if (zone[1].Contains(",") && zone[2].Contains(","))
                                         {
-                                            string[] _corner1 = zone[1].Split(',');
-                                            string[] _corner2 = zone[2].Split(',');
-                                            int.TryParse(_corner1[0], out int x1);
-                                            int.TryParse(_corner1[1], out int y1);
-                                            int.TryParse(_corner1[2], out int z1);
-                                            int.TryParse(_corner2[0], out int x2);
-                                            int.TryParse(_corner2[1], out int y2);
-                                            int.TryParse(_corner2[2], out int z2);
+                                            string[] corner1 = zone[1].Split(',');
+                                            string[] corner2 = zone[2].Split(',');
+                                            int.TryParse(corner1[0], out int x1);
+                                            int.TryParse(corner1[1], out int y1);
+                                            int.TryParse(corner1[2], out int z1);
+                                            int.TryParse(corner2[0], out int x2);
+                                            int.TryParse(corner2[1], out int y2);
+                                            int.TryParse(corner2[2], out int z2);
                                             int alt;
                                             if (x1 > x2)
                                             {
@@ -125,6 +128,12 @@ namespace ServerTools
                                             }
                                             zone[1] = x1 + "," + y1 + "," + z1;
                                             zone[2] = x2 + "," + y2 + "," + z2;
+                                            c1 = (x1 + x2) / 2;
+                                            c2 = (y1 + y2) / 2;
+                                            c3 = (z1 + z2) / 2;
+                                            d1 = (int)Vector2.Distance(new Vector2(x1, 0), new Vector2(x2, 0));
+                                            d2 = (int)Vector2.Distance(new Vector2(y1, 0), new Vector2(y2, 0));
+                                            d3 = (int)Vector2.Distance(new Vector2(z1, 0), new Vector2(z2, 0));
                                         }
                                         else
                                         {
@@ -132,9 +141,14 @@ namespace ServerTools
                                             continue;
                                         }
                                     }
+                                    Bounds newBounds = new Bounds(new Vector3(c1, c2, c3), new Vector3(d1, d2, d3));
                                     if (!ZoneList.Contains(zone))
                                     {
                                         ZoneList.Add(zone);
+                                        if (!ZoneBounds.Contains(newBounds))
+                                        {
+                                            ZoneBounds.Add(newBounds);
+                                        }
                                     }
                                 }
                             }
@@ -314,7 +328,8 @@ namespace ServerTools
                 for (int i = 0; i < ZoneList.Count; i++)
                 {
                     string[] zone = ZoneList[i];
-                    if (InsideZone(zone, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z))
+                    Bounds bounds = ZoneBounds[i];
+                    if (InsideZone(bounds, zone, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z))
                     {
                         if (ZonePlayer.ContainsKey(_player.entityId))
                         {
@@ -608,14 +623,13 @@ namespace ServerTools
             }
         }
 
-        public static bool InsideZone(string[] _zone, float _X, float _Y, float _Z)
+        public static bool InsideZone(Bounds _bounds, string[] _zone, float _X, float _Y, float _Z)
         {
-            string[] _corner1 = _zone[1].Split(',');
-            float.TryParse(_corner1[0], out float xMin);
-            float.TryParse(_corner1[1], out float yMin);
-            float.TryParse(_corner1[2], out float zMin);
             if (_zone[3].ToLower() == "true")
             {
+                string[] _corner1 = _zone[1].Split(',');
+                float.TryParse(_corner1[0], out float xMin);
+                float.TryParse(_corner1[2], out float zMin);
                 if (int.TryParse(_zone[2], out int _radius))
                 {
                     if (VectorCircle(xMin, zMin, _X, _Z, _radius))
@@ -626,11 +640,7 @@ namespace ServerTools
             }
             else
             {
-                string[] _corner2 = _zone[2].Split(',');
-                float.TryParse(_corner2[0], out float xMax);
-                float.TryParse(_corner2[1], out float yMax);
-                float.TryParse(_corner2[2], out float zMax);
-                if (VectorBox(xMin, yMin, zMin, xMax, yMax, zMax, _X, _Y, _Z))
+                if (VectorBox(_bounds, new Vector3(_X, _Y, _Z)))
                 {
                     return true;
                 }
@@ -647,9 +657,10 @@ namespace ServerTools
             return false;
         }
 
-        public static bool VectorBox(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax, float _X, float _Y, float _Z)
+        public static bool VectorBox(Bounds _bounds, Vector3 _position)
         {
-            if (_X >= xMin && _X <= xMax && _Y >= yMin && _Y <= yMax && _Z >= zMin && _Z <= zMax)
+
+            if (_bounds.Contains(_position))
             {
                 return true;
             }
@@ -680,12 +691,12 @@ namespace ServerTools
                                         int X = (int)entity.position.x;
                                         int Y = (int)entity.position.y;
                                         int Z = (int)entity.position.z;
-                                        string[] corner1 = zone[1].Split(',');
-                                        int.TryParse(corner1[0], out int xMin);
-                                        int.TryParse(corner1[1], out int yMin);
-                                        int.TryParse(corner1[2], out int zMin);
                                         if (zone[3].ToLower() == "true")
                                         {
+                                            string[] corner1 = zone[1].Split(',');
+                                            int.TryParse(corner1[0], out int xMin);
+                                            int.TryParse(corner1[1], out int yMin);
+                                            int.TryParse(corner1[2], out int zMin);
                                             if (int.TryParse(zone[2], out int radius))
                                             {
                                                 if (VectorCircle(xMin, zMin, X, Z, radius))
@@ -698,11 +709,8 @@ namespace ServerTools
                                         }
                                         else
                                         {
-                                            string[] corner2 = zone[2].Split(',');
-                                            int.TryParse(corner2[0], out int xMax);
-                                            int.TryParse(corner2[1], out int yMax);
-                                            int.TryParse(corner2[2], out int zMax);
-                                            if (VectorBox(xMin, yMin, zMin, xMax, yMax, zMax, X, Y, Z))
+                                            Bounds bounds = ZoneBounds[i];
+                                            if (VectorBox(bounds, new Vector3(X, Y, Z)))
                                             {
                                                 GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
                                                 Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed {0} from zone {1} @ {2} {3} {4}",
@@ -836,14 +844,14 @@ namespace ServerTools
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Do not use decimals in the corner positions -->");
                     sw.WriteLine("    <!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
-                    sw.WriteLine("    <!-- PvP: True/False will set a buff that blocks or allows damage from player to player -->");
+                    sw.WriteLine("    <!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
                     sw.WriteLine("    <!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
                     sw.WriteLine("    <!-- Possible variables for commands include {PlayerName}, {EntityId}, {Id}, {EOS}, {Delay}, whisper, global -->");
-                    sw.WriteLine("    <!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvP=\"0\" NoZombie=\"True\" /> -->");
+                    sw.WriteLine("    <!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Do not use decimals") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- Overlapping zones:") && !OldNodeList[i].OuterXml.Contains("<!-- PvP: True/False") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- Overlapping zones:") && !OldNodeList[i].OuterXml.Contains("<!-- PvPvE: 0") &&
                             !OldNodeList[i].OuterXml.Contains("<!-- EntryCommand and ExitCommand") && !OldNodeList[i].OuterXml.Contains("<!-- Possible variables for commands") &&
                             !OldNodeList[i].OuterXml.Contains("<!-- <Zone Name=\"Example\"") && !OldNodeList[i].OuterXml.Contains("<!-- <Zone Name=\"\""))
                         {
@@ -860,7 +868,7 @@ namespace ServerTools
                             if (line.HasAttributes && line.Name == "Zone")
                             {
                                 string name = "", corner1 = "", corner2 = "", circle = "", entryMessage = "", exitMessage = "", entryCommand = "",
-                                    exitCommand = "", reminder = "", pve = "", noZ = "";
+                                    exitCommand = "", reminder = "", pvpve = "", noZ = "";
                                 if (line.HasAttribute("Name"))
                                 {
                                     name = line.GetAttribute("Name");
@@ -897,15 +905,15 @@ namespace ServerTools
                                 {
                                     reminder = line.GetAttribute("ReminderNotice");
                                 }
-                                if (line.HasAttribute("PvE"))
+                                if (line.HasAttribute("PvPvE"))
                                 {
-                                    pve = line.GetAttribute("PvE");
+                                    pvpve = line.GetAttribute("PvPvE");
                                 }
                                 if (line.HasAttribute("NoZombie"))
                                 {
                                     noZ = line.GetAttribute("NoZombie");
                                 }
-                                sw.WriteLine(string.Format("    <Zone Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Circle=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" EntryCommand=\"{6}\" ExitCommand=\"{7}\" ReminderNotice=\"{8}\" PvE=\"{9}\" NoZombie=\"{10}\" />", name, corner1, corner2, circle, entryMessage, exitMessage, entryCommand, exitCommand, reminder, pve, noZ));
+                                sw.WriteLine(string.Format("    <Zone Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Circle=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" EntryCommand=\"{6}\" ExitCommand=\"{7}\" ReminderNotice=\"{8}\" PvPvE=\"{9}\" NoZombie=\"{10}\" />", name, corner1, corner2, circle, entryMessage, exitMessage, entryCommand, exitCommand, reminder, pvpve, noZ));
                             }
                         }
                     }

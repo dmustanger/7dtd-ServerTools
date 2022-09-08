@@ -1,5 +1,31 @@
 ﻿CHANGELOG
 
+20.6.2
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added Teleport_Detector tool. Detects players teleporting
+when they should not
+-Added option Bet to Roll_It_Out tool. This is the amount
+required to play each game with other players. The winner
+receives the total of all bets. Leaving a game will forfeit
+their bet
+-Fixed Roll_It_Out lobby failing to connect players together
+-Fixed Zones.xml update not functioning as intended
+-Fixed Shop panel not opening
+-Fixed Hardcore not functioning as intended
+-Fixed Protected_Zones not functioning as intended
+-Changed load process to allow old mod folder location for
+installation files
+-Changed Market and Lobby space to be square instead of a circle
+-Changed process for Market and Lobby formation. Improved the 
+time required to check player positions
+-Changed process for Zones formation. Improved the time 
+required to check player positions
+-Changed the process for detection of teleportation to avoid 
+false positives in the Flying_Detector
+-Updated HowToSetup.txt
+
 20.6.1
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

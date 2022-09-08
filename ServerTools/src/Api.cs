@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using UnityEngine;
 
@@ -7,9 +8,24 @@ namespace ServerTools
 {
     public class API : IModApi
     {
-        public static string GamePath = GamePrefs.GetString(EnumGamePrefs.UserDataFolder);
+        public static string GamePath = GetGamePath();
         public static string ConfigPath = string.Format("{0}/ServerTools", GamePath);
         public static List<string> Verified = new List<string>();
+
+        public static string GetGamePath()
+        {
+            string path;
+            string currentDir = Directory.GetCurrentDirectory();
+            if (Directory.Exists(currentDir + "/Mods/ServerTools") && File.Exists(currentDir + "/Mods/ServerTools/ServerTools.dll"))
+            {
+                path = currentDir;
+            }
+            else
+            {
+                path = GamePrefs.GetString(EnumGamePrefs.UserDataFolder);
+            }
+            return path;
+        }
 
         public void InitMod(Mod _modInstance)
         {
@@ -37,7 +53,7 @@ namespace ServerTools
         {
             try
             {
-                ChatHook.ChatMessage(null, Config.Chat_Response_Color + "The server has completed loading" + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                Log.Out(string.Format("[SERVERTOOLS] The server has completed loading. Beginning to process ServerTools"));
                 LoadProcess.Load();
             }
             catch (Exception e)
@@ -220,9 +236,9 @@ namespace ServerTools
                         }
                         else if (_respawnReason == RespawnType.Teleport)
                         {
-                            if (Teleportation.Teleporting.Contains(_cInfo.entityId))
+                            if (TeleportDetector.IsEnabled)
                             {
-                                Teleportation.Teleporting.Remove(_cInfo.entityId);
+                                TeleportDetector.Exec(_cInfo);
                             }
                         }
                         if (PlayerChecks.TwoSecondMovement.ContainsKey(_cInfo.entityId))
@@ -392,9 +408,9 @@ namespace ServerTools
                         BloodmoonWarrior.WarriorList.Remove(_cInfo.entityId);
                         BloodmoonWarrior.KilledZombies.Remove(_cInfo.entityId);
                     }
-                    if (Teleportation.Teleporting.Contains(_cInfo.entityId))
+                    if (TeleportDetector.Ommissions.Contains(_cInfo.entityId))
                     {
-                        Teleportation.Teleporting.Remove(_cInfo.entityId);
+                        TeleportDetector.Ommissions.Remove(_cInfo.entityId);
                     }
                     if (LevelUp.PlayerLevels.ContainsKey(_cInfo.entityId))
                     {
@@ -427,6 +443,10 @@ namespace ServerTools
                     if (PersistentOperations.Session.ContainsKey(id))
                     {
                         PersistentOperations.Session.Remove(id);
+                    }
+                    if (RIO.IsEnabled && WebAPI.IsEnabled && WebAPI.IsRunning)
+                    {
+                        RIO.RemovePlayer(_cInfo);
                     }
                 }
                 else
@@ -511,7 +531,7 @@ namespace ServerTools
                     {
                         if (PersistentContainer.Instance.Players[id].HardcoreEnabled)
                         {
-                            Hardcore.Check(_cInfo, _player);
+                            Hardcore.Check(_cInfo, _player, false);
                         }
                     }
                     else if (!PersistentContainer.Instance.Players[id].HardcoreEnabled)
@@ -520,7 +540,7 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[id].HardcoreStats = hardcoreStats;
                         PersistentContainer.Instance.Players[id].HardcoreEnabled = true;
                         PersistentContainer.DataChange = true;
-                        Hardcore.Check(_cInfo, _player);
+                        Hardcore.Check(_cInfo, _player, false);
                     }
                 }
             }
@@ -547,7 +567,7 @@ namespace ServerTools
                     {
                         if (PersistentContainer.Instance.Players[id].HardcoreEnabled)
                         {
-                            Hardcore.Check(_cInfo, _player);
+                            Hardcore.Check(_cInfo, _player, false);
                         }
                     }
                     else if (!PersistentContainer.Instance.Players[id].HardcoreEnabled)
@@ -556,7 +576,7 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[id].HardcoreStats = hardcoreStats;
                         PersistentContainer.Instance.Players[id].HardcoreEnabled = true;
                         PersistentContainer.DataChange = true;
-                        Hardcore.Check(_cInfo, _player);
+                        Hardcore.Check(_cInfo, _player, false);
                     }
                 }
                 if (LoginNotice.IsEnabled && LoginNotice.Dict1.ContainsKey(_cInfo.PlatformId.CombinedString) || LoginNotice.Dict1.ContainsKey(id))
@@ -662,10 +682,6 @@ namespace ServerTools
                 if (PersistentContainer.Instance.Players[id].EventOver)
                 {
                     Event.EventOver(cInfo);
-                }
-                if (Hardcore.IsEnabled && PersistentContainer.Instance.Players[id].HardcoreEnabled)
-                {
-                    Hardcore.Check(cInfo, (EntityPlayer)__instance);
                 }
                 if (Zones.ZonePlayer.ContainsKey(cInfo.entityId))
                 {

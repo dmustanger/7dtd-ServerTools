@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.6.1";
+        public const string Version = "20.6.2";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -2310,7 +2310,12 @@ namespace ServerTools
                                                 }
                                                 if (line.HasAttribute("Lobby_Position"))
                                                 {
-                                                    Lobby.Lobby_Position = line.GetAttribute("Lobby_Position");
+                                                    string lobbyPosition = line.GetAttribute("Lobby_Position");
+                                                    if (Lobby.Lobby_Position != lobbyPosition)
+                                                    {
+                                                        Lobby.SetPosition(lobbyPosition);
+                                                        Lobby.Lobby_Position = lobbyPosition;
+                                                    }
                                                 }
                                                 break;
                                             case "Lobby_Extended":
@@ -2491,9 +2496,14 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry in ServerToolsConfig.xml because of missing 'Market_Position' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                else
+                                                if (line.HasAttribute("Lobby_Position"))
                                                 {
-                                                    Market.Market_Position = line.GetAttribute("Market_Position");
+                                                    string marketPosition = line.GetAttribute("Lobby_Position");
+                                                    if (Market.Market_Position != marketPosition)
+                                                    {
+                                                        Market.SetPosition(marketPosition);
+                                                        Market.Market_Position = marketPosition;
+                                                    }
                                                 }
                                                 break;
                                             case "Market_Extended":
@@ -4386,6 +4396,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"PvE_Violations\" Jail=\"{0}\" Kill=\"{1}\" Kick=\"{2}\" Ban=\"{3}\" />", PersistentOperations.Jail_Violation, PersistentOperations.Kill_Violation, PersistentOperations.Kick_Violation, PersistentOperations.Ban_Violation));
                 sw.WriteLine(string.Format("        <Tool Name=\"Spectator_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" />", PlayerChecks.SpectatorEnabled, PlayerChecks.Spectator_Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Speed_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", SpeedDetector.IsEnabled, SpeedDetector.Speed_Admin_Level, SpeedDetector.Total_Flags));
+                sw.WriteLine(string.Format("        <Tool Name=\"Teleport_Detector\" Enable=\"{0}\" Jail=\"{1}\" Kill=\"{2}\" Kick=\"{3}\" Ban=\"{4}\" />", TeleportDetector.IsEnabled, TeleportDetector.Jail, TeleportDetector.Kill, TeleportDetector.Kick, TeleportDetector.Ban));
                 sw.WriteLine(string.Format("        <Tool Name=\"Tracking\" Enable=\"{0}\" />", Track.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"XRay_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" />", XRayDetector.IsEnabled, XRayDetector.Admin_Level));
                 sw.WriteLine("    </AntiCheat>");

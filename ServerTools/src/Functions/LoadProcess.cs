@@ -20,48 +20,12 @@ namespace ServerTools
                 string installPath = gamePath + "/Mods/ServerTools";
                 if (!Directory.Exists(installPath))
                 {
-                    if (!Directory.Exists(gamePath + "/Mods/0ServerTools"))
-                    {
-                        installPath = gamePath + "/Mods/0ServerTools";
-                        if (!Directory.Exists(gamePath + "/Mods/1ServerTools"))
-                        {
-                            installPath = gamePath + "/Mods/1ServerTools";
-                            if (!Directory.Exists(gamePath + "/Mods/2ServerTools"))
-                            {
-                                installPath = gamePath + "/Mods/2ServerTools";
-                                if (!Directory.Exists(gamePath + "/Mods/3ServerTools"))
-                                {
-                                    installPath = gamePath + "/Mods/3ServerTools";
-                                    Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in the mods folder inside the user data folder '{0}'", API.GamePath + "/Mods"));
-                                    return;
-                                }
-                                else if (!File.Exists(gamePath + "/Mods/3ServerTools/ServerTools.dll"))
-                                {
-                                    Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in the mods folder inside the user data folder '{0}'", API.GamePath + "/Mods"));
-                                    return;
-                                }
-                            }
-                            else if (!File.Exists(gamePath + "/Mods/2ServerTools/ServerTools.dll"))
-                            {
-                                Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in the mods folder inside the user data folder '{0}'", API.GamePath + "/Mods"));
-                                return;
-                            }
-                        }
-                        else if (!File.Exists(gamePath + "/Mods/1ServerTools/ServerTools.dll"))
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in the mods folder inside the user data folder '{0}'", API.GamePath + "/Mods"));
-                            return;
-                        }
-                    }
-                    else if (!File.Exists(gamePath + "/Mods/0ServerTools/ServerTools.dll"))
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in the mods folder inside the user data folder '{0}'", API.GamePath + "/Mods"));
-                        return;
-                    }
+                    Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in a mods folder located at '{0}'", API.GamePath + "/Mods"));
+                    return;
                 }
                 else if (!File.Exists(gamePath + "/Mods/ServerTools/ServerTools.dll"))
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in the mods folder inside the user data folder '{0}'", API.GamePath + "/Mods"));
+                    Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in a mods folder located at '{0}'", API.GamePath + "/Mods"));
                     return;
                 }
                 if (!Directory.Exists(configPath))

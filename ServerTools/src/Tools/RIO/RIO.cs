@@ -10,7 +10,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static string Directory = "", Command_rio = "rio";
-        public static int Command_Cost = 25;
+        public static int Bet = 25;
 
         public static Dictionary<string, int> Access = new Dictionary<string, int>();
         public static Dictionary<string, int[]> Tables = new Dictionary<string, int[]>();
@@ -181,6 +181,19 @@ namespace ServerTools
             }
             dice = dice.Remove(dice.Length - 1);
             return dice;
+        }
+
+        public static void RemovePlayer(ClientInfo _cInfo)
+        {
+            var tables = Tables.ToArray();
+            for (int i = 0; i < tables.Length; i++)
+            {
+                if (tables[i].Value.Contains(_cInfo.entityId))
+                {
+
+                    break;
+                }
+            }
         }
     }
 }

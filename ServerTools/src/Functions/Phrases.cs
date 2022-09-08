@@ -2530,6 +2530,26 @@ namespace ServerTools
                         phrase = "You can not teleport with a vehicle";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Teleport3\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Teleport4", out phrase))
+                    {
+                        phrase = "You have been jailed for illegal teleportation";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Teleport4\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Teleport5", out phrase))
+                    {
+                        phrase = "You have been killed for illegal teleportation";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Teleport5\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Teleport6", out phrase))
+                    {
+                        phrase = "You have been kicked for illegal teleportation";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Teleport6\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Teleport7", out phrase))
+                    {
+                        phrase = "You have been banned for illegal teleportation";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Teleport7\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* Weather_Vote ********************* -->");

@@ -207,7 +207,7 @@
     <Compile Include="src\PersistentData\StateManager.cs" />
     <Compile Include="src\Tools\ExitCommand\ExitCommand.cs" />
     <Compile Include="src\Tools\Hardcore\Hardcore.cs" />
-    <Compile Include="src\AntiCheat\TeleportCheck\TeleportCheck.cs" />
+    <Compile Include="src\AntiCheat\TeleportDetector\TeleportDetector.cs" />
     <Compile Include="src\Tools\SleeperRespawn\SleeperRespawn.cs" />
     <Compile Include="src\Tools\Wall\Wall.cs" />
     <Compile Include="src\Tools\WebPanel\WebPanel.cs" />

@@ -263,7 +263,7 @@ namespace ServerTools
                 {
                     if (Delay_Between_Uses < 1)
                     {
-                        if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
+                        if (Command_Cost >= 1 && Wallet.IsEnabled)
                         {
                             CommandCost(_cInfo);
                         }
@@ -322,7 +322,7 @@ namespace ServerTools
             {
                 if (_timepassed >= _delay)
                 {
-                    if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
+                    if (Command_Cost >= 1 && Wallet.IsEnabled)
                     {
                         CommandCost(_cInfo);
                     }

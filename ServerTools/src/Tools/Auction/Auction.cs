@@ -286,48 +286,46 @@ namespace ServerTools
             {
                 if (AuctionItems.Count > 0)
                 {
-                    if (Panel && WebAPI.IsEnabled && WebAPI.Connected)
+                    if (Panel && WebAPI.IsEnabled && WebAPI.Connected &&
+                        !PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay)
                     {
-                        if (!PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay)
+                        string securityId = "";
+                        for (int i = 0; i < 10; i++)
                         {
-                            string securityId = "";
-                            for (int i = 0; i < 10; i++)
+                            string pass = CreatePassword(4);
+                            if (pass != "DBUG" && !PanelAccess.ContainsKey(pass))
                             {
-                                string pass = CreatePassword(4);
-                                if (pass != "DBUG" && !PanelAccess.ContainsKey(pass))
+                                securityId = pass;
+                                if (!PanelAccess.ContainsValue(_cInfo.entityId))
                                 {
-                                    securityId = pass;
-                                    if (!PanelAccess.ContainsValue(_cInfo.entityId))
+                                    PanelAccess.Add(securityId, _cInfo.entityId);
+                                    WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
+                                }
+                                else
+                                {
+                                    if (PanelAccess.Count > 0)
                                     {
-                                        PanelAccess.Add(securityId, _cInfo.entityId);
-                                        WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
-                                    }
-                                    else
-                                    {
-                                        if (PanelAccess.Count > 0)
+                                        foreach (var client in PanelAccess)
                                         {
-                                            foreach (var client in PanelAccess)
+                                            if (client.Value == _cInfo.entityId)
                                             {
-                                                if (client.Value == _cInfo.entityId)
-                                                {
-                                                    PanelAccess.Remove(client.Key);
-                                                    WebAPI.AuthorizedTime.Remove(client.Key);
-                                                    break;
-                                                }
+                                                PanelAccess.Remove(client.Key);
+                                                WebAPI.AuthorizedTime.Remove(client.Key);
+                                                break;
                                             }
                                         }
-                                        PanelAccess.Add(securityId, _cInfo.entityId);
-                                        WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
                                     }
-                                    break;
+                                    PanelAccess.Add(securityId, _cInfo.entityId);
+                                    WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
                                 }
+                                break;
                             }
-                            Phrases.Dict.TryGetValue("Auction20", out string phrase);
-                            phrase = phrase.Replace("{Value}", securityId);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserAuction", true));
-                            return;
                         }
+                        Phrases.Dict.TryGetValue("Auction20", out string phrase);
+                        phrase = phrase.Replace("{Value}", securityId);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserAuction", true));
+                        return;
                     }
                     List<string> IDs = new List<string>();
                     var auctionEntries = AuctionItems.ToArray();

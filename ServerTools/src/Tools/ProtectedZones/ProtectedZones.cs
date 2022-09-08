@@ -12,11 +12,7 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false;
 
         public static List<int[]> ProtectedList = new List<int[]>();
-        public static List<string> AddProtection = new List<string>();
-        public static List<string> RemoveProtection = new List<string>();
         public static Dictionary<int, int[]> Vectors = new Dictionary<int, int[]>();
-
-        public static List<long> Keys = new List<long>();
 
         private const string file = "ProtectedZones.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -33,9 +29,6 @@ namespace ServerTools
         public static void Unload()
         {
             ProtectedList.Clear();
-            AddProtection.Clear();
-            RemoveProtection.Clear();
-            Vectors.Clear();
             FileWatcher.Dispose();
             IsRunning = false;
         }
@@ -58,19 +51,14 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                if (PersistentContainer.Instance.ProtectedZones == null)
-                {
-                    PersistentContainer.Instance.ProtectedZones = new List<string>();
-                    PersistentContainer.DataChange = true;
-                }
                 bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
                 if (childNodes != null)
                 {
-                    List<string> keys = new List<string>();
+                    List<int[]> oldProtections = ProtectedList;
                     ProtectedList.Clear();
-                    AddProtection.Clear();
-                    RemoveProtection.Clear();
+                    string saveGameRegionDir = GameIO.GetSaveGameRegionDir();
+                    RegionFileManager regionFileManager = new RegionFileManager(saveGameRegionDir, saveGameRegionDir, 0, true);
                     List<Chunk> chunks = new List<Chunk>();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
@@ -130,14 +118,7 @@ namespace ServerTools
                                         vectors[1] = corner2_z;
                                         vectors[3] = corner1_z;
                                     }
-                                    if (active)
-                                    {
-                                        vectors[4] = 1;
-                                    }
-                                    else
-                                    {
-                                        vectors[4] = 0;
-                                    }
+                                    vectors[4] = 1;
                                     if (!ProtectedList.Contains(vectors))
                                     {
                                         ProtectedList.Add(vectors);
@@ -145,7 +126,6 @@ namespace ServerTools
                                         {
                                             for (int k = vectors[1]; k <= vectors[3]; k++)
                                             {
-                                                string vector = new Vector3i(j, 0, k).ToString();
                                                 Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
                                                 if (chunk != null)
                                                 {
@@ -160,18 +140,9 @@ namespace ServerTools
                                                             {
                                                                 chunks.Add(chunk);
                                                             }
-                                                            if (!PersistentContainer.Instance.ProtectedZones.Contains(vector))
-                                                            {
-                                                                PersistentContainer.Instance.ProtectedZones.Add(vector);
-                                                                PersistentContainer.DataChange = true;
-                                                            }
-                                                        }
-                                                        if (!keys.Contains(vector))
-                                                        {
-                                                            keys.Add(vector);
                                                         }
                                                     }
-                                                    else if (PersistentContainer.Instance.ProtectedZones.Contains(vector))
+                                                    else
                                                     {
                                                         if (chunk.IsTraderArea(x, z))
                                                         {
@@ -181,25 +152,84 @@ namespace ServerTools
                                                                 chunks.Add(chunk);
                                                             }
                                                         }
-                                                        PersistentContainer.Instance.ProtectedZones.Remove(vector);
-                                                        PersistentContainer.DataChange = true;
                                                     }
                                                 }
-                                                else if (active)
+                                                else
                                                 {
-                                                    if (!PersistentContainer.Instance.ProtectedZones.Contains(vector))
+                                                    int num = World.toChunkXZ(j);
+                                                    int num2 = World.toChunkXZ(k);
+                                                    long key = WorldChunkCache.MakeChunkKey(num, num2);
+                                                    if (regionFileManager.ContainsChunkSync(key))
                                                     {
-                                                        AddProtection.Add(vector);
-                                                    }
-                                                    if (!keys.Contains(vector))
-                                                    {
-                                                        keys.Add(vector);
+                                                        chunk = regionFileManager.GetChunkSync(key);
+                                                        if (chunk != null)
+                                                        {
+                                                            Bounds bounds = chunk.GetAABB();
+                                                            int x = j - (int)bounds.min.x, z = k - (int)bounds.min.z;
+                                                            if (active)
+                                                            {
+                                                                if (!chunk.IsTraderArea(x, z))
+                                                                {
+                                                                    chunk.SetTraderArea(x, z, true);
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                if (chunk.IsTraderArea(x, z))
+                                                                {
+                                                                    chunk.SetTraderArea(x, z, false);
+                                                                }
+                                                            }
+                                                            GameManager.Instance.World.ChunkCache.AddChunkSync(chunk);
+                                                        }
                                                     }
                                                 }
-                                                else if (PersistentContainer.Instance.ProtectedZones.Contains(vector))
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for (int i = 0; i < oldProtections.Count; i++)
+                    {
+                        if (!ProtectedList.Contains(oldProtections[i]))
+                        {
+                            for (int j = oldProtections[i][0]; j <= oldProtections[i][2]; j++)
+                            {
+                                for (int k = oldProtections[i][1]; k <= oldProtections[i][3]; k++)
+                                {
+                                    Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
+                                    if (chunk != null)
+                                    {
+                                        Bounds bounds = chunk.GetAABB();
+                                        int x = j - (int)bounds.min.x, z = k - (int)bounds.min.z;
+                                        if (chunk.IsTraderArea(x, z))
+                                        {
+                                            chunk.SetTraderArea(x, z, false);
+                                            if (!chunks.Contains(chunk))
+                                            {
+                                                chunks.Add(chunk);
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        int num = World.toChunkXZ(j);
+                                        int num2 = World.toChunkXZ(k);
+                                        long key = WorldChunkCache.MakeChunkKey(num, num2);
+                                        if (regionFileManager.ContainsChunkSync(key))
+                                        {
+                                            chunk = regionFileManager.GetChunkSync(key);
+                                            if (chunk != null)
+                                            {
+                                                Bounds bounds = chunk.GetAABB();
+                                                int x = j - (int)bounds.min.x, z = k - (int)bounds.min.z;
+                                                if (chunk.IsTraderArea(x, z))
                                                 {
-                                                    RemoveProtection.Remove(vector);
+                                                    chunk.SetTraderArea(x, z, false);
                                                 }
+                                                GameManager.Instance.World.ChunkCache.AddChunkSync(chunk);
                                             }
                                         }
                                     }
@@ -210,7 +240,7 @@ namespace ServerTools
                     if (chunks.Count > 0)
                     {
                         List<ClientInfo> clientList = PersistentOperations.ClientList();
-                        if (clientList != null)
+                        if (clientList != null && clientList.Count > 0)
                         {
                             for (int i = 0; i < clientList.Count; i++)
                             {
@@ -225,16 +255,10 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (PersistentContainer.Instance.ProtectedZones.Count > 0)
-                    {
-                        for (int i = 0; i < PersistentContainer.Instance.ProtectedZones.Count; i++)
-                        {
-                            if (!keys.Contains(PersistentContainer.Instance.ProtectedZones[i]))
-                            {
-                                RemoveProtection.Add(PersistentContainer.Instance.ProtectedZones[i]);
-                            }
-                        }
-                    }
+                    GameManager.Instance.World.ChunkCache.Save();
+                    regionFileManager.MakePersistent(GameManager.Instance.World.ChunkCache, true);
+                    regionFileManager.WaitSaveDone();
+                    regionFileManager.Cleanup();
                 }
                 if (upgrade)
                 {
@@ -333,50 +357,6 @@ namespace ServerTools
                 UpdateXml();
             }
             LoadXml();
-        }
-
-        public static void Add(Chunk _chunk, Vector3i _vector, string _vectorString)
-        {
-            AddProtection.Remove(_vectorString);
-            Bounds bounds = _chunk.GetAABB();
-            int x = _vector.x - (int)bounds.min.x, z = _vector.z - (int)bounds.min.z;
-            _chunk.SetTraderArea(x, z, true);
-            PersistentContainer.Instance.ProtectedZones.Add(_vectorString);
-            PersistentContainer.DataChange = true;
-            List<ClientInfo> clientList = PersistentOperations.ClientList();
-            if (clientList != null)
-            {
-                for (int i = 0; i < clientList.Count; i++)
-                {
-                    ClientInfo cInfo = clientList[i];
-                    if (cInfo != null)
-                    {
-                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
-                    }
-                }
-            }
-        }
-
-        public static void Remove(Chunk _chunk, Vector3i _vector, string _vectorString)
-        {
-            RemoveProtection.Remove(_vectorString);
-            Bounds bounds = _chunk.GetAABB();
-            int x = _vector.x - (int)bounds.min.x, z = _vector.z - (int)bounds.min.z;
-            _chunk.SetTraderArea(x, z, false);
-            PersistentContainer.Instance.ProtectedZones.Remove(_vectorString);
-            PersistentContainer.DataChange = true;
-            List<ClientInfo> clientList = PersistentOperations.ClientList();
-            if (clientList != null)
-            {
-                for (int i = 0; i < clientList.Count; i++)
-                {
-                    ClientInfo cInfo = clientList[i];
-                    if (cInfo != null)
-                    {
-                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
-                    }
-                }
-            }
         }
 
         public static void ClearSingleChunkProtection(ClientInfo _cInfo)

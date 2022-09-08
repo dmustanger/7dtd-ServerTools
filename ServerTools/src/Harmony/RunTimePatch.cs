@@ -191,22 +191,6 @@ namespace ServerTools
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
-                original = AccessTools.Method(typeof(ChunkCluster), "AddChunkSync");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChunkCluster.AddChunkSync Class.Method was not found"));
-                }
-                else
-                {
-                    MethodInfo postfix = typeof(Injections).GetMethod("ChunkCluster_AddChunkSync_Postfix");
-                    if (postfix == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChunkCluster_AddChunkSync.postfix"));
-                        return;
-                    }
-                    harmony.Patch(original, null, new HarmonyMethod(postfix));
-                }
-
                 original = AccessTools.Method(typeof(World), "SpawnEntityInWorld");
                 if (original == null)
                 {
@@ -397,6 +381,22 @@ namespace ServerTools
                         return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                original = AccessTools.Method(typeof(ClientInfo), "SendPackage");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: ClientInfo.SendPackage Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo postfix = typeof(Injections).GetMethod("ClientInfo_SendPackage_Postfix");
+                    if (postfix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ClientInfo_SendPackage_Postfix"));
+                        return;
+                    }
+                    harmony.Patch(original, null, new HarmonyMethod(postfix));
                 }
 
                 Log.Out("[SERVERTOOLS] Runtime patching complete");

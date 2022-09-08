@@ -53,16 +53,11 @@ namespace ServerTools
                         if (_lottoValue > 0)
                         {
                             int currency = 0;
-                            int bankValue = 0;
                             if (Wallet.IsEnabled)
                             {
                                 currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                             }
-                            if (Bank.IsEnabled && Bank.Payments)
-                            {
-                                bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                            }
-                            if (currency + bankValue >= _lottoValue)
+                            if (currency >= _lottoValue)
                             {
                                 OpenLotto = true;
                                 LottoValue = _lottoValue;
@@ -109,16 +104,11 @@ namespace ServerTools
             if (OpenLotto)
             {
                 int currency = 0;
-                int bankValue = 0;
                 if (Wallet.IsEnabled)
                 {
                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 }
-                if (Bank.IsEnabled && Bank.Payments)
-                {
-                    bankValue = Bank.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                }
-                if (currency + bankValue >= LottoValue)
+                if (currency >= LottoValue)
                 {
                     if (!LottoEntries.Contains(_cInfo))
                     {

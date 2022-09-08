@@ -49,7 +49,7 @@ namespace ServerTools
                     }
                     if (Delay_Between_Uses < 1)
                     {
-                        if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
+                        if (Command_Cost >= 1 && Wallet.IsEnabled)
                         {
                             CommandCost(_cInfo, player, vehicleId);
                         }
@@ -66,7 +66,7 @@ namespace ServerTools
                             DateTime.TryParse(vehicleInfo[1], out DateTime delay);
                             if (DateTime.Now >= delay)
                             {
-                                if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
+                                if (Command_Cost >= 1 && Wallet.IsEnabled)
                                 {
                                     CommandCost(_cInfo, player, vehicleId);
                                 }

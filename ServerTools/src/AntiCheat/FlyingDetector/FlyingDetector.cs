@@ -14,7 +14,7 @@ namespace ServerTools
         public static Dictionary<int, int> Flags = new Dictionary<int, int>();
 
         private static string file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, file);
+        private static string Filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, file);
 
         public static bool IsFlying(Vector3 _position)
         {
@@ -77,7 +77,7 @@ namespace ServerTools
                     Flags.Remove(_cInfo.entityId);
                     Phrases.Dict.TryGetValue("Flying2", out string phrase);
                     SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
-                    using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
+                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                     {
                         sw.WriteLine(string.Format("Detected Id '{0}' '{1}' named '{2}' flying @ '{3}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _player.position));
                         sw.WriteLine();

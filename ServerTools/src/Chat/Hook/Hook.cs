@@ -1183,7 +1183,7 @@ namespace ServerTools
                                     {
                                         if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreEnabled)
                                         {
-                                            Hardcore.Check(_cInfo, player);
+                                            Hardcore.Check(_cInfo, player, false);
                                         }
                                         else
                                         {
@@ -1193,7 +1193,7 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        Hardcore.Check(_cInfo, player);
+                                        Hardcore.Check(_cInfo, player, false);
                                     }
                                 }
                                 return false;

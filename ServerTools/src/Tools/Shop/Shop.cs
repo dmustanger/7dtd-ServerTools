@@ -1220,7 +1220,7 @@ namespace ServerTools
             {
                 if (Panel && WebAPI.IsEnabled && WebAPI.Connected)
                 {
-                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay)
+                    if (!PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay)
                     {
                         string securityId = "";
                         for (int i = 0; i < 10; i++)
@@ -1254,15 +1254,15 @@ namespace ServerTools
                                 break;
                             }
                         }
-                        Phrases.Dict.TryGetValue("Shop4", out string phrase);
-                        phrase = phrase.Replace("{Value}", securityId);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Shop4", out string phrase1);
+                        phrase1 = phrase1.Replace("{Value}", securityId);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserShop", true));
                         return;
                     }
                 }
-                Phrases.Dict.TryGetValue("Shop1", out string _phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Shop1", out string phrase2);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 string categories = "";
                 if (Categories.Count > 1)
                 {
@@ -1273,14 +1273,14 @@ namespace ServerTools
                     categories = Categories[0];
                 }
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + categories + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                Phrases.Dict.TryGetValue("Shop2", out string phrase1);
-                phrase1 = phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                phrase1 = phrase1.Replace("{Command_shop}", Command_shop);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                Phrases.Dict.TryGetValue("Shop13", out phrase1);
-                phrase1 = phrase1.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                phrase1 = phrase1.Replace("{Command_shop_buy}", Command_shop_buy);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Shop2", out string phrase3);
+                phrase3 = phrase3.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                phrase3 = phrase3.Replace("{Command_shop}", Command_shop);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase3 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Shop13", out phrase3);
+                phrase3 = phrase3.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                phrase3 = phrase3.Replace("{Command_shop_buy}", Command_shop_buy);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase3 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)
             {
@@ -1292,6 +1292,10 @@ namespace ServerTools
         {
             try
             {
+                if (PersistentOperations.Debug)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] DEBUG: Shop: ShowCategory: _cInfo.playerName = '{0}' / _category = '{1}'", _cInfo.playerName, _category));
+                }
                 if (Categories.Contains(_category))
                 {
                     for (int i = 0; i < Dict.Count; i++)

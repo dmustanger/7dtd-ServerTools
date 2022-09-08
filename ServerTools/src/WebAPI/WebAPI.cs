@@ -1649,10 +1649,6 @@ namespace ServerTools
                                                                             Authorized.Add(keyHash, customers[i].Key);
                                                                             AuthorizedTime.Add(keyHash, DateTime.Now.AddMinutes(5));
                                                                             int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
-                                                                            if (Bank.IsEnabled && Bank.Payments)
-                                                                            {
-                                                                                currency += PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank;
-                                                                            }
                                                                             responseMessage += cInfo.playerName + "☼" + "Balance: " + currency + "☼" + Wallet.Currency_Name +
                                                                                 "☼" + Shop.Panel_Name + "☼" + Shop.PanelItems + "☼" + Shop.CategoryString + "☼" + salt;
                                                                             _response.StatusCode = 200;
@@ -1763,10 +1759,6 @@ namespace ServerTools
                                                                 if (player != null)
                                                                 {
                                                                     int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
-                                                                    if (Bank.IsEnabled && Bank.Payments)
-                                                                    {
-                                                                        currency += PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank;
-                                                                    }
                                                                     int quantity = int.Parse(purchaseData[2]);
                                                                     int count = int.Parse(item[3]);
                                                                     int price = int.Parse(item[5]);
@@ -1885,10 +1877,6 @@ namespace ServerTools
                                                                             Authorized.Add(keyHash, customers[i].Key);
                                                                             AuthorizedTime.Add(keyHash, DateTime.Now.AddMinutes(5));
                                                                             int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
-                                                                            if (Bank.IsEnabled && Bank.Payments)
-                                                                            {
-                                                                                currency += PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank;
-                                                                            }
                                                                             responseMessage += cInfo.playerName + "☼" + "Balance: " + currency + "☼" + Wallet.Currency_Name +
                                                                                 "☼" + Auction.Panel_Name + "☼" + Auction.GetItems(cInfo.CrossplatformId.CombinedString) + "☼" + salt;
                                                                             _response.StatusCode = 200;
@@ -2005,10 +1993,6 @@ namespace ServerTools
                                                                         {
                                                                             PersistentContainer.Instance.Players[playerId].Auction.TryGetValue(itemId, out ItemDataSerializable itemData);
                                                                             int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
-                                                                            if (Bank.IsEnabled && Bank.Payments)
-                                                                            {
-                                                                                currency += PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank;
-                                                                            }
                                                                             if (currency >= itemData.price)
                                                                             {
                                                                                 Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, itemData.price);
@@ -2255,33 +2239,22 @@ namespace ServerTools
                                                                         {
                                                                             PageHits.Remove(_ip);
                                                                         }
-                                                                        //if (RIO.Command_Cost > 0)
-                                                                        //{
-                                                                        //    int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
-                                                                        //    if (Bank.IsEnabled && Bank.Payments)
-                                                                        //    {
-                                                                        //        currency += PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank;
-                                                                        //    }
-                                                                        //    if (currency >= RIO.Command_Cost)
-                                                                        //    {
-                                                                        //        if (Bank.IsEnabled && Bank.Payments)
-                                                                        //        {
-                                                                        //            Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, RIO.Command_Cost, true);
-                                                                        //        }
-                                                                        //        else
-                                                                        //        {
-                                                                        //            Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, RIO.Command_Cost, false);
-                                                                        //        }
-                                                                        //    }
-                                                                        //    else
-                                                                        //    {
-                                                                        //        valid = false;
-                                                                        //        RIO.Access.Remove(allPlayers[i].Key);
-                                                                        //        AuthorizedTime.Remove(allPlayers[i].Key);
-                                                                        //        responseMessage += "You do not have enough to play";
-                                                                        //        _response.StatusCode = 401;
-                                                                        //    }
-                                                                        //}
+                                                                        if (Wallet.IsEnabled && RIO.Bet > 0)
+                                                                        {
+                                                                            int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
+                                                                            if (currency >= RIO.Bet)
+                                                                            {
+                                                                                Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, RIO.Bet);
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                valid = false;
+                                                                                RIO.Access.Remove(allPlayers[i].Key);
+                                                                                AuthorizedTime.Remove(allPlayers[i].Key);
+                                                                                responseMessage += "You do not have enough to play";
+                                                                                _response.StatusCode = 401;
+                                                                            }
+                                                                        }
                                                                         if (valid)
                                                                         {
                                                                             AuthorizedTime.Remove(allPlayers[i].Key);
@@ -2323,110 +2296,129 @@ namespace ServerTools
                                                                                                     break;
                                                                                                 }
                                                                                             }
-                                                                                            if (players.ToString().Contains(entityId.ToString()))//id found at table
+                                                                                            int playerCount = 0;
+                                                                                            for (int k = 0; k < players.Length; k++)
                                                                                             {
-                                                                                                int aiCount = 0;
-                                                                                                int playerCount = 0;
-                                                                                                for (int k = 0; k < 4; k++)
+                                                                                                if (players[k] == entityId)//if player id match
                                                                                                 {
-                                                                                                    if (players[k] == entityId)//if player id match
+                                                                                                    if (k == 0)//Player is the host
                                                                                                     {
-                                                                                                        if (k == 0)//Player is the host
+                                                                                                        if (!started)
                                                                                                         {
-                                                                                                            if (!started)
+                                                                                                            for (int l = 0; l < players.Length; l++)//remove all players from table
                                                                                                             {
-                                                                                                                for (int l = 0; l < players.Length; l++)//remove all players from table
-                                                                                                                {
-                                                                                                                    players[l] = -1;
-                                                                                                                }
-                                                                                                                RIO.Tables[table.Key] = players;
-                                                                                                                events.Add(events.Count, "HostLeft");
-                                                                                                                RIO.Events[table.Key] = events;
+                                                                                                                players[l] = -1;
                                                                                                             }
-                                                                                                            else
-                                                                                                            {
-                                                                                                                players[k] = -1;//remove player from table
-                                                                                                                RIO.Tables[table.Key] = players;
-                                                                                                                int playerNumber = k + 1;
-                                                                                                                events.Add(events.Count, "Left╚" + playerNumber);
-                                                                                                                RIO.Events[table.Key] = events;
-                                                                                                            }
+                                                                                                            RIO.Tables[table.Key] = players;
+                                                                                                            events.Add(events.Count, "HostLeft");
+                                                                                                            RIO.Events[table.Key] = events;
                                                                                                         }
                                                                                                         else
                                                                                                         {
-                                                                                                            if (!started)
-                                                                                                            {
-                                                                                                                players[k] = 0;//remove player and open slot
-                                                                                                                RIO.Tables[table.Key] = players;
-                                                                                                            }
-                                                                                                            else
-                                                                                                            {
-                                                                                                                players[k] = -1;//remove player and close slot
-                                                                                                                RIO.Tables[table.Key] = players;
-                                                                                                            }
+                                                                                                            players[k] = -1;//remove player from table
+                                                                                                            RIO.Tables[table.Key] = players;
                                                                                                             int playerNumber = k + 1;
                                                                                                             events.Add(events.Count, "Left╚" + playerNumber);
                                                                                                             RIO.Events[table.Key] = events;
                                                                                                         }
                                                                                                     }
-                                                                                                    else if (players[k] != -1 && players[k] != 0)//Slot is not closed or empty
+                                                                                                    else
                                                                                                     {
-                                                                                                        playerCount += 1;
-                                                                                                        if (players[k] == -2)//Player is AI
+                                                                                                        if (!started)
                                                                                                         {
-                                                                                                            aiCount += 1;
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                                if (playerCount == 0 || playerCount == aiCount)//No players remain
-                                                                                                {
-                                                                                                    RIO.Tables.Remove(table.Key);
-                                                                                                    RIO.Events.Remove(table.Key);
-                                                                                                    RIO.Claims.Remove(table.Key);
-                                                                                                }
-                                                                                                else if (playerCount == 1 && started)//One player remains and game started
-                                                                                                {
-                                                                                                    bool foundWinner = false;
-                                                                                                    int count = 1;
-                                                                                                    for (int k = 0; k < 4; k++)
-                                                                                                    {
-                                                                                                        if (players[k] != -1 && players[k] != -2)
-                                                                                                        {
-                                                                                                            if (!foundWinner)
-                                                                                                            {
-                                                                                                                foundWinner = true;
-                                                                                                                int playerNumber = k + 1;
-                                                                                                                events.Add(events.Count, "Win╚" + playerNumber);
-                                                                                                                RIO.Events[table.Key] = events;
-                                                                                                            }
+                                                                                                            players[k] = 0;//remove player and open slot
+                                                                                                            RIO.Tables[table.Key] = players;
                                                                                                         }
                                                                                                         else
                                                                                                         {
-                                                                                                            count += 1;
+                                                                                                            players[k] = -1;//remove player and close slot
+                                                                                                            RIO.Tables[table.Key] = players;
                                                                                                         }
+                                                                                                        int playerNumber = k + 1;
+                                                                                                        events.Add(events.Count, "Left╚" + playerNumber);
+                                                                                                        RIO.Events[table.Key] = events;
                                                                                                     }
-                                                                                                    //if (RIO.Command_Cost > 0)
-                                                                                                    //{
-                                                                                                    //    Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, RIO.Command_Cost * count);
-                                                                                                    //}
+                                                                                                }
+                                                                                                else if (players[k] != -1 && players[k] != 0)//Slot is not closed or empty
+                                                                                                {
+                                                                                                    playerCount += 1;
                                                                                                 }
                                                                                             }
-                                                                                            else if (!sitting && !started && players[0] != -1 && players.ToString().Contains("0"))//player is not in a game, this table has not started, host has not left and table has a open slot
+                                                                                            if (playerCount == 0)//No players remain
                                                                                             {
-                                                                                                for (int k = 0; k < players.Length; k++)
+                                                                                                RIO.Tables.Remove(table.Key);
+                                                                                                RIO.Events.Remove(table.Key);
+                                                                                                RIO.Claims.Remove(table.Key);
+                                                                                            }
+                                                                                            else if (playerCount == 1 && started)//One player remains and game started
+                                                                                            {
+                                                                                                int winnerId = 0;
+                                                                                                int count = 1;
+                                                                                                for (int k = 0; k < 4; k++)
                                                                                                 {
-                                                                                                    if (players[k] == 0)//slot is open
+                                                                                                    if (players[k] != -1 && players[k] != -2)
                                                                                                     {
-                                                                                                        sitting = true;
+                                                                                                        winnerId = players[k];
                                                                                                         int playerNumber = k + 1;
-                                                                                                        events.Add(events.Count, "Join╚" + playerNumber + "╚" + cInfo.playerName);
+                                                                                                        events.Add(events.Count, "Win╚" + playerNumber);
                                                                                                         RIO.Events[table.Key] = events;
-                                                                                                        responseMessage += table.Key + "☼" + playerNumber;
-                                                                                                        _response.StatusCode = 200;
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        count += 1;
+                                                                                                    }
+                                                                                                }
+                                                                                                if (RIO.Bet > 0)
+                                                                                                {
+                                                                                                    ClientInfo cInfoWinner = PersistentOperations.GetClientInfoFromEntityId(winnerId);
+                                                                                                    if (cInfoWinner != null)
+                                                                                                    {
+                                                                                                        Wallet.AddCurrency(cInfoWinner.CrossplatformId.CombinedString, RIO.Bet * count, true);
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            if (RIO.Tables.Count > 0)
+                                                                            {
+                                                                                var tables = RIO.Tables.ToArray();//get all tables
+                                                                                for (int j = 0; j < tables.Length; j++)
+                                                                                {
+                                                                                    if (!sitting)
+                                                                                    {
+                                                                                        bool started = false;
+                                                                                        var table = tables[j];
+                                                                                        if (RIO.Tables.TryGetValue(table.Key, out int[] players))//get player ids
+                                                                                        {
+                                                                                            if (RIO.Events.TryGetValue(table.Key, out Dictionary<int, string> events))//get table events
+                                                                                            {
+                                                                                                var eventArray = events.ToArray();
+                                                                                                for (int k = 0; k < eventArray.Length; k++)
+                                                                                                {
+                                                                                                    if (eventArray[k].Value.Contains("Start"))//game has started
+                                                                                                    {
+                                                                                                        started = true;
                                                                                                         break;
                                                                                                     }
                                                                                                 }
-                                                                                                break;
+                                                                                                if (!started)
+                                                                                                {
+                                                                                                    for (int k = 0; k < players.Length; k++)
+                                                                                                    {
+                                                                                                        if (players[k] == 0)
+                                                                                                        {
+                                                                                                            sitting = true;
+                                                                                                            int playerNumber = k + 1;
+                                                                                                            events.Add(events.Count, "Join╚" + playerNumber + "╚" + cInfo.playerName);
+                                                                                                            RIO.Events[table.Key] = events;
+                                                                                                            responseMessage += table.Key + "☼" + playerNumber;
+                                                                                                            _response.StatusCode = 200;
+                                                                                                            break;
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
                                                                                             }
                                                                                         }
                                                                                     }
@@ -2435,21 +2427,21 @@ namespace ServerTools
                                                                             if (!sitting)
                                                                             {
                                                                                 string tableId = "";
-                                                                                for (int k = 0; k < 10; k++)
+                                                                                for (int k = 0; k < 15; k++)
                                                                                 {
                                                                                     tableId = RIO.CreateTable();
                                                                                     if (!RIO.Tables.ContainsKey(tableId) && !RIO.Events.ContainsKey(tableId))
                                                                                     {
-                                                                                        Dictionary<int, string> events = new Dictionary<int, string>();
-                                                                                        RIO.Events.Add(tableId, events);
-                                                                                        Dictionary<string, int> claims = new Dictionary<string, int>();
-                                                                                        RIO.Claims.Add(tableId, claims);
-                                                                                        RIO.Tables.Add(tableId, new int[] { entityId, 0, 0, 0 });
-                                                                                        events.Add(0, "Host╚" + cInfo.playerName);
-                                                                                        RIO.Events[tableId] = events;
                                                                                         break;
                                                                                     }
                                                                                 }
+                                                                                Dictionary<int, string> events = new Dictionary<int, string>();
+                                                                                RIO.Events.Add(tableId, events);
+                                                                                Dictionary<string, int> claims = new Dictionary<string, int>();
+                                                                                RIO.Claims.Add(tableId, claims);
+                                                                                RIO.Tables.Add(tableId, new int[] { entityId, 0, 0, 0 });
+                                                                                events.Add(0, "Host╚" + cInfo.playerName);
+                                                                                RIO.Events[tableId] = events;
                                                                                 responseMessage += tableId + "☼" + 1;
                                                                                 _response.StatusCode = 202;
                                                                             }
@@ -2567,7 +2559,6 @@ namespace ServerTools
                                                         {
                                                             if (RIO.Events.TryGetValue(exitRioData[1], out Dictionary<int, string> events))
                                                             {
-                                                                int aiCount = 0;
                                                                 int playerCount = 0;
                                                                 int bets = 0;
                                                                 bool started = false;
@@ -2600,16 +2591,12 @@ namespace ServerTools
                                                                             events.Add(events.Count, "Left╚" + playerNumber);
                                                                             RIO.Events[exitRioData[1]] = events;
                                                                         }
-                                                                        else
+                                                                        else if (players[i] != -1)
                                                                         {
                                                                             playerCount += 1;
-                                                                            if (players[i] == -2)
-                                                                            {
-                                                                                aiCount += 1;
-                                                                            }
                                                                         }
                                                                     }
-                                                                    if (playerCount == 0 || playerCount == aiCount)
+                                                                    if (playerCount == 0)
                                                                     {
                                                                         RIO.Tables.Remove(exitRioData[1]);
                                                                         RIO.Events.Remove(exitRioData[1]);
@@ -2617,33 +2604,30 @@ namespace ServerTools
                                                                     }
                                                                     else if (playerCount == 1)
                                                                     {
-                                                                        bool foundWinner = false;
+                                                                        int winnerId = 0;
                                                                         int count = 1;
                                                                         for (int i = 0; i < 4; i++)
                                                                         {
                                                                             if (players[i] != -1 && players[i] != -2)
                                                                             {
-                                                                                if (!foundWinner)
-                                                                                {
-                                                                                    foundWinner = true;
-                                                                                    int playerNumber = i + 1;
-                                                                                    events.Add(events.Count, "Win╚" + playerNumber);
-                                                                                    RIO.Events[exitRioData[1]] = events;
-                                                                                }
+                                                                                winnerId = players[i];
+                                                                                int playerNumber = i + 1;
+                                                                                events.Add(events.Count, "Win╚" + playerNumber);
+                                                                                RIO.Events[exitRioData[1]] = events;
                                                                             }
                                                                             else
                                                                             {
                                                                                 count += 1;
                                                                             }
                                                                         }
-                                                                        //if (RIO.Command_Cost > 0)
-                                                                        //{
-                                                                        //    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
-                                                                        //    if (cInfo != null)
-                                                                        //    {
-                                                                        //        Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, RIO.Command_Cost * count);
-                                                                        //    }
-                                                                        //}
+                                                                        if (RIO.Bet > 0)
+                                                                        {
+                                                                            ClientInfo cInfoWinner = PersistentOperations.GetClientInfoFromEntityId(winnerId);
+                                                                            if (cInfoWinner != null)
+                                                                            {
+                                                                                Wallet.AddCurrency(cInfoWinner.CrossplatformId.CombinedString, RIO.Bet * count, true);
+                                                                            }
+                                                                        }
                                                                     }
                                                                 }
                                                                 else

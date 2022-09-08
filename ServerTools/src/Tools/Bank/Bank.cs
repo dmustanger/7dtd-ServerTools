@@ -9,7 +9,7 @@ namespace ServerTools
 {
     class Bank
     {
-        public static bool IsEnabled = false, Inside_Claim = false, Player_Transfers = false, Direct_Deposit = false, Payments = false;
+        public static bool IsEnabled = false, Inside_Claim = false, Player_Transfers = false, Direct_Deposit = false;
         public static string Command_bank = "bank", Command_deposit = "deposit", Command_withdraw = "withdraw", Command_transfer = "transfer";
         public static int Deposit_Fee_Percent = 5;
 

@@ -13,7 +13,7 @@ namespace ServerTools
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine("This was drafted for version 20.6.0");
+                sw.WriteLine("This was drafted for version 20.6.2");
                 sw.WriteLine();
                 sw.WriteLine("If you find mistakes or the file is out of date, let the dev team know.");
                 sw.WriteLine();
@@ -304,7 +304,6 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("<Tool Name=\"Bank\" />");
                 sw.WriteLine("<Tool Name=\"Bank\" Enable=\"False\" Inside_Claim=\"False\" Deposit_Fee_Percent=\"5\" Player_Transfers=\"False\" Direct_Deposit=\"False\" />");
-                sw.WriteLine("<Tool Name=\"Bank_Extended\" Payments=\"False\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set True or False for Inside_Claim");
@@ -317,13 +316,12 @@ namespace ServerTools
                 sw.WriteLine("Players can type /bank to see their bank value.");
                 sw.WriteLine("Transferring from the Wallet to the Bank will take currency from the players bag.");
                 sw.WriteLine("/deposit # takes from the player's bag and adds it to their bank.");
-                sw.WriteLine("/withdraw # takes from the player's bank and adds it to their bag.");
+                sw.WriteLine("/withdraw # takes from the player's bank and adds it to their bag/inventory.");
                 sw.WriteLine("Turn on and off player transfer to allow players to transfer between bank accounts.");
                 sw.WriteLine("While transfer is enabled, players will see their transfer ID when they type /bank.");
                 sw.WriteLine("They can give this transfer ID to another player so that someone can transfer funds to it using chat command /transfer ID amount.");
                 sw.WriteLine("Example: /transfer 1379 5000.");
                 sw.WriteLine("Direct deposit will take currency normally sent to the players inventory and put it in their bank instead.");
-                sw.WriteLine("Payments controls whether currency comes from the bank to pay for commands. It will always take it from the inventory first, bank second.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -1402,12 +1400,12 @@ namespace ServerTools
                 sw.WriteLine("Enabling will create an xml file named ProtectedZones.xml.");
                 sw.WriteLine("Use the console commands while in game to add protection to an area or add zones via the xml");
                 sw.WriteLine("Use the console commands while in game to remove protection to an area or remove zones via the xml");
-                sw.WriteLine("You can set the area protection to false so that you do not have to remove it from the list");
+                sw.WriteLine("You can set the area protection to false in the .xml so that you do not have to remove it from the list");
                 sw.WriteLine("Use two opposing corner points to designate the protected space. This will form a square or rectangle depending on the locations chosen");
                 sw.WriteLine("Protected spaces do not allow for any damage to the blocks nor for anyone to build inside of it including admins.");
                 sw.WriteLine("You can list the protected spaces in console.");
-                sw.WriteLine("You can disable the protection of a space while keeping it on the list to make it easy to reactivate.");
                 sw.WriteLine("If you find the protection gets stuck, you can use console command st-pz remove. Protection will be removed from the chunk you are standing in only.");
+                sw.WriteLine("A chunk is 16 x 16 blocks.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

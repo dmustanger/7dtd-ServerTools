@@ -107,7 +107,7 @@ namespace ServerTools
                                             }
                                             if (FlyingDetector.IsEnabled && userPlatformPermissionLevel > FlyingDetector.Flying_Admin_Level && userCrossplatformPermissionLevel > FlyingDetector.Flying_Admin_Level)
                                             {
-                                                if (FlyingDetector.IsFlying(player.position))
+                                                if (!TeleportDetector.Ommissions.Contains(cInfo.entityId) && FlyingDetector.IsFlying(player.position))
                                                 {
                                                     FlyingDetector.Detected(cInfo, player);
                                                 }

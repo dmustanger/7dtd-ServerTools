@@ -122,7 +122,7 @@ namespace ServerTools
         {
             if (_timepassed >= _delay)
             {
-                if (Command_Cost >= 1 && (Wallet.IsEnabled || Bank.IsEnabled && Bank.Payments))
+                if (Command_Cost >= 1 && Wallet.IsEnabled)
                 {
                     CommandCost(_cInfo, _friend);
                 }
