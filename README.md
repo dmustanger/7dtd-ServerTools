@@ -13,7 +13,8 @@ They have been separated to reduce the size of ServerTools since not all servers
 <br>
 Download and extract the files.<br>
 <br>
-Copy the Mods folder to the root directory of your server or the user data directory if you prefer.<br>
+Copy the Mods folder from the latest release to the user data directory or to the root directory of your server if you prefer.<br>
+It is highly recommended that you use the user data folder. The root folder can be used but the developers will eventually drop support for mods located there.<br>
 <br>
 Start the server.<br>
 <br>
@@ -57,7 +58,6 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Bad_Word_Filter](#bad_word_filter)
   - [Bank](#bank)
   - [Bed](#bed)
-  - [Black_Jack](#black_jack)
   - [Block_Logger](#block_logger)
   - [Block_Pickup](#block_pickup)
   - [Bloodmoon](#bloodmoon)
@@ -121,6 +121,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Report](#report)
   - [Reserved_Slots](#reserved_slots)
   - [Restart_Vote](#restart_vote)
+  - [Roll_It_Out](#roll_it_out)
   - [Scout_Player](#scout_player)
   - [Shop](#shop)
   - [Shutdown & Shutdown_Extended](#shutdown--shutdown_extended)
@@ -676,7 +677,7 @@ Filters out bad words or symbols from chat matching the list in BadWords.xml
 
 ## Bank
 ```xml
-<Tool Name="Bank" Enable="False" Inside_Claim="False" Deposit_Fee_Percent="5" Player_Transfers="False" />
+<Tool Name="Bank" Enable="False" Inside_Claim="False" Deposit_Fee_Percent="5" Player_Transfers="False" Direct_Deposit="False" />
 ```
 ### Attributes
 * __Enable__  
@@ -687,6 +688,8 @@ Set True or False for Inside_Claim
 Set a numeric value for Deposit_Fee_Percent
 * __Player_Transfers__ 
 Set True or False for Player_Transfers
+* __Direct_Deposit__ 
+Set True or False for Direct_Deposit
 
 ### Description
 Inside_Claim controls whether players must be inside their own claim to use the bank commands.
@@ -702,6 +705,8 @@ Players can type /bank to see their bank value.
 Transferring from the Wallet to the Bank will take currency from the players bag.
 
 /deposit # takes from the players bag and adds it to their bank.
+
+Direct_Deposit controls whether currency goes directly to a player's bank instead of their bag.
 
 ## Bed
 ```xml
@@ -724,17 +729,6 @@ The delay between using the command is controled with Delay_Between_Uses. This i
 Command_Cost controls the amount needed to run the command.
 
 Players type /bed to activate it
-
-## Black_Jack
-```xml
-<Tool Name="Black_Jack" Enable="False" Buy_In="300" />
-```
-
-### Attributes
-* __Enable__  
-Turn Black_Jack on/off by setting this to true/false.
-* __Buy_In__ 
-Set a numeric value to control the cost of entry
  
 ## Block_Logger
 ```xml
@@ -2063,6 +2057,23 @@ Allows players to vote for a server restart. Initiates stopserver 1 if successfu
 Players_Online is the amount needed to start a vote.
 
 Votes_Needed is the amount of players that must vote yes.
+
+## Roll_It_Out
+```xml
+<Tool Name="Roll_It_Out" Enable="False" Bet="25" />
+```
+### Attributes
+* __Enable__  
+Set True or False for Enable
+* __Bet__  
+Set a numeric value for Bet
+
+### Description
+Allows players to enter a dice rolling game against each other or AI.
+
+The game is played through the steam browser and requires Web_API to be enabled and running.
+
+Bet is the amount of currency required to play the game. The winner of the game will receive the total from the bets.
 
 ## Scout_Player
 ```xml
