@@ -303,8 +303,6 @@ Jail_Position controls where a jailed player is sent to. This is the x, y, z pos
 
 Jail shock will apply the shock buff to them if they try to leave the prison area.
 
-If you send a player to jail via chat commands, are sent to jail for 60 minutes. Players sent via console can be adjusted to suit your needs.
-
 ## Net_Package_Detector
 ```xml
 <Tool Name="Net_Package_Detector" Enable="False" />
@@ -331,8 +329,6 @@ Set a numeric value for Interval
 Starts a log that will keep track of multi stats and the player inventory.
 
 Setting the Interval will control how often these checks and logs and written to the file.
-
-
 
 ## Player_Stats & Player_Stats_Extended
 ```xml
@@ -376,7 +372,6 @@ Setting Kick_Enabled to true will kick the detected player.
 
 Setting Ban_Enabled to true will ban the detected player.
 
-
 ## Protected_Zones
 ```xml
 <Tool Name="Protected_Zones" Enable="False" />
@@ -388,19 +383,17 @@ Set True or False for Enable
 ### Description
 Enabling will create an xml file named ProtectedZones.xml.
 
-Use the console commands while in game to add protection to an area or add zones via the xml
+Use the console commands while in game to add protection to an area or add zones via the xml.
 
-Use the console commands while in game to remove protection to an area or remove zones via the xml
+Use the console commands while in game to remove protection to an area or remove zones via the xml.
 
-You can set the area protection to false so that you do not have to remove it from the list
+You can set the area protection to false so that you do not have to remove it from the list.
 
-Use two opposing corner points to designate the protected space. This will form a square or rectangle depending on the locations chosen
+Use two opposing corner points to designate the protected space. This will form a square or rectangle depending on the locations chosen.
 
 Protected spaces do not allow for any damage to the blocks nor for anyone to build inside of it including admins.
 
 You can list the protected spaces in console.
-
-You can disable the protection of a space while keeping it on the list to make it easy to reactivate.
 
 ## PvE_Violations
 ```xml
@@ -417,7 +410,7 @@ Set a numeric value for Kick
 Set a numeric value for Ban
 
 ### Description
-Players that violate PvE Lobby or Market space will be hit with a strike. If they get too many of them, it will apply a penalty.
+Players that violate a PvE Lobby or Market space will be hit with a strike. If they get too many of them, it will apply a penalty.
 
 Set how many strikes a player can have before applying the penalties.
 
@@ -443,9 +436,8 @@ Set a numeric value for Admin_Level
 
 ### Description
 Automatically detects players using spectator mode without authorization.
+
 Admins lower or equal to tier Admin_Level are immune to the spectator check.
-
-
 
 ## Speed_Detector
 ```xml
@@ -479,7 +471,6 @@ Enables the tracking logger to create a database log of player positions.
 
 Use console commands to see the players and their positions from a specified location and time.
 
-
 ## XRay_Detector
 ```xml
 <Tool Name="XRay_Detector" Enable="False" Admin_Level="0" />
@@ -492,7 +483,7 @@ Set a numeric value for Admin_Level
 
 ### Description
 Enabling will automatically check players head location and sets their screen black until it stops colliding with blocks.
-Admin_Level controls the tier required for the tool to skip specific players and allow them to view inside blocks.
+Admin_Level controls the permission required in your ServerAdmin.xml to skip specific players, which allows them to view inside blocks.
 <br>
 <br>
 <br>
@@ -544,16 +535,15 @@ Set a numeric value for Minimum_Spawn_Radius
 Set a numeric value for Maximum_Spawn_Radius
 * __Animal_Ids__  
 A list of Ids for the type of animals to spawn.  
-The list should be comma separated.  
-__```????(where do the Ids come from? is there a list?)```__
+The list should be comma separated.
 * __Command_Cost__  
 Set a numeric values for Command_Cost
 
 ### Commands
 * /animaltracking  
-Spawns an animal from the allowed Ids to within the radius set
+Spawns an animal from the allowed IDs to within the radius set
 * /track  
-Spawns an animal from the allowed Ids to within the radius set |
+Spawns an animal from the allowed IDs to within the radius set
 
 ### Description
 
@@ -593,45 +583,49 @@ Set a numeric value for Tax
 
 Players can sell items by putting it into the first slot of a secure chest they own and typing /auction sell #. The number is how much the price is.
 
-Typing '_/auction_' shows available items in the auction. 
+Typing '_/auction_' shows available items in the auction or it will open the panel if enabled, allowing players to view and exchange Auction items. 
 
 Players can attempt to purchase the corresponding item # with '_/auction buy #_'.
 
 Profits are sent to the sellers wallet.
 
-A player can cancel their auction by typing '_/auction cancel_' but it must have been longer than the cancel time.
-
 ___Total_Items___ controls how many items they may have in the auction.
 
 ## Auto_Backup
 ```xml
-<Tool Name="Auto_Backup" Enable="False" Delay_Between_Saves="240" Destination="" Compression_Level="0" Backup_Count="5" />
+<Tool Name="Auto_Backup" Enable="False" Delay_Between_Saves="240" Compression_Level="0" Backup_Count="5" />
+<Tool Name="Auto_Backup_Extended" Destination="" Save_Directory="" />
 ```
 
 ### Attributes
-1. __Enable__  
+* __Enable__  
 Set True or False for Enable
-2. __Delay_Between_Saves__  
+* __Delay_Between_Saves__  
 Set a numeric value for Delay_Between_Saves in minutes
-3. __Destination__  
-Set your desired save folder location for Destination  
-You should enter an absolute path, e.g. c:/MyFiles/7DaysBackups
-4. __Compression_Level__  
+* __Compression_Level__  
 Compression level:  
    0 - None  
    9 - maximum 
-5. __Backup_Count__  
+* __Backup_Count__  
 How many total backups to keep before deleting old ones.
+* __Destination__  
+Set the desired location to save backups with Destination
+Leave this blank for the default location
+You should enter an absolute path, e.g. c:/MyFiles/7DaysBackups
+* __Save_Directory__  
+Set the desired save folder to backup with Save_Directory
+Leave this blank for the default location
+You should enter an absolute path, e.g. c:/Users/BananaMan/AppData/Roaming/7DaysToDie/Saves
 
 ### Description
 An automatic backup of the world files will be created in a zip file.
 
 Time_Between_Saves controls how many minutes will pass between backups.
-You can allow the default location or specify a save directory you would like your backups to go with Destination.
+You can allow the default location or specify a save directory you would like your backups to be located by setting the Destination.
 
-Be careful to put the entire location if inputting a custom one. Example C:/MyFiles/7DaysBackups/.
+You should enter an absolute path, e.g. Example C:/MyFiles/7DaysBackups/.
 
-Set the compression level from 0-9. 0 is none, 9 is maximum.
+Set the compression level from 0-9. 0 is none, 9 is maximum. Increasing this value may impact performance of the server and will increase the time to run.
 
 ## Auto_Party_Invite
 
@@ -673,7 +667,9 @@ Set True or False for Invalid_Name
 ### Description
 Enabling will create a BadWords.xml in your main installation folder in a ServerTools folder.
 
-Filters out bad words or symbols from chat matching the list in BadWords.xml
+Filters out bad words or symbols from chat matching the list in BadWords.xml.
+
+It will not filter a phrase or multiple word salad, only single words.
 
 ## Bank
 ```xml
