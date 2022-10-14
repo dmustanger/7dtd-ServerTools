@@ -37,7 +37,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[0]);
+                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[0]);
                         if (cInfo != null)
                         {
                             SpawnItems(cInfo);
@@ -64,7 +64,7 @@ namespace ServerTools
                     World world = GameManager.Instance.World;
                     if (world.Players.dict.ContainsKey(_cInfo.entityId))
                     {
-                        EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                        EntityPlayer _player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                         if (_player != null && _player.IsSpawned() && !_player.IsDead())
                         {
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].StartingItems = true;

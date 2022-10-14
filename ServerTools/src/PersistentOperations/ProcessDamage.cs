@@ -25,21 +25,21 @@ namespace ServerTools
         {
             try
             {
-                Entity victim = PersistentOperations.GetEntity(entityId(__instance));
+                Entity victim = GeneralFunction.GetEntity(entityId(__instance));
                 if (victim != null)
                 {
-                    Entity attacker = PersistentOperations.GetEntity(attackerEntityId(__instance));
+                    Entity attacker = GeneralFunction.GetEntity(attackerEntityId(__instance));
                     if (attacker != null)
                     {
                         if (victim is EntityPlayer)
                         {
-                            ClientInfo cInfoVictim = PersistentOperations.GetClientInfoFromEntityId(victim.entityId);
+                            ClientInfo cInfoVictim = GeneralFunction.GetClientInfoFromEntityId(victim.entityId);
                             if (cInfoVictim != null)
                             {
                                 EntityPlayer victimPlayer = victim as EntityPlayer;
                                 if (attacker is EntityPlayer)
                                 {
-                                    ClientInfo cInfoAttacker = PersistentOperations.GetClientInfoFromEntityId(attacker.entityId);
+                                    ClientInfo cInfoAttacker = GeneralFunction.GetClientInfoFromEntityId(attacker.entityId);
                                     if (cInfoAttacker != null)
                                     {
                                         EntityPlayer attackingPlayer = attacker as EntityPlayer;
@@ -63,7 +63,7 @@ namespace ServerTools
                                                     return true;
                                                 }
                                             }
-                                            if (InfiniteAmmo.IsEnabled && attackingItem(__instance).ItemClass.IsGun())
+                                            if (InfiniteAmmo.IsEnabled && attackingItem(__instance).ItemClass != null && attackingItem(__instance).ItemClass.IsGun())
                                             {
                                                 int slot = attackingPlayer.inventory.holdingItemIdx;
                                                 if (InfiniteAmmo.Exec(cInfoAttacker, attackingPlayer, slot, attackingItem(__instance)))
@@ -114,7 +114,7 @@ namespace ServerTools
                                             }
                                             if (Wallet.IsEnabled && Wallet.PVP && Wallet.Player_Kill > 0)
                                             {
-                                                Wallet.AddCurrency(cInfoAttacker.CrossplatformId.CombinedString, Wallet.Zombie_Kill, true);
+                                                Wallet.AddCurrency(cInfoAttacker.CrossplatformId.CombinedString, Wallet.Player_Kill, true);
                                             }
                                             if (MagicBullet.IsEnabled && !MagicBullet.Kill.Contains(cInfoAttacker.entityId))
                                             {
@@ -165,7 +165,7 @@ namespace ServerTools
                         }
                         else if (victim is EntityZombie && attacker is EntityPlayer)
                         {
-                            ClientInfo cInfoAttacker = PersistentOperations.GetClientInfoFromEntityId(attacker.entityId);
+                            ClientInfo cInfoAttacker = GeneralFunction.GetClientInfoFromEntityId(attacker.entityId);
                             if (cInfoAttacker != null)
                             {
                                 EntityPlayer attackingPlayer = attacker as EntityPlayer;
@@ -175,7 +175,7 @@ namespace ServerTools
                                     {
                                         if (DamageDetector.LogEnabled)
                                         {
-                                            int distance = (int)attackingPlayer.GetDistance(victim);
+                                            float distance = attackingPlayer.GetDistance(victim);
                                             using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                             {
                                                 sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' named '{6}' @ '{7}' using '{8}' for '{9}' damage. Distance '{10}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, victim.entityId, victim.EntityClass.entityClassName, victim.position, attackingItem(__instance).ItemClass.GetLocalizedItemName() ?? attackingItem(__instance).ItemClass.GetItemName(), strength(__instance), distance));
@@ -189,7 +189,7 @@ namespace ServerTools
                                             return true;
                                         }
                                     }
-                                    if (InfiniteAmmo.IsEnabled && attackingItem(__instance).ItemClass.IsGun())
+                                    if (InfiniteAmmo.IsEnabled && attackingItem(__instance).ItemClass != null && attackingItem(__instance).ItemClass.IsGun())
                                     {
                                         int slot = attackingPlayer.inventory.holdingItemIdx;
                                         if (InfiniteAmmo.Exec(cInfoAttacker, attackingPlayer, slot, attackingItem(__instance)))
@@ -206,14 +206,7 @@ namespace ServerTools
                                         }
                                         if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.BloodmoonStarted && BloodmoonWarrior.WarriorList.Contains(cInfoAttacker.entityId))
                                         {
-                                            if (BloodmoonWarrior.KilledZombies.TryGetValue(cInfoAttacker.entityId, out int killedZ))
-                                            {
-                                                BloodmoonWarrior.KilledZombies[cInfoAttacker.entityId] += 1;
-                                            }
-                                            else
-                                            {
-                                                BloodmoonWarrior.KilledZombies.Add(cInfoAttacker.entityId, 1);
-                                            }
+                                            BloodmoonWarrior.KilledZombies[cInfoAttacker.entityId] += 1;
                                         }
                                     }
                                 }
@@ -221,13 +214,13 @@ namespace ServerTools
                                 {
                                     return true;
                                 }
-                                if (PersistentOperations.IsBloodmoon() && Market.IsEnabled && Market.MarketPlayers.Contains(cInfoAttacker.entityId))
+                                if (Market.IsEnabled && Market.Damage_Z && GeneralFunction.IsBloodmoon() && Market.MarketPlayers.Contains(cInfoAttacker.entityId))
                                 {
                                     Phrases.Dict.TryGetValue("Market12", out string phrase);
                                     ChatHook.ChatMessage(cInfoAttacker, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return true;
                                 }
-                                if (PersistentOperations.IsBloodmoon() && Lobby.IsEnabled && Lobby.LobbyPlayers.Contains(cInfoAttacker.entityId))
+                                if (Lobby.IsEnabled && Lobby.Damage_Z && GeneralFunction.IsBloodmoon() && Lobby.LobbyPlayers.Contains(cInfoAttacker.entityId))
                                 {
                                     Phrases.Dict.TryGetValue("Lobby12", out string phrase);
                                     ChatHook.ChatMessage(cInfoAttacker, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -237,7 +230,7 @@ namespace ServerTools
                         }
                         else if (victim is EntityAnimal && attacker is EntityPlayer)
                         {
-                            ClientInfo cInfoAttacker = PersistentOperations.GetClientInfoFromEntityId(attacker.entityId);
+                            ClientInfo cInfoAttacker = GeneralFunction.GetClientInfoFromEntityId(attacker.entityId);
                             if (cInfoAttacker != null)
                             {
                                 EntityPlayer attackingPlayer = attacker as EntityPlayer;
@@ -247,7 +240,7 @@ namespace ServerTools
                                     {
                                         return true;
                                     }
-                                    if (InfiniteAmmo.IsEnabled && attackingItem(__instance).ItemClass.IsGun())
+                                    if (InfiniteAmmo.IsEnabled && attackingItem(__instance).ItemClass != null && attackingItem(__instance).ItemClass.IsGun())
                                     {
                                         int slot = attackingPlayer.inventory.holdingItemIdx;
                                         if (InfiniteAmmo.Exec(cInfoAttacker, attackingPlayer, slot, attackingItem(__instance)))
@@ -262,7 +255,7 @@ namespace ServerTools
                     else if (KillNotice.IsEnabled && KillNotice.Misc && bFatal(__instance) && victim.IsAlive())
                     {
                         lastEntityKilled = victim.entityId;
-                        ClientInfo cInfoVictim = PersistentOperations.GetClientInfoFromEntityId(victim.entityId);
+                        ClientInfo cInfoVictim = GeneralFunction.GetClientInfoFromEntityId(victim.entityId);
                         if (cInfoVictim != null)
                         {
                             KillNotice.MiscDeath(cInfoVictim, damageTyp(__instance));

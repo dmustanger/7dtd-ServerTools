@@ -30,8 +30,8 @@ namespace ServerTools
                 }
                 else if (Friend_Access)
                 {
-                    PersistentPlayerData ppdAccess = PersistentOperations.GetPersistentPlayerDataFromEntityId(_entityIdThatOpenedIt);
-                    PersistentPlayerData ppdOwner = PersistentOperations.GetPersistentPlayerDataFromEntityId(ownerId);
+                    PersistentPlayerData ppdAccess = GeneralFunction.GetPersistentPlayerDataFromEntityId(_entityIdThatOpenedIt);
+                    PersistentPlayerData ppdOwner = GeneralFunction.GetPersistentPlayerDataFromEntityId(ownerId);
                     if (ppdAccess != null && ppdOwner != null)
                     {
                         if (ppdAccess.ACL.Contains(ppdAccess.UserIdentifier) && ppdOwner.ACL.Contains(ppdOwner.UserIdentifier))

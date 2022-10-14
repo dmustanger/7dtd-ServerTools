@@ -45,7 +45,7 @@ namespace ServerTools
                 return;
             }
             Vector3 _pos = GameManager.Instance.World.Players.dict[_cInfo.entityId].position;
-            List<ClientInfo> clientList = PersistentOperations.ClientList();
+            List<ClientInfo> clientList = GeneralFunction.ClientList();
             if (clientList != null)
             {
                 for (int i = 0; i < clientList.Count; i++)

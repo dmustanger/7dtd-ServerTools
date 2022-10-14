@@ -22,7 +22,7 @@ namespace ServerTools
             {
                 if (!File.Exists(FilePath))
                 {
-                    TokenKey = PersistentOperations.CreatePassword(22);
+                    TokenKey = GeneralFunction.CreatePassword(22);
                     using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                     {
                         sw.WriteLine(TokenKey);

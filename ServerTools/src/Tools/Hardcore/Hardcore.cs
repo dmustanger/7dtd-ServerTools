@@ -10,6 +10,8 @@ namespace ServerTools
         public static int Max_Deaths = 9, Max_Extra_Lives = 3, Life_Price = 2000;
         public static string Command_top3 = "top3", Command_score = "score", Command_buy_life = "buy life", Command_hardcore = "hardcore", Command_hardcore_on = "hardcore on";
 
+        public static List<string> NoEntry = new List<string>();
+
         public static void Check(ClientInfo _cInfo, EntityPlayer _player, bool _addDeath)
         {
             string[] stats = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats;
@@ -48,7 +50,7 @@ namespace ServerTools
             PersistentPlayer p = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString];
             if (p != null)
             {
-                PersistentOperations.Session.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime time);
+                GeneralFunction.Session.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime time);
                 TimeSpan varTime = DateTime.Now - time;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int timepassed = (int)fractionalMinutes;
@@ -66,7 +68,9 @@ namespace ServerTools
                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreSavedStats = SavedStats;
                 }
                 p.Auction = new Dictionary<int, ItemDataSerializable>();
+                p.AuctionCount = 0;
                 p.AuctionReturn = new Dictionary<int, ItemDataSerializable>();
+                p.AutoPartyInvite = new List<string[]>();
                 p.Bank = 0;
                 p.Bounty = 0;
                 p.BountyHunter = 0;
@@ -77,18 +81,28 @@ namespace ServerTools
                 p.ClanRequestToJoin = new Dictionary<string, string>();
                 p.CountryBanImmune = false;
                 p.CustomCommandDelays = new Dictionary<string, DateTime>();
+                p.EventOver = false;
+                p.EventReturnPosition = "";
+                p.EventSpawn = false;
+                p.Events = new List<List<string>>();
+                p.ExperienceBoost = 0;
+                p.FamilyShareImmune = false;
                 p.FirstClaimBlock = false;
                 p.HardcoreEnabled = false;
                 p.HardcoreStats = new string[0];
                 p.HighPingImmune = false;
                 p.HighPingImmuneName = "";
                 p.Homes = new Dictionary<string, string>();
+                p.HomeSpots = 0;
                 p.JailDate = new DateTime();
                 p.JailName = "";
                 p.JailTime = 0;
+                p.JailRelease = false;
                 p.LastAnimal = new DateTime();
+                p.LastBed = new DateTime();
                 p.LastDied = new DateTime();
                 p.LastFriendTele = new DateTime();
+                p.LastGamble = new DateTime();
                 p.LastGimme = new DateTime();
                 p.LastHome = new DateTime();
                 p.LastJoined = new DateTime();
@@ -96,6 +110,10 @@ namespace ServerTools
                 p.LastLobby = new DateTime();
                 p.LastLog = new DateTime();
                 p.LastMarket = new DateTime();
+                p.LastNameColorChange = new DateTime();
+                p.LastPrayer = new DateTime();
+                p.LastPrefixColorChange = new DateTime();
+                p.LastScout = new DateTime();
                 p.LastStuck = new DateTime();
                 p.LastTravel = new DateTime();
                 p.LastVote = new DateTime();
@@ -111,15 +129,19 @@ namespace ServerTools
                 p.OldPlayer = false;
                 p.PlayerName = "";
                 p.PlayerWallet = 0;
+                p.ProxyBanImmune = false;
+                p.CustomReturnPositions = new Dictionary<string, string>();
                 p.SessionTime = 0;
                 p.StartingItems = false;
                 p.TotalTimePlayed = 0;
                 p.Vehicles = new Dictionary<int, string[]>();
                 p.VoteWeekCount = 0;
+                p.Waypoints = new Dictionary<string, string>();
+                p.WaypointSpots = 0;
                 p.WebPass = "";
                 p.ZoneDeathTime = new DateTime();
                 PersistentContainer.DataChange = true;
-                Hardcore.Disconnect(_cInfo, newStats);
+                Disconnect(_cInfo, newStats);
             }
         }
 
@@ -247,7 +269,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (Max_Extra_Lives > 0)
@@ -334,81 +356,11 @@ namespace ServerTools
                 {
                     File.Delete(filepath2);
                 }
-                RemovePlayerData(_cInfo);
+                NoEntry.Remove(_cInfo.CrossplatformId.CombinedString);
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.ResetHardcoreProfile: {0}", e.Message));
-            }
-        }
-
-        public static void RemovePlayerData(ClientInfo _cInfo)
-        {
-            try
-            {
-                PersistentPlayer p = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString];
-                if (p != null)
-                {
-                    p.Auction = new Dictionary<int, ItemDataSerializable>();
-                    p.AuctionReturn = new Dictionary<int, ItemDataSerializable>();
-                    p.Bank = 0;
-                    p.Bounty = 0;
-                    p.BountyHunter = 0;
-                    p.ClanInvite = "";
-                    p.ClanName = "";
-                    p.ClanOfficer = false;
-                    p.ClanOwner = false;
-                    p.ClanRequestToJoin = new Dictionary<string, string>();
-                    p.CountryBanImmune = false;
-                    p.CustomCommandDelays = new Dictionary<string, DateTime>();
-                    p.FirstClaimBlock = false;
-                    p.HardcoreEnabled = false;
-                    p.HardcoreSavedStats = new List<string[]>();
-                    p.HardcoreStats = new string[0];
-                    p.HighPingImmune = false;
-                    p.HighPingImmuneName = "";
-                    p.Homes = new Dictionary<string, string>();
-                    p.JailDate = new DateTime();
-                    p.JailName = "";
-                    p.JailTime = 0;
-                    p.LastAnimal = new DateTime();
-                    p.LastDied = new DateTime();
-                    p.LastFriendTele = new DateTime();
-                    p.LastGimme = new DateTime();
-                    p.LastHome = new DateTime();
-                    p.LastJoined = new DateTime();
-                    p.LastKillMe = new DateTime();
-                    p.LastLobby = new DateTime();
-                    p.LastLog = new DateTime();
-                    p.LastMarket = new DateTime();
-                    p.LastStuck = new DateTime();
-                    p.LastTravel = new DateTime();
-                    p.LastVote = new DateTime();
-                    p.LastVoteWeek = new DateTime();
-                    p.LastWhisper = "";
-                    p.LobbyReturnPos = "";
-                    p.MarketReturnPos = "";
-                    p.MuteDate = new DateTime();
-                    p.MuteName = "";
-                    p.MuteTime = 0;
-                    p.NewSpawn = false;
-                    p.NewSpawnPosition = "";
-                    p.OldPlayer = false;
-                    p.PlayerName = "";
-                    p.PlayerWallet = 0;
-                    p.SessionTime = 0;
-                    p.StartingItems = false;
-                    p.TotalTimePlayed = 0;
-                    p.Vehicles = new Dictionary<int, string[]>();
-                    p.VoteWeekCount = 0;
-                    p.Waypoints = new Dictionary<string, string>();
-                    p.WebPass = "";
-                    p.ZoneDeathTime = new DateTime();
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.RemovePlayerData: {0}", e.Message));
             }
         }
 
@@ -439,13 +391,18 @@ namespace ServerTools
         {
             try
             {
-                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"Auto kicked at end of hardcore session\"", _cInfo.CrossplatformId.CombinedString), null);
-                EntityPlayer entityPlayer = (EntityPlayer)GameManager.Instance.World.GetEntity(_cInfo.entityId);
-                PersistentOperations.SavePersistentPlayerDataXML();
-                PersistentOperations.RemoveAllClaims(_cInfo.CrossplatformId.CombinedString);
-                PersistentOperations.RemovePersistentPlayerData(_cInfo.CrossplatformId.CombinedString);
-                PersistentOperations.RemoveAllACL(_cInfo.CrossplatformId.CombinedString);
-                Hardcore.ResetHardcoreProfile(_cInfo);
+                NoEntry.Add(_cInfo.CrossplatformId.CombinedString);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                if (player != null)
+                {
+                    Phrases.Dict.TryGetValue("Hardcore14", out string phrase);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} {1}", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                }
+                GeneralFunction.SavePersistentPlayerDataXML();
+                GeneralFunction.RemoveAllClaims(_cInfo.CrossplatformId.CombinedString);
+                GeneralFunction.RemovePersistentPlayerData(_cInfo.CrossplatformId.CombinedString);
+                GeneralFunction.RemoveAllACL(_cInfo.CrossplatformId.CombinedString);
+                Timers.HardcoreDeleteFiles(_cInfo);
             }
             catch (Exception e)
             {

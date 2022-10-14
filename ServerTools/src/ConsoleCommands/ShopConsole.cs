@@ -306,10 +306,10 @@ namespace ServerTools
                         List<string[]> shopLog = PersistentContainer.Instance.ShopLog;
                         if (shopLog.Count > 0)
                         {
-                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[2]);
+                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[2]);
                             if (cInfo != null)
                             {
-                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                                 if (player != null)
                                 {
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Shop records:"));

@@ -785,6 +785,11 @@ namespace ServerTools
                         phrase = "You can not damage zombies while inside the lobby on bloodmoon";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lobby12\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Lobby13", out phrase))
+                    {
+                        phrase = "You can not use this command during the bloodmoon";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Lobby13\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************ Market ************************ -->");
@@ -849,6 +854,11 @@ namespace ServerTools
                         phrase = "You can not damage zombies while inside the market on bloodmoon";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Market12\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Market13", out phrase))
+                    {
+                        phrase = "You can not use this command during the bloodmoon";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Market13\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************** Waypoints *********************** -->");
@@ -1822,6 +1832,16 @@ namespace ServerTools
                         phrase = "You are already signed up for hardcore mode. Type {Command_Prefix1}{Command_hardcore} to check how many lives remain";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Hardcore12\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Hardcore13", out phrase))
+                    {
+                        phrase = "The server is resetting your data profile. Unable to join";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Hardcore13\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Hardcore14", out phrase))
+                    {
+                        phrase = "Auto kicked at end of hardcore session. Please rejoin in 10 seconds";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Hardcore14\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- **************** Chat_Flood_Protection ***************** -->");
@@ -1993,12 +2013,12 @@ namespace ServerTools
                     {
                         phrase = "You can only withdraw a full stack at a time. The maximum stack size is {Max}";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank10\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank9\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank10", out phrase))
                     {
                         phrase = "You do not have this much in your bank";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank11\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank10\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Bank11", out phrase))
                     {
                         phrase = "Id not found. Ask for the transfer Id from the player you want to transfer to";
@@ -3343,6 +3363,42 @@ namespace ServerTools
                         phrase = "Overlay has been set to true";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Overlay3\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ******************** Interactive_Map ******************* -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("IMap1", out phrase))
+                    {
+                        phrase = "Interactive map security code set to {Value}";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"IMap1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ******************* Land_Claim_Count ******************* -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("LandClaim1", out phrase))
+                    {
+                        phrase = "You have {Value1} of {Value2} active land claims";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"LandClaim1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ******************* No_Vehicle_Drone ******************* -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("NoVehicleDrone1", out phrase))
+                    {
+                        phrase = "Pick up your drone before entering a vehicle";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"NoVehicleDrone1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ****************** Command_Permission ****************** -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("CommandPermission1", out phrase))
+                    {
+                        phrase = "You do not have permission to use that command";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"CommandPermission1\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");

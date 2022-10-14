@@ -6,7 +6,7 @@ namespace ServerTools
 {
     public class WebPanel
     {
-        public static bool IsEnabled = false;
+        public static bool IsEnabled = false, Alert = false;
         public static int Timeout = 5;
 
     }

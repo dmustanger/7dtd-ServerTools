@@ -97,7 +97,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        List<ClientInfo> clientList = GeneralFunction.ClientList();
                         if (clientList != null)
                         {
                             for (int i = 0; i < clientList.Count; i++)
@@ -165,7 +165,7 @@ namespace ServerTools
                 {
                     if (_params[0].Contains("_"))
                     {
-                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[0]);
+                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[0]);
                         if (cInfo != null)
                         {
                             int currentWallet = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);

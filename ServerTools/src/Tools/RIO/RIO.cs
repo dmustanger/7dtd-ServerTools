@@ -17,7 +17,7 @@ namespace ServerTools
         public static Dictionary<string, Dictionary<int, string>> Events = new Dictionary<string, Dictionary<int, string>>();
         public static Dictionary<string, Dictionary<string, int>> Claims = new Dictionary<string, Dictionary<string, int>>();
 
-        private static readonly string AlphaSet = "JKQRLWBYZMPSNODHEFXTACGIUV", NumSet = "1928374650", DieSet = "136425";
+        private static readonly string NumSet = "1928374650", DieSet = "136425";
 
         public static void Exec(ClientInfo _cInfo)
         {
@@ -26,7 +26,26 @@ namespace ServerTools
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + "Overlay is set off. Steam browser is disabled" + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
-            if (WebAPI.IsEnabled && WebAPI.Connected)
+            string ip = _cInfo.ip;
+            bool duplicate = false;
+            List<ClientInfo> clientList = GeneralFunction.ClientList();
+            if (clientList != null && clientList.Count > 1)
+            {
+                for (int i = 0; i < clientList.Count; i++)
+                {
+                    ClientInfo cInfo = clientList[i];
+                    if (cInfo != null && cInfo.entityId != _cInfo.entityId && ip == cInfo.ip)
+                    {
+                        duplicate = true;
+                        break;
+                    }
+                }
+            }
+            long ipLong = GeneralFunction.ConvertIPToLong(_cInfo.ip);
+            if (duplicate || (ipLong >= GeneralFunction.ConvertIPToLong("10.0.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("10.255.255.255")) ||
+                (ipLong >= GeneralFunction.ConvertIPToLong("172.16.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("172.31.255.255")) ||
+                (ipLong >= GeneralFunction.ConvertIPToLong("192.168.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("192.168.255.255")) ||
+                _cInfo.ip == "127.0.0.1")
             {
                 string securityId = "";
                 for (int i = 0; i < 10; i++)
@@ -38,7 +57,6 @@ namespace ServerTools
                         if (!Access.ContainsValue(_cInfo.entityId))
                         {
                             Access.Add(securityId, _cInfo.entityId);
-                            WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
                         }
                         else
                         {
@@ -58,23 +76,25 @@ namespace ServerTools
                                             {
                                                 if (players[l] == id)
                                                 {
-                                                    players[i] = -1;
+                                                    players[l] = -1;
                                                     Tables[tables[k].Key] = players;
                                                     if (Events.TryGetValue(tables[k].Key, out Dictionary<int, string> events))
                                                     {
-                                                        events.Add(events.Count, "Left╚" + (i + 1));
+                                                        events.Add(events.Count, "Left╚" + (l + 1));
                                                     }
                                                 }
                                             }
                                         }
                                         Access.Remove(accessList[j].Key);
-                                        var authorizedList = WebAPI.Authorized.ToArray();
-                                        for (int k = 0; k < authorizedList.Length; k++)
+                                        if (WebAPI.Authorized.ContainsValue(accessList[j].Key))
                                         {
-                                            if (authorizedList[k].Key == accessList[j].Key)
+                                            var authorizedList = WebAPI.Authorized.ToArray();
+                                            for (int k = 0; k < authorizedList.Length; k++)
                                             {
-                                                WebAPI.Authorized.Remove(authorizedList[k].Key);
-                                                WebAPI.AuthorizedTime.Remove(authorizedList[k].Key);
+                                                if (authorizedList[k].Value == accessList[j].Key)
+                                                {
+                                                    WebAPI.Authorized.Remove(authorizedList[k].Key);
+                                                }
                                             }
                                         }
                                         break;
@@ -82,7 +102,6 @@ namespace ServerTools
                                 }
                             }
                             Access.Add(securityId, _cInfo.entityId);
-                            WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
                         }
                         break;
                     }
@@ -92,16 +111,96 @@ namespace ServerTools
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserRio", true));
             }
+            else
+            {
+                if (Access.ContainsValue(_cInfo.entityId))
+                {
+                    var clients = Access.ToArray();
+                    for (int i = 0; i < clients.Length; i++)
+                    {
+                        if (clients[i].Value == _cInfo.entityId)
+                        {
+                            Access.TryGetValue(clients[i].Key, out int id);
+                            Access.Remove(clients[i].Key);
+                            Access.Add(ip, _cInfo.entityId);
+                            var tables = Tables.ToArray();
+                            for (int k = 0; k < tables.Length; k++)
+                            {
+                                int[] players = tables[k].Value;
+                                for (int l = 0; l < players.Length; l++)
+                                {
+                                    if (players[l] == id)
+                                    {
+                                        players[l] = -1;
+                                        Tables[tables[k].Key] = players;
+                                        if (Events.TryGetValue(tables[k].Key, out Dictionary<int, string> events))
+                                        {
+                                            events.Add(events.Count, "Left╚" + (l + 1));
+                                        }
+                                    }
+                                }
+                            }
+                            if (WebAPI.Authorized.ContainsValue(clients[i].Key))
+                            {
+                                var authorizedList = WebAPI.Authorized.ToArray();
+                                for (int k = 0; k < authorizedList.Length; k++)
+                                {
+                                    if (authorizedList[k].Value == clients[i].Key)
+                                    {
+                                        WebAPI.Authorized.Remove(authorizedList[k].Key);
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                else if (Access.ContainsKey(ip))
+                {
+                    Access.TryGetValue(ip, out int id);
+                    Access[ip] = _cInfo.entityId;
+                    var tables = Tables.ToArray();
+                    for (int k = 0; k < tables.Length; k++)
+                    {
+                        int[] players = tables[k].Value;
+                        for (int l = 0; l < players.Length; l++)
+                        {
+                            if (players[l] == id)
+                            {
+                                players[l] = -1;
+                                Tables[tables[k].Key] = players;
+                                if (Events.TryGetValue(tables[k].Key, out Dictionary<int, string> events))
+                                {
+                                    events.Add(events.Count, "Left╚" + (l + 1));
+                                }
+                            }
+                        }
+                    }
+                    var authorizedList = WebAPI.Authorized.ToArray();
+                    for (int k = 0; k < authorizedList.Length; k++)
+                    {
+                        if (authorizedList[k].Key == ip)
+                        {
+                            WebAPI.Authorized.Remove(authorizedList[k].Key);
+                        }
+                    }
+                }
+                else
+                {
+                    Access.Add(ip, _cInfo.entityId);
+                }
+                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserRio", true));
+            }
         }
 
         public static void SetLink()
         {
             try
             {
-                if (File.Exists(PersistentOperations.XPathDir + "XUi/windows.xml"))
+                if (File.Exists(GeneralFunction.XPathDir + "XUi/windows.xml"))
                 {
                     string link = string.Format("http://{0}:{1}/rio.html", WebAPI.BaseAddress, WebAPI.Port);
-                    List<string> lines = File.ReadAllLines(PersistentOperations.XPathDir + "XUi/windows.xml").ToList();
+                    List<string> lines = File.ReadAllLines(GeneralFunction.XPathDir + "XUi/windows.xml").ToList();
                     for (int i = 0; i < lines.Count; i++)
                     {
                         if (lines[i].Contains("browserRio"))
@@ -109,7 +208,7 @@ namespace ServerTools
                             if (!lines[i + 7].Contains(link))
                             {
                                 lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", link);
-                                File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
+                                File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
                             }
                             return;
                         }
@@ -137,7 +236,7 @@ namespace ServerTools
                             lines.Add("</append>");
                             lines.Add("");
                             lines.Add("</configs>");
-                            File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
+                            File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
                             return;
                         }
                     }
@@ -145,7 +244,7 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", PersistentOperations.XPathDir + "XUi/windows.xml", e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralFunction.XPathDir + "XUi/windows.xml", e.Message));
             }
         }
 
@@ -155,7 +254,7 @@ namespace ServerTools
             Random rnd = new System.Random();
             for (int i = 0; i < _length; i++)
             {
-                pass += AlphaSet.ElementAt(rnd.Next(0, 26));
+                pass += GeneralFunction.NumSet.ElementAt(rnd.Next(0, 10));
             }
             return pass;
         }

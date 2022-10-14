@@ -101,7 +101,7 @@ namespace ServerTools
                                         continue;
                                     }
                                     string name = line.GetAttribute("Name");
-                                    if (!PersistentOperations.IsValidItem(name))
+                                    if (!GeneralFunction.IsValidItem(name))
                                     {
                                         Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry. Item name not found: {0}", name));
                                         continue;
@@ -260,10 +260,10 @@ namespace ServerTools
             {
                 if (!BloodmoonStarted)
                 {
-                    if (PersistentOperations.IsBloodmoon())
+                    if (GeneralFunction.IsBloodmoon())
                     {
                         BloodmoonStarted = true;
-                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        List<ClientInfo> clientList = GeneralFunction.ClientList();
                         if (clientList != null)
                         {
                             for (int i = 0; i < clientList.Count; i++)
@@ -271,7 +271,7 @@ namespace ServerTools
                                 ClientInfo cInfo = clientList[i];
                                 if (cInfo != null)
                                 {
-                                    EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                                    EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                                     if (player != null && player.IsSpawned() && player.IsAlive() && player.Died > 0 && player.Progression.GetLevel() >= 10 && Random.Next(0, 100) <= Chance)
                                     {
                                         WarriorList.Add(cInfo.entityId);
@@ -285,7 +285,7 @@ namespace ServerTools
                         }
                     }
                 }
-                else if (!PersistentOperations.IsBloodmoon())
+                else if (!GeneralFunction.IsBloodmoon())
                 {
                     BloodmoonStarted = false;
                     RewardWarriors();
@@ -305,14 +305,14 @@ namespace ServerTools
                 for (int i = 0; i < warriors.Count; i++)
                 {
                     int warrior = warriors[i];
-                    EntityPlayer player = PersistentOperations.GetEntityPlayer(warrior);
+                    EntityPlayer player = GeneralFunction.GetEntityPlayer(warrior);
                     if (player != null && player.IsAlive())
                     {
                         if (KilledZombies.TryGetValue(warrior, out int _killedZ))
                         {
                             if (_killedZ >= Zombie_Kills)
                             {
-                                ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(warrior);
+                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(warrior);
                                 if (cInfo != null)
                                 {
                                     Counter(cInfo, Reward_Count);
@@ -322,13 +322,13 @@ namespace ServerTools
                                         player.Died = deathCount;
                                         player.bPlayerStatsChanged = true;
                                         cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(player));
-                                        Phrases.Dict.TryGetValue("BloodmoonWarrior2", out string _phrase);
-                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        Phrases.Dict.TryGetValue("BloodmoonWarrior2", out string phrase);
+                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                     else
                                     {
-                                        Phrases.Dict.TryGetValue("BloodmoonWarrior3", out string _phrase);
-                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        Phrases.Dict.TryGetValue("BloodmoonWarrior3", out string phrase);
+                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                             }

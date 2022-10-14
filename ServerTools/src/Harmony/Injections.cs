@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using UnityEngine;
 
 public static class Injections
 {
@@ -163,7 +162,7 @@ public static class Injections
                 {
                     _msg = Regex.Replace(_msg, @"\[.*?\]", "");
                 }
-                if (!PersistentOperations.InvalidPrefix.Contains(_msg[0]))
+                if (!GeneralFunction.InvalidPrefix.Contains(_msg[0]))
                 {
                     if (_mainName.Contains("[") && _mainName.Contains("]"))
                     {
@@ -220,11 +219,15 @@ public static class Injections
     {
         try
         {
-            if (PersistentOperations.No_Vehicle_Pickup)
+            if (GeneralFunction.No_Vehicle_Pickup)
             {
-                Entity entity = PersistentOperations.GetEntity(_entityId);
+                Entity entity = GeneralFunction.GetEntity(_entityId);
                 if (entity != null && entity is EntityVehicle)
                 {
+                    if (GeneralFunction.Allow_Bicycle && entity is EntityBicycle)
+                    {
+                        return true;
+                    }
                     return false;
                 }
             }
@@ -240,7 +243,7 @@ public static class Injections
     {
         try
         {
-            ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
+            ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
             if (cInfo != null)
             {
                 if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > 0 &&
@@ -285,11 +288,11 @@ public static class Injections
                     }
                     if (WorkstationLock.IsEnabled && _te is TileEntityWorkstation)
                     {
-                        EntityPlayer entityPlayer = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                        EntityPlayer entityPlayer = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                         if (entityPlayer != null)
                         {
-                            EnumLandClaimOwner owner = PersistentOperations.ClaimedByWho(cInfo.CrossplatformId, new Vector3i(entityPlayer.position));
-                            if (owner != EnumLandClaimOwner.Self && owner != EnumLandClaimOwner.Ally && !PersistentOperations.ClaimedByNone(new Vector3i(entityPlayer.position)))
+                            EnumLandClaimOwner owner = GeneralFunction.ClaimedByWho(cInfo.CrossplatformId, new Vector3i(entityPlayer.position));
+                            if (owner != EnumLandClaimOwner.Self && owner != EnumLandClaimOwner.Ally && !GeneralFunction.ClaimedByNone(new Vector3i(entityPlayer.position)))
                             {
                                 Phrases.Dict.TryGetValue("WorkstationLock1", out string phrase);
                                 ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -314,7 +317,7 @@ public static class Injections
         {
             if (__state)
             {
-                ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
+                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
                 if (cInfo != null)
                 {
                     cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close trader", true));
@@ -338,7 +341,7 @@ public static class Injections
                     EntityAlive entityAlive = __instance.GetAttackTarget();
                     if (entityAlive != null && entityAlive is EntityPlayer)
                     {
-                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityAlive.entityId);
+                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityAlive.entityId);
                         if (cInfo != null)
                         {
                             if (ReservedSlots.Dict.ContainsKey(cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(cInfo.CrossplatformId.CombinedString))
@@ -366,7 +369,7 @@ public static class Injections
             {
                 if (Hardcore.IsEnabled)
                 {
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(__instance.entityId);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(__instance.entityId);
                     if (cInfo != null)
                     {
                         if (Hardcore.Optional)
@@ -397,7 +400,7 @@ public static class Injections
         {
             if (DroppedBagProtection.IsEnabled && _entity != null && _entity is EntityBackpack)
             {
-                List<ClientInfo> clientList = PersistentOperations.ClientList();
+                List<ClientInfo> clientList = GeneralFunction.ClientList();
                 if (clientList != null)
                 {
                     for (int i = 0; i < clientList.Count; i++)
@@ -499,14 +502,14 @@ public static class Injections
             int entityId;
             if (int.TryParse(_nameOrId, out entityId))
             {
-                clientInfo = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                clientInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
                 if (clientInfo != null)
                 {
                     __result = clientInfo;
                     return false;
                 }
             }
-            clientInfo = PersistentOperations.GetClientInfoFromName(_nameOrId);
+            clientInfo = GeneralFunction.GetClientInfoFromName(_nameOrId);
             if (clientInfo != null)
             {
                 __result = clientInfo;
@@ -517,7 +520,7 @@ public static class Injections
                 PlatformUserIdentifierAbs userIdentifier;
                 if (PlatformUserIdentifierAbs.TryFromCombinedString(_nameOrId, out userIdentifier))
                 {
-                    clientInfo = PersistentOperations.GetClientInfoFromUId(userIdentifier);
+                    clientInfo = GeneralFunction.GetClientInfoFromUId(userIdentifier);
                     if (clientInfo != null)
                     {
                         __result = clientInfo;
@@ -535,52 +538,87 @@ public static class Injections
 
     public static bool NetPackagePlayerStats_ProcessPackage_Prefix(NetPackagePlayerStats __instance)
     {
-        if (__instance.Sender != null && PersistentOperations.Net_Package_Detector && !PlayerStatsPackage.IsValid(__instance))
+        try
         {
-            return false;
+            if (__instance.Sender != null && GeneralFunction.Net_Package_Detector && !PlayerStatsPackage.IsValid(__instance))
+            {
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackagePlayerStats_ProcessPackage_Prefix: {0}", e.Message));
         }
         return true;
     }
 
     public static bool NetPackageEntityAddScoreServer_ProcessPackage_Prefix(NetPackageEntityAddScoreServer __instance)
     {
-        if (__instance.Sender != null)
+        try
         {
-            if (PersistentOperations.Net_Package_Detector && !EntityAddScoreServerPackage.IsValid(__instance))
+            if (__instance.Sender != null)
             {
-                return false;
+                if (GeneralFunction.Net_Package_Detector && !EntityAddScoreServerPackage.IsValid(__instance))
+                {
+                    return false;
+                }
+                if (MagicBullet.IsEnabled && MagicBullet.Exec(__instance))
+                {
+                    return false;
+                }
             }
-            if (MagicBullet.IsEnabled && MagicBullet.Exec(__instance))
-            {
-                return false;
-            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageEntityAddScoreServer_ProcessPackage_Prefix: {0}", e.Message));
         }
         return true;
     }
 
     public static bool NetPackageChat_ProcessPackage_Prefix(NetPackageChat __instance)
     {
-        if (__instance.Sender != null && PersistentOperations.Net_Package_Detector && !ChatPackage.IsValid(__instance))
+        try
         {
-            return false;
+            if (__instance.Sender != null && GeneralFunction.Net_Package_Detector && !ChatPackage.IsValid(__instance))
+            {
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageChat_ProcessPackage_Prefix: {0}", e.Message));
         }
         return true;
     }
 
     public static bool NetPackageEntityPosAndRot_ProcessPackage_Prefix(NetPackageEntityPosAndRot __instance)
     {
-        if (__instance.Sender != null && PersistentOperations.Net_Package_Detector && !EntityPosAndRotPackage.IsValid(__instance))
+        try
         {
-            return false;
+            if (__instance.Sender != null && GeneralFunction.Net_Package_Detector && !EntityPosAndRotPackage.IsValid(__instance))
+            {
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageEntityPosAndRot_ProcessPackage_Prefix: {0}", e.Message));
         }
         return true;
     }
 
     public static bool NetPackagePlayerData_ProcessPackage_Prefix(NetPackagePlayerData __instance)
     {
-        if (__instance.Sender != null && PersistentOperations.Net_Package_Detector && !PlayerDataPackage.IsValid(__instance))
+        try
         {
-            return false;
+            if (__instance.Sender != null && GeneralFunction.Net_Package_Detector && !PlayerDataPackage.IsValid(__instance))
+            {
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackagePlayerData_ProcessPackage_Prefix: {0}", e.Message));
         }
         return true;
     }
@@ -606,5 +644,66 @@ public static class Injections
                 TeleportDetector.Ommissions.Add(__instance.entityId);
             }
         }
+    }
+
+    public static bool PersistentPlayerList_PlaceLandProtectionBlock_Prefix(PersistentPlayerList __instance, Vector3i pos, PersistentPlayerData owner)
+    {
+        try
+        {
+            if (LandClaimCount.IsEnabled && __instance != null && pos != null && owner != null)
+            {
+                PersistentPlayerData persistentPlayerData;
+                if (__instance.m_lpBlockMap.TryGetValue(pos, out persistentPlayerData))
+                {
+                    persistentPlayerData.RemoveLandProtectionBlock(pos);
+                }
+                owner.AddLandProtectionBlock(pos);
+                LandClaimCount.RemoveExtraLandClaims(owner);
+                __instance.m_lpBlockMap[pos] = owner;
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.PersistentPlayerList_PlaceLandProtectionBlock_Prefix: {0}", e.Message));
+        }
+        return true;
+    }
+
+    public static bool NetPackageEntityAttach_ProcessPackage_Prefix(NetPackageEntityAttach __instance)
+    {
+        try
+        {
+            if (__instance.Sender == null)
+            {
+                return false;
+            }
+            else
+            {
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(NoVehicleDrone.riderId(__instance));
+                if (player != null)
+                {
+                    if (player.IsDead())
+                    {
+                        return false;
+                    }
+                    else if (NoVehicleDrone.IsEnabled && !NoVehicleDrone.Exec(__instance, player))
+                    {
+                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(player.entityId);
+                        if (cInfo != null)
+                        {
+                            Phrases.Dict.TryGetValue("NoVehicleDrone1", out string phrase);
+                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
+                        return false;
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageEntityAttach_ProcessPackage_Prefix: {0}", e.Message));
+        }
+        return true;
     }
 }

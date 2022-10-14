@@ -169,7 +169,7 @@ namespace ServerTools
                                 p.ClanName = "";
                                 p.ClanOfficer = false;
                                 ClanMember.Remove(_id);
-                                ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_id);
+                                ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_id);
                                 if (cInfo2 != null && _cInfo != cInfo2)
                                 {
                                     Phrases.Dict.TryGetValue("Clan21", out string phrase1);
@@ -221,7 +221,7 @@ namespace ServerTools
                                 if (PersistentContainer.Instance.Players[_clanMember].ClanName == _oldClanName)
                                 {
                                     PersistentContainer.Instance.Players[_clanMember].ClanName = _clanName;
-                                    ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clanMember);
+                                    ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_clanMember);
                                     if (cInfo2 != null && _cInfo != cInfo2)
                                     {
                                         Phrases.Dict.TryGetValue("Clan31", out string phrase1);
@@ -346,7 +346,7 @@ namespace ServerTools
                             string _clanName = PersistentContainer.Instance.Players[_clanMember].ClanName;
                             if (!string.IsNullOrEmpty(_clanName) && _clanName == _clanInvite)
                             {
-                                ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clanMember);
+                                ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_clanMember);
                                 if (cInfo2 != null)
                                 {
                                     Phrases.Dict.TryGetValue("Clan29", out string phrase);
@@ -385,7 +385,7 @@ namespace ServerTools
                             string _clanName2 = PersistentContainer.Instance.Players[_clanMember].ClanName;
                             if (!string.IsNullOrEmpty(_clanName2) && _clanName2 == _clanName)
                             {
-                                ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clanMember);
+                                ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_clanMember);
                                 if (cInfo2 != null)
                                 {
                                     Phrases.Dict.TryGetValue("Clan29", out string phrase);
@@ -443,7 +443,7 @@ namespace ServerTools
                             string _clanName = PersistentContainer.Instance.Players[_clanMember].ClanName;
                             if (string.IsNullOrEmpty(_clanName) && _clanName == _clanInvite)
                             {
-                                ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clanMember);
+                                ClientInfo _cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_clanMember);
                                 if (_cInfo2 != null)
                                 {
                                     Phrases.Dict.TryGetValue("Clan15", out _phrase);
@@ -545,7 +545,7 @@ namespace ServerTools
                                     string _clanMember = ClanMember[i];
                                     if (PersistentContainer.Instance.Players[_clanMember].ClanName == _clanName)
                                     {
-                                        ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clanMember);
+                                        ClientInfo _cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_clanMember);
                                         if (_cInfo2 != null && _cInfo != _cInfo2)
                                         {
                                             Phrases.Dict.TryGetValue("Clan32", out _phrase);
@@ -708,7 +708,7 @@ namespace ServerTools
                             string _clanMember = ClanMember[i];
                             if (PersistentContainer.Instance.Players[_clanMember].ClanName == _clanName)
                             {
-                                ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clanMember);
+                                ClientInfo _cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_clanMember);
                                 if (_cInfo2 != null)
                                 {
                                     Phrases.Dict.TryGetValue("Clan32", out _phrase);
@@ -748,7 +748,7 @@ namespace ServerTools
                                 PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue("Clan40", out string _phrase);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clan.Key);
+                                ClientInfo _cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_clan.Key);
                                 if (_cInfo2 != null)
                                 {
                                     Phrases.Dict.TryGetValue("Clan38", out _phrase);
@@ -833,7 +833,7 @@ namespace ServerTools
                     {
                         if (_clan.Value == _clanName)
                         {
-                            ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_clan.Key);
+                            ClientInfo _cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_clan.Key);
                             if (_cInfo2 != null)
                             {
                                 string _senderName = string.Format("{0}(Clan) {1}[-]", Private_Chat_Color, _cInfo.playerName);

@@ -50,7 +50,7 @@ namespace ServerTools
         {
             try
             {
-                PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromUId(_cInfo.CrossplatformId);
+                PlayerDataFile pdf = GeneralFunction.GetPlayerDataFileFromUId(_cInfo.CrossplatformId);
                 if (pdf != null)
                 {
                     Vector3i pos = new Vector3i((int)pdf.ecd.pos.x, (int)pdf.ecd.pos.y, (int)pdf.ecd.pos.z);
@@ -108,7 +108,7 @@ namespace ServerTools
                                     {
                                         tileEntityLootContainer.SetModified();
                                     }
-                                    PersistentOperations.SavePlayerDataFile(_cInfo.CrossplatformId.ToString(), pdf);
+                                    GeneralFunction.SavePlayerDataFile(_cInfo.CrossplatformId.ToString(), pdf);
                                 }
                             }
                         }
@@ -125,7 +125,7 @@ namespace ServerTools
         {
             try
             {
-                ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(_id);
+                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(_id);
                 if (cInfo != null)
                 {
                     if (GameManager.Instance.World.Players.dict.ContainsKey(cInfo.entityId))
@@ -143,10 +143,10 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    PlayerDataFile playerDataFile = PersistentOperations.GetPlayerDataFileFromUId(cInfo.CrossplatformId);
+                                    PlayerDataFile playerDataFile = GeneralFunction.GetPlayerDataFileFromUId(cInfo.CrossplatformId);
                                     if (playerDataFile != null)
                                     {
-                                        PersistentOperations.SavePlayerDataFile(cInfo.CrossplatformId.ToString(), playerDataFile);
+                                        GeneralFunction.SavePlayerDataFile(cInfo.CrossplatformId.ToString(), playerDataFile);
                                     }
                                     Players.Remove(cInfo.entityId);
                                     Disconnect(cInfo);

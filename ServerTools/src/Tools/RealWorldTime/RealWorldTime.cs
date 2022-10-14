@@ -79,7 +79,7 @@ namespace ServerTools
             Phrases.Dict.TryGetValue("RealWorldTime1", out string phrase);
             phrase = phrase.Replace("{Time}", time.ToShortTimeString());
             phrase = phrase.Replace("{TimeZone}", Time_Zone);
-            List<ClientInfo> clientList = PersistentOperations.ClientList();
+            List<ClientInfo> clientList = GeneralFunction.ClientList();
             if (clientList != null)
             {
                 for (int i = 0; i < clientList.Count; i++)

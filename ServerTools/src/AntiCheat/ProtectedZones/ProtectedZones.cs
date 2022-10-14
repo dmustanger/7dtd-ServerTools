@@ -239,7 +239,7 @@ namespace ServerTools
                     }
                     if (chunks.Count > 0)
                     {
-                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        List<ClientInfo> clientList = GeneralFunction.ClientList();
                         if (clientList != null && clientList.Count > 0)
                         {
                             for (int i = 0; i < clientList.Count; i++)
@@ -364,7 +364,7 @@ namespace ServerTools
             try
             {
                 List<Chunk> chunkList = new List<Chunk>();
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     Vector3 position = player.position;
@@ -393,7 +393,7 @@ namespace ServerTools
                     for (int k = 0; k < chunkList.Count; k++)
                     {
                         Chunk chunk = chunkList[k];
-                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        List<ClientInfo> clientList = GeneralFunction.ClientList();
                         if (clientList != null)
                         {
                             for (int l = 0; l < clientList.Count; l++)
@@ -420,7 +420,7 @@ namespace ServerTools
             {
                 List<Chunk> chunkList = new List<Chunk>();
                 List<int[]> positionList = new List<int[]>();
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     positionList.Add(new int[] { (int)player.position.x, (int)player.position.z });
@@ -460,7 +460,7 @@ namespace ServerTools
                     for (int k = 0; k < chunkList.Count; k++)
                     {
                         Chunk chunk = chunkList[k];
-                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        List<ClientInfo> clientList = GeneralFunction.ClientList();
                         if (clientList != null)
                         {
                             for (int l = 0; l < clientList.Count; l++)

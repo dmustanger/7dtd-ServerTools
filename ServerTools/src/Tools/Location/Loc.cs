@@ -11,7 +11,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            Entity player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+            Entity player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
             if (player != null)
             {
                 Vector3i position = new Vector3i(player.position.x, player.position.y, player.position.z);

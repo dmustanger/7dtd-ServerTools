@@ -125,6 +125,7 @@ function SignIn() {
 				let request = new XMLHttpRequest();
 				request.open('POST', window.location.href.replace('st.html', 'SignIn'), true);
 				request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+				request.setRequestHeader('User-Agent', 'C# program');
 				request.onerror = function() {
 					alert("Error");
 				};
@@ -264,6 +265,10 @@ function Console() {
 			let log = document.getElementById('Console');
 			log.textContent += responseSplit[0];
 			log.scrollIntoView(false);
+			StartConsoleClock();
+		}
+		if (request.status == 201 && request.readyState == 4) {
+			Pin += request.responseText;
 			StartConsoleClock();
 		}
 		else if (request.status == 403 && request.readyState == 4) {
@@ -687,7 +692,7 @@ function Reward() {
 };
 
 function StartPlayerClock() {
-	PlayerClock = setInterval(Players, 10000);
+	PlayerClock = setTimeout(Players, 10000);
 };
 
 function StopPlayerClock() {
@@ -695,7 +700,7 @@ function StopPlayerClock() {
 };
 
 function StartConsoleClock() {
-	ConsoleClock = setInterval(Console, 10000);
+	ConsoleClock = setTimeout(Console, 10000);
 };
 
 function StopConsoleClock() {

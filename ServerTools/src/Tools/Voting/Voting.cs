@@ -101,45 +101,28 @@ namespace ServerTools
                                         continue;
                                     }
                                     string item = line.GetAttribute("ItemOrBlock");
-                                    if (item == "WalletCoin")
+
+                                    ItemValue itemValue = ItemClass.GetItem(item, false);
+                                    if (itemValue.type == ItemValue.None.type)
                                     {
-                                        if (Wallet.IsEnabled)
-                                        {
-                                            if (minCount < 1)
-                                            {
-                                                minCount = 1;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Wallet tool is not enabled: {0}", line.OuterXml));
-                                            continue;
-                                        }
+                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Item not found: {0}", item));
+                                        continue;
                                     }
-                                    else
+                                    if (minCount > itemValue.ItemClass.Stacknumber.Value)
                                     {
-                                        ItemValue itemValue = ItemClass.GetItem(item, false);
-                                        if (itemValue.type == ItemValue.None.type)
-                                        {
-                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Item not found: {0}", item));
-                                            continue;
-                                        }
-                                        if (minCount > itemValue.ItemClass.Stacknumber.Value)
-                                        {
-                                            minCount = itemValue.ItemClass.Stacknumber.Value;
-                                        }
-                                        else if (minCount < 1)
-                                        {
-                                            minCount = 1;
-                                        }
-                                        if (maxCount > itemValue.ItemClass.Stacknumber.Value)
-                                        {
-                                            maxCount = itemValue.ItemClass.Stacknumber.Value;
-                                        }
-                                        else if (maxCount < 1)
-                                        {
-                                            maxCount = 1;
-                                        }
+                                        minCount = itemValue.ItemClass.Stacknumber.Value;
+                                    }
+                                    else if (minCount < 1)
+                                    {
+                                        minCount = 1;
+                                    }
+                                    if (maxCount > itemValue.ItemClass.Stacknumber.Value)
+                                    {
+                                        maxCount = itemValue.ItemClass.Stacknumber.Value;
+                                    }
+                                    else if (maxCount < 1)
+                                    {
+                                        maxCount = 1;
                                     }
                                     if (minQuality < 1)
                                     {
@@ -500,7 +483,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null && player.IsSpawned())
                 {
                     World world = GameManager.Instance.World;
@@ -589,7 +572,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null && player.IsSpawned())
                 {
                     Vector3 pos = player.GetPosition();
@@ -651,9 +634,9 @@ namespace ServerTools
         {
             try
             {
-                if (File.Exists(PersistentOperations.XPathDir + "XUi/windows.xml"))
+                if (File.Exists(GeneralFunction.XPathDir + "XUi/windows.xml"))
                 {
-                    List<string> lines = File.ReadAllLines(PersistentOperations.XPathDir + "XUi/windows.xml").ToList();
+                    List<string> lines = File.ReadAllLines(GeneralFunction.XPathDir + "XUi/windows.xml").ToList();
                     for (int i = 0; i < lines.Count; i++)
                     {
                         if (lines[i].Contains("browserVote"))
@@ -661,7 +644,7 @@ namespace ServerTools
                             if (!lines[i + 7].Contains(_link))
                             {
                                 lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", _link);
-                                File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
+                                File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
                             }
                             return;
                         }
@@ -689,14 +672,14 @@ namespace ServerTools
                             lines.Add("</append>");
                             lines.Add("");
                             lines.Add("</configs>");
-                            File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
+                            File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
                         }
                     }
                 }
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", PersistentOperations.XPathDir + "XUi/windows.xml", e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralFunction.XPathDir + "XUi/windows.xml", e.Message));
             }
         }
 

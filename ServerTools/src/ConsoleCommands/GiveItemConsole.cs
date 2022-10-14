@@ -87,7 +87,7 @@ namespace ServerTools
                         }
                         if (_params[0].ToLower() == "all")
                         {
-                            List<ClientInfo> cInfoList = PersistentOperations.ClientList();
+                            List<ClientInfo> cInfoList = GeneralFunction.ClientList();
                             if (cInfoList != null)
                             {
                                 for (int i = 0; i < cInfoList.Count; i++)
@@ -95,7 +95,7 @@ namespace ServerTools
                                     ClientInfo cInfo = cInfoList[i];
                                     if (cInfo != null)
                                     {
-                                        EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                                        EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                                         if (player != null && player.IsSpawned() && !player.IsDead())
                                         {
                                             EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
@@ -129,7 +129,7 @@ namespace ServerTools
                             ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
                             if (cInfo != null)
                             {
-                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                                 if (player != null && player.IsSpawned() && !player.IsDead())
                                 {
                                     var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData

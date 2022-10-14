@@ -13,7 +13,6 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, Permissions = false;
 
         public static Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
-        public static List<string> PermissionQue = new List<string>();
         public static List<int> TeleportCheckProtection = new List<int>();
         
         private const string file = "CustomCommands.xml";
@@ -72,7 +71,7 @@ namespace ServerTools
                                     continue;
                                 }
                                 else if (line.HasAttribute("Trigger") && line.HasAttribute("Command") && line.HasAttribute("DelayBetweenUses") && line.HasAttribute("Hidden") &&
-                                    line.HasAttribute("Reserved") && line.HasAttribute("Permission") && line.HasAttribute("Cost") && line.HasAttribute("Bloodmoon"))
+                                    line.HasAttribute("Reserved") && line.HasAttribute("Cost") && line.HasAttribute("Bloodmoon"))
                                 {
                                     string trigger = line.GetAttribute("Trigger").ToLower();
                                     string command = line.GetAttribute("Command");
@@ -81,11 +80,6 @@ namespace ServerTools
                                     if (!bool.TryParse(line.GetAttribute("Reserved").ToLower(), out bool reserved))
                                     {
                                         Log.Out(string.Format("[SERVERTOOLS] Ignoring CustomCommands.xml entry. Invalid (true/false) value for 'Reserved' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!bool.TryParse(line.GetAttribute("Permission").ToLower(), out bool permission))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring CustomCommands.xml entry. Invalid (true/false) value for 'Permission' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
                                     if (!int.TryParse(line.GetAttribute("Cost"), out int cost))
@@ -98,23 +92,14 @@ namespace ServerTools
                                         Log.Out(string.Format("[SERVERTOOLS] Ignoring CustomCommands.xml entry. Invalid (true/false) value for 'Bloodmoon' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    string[] c = { command, delay, hidden, reserved.ToString(), permission.ToString(), cost.ToString(), bloodmoon.ToString() };
+                                    string[] c = { command, delay, hidden, reserved.ToString(), cost.ToString(), bloodmoon.ToString() };
                                     if (!Dict.ContainsKey(trigger))
                                     {
                                         Dict.Add(trigger, c);
-                                        if (!GameManager.Instance.adminTools.GetCommands().ContainsKey(trigger))
-                                        {
-                                            PermissionQue.Add(trigger);
-                                            Permissions = true;
-                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    if (Permissions)
-                    {
-                        Timers.AddPermissionTimer();
                     }
                 }
                 if (upgrade)
@@ -178,15 +163,15 @@ namespace ServerTools
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, {SetTeleport}, {Teleport}, whisper, global -->");
-                    sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Permission=\"false\" Cost=\"0\" Bloodmoon=\"false\" /> -->");
-                    sw.WriteLine("    <!-- <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Reserved=\"false\" Permission=\"\" Cost=\"\" Bloodmoon=\"\" /> -->");
+                    sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Cost=\"0\" Bloodmoon=\"true\" /> -->");
+                    sw.WriteLine("    <!-- <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Reserved=\"false\" Cost=\"\" Bloodmoon=\"\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, string[]> kvp in Dict)
                         {
-                            sw.WriteLine(string.Format("    <Custom Trigger=\"{0}\" Command=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Reserved=\"{4}\" Permission=\"{5}\" Cost=\"{6}\" Bloodmoon=\"{7}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3], kvp.Value[4], kvp.Value[5], kvp.Value[6]));
+                            sw.WriteLine(string.Format("    <Custom Trigger=\"{0}\" Command=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Reserved=\"{4}\" Cost=\"{5}\" Bloodmoon=\"{6}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3], kvp.Value[4], kvp.Value[5]));
                         }
                     }
                     sw.WriteLine("</CustomCommands>");
@@ -233,34 +218,32 @@ namespace ServerTools
                         bool.TryParse(kvp.Value[3], out bool reserved);
                         if (!hidden)
                         {
-                            if (reserved)
+                            if (reserved && (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || 
+                                ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+                                if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                                 {
-                                    if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
+                                    if (DateTime.Now < dt)
                                     {
-                                        if (DateTime.Now < dt)
+                                        string c = kvp.Key;
+                                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, c);
+                                        if (commands.Length >= 100)
                                         {
-                                            string c = kvp.Key;
-                                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, c);
-                                            if (commands.Length >= 100)
-                                            {
-                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                                commands = "";
-                                            }
+                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                            commands = "";
                                         }
                                     }
-                                    else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                                }
+                                else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                                {
+                                    if (DateTime.Now < dt)
                                     {
-                                        if (DateTime.Now < dt)
+                                        string c = kvp.Key;
+                                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, c);
+                                        if (commands.Length >= 100)
                                         {
-                                            string c = kvp.Key;
-                                            commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, c);
-                                            if (commands.Length >= 100)
-                                            {
-                                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                                commands = "";
-                                            }
+                                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                            commands = "";
                                         }
                                     }
                                 }
@@ -294,18 +277,24 @@ namespace ServerTools
                 if (Dict.TryGetValue(_command, out string[] c))
                 {
                     int.TryParse(c[1], out int delay);
-                    int.TryParse(c[5], out int cost);
+                    int.TryParse(c[4], out int cost);
                     bool.TryParse(c[3], out bool reserved);
                     if (reserved && !ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) && !ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                     {
                         return;
                     }
-                    bool.TryParse(c[4], out bool permission);
-                    if (permission && !Permission(_cInfo, _command))
+                    if (GameManager.Instance.adminTools.GetCommands().ContainsKey(_command))
                     {
-                        return; 
+                        string[] commands = { _command };
+                        if (!GameManager.Instance.adminTools.CommandAllowedFor(commands, _cInfo))
+                        {
+                            Phrases.Dict.TryGetValue("CustomCommands2", out string phrase);
+                            phrase = phrase.Replace("{Command}", _command);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            return;
+                        }
                     }
-                    bool.TryParse(c[6], out bool bloodmoon);
+                    bool.TryParse(c[5], out bool bloodmoon);
                     if (!bloodmoon && Bloodmoon(_cInfo, _command))
                     {
                         return;
@@ -327,35 +316,11 @@ namespace ServerTools
             }
         }
 
-        private static bool Permission(ClientInfo _cInfo, string _command)
-        {
-            try
-            {
-                if (!GameManager.Instance.adminTools.GetCommands().ContainsKey(_command))
-                {
-                    GameManager.Instance.adminTools.AddCommandPermission(_command, 0, true);
-                }
-                string[] commands = { _command };
-                if (GameManager.Instance.adminTools.CommandAllowedFor(commands, _cInfo))
-                {
-                    return true;
-                }
-                Phrases.Dict.TryGetValue("CustomCommands2", out string phrase);
-                phrase = phrase.Replace("{Command}", _command);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommands.Permission: {0}", e.Message));
-            }
-            return false;
-        }
-
         private static bool Bloodmoon(ClientInfo _cInfo, string _command)
         {
             try
             {
-                if (PersistentOperations.IsBloodmoon())
+                if (GeneralFunction.IsBloodmoon())
                 {
                     Phrases.Dict.TryGetValue("CustomCommands5", out string phrase);
                     phrase = phrase.Replace("{Command}", _command);
@@ -537,7 +502,7 @@ namespace ServerTools
         {
             try
             {
-                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_playerId);
+                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_playerId);
                 if (cInfo != null)
                 {
                     for (int i = 0; i < commands.Count; i++)
@@ -594,7 +559,7 @@ namespace ServerTools
                     }
                     if (_command.Contains("{RandomId}"))
                     {
-                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        List<ClientInfo> clientList = GeneralFunction.ClientList();
                         if (clientList != null)
                         {
                             ClientInfo cInfo2 = clientList.ElementAt(Random.Next(clientList.Count));
@@ -606,7 +571,7 @@ namespace ServerTools
                     }
                     if (_command.Contains("{RandomEOS}"))
                     {
-                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        List<ClientInfo> clientList = GeneralFunction.ClientList();
                         if (clientList != null)
                         {
                             ClientInfo cInfo2 = clientList.ElementAt(Random.Next(clientList.Count));
@@ -712,7 +677,7 @@ namespace ServerTools
                             XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && (line.Name == "Custom" || line.Name == "Command"))
                             {
-                                string trigger = "", command = "", delay = "0", hidden = "false", reserved = "false", permission = "false", cost = "0", bloodmoon = "false";
+                                string trigger = "", command = "", delay = "0", hidden = "false", reserved = "false", cost = "0", bloodmoon = "false";
                                 if (line.HasAttribute("Trigger"))
                                 {
                                     trigger = line.GetAttribute("Trigger");
@@ -733,10 +698,6 @@ namespace ServerTools
                                 {
                                     reserved = line.GetAttribute("Reserved");
                                 }
-                                if (line.HasAttribute("Permission"))
-                                {
-                                    permission = line.GetAttribute("Permission");
-                                }
                                 if (line.HasAttribute("Cost"))
                                 {
                                     cost = line.GetAttribute("Cost");
@@ -745,7 +706,7 @@ namespace ServerTools
                                 {
                                     bloodmoon = line.GetAttribute("Bloodmoon");
                                 }
-                                sw.WriteLine(string.Format("    <Custom Trigger=\"{0}\" Command=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Reserved=\"{4}\" Permission=\"{5}\" Cost=\"{6}\" Bloodmoon=\"{7}\" />", trigger, command, delay, hidden, reserved, permission, cost, bloodmoon));
+                                sw.WriteLine(string.Format("    <Custom Trigger=\"{0}\" Command=\"{1}\" DelayBetweenUses=\"{2}\" Hidden=\"{3}\" Reserved=\"{4}\" Cost=\"{5}\" Bloodmoon=\"{6}\" />", trigger, command, delay, hidden, reserved, cost, bloodmoon));
                             }
                         }
                     }
@@ -760,16 +721,6 @@ namespace ServerTools
             }
             FileWatcher.EnableRaisingEvents = true;
             LoadXml();
-        }
-
-        public static void AddPermissions()
-        {
-            GameManager.Instance.adminTools.AddCommandPermission(PermissionQue[0], 0, true);
-            PermissionQue.RemoveAt(0);
-            if (PermissionQue.Count > 0)
-            {
-                Timers.AddPermissionTimer();
-            }
         }
     }
 }

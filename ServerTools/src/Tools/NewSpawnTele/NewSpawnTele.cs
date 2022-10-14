@@ -18,7 +18,7 @@ namespace ServerTools
             }
             else
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     Vector3 position = player.GetPosition();
@@ -79,7 +79,7 @@ namespace ServerTools
                 }
                 int.TryParse(cords[0], out int x);
                 int.TryParse(cords[2], out int z);
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if ((x - player.position.x) * (x - player.position.x) + (z - player.position.z) * (z - player.position.z) <= 50 * 50)

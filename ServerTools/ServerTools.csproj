@@ -53,7 +53,9 @@
     <Compile Include="src\AntiCheat\NetPackages\NetPackageEntityPosAndRot.cs" />
     <Compile Include="src\AntiCheat\NetPackages\NetPackagePlayerData.cs" />
     <Compile Include="src\AntiCheat\NetPackages\NetPackagePlayerStats.cs" />
+    <Compile Include="src\AntiCheat\No_Vehicle_Drone\NoVehicleDrone.cs" />
     <Compile Include="src\AntiCheat\PlayerChecks\PlayerChecks.cs" />
+    <Compile Include="src\AntiCheat\ProtectedZones\ProtectedZones.cs" />
     <Compile Include="src\AntiCheat\SpeedDetector\SpeedDetector.cs" />
     <Compile Include="src\AntiCheat\XRayDetector\XRayDetector.cs" />
     <Compile Include="src\ConsoleCommands\BlockChatCommandConsole.cs" />
@@ -99,6 +101,8 @@
     <Compile Include="src\Tools\AutoPartyInvite\AutoPartyInvite.cs" />
     <Compile Include="src\Tools\AutoRestart\AutoRestart.cs" />
     <Compile Include="src\Tools\Bed\Bed.cs" />
+    <Compile Include="src\Tools\InteractiveMap\InteractiveMap.cs" />
+    <Compile Include="src\Tools\LandClaimCount\LandClaimCount.cs" />
     <Compile Include="src\Tools\RIO\RIO.cs" />
     <Compile Include="src\Tools\BotResponse\BotResponse.cs" />
     <Compile Include="src\Tools\DiscordLink\DiscordLink.cs" />
@@ -121,7 +125,6 @@
     <Compile Include="src\Tools\OutputLog\OutputLog.cs" />
     <Compile Include="src\Tools\POIProtection\POIProtection.cs" />
     <Compile Include="src\Tools\Poll\Poll.cs" />
-    <Compile Include="src\Tools\ProtectedZones\ProtectedZones.cs" />
     <Compile Include="src\Tools\DeletePlayerData\DeletePlayerData.cs" />
     <Compile Include="src\Tools\RegionReset\RegionReset.cs" />
     <Compile Include="src\Tools\Session\Session.cs" />
@@ -200,7 +203,7 @@
     <Compile Include="src\Tools\Event\Event.cs" />
     <Compile Include="src\Functions\LoadProcess.cs" />
     <Compile Include="src\Functions\CommandList.cs" />
-    <Compile Include="src\PersistentOperations\PersistentOperations.cs" />
+    <Compile Include="src\PersistentOperations\GeneralFunction.cs" />
     <Compile Include="src\PersistentData\PersistentContainer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayers.cs" />
@@ -209,6 +212,7 @@
     <Compile Include="src\Tools\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\TeleportDetector\TeleportDetector.cs" />
     <Compile Include="src\Tools\SleeperRespawn\SleeperRespawn.cs" />
+    <Compile Include="src\Tools\OversizedTraps\OversizedTraps.cs" />
     <Compile Include="src\Tools\Wall\Wall.cs" />
     <Compile Include="src\Tools\WebPanel\WebPanel.cs" />
     <Compile Include="src\Tools\WorkstationLock\WorkstationLock.cs" />
@@ -293,7 +297,7 @@
     <Compile Include="src\Tools\StartingItems\StartingItems.cs" />
     <Compile Include="src\Tools\StopServer\StopServer.cs" />
     <Compile Include="src\Tools\Teleportation\Teleportation.cs" />
-    <Compile Include="src\Tools\Voting\VoteReward.cs" />
+    <Compile Include="src\Tools\Voting\Voting.cs" />
     <Compile Include="src\Tools\WatchList\WatchList.cs" />
     <Compile Include="src\Tools\Waypoints\Waypoints.cs" />
     <Compile Include="src\WebAPI\MimeType.cs" />

@@ -38,7 +38,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (!int.TryParse(_vehicle, out int vehicleId))
@@ -123,7 +123,7 @@ namespace ServerTools
 
         public static void TeleVehicle(ClientInfo _cInfo, Entity _player, int _vehicleId)
         {
-            Entity entity = PersistentOperations.GetEntity(_vehicleId);
+            Entity entity = GeneralFunction.GetEntity(_vehicleId);
             if (entity != null && entity is EntityVehicle)
             {
                 if (entity.AttachedToEntity != null)
@@ -285,7 +285,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (player.AttachedToEntity == null)
@@ -302,7 +302,7 @@ namespace ServerTools
                         int y = (int)position.y;
                         int z = (int)position.z;
                         Vector3i vec3i = new Vector3i(x, y, z);
-                        EnumLandClaimOwner claimOwner = PersistentOperations.ClaimedByWho(_cInfo.CrossplatformId, vec3i);
+                        EnumLandClaimOwner claimOwner = GeneralFunction.ClaimedByWho(_cInfo.CrossplatformId, vec3i);
                         if (claimOwner != EnumLandClaimOwner.Self && claimOwner != EnumLandClaimOwner.Ally)
                         {
                             Phrases.Dict.TryGetValue("VehicleRecall6", out string phrase);

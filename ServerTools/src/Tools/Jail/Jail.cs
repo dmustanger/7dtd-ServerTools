@@ -24,7 +24,7 @@ namespace ServerTools
             }
             else
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     int x = (int)player.position.x;
@@ -70,10 +70,10 @@ namespace ServerTools
             {
                 for (int i = 0; i < Jailed.Count; i++)
                 {
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(Jailed[i]);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(Jailed[i]);
                     if (cInfo != null)
                     {
-                        EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                        EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                         if (player.Spawned && player.IsAlive())
                         {
                             string[] cords = Jail_Position.Split(',');
@@ -113,7 +113,7 @@ namespace ServerTools
                         int timepassed = (int)fractionalMinutes;
                         if (timepassed >= jailTime)
                         {
-                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(id);
+                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(id);
                             if (cInfo != null)
                             {
                                 EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];

@@ -9,7 +9,7 @@ namespace ServerTools
 
         public static bool IsProtected(EntityPlayer _victim)
         {
-            if (_victim.IsAlive() && _victim.Progression.Level <= Level)
+            if (_victim.IsAlive() && _victim.Progression != null && _victim.Progression.Level <= Level)
             {
                 return true;
             }

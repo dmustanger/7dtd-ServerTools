@@ -70,22 +70,29 @@ namespace ServerTools
                 }
                 else if (_params[0] == "set")
                 {
-                    ClientInfo _cInfo = _senderInfo.RemoteClientInfo;
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    Vector3 _position = _player.GetPosition();
-                    int x = (int)_position.x;
-                    int y = (int)_position.y;
-                    int z = (int)_position.z;
-                    string _lposition = x + "," + y + "," + z;
-                    Lobby.Lobby_Position = _lposition;
-                    if (!Phrases.Dict.TryGetValue("Stuck1", out string _phrase))
+                    ClientInfo cInfo = _senderInfo.RemoteClientInfo;
+                    if (cInfo != null)
                     {
-                        _phrase = "{PlayerName} you have set the lobby position as {LobbyPosition}";
+                        EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                        if (player != null)
+                        {
+                            Vector3 position = player.GetPosition();
+                            int x = (int)position.x;
+                            int y = (int)position.y;
+                            int z = (int)position.z;
+                            string lposition = x + "," + y + "," + z;
+                            Lobby.LobbyBounds.center = new Vector3(x, y, z);
+                            int size = Lobby.Lobby_Size * 2;
+                            Lobby.LobbyBounds.size = new Vector3(size, size, size);
+                            Lobby.Lobby_Position = lposition;
+                            Phrases.Dict.TryGetValue("Lobby2", out string phrase);
+                            phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
+                            phrase = phrase.Replace("{LobbyPosition}", lposition);
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] {0}", phrase));
+                            Config.WriteXml();
+                            Config.LoadXml();
+                        }
                     }
-                    _phrase = _phrase.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase = _phrase.Replace("{LobbyPosition}", _lposition);
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] {0}", _phrase));
-                    Config.WriteXml();
                 }
                 else
                 {

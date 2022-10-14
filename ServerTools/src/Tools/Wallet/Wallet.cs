@@ -17,9 +17,9 @@ namespace ServerTools
         {
             try
             {
-                if (File.Exists(PersistentOperations.XPathDir + "items.xml"))
+                if (File.Exists(GeneralFunction.XPathDir + "items.xml"))
                 {
-                    string[] arrLines = File.ReadAllLines(PersistentOperations.XPathDir + "items.xml");
+                    string[] arrLines = File.ReadAllLines(GeneralFunction.XPathDir + "items.xml");
                     int lineNumber = 0;
                     for (int i = 0; i < arrLines.Length; i++)
                     {
@@ -32,7 +32,7 @@ namespace ServerTools
                             else
                             {
                                 arrLines[lineNumber] = string.Format("<set xpath=\"/items/item[@name='{0}']/property[@name='Tags']/@value\">dukes,currency</set>", _item);
-                                File.WriteAllLines(PersistentOperations.XPathDir + "items.xml", arrLines);
+                                File.WriteAllLines(GeneralFunction.XPathDir + "items.xml", arrLines);
                                 break;
                             }
                         }
@@ -41,7 +41,7 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", PersistentOperations.XPathDir + "items.xml", e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralFunction.XPathDir + "items.xml", e.Message));
                 return;
             }
         }
@@ -49,13 +49,13 @@ namespace ServerTools
         public static int GetCurrency(string _id)
         {
             int value = 0;
-            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_id);
+            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_id);
             if (cInfo != null)
             {
                 ItemStack[] stacks = cInfo.latestPlayerData.bag;
                 for (int i = 0; i < stacks.Length; i++)
                 {
-                    if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.Name == PersistentOperations.Currency_Item)
+                    if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.Name == GeneralFunction.Currency_Item)
                     {
                         value += stacks[i].count;
                     }
@@ -63,13 +63,13 @@ namespace ServerTools
             }
             else
             {
-                PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromId(_id);
+                PlayerDataFile pdf = GeneralFunction.GetPlayerDataFileFromId(_id);
                 if (pdf != null)
                 {
                     ItemStack[] stacks = pdf.bag;
                     for (int i = 0; i < stacks.Length; i++)
                     {
-                        if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.Name == PersistentOperations.Currency_Item)
+                        if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.Name == GeneralFunction.Currency_Item)
                         {
                             value += stacks[i].count;
                         }
@@ -81,10 +81,10 @@ namespace ServerTools
 
         public static void AddCurrency(string _id, int _amount, bool _directAllowed)
         {
-            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_id);
+            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_id);
             if (cInfo != null)
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                 if (player != null)
                 {
                     if (player.IsSpawned())
@@ -92,13 +92,13 @@ namespace ServerTools
                         if (Bank.IsEnabled && Bank.Direct_Deposit && _directAllowed)
                         {
                             Bank.AddCurrencyToBank(cInfo.CrossplatformId.CombinedString, _amount);
-                            Phrases.Dict.TryGetValue("Bank11", out string phrase);
+                            Phrases.Dict.TryGetValue("Bank17", out string phrase);
                             phrase = phrase.Replace("{Value}", _amount.ToString());
                             phrase = phrase.Replace("{CoinName}", Currency_Name);
                             ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             return;
                         }
-                        ItemValue itemValue = ItemClass.GetItem(PersistentOperations.Currency_Item, false);
+                        ItemValue itemValue = ItemClass.GetItem(GeneralFunction.Currency_Item, false);
                         if (itemValue != null)
                         {
                             List<int> stackList = new List<int>();
@@ -158,10 +158,10 @@ namespace ServerTools
         public static void RemoveCurrency(string _steamid, int _amount)
         {
             int count = 0;
-            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_steamid);
+            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_steamid);
             if (cInfo != null)
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                 if (player != null)
                 {
                     if (player.IsSpawned())

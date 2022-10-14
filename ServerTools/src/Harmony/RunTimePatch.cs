@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using Audio;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -397,6 +398,38 @@ namespace ServerTools
                         return;
                     }
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
+                }
+
+                original = AccessTools.Method(typeof(PersistentPlayerList), "PlaceLandProtectionBlock");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: PersistentPlayerList.PlaceLandProtectionBlock Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("PersistentPlayerList_PlaceLandProtectionBlock_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: PersistentPlayerList_PlaceLandProtectionBlock_Prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                original = AccessTools.Method(typeof(NetPackageEntityAttach), "ProcessPackage");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityAttach.ProcessPackage Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackageEntityAttach_ProcessPackage_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityAttach_ProcessPackage_Prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
                 Log.Out("[SERVERTOOLS] Runtime patching complete");

@@ -33,7 +33,7 @@ namespace ServerTools
                 ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
                 if (cInfo != null)
                 {
-                    EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                    EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                     if (player != null)
                     {
                         if (GameEventManager.GameEventSequences.ContainsKey(_params[1]))

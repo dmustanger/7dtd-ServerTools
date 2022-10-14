@@ -166,7 +166,7 @@ namespace ServerTools
                             else
                             {
                                 Event.Teams.TryGetValue(_player.Key, out int _team);
-                                PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromId(_player.Key);
+                                PlayerDataFile _pdf = GeneralFunction.GetPlayerDataFileFromId(_player.Key);
                                 if (_pdf != null)
                                 {
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Offline player: Name {0}, Id {1}, is on team {2}.", _pdf.ecd.entityName, _player.Key, _team));

@@ -10,7 +10,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false;
         public static int Backup_Count = 5, Compression_Level = 0;
-        public static string Destination = "", SaveDirectory = GameIO.GetSaveGameDir(), Delay = "240";
+        public static string Destination = "", Save_Directory = "", Delay = "240";
         private static Thread th;
 
         public static void SetDelay()
@@ -104,7 +104,17 @@ namespace ServerTools
         {
             try
             {
-                DirectoryInfo saveDirInfo = new DirectoryInfo(SaveDirectory);//save dir
+                string saveDirectory = Save_Directory;
+                if (string.IsNullOrEmpty(saveDirectory))
+                {
+                    saveDirectory = GameIO.GetSaveGameDir();
+                }
+                if (string.IsNullOrEmpty(saveDirectory))
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Auto backup can not locate a working directory to save. Provide a Save_Directory in your config file and try again."));
+                    return;
+                }
+                DirectoryInfo saveDirInfo = new DirectoryInfo(saveDirectory);//save dir
                 if (string.IsNullOrEmpty(Destination))
                 {
                     if (saveDirInfo != null)
@@ -114,7 +124,7 @@ namespace ServerTools
                             Directory.CreateDirectory(API.ConfigPath + "/WorldBackup");
                             Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at '{0}' and backup resumed", API.ConfigPath + "/WorldBackup"));
                         }
-                        string[] files = Directory.GetFiles(API.ConfigPath + "/WorldBackup/", "*.zip", SearchOption.AllDirectories);//get files from save directory. This is the default destination
+                        string[] files = Directory.GetFiles(API.ConfigPath + "/WorldBackup/", "*.zip", SearchOption.AllDirectories);//get files from destination directory. This is the default destination
                         if (files != null && files.Length > Backup_Count)//files are not null and too many exist
                         {
                             DeleteFiles(files);//exec file delete
@@ -196,74 +206,83 @@ namespace ServerTools
 
         private static void Save(string _destinationDirInfo)
         {
-            Phrases.Dict.TryGetValue("AutoBackup1", out string phrase);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-            string name = string.Format("Backup_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
-            string[] fileNames = Directory.GetFiles(SaveDirectory, "*", SearchOption.AllDirectories);
-            string destination = _destinationDirInfo + string.Format("/Backup_{0}.zip", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
-
-            using (ZipOutputStream OutputStream = new ZipOutputStream(File.Create(destination)))
+            string[] fileNames = Directory.GetFiles(Save_Directory, "*", SearchOption.AllDirectories);
+            if (fileNames.Length > 0)
             {
-                OutputStream.UseZip64 = UseZip64.On;
-                if (Compression_Level > 9)
-                {
-                    OutputStream.SetLevel(9);
-                }
-                else if (Compression_Level < 0)
-                {
-                    OutputStream.SetLevel(0);
-                }
-                else
-                {
-                    OutputStream.SetLevel(Compression_Level);
-                }
-                byte[] buffer = new byte[8192];
                 for (int i = 0; i < fileNames.Length; i++)
                 {
-                    string file = fileNames[i];
-                    ZipEntry entry = new ZipEntry(file);
-
-                    entry.DateTime = DateTime.Now;
-                    OutputStream.PutNextEntry(entry);
-                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    if (fileNames[i].Contains("main.ttw"))
                     {
-                        int sourceBytes;
-                        do
+                        Phrases.Dict.TryGetValue("AutoBackup1", out string phrase);
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        string name = string.Format("Backup_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
+                        string destination = _destinationDirInfo + string.Format("/Backup_{0}.zip", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
+                        using (ZipOutputStream OutputStream = new ZipOutputStream(File.Create(destination)))
                         {
-                            sourceBytes = fs.Read(buffer, 0, buffer.Length);
-                            OutputStream.Write(buffer, 0, sourceBytes);
-                        }
-                        while (sourceBytes > 0);
-                    }
-                }
-                fileNames = Directory.GetFiles(API.ConfigPath, "ServerTools.bin", SearchOption.AllDirectories);
-                if (fileNames != null)
-                {
-                    for (int i = 0; i < fileNames.Length; i++)
-                    {
-                        string file = fileNames[i];
-                        ZipEntry entry = new ZipEntry(file);
-
-                        entry.DateTime = DateTime.Now;
-                        OutputStream.PutNextEntry(entry);
-                        using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                        {
-                            int sourceBytes;
-                            do
+                            OutputStream.UseZip64 = UseZip64.On;
+                            if (Compression_Level > 9)
                             {
-                                sourceBytes = fs.Read(buffer, 0, buffer.Length);
-                                OutputStream.Write(buffer, 0, sourceBytes);
+                                OutputStream.SetLevel(9);
                             }
-                            while (sourceBytes > 0);
+                            else if (Compression_Level < 0)
+                            {
+                                OutputStream.SetLevel(0);
+                            }
+                            else
+                            {
+                                OutputStream.SetLevel(Compression_Level);
+                            }
+                            byte[] buffer = new byte[8192];
+                            for (int j = 0; j < fileNames.Length; j++)
+                            {
+                                string file = fileNames[j];
+                                ZipEntry entry = new ZipEntry(file);
+
+                                entry.DateTime = DateTime.Now;
+                                OutputStream.PutNextEntry(entry);
+                                using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                                {
+                                    int sourceBytes;
+                                    do
+                                    {
+                                        sourceBytes = fs.Read(buffer, 0, buffer.Length);
+                                        OutputStream.Write(buffer, 0, sourceBytes);
+                                    }
+                                    while (sourceBytes > 0);
+                                }
+                            }
+                            fileNames = Directory.GetFiles(API.ConfigPath, "ServerTools.bin", SearchOption.AllDirectories);
+                            if (fileNames != null)
+                            {
+                                for (int j = 0; j < fileNames.Length; j++)
+                                {
+                                    string file = fileNames[j];
+                                    ZipEntry entry = new ZipEntry(file);
+
+                                    entry.DateTime = DateTime.Now;
+                                    OutputStream.PutNextEntry(entry);
+                                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                                    {
+                                        int sourceBytes;
+                                        do
+                                        {
+                                            sourceBytes = fs.Read(buffer, 0, buffer.Length);
+                                            OutputStream.Write(buffer, 0, sourceBytes);
+                                        }
+                                        while (sourceBytes > 0);
+                                    }
+                                }
+                            }
+                            OutputStream.Finish();
+                            OutputStream.Close();
                         }
+                        Log.Out(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at '{0}'. File is named '{1}'", _destinationDirInfo, name + ".zip"));
+                        Phrases.Dict.TryGetValue("AutoBackup2", out phrase);
+                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        break;
                     }
                 }
-                OutputStream.Finish();
-                OutputStream.Close();
             }
-            Log.Out(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at '{0}'. File is named '{1}'", _destinationDirInfo, name + ".zip"));
-            Phrases.Dict.TryGetValue("AutoBackup2", out phrase);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
     }
 }

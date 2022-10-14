@@ -20,10 +20,10 @@ namespace ServerTools
             {
                 if (__instance != null && _persistentPlayerId != null && _blocksToChange != null)
                 {
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromUId(_persistentPlayerId);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromUId(_persistentPlayerId);
                     if (cInfo != null)
                     {
-                        EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                        EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                         if (player != null)
                         {
                             World world = __instance.World;
@@ -42,7 +42,7 @@ namespace ServerTools
                                             if (POIProtection.IsEnabled && POIProtection.Bed && world.IsPositionWithinPOI(newBlockInfo.pos.ToVector3(), POIProtection.Extra_Distance))
                                             {
                                                 GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
-                                                PersistentOperations.ReturnBlock(cInfo, newBlock.GetBlockName(), 1, "GiveItem1");
+                                                GeneralFunction.ReturnBlock(cInfo, newBlock.GetBlockName(), 1, "GiveItem1");
                                                 Phrases.Dict.TryGetValue("POI1", out string phrase);
                                                 phrase = phrase.Replace("{Distance}", POIProtection.Extra_Distance.ToString());
                                                 ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -54,7 +54,7 @@ namespace ServerTools
                                             if (POIProtection.IsEnabled && POIProtection.Claim && world.IsPositionWithinPOI(newBlockInfo.pos.ToVector3(), POIProtection.Extra_Distance))
                                             {
                                                 GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
-                                                PersistentOperations.ReturnBlock(cInfo, newBlock.GetBlockName(), 1, "GiveItem1");
+                                                GeneralFunction.ReturnBlock(cInfo, newBlock.GetBlockName(), 1, "GiveItem1");
                                                 Phrases.Dict.TryGetValue("POI2", out string phrase);
                                                 phrase = phrase.Replace("{Distance}", POIProtection.Extra_Distance.ToString());
                                                 ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -70,7 +70,7 @@ namespace ServerTools
                                             if (newBlock.GetBlockName().ToLower().Contains("cube"))
                                             {
                                                 Wall.WallEnabled.TryGetValue(cInfo.entityId, out Vector3i vector);
-                                                if (PersistentOperations.ClaimedByWho(_persistentPlayerId, newBlockInfo.pos) == EnumLandClaimOwner.Self)
+                                                if (GeneralFunction.ClaimedByWho(_persistentPlayerId, newBlockInfo.pos) == EnumLandClaimOwner.Self)
                                                 {
                                                     if (vector.Equals(Vector3i.zero))
                                                     {
@@ -103,7 +103,7 @@ namespace ServerTools
                                     {
                                         if (oldBlockValue.Block is BlockLandClaim)
                                         {
-                                            if (PersistentOperations.ClaimedByWho(_persistentPlayerId, newBlockInfo.pos) == EnumLandClaimOwner.None)
+                                            if (GeneralFunction.ClaimedByWho(_persistentPlayerId, newBlockInfo.pos) == EnumLandClaimOwner.None)
                                             {
                                                 if (BlockPickup.IsEnabled)
                                                 {
@@ -154,7 +154,7 @@ namespace ServerTools
                                         }
                                         else if (!oldBlock.CanPickup)//old block can not be picked up
                                         {
-                                            if (PersistentOperations.ClaimedByWho(_persistentPlayerId, newBlockInfo.pos) == EnumLandClaimOwner.None)
+                                            if (GeneralFunction.ClaimedByWho(_persistentPlayerId, newBlockInfo.pos) == EnumLandClaimOwner.None)
                                             {
                                                 if (DamageDetector.IsEnabled)
                                                 {
@@ -178,13 +178,13 @@ namespace ServerTools
                                         if (newBlockInfo.bChangeDamage)//block took damage
                                         {
                                             if (BlockPickup.IsEnabled && BlockPickup.PickupEnabled.Contains(player.entityId) &&
-                                                player.inventory.holdingItemItemValue.GetItemId() == PersistentOperations.MeleeHandPlayer)
+                                                player.inventory.holdingItemItemValue.GetItemId() == GeneralFunction.MeleeHandPlayer)
                                             {
                                                 if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) <= BlockPickup.Admin_Level ||
                                                     GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) <= BlockPickup.Admin_Level)
                                                 {
                                                     GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
-                                                    PersistentOperations.ReturnBlock(cInfo, oldBlock.GetBlockName(), 1, "Pickup5");
+                                                    GeneralFunction.ReturnBlock(cInfo, oldBlock.GetBlockName(), 1, "Pickup5");
                                                     return false;
                                                 }
                                                 if (!world.IsPositionWithinPOI(newBlockInfo.pos.ToVector3(), 2))
@@ -203,7 +203,7 @@ namespace ServerTools
                                                     ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                     return true;
                                                 }
-                                                if (PersistentOperations.ClaimedByWho(cInfo.CrossplatformId, new Vector3i(player.position)) == EnumLandClaimOwner.Self)
+                                                if (GeneralFunction.ClaimedByWho(cInfo.CrossplatformId, new Vector3i(player.position)) == EnumLandClaimOwner.Self)
                                                 {
                                                     if (oldBlockValue.damage == 0)
                                                     {
@@ -236,7 +236,7 @@ namespace ServerTools
                                                                 }
                                                             }
                                                             GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
-                                                            PersistentOperations.ReturnBlock(cInfo, oldBlock.GetBlockName(), 1, "Pickup5");
+                                                            GeneralFunction.ReturnBlock(cInfo, oldBlock.GetBlockName(), 1, "Pickup5");
                                                             return false;
                                                     }
                                                     else

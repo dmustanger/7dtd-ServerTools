@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -14,8 +15,10 @@ namespace ServerTools
             return "Usage:\n" +
                    "  1. st-mkt off\n" +
                    "  2. st-mkt on\n" +
+                   "  3. st-mkt set\n" +
                    "1. Turn off the market\n" +
-                   "2. Turn on the market\n";
+                   "2. Turn on the market\n" +
+                   "3. Sets the market position to your current location\n";
         }
         public override string[] GetCommands()
         {
@@ -61,6 +64,26 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Market is already on"));
                         return;
                     }
+                }
+                else if (_params[0] == "set")
+                {
+                    ClientInfo cInfo = _senderInfo.RemoteClientInfo;
+                    EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];
+                    Vector3 position = player.GetPosition();
+                    int x = (int)position.x;
+                    int y = (int)position.y;
+                    int z = (int)position.z;
+                    string lposition = x + "," + y + "," + z;
+                    Market.MarketBounds.center = new Vector3(x, y, z);
+                    int size = Market.Market_Size * 2;
+                    Market.MarketBounds.size = new Vector3(size, size, size);
+                    Market.Market_Position = lposition;
+                    Phrases.Dict.TryGetValue("Market6", out string phrase);
+                    phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
+                    phrase = phrase.Replace("{MarketPosition}", lposition);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] {0}", phrase));
+                    Config.WriteXml();
+                    Config.LoadXml();
                 }
                 else
                 {

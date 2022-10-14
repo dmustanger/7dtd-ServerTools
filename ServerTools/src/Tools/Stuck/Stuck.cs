@@ -76,7 +76,7 @@ namespace ServerTools
 
         public static void CheckLP(ClientInfo _cInfo)
         {
-            EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+            EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
             if (player != null)
             {
                 Vector3 position = player.GetPosition();

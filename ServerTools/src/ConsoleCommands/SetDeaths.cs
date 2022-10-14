@@ -36,10 +36,10 @@ namespace ServerTools
                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid value '{0}'", _params[1]));
                     return;
                 }
-                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[0]);
+                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[0]);
                 if (cInfo != null)
                 {
-                    EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                    EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                     if (player != null)
                     {
                         player.Died = value;

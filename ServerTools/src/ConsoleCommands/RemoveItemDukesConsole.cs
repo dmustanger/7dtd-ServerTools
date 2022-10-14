@@ -30,10 +30,10 @@ namespace ServerTools
                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
-                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[0]);
+                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[0]);
                 if (cInfo != null)
                 {
-                    EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                    EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                     if (player != null)
                     {
                         if (GameEventManager.GameEventSequences.ContainsKey("action_dukes"))

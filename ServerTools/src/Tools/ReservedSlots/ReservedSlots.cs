@@ -266,7 +266,7 @@ namespace ServerTools
             {
                 List<ClientInfo> reserved = new List<ClientInfo>();
                 List<ClientInfo> normal = new List<ClientInfo>();
-                List<ClientInfo> clientList = PersistentOperations.ClientList();
+                List<ClientInfo> clientList = GeneralFunction.ClientList();
                 if (clientList != null)
                 {
                     if (AdminCheck(_cInfo, _platformId, _crossplatformId))//admin is joining

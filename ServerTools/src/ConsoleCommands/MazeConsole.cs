@@ -340,7 +340,7 @@ namespace ServerTools
                                                                 }
                                                                 if (chunks.Count > 0)
                                                                 {
-                                                                    List<ClientInfo> clientList = PersistentOperations.ClientList();
+                                                                    List<ClientInfo> clientList = GeneralFunction.ClientList();
                                                                     if (clientList != null)
                                                                     {
                                                                         for (int i = 0; i < clientList.Count; i++)

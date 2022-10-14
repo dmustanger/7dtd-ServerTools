@@ -191,7 +191,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (PlayerLevels.ContainsKey(player.entityId))
@@ -297,7 +297,7 @@ namespace ServerTools
         {
             try
             {
-                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_playerId);
+                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_playerId);
                 if (cInfo != null)
                 {
                     for (int i = 0; i < _commands.Count; i++)

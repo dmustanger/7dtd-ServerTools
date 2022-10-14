@@ -21,7 +21,7 @@ namespace ServerTools
                 {
                     if (int.TryParse(_player, out int entityId))
                     {
-                        ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromEntityId(entityId);
+                        ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromEntityId(entityId);
                         if (cInfo2 != null)
                         {
                             if (Mute.Mutes.Contains(cInfo2.CrossplatformId.CombinedString))
@@ -74,7 +74,7 @@ namespace ServerTools
 
         public static void List(ClientInfo _cInfo)
         {
-            List<ClientInfo> clientList = PersistentOperations.ClientList();
+            List<ClientInfo> clientList = GeneralFunction.ClientList();
             if (clientList != null)
             {
                 for (int i = 0; i < clientList.Count; i++)

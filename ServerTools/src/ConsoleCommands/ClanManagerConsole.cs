@@ -128,7 +128,7 @@ namespace ServerTools
                                             p.ClanName = "";
                                             ClanManager.ClanMember.Remove(_id);
                                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Deleted {0} with id {1} from the clan system", p.PlayerName, _id));
-                                            ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_id);
+                                            ClientInfo _cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_id);
                                             if (_cInfo2 != null)
                                             {
                                                 Phrases.Dict.TryGetValue("Clan21", out string _phrase);
@@ -179,7 +179,7 @@ namespace ServerTools
                                         p.ClanRequestToJoin = null;
                                         ClanManager.ClanMember.Remove(_id);
                                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Deleted {0} with id {1} from the clan system", p.PlayerName, _id));
-                                        ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_id);
+                                        ClientInfo _cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_id);
                                         if (_cInfo2 != null)
                                         {
                                             Phrases.Dict.TryGetValue("Clan21", out string _phrase);

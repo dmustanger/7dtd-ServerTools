@@ -95,7 +95,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
                         if (cInfo != null)
                         {
                             if (Jail.Jailed.Contains(cInfo.CrossplatformId.CombinedString))
@@ -105,7 +105,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                                 if (player != null && player.IsSpawned())
                                 {
                                     string[] cords = Jail.Jail_Position.Split(',');
@@ -172,10 +172,10 @@ namespace ServerTools
                         }
                         else
                         {
-                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
                             if (cInfo != null)
                             {
-                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                                 if (player != null)
                                 {
                                     EntityBedrollPositionList position = player.SpawnPoints;

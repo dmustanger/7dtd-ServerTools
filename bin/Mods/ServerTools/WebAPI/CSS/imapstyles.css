@@ -1,0 +1,49 @@
+#GeneralBody
+{
+	position:absolute;
+	width:100%;
+	height:100%;
+	margin:0;
+	padding:0;
+	background:#404040;
+}
+
+#Head
+{
+	width:100%;
+	height:20%;
+	background-image:url(../Img/BloodBorder.webp);
+	background-repeat:no-repeat;
+	background-size:contain;
+}
+
+#MapContainer
+{
+	height:78%;
+}
+
+#MapTable
+{
+	margin-top:1%;
+	margin-left:auto;
+	margin-right:auto;
+	z-index:0;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
+
+.RegionCell
+{
+	position:relative;
+	text-align:bottom-left;
+	min-width:128px;
+	height:128px;
+	width:128px;
+	border:1px solid #000;
+	margin:0px;
+	padding:0px;
+	background-image:url(../Img/Blank.png);
+	background-repeat:no-repeat;
+	background-size:100% 100%;
+	color:#FFF;
+}

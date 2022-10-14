@@ -99,7 +99,7 @@ namespace ServerTools
                                 {
                                     if (PersistentContainer.Instance.Players[playerId].Auction.TryGetValue(_id, out ItemDataSerializable _itemData))
                                     {
-                                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(playerId);
+                                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(playerId);
                                         if (cInfo != null)
                                         {
                                             ItemValue itemValue = new ItemValue(ItemClass.GetItem(_itemData.name, false).type, false);
@@ -248,7 +248,7 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
@@ -276,7 +276,7 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
                         return;
                     }
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
@@ -318,7 +318,7 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)

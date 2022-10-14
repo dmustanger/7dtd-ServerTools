@@ -13,46 +13,46 @@ namespace ServerTools
             int playerCount = ConnectionManager.Instance.ClientCount();
             int zombies = 0, animals = 0, bicycles = 0, miniBikes = 0, motorcycles = 0, fourByFour = 0, gyros = 0, supplyCrates = 0;
             int daysRemaining = DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
-            List<Entity> _entities = GameManager.Instance.World.Entities.list;
-            foreach (Entity _e in _entities)
+            List<Entity> entities = GameManager.Instance.World.Entities.list;
+            foreach (Entity e in entities)
             {
-                if (_e.IsClientControlled())
+                if (e.IsClientControlled())
                 {
                     continue;
                 }
-                string _tags = _e.EntityClass.Tags.ToString();
-                if (_tags.Contains("zombie") && _e.IsAlive())
+                string tags = e.EntityClass.Tags.ToString();
+                if (tags.Contains("zombie") && e.IsAlive())
                 {
                     zombies++;
                 }
-                else if (_tags.Contains("animal") && _e.IsAlive())
+                else if (tags.Contains("animal") && e.IsAlive())
                 {
                     animals++;
                 }
                 else
                 {
-                    string _name = EntityClass.list[_e.entityClass].entityClassName;
-                    if (_name == "vehicleBicycle")
+                    string name = EntityClass.list[e.entityClass].entityClassName;
+                    if (name == "vehicleBicycle")
                     {
                         bicycles++;
                     }
-                    else if (_name == "vehicleMinibike")
+                    else if (name == "vehicleMinibike")
                     {
                         miniBikes++;
                     }
-                    else if (_name == "vehicleMotorcycle")
+                    else if (name == "vehicleMotorcycle")
                     {
                         motorcycles++;
                     }
-                    else if (_name == "vehicle4x4Truck")
+                    else if (name == "vehicle4x4Truck")
                     {
                         fourByFour++;
                     }
-                    else if (_name == "vehicleGyrocopter")
+                    else if (name == "vehicleGyrocopter")
                     {
                         gyros++;
                     }
-                    else if (_name == "sc_General")
+                    else if (name == "sc_General")
                     {
                         supplyCrates++;
                     }
@@ -101,16 +101,16 @@ namespace ServerTools
 
         public static int DaysRemaining(int _daysUntilHorde)
         {
-            int _bloodmoonFrequency = GamePrefs.GetInt(EnumGamePrefs.BloodMoonFrequency);
-            if (_daysUntilHorde <= _bloodmoonFrequency)
+            int bloodmoonFrequency = GamePrefs.GetInt(EnumGamePrefs.BloodMoonFrequency);
+            if (_daysUntilHorde <= bloodmoonFrequency)
             {
-                int _daysLeft = _bloodmoonFrequency - _daysUntilHorde;
-                return _daysLeft;
+                int daysLeft = bloodmoonFrequency - _daysUntilHorde;
+                return daysLeft;
             }
             else
             {
-                int _daysLeft = _daysUntilHorde - _bloodmoonFrequency;
-                return DaysRemaining(_daysLeft);
+                int daysLeft = _daysUntilHorde - bloodmoonFrequency;
+                return DaysRemaining(daysLeft);
             }
         }
     }

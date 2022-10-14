@@ -23,7 +23,6 @@ namespace ServerTools
         private static string LogFilePath = string.Format("{0}/Logs/ShopLogs/Shop_{1}.txt", API.ConfigPath, DateTime.Today.ToString("M-d-yyyy:hh:mm:ss"));
         private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, "Shop.xml");
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, "Shop.xml");
-        private static readonly string AlphaNumSet = "JKQRLWBYZMPSNODHEFXTACGIUV";
 
         private static XmlNodeList OldNodeList;
 
@@ -1074,10 +1073,10 @@ namespace ServerTools
         {
             try
             {
-                if (File.Exists(PersistentOperations.XPathDir + "XUi/windows.xml"))
+                if (File.Exists(GeneralFunction.XPathDir + "XUi/windows.xml"))
                 {
                     string link = string.Format("http://{0}:{1}/shop.html", WebAPI.BaseAddress, WebAPI.Port);
-                    List<string> lines = File.ReadAllLines(PersistentOperations.XPathDir + "XUi/windows.xml").ToList();
+                    List<string> lines = File.ReadAllLines(GeneralFunction.XPathDir + "XUi/windows.xml").ToList();
                     for (int i = 0; i < lines.Count; i++)
                     {
                         if (lines[i].Contains("browserShop"))
@@ -1085,7 +1084,7 @@ namespace ServerTools
                             if (!lines[i + 7].Contains(link))
                             {
                                 lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", link);
-                                File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
+                                File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
                             }
                             return;
                         }
@@ -1113,7 +1112,7 @@ namespace ServerTools
                             lines.Add("</append>");
                             lines.Add("");
                             lines.Add("</configs>");
-                            File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
+                            File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
                             return;
                         }
                     }
@@ -1121,7 +1120,7 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", PersistentOperations.XPathDir + "XUi/windows.xml", e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralFunction.XPathDir + "XUi/windows.xml", e.Message));
             }
         }
 
@@ -1131,56 +1130,61 @@ namespace ServerTools
             {
                 if (Dict.Count > 0)
                 {
-                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                    EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
-                        if (Inside_Market && Inside_Traders)
+                        if (Market.IsEnabled && Inside_Market)
                         {
-                            string[] _cords = Market.Market_Position.Split(',');
-                            int.TryParse(_cords[0], out int x);
-                            int.TryParse(_cords[1], out int y);
-                            int.TryParse(_cords[2], out int z);
-                            if ((x - player.position.x) * (x - player.position.x) + (z - player.position.z) * (z - player.position.z) <= Market.Market_Size * Market.Market_Size && GameManager.Instance.World.IsWithinTraderArea(new Vector3i(player.position.x, player.position.y, player.position.z)))
+                            if (Inside_Traders)
                             {
-                                Form(_cInfo, _categoryOrItem, _form, _count);
+                                string[] cords = Market.Market_Position.Split(',');
+                                int.TryParse(cords[0], out int x);
+                                int.TryParse(cords[1], out int y);
+                                int.TryParse(cords[2], out int z);
+                                if (Market.IsMarket(player.position) && GameManager.Instance.World.IsWithinTraderArea(new Vector3i(player.position.x, player.position.y, player.position.z)))
+                                {
+                                    Form(_cInfo, _categoryOrItem, _form, _count);
+                                }
+                                else
+                                {
+                                    Phrases.Dict.TryGetValue("Shop9", out string _phrase);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                }
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue("Shop9", out string _phrase);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                string[] cords = Market.Market_Position.Split(',');
+                                int.TryParse(cords[0], out int x);
+                                int.TryParse(cords[1], out int y);
+                                int.TryParse(cords[2], out int z);
+                                if (Market.IsMarket(player.position))
+                                {
+                                    Form(_cInfo, _categoryOrItem, _form, _count);
+                                }
+                                else
+                                {
+                                    Phrases.Dict.TryGetValue("Shop10", out string phrase);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                }
                             }
                         }
-                        else if (Inside_Market && !Inside_Traders)
+                        else if (Inside_Traders)
                         {
-                            string[] _cords = Market.Market_Position.Split(',');
-                            int.TryParse(_cords[0], out int x);
-                            int.TryParse(_cords[1], out int y);
-                            int.TryParse(_cords[2], out int z);
-                            if ((x - player.position.x) * (x - player.position.x) + (z - player.position.z) * (z - player.position.z) <= Market.Market_Size * Market.Market_Size)
+                            string[] cords = Market.Market_Position.Split(',');
+                            int.TryParse(cords[0], out int x);
+                            int.TryParse(cords[1], out int y);
+                            int.TryParse(cords[2], out int z);
+                            if (GameManager.Instance.World.IsWithinTraderArea(new Vector3i(player.position.x, player.position.y, player.position.z)))
                             {
                                 Form(_cInfo, _categoryOrItem, _form, _count);
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue("Shop10", out string _phrase);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            }
-                        }
-                        else if (!Inside_Market && Inside_Traders)
-                        {
-                            World world = GameManager.Instance.World;
-                            Vector3i playerPos = new Vector3i(player.position.x, player.position.y, player.position.z);
-                            if (world.IsWithinTraderArea(playerPos))
-                            {
-                                Form(_cInfo, _categoryOrItem, _form, _count);
-                            }
-                            else
-                            {
-                                Phrases.Dict.TryGetValue("Shop3", out string phrase);
+                                Phrases.Dict.TryGetValue("Shop9", out string phrase);
                                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
-                        else if (!Inside_Market && !Inside_Traders)
+                        else
                         {
                             Form(_cInfo, _categoryOrItem, _form, _count);
                         }
@@ -1218,9 +1222,28 @@ namespace ServerTools
         {
             try
             {
-                if (Panel && WebAPI.IsEnabled && WebAPI.Connected)
+                if (Panel && WebAPI.IsEnabled && WebAPI.Connected && !PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay)
                 {
-                    if (!PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay)
+                    string ip = _cInfo.ip;
+                    bool duplicate = false;
+                    List<ClientInfo> clientList = GeneralFunction.ClientList();
+                    if (clientList != null && clientList.Count > 1)
+                    {
+                        for (int i = 0; i < clientList.Count; i++)
+                        {
+                            ClientInfo cInfo = clientList[i];
+                            if (cInfo != null && cInfo.entityId != _cInfo.entityId && ip == cInfo.ip)
+                            {
+                                duplicate = true;
+                                break;
+                            }
+                        }
+                    }
+                    long ipLong = GeneralFunction.ConvertIPToLong(_cInfo.ip);
+                    if (duplicate || (ipLong >= GeneralFunction.ConvertIPToLong("10.0.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("10.255.255.255")) ||
+                        (ipLong >= GeneralFunction.ConvertIPToLong("172.16.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("172.31.255.255")) ||
+                        (ipLong >= GeneralFunction.ConvertIPToLong("192.168.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("192.168.255.255")) ||
+                        _cInfo.ip == "127.0.0.1")
                     {
                         string securityId = "";
                         for (int i = 0; i < 10; i++)
@@ -1232,7 +1255,6 @@ namespace ServerTools
                                 if (!PanelAccess.ContainsValue(_cInfo.entityId))
                                 {
                                     PanelAccess.Add(securityId, _cInfo.entityId);
-                                    WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
                                 }
                                 else
                                 {
@@ -1243,13 +1265,11 @@ namespace ServerTools
                                             if (client.Value == _cInfo.entityId)
                                             {
                                                 PanelAccess.Remove(client.Key);
-                                                WebAPI.AuthorizedTime.Remove(client.Key);
                                                 break;
                                             }
                                         }
                                     }
                                     PanelAccess.Add(securityId, _cInfo.entityId);
-                                    WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
                                 }
                                 break;
                             }
@@ -1258,29 +1278,56 @@ namespace ServerTools
                         phrase1 = phrase1.Replace("{Value}", securityId);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserShop", true));
-                        return;
                     }
-                }
-                Phrases.Dict.TryGetValue("Shop1", out string phrase2);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                string categories = "";
-                if (Categories.Count > 1)
-                {
-                    categories = string.Join(", ", Categories.ToArray());
+                    else
+                    {
+                        if (PanelAccess.Count > 0 && PanelAccess.ContainsValue(_cInfo.entityId))
+                        {
+                            var clients = PanelAccess.ToArray();
+                            for (int i = 0; i < clients.Length; i++)
+                            {
+                                if (clients[i].Value == _cInfo.entityId && clients[i].Key != ip)
+                                {
+                                    PanelAccess.Remove(clients[i].Key);
+                                    PanelAccess.Add(ip, _cInfo.entityId);
+                                    break;
+                                }
+                            }
+                        }
+                        else if (PanelAccess.ContainsKey(ip))
+                        {
+                            PanelAccess[ip] = _cInfo.entityId;
+                        }
+                        else
+                        {
+                            PanelAccess.Add(ip, _cInfo.entityId);
+                        }
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserShop", true));
+                    }
                 }
                 else
                 {
-                    categories = Categories[0];
+                    Phrases.Dict.TryGetValue("Shop1", out string phrase2);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    string categories = "";
+                    if (Categories.Count > 1)
+                    {
+                        categories = string.Join(", ", Categories.ToArray());
+                    }
+                    else
+                    {
+                        categories = Categories[0];
+                    }
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + categories + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Shop2", out string phrase3);
+                    phrase3 = phrase3.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    phrase3 = phrase3.Replace("{Command_shop}", Command_shop);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase3 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("Shop13", out phrase3);
+                    phrase3 = phrase3.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    phrase3 = phrase3.Replace("{Command_shop_buy}", Command_shop_buy);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase3 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + categories + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                Phrases.Dict.TryGetValue("Shop2", out string phrase3);
-                phrase3 = phrase3.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                phrase3 = phrase3.Replace("{Command_shop}", Command_shop);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase3 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                Phrases.Dict.TryGetValue("Shop13", out phrase3);
-                phrase3 = phrase3.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                phrase3 = phrase3.Replace("{Command_shop_buy}", Command_shop_buy);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase3 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)
             {
@@ -1292,7 +1339,7 @@ namespace ServerTools
         {
             try
             {
-                if (PersistentOperations.Debug)
+                if (GeneralFunction.Debug)
                 {
                     Log.Out(string.Format("[SERVERTOOLS] DEBUG: Shop: ShowCategory: _cInfo.playerName = '{0}' / _category = '{1}'", _cInfo.playerName, _category));
                 }
@@ -1347,19 +1394,19 @@ namespace ServerTools
             {
                 for (int i = 0; i < Dict.Count; i++)
                 {
-                    string[] _itemData = Dict[i];
-                    if (int.Parse(_itemData[0]) == _item)
+                    string[] itemData = Dict[i];
+                    if (int.Parse(itemData[0]) == _item)
                     {
                         int currency = 0;
                         if (Wallet.IsEnabled)
                         {
                             currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                         }
-                        int _cost = int.Parse(_itemData[5]) * _count;
-                        if (currency >= _cost)
+                        int cost = int.Parse(itemData[5]) * _count;
+                        if (currency >= cost)
                         {
-                            _count = int.Parse(_itemData[3]) * _count;
-                            ShopPurchase(_cInfo, _itemData[1], _itemData[2], _count, int.Parse(_itemData[4]), _cost);
+                            _count = int.Parse(itemData[3]) * _count;
+                            ShopPurchase(_cInfo, itemData[1], itemData[2], _count, int.Parse(itemData[4]), cost);
                         }
                         else
                         {
@@ -1371,8 +1418,8 @@ namespace ServerTools
                         return;
                     }
                 }
-                Phrases.Dict.TryGetValue("Shop15", out string _phrase1);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("Shop15", out string phrase1);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)
             {
@@ -1453,7 +1500,7 @@ namespace ServerTools
             System.Random rnd = new System.Random();
             for (int i = 0; i < _length; i++)
             {
-                pass += AlphaNumSet.ElementAt(rnd.Next(0, 26));
+                pass += GeneralFunction.NumSet.ElementAt(rnd.Next(0, 10));
             }
             return pass;
         }

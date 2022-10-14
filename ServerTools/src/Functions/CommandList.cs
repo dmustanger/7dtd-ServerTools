@@ -242,7 +242,7 @@ namespace ServerTools
                             Mute.Command_mutelist = kvp.Value[0];
                             continue;
                         case "commands":
-                            PersistentOperations.Command_commands = kvp.Value[0];
+                            GeneralFunction.Command_commands = kvp.Value[0];
                             continue;
                         case "day7":
                             Day7.Command_day7 = kvp.Value[0];
@@ -361,9 +361,6 @@ namespace ServerTools
                         case "mback":
                             Market.Command_mback = kvp.Value[0];
                             continue;
-                        case "setmarket":
-                            Market.Command_set = kvp.Value[0];
-                            continue;
                         case "market":
                             Market.Command_market = kvp.Value[0];
                             continue;
@@ -372,9 +369,6 @@ namespace ServerTools
                             continue;
                         case "lback":
                             Lobby.Command_lobbyback = kvp.Value[0];
-                            continue;
-                        case "setlobby":
-                            Lobby.Command_set = kvp.Value[0];
                             continue;
                         case "lobby":
                             Lobby.Command_lobby = kvp.Value[0];
@@ -578,7 +572,7 @@ namespace ServerTools
                             AutoPartyInvite.Command_party_remove = kvp.Value[0];
                             continue;
                         case "expire":
-                            PersistentOperations.Command_expire = kvp.Value[0];
+                            GeneralFunction.Command_expire = kvp.Value[0];
                             continue;
                         case "pickup":
                             BlockPickup.Command_pickup = kvp.Value[0];
@@ -593,7 +587,19 @@ namespace ServerTools
                             RIO.Command_rio = kvp.Value[0];
                             continue;
                         case "overlay":
-                            PersistentOperations.Command_overlay = kvp.Value[0];
+                            GeneralFunction.Command_overlay = kvp.Value[0];
+                            continue;
+                        case "imap":
+                            InteractiveMap.Command_imap = kvp.Value[0];
+                            continue;
+                        case "map":
+                            AllocsMap.Command_map = kvp.Value[0];
+                            continue;
+                        case "discord":
+                            DiscordLink.Command_discord = kvp.Value[0];
+                            continue;
+                        case "claims":
+                            LandClaimCount.Command_claims = kvp.Value[0];
                             continue;
                     }
                 }
@@ -661,11 +667,9 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"travel\" Replacement=\"travel\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"marketback\" Replacement=\"marketback\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"mback\" Replacement=\"mback\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"setmarket\" Replacement=\"setmarket\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"market\" Replacement=\"market\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"lobbyback\" Replacement=\"lobbyback\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"lback\" Replacement=\"lback\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"setlobby\" Replacement=\"setlobby\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"lobby\" Replacement=\"lobby\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"shop\" Replacement=\"shop\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"shop buy\" Replacement=\"shop buy\" Hidden=\"false\" />");
@@ -739,6 +743,10 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"bed\" Replacement=\"bed\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"rio\" Replacement=\"rio\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"overlay\" Replacement=\"overlay\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"imap\" Replacement=\"imap\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"map\" Replacement=\"map\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"discord\" Replacement=\"discord\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"claims\" Replacement=\"claims\" Hidden=\"false\" />");
         }
 
         private static void UpgradeXml()

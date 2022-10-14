@@ -51,7 +51,7 @@ namespace ServerTools
                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Entity with id '{0}' can not be a player", _entityId));
                     return;
                 }
-                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
+                EntityPlayer _player = GeneralFunction.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
                 if (_player != null)
                 {
                     Entity.SetRotation(new UnityEngine.Vector3(_player.position.x, _player.position.y, _player.position.z));

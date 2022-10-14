@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Timers;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -87,65 +88,65 @@ namespace ServerTools
 
         public static void StartingItemsTimer(ClientInfo _cInfo)
         {
-            System.Timers.Timer newPlayerStartingItemsTimer = new System.Timers.Timer(3000)
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(3000)
             {
                 AutoReset = false
             };
-            newPlayerStartingItemsTimer.Start();
-            newPlayerStartingItemsTimer.Elapsed += (sender, e) =>
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
             {
                 Init3(_cInfo);
-                newPlayerStartingItemsTimer.Stop();
-                newPlayerStartingItemsTimer.Close();
-                newPlayerStartingItemsTimer.Dispose();
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
             };
         }
 
         public static void DisconnectHardcorePlayer(ClientInfo _cInfo)
         {
-            System.Timers.Timer hardcoreTimer = new System.Timers.Timer(20000)
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(20000)
             {
                 AutoReset = false
             };
-            hardcoreTimer.Start();
-            hardcoreTimer.Elapsed += (sender, e) =>
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
             {
                 Init4(_cInfo);
-                hardcoreTimer.Stop();
-                hardcoreTimer.Close();
-                hardcoreTimer.Dispose();
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
             };
         }
 
         public static void ExitWithCommand(int _id, int _time)
         {
-            System.Timers.Timer exitCommand = new System.Timers.Timer(_time * 1000)
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(_time * 1000)
             {
                 AutoReset = false
             };
-            exitCommand.Start();
-            exitCommand.Elapsed += (sender, e) =>
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
             {
                 Init5(_id);
-                exitCommand.Stop();
-                exitCommand.Close();
-                exitCommand.Dispose();
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
             };
         }
 
         public static void ExitWithoutCommand(ClientInfo _cInfo, string _ip)
         {
-            System.Timers.Timer exitDelay = new System.Timers.Timer(1500)
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1500)
             {
                 AutoReset = false
             };
-            exitDelay.Start();
-            exitDelay.Elapsed += (sender, e) =>
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
             {
                 Init6(_cInfo, _ip);
-                exitDelay.Stop();
-                exitDelay.Close();
-                exitDelay.Dispose();
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
             };
         }
 
@@ -273,33 +274,33 @@ namespace ServerTools
 
         public static void StartingItemsDelayTimer(ClientInfo _cInfo, List<string> _items)
         {
-            System.Timers.Timer startingItemsDelayTimer = new System.Timers.Timer(1000)
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
             {
                 AutoReset = false
             };
-            startingItemsDelayTimer.Start();
-            startingItemsDelayTimer.Elapsed += (sender, e) =>
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
             {
                 Init13(_cInfo, _items);
-                startingItemsDelayTimer.Stop();
-                startingItemsDelayTimer.Close();
-                startingItemsDelayTimer.Dispose();
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
             };
         }
 
         public static void ResetPlayerProfileDelayTimer(string _id)
         {
-            System.Timers.Timer startingItemsDelayTimer = new System.Timers.Timer(2000)
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(2000)
             {
                 AutoReset = false
             };
-            startingItemsDelayTimer.Start();
-            startingItemsDelayTimer.Elapsed += (sender, e) =>
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
             {
                 Init14(_id);
-                startingItemsDelayTimer.Stop();
-                startingItemsDelayTimer.Close();
-                startingItemsDelayTimer.Dispose();
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
             };
         }
 
@@ -307,33 +308,81 @@ namespace ServerTools
             BlockValue _concreteBlockValue, BlockValue _stoneBlockValue, BlockValue _glassCeilingBlockValue, BlockValue _glassBlockValue,
             BlockValue _ladderValue)
         {
-            System.Timers.Timer startingItemsDelayTimer = new System.Timers.Timer(5000)
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(5000)
             {
                 AutoReset = false
             };
-            startingItemsDelayTimer.Start();
-            startingItemsDelayTimer.Elapsed += (sender, e) =>
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
             {
                 Init15(_blockList, _steelBlockValue, _concreteBlockValue, _stoneBlockValue, _glassCeilingBlockValue, _glassBlockValue, _ladderValue);
-                startingItemsDelayTimer.Stop();
-                startingItemsDelayTimer.Close();
-                startingItemsDelayTimer.Dispose();
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
             };
         }
 
         public static void AddPermissionTimer()
         {
-            System.Timers.Timer startingItemsDelayTimer = new System.Timers.Timer(500)
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(500)
             {
                 AutoReset = false
             };
-            startingItemsDelayTimer.Start();
-            startingItemsDelayTimer.Elapsed += (sender, e) =>
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
             {
                 Init16();
-                startingItemsDelayTimer.Stop();
-                startingItemsDelayTimer.Close();
-                startingItemsDelayTimer.Dispose();
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void WebPanelAlertTimer()
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(2000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init17();
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void InsideBlockTimer(ClientInfo _cInfo, Vector3 _position)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(5000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init18(_cInfo, _position);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void HardcoreDeleteFiles(ClientInfo _cInfo)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(5000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init19(_cInfo);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
             };
         }
 
@@ -352,10 +401,7 @@ namespace ServerTools
 
         private static void Exec()
         {
-            if (Zones.IsEnabled || Lobby.IsEnabled || Market.IsEnabled)
-            {
-                PersistentOperations.CheckArea();
-            }
+            GeneralFunction.CheckArea();
             if (Jail.IsEnabled)
             {
                 Jail.StatusCheck();
@@ -375,14 +421,14 @@ namespace ServerTools
                 {
                     WorldRadius.Exec();
                 }
-            }
-            if (fiveSecondTick >= 5)
-            {
-                fiveSecondTick = 0;
                 if (Zones.IsEnabled)
                 {
                     Zones.HostileCheck();
                 }
+            }
+            if (fiveSecondTick >= 5)
+            {
+                fiveSecondTick = 0;
                 if (PlayerStats.IsEnabled)
                 {
                     PlayerStats.Exec();
@@ -403,10 +449,7 @@ namespace ServerTools
             if (twentySecondTick >= 20)
             {
                 twentySecondTick = 0;
-                if (Track.IsEnabled)
-                {
-                    Track.Exec();
-                }
+                Track.Exec();
                 EventSchedule.Exec();
             }
             if (oneMinTick >= 60)
@@ -434,14 +477,14 @@ namespace ServerTools
                     InvalidItems.CheckStorage();
                 }
             }
-            if (PersistentOperations.NewPlayerQue.Count > 0)
+            if (GeneralFunction.NewPlayerQue.Count > 0)
             {
                 newPlayer++;
                 if (newPlayer >= 5)
                 {
                     newPlayer = 0;
-                    ClientInfo cInfo = PersistentOperations.NewPlayerQue[0];
-                    PersistentOperations.NewPlayerQue.RemoveAt(0);
+                    ClientInfo cInfo = GeneralFunction.NewPlayerQue[0];
+                    GeneralFunction.NewPlayerQue.RemoveAt(0);
                     API.NewPlayerExec(cInfo);
                 }
             }
@@ -618,7 +661,7 @@ namespace ServerTools
 
         private static void Init9()
         {
-            PersistentOperations.SetWindowLinks();
+            GeneralFunction.SetWindowLinks();
         }
 
         private static void Init10(string _playerId, int _amount)
@@ -656,7 +699,26 @@ namespace ServerTools
 
         private static void Init16()
         {
-            CustomCommands.AddPermissions();
+            
+        }
+
+        private static void Init17()
+        {
+            WebPanel.Alert = true;
+            if (WebAPI.Panel_Address != "")
+            {
+                Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel link @ '{0}'", WebAPI.Panel_Address));
+            }
+        }
+
+        private static void Init18(ClientInfo _cInfo, Vector3 _position)
+        {
+            Teleportation.StillInsideBlock(_cInfo, _position);
+        }
+
+        private static void Init19(ClientInfo _cInfo)
+        {
+            Hardcore.ResetHardcoreProfile(_cInfo);
         }
     }
 }

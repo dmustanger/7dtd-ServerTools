@@ -46,7 +46,7 @@ namespace ServerTools
 
         public static void BrokeBlock(ClientInfo _cInfo, Block _oldBlock, Vector3i _position)
         {
-            EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+            EntityPlayer _player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
             if (_player != null)
             {
                 using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))

@@ -19,7 +19,7 @@ namespace ServerTools
 
         public static void BountyList(ClientInfo _cInfo)
         {
-            List<ClientInfo> clients = PersistentOperations.ClientList();
+            List<ClientInfo> clients = GeneralFunction.ClientList();
             if (clients != null && clients.Count > 0)
             {
                 for (int i = 0; i < clients.Count; i++)
@@ -169,8 +169,8 @@ namespace ServerTools
             {
                 if (_cInfo1.CrossplatformId != null && _player1 != null && _player2 != null && _cInfo2.CrossplatformId != null)
                 {
-                    PersistentPlayerData _ppd1 = PersistentOperations.GetPersistentPlayerDataFromId(_cInfo1.CrossplatformId.CombinedString);
-                    PersistentPlayerData _ppd2 = PersistentOperations.GetPersistentPlayerDataFromId(_cInfo2.CrossplatformId.CombinedString);
+                    PersistentPlayerData _ppd1 = GeneralFunction.GetPersistentPlayerDataFromId(_cInfo1.CrossplatformId.CombinedString);
+                    PersistentPlayerData _ppd2 = GeneralFunction.GetPersistentPlayerDataFromId(_cInfo2.CrossplatformId.CombinedString);
                     if (_ppd1.ACL != null && !_ppd1.ACL.Contains(_cInfo2.InternalId) && _ppd2.ACL != null && !_ppd2.ACL.Contains(_cInfo1.InternalId))
                     {
                         if (_player1.Party != null && !_player1.Party.ContainsMember(_player2) && _player2.Party != null && !_player2.Party.ContainsMember(_player1))
@@ -306,7 +306,7 @@ namespace ServerTools
 
         public static void ConsoleBountyList()
         {
-            List<ClientInfo> clientList = PersistentOperations.ClientList();
+            List<ClientInfo> clientList = GeneralFunction.ClientList();
             if (clientList != null)
             {
                 for (int i = 0; i < clientList.Count; i++)

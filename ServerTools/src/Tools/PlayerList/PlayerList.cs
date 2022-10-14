@@ -9,7 +9,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            List<ClientInfo> clientList = PersistentOperations.ClientList();
+            List<ClientInfo> clientList = GeneralFunction.ClientList();
             if (clientList != null)
             {
                 for (int i = 0; i < clientList.Count; i++)

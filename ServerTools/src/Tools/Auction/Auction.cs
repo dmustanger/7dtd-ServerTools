@@ -21,16 +21,15 @@ namespace ServerTools
 
         private static readonly string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         public static readonly string Filepath = string.Format("{0}/Logs/AuctionLogs/{1}", API.ConfigPath, file);
-        private static readonly string AlphaNumSet = "JKQRLWBYZMPSNODHEFXTACGIUV";
 
         public static void SetLink()
         {
             try
             {
-                if (File.Exists(PersistentOperations.XPathDir + "XUi/windows.xml"))
+                if (File.Exists(GeneralFunction.XPathDir + "XUi/windows.xml"))
                 {
                     string link = string.Format("http://{0}:{1}/auction.html", WebAPI.BaseAddress, WebAPI.Port);
-                    List<string> lines = File.ReadAllLines(PersistentOperations.XPathDir + "XUi/windows.xml").ToList();
+                    List<string> lines = File.ReadAllLines(GeneralFunction.XPathDir + "XUi/windows.xml").ToList();
                     for (int i = 0; i < lines.Count; i++)
                     {
                         if (lines[i].Contains("browserAuction"))
@@ -38,7 +37,7 @@ namespace ServerTools
                             if (!lines[i + 7].Contains(link))
                             {
                                 lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", link);
-                                File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
+                                File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
                             }
                             return;
                         }
@@ -59,14 +58,13 @@ namespace ServerTools
                             lines.Add("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                             lines.Add("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
                             lines.Add("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
-                            lines.Add("          <!-- Change the text IP and Port to the one needed by ServerTools web api -->");
                             lines.Add("      </panel>");
                             lines.Add("  </window>");
                             lines.Add("");
                             lines.Add("</append>");
                             lines.Add("");
                             lines.Add("</configs>");
-                            File.WriteAllLines(PersistentOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
+                            File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
                             return;
                         }
                     }
@@ -74,7 +72,7 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", PersistentOperations.XPathDir + "XUi/windows.xml", e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralFunction.XPathDir + "XUi/windows.xml", e.Message));
             }
         }
 
@@ -82,7 +80,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (int.TryParse(_price, out int auctionPrice))
@@ -286,46 +284,89 @@ namespace ServerTools
             {
                 if (AuctionItems.Count > 0)
                 {
-                    if (Panel && WebAPI.IsEnabled && WebAPI.Connected &&
-                        !PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay)
+                    if (Panel && WebAPI.IsEnabled && WebAPI.Connected && !PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Overlay)
                     {
-                        string securityId = "";
-                        for (int i = 0; i < 10; i++)
+                        string ip = _cInfo.ip;
+                        bool duplicate = false;
+                        List<ClientInfo> clientList = GeneralFunction.ClientList();
+                        if (clientList != null && clientList.Count > 1)
                         {
-                            string pass = CreatePassword(4);
-                            if (pass != "DBUG" && !PanelAccess.ContainsKey(pass))
+                            for (int i = 0; i < clientList.Count; i++)
                             {
-                                securityId = pass;
-                                if (!PanelAccess.ContainsValue(_cInfo.entityId))
+                                ClientInfo cInfo = clientList[i];
+                                if (cInfo != null && cInfo.entityId != _cInfo.entityId && ip == cInfo.ip)
                                 {
-                                    PanelAccess.Add(securityId, _cInfo.entityId);
-                                    WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
+                                    duplicate = true;
+                                    break;
                                 }
-                                else
-                                {
-                                    if (PanelAccess.Count > 0)
-                                    {
-                                        foreach (var client in PanelAccess)
-                                        {
-                                            if (client.Value == _cInfo.entityId)
-                                            {
-                                                PanelAccess.Remove(client.Key);
-                                                WebAPI.AuthorizedTime.Remove(client.Key);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    PanelAccess.Add(securityId, _cInfo.entityId);
-                                    WebAPI.AuthorizedTime.Add(securityId, DateTime.Now.AddMinutes(5));
-                                }
-                                break;
                             }
                         }
-                        Phrases.Dict.TryGetValue("Auction20", out string phrase);
-                        phrase = phrase.Replace("{Value}", securityId);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserAuction", true));
-                        return;
+                        long ipLong = GeneralFunction.ConvertIPToLong(_cInfo.ip);
+                        if (duplicate || (ipLong >= GeneralFunction.ConvertIPToLong("10.0.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("10.255.255.255")) ||
+                            (ipLong >= GeneralFunction.ConvertIPToLong("172.16.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("172.31.255.255")) ||
+                            (ipLong >= GeneralFunction.ConvertIPToLong("192.168.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("192.168.255.255")) ||
+                            _cInfo.ip == "127.0.0.1")
+                        {
+                            string securityId = "";
+                            for (int i = 0; i < 10; i++)
+                            {
+                                string pass = CreatePassword(4);
+                                if (pass != "DBUG" && !PanelAccess.ContainsKey(pass))
+                                {
+                                    securityId = pass;
+                                    if (!PanelAccess.ContainsValue(_cInfo.entityId))
+                                    {
+                                        PanelAccess.Add(securityId, _cInfo.entityId);
+                                    }
+                                    else
+                                    {
+                                        if (PanelAccess.Count > 0)
+                                        {
+                                            foreach (var client in PanelAccess)
+                                            {
+                                                if (client.Value == _cInfo.entityId)
+                                                {
+                                                    PanelAccess.Remove(client.Key);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        PanelAccess.Add(securityId, _cInfo.entityId);
+                                    }
+                                    break;
+                                }
+                            }
+                            Phrases.Dict.TryGetValue("Auction20", out string phrase);
+                            phrase = phrase.Replace("{Value}", securityId);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserAuction", true));
+                            return;
+                        }
+                        else
+                        {
+                            if (PanelAccess.Count > 0 && PanelAccess.ContainsValue(_cInfo.entityId))
+                            {
+                                var clients = PanelAccess.ToArray();
+                                for (int i = 0; i < clients.Length; i++)
+                                {
+                                    if (clients[i].Value == _cInfo.entityId && clients[i].Key != ip)
+                                    {
+                                        PanelAccess.Remove(clients[i].Key);
+                                        PanelAccess.Add(ip, _cInfo.entityId);
+                                        break;
+                                    }
+                                }
+                            }
+                            else if (PanelAccess.ContainsKey(ip))
+                            {
+                                PanelAccess[ip] = _cInfo.entityId;
+                            }
+                            else
+                            {
+                                PanelAccess.Add(ip, _cInfo.entityId);
+                            }
+                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui open browserAuction", true));
+                        }
                     }
                     List<string> IDs = new List<string>();
                     var auctionEntries = AuctionItems.ToArray();
@@ -464,7 +505,7 @@ namespace ServerTools
                 float fee = _itemData.price * ((float)Tax / 100);
                 int adjustedPrice = _itemData.price - (int)fee;
                 Wallet.AddCurrency(_id, adjustedPrice, true);
-                string playerName = PersistentOperations.GetPlayerDataFileFromId(_id).ecd.entityName;
+                string playerName = GeneralFunction.GetPlayerDataFileFromId(_id).ecd.entityName;
                 using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                 {
                     sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' has purchased auction entry '{3}', profits went to ID '{4}' named '{5}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _purchase, _id, playerName));
@@ -478,7 +519,7 @@ namespace ServerTools
                 phrase = phrase.Replace("{Value}", _itemData.price.ToString());
                 phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_id);
+                ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_id);
                 if (cInfo2 != null)
                 {
                     Phrases.Dict.TryGetValue("Auction10", out string phrase1);
@@ -493,7 +534,7 @@ namespace ServerTools
             {
                 if (AuctionItems.ContainsKey(itemId))
                 {
-                    EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                    EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
                         if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.Count > 0)
@@ -599,7 +640,7 @@ namespace ServerTools
             System.Random rnd = new System.Random();
             for (int i = 0; i < _length; i++)
             {
-                pass += AlphaNumSet.ElementAt(rnd.Next(0, 26));
+                pass += GeneralFunction.NumSet.ElementAt(rnd.Next(0, 10));
             }
             return pass;
         }

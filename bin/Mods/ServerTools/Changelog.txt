@@ -1,5 +1,62 @@
 ﻿CHANGELOG
 
+20.6.3
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added No_Vehicle_Drone tool. Players must pick up their drone
+before entering a vehicle
+-Added option Allow_Bicycle to No_Vehicle_Pickup tool
+-Added option Save_Directory to Auto_Backup tool. Allows you
+to specify the location you wish to backup. If not specified
+it will attempt to use the default directory. The location
+must contain the file main.ttw in one of the folders
+-Added chat command /claims. Tells the player how many active
+claims they have and their limit
+-Added Land_Claim_Count tool. Creates an xml to specify land
+claims allowed for specific players using their steam id or EOS. 
+Claims can be set higher or lower than the default. Takes
+affect upon placement of claims
+-Added Oversized_Traps tool. Upon activation a xpath document
+will be generated that modifies the footprint of traps and 
+turrets when placing them. Server restart required to activate
+or deactivate
+-Added option Damage_Z to Market and Lobby tools. Controls
+whether players can hurt zombies
+-Added discord and map to the CommandList.xml
+-Added Interactive_Map tool. Requires the latest Allocs Fixes 
+be installed. Map can be accessed from in game or an outside 
+browser. Interaction with the map and players are based on
+permissions set via InteractiveMap.xml
+-Added internal fix for players spawning inside a block or
+outside of the map. Their position will be shifted a few blocks
+or upwards to the surface
+-Fixed Hardcore tool failing to delete the necessary files
+-Fixed Bed tool not withdrawing the Command_Cost on use
+-Fixed Market and Lobby bounds not setting on startup
+-Fixed Web_Panel console section not functioning as intended
+-Fixed phrase shown when receiving currency to the Bank directly
+-Fixed Bank phrase number set incorrectly during file creation
+-Changed options Player_Check and Zombie_Check from Market
+and Lobby tools to only apply when first teleporting into
+the area
+-Changed Market and Lobby area to remove zombies automatically
+-Changed login process to access the Auction, Shop, RIO panels
+-Changed when zombies are removed from the Market, Lobby and
+Zones. A player must be inside of the area set for no zombies
+-Changed command permissions. All chat commands can have a
+permission level added via the ServerAdmin.xml as you would
+normally. Custom_Commands no longer require permissions active
+in the xml, just add the command to the ServerAdmin.xml
+-Changed panel cache headers to prevent potential cause of
+Steam browser freezing
+-Removed chat commands /setlobby /setmarket. Use the
+console commands for each tool to achieve the same thing
+-Removed Web_API option Icon_Folder. This is now handled 
+automatically
+-Removed Tracking tool from config. This runs automatically
+and can be accessed via console the same as before
+
 20.6.2
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

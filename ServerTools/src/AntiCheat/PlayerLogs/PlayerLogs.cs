@@ -110,7 +110,7 @@ namespace ServerTools
                             EntityPlayer player = playerList[i];
                             if (player != null)
                             {
-                                ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(player.entityId);
+                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(player.entityId);
                                 if (cInfo != null)
                                 {
                                     playerDataFile = cInfo.latestPlayerData;
@@ -300,7 +300,7 @@ namespace ServerTools
 
         private static XmlNode PrintVehicle(int _vehicleId, XmlNode _playerNode, XmlDocument _xmlDoc)
         {
-            EntityVehicle vehicle = (EntityVehicle)PersistentOperations.GetEntity(_vehicleId);
+            EntityVehicle vehicle = (EntityVehicle)GeneralFunction.GetEntity(_vehicleId);
             if (vehicle != null)
             {
                 XmlNode newEntry = _xmlDoc.CreateTextNode(string.Format("       Id {0} / Health {1} / Speed {2}\n", vehicle.entityId, vehicle.Health, (int)vehicle.speedForward));

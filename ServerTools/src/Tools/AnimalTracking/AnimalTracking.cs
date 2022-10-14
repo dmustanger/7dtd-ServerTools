@@ -170,7 +170,7 @@ namespace ServerTools
                         }
                         if (randomId == counter)
                         {
-                            EntityPlayer entityPlayer = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                            EntityPlayer entityPlayer = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                             if (entityPlayer != null)
                             {
                                 if (SpawnAnimal(_cInfo, entityPlayer, nextRadius, randomId))
@@ -202,7 +202,7 @@ namespace ServerTools
 
         public static bool SpawnAnimal(ClientInfo _cInfo, EntityPlayer _entityPlayer, int _radius, int _animalId)
         {
-            PersistentOperations.EntityId.TryGetValue(_animalId, out int entityId);
+            GeneralFunction.EntityId.TryGetValue(_animalId, out int entityId);
             bool posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_entityPlayer.position, 15, out int x, out int y, out int z, new Vector3(_radius, _radius, _radius), true);
             if (!posFound)
             {

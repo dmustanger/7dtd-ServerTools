@@ -246,11 +246,11 @@ namespace ServerTools
         {
             try
             {
-                List<ClientInfo> clients = PersistentOperations.ClientList();
+                List<ClientInfo> clients = GeneralFunction.ClientList();
                 if (clients != null && clients.Count > 0)
                 {
-                    List<ClientInfo> admin = PersistentOperations.ClientList();
-                    List<ClientInfo> player = PersistentOperations.ClientList();
+                    List<ClientInfo> admin = GeneralFunction.ClientList();
+                    List<ClientInfo> player = GeneralFunction.ClientList();
                     for (int i = 0; i < clients.Count; i++)
                     {
                         ClientInfo cInfo = clients[i];

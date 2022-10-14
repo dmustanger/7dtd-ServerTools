@@ -48,7 +48,7 @@ namespace ServerTools
                     }
                     else if (_params[1].Contains("EOS_"))
                     {
-                        PersistentPlayerData ppd = PersistentOperations.GetPersistentPlayerDataFromId(_params[1]);
+                        PersistentPlayerData ppd = GeneralFunction.GetPersistentPlayerDataFromId(_params[1]);
                         if (ppd != null)
                         {
                             id = ppd.UserIdentifier.CombinedString;

@@ -17,7 +17,7 @@ namespace ServerTools
             {
                 if (__instance.Sender.entityId != entityId(__instance))
                 {
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(entityId(__instance));
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId(__instance));
                     if (cInfo != null)
                     {
                         SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for packet manipulation\"", __instance.Sender.CrossplatformId.CombinedString), null);

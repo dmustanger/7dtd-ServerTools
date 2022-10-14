@@ -13,7 +13,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (player.SpawnPoints.Count > 0)
@@ -139,6 +139,10 @@ namespace ServerTools
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(position, null, false));
                 Phrases.Dict.TryGetValue("Bed4", out string phrase);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                if (Command_Cost >= 1 && Wallet.IsEnabled)
+                {
+                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
+                }
             }
             catch (Exception e)
             {

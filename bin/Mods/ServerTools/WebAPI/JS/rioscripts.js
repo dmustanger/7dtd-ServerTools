@@ -38,11 +38,494 @@ var AudioLeave = new Audio("Audio/leave.mp3");
 var AudioWin = new Audio("Audio/win.mp3");
 var AudioLost = new Audio("Audio/lost.mp3");
 
+//Server based functions
+
 function FreshPage() {
 	BuildDice();
 	BuildSquareList();
 	StartObserver();
+	let request = new XMLHttpRequest();
+	request.open('POST', window.location.href.replace('rio.html', 'RIOIPSync'), true);
+	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+	request.onerror = function() {
+		alert("Error. Unable to communicate with server");
+	};
+	request.onload = function() {
+		if ((request.status == 200 || request.status === 202) && request.readyState == 4) {
+			if (request.status === 202) {
+				Host = true;
+			}
+			ClientId = responseSplit[0];
+			let responseSplit = request.responseText.split('☼');
+			Pin = CryptoJS.SHA512(ClientId + responseSplit[1]).toString();
+			TableId = responseSplit[2];
+			PlayerNumber = responseSplit[3];
+			AnimationQue.push(document.getElementById('SecuritySync').style.top = "-2000px");
+			AnimationQue.push(document.getElementById('Header').style.top = "0px");
+			AnimationQue.push(document.getElementById('LobbyContainer').style.top = "0px");
+			AnimationDelay();
+			StartUpdate();
+		}
+		else if (request.status === 401 && request.readyState === 4) {
+			alert("Unable to sync your IP with a player in game. Check you are still in game");
+		}
+		else if (request.status === 402 && request.readyState === 4) {
+			alert("You do not have enough currency to play");
+		}
+		else if (request.status == 403 && request.readyState == 4) {
+			alert("Server has refused entry");
+		}
+	};
+	request.send(" ");
 };
+
+function EnterGame() {
+	let secureId = document.getElementById("SecureId").value;
+	if (secureId.length > 3 && secureId.length < 5) {
+		if (document.getElementById("ConfirmEnter").checked) {
+			let request = new XMLHttpRequest();
+			request.open('POST', window.location.href.replace('rio.html', 'EnterRIO'), true);
+			request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+			request.onerror = function() {
+				alert("EnterGame Error: No response from server");
+			};
+			request.onload = function() {
+				if ((request.status == 200 || request.status === 202) && request.readyState == 4) {
+					if (request.status === 202) {
+						Host = true;
+					}
+					ClientId = secureId;
+					let responseSplit = request.responseText.split('☼');
+					Pin = CryptoJS.SHA512(ClientId + responseSplit[0]).toString();
+					TableId = responseSplit[1];
+					PlayerNumber = responseSplit[2];
+					AnimationQue.push(document.getElementById('SecuritySync').style.top = "-2000px");
+					AnimationQue.push(document.getElementById('Header').style.top = "0px");
+					AnimationQue.push(document.getElementById('LobbyContainer').style.top = "0px");
+					AnimationDelay();
+					StartUpdate();
+				}
+				else if (request.status === 400 && request.readyState === 4) {
+					alert("Invalid security ID");
+				}
+				else if (request.status === 401 && request.readyState === 4) {
+					alert("Unable to sync with a player in game. Check you are still in game");
+				}
+				else if (request.status === 402 && request.readyState === 4) {
+					alert("You do not have enough currency to play");
+				}
+				else if (request.status === 403 && request.readyState === 4) {
+					alert("Server has refused entry");
+				}
+			};
+			request.send(CryptoJS.SHA512(secureId).toString());
+		}
+		else {
+			alert("Click the confirmation checkbox first");
+		}
+	}
+	else {
+		alert("Invalid security ID. ID must be 4 chars in length");
+	}
+};
+
+function ExitGame() {
+	let request = new XMLHttpRequest();
+	request.open('POST', window.location.href.replace('rio.html', 'ExitRIO'), true);
+	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+	request.onerror = function() {
+		StopUpdate();
+		alert("ExitGame Error: No response from server");
+	};
+	request.onload = function() {
+		if (request.status === 200 && request.readyState === 4) {
+			window.location.href = window.location.href;
+		}
+		else if (request.status === 401 && request.readyState === 4) {
+			window.location.href = window.location.href;
+		}
+		else if (request.status === 403 && request.readyState === 4) {
+			window.location.href = window.location.href;
+		}
+	};
+	request.send(Pin + "☼" + TableId);
+};
+
+function RollDice() {
+	if (Active && !Shuffling && Roll != 4) {
+		if (HeldDice[0] === "false" || HeldDice[1] === "false" || HeldDice[2] === "false" || HeldDice[3] === "false" || HeldDice[4] === "false") {
+			if (Roll > 1) {
+				for (let [key] of Object.entries(SquareList)) {
+					if (document.getElementById(key).style.backgroundColor != "" && ClaimedSquares[key] == null) {
+						AnimationQue.push(document.getElementById(key).style.backgroundColor = "");
+					}
+				}
+			}
+			Roll += 1;
+			if (Roll === 2) {
+				AnimationQue.push(document.getElementById("RollNumber").innerHTML = "1");
+			}
+			else if (Roll === 3) {
+				AnimationQue.push(document.getElementById("RollNumber").innerHTML = "2");
+			}
+			else {
+				AnimationQue.push(document.getElementById("RollNumber").innerHTML = "3");
+				AnimationQue.push(document.getElementById("Roller").style.boxShadow = "");
+			}
+			let heldDice = HeldDice[0] + "," + HeldDice[1] + "," + HeldDice[2] + "," + HeldDice[3] + "," + HeldDice[4];
+			let request = new XMLHttpRequest();
+			request.open('POST', window.location.href.replace('rio.html', 'RollRIO'), true);
+			request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+			request.onerror = function() {
+				StopUpdate();
+				alert("RollDice Error: No response from server");
+			};
+			request.onload = function() {
+				if (request.status === 200 && request.readyState === 4) {
+					let newDice = "";
+					let responseSplit = request.responseText.split('☼');
+					Pin = CryptoJS.SHA512(ClientId + responseSplit[0]).toString();
+					newDice = responseSplit[1].split(',');
+					for (let i = 0; i < 5; i++) {
+						let die = newDice[i] - 1;
+						DiceFace[i] = die;
+					}
+					Shuffle();
+				}
+				if (request.status === 401 && request.readyState === 4) {
+					StopUpdate();
+					alert("This security ID has expired. Please acquire a new one");
+				}
+				else if (request.status === 403 && request.readyState === 4) {
+					StopUpdate();
+					alert("RollDice: Server rejected request");
+				}
+			};
+			request.send(Pin + "☼" + TableId + "☼" + heldDice + "☼" + PlayerNumber);
+			AnimationDelay();
+		}
+	}
+};
+
+function EndTurn() {
+	Roll = 1;
+	let request = new XMLHttpRequest();
+	request.open('POST', window.location.href.replace('rio.html', 'EndTurnRIO'), true);
+	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+	request.onerror = function() {
+		StopUpdate();
+		alert("EndTurn Error: No response from server");
+	};
+	request.onload = function() {
+		if (request.status === 200 && request.readyState === 4) {
+			Pin = CryptoJS.SHA512(ClientId + request.responseText).toString();
+		}
+		else if (request.status === 401 && request.readyState === 4) {
+			StopUpdate();
+			alert("This security ID has expired. Please acquire a new one");
+		}
+		else if (request.status === 403 && request.readyState === 4) {
+			StopUpdate();
+			alert("EndTurn: Server rejected request");
+		}
+	};
+	request.send(Pin + "☼" + TableId + "☼" + PlayerNumber);
+};
+
+function SetSquare(id) {
+	if (!Shuffling && Roll > 1 && (MatchList.includes("ultra") || ClaimedSquares[id] == null && MatchList.includes(id))) {
+		ClaimedSquares[id] = PlayerNumber;
+		if (PlayerNumber === "1") {
+			AnimationQue.push(document.getElementById(id).style.backgroundColor = "#0000B3");
+		}
+		else if (PlayerNumber === "2") {
+			AnimationQue.push(document.getElementById(id).style.backgroundColor = "#E60000");
+		}
+		else if (PlayerNumber === "3") {
+			AnimationQue.push(document.getElementById(id).style.backgroundColor = "#00CC00");
+		}
+		else if (PlayerNumber === "4") {
+			AnimationQue.push(document.getElementById(id).style.backgroundColor = "#E6E600");
+		}
+		for (let [key, value] of Object.entries(SquareList)) {
+			if (ClaimedSquares[key] == null) {
+				AnimationQue.push(document.getElementById(key).style.backgroundColor = "");
+			}
+		}
+		for (let i = 1; i <= 5; i++) {
+			AnimationQue.push(document.getElementById("Die" + i).style.boxShadow = "");
+		}
+		AnimationQue.push(document.getElementById("Roller").style.boxShadow = "");
+		AnimationQue.push(document.getElementById("RollNumber").innerHTML = "");
+		AnimationDelay();
+		AudioClaim.play();
+		HeldDice[0] = "false";
+		HeldDice[1] = "false";
+		HeldDice[2] = "false";
+		HeldDice[3] = "false";
+		HeldDice[4] = "false";
+		Roll = 1;
+		let winner = false;
+		let claims = Object.entries(ClaimedSquares);
+		if (claims.length >= 4) {
+			let squares = Object.keys(SquareList);
+			let clientClaims = new Array();
+			for (let [key, value] of claims) {
+				if (value == PlayerNumber) {
+					clientClaims.push(key);
+				}
+			}
+			clientClaims.push("5_5");
+			let claimCount = clientClaims.length;
+			if (claimCount >= 4) {
+				for (let j = 0; j < claimCount; j++) {
+					let claimSplit = clientClaims[j].split("_");
+					let parsed1 = parseInt(claimSplit[0]);
+					let parsed2 = parseInt(claimSplit[1]);
+					for (let k = 1; k < 4; k++) {
+						let position = parsed1 - k;
+						let up = clientClaims[j].replace(claimSplit[0] + "_", position + "_");
+						if (squares.includes(up)) {
+							if (clientClaims.includes(up)) {
+								if (k === 3) {
+									winner = true;
+									break;
+								}
+							}
+							else {
+								break;
+							}
+						}
+						else {
+							break;
+						}
+					}
+					if (!winner) {
+						for (let l = 1; l < 4; l++) {
+							let position = parsed1 + l;
+							let down = clientClaims[j].replace(claimSplit[0] + "_", position + "_");
+							if (squares.includes(down)) {
+								if (clientClaims.includes(down)) {
+									if (l === 3) {
+										winner = true;
+										break;
+									}
+								}
+								else {
+									break;
+								}
+							}
+							else {
+								break;
+							}
+						}
+					}
+					if (!winner) {
+						for (let m = 1; m < 4; m++) {
+							let position = parsed2 - m;
+							let left = clientClaims[j].replace("_" + claimSplit[1], "_" + position);
+							if (squares.includes(left)) {
+								if (clientClaims.includes(left)) {
+									if (m === 3) {
+										winner = true;
+										break;
+									}
+								}
+								else {
+									break;
+								}
+							}
+							else {
+								break;
+							}
+						}
+					}
+					if (!winner) {
+						for (let n = 1; n < 4; n++) {
+							let position = parsed2 + n;
+							let right = clientClaims[j].replace("_" + claimSplit[1], "_" + position);
+							if (squares.includes(right)) {
+								if (clientClaims.includes(right)) {
+									if (n === 3) {
+										winner = true;
+										break;
+									}
+								}
+								else {
+									break;
+								}
+							}
+							else {
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		let request = new XMLHttpRequest();
+		request.open('POST', window.location.href.replace('rio.html', 'ClaimRIO'), true);
+		request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+		request.onerror = function() {
+			StopUpdate();
+			alert("SetSquare Error: No response from server");
+		};
+		request.onload = function() {
+			if (request.status === 200 && request.readyState === 4) {
+				Pin = CryptoJS.SHA512(ClientId + request.responseText).toString();
+			}
+			if (request.status === 401 && request.readyState === 4) {
+				StopUpdate();
+				alert("This security ID has expired. Please acquire a new one");
+			}
+			else if (request.status === 403 && request.readyState === 4) {
+				StopUpdate();
+				alert("SetSquare: Server rejected request");
+			}
+		};
+		request.send(Pin + "☼" + TableId + "☼" + id + "☼" + PlayerNumber + "☼" + winner);
+	}
+};
+
+function RequestUpdate() {
+	let request = new XMLHttpRequest();
+	request.open('POST', window.location.href.replace('rio.html', 'UpdateRIO'), true);
+	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+	request.onerror = function() {
+		StopUpdate();
+		alert("RequestUpdate Error: No response from server");
+	};
+	request.onload = function() {
+		if (request.status === 200 && request.readyState === 4) {
+			let responseSplit = request.responseText.split('☼');
+			Pin = CryptoJS.SHA512(ClientId + responseSplit[0]).toString();
+			if (responseSplit[1].includes("§")) {
+				let newEvents = responseSplit[1].split("§");
+				for (let i = 0; i < newEvents.length; i++) {
+					RunEvent(newEvents[i], 0);
+				}
+			}
+			else {
+				RunEvent(responseSplit[1], 0);
+			}
+		}
+		if (request.status === 202 && request.readyState === 4) {
+			Pin = CryptoJS.SHA512(ClientId + request.responseText).toString();
+		}
+		else if (request.status === 401 && request.readyState === 4) {
+			StopUpdate();
+			alert("This security ID has expired. Please acquire a new one");
+			
+		}
+		else if (request.status === 403 && request.readyState === 4) {
+			StopUpdate();
+			alert("RequestUpdate: Server rejected request");
+		}
+	};
+	request.send(Pin + "☼" + TableId + "☼" + EventCount);
+};
+
+function StartGame() {
+	if (!Active && !Started && Host) {
+		if (PlayerCount > 1) {
+			let request = new XMLHttpRequest();
+			request.open('POST', window.location.href.replace('rio.html', 'StartGameRIO'), true);
+			request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+			request.onerror = function() {
+				StopUpdate();
+				alert("StartGame Error: No response from server");
+			};
+			request.onload = function() {
+				if (request.status === 200 && request.readyState === 4) {
+					Started = true;
+					Pin = CryptoJS.SHA512(ClientId + request.responseText).toString();
+					AnimationQue.push(document.getElementById('StartButton').style.top = "2000px");
+					AnimationQue.push(document.getElementById('AddAIButton').style.top = "2000px");
+					AnimationQue.push(document.getElementById('RemoveAIButton').style.top = "2000px");
+					AnimationDelay();
+					StartUpdate();
+				}
+				else if (request.status === 401 && request.readyState === 4) {
+					StopUpdate();
+					alert("This security ID has expired. Please acquire a new one");
+				}
+				else if (request.status === 403 && request.readyState === 4) {
+					StopUpdate();
+					alert("StartGame: Server rejected request");
+				}
+			};
+			request.send(Pin + "☼" + TableId);
+		}
+	}
+};
+
+function AddAI() {
+	alert("Coming soon");
+	//if (!Active && !Started && Host && PlayerCount < 4) {
+	//	Active = true;
+	//	let request = new XMLHttpRequest();
+	//	request.open('POST', window.location.href.replace('rio.html', 'AddAIRIO'), true);
+	//	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+	//	request.onerror = function() {
+	//		Active = false;
+	//		alert("AddAI Error: No response from server");
+	//	};
+	//	request.onload = function () {
+	//		if (request.status === 200 && request.readyState === 4) {
+	//			Active = false;
+	//			AICount += 1;
+	//			PlayerCount += 1;
+	//		}
+	//		else if (request.status === 401 && request.readyState === 4) {
+	//			Active = false;
+	//		}
+	//		else if (request.status === 403 && request.readyState === 4) {
+	//			Active = false;
+	//		}
+	//	};
+	//	if (ClientId != "DBG1" && ClientId != "DBG2" && ClientId != "DBG3" && ClientId != "DBG4") {
+	//		request.send(Pin + "☼" + TableId);
+	//	}
+	//	else {
+	//		request.send(ClientId + "☼" + TableId);
+	//	}
+	//}
+};
+
+function RemoveAI() {
+	alert("Coming soon");
+	//if (!Active && !Started && Host && AICount > 0) {
+	//	Active = true;
+	//	let request = new XMLHttpRequest();
+	//	request.open('POST', window.location.href.replace('rio.html', 'RemoveAIRIO'), true);
+	//	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+	//	request.onerror = function() {
+	//		Active = false;
+	//		alert("RemoveAI Error: No response from server");
+	//	};
+	//	request.onload = function () {
+	//		if (request.status === 200 && request.readyState === 4) {
+	//			Active = false;
+	//			AICount -= 1;
+	//			PlayerCount -= 1;
+	//		}
+	//		else if (request.status === 401 && request.readyState === 4) {
+	//			Active = false;
+	//		}
+	//		else if (request.status === 403 && request.readyState === 4) {
+	//			Active = false;
+	//		}
+	//	};
+	//	if (ClientId != "DBG1" && ClientId != "DBG2" && ClientId != "DBG3" && ClientId != "DBG4") {
+	//		request.send(Pin + "☼" + TableId);
+	//	}
+	//	else {
+	//		request.send(ClientId + "☼" + TableId);
+	//	}
+	//}
+};
+
+//Basic functions
 
 function BuildDice() {
 	DiceList[0] = "Img/Die1.png";
@@ -137,6 +620,39 @@ function BuildSquareList() {
 	SquareList["9_9"] = "5_0_0";
 };
 
+function StartObserver() {
+	let body = document.getElementById('GeneralBody'),
+	options = {
+		childList: true,
+		subtree: true
+	},
+	AnimationObserver = new MutationObserver(MutationCalled);
+	AnimationObserver.observe(body, options);
+};
+
+function StopObserver() {
+	AnimationObserver.disconnect();
+};
+
+function MutationCalled() {
+	Animating = false;
+	if (AnimationQue.length > 0) {
+		AnimationDelay();
+	}
+};
+
+function HowToPlay() {
+	if (!HTP) {
+		HTP = true;
+		AnimationQue.push(document.getElementById('HowToPlayContainer').style.top = "0px");
+	}
+	else {
+		HTP = false;
+		AnimationQue.push(document.getElementById('HowToPlayContainer').style.top = "2000px");
+	}
+	AnimationDelay();
+};
+
 function Balloons(playerNumber) {
 	BalloonsAnimating = true;
 	let balloonImage;
@@ -159,7 +675,7 @@ function Balloons(playerNumber) {
 	AnimationDelay();
 };
 
-function BalloonUp () {
+function BalloonUp() {
 	BalloonMovement += 2;
 	if (BalloonMovement !== 1800) {
 		let position = 800 - BalloonMovement;
@@ -170,63 +686,8 @@ function BalloonUp () {
     }
 	else {
 		BalloonsAnimating = false;
+		StopBalloons();
 		AnimationDelay();
-	}
-};
-
-function RollDice() {
-	if (Active && !Shuffling && Roll != 4) {
-		if (HeldDice[0] === "false" || HeldDice[1] === "false" || HeldDice[2] === "false" || HeldDice[3] === "false" || HeldDice[4] === "false") {
-			if (Roll > 1) {
-				for (let [key] of Object.entries(SquareList)) {
-					if (document.getElementById(key).style.backgroundColor != "" && ClaimedSquares[key] == null) {
-						AnimationQue.push(document.getElementById(key).style.backgroundColor = "");
-					}
-				}
-			}
-			Roll += 1;
-			if (Roll === 2) {
-				AnimationQue.push(document.getElementById("RollNumber").innerHTML = "1");
-			}
-			else if (Roll === 3) {
-				AnimationQue.push(document.getElementById("RollNumber").innerHTML = "2");
-			}
-			else {
-				AnimationQue.push(document.getElementById("RollNumber").innerHTML = "3");
-				AnimationQue.push(document.getElementById("Roller").style.boxShadow = "");
-			}
-			let heldDice = HeldDice[0] + "," + HeldDice[1] + "," + HeldDice[2] + "," + HeldDice[3] + "," + HeldDice[4];
-			let request = new XMLHttpRequest();
-			request.open('POST', window.location.href.replace('rio.html', 'RollRio'), true);
-			request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
-			request.onerror = function() {
-				StopUpdate();
-				alert("RollDice Error: No response from server");
-			};
-			request.onload = function () {
-				if (request.status === 200 && request.readyState === 4) {
-					let newDice = "";
-					let responseSplit = request.responseText.split('☼');
-					Pin = CryptoJS.SHA512(ClientId + responseSplit[0]).toString();
-					newDice = responseSplit[1].split(',');
-					for (let i = 0; i < 5; i++) {
-						let die = newDice[i] - 1;
-						DiceFace[i] = die;
-					}
-					Shuffle();
-				}
-				if (request.status === 401 && request.readyState === 4) {
-					StopUpdate();
-					alert("This security ID has expired. Please acquire a new one");
-				}
-				else if (request.status === 403 && request.readyState === 4) {
-					StopUpdate();
-					alert("RollDice: Server rejected request");
-				}
-			};
-			request.send(Pin + "☼" + TableId + "☼" + heldDice + "☼" + PlayerNumber);
-			AnimationDelay();
-		}
 	}
 };
 
@@ -592,31 +1053,6 @@ function Shuffle() {
 	}, 100);
 };
 
-function EndTurn() {
-	Roll = 1;
-	let request = new XMLHttpRequest();
-	request.open('POST', window.location.href.replace('rio.html', 'EndTurnRio'), true);
-	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
-	request.onerror = function() {
-		StopUpdate();
-		alert("EndTurn Error: No response from server");
-	};
-	request.onload = function () {
-		if (request.status === 200 && request.readyState === 4) {
-			Pin = CryptoJS.SHA512(ClientId + request.responseText).toString();
-		}
-		else if (request.status === 401 && request.readyState === 4) {
-			StopUpdate();
-			alert("This security ID has expired. Please acquire a new one");
-		}
-		else if (request.status === 403 && request.readyState === 4) {
-			StopUpdate();
-			alert("EndTurn: Server rejected request");
-		}
-	};
-	request.send(Pin + "☼" + TableId + "☼" + PlayerNumber);
-};
-
 function SetDie(number) {
 	if (!Shuffling) {
 		if (Roll > 1) {
@@ -643,259 +1079,6 @@ function SetDie(number) {
 			AnimationDelay();
 		}
 	}
-};
-
-function SetSquare(id) {
-	if (!Shuffling && Roll > 1 && (MatchList.includes("ultra") || ClaimedSquares[id] == null && MatchList.includes(id))) {
-		ClaimedSquares[id] = PlayerNumber;
-		if (PlayerNumber === "1") {
-			AnimationQue.push(document.getElementById(id).style.backgroundColor = "#0000B3");
-		}
-		else if (PlayerNumber === "2") {
-			AnimationQue.push(document.getElementById(id).style.backgroundColor = "#E60000");
-		}
-		else if (PlayerNumber === "3") {
-			AnimationQue.push(document.getElementById(id).style.backgroundColor = "#00CC00");
-		}
-		else if (PlayerNumber === "4") {
-			AnimationQue.push(document.getElementById(id).style.backgroundColor = "#E6E600");
-		}
-		for (let [key, value] of Object.entries(SquareList)) {
-			if (ClaimedSquares[key] == null) {
-				AnimationQue.push(document.getElementById(key).style.backgroundColor = "");
-			}
-		}
-		for (let i = 1; i <= 5; i++) {
-			AnimationQue.push(document.getElementById("Die" + i).style.boxShadow = "");
-		}
-		AnimationQue.push(document.getElementById("Roller").style.boxShadow = "");
-		AnimationQue.push(document.getElementById("RollNumber").innerHTML = "");
-		AnimationDelay();
-		AudioClaim.play();
-		HeldDice[0] = "false";
-		HeldDice[1] = "false";
-		HeldDice[2] = "false";
-		HeldDice[3] = "false";
-		HeldDice[4] = "false";
-		Roll = 1;
-		let winner = false;
-		let claims = Object.entries(ClaimedSquares);
-		if (claims.length >= 4) {
-			let squares = Object.keys(SquareList);
-			let clientClaims = new Array();
-			for (let [key, value] of claims) {
-				if (value == PlayerNumber) {
-					clientClaims.push(key);
-				}
-			}
-			clientClaims.push("5_5");
-			let claimCount = clientClaims.length;
-			if (claimCount >= 4) {
-				for (let j = 0; j < claimCount; j++) {
-					let claimSplit = clientClaims[j].split("_");
-					let parsed1 = parseInt(claimSplit[0]);
-					let parsed2 = parseInt(claimSplit[1]);
-					for (let k = 1; k < 4; k++) {
-						let position = parsed1 - k;
-						let up = clientClaims[j].replace(claimSplit[0] + "_", position + "_");
-						if (squares.includes(up)) {
-							if (clientClaims.includes(up)) {
-								if (k === 3) {
-									winner = true;
-									break;
-								}
-							}
-							else {
-								break;
-							}
-						}
-						else {
-							break;
-						}
-					}
-					if (!winner) {
-						for (let l = 1; l < 4; l++) {
-							let position = parsed1 + l;
-							let down = clientClaims[j].replace(claimSplit[0] + "_", position + "_");
-							if (squares.includes(down)) {
-								if (clientClaims.includes(down)) {
-									if (l === 3) {
-										winner = true;
-										break;
-									}
-								}
-								else {
-									break;
-								}
-							}
-							else {
-								break;
-							}
-						}
-					}
-					if (!winner) {
-						for (let m = 1; m < 4; m++) {
-							let position = parsed2 - m;
-							let left = clientClaims[j].replace("_" + claimSplit[1], "_" + position);
-							if (squares.includes(left)) {
-								if (clientClaims.includes(left)) {
-									if (m === 3) {
-										winner = true;
-										break;
-									}
-								}
-								else {
-									break;
-								}
-							}
-							else {
-								break;
-							}
-						}
-					}
-					if (!winner) {
-						for (let n = 1; n < 4; n++) {
-							let position = parsed2 + n;
-							let right = clientClaims[j].replace("_" + claimSplit[1], "_" + position);
-							if (squares.includes(right)) {
-								if (clientClaims.includes(right)) {
-									if (n === 3) {
-										winner = true;
-										break;
-									}
-								}
-								else {
-									break;
-								}
-							}
-							else {
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-		let request = new XMLHttpRequest();
-		request.open('POST', window.location.href.replace('rio.html', 'ClaimRio'), true);
-		request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
-		request.onerror = function() {
-			StopUpdate();
-			alert("SetSquare Error: No response from server");
-		};
-		request.onload = function () {
-			if (request.status === 200 && request.readyState === 4) {
-				Pin = CryptoJS.SHA512(ClientId + request.responseText).toString();
-			}
-			if (request.status === 401 && request.readyState === 4) {
-				StopUpdate();
-				alert("This security ID has expired. Please acquire a new one");
-			}
-			else if (request.status === 403 && request.readyState === 4) {
-				StopUpdate();
-				alert("SetSquare: Server rejected request");
-			}
-		};
-		request.send(Pin + "☼" + TableId + "☼" + id + "☼" + PlayerNumber + "☼" + winner);
-	}
-};
-
-function EnterGame() {
-	let secureId = document.getElementById("SecureId").value;
-	if (secureId.length > 3 && secureId.length < 5) {
-		if (document.getElementById("ConfirmEnter").checked) {
-			let request = new XMLHttpRequest();
-			request.open('POST', window.location.href.replace('rio.html', 'EnterRio'), true);
-			request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
-			request.onerror = function() {
-				alert("EnterGame Error: No response from server");
-			};
-			request.onload = function () {
-				if (request.status === 200 && request.readyState === 4) {
-					ClientId = secureId;
-					let responseSplit = request.responseText.split('☼');
-					Pin = CryptoJS.SHA512(ClientId + responseSplit[0]).toString();
-					TableId = responseSplit[1];
-					PlayerNumber = responseSplit[2];
-					AnimationQue.push(document.getElementById('SecuritySync').style.top = "-2000px");
-					AnimationQue.push(document.getElementById('Header').style.top = "0px");
-					AnimationQue.push(document.getElementById('LobbyContainer').style.top = "0px");
-					AnimationDelay();
-					StartUpdate();
-				}
-				else if (request.status === 202 && request.readyState === 4) {
-					Host = true;
-					ClientId = secureId;
-					let responseSplit = request.responseText.split('☼');
-					Pin = CryptoJS.SHA512(ClientId + responseSplit[0]).toString();
-					TableId = responseSplit[1];
-					PlayerNumber = responseSplit[2];
-					AnimationQue.push(document.getElementById('SecuritySync').style.top = "-2000px");
-					AnimationQue.push(document.getElementById('Header').style.top = "0px");
-					AnimationQue.push(document.getElementById('LobbyContainer').style.top = "0px");
-					AnimationDelay();
-					StartUpdate();
-				}
-				else if (request.status === 400 && request.readyState === 4) {
-					alert("Invalid security ID");
-				}
-				else if (request.status === 401 && request.readyState === 4) {
-					alert("This security ID has expired. Please acquire a new one");
-				}
-				else if (request.status === 402 && request.readyState === 4) {
-					alert("You must be in game to join");
-				}
-				else if (request.status === 403 && request.readyState === 4) {
-					alert("EnterGame: Server rejected request");
-				}
-			};
-			request.send(CryptoJS.SHA512(secureId).toString());
-		}
-		else {
-			alert("Click the confirmation checkbox first");
-		}
-	}
-	else {
-		alert("Invalid security ID. ID must be 4 chars in length");
-	}
-};
-
-function RequestUpdate() {
-	let request = new XMLHttpRequest();
-	request.open('POST', window.location.href.replace('rio.html', 'UpdateRio'), true);
-	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
-	request.onerror = function() {
-		StopUpdate();
-		alert("RequestUpdate Error: No response from server");
-	};
-	request.onload = function () {
-		if (request.status === 200 && request.readyState === 4) {
-			let responseSplit = request.responseText.split('☼');
-			Pin = CryptoJS.SHA512(ClientId + responseSplit[0]).toString();
-			if (responseSplit[1].includes("§")) {
-				let newEvents = responseSplit[1].split("§");
-				for (let i = 0; i < newEvents.length; i++) {
-					RunEvent(newEvents[i], 0);
-				}
-			}
-			else {
-				RunEvent(responseSplit[1], 0);
-			}
-		}
-		if (request.status === 202 && request.readyState === 4) {
-			Pin = CryptoJS.SHA512(ClientId + request.responseText).toString();
-		}
-		else if (request.status === 401 && request.readyState === 4) {
-			StopUpdate();
-			alert("This security ID has expired. Please acquire a new one");
-			
-		}
-		else if (request.status === 403 && request.readyState === 4) {
-			StopUpdate();
-			alert("RequestUpdate: Server rejected request");
-		}
-	};
-	request.send(Pin + "☼" + TableId + "☼" + EventCount);
 };
 
 function RunEvent(newEvent, pass) {
@@ -1282,140 +1465,6 @@ function RunEvent(newEvent, pass) {
 	}
 };
 
-function StartGame() {
-	if (!Active && !Started && Host) {
-		if (PlayerCount > 1) {
-			let request = new XMLHttpRequest();
-			request.open('POST', window.location.href.replace('rio.html', 'StartGameRio'), true);
-			request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
-			request.onerror = function() {
-				StopUpdate();
-				alert("StartGame Error: No response from server");
-			};
-			request.onload = function () {
-				if (request.status === 200 && request.readyState === 4) {
-					Started = true;
-					Pin = CryptoJS.SHA512(ClientId + request.responseText).toString();
-					AnimationQue.push(document.getElementById('StartButton').style.top = "2000px");
-					AnimationQue.push(document.getElementById('AddAIButton').style.top = "2000px");
-					AnimationQue.push(document.getElementById('RemoveAIButton').style.top = "2000px");
-					AnimationDelay();
-					StartUpdate();
-				}
-				else if (request.status === 401 && request.readyState === 4) {
-					StopUpdate();
-					alert("This security ID has expired. Please acquire a new one");
-				}
-				else if (request.status === 403 && request.readyState === 4) {
-					StopUpdate();
-					alert("StartGame: Server rejected request");
-				}
-			};
-			request.send(Pin + "☼" + TableId);
-		}
-	}
-};
-
-function ExitGame() {
-	let request = new XMLHttpRequest();
-	request.open('POST', window.location.href.replace('rio.html', 'ExitRio'), true);
-	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
-	request.onerror = function() {
-		StopUpdate();
-		alert("ExitGame Error: No response from server");
-	};
-	request.onload = function () {
-		if (request.status === 200 && request.readyState === 4) {
-			window.location.href = window.location.href;
-		}
-		else if (request.status === 401 && request.readyState === 4) {
-			window.location.href = window.location.href;
-		}
-		else if (request.status === 403 && request.readyState === 4) {
-			window.location.href = window.location.href;
-		}
-	};
-	request.send(Pin + "☼" + TableId);
-};
-
-function HowToPlay() {
-	if (!HTP) {
-		HTP = true;
-		AnimationQue.push(document.getElementById('HowToPlayContainer').style.top = "0px");
-	}
-	else {
-		HTP = false;
-		AnimationQue.push(document.getElementById('HowToPlayContainer').style.top = "2000px");
-	}
-	AnimationDelay();
-};
-
-function AddAI() {
-	alert("Coming soon");
-	//if (!Active && !Started && Host && PlayerCount < 4) {
-	//	Active = true;
-	//	let request = new XMLHttpRequest();
-	//	request.open('POST', window.location.href.replace('rio.html', 'AddAIRio'), true);
-	//	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
-	//	request.onerror = function() {
-	//		Active = false;
-	//		alert("AddAI Error: No response from server");
-	//	};
-	//	request.onload = function () {
-	//		if (request.status === 200 && request.readyState === 4) {
-	//			Active = false;
-	//			AICount += 1;
-	//			PlayerCount += 1;
-	//		}
-	//		else if (request.status === 401 && request.readyState === 4) {
-	//			Active = false;
-	//		}
-	//		else if (request.status === 403 && request.readyState === 4) {
-	//			Active = false;
-	//		}
-	//	};
-	//	if (ClientId != "DBG1" && ClientId != "DBG2" && ClientId != "DBG3" && ClientId != "DBG4") {
-	//		request.send(Pin + "☼" + TableId);
-	//	}
-	//	else {
-	//		request.send(ClientId + "☼" + TableId);
-	//	}
-	//}
-};
-
-function RemoveAI() {
-	alert("Coming soon");
-	//if (!Active && !Started && Host && AICount > 0) {
-	//	Active = true;
-	//	let request = new XMLHttpRequest();
-	//	request.open('POST', window.location.href.replace('rio.html', 'RemoveAIRio'), true);
-	//	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
-	//	request.onerror = function() {
-	//		Active = false;
-	//		alert("RemoveAI Error: No response from server");
-	//	};
-	//	request.onload = function () {
-	//		if (request.status === 200 && request.readyState === 4) {
-	//			Active = false;
-	//			AICount -= 1;
-	//			PlayerCount -= 1;
-	//		}
-	//		else if (request.status === 401 && request.readyState === 4) {
-	//			Active = false;
-	//		}
-	//		else if (request.status === 403 && request.readyState === 4) {
-	//			Active = false;
-	//		}
-	//	};
-	//	if (ClientId != "DBG1" && ClientId != "DBG2" && ClientId != "DBG3" && ClientId != "DBG4") {
-	//		request.send(Pin + "☼" + TableId);
-	//	}
-	//	else {
-	//		request.send(ClientId + "☼" + TableId);
-	//	}
-	//}
-};
-
 function Animate() {
 	let length = AnimationQue.length;
 	if (!Animating && length > 0) {
@@ -1432,27 +1481,6 @@ function Animate() {
 	}
 };
 
-function StartObserver() {
-	let body = document.getElementById('GeneralBody'),
-	options = {
-		childList: true,
-		subtree: true
-	},
-	AnimationObserver = new MutationObserver(MutationCalled);
-	AnimationObserver.observe(body, options);
-};
-
-function StopObserver() {
-	AnimationObserver.disconnect();
-};
-
-function MutationCalled () {
-	Animating = false;
-	if (AnimationQue.length > 0) {
-		AnimationDelay();
-	}
-};
-
 function StartUpdate() {
 	UpdateTimer = setInterval(RequestUpdate, 5000);
 };
@@ -1465,6 +1493,14 @@ function BalloonAnimation() {
 	BalloonTimer = setTimeout(BalloonUp, 10);
 };
 
+function StopBalloons() {
+	clearTimeout(BalloonTimer);
+};
+
 function AnimationDelay() {
 	AnimationTimer = setTimeout(Animate, 1000);
+};
+
+function StopAnimations() {
+	clearTimeout(AnimationTimer);
 };

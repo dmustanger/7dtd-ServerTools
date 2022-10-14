@@ -10,62 +10,72 @@ namespace ServerTools
         {
             return "[ServerTools] - Enable, disable voting. Reset player vote reward delay.";
         }
+
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. st-vr off\n" +
-                   "  2. st-vr on\n" +
-                   "  3. st-vr reset <EOS/EntityId/PlayerName>\n" +
-                   "  4. st-vr reset online\n" +
-                   "  5. st-vr reset all\n" +
+                   "  1. st-vote off\n" +
+                   "  2. st-vote on\n" +
+                   "  3. st-vote reset <EOS/EntityId/PlayerName>\n" +
+                   "  4. st-vote reset online\n" +
+                   "  5. st-vote reset all\n" +
+                   "  6. st-vote reward <EOS/EntityId/PlayerName>\n" +
                    "1. Turn off voting\n" +
                    "2. Turn on voting\n" +
                    "3. Reset the vote reward delay of a player Id\n" +
                    "4. Reset the vote reward delay of all online players\n" +
-                   "5. Reset the vote reward delay of all online and offline players\n";
+                   "5. Reset the vote reward delay of all online and offline players\n" +
+                   "6. Give a player a vote reward. Identical to running chat command /votereward. Does not count towards their delay\n";
         }
+
         public override string[] GetCommands()
         {
-            return new string[] { "st-VoteReward", "vr", "st-vr" };
+            return new string[] { "st-Vote", "vo", "st-vo" };
         }
+
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try
             {
-                if (_params.Count < 1 || _params.Count > 2)
-                {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found '{0}'", _params.Count));
-                    return;
-                }
                 if (_params[0].ToLower().Equals("off"))
                 {
+                    if (_params.Count != 1)
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        return;
+                    }
                     if (Voting.IsEnabled)
                     {
                         Voting.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vote reward has been set to off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Voting has been set to off"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vote reward is already off"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Voting is already off"));
                         return;
                     }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
+                    if (_params.Count != 1)
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        return;
+                    }
                     if (!Voting.IsEnabled)
                     {
                         Voting.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vote reward has been set to on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Voting has been set to on"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vote reward is already on"));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Voting is already on"));
                         return;
                     }
                 }
@@ -86,7 +96,7 @@ namespace ServerTools
                             {
                                 PersistentContainer.Instance.Players[_cInfo2.CrossplatformId.CombinedString].LastVote = DateTime.Now.AddYears(-1);
                                 PersistentContainer.DataChange = true;
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vote reward delay reset for '{0}'", _cInfo2.playerName));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vote delay reset for '{0}'", _cInfo2.playerName));
                             }
                         }
                         return;
@@ -100,18 +110,18 @@ namespace ServerTools
                                 PersistentContainer.Instance.Players[PersistentContainer.Instance.Players.IDs[i]].LastVote = DateTime.Now.AddYears(-1);
                                 PersistentContainer.DataChange = true;
                             }
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Vote reward delay reset for all players");
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Vote delay reset for all players");
                             return;
                         }
                     }
                     else
                     {
-                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
                         if (cInfo != null)
                         {
                             PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].LastVote = DateTime.Now.AddYears(-1);
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vote reward delay reset for '{0}'", cInfo.playerName));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vote delay reset for '{0}'", cInfo.playerName));
                         }
                         else if (_params[1].Contains("_"))
                         {
@@ -120,11 +130,11 @@ namespace ServerTools
                             {
                                 PersistentContainer.Instance.Players[_params[1]].LastVote = DateTime.Now.AddYears(-1);
                                 PersistentContainer.DataChange = true;
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vote reward delay reset for '{0}'", _params[1]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vote delay reset for '{0}'", _params[1]));
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Id '{0}' does not have a vote reward delay to reset", _params[1]));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Id '{0}' does not have a vote delay to reset", _params[1]));
                             }
                         }
                         else
@@ -133,6 +143,41 @@ namespace ServerTools
                         }
                     }
                 }
+                else if (_params[0].ToLower().Equals("reward"))
+                {
+                    if (_params.Count != 2)
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        return;
+                    }
+                    string id = "", playerName = "";
+                    ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    if (cInfo != null)
+                    {
+                        id = cInfo.CrossplatformId.CombinedString;
+                        playerName = cInfo.playerName;
+                    }
+                    else if (_params[1].Contains("EOS_"))
+                    {
+                        PersistentPlayerData ppd = GeneralFunction.GetPersistentPlayerDataFromId(_params[1]);
+                        if (ppd != null)
+                        {
+                            id = ppd.UserIdentifier.CombinedString;
+                            playerName = ppd.PlayerName;
+                        }
+                        else
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player data for '{0}'", _params[1]));
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid id '{0}'. Use their EOS id when offline", _params[1]));
+                        return;
+                    }
+                    Voting.ItemOrBlockCounter(cInfo, Voting.Reward_Count);
+                }
                 else
                 {
                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
@@ -140,7 +185,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in VotingConsole.Execute: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in VoteConsole.Execute: {0}", e.Message));
             }
         }
     }

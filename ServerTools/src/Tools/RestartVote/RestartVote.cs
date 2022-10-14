@@ -14,13 +14,13 @@ namespace ServerTools
 
         public static void CallForVote1(ClientInfo _cInfo)
         {
-            TimeSpan varTime = DateTime.Now - PersistentOperations.StartTime;
+            TimeSpan varTime = DateTime.Now - GeneralFunction.StartTime;
             double fractionalMinutes = varTime.TotalMinutes;
             int timepassed = (int)fractionalMinutes;
             if (timepassed >= 30)
             {
                 bool adminOnline = false;
-                List<ClientInfo> clientList = PersistentOperations.ClientList();
+                List<ClientInfo> clientList = GeneralFunction.ClientList();
                 if (clientList != null)
                 {
                     for (int i = 0; i < clientList.Count; i++)

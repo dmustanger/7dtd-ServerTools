@@ -71,12 +71,12 @@ namespace ServerTools
 
         public static void PrepareShutdown()
         {
-            if (PersistentOperations.IsBloodmoon() && !Interrupt_Bloodmoon)
+            if (GeneralFunction.IsBloodmoon() && !Interrupt_Bloodmoon)
             {
                 EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(10));
                 if (Event.Open && !Event.OperatorWarned)
                 {
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(Event.Operator);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(Event.Operator);
                     if (cInfo != null)
                     {
                         Event.OperatorWarned = true;
@@ -120,12 +120,12 @@ namespace ServerTools
 
         public static void TimeRemaining(int _newCount)
         {
-            if (PersistentOperations.IsBloodmoon() && !Interrupt_Bloodmoon)
+            if (GeneralFunction.IsBloodmoon() && !Interrupt_Bloodmoon)
             {
                 EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(10));
                 if (Event.Open && !Event.OperatorWarned)
                 {
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(Event.Operator);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(Event.Operator);
                     if (cInfo != null)
                     {
                         Event.OperatorWarned = true;
@@ -164,7 +164,7 @@ namespace ServerTools
         public static void Lock()
         {
             UI_Locked = true;
-            List<ClientInfo> clients = PersistentOperations.ClientList();
+            List<ClientInfo> clients = GeneralFunction.ClientList();
             if (clients != null)
             {
                 for (int i = 0; i < clients.Count; i++)
@@ -185,8 +185,8 @@ namespace ServerTools
         public static void Kick()
         {
             PersistentContainer.Instance.Save();
-            Phrases.Dict.TryGetValue("StopServer3", out string _phrase);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kickall \"{0}\"", _phrase), null);
+            Phrases.Dict.TryGetValue("StopServer3", out string phrase);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kickall \"{0}\"", phrase), null);
         }
 
         public static void Alert(string _message, int _count)

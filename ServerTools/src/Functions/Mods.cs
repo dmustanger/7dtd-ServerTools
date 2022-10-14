@@ -215,6 +215,14 @@ namespace ServerTools
             {
                 BotResponse.Load();
             }
+            if (LandClaimCount.IsRunning && !LandClaimCount.IsEnabled)
+            {
+                LandClaimCount.Unload();
+            }
+            else if (!LandClaimCount.IsRunning && LandClaimCount.IsEnabled)
+            {
+                LandClaimCount.Load();
+            }
             if (ProtectedZones.IsRunning && !ProtectedZones.IsEnabled)
             {
                 ProtectedZones.Unload();
@@ -240,6 +248,14 @@ namespace ServerTools
             {
                 Jail.JailList();
             }
+            if (OversizedTraps.IsEnabled && !OversizedTraps.IsRunning)
+            {
+                OversizedTraps.CreateXPath();
+            }
+            else if(OversizedTraps.IsRunning && !OversizedTraps.IsEnabled)
+            {
+                OversizedTraps.RemoveXPath();
+            }
             if (WebAPI.IsEnabled && !WebAPI.IsRunning)
             {
                 WebAPI.Load();
@@ -247,6 +263,26 @@ namespace ServerTools
             else if (WebAPI.IsRunning && !WebAPI.IsEnabled)
             {
                 WebAPI.Unload();
+                Log.Out(string.Format("[SERVERTOOLS] The various panels offered by ServerTools are now unavailable due to the Web_API being disabled"));
+            }
+            if (WebPanel.IsEnabled)
+            {
+                if (!WebPanel.Alert)
+                {
+                    if (WebAPI.Panel_Address != "")
+                    {
+                        WebPanel.Alert = true;
+                        Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel link @ '{0}'", WebAPI.Panel_Address));
+                    }
+                    else
+                    {
+                        Timers.WebPanelAlertTimer();
+                    }
+                }
+            }
+            else if (WebPanel.Alert)
+            {
+                WebPanel.Alert = false;
             }
         }
     }

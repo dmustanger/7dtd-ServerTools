@@ -321,7 +321,7 @@ namespace ServerTools
             }
         }
 
-        public static void ZoneCheck(ClientInfo _cInfo, EntityAlive _player)
+        public static void ZoneCheck(ClientInfo _cInfo, EntityAlive _player, List<Entity> _entityList)
         {
             try
             {
@@ -376,6 +376,20 @@ namespace ServerTools
                                 {
                                     ProcessCommand(_cInfo, zone[6]);
                                 }
+                                if (bool.TryParse(zone[10], out bool allowed))
+                                {
+                                    if (!allowed && _entityList != null && _entityList.Count > 0)
+                                    {
+                                        for (int j = 0; j < _entityList.Count; j++)
+                                        {
+                                            if (InsideZone(bounds, zone, (int)_entityList[j].position.x, (int)_entityList[j].position.y, (int)_entityList[j].position.z))
+                                            {
+                                                GameManager.Instance.World.RemoveEntity(_entityList[j].entityId, EnumRemoveEntityReason.Despawned);
+                                                Log.Out(string.Format("[SERVERTOOLS] Removed a hostile from a zone @ '{0}'", _entityList[j].position));
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                         else
@@ -412,6 +426,20 @@ namespace ServerTools
                             {
                                 ProcessCommand(_cInfo, zone[6]);
                             }
+                            if (bool.TryParse(zone[10], out bool allowed))
+                            {
+                                if (!allowed && _entityList != null && _entityList.Count > 0)
+                                {
+                                    for (int j = 0; j < _entityList.Count; j++)
+                                    {
+                                        if (InsideZone(bounds, zone, (int)_entityList[j].position.x, (int)_entityList[j].position.y, (int)_entityList[j].position.z))
+                                        {
+                                            GameManager.Instance.World.RemoveEntity(_entityList[j].entityId, EnumRemoveEntityReason.Despawned);
+                                            Log.Out(string.Format("[SERVERTOOLS] Removed a hostile from a zone @ '{0}'", _entityList[j].position));
+                                        }
+                                    }
+                                }
+                            }
                         }
                         return;
                     }
@@ -438,7 +466,7 @@ namespace ServerTools
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
                                 break;
                         }
-                        switch (PersistentOperations.Player_Killing_Mode)
+                        switch (GeneralFunction.Player_Killing_Mode)
                         {
                             case 0:
                                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
@@ -515,7 +543,7 @@ namespace ServerTools
         {
             try
             {
-                ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_playerId);
+                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_playerId);
                 if (cInfo != null)
                 {
                     for (int i = 0; i < _commands.Count; i++)
@@ -570,7 +598,7 @@ namespace ServerTools
                 }
                 if (_command.Contains("{RandomId}"))
                 {
-                    List<ClientInfo> clientList = PersistentOperations.ClientList();
+                    List<ClientInfo> clientList = GeneralFunction.ClientList();
                     if (clientList != null)
                     {
                         ClientInfo cInfo2 = clientList.ElementAt(Random.Next(clientList.Count));
@@ -582,7 +610,7 @@ namespace ServerTools
                 }
                 if (_command.Contains("{RandomEOS}"))
                 {
-                    List<ClientInfo> clientList = PersistentOperations.ClientList();
+                    List<ClientInfo> clientList = GeneralFunction.ClientList();
                     if (clientList != null)
                     {
                         ClientInfo cInfo2 = clientList.ElementAt(Random.Next(clientList.Count));
@@ -736,7 +764,7 @@ namespace ServerTools
             {
                 foreach (KeyValuePair<int, DateTime> time in Reminder.ToArray())
                 {
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(time.Key);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(time.Key);
                     if (cInfo != null)
                     {
                         DateTime dt = time.Value;
@@ -786,8 +814,8 @@ namespace ServerTools
                         }
                         else if (zone1[9] == "1")
                         {
-                            PersistentPlayerData ppd1 = PersistentOperations.GetPersistentPlayerDataFromId(_cInfo1.CrossplatformId.CombinedString);
-                            PersistentPlayerData ppd2 = PersistentOperations.GetPersistentPlayerDataFromId(_cInfo2.CrossplatformId.CombinedString);
+                            PersistentPlayerData ppd1 = GeneralFunction.GetPersistentPlayerDataFromId(_cInfo1.CrossplatformId.CombinedString);
+                            PersistentPlayerData ppd2 = GeneralFunction.GetPersistentPlayerDataFromId(_cInfo2.CrossplatformId.CombinedString);
                             if ((ppd1 != null && ppd1.ACL != null && !ppd1.ACL.Contains(_cInfo2.CrossplatformId)) || (ppd2 != null && ppd2.ACL != null && !ppd2.ACL.Contains(_cInfo1.CrossplatformId)))
                             {
                                 Phrases.Dict.TryGetValue("Zones10", out string phrase);
@@ -797,8 +825,8 @@ namespace ServerTools
                         }
                         else if (zone1[9] == "2")
                         {
-                            PersistentPlayerData ppd1 = PersistentOperations.GetPersistentPlayerDataFromId(_cInfo1.CrossplatformId.CombinedString);
-                            PersistentPlayerData ppd2 = PersistentOperations.GetPersistentPlayerDataFromId(_cInfo2.CrossplatformId.CombinedString);
+                            PersistentPlayerData ppd1 = GeneralFunction.GetPersistentPlayerDataFromId(_cInfo1.CrossplatformId.CombinedString);
+                            PersistentPlayerData ppd2 = GeneralFunction.GetPersistentPlayerDataFromId(_cInfo2.CrossplatformId.CombinedString);
                             if ((ppd1 != null && ppd1.ACL != null && ppd1.ACL.Contains(_cInfo2.CrossplatformId)) || (ppd2 != null && ppd2.ACL != null && ppd2.ACL.Contains(_cInfo1.CrossplatformId)))
                             {
                                 Phrases.Dict.TryGetValue("Zones11", out string phrase);
@@ -807,7 +835,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    else if (zone1[9] != PersistentOperations.Player_Killing_Mode.ToString())
+                    else if (zone1[9] != GeneralFunction.Player_Killing_Mode.ToString())
                     {
                         Phrases.Dict.TryGetValue("Zones3", out string phrase);
                         ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -817,7 +845,7 @@ namespace ServerTools
                 else if (ZonePlayer.ContainsKey(_cInfo2.entityId))
                 {
                     ZonePlayer.TryGetValue(_cInfo2.entityId, out string[] zone);
-                    if (zone[9] != PersistentOperations.Player_Killing_Mode.ToString())
+                    if (zone[9] != GeneralFunction.Player_Killing_Mode.ToString())
                     {
                         Phrases.Dict.TryGetValue("Zones3", out string phrase);
                         ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

@@ -42,7 +42,7 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer: '{0}'", _params[2]));
                         return;
                     }
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
@@ -76,7 +76,7 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer: '{0}'", _params[2]));
                         return;
                     }
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
@@ -109,7 +109,7 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 2, found '{0}'", _params.Count));
                         return;
                     }
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)

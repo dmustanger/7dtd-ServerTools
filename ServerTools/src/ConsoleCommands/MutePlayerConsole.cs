@@ -56,7 +56,7 @@ namespace ServerTools
                             if (int.TryParse(_params[2], out int value))
                                 muteTime = value;
                         }
-                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
                         if (cInfo != null)
                         {
                             if (Mute.Mutes.Contains(cInfo.PlatformId.CombinedString) || Mute.Mutes.Contains(cInfo.CrossplatformId.CombinedString))
@@ -109,7 +109,7 @@ namespace ServerTools
                         string id = _params[1];
                         if (Mute.Mutes.Contains(id))
                         {
-                            ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(id);
+                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(id);
                             if (cInfo != null)
                             {
                                 ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + "You have been unmuted[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

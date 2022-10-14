@@ -12,218 +12,238 @@ namespace ServerTools
 
         public static void Load()
         {
-            if (!Loaded)
+            try
             {
-                Loaded = true;
-                string gamePath = API.GamePath;
-                string configPath = gamePath + "/ServerTools";
-                string installPath = gamePath + "/Mods/ServerTools";
-                if (!Directory.Exists(installPath))
+                if (!Loaded)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in a mods folder located at '{0}'", API.GamePath + "/Mods"));
-                    return;
-                }
-                else if (!File.Exists(gamePath + "/Mods/ServerTools/ServerTools.dll"))
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in a mods folder located at '{0}'", API.GamePath + "/Mods"));
-                    return;
-                }
-                if (!Directory.Exists(configPath))
-                {
-                    Directory.CreateDirectory(configPath);
-                    Log.Out(string.Format("[SERVERTOOLS] Created new ServerTools directory at '{0}'", configPath));
-                    Log.Out("[SERVERTOOLS] Tool XML and log files for ServerTools will be placed in this folder");
-                }
-                else
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Located xml and log directory at '{0}'", configPath));
-                }
-                if (!Directory.Exists(configPath + "/Logs/ChatLogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/ChatLogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/DetectionLogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/DetectionLogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/BountyLogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/BountyLogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/AuctionLog"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/AuctionLogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/BankLogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/BankLogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/DupeLogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/DupeLogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/PlayerLogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/PlayerLogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/PlayerReports"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/PlayerReports");
-                }
-                if (!Directory.Exists(configPath + "/Logs/PollLogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/PollLogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/ChatCommandLogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/ChatCommandLogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/DamageLogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/DamageLogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/BlockLogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/BlockLogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/ConsoleCommandLogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/ConsoleCommandLogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/WebAPILogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/WebAPILogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/OutputLogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/OutputLogs");
-                }
-                if (!Directory.Exists(configPath + "/Logs/ShopLogs"))
-                {
-                    Directory.CreateDirectory(configPath + "/Logs/ShopLogs");
-                }
-
-                if (!Directory.Exists(installPath + "/Config"))
-                {
-                    Directory.CreateDirectory(installPath + "/Config");
-                }
-                if (!Directory.Exists(installPath + "/Config/XUi"))
-                {
-                    Directory.CreateDirectory(installPath + "/Config/XUi");
-                }
-                if (Directory.Exists(installPath + "/WebAPI"))
-                {
-                    WebAPI.Directory = installPath + "/WebAPI/";
-                }
-                if (Directory.Exists(installPath + "/Config"))
-                {
-                    PersistentOperations.XPathDir = installPath + "/Config/";
-                }
-                StateManager.Awake();
-                RunTimePatch.PatchAll();
-                PersistentOperations.CreateCustomXUi();
-                PersistentOperations.GetCurrencyName();
-                PersistentOperations.GetMeleeHandPlayer();
-                PersistentOperations.EntityIdList();
-                PersistentOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
-                Config.Load();
-                CommandList.BuildList();
-                CommandList.Load();
-                Mods.Load();
-                Phrases.Load();
-                HowToSetup.Load();
-                if (Directory.Exists(GameIO.GetGamePath().Replace("..", "")))
-                {
-                    DirectoryInfo parent = Directory.GetParent(GameIO.GetGamePath().Replace("..", "")).Parent;
-                    if (Directory.Exists(parent.FullName + "/Data/ItemIcons"))
+                    Loaded = true;
+                    string gamePath = API.GamePath;
+                    string configPath = gamePath + "/ServerTools";
+                    string installPath = gamePath + "/Mods/ServerTools";
+                    if (!Directory.Exists(installPath))
                     {
-                        Log.Out("[SERVERTOOLS] Located game icons @ '{0}'", parent.FullName + "/Data/ItemIcons");
+                        Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in a mods folder located at '{0}'", API.GamePath + "/Mods"));
+                        return;
+                    }
+                    else if (!File.Exists(gamePath + "/Mods/ServerTools/ServerTools.dll"))
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in a mods folder located at '{0}'", API.GamePath + "/Mods"));
+                        return;
+                    }
+                    if (!Directory.Exists(configPath))
+                    {
+                        Directory.CreateDirectory(configPath);
+                        Log.Out(string.Format("[SERVERTOOLS] Created new ServerTools directory at '{0}'", configPath));
+                        Log.Out("[SERVERTOOLS] Tool XML and log files for ServerTools will be placed in this folder");
                     }
                     else
                     {
-                        Log.Out("[SERVERTOOLS] Unable to locate game icons. Falling back to user entry '{0}'", WebAPI.Icon_Folder);
+                        Log.Out(string.Format("[SERVERTOOLS] Located xml and log directory at '{0}'", configPath));
                     }
-                }
-                if (Fps.IsEnabled)
-                {
-                    Fps.SetTarget();
-                }
-                if (SleeperRespawn.IsEnabled)
-                {
+                    if (!Directory.Exists(configPath + "/Logs/ChatLogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/ChatLogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/DetectionLogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/DetectionLogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/BountyLogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/BountyLogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/AuctionLog"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/AuctionLogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/BankLogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/BankLogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/DupeLogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/DupeLogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/PlayerLogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/PlayerLogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/PlayerReports"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/PlayerReports");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/PollLogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/PollLogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/ChatCommandLogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/ChatCommandLogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/DamageLogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/DamageLogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/BlockLogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/BlockLogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/ConsoleCommandLogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/ConsoleCommandLogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/WebAPILogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/WebAPILogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/OutputLogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/OutputLogs");
+                    }
+                    if (!Directory.Exists(configPath + "/Logs/ShopLogs"))
+                    {
+                        Directory.CreateDirectory(configPath + "/Logs/ShopLogs");
+                    }
+
+                    if (!Directory.Exists(installPath + "/Config"))
+                    {
+                        Directory.CreateDirectory(installPath + "/Config");
+                    }
+                    if (!Directory.Exists(installPath + "/Config/XUi"))
+                    {
+                        Directory.CreateDirectory(installPath + "/Config/XUi");
+                    }
+                    if (Directory.Exists(installPath + "/WebAPI"))
+                    {
+                        WebAPI.Directory = installPath + "/WebAPI/";
+                    }
+                    if (Directory.Exists(installPath + "/Config"))
+                    {
+                        GeneralFunction.XPathDir = installPath + "/Config/";
+                    }
+
+                    StateManager.Awake();
+                    RunTimePatch.PatchAll();
+                    Config.Load();
+                    GeneralFunction.CreateCustomXUi();
+                    GeneralFunction.GetCurrencyName();
+                    GeneralFunction.GetMeleeHandPlayer();
+                    GeneralFunction.EntityIdList();
+                    GeneralFunction.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
+                    CommandList.BuildList();
+                    CommandList.Load();
+                    Mods.Load();
+                    Phrases.Load();
+                    HowToSetup.Load();
+
+                    if (Fps.IsEnabled)
+                    {
+                        Fps.SetTarget();
+                    }
+                    if (SleeperRespawn.IsEnabled)
+                    {
+                        try
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("sleeperreset"), null);
+                        }
+                        catch (XmlException e)
+                        {
+                            Log.Out("[SERVERTOOLS] Failed to reset sleeper spawn points. Error = {0}", e.Message);
+                        }
+                    }
                     try
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("sleeperreset"), null);
+                        DeleteFiles("AuctionLogs");
+                        DeleteFiles("BankLogs");
+                        DeleteFiles("BlockLogs");
+                        DeleteFiles("BountyLogs");
+                        DeleteFiles("ChatCommandLogs");
+                        DeleteFiles("ChatLogs");
+                        DeleteFiles("ConsoleCommandLogs");
+                        DeleteFiles("DamageLogs");
+                        DeleteFiles("DetectionLogs");
+                        DeleteFiles("DupeLogs");
+                        DeleteFiles("OutputLogs");
+                        DeleteFiles("PlayerLogs");
+                        DeleteFiles("PlayerReports");
+                        DeleteFiles("PollLogs");
+                        DeleteFiles("WebAPILogs");
+
+                        Log.Out(string.Format("[SERVERTOOLS] Xml log clean up complete"));
                     }
                     catch (XmlException e)
                     {
-                        Log.Out("[SERVERTOOLS] Failed to reset sleeper spawn points. Error = {0}", e.Message);
+                        Log.Out("[SERVERTOOLS] Failed to delete old logs. Error = {0}", e.Message);
                     }
-                }
-                try
-                {
-                    DeleteFiles("AuctionLogs");
-                    DeleteFiles("BankLogs");
-                    DeleteFiles("BlockLogs");
-                    DeleteFiles("BountyLogs");
-                    DeleteFiles("ChatCommandLogs");
-                    DeleteFiles("ChatLogs");
-                    DeleteFiles("ConsoleCommandLogs");
-                    DeleteFiles("DamageLogs");
-                    DeleteFiles("DetectionLogs");
-                    DeleteFiles("DupeLogs");
-                    DeleteFiles("OutputLogs");
-                    DeleteFiles("PlayerLogs");
-                    DeleteFiles("PlayerReports");
-                    DeleteFiles("PollLogs");
-                    DeleteFiles("WebAPILogs");
 
-                    Log.Out(string.Format("[SERVERTOOLS] Xml log clean up complete"));
-                }
-                catch (XmlException e)
-                {
-                    Log.Out("[SERVERTOOLS] Failed to delete old logs. Error = {0}", e.Message);
-                }
-                if (PersistentContainer.Instance.WorldSeed == 0)
-                {
-                    PersistentContainer.Instance.WorldSeed = GameManager.Instance.World.Seed;
-                    PersistentContainer.DataChange = true;
-                }
-                else if (PersistentContainer.Instance.WorldSeed != GameManager.Instance.World.Seed)
-                {
-                    PersistentContainer.Instance.WorldSeed = GameManager.Instance.World.Seed;
-                    PersistentContainer.DataChange = true;
-                    if (!CleanBin.IsEnabled && PersistentContainer.Instance.Players.IDs.Count > 0)
+                    if (Directory.Exists(GameIO.GetGamePath().Replace("..", "")))
                     {
-                        Log.Out("[SERVERTOOLS] Detected a new world. You have old ServerTools data saved from the last map. Run the Clean_Bin tool to remove the data of your choice");
+                        DirectoryInfo parent = Directory.GetParent(GameIO.GetGamePath().Replace("..", "")).Parent;
+                        if (Directory.Exists(parent.FullName + "/Data/ItemIcons"))
+                        {
+                            Log.Out("[SERVERTOOLS] Located folder containing game icons");
+                            WebAPI.Icon_Folder = parent.FullName + "/Data/ItemIcons";
+                        }
+                        else
+                        {
+                            Log.Out("[SERVERTOOLS] Unable to locate game icons. Shop, Auction and Web panels will be affected by this");
+                        }
                     }
-                }
-                if (PersistentContainer.Instance.ConnectionTimeOut == null)
-                {
-                    Dictionary<string, DateTime> timeOuts = new Dictionary<string, DateTime>();
-                    PersistentContainer.Instance.ConnectionTimeOut = timeOuts;
-                    PersistentContainer.DataChange = true;
-                }
-                if (PersistentContainer.Instance.ShopLog == null)
-                {
-                    List<string[]> log = new List<string[]>();
-                    PersistentContainer.Instance.ShopLog = log;
-                    PersistentContainer.DataChange = true;
-                }
-                if (CleanBin.IsEnabled)
-                {
-                    CleanBin.Exec();
-                    Log.Out("[SERVERTOOLS] ServerTools.bin has been cleaned. The tool will now disable automatically");
-                    CleanBin.IsEnabled = false;
-                    Config.WriteXml();
-                    Config.LoadXml();
-                }
-                Track.Cleanup();
-                DroppedBagProtection.BuildList();
-                ActiveTools.Exec(true);
-                Timers.Set_Link_Delay();
-                Timers.PersistentDataSave();
 
-                Log.Out("[SERVERTOOLS] Running ServerTools Config v.{0}", Config.Version);
+                    if (PersistentContainer.Instance.WorldSeed == 0)
+                    {
+                        PersistentContainer.Instance.WorldSeed = GameManager.Instance.World.Seed;
+                        PersistentContainer.DataChange = true;
+                    }
+                    else if (PersistentContainer.Instance.WorldSeed != GameManager.Instance.World.Seed)
+                    {
+                        PersistentContainer.Instance.WorldSeed = GameManager.Instance.World.Seed;
+                        PersistentContainer.DataChange = true;
+                        if (!CleanBin.IsEnabled && PersistentContainer.Instance.Players.IDs.Count > 0)
+                        {
+                            Log.Out("[SERVERTOOLS] Detected a new world. You have old ServerTools data saved from the last map. Run the Clean_Bin tool to remove the data of your choice");
+                        }
+                    }
+                    if (PersistentContainer.Instance.ConnectionTimeOut == null)
+                    {
+                        Dictionary<string, DateTime> timeOuts = new Dictionary<string, DateTime>();
+                        PersistentContainer.Instance.ConnectionTimeOut = timeOuts;
+                        PersistentContainer.DataChange = true;
+                    }
+                    if (PersistentContainer.Instance.ShopLog == null)
+                    {
+                        List<string[]> log = new List<string[]>();
+                        PersistentContainer.Instance.ShopLog = log;
+                        PersistentContainer.DataChange = true;
+                    }
+                    if (PersistentContainer.Instance.Track == null)
+                    {
+                        List<string[]> track = new List<string[]>();
+                        PersistentContainer.Instance.Track = track;
+                        PersistentContainer.DataChange = true;
+                    }
+                    if (CleanBin.IsEnabled)
+                    {
+                        CleanBin.Exec();
+                        Log.Out("[SERVERTOOLS] ServerTools.bin has been cleaned. The tool will now disable automatically");
+                        CleanBin.IsEnabled = false;
+                        Config.WriteXml();
+                        Config.LoadXml();
+                    }
+                    InteractiveMap.SetWorldSize();
+                    InteractiveMap.LocateMapFolder();
+                    Track.Cleanup();
+                    DroppedBagProtection.BuildList();
+                    ActiveTools.Exec(true);
+                    Timers.Set_Link_Delay();
+                    Timers.PersistentDataSave();
+
+                    Log.Out("[SERVERTOOLS] Running ServerTools Config v.{0}", Config.Version);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in LoadProcess.Load: {0}", e.Message));
             }
         }
 

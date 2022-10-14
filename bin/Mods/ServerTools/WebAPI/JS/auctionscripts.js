@@ -7,11 +7,31 @@ var ItemId = -1;
 var Page = 1;
 
 function FreshPage() {
-	document.getElementById('SecuritySync').style.visibility = "visible";
-	document.getElementById('Header').style.visibility = "hidden";
-	document.getElementById('Body').style.visibility = "hidden";
-	document.getElementById('CancelItem').style.visibility = "hidden";
-	document.getElementById('CancelButton').style.visibility = "hidden";
+	let request = new XMLHttpRequest();
+	request.open('POST', window.location.href.replace('auction.html', 'AuctionIPSync'), true);
+	request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+	request.onerror = function() {
+		alert("Error. Unable to communicate with server");
+	};
+	request.onload = function() {
+		if (request.status == 200 && request.readyState == 4) {
+			let responseSplit = request.responseText.split('☼');
+			ClientId = responseSplit[5];
+			Pin = CryptoJS.SHA512(ClientId + responseSplit[6]).toString();
+			Accepted(responseSplit);
+		}
+		else if (request.status == 401 && request.readyState == 4) {
+			document.getElementById('SecuritySync').style.visibility = "visible";
+			document.getElementById('Header').style.visibility = "hidden";
+			document.getElementById('Body').style.visibility = "hidden";
+			document.getElementById('CancelItem').style.visibility = "hidden";
+			document.getElementById('CancelButton').style.visibility = "hidden";
+		}
+		else if (request.status == 402 && request.readyState == 4) {
+			alert("Unable to sync your IP with a player in game. Check you are still in game");
+		}
+	};
+	request.send(" ");
 };
 
 function EnterAuction() {

@@ -91,7 +91,7 @@ namespace ServerTools
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
                             return;
                         }
-                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[2]);
+                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[2]);
                         if (cInfo != null)
                         {
                             if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
@@ -121,7 +121,7 @@ namespace ServerTools
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] No client info found. Join the server as a client before using this command"));
                                 return;
                             }
-                            EntityPlayer player = PersistentOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
+                            EntityPlayer player = GeneralFunction.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
                             if (player != null)
                             {
                                 int x = (int)player.position.x;
@@ -188,7 +188,7 @@ namespace ServerTools
                 {
                     if (_params.Count == 3 && _params[1].ToLower().Equals("spot"))
                     {
-                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[2]);
+                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[2]);
                         if (cInfo != null)
                         {
                             if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
@@ -252,7 +252,7 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
-                    ClientInfo cInfo = PersistentOperations.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)

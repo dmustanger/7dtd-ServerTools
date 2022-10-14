@@ -80,7 +80,7 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(douche.entityId);
+                                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(douche.entityId);
                                         if (cInfo != null)
                                         {
                                             Log.Out(string.Format("[SERVERTOOLS] Entity cleanup removed bicycle id '{0}' belonging to '{1}'. Closest player id '{2}' named '{3}'", entity.entityId, entity.belongsPlayerId, cInfo.CrossplatformId.CombinedString, cInfo.playerName));

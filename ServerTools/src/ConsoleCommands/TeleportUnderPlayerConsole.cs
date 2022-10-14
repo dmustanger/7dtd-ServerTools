@@ -35,10 +35,10 @@ namespace ServerTools
                 if (_params.Count == 1)
                 {
                     ClientInfo cInfo = _senderInfo.RemoteClientInfo;
-                    ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromNameOrId(_params[0]);
+                    ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_params[0]);
                     if (cInfo2 != null)
                     {
-                        EntityPlayer player2 = PersistentOperations.GetEntityPlayer(cInfo2.entityId);
+                        EntityPlayer player2 = GeneralFunction.GetEntityPlayer(cInfo2.entityId);
                         if ((int)player2.position.y < 13)
                         {
                             cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)player2.position.x, 0, (int)player2.position.z), null, false));

@@ -5,45 +5,36 @@ namespace ServerTools
 {
     class Track
     {
-        public static bool IsEnabled = false;
-
         public static void Exec()
         {
-            if (GameManager.Instance.World.Players.dict.Count > 0)
+            List<ClientInfo> clientList = GeneralFunction.ClientList();
+            if (clientList != null && clientList.Count > 0)
             {
-                List<string[]> track = new List<string[]>();
-                if (PersistentContainer.Instance.Track != null)
+                List<string[]> track = PersistentContainer.Instance.Track;
+                for (int i = 0; i < clientList.Count; i++)
                 {
-                    track = PersistentContainer.Instance.Track;
-                }
-                List<ClientInfo> clientList = PersistentOperations.ClientList();
-                if (clientList != null)
-                {
-                    for (int i = 0; i < clientList.Count; i++)
+                    ClientInfo cInfo = clientList[i];
+                    if (cInfo != null)
                     {
-                        ClientInfo cInfo = clientList[i];
-                        if (cInfo != null)
+                        EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                        if (player != null && player.IsSpawned())
                         {
-                            EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
-                            if (player != null && player.IsSpawned())
+                            string pos = (int)player.position.x + "," + (int)player.position.y + "," + (int)player.position.z;
+                            string holdingItem = player.inventory.holdingItem.Name;
+                            if (!string.IsNullOrEmpty(player.inventory.holdingItem.Name))
                             {
-                                string pos = (int)player.position.x + "," + (int)player.position.y + "," + (int)player.position.z;
-                                string holdingItem = player.inventory.holdingItem.Name;
-                                if (!string.IsNullOrEmpty(player.inventory.holdingItem.Name))
+                                ItemValue itemValue = ItemClass.GetItem(holdingItem, true);
+                                if (itemValue.type != ItemValue.None.type)
                                 {
-                                    ItemValue itemValue = ItemClass.GetItem(holdingItem, true);
-                                    if (itemValue.type != ItemValue.None.type)
-                                    {
-                                        holdingItem = itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name;
-                                    }
-                                    string[] newData = { DateTime.Now.ToString(), pos, cInfo.CrossplatformId.CombinedString, player.EntityName, holdingItem };
-                                    track.Add(newData);
+                                    holdingItem = itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name;
                                 }
-                                else
-                                {
-                                    string[] newData = { DateTime.Now.ToString(), pos, cInfo.CrossplatformId.CombinedString, player.EntityName, "nothing" };
-                                    track.Add(newData);
-                                }
+                                string[] newData = { DateTime.Now.ToString(), pos, cInfo.CrossplatformId.CombinedString, player.EntityName, holdingItem };
+                                track.Add(newData);
+                            }
+                            else
+                            {
+                                string[] newData = { DateTime.Now.ToString(), pos, cInfo.CrossplatformId.CombinedString, player.EntityName, "nothing" };
+                                track.Add(newData);
                             }
                         }
                     }

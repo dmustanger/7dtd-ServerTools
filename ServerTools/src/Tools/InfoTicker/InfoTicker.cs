@@ -263,7 +263,7 @@ namespace ServerTools
                     {
                         MsgList.RandomizeList();
                         string message = MsgList[0];
-                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        List<ClientInfo> clientList = GeneralFunction.ClientList();
                         if (clientList != null)
                         {
                             for (int i = 0; i < clientList.Count; i++)
@@ -291,7 +291,7 @@ namespace ServerTools
                     else
                     {
                         string message = MsgList[0];
-                        List<ClientInfo> clientList = PersistentOperations.ClientList();
+                        List<ClientInfo> clientList = GeneralFunction.ClientList();
                         if (clientList != null)
                         {
                             for (int i = 0; i < clientList.Count; i++)

@@ -20,7 +20,7 @@ namespace ServerTools
         {
             try
             {
-                List<ClientInfo> clientList = PersistentOperations.ClientList();
+                List<ClientInfo> clientList = GeneralFunction.ClientList();
                 if (clientList != null)
                 {
                     for (int i = 0; i < clientList.Count; i++)
@@ -28,7 +28,7 @@ namespace ServerTools
                         ClientInfo cInfo = clientList[i];
                         if (cInfo != null)
                         {
-                            EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                            EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                             if (player != null)
                             {
                                 int userPlatformPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId);
@@ -86,7 +86,7 @@ namespace ServerTools
                                         }
                                         if (player.AttachedToEntity != null && player.AttachedToEntity is EntityVehicle)
                                         {
-                                            Entity entity = PersistentOperations.GetEntity(player.AttachedToEntity.entityId);
+                                            Entity entity = GeneralFunction.GetEntity(player.AttachedToEntity.entityId);
                                             if (entity != null && entity is EntityVehicle)
                                             {
                                                 continue;
@@ -139,7 +139,7 @@ namespace ServerTools
             try
             {
                 HalfSecondRunning = true;
-                List<ClientInfo> clientList = PersistentOperations.ClientList();
+                List<ClientInfo> clientList = GeneralFunction.ClientList();
                 if (clientList != null && clientList.Count > 0)
                 {
                     for (int i = 0; i < clientList.Count; i++)
@@ -150,7 +150,7 @@ namespace ServerTools
                             if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > XRayDetector.Admin_Level &&
                                 GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > XRayDetector.Admin_Level)
                             {
-                                EntityPlayer player = PersistentOperations.GetEntityPlayer(cInfo.entityId);
+                                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                                 if (player != null)
                                 {
                                     XRayDetector.IsInsideBlocks(cInfo, player);

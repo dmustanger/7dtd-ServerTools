@@ -14,7 +14,7 @@ namespace ServerTools
 
         public static void ListFriends(ClientInfo _cInfo)
         {
-            EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+            EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
             if (player != null)
             {
                 bool found = false;
@@ -26,7 +26,7 @@ namespace ServerTools
                     {
                         if (player != player2 && player.IsFriendsWith(player2))
                         {
-                            ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromEntityId(player2.entityId);
+                            ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromEntityId(player2.entityId);
                             if (cInfo2 != null)
                             {
                                 found = true;
@@ -48,7 +48,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo, string _message)
         {
-            EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+            EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
             if (player != null)
             {
                 if (Player_Check)
@@ -68,7 +68,7 @@ namespace ServerTools
                 ClientInfo friend = ConsoleHelper.ParseParamIdOrName(_message);
                 if (friend != null)
                 {
-                    EntityPlayer friendPlayer = PersistentOperations.GetEntityPlayer(friend.entityId);
+                    EntityPlayer friendPlayer = GeneralFunction.GetEntityPlayer(friend.entityId);
                     if (friendPlayer != null)
                     {
                         if (!player.IsFriendsWith(friendPlayer))
@@ -143,12 +143,7 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo, ClientInfo _friend)
         {
-            int currency = 0;
-            if (Wallet.IsEnabled)
-            {
-                currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-            }
-            if (currency >= Command_Cost)
+            if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
             {
                 MessageFriend(_cInfo, _friend);
             }
@@ -186,21 +181,21 @@ namespace ServerTools
 
         public static void TeleFriend(ClientInfo _cInfo, int _invitingFriend)
         {
-            ClientInfo cInfo2 = PersistentOperations.GetClientInfoFromEntityId(_invitingFriend);
+            ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromEntityId(_invitingFriend);
             if (cInfo2 != null)
             {
-                EntityPlayer player = PersistentOperations.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
-                    if (Command_Cost >= 1 && Wallet.IsEnabled)
-                    {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                    }
                     Phrases.Dict.TryGetValue("FriendTeleport7", out string phrase1);
                     ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)player.position.x, (int)player.position.y, (int)player.position.z), null, false));
                     PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].LastFriendTele = DateTime.Now;
                     PersistentContainer.DataChange = true;
+                    if (Command_Cost >= 1 && Wallet.IsEnabled)
+                    {
+                        Wallet.RemoveCurrency(cInfo2.CrossplatformId.CombinedString, Command_Cost);
+                    }
                 }
             }
             else
