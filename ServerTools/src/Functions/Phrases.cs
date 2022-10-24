@@ -585,7 +585,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Jail2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Jail3", out phrase))
                     {
-                        phrase = "You have set the jail position as {JailPosition}";
+                        phrase = "You have set the jail position as {Position}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Jail3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Jail4", out phrase))
@@ -732,7 +732,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lobby1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lobby2", out phrase))
                     {
-                        phrase = "You have set the lobby position as {LobbyPosition}";
+                        phrase = "You have set the lobby position as {Position}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lobby2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lobby3", out phrase))
@@ -816,12 +816,12 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Market4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Market5", out phrase))
                     {
-                        phrase = "You have left the market space. {Command_Prefix1}{Command_marketback} command is no longer available";
+                        phrase = "You have left the market";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Market5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Market6", out phrase))
                     {
-                        phrase = "You have set the market position as {MarketPosition}";
+                        phrase = "You have set the market position as {Position}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Market6\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Market7", out phrase))

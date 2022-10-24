@@ -162,9 +162,9 @@ namespace ServerTools
                     for (int i = 0; i < windowContent.Count; i++)
                     {
                         string line = windowContent[i];
-                        if (line.Contains("browserMap") || line.Contains("browserDiscord") || line.Contains("browserVote") ||
-                            line.Contains("browserRio") || line.Contains("browserShop") || line.Contains("browserAuction") ||
-                            line.Contains("browserIMap"))
+                        if (line.Contains(AllocsMap.Link) || line.Contains(DiscordLink.Invitation_Link) || line.Contains(Voting.Link) ||
+                            line.Contains("rio.html") || line.Contains("shop.html") || line.Contains("auction.html") ||
+                            line.Contains("imap.html"))
                         {
                             count += 1;
                         }
@@ -537,10 +537,10 @@ namespace ServerTools
                     for (int i = 0; i < clientList.Count; i++)
                     {
                         ClientInfo cInfo = clientList[i];
-                        if (cInfo != null)
+                        if (cInfo != null && !TeleportDetector.Ommissions.Contains(cInfo.entityId))
                         {
                             EntityPlayer player = GetEntityPlayer(cInfo.entityId);
-                            if (player != null && !player.IsDead() && player.IsSpawned() && player.position != null)
+                            if (player != null && player.IsSpawned() && !player.IsDead() && player.position != null)
                             {
                                 if (Zones.IsEnabled && Zones.ZoneList.Count > 0)
                                 {
@@ -2515,20 +2515,6 @@ namespace ServerTools
                 {
                     commands = string.Format("{0} @" + AdminChat.Command_admin, commands);
                 }
-                if (Jail.IsEnabled)
-                {
-                    if (Jail.Command_set != "")
-                    {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Jail.Command_set);
-                    }
-                }
-                if (NewSpawnTele.IsEnabled)
-                {
-                    if (NewSpawnTele.Command_setspawn != "")
-                    {
-                        commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, NewSpawnTele.Command_setspawn);
-                    }
-                }
                 if (commands.Length > 0)
                 {
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + commands, -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -2543,6 +2529,8 @@ namespace ServerTools
         public static void SetWindowLinks()
         {
             Auction.SetLink();
+            AllocsMap.SetLink(AllocsMap.Link);
+            DiscordLink.SetLink(DiscordLink.Invitation_Link);
             Shop.SetLink();
             RIO.SetLink();
             InteractiveMap.SetLink();

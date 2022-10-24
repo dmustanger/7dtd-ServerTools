@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.6.3";
+        public const string Version = "20.6.4";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -480,6 +480,18 @@ namespace ServerTools
                                                 if (!bool.TryParse(line.GetAttribute("Direct_Deposit"), out Bank.Direct_Deposit))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Direct_Deposit' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                break;
+                                            case "Bank_Extended":
+                                                if (!line.HasAttribute("Deposit_Message"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank_Extended entry in ServerToolsConfig.xml because of missing 'Deposit_Message' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!bool.TryParse(line.GetAttribute("Deposit_Message"), out Bank.Deposit_Message))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Deposit_Message' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 break;
@@ -2219,24 +2231,14 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of invalid (True/False) value for 'PvP' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!line.HasAttribute("Zombie_Kills"))
+                                                if (!line.HasAttribute("Other"))
                                                 {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of missing 'Zombie_Kills' attribute: {0}", line.OuterXml));
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of missing 'Other' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!bool.TryParse(line.GetAttribute("Zombie_Kills"), out KillNotice.Zombie_Kills))
+                                                if (!bool.TryParse(line.GetAttribute("Other"), out KillNotice.Other))
                                                 {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Zombie_Kills' attribute: {0}", line.OuterXml));
-                                                    continue;
-                                                }
-                                                if (!line.HasAttribute("Animal_Kills"))
-                                                {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of missing 'Animal_Kills' attribute: {0}", line.OuterXml));
-                                                    continue;
-                                                }
-                                                if (!bool.TryParse(line.GetAttribute("Animal_Kills"), out KillNotice.Animal_Kills))
-                                                {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Animal_Kills' attribute: {0}", line.OuterXml));
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Other' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 if (!line.HasAttribute("Show_Level"))
@@ -4473,6 +4475,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Save_World\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" />", AutoSaveWorld.IsEnabled, AutoSaveWorld.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Deposit_Fee_Percent=\"{2}\" Player_Transfers=\"{3}\" Direct_Deposit=\"{4}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Deposit_Fee_Percent, Bank.Player_Transfers, Bank.Direct_Deposit));
+                sw.WriteLine(string.Format("        <Tool Name=\"Bank_Extended\" Deposit_Message=\"{0}\" />", Bank.Deposit_Message));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bed\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", Bed.IsEnabled, Bed.Delay_Between_Uses, Bed.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Logger\" Enable=\"{0}\" />", BlockLogger.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Pickup\" Enable=\"{0}\" Admin_Only=\"{1}\" Admin_Level=\"{2}\" Reserved=\"{3}\" />", BlockPickup.IsEnabled, BlockPickup.Admin_Only, BlockPickup.Admin_Level, BlockPickup.Reserved));
@@ -4517,7 +4520,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Info_Ticker\" Enable=\"{0}\" Delay=\"{1}\" Random=\"{2}\" />", InfoTicker.IsEnabled, InfoTicker.Delay, InfoTicker.Random));
                 sw.WriteLine(string.Format("        <Tool Name=\"Interactive_Map\" Enable=\"{0}\" Map_Directory=\"{1}\" />", InteractiveMap.IsEnabled, InteractiveMap.Map_Directory));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kick_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", KickVote.IsEnabled, KickVote.Players_Online, KickVote.Votes_Needed));
-                sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice\" Enable=\"{0}\" PvP=\"{1}\" Zombie_Kills=\"{2}\" Animal_Kills=\"{3}\" Show_Level=\"{4}\" />", KillNotice.IsEnabled, KillNotice.PvP, KillNotice.Zombie_Kills, KillNotice.Animal_Kills, KillNotice.Show_Level));
+                sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice\" Enable=\"{0}\" PvP=\"{1}\" Other=\"{2}\" Show_Level=\"{3}\" />", KillNotice.IsEnabled, KillNotice.PvP, KillNotice.Other, KillNotice.Show_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice_Extended\" Show_Damage=\"{0}\" Misc=\"{1}\" />", KillNotice.Show_Damage, KillNotice.Misc));
                 sw.WriteLine(string.Format("        <Tool Name=\"Land_Claim_Count\" Enable=\"{0}\" />", LandClaimCount.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Level_Up\" Enable=\"{0}\" Xml_Only=\"{1}\" Announce=\"{2}\" />", LevelUp.IsEnabled, LevelUp.Xml_Only, LevelUp.Announce));

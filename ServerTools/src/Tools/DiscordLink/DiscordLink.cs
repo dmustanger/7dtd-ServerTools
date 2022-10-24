@@ -27,6 +27,10 @@ namespace ServerTools
             {
                 if (File.Exists(GeneralFunction.XPathDir + "XUi/windows.xml"))
                 {
+                    if (_link.EndsWith("/") || _link.EndsWith("\\"))
+                    {
+                        _link.Remove(_link.Length - 1);
+                    }
                     List<string> lines = File.ReadAllLines(GeneralFunction.XPathDir + "XUi/windows.xml").ToList();
                     for (int i = 0; i < lines.Count; i++)
                     {
@@ -56,7 +60,6 @@ namespace ServerTools
                             lines.Add("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                             lines.Add("          <sprite depth=\"4\" name=\"microphoneIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
                             lines.Add("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
-                            lines.Add("          <!-- Change the text IP and Port to the one needed by ServerTools web api -->");
                             lines.Add("      </panel>");
                             lines.Add("  </window>");
                             lines.Add("");

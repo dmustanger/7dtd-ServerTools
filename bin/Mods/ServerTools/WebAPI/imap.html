@@ -12,21 +12,83 @@
 		<title>Interactive Map</title>
 	</head>
 	
-	<body onload="FreshPage()" id="GeneralBody" ">
-		<header id="Head">
-			<div id="SubheaderLeft">
-				
-			</div>
-			<div id="SubheaderRight">
-				
-			</div>
-		</header>
+	<body onload="FreshPage()" id="GeneralBody">
+		<img src="Img/XIcon.png" id="Target" />
+		<div id="Details">
+		</div>
+		<div id="Position">
+			<h4 class="Pos">X = </h4>
+			<h4 id="PositionX" class="Pos">0</h4>
+			<h4 class="Pos">Y = </h4>
+			<h4 id="PositionY" class="Pos">0</h4>
+		</div>
+		<div id="LockedPosition">
+			<img src="Img/XIcon.png" id="XIcon" />
+			<h4 class="LockTags">X = </h4>
+			<h4 id="LockedX" class="LockTags">0</h4>
+			<h4 class="LockTags">Y = </h4>
+			<h4 id="LockedY" class="LockTags">0</h4>
+		</div>
+		<div id="SelectedRegion">
+			<h4 class="RegionTags">Region File = </h4>
+			<h4 id="RegionFile" class="RegionTags">r.0.0.7rg</h4>
+		</div>
 		<div id="MapContainer">
 			<table id="MapTable">
 				<tbody id="MapBody">
-					
 				</tbody>
 			</table>
-		</div>	
+			<table id="GridTable">
+				<tbody id="GridBody">
+				</tbody>
+			</table>
+		</div>
+		<div id="Tab1">
+			<div id="Symbol">
+				+++
+			</div>
+		</div>
+		<div id="ZoomContainer">
+			<table id="ZoomTable">
+				<tbody id="ZoomBody">
+					<tr>
+						<td id="3" class="ZoomCell"> </td>
+						<td id="7" class="ZoomCell"> </td>
+						<td id="11" class="ZoomCell"> </td>
+						<td id="15" class="ZoomCell"> </td>
+					</tr>
+					<tr>
+						<td id="2" class="ZoomCell"> </td>
+						<td id="6" class="ZoomCell"> </td>
+						<td id="10" class="ZoomCell"> </td>
+						<td id="14" class="ZoomCell"> </td>
+					</tr>
+					<tr>
+						<td id="1" class="ZoomCell"> </td>
+						<td id="5" class="ZoomCell"> </td>
+						<td id="9" class="ZoomCell"> </td>
+						<td id="13" class="ZoomCell"> </td>
+					</tr>
+					<tr>
+						<td id="0" class="ZoomCell"> </td>
+						<td id="4" class="ZoomCell"> </td>
+						<td id="8" class="ZoomCell"> </td>
+						<td id="12" class="ZoomCell"> </td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div id="Tab2">
+			<div id="Symbol">
+				^V^
+			</div>
+		</div>
 	</body>
+	<footer id="Controller">
+		<div id="ControllerBackground">
+		</div>
+		<div id="ButtonContainer">
+			<input type="button" value="Grid" onclick="Grid()" id="GridButton" class="ControllerButtons" />
+		</div>
+	</footer>
 </html>

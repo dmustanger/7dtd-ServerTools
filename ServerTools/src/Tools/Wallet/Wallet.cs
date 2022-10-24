@@ -92,10 +92,13 @@ namespace ServerTools
                         if (Bank.IsEnabled && Bank.Direct_Deposit && _directAllowed)
                         {
                             Bank.AddCurrencyToBank(cInfo.CrossplatformId.CombinedString, _amount);
-                            Phrases.Dict.TryGetValue("Bank17", out string phrase);
-                            phrase = phrase.Replace("{Value}", _amount.ToString());
-                            phrase = phrase.Replace("{CoinName}", Currency_Name);
-                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            if (Bank.Deposit_Message)
+                            {
+                                Phrases.Dict.TryGetValue("Bank17", out string phrase);
+                                phrase = phrase.Replace("{Value}", _amount.ToString());
+                                phrase = phrase.Replace("{CoinName}", Currency_Name);
+                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            }
                             return;
                         }
                         ItemValue itemValue = ItemClass.GetItem(GeneralFunction.Currency_Item, false);

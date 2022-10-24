@@ -5,35 +5,8 @@ namespace ServerTools
     public class NewSpawnTele
     {
         public static bool IsEnabled = false, Return = false;
-        public static string Command_setspawn = "setspawn", Command_ready = "ready";
-        private static string[] Cmd = { Command_setspawn };
+        public static string Command_ready = "ready";
         public static string New_Spawn_Tele_Position = "0,0,0";
-
-        public static void SetNewSpawnTele(ClientInfo _cInfo)
-        {
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(Cmd, _cInfo))
-            {
-                Phrases.Dict.TryGetValue("NewSpawnTele7", out string phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-            }
-            else
-            {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
-                if (player != null)
-                {
-                    Vector3 position = player.GetPosition();
-                    int x = (int)position.x;
-                    int y = (int)position.y;
-                    int z = (int)position.z;
-                    string sposition = x + "," + y + "," + z;
-                    New_Spawn_Tele_Position = sposition;
-                    Config.WriteXml();
-                    Phrases.Dict.TryGetValue("NewSpawnTele1", out string phrase);
-                    phrase = phrase.Replace("{Position}", New_Spawn_Tele_Position);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                }
-            }
-        }
 
         public static void TeleNewSpawn(ClientInfo _cInfo, EntityPlayer _player)
         {

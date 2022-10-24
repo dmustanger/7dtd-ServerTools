@@ -196,7 +196,12 @@ namespace ServerTools
                 if (positionList != null)
                 {
                     string claimLimit = GameStats.GetInt(EnumGameStats.LandClaimCount).ToString();
-                    if (Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+                    if (Dict.ContainsKey(_cInfo.PlatformId.CombinedString))
+                    {
+                        Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out string[] nameAndLimit);
+                        claimLimit = nameAndLimit[1];
+                    }
+                    else if (Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                     {
                         Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out string[] nameAndLimit);
                         claimLimit = nameAndLimit[1];

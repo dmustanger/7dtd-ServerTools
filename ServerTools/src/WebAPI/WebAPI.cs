@@ -64,6 +64,7 @@ namespace ServerTools
         {
             try
             {
+                ServicePointManager.ServerCertificateValidationCallback += (send, certificate, chain, sslPolicyErrors) => { return true; };
                 using (WebClient webClient = new WebClient())
                 {
                     string externalIpString = webClient.DownloadString("https://ipinfo.io/ip?token=c31843916e5fd7").Trim();
@@ -176,6 +177,7 @@ namespace ServerTools
                     PostURI.Add("RemoveAIRIO");
                     PostURI.Add("MapIPSync");
                     PostURI.Add("EnterMap");
+                    PostURI.Add("Map");
                 }
             }
             catch (Exception e)
@@ -449,14 +451,18 @@ namespace ServerTools
                         else if (_uri.Contains("Map/") && _uri.EndsWith(".png"))
                         {
                             _uri = _uri.Remove(0, _uri.IndexOf(Port.ToString()) + Port.ToString().Length + 1);
+                            string blank = _uri.Remove(_uri.IndexOf("Map/")) + "Img/Blank.png";
                             _uri = InteractiveMap.Map_Directory + "/" + _uri.Replace("Map/", "");
                             if (File.Exists(_uri))
                             {
                                 GET(_response, _uri, _ip);
                             }
+                            else if (File.Exists(Directory + blank))
+                            {
+                                GET(_response, Directory + blank, _ip);
+                            }
                             else
                             {
-                                _response.StatusCode = 404;
                                 Writer(string.Format("Received get request for missing file at '{0}' from IP '{1}'", _uri, _ip));
                             }
                         }
@@ -1137,17 +1143,17 @@ namespace ServerTools
                                                             {
                                                                 bool changed = false;
                                                                 XmlNodeList nodes = xmlDoc.GetElementsByTagName("Tool");
-                                                                string[] tools = clientData[2].Split('☼');
+                                                                string[] tools = clientData[2].Split('╛');
                                                                 for (int i = 0; i < tools.Length; i++)
                                                                 {
                                                                     XmlNode node = nodes[i];
                                                                     string[] nameAndOptions = tools[i].Split('§');
                                                                     if (nameAndOptions[1].Contains("╚"))
                                                                     {
-                                                                        string[] _options = nameAndOptions[1].Split('╚');
-                                                                        for (int j = 0; j < _options.Length; j++)
+                                                                        string[] options = nameAndOptions[1].Split('╚');
+                                                                        for (int j = 0; j < options.Length; j++)
                                                                         {
-                                                                            string[] optionNameAndValue = _options[j].Split('σ');
+                                                                            string[] optionNameAndValue = options[j].Split('σ');
                                                                             int nodePosition = j + 1;
                                                                             if (nameAndOptions[0] == node.Attributes[0].Value && optionNameAndValue[0] == node.Attributes[nodePosition].Name && optionNameAndValue[1] != node.Attributes[nodePosition].Value)
                                                                             {
@@ -1816,9 +1822,9 @@ namespace ServerTools
                                                                     int count = int.Parse(item[3]);
                                                                     int price = int.Parse(item[5]);
                                                                     int total = price * quantity;
+                                                                    int itemCount = count * quantity;
                                                                     if (currency >= total)
                                                                     {
-                                                                        Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, total);
                                                                         ItemValue itemValue = new ItemValue(ItemClass.GetItem(item[1], false).type);
                                                                         int quality = int.Parse(item[4]);
                                                                         if (itemValue.HasQuality)
@@ -1836,7 +1842,7 @@ namespace ServerTools
                                                                         {
                                                                             entityClass = EntityClass.FromString("item"),
                                                                             id = EntityFactory.nextEntityID++,
-                                                                            itemStack = new ItemStack(itemValue, count * quantity),
+                                                                            itemStack = new ItemStack(itemValue, itemCount),
                                                                             pos = world.Players.dict[cInfo.entityId].position,
                                                                             rot = new Vector3(20f, 0f, 20f),
                                                                             lifetime = 60f,
@@ -1845,9 +1851,15 @@ namespace ServerTools
                                                                         world.SpawnEntityInWorld(entityItem);
                                                                         cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
                                                                         world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                                                                        Log.Out(string.Format("Sold '{0}' to '{1}' '{2}' named '{3}' through the shop", itemValue.ItemClass.Name, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                                                                        if (total > 0)
+                                                                        {
+                                                                            Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, total);
+                                                                        }
+                                                                        PersistentContainer.Instance.ShopLog.Add(new string[] { itemValue.ItemClass.Name, itemCount.ToString(), cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, DateTime.Now.ToString() });
+                                                                        PersistentContainer.DataChange = true;
+
                                                                         Phrases.Dict.TryGetValue("Shop16", out string phrase);
-                                                                        phrase = phrase.Replace("{Count}", (count * quantity).ToString());
+                                                                        phrase = phrase.Replace("{Count}", itemCount.ToString());
                                                                         if (item[2] != "")
                                                                         {
                                                                             phrase = phrase.Replace("{Item}", item[2]);
@@ -3385,6 +3397,41 @@ namespace ServerTools
                                         //{
                                         //    _response.StatusCode = 401;
                                         //}
+                                        break;
+                                    case "Map":
+                                        if (InteractiveMap.IsEnabled)
+                                        {
+                                            if (postMessage.Contains('☼'))
+                                            {
+                                                string[] mapData = postMessage.Split('☼');
+                                                string mapDataUppercase = mapData[0].ToUpper();
+                                                if (Authorized.ContainsKey(mapDataUppercase))
+                                                {
+                                                    Authorized.TryGetValue(mapDataUppercase, out string id);
+                                                    if (!id.Contains(".") || (id.Contains(".") && id == _ip))
+                                                    {
+                                                        string keyHash = "", salt = "";
+                                                        for (int i = 0; i < 10; i++)
+                                                        {
+                                                            salt = GeneralFunction.CreatePassword(4);
+                                                            byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
+                                                            using (SHA512 sha512 = SHA512.Create())
+                                                            {
+                                                                byte[] hashBytes = sha512.ComputeHash(bytes);
+                                                                keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                                                            }
+                                                            if (!Authorized.ContainsKey(keyHash))
+                                                            {
+                                                                Authorized.Remove(mapDataUppercase);
+                                                                Authorized.Add(keyHash, id);
+                                                                break;
+                                                            }
+                                                        }
+                                                        
+                                                    }
+                                                }
+                                            }
+                                        }
                                         break;
                                 }
                                 byte[] c = Encoding.UTF8.GetBytes(responseMessage);

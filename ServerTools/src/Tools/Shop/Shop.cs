@@ -105,6 +105,7 @@ namespace ServerTools
                                         Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop.xml entry. Item could not be found: {0}", name));
                                         continue;
                                     }
+                                    name = itemValue.ItemClass.Name;
                                     if (count > itemValue.ItemClass.Stacknumber.Value)
                                     {
                                         count = itemValue.ItemClass.Stacknumber.Value;
@@ -1460,22 +1461,13 @@ namespace ServerTools
                 world.SpawnEntityInWorld(entityItem);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                if (_price >= 1 && Wallet.IsEnabled)
+                if (_price >= 1)
                 {
                     Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _price);
                 }
-                if (PersistentContainer.Instance.ShopLog != null)
-                {
-                    PersistentContainer.Instance.ShopLog.Add(new string[] { itemValue.ItemClass.Name, _count.ToString(), _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, DateTime.Now.ToString() });
-                }
-                else
-                {
-                    List<string[]> log = new List<string[]>();
-                    log.Add(new string[] { itemValue.ItemClass.Name, _count.ToString(), _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, DateTime.Now.ToString() });
-                    PersistentContainer.Instance.ShopLog = log;
-                }
+                PersistentContainer.Instance.ShopLog.Add(new string[] { itemValue.ItemClass.Name, _count.ToString(), _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, DateTime.Now.ToString() });
                 PersistentContainer.DataChange = true;
-                Log.Out(string.Format("Sold '{0}' to '{1}' '{2}' named '{3}' through the shop", itemValue.ItemClass.Name, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
+
                 Phrases.Dict.TryGetValue("Shop16", out string phrase);
                 phrase = phrase.Replace("{Count}", _count.ToString());
                 if (_secondaryName != "")

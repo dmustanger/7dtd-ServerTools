@@ -133,7 +133,7 @@ namespace ServerTools
         {
             try
             {
-                if (_cInfo != null)
+                if (_cInfo != null && _pos != null)
                 {
                     string id = _cInfo.CrossplatformId.CombinedString;
                     EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
@@ -148,7 +148,7 @@ namespace ServerTools
                         }
                         else if (_respawnReason == RespawnType.LoadedGame)
                         {
-
+                    
                         }
                         else if (_respawnReason == RespawnType.EnterMultiplayer)
                         {
@@ -227,6 +227,10 @@ namespace ServerTools
                         }
                         else if (_respawnReason == RespawnType.Teleport)
                         {
+                            if (TeleportDetector.Ommissions.Contains(_cInfo.entityId))
+                            {
+                                TeleportDetector.Ommissions.Remove(_cInfo.entityId);
+                            }
                             if (TeleportDetector.IsEnabled)
                             {
                                 TeleportDetector.Exec(_cInfo);
@@ -274,7 +278,7 @@ namespace ServerTools
                     EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
-                        if (KillNotice.IsEnabled && (KillNotice.Zombie_Kills || KillNotice .Animal_Kills) && string.IsNullOrEmpty(_secondaryName))
+                        if (KillNotice.IsEnabled && KillNotice.Other && string.IsNullOrEmpty(_secondaryName))
                         {
                             if (KillNotice.Damage.ContainsKey(player.entityId))
                             {
@@ -448,6 +452,10 @@ namespace ServerTools
                     if (Shop.PanelAccess.ContainsKey(_cInfo.ip))
                     {
                         Shop.PanelAccess.Remove(_cInfo.ip);
+                    }
+                    if (InteractiveMap.Access.ContainsKey(_cInfo.ip))
+                    {
+                        InteractiveMap.Access.Remove(_cInfo.ip);
                     }
                 }
                 else

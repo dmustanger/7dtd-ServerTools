@@ -1,49 +1,272 @@
 #GeneralBody
 {
 	position:absolute;
-	width:100%;
+	width:80%;
 	height:100%;
-	margin:0;
-	padding:0;
+	margin:0px;
+	padding:0px;
 	background:#404040;
-}
-
-#Head
-{
-	width:100%;
-	height:20%;
-	background-image:url(../Img/BloodBorder.webp);
-	background-repeat:no-repeat;
-	background-size:contain;
 }
 
 #MapContainer
 {
-	height:78%;
+	position:relative;
+	width:100%;
+	margin:0px;
+	padding:0px;
 }
 
 #MapTable
 {
-	margin-top:1%;
-	margin-left:auto;
-	margin-right:auto;
 	z-index:0;
-	border-collapse: separate;
-	border-spacing: 0px;
+	position:absolute;
+	border-collapse:separate;
+	border-spacing:0px;
 }
 
-.RegionCell
+#GridTable
+{
+	z-index:1;
+	position:absolute;
+	border-collapse:separate;
+	border-spacing:0px;
+	opacity:0.5;
+}
+
+#ZoomTable
+{
+	position:absolute;
+	border-collapse:separate;
+	border-spacing:0px;
+}
+
+#Controller
+{
+	z-index:3;
+	position:fixed;
+	height:100px;
+	width:100%;
+	bottom:0px;
+}
+
+#Position
+{
+	z-index:4;
+	position:fixed;
+	top:15px;
+	left:30px;
+	height:20px;
+	width:200px;
+}
+
+#LockedPosition
+{
+	z-index:4;
+	position:fixed;
+	top:40px;
+	left:50px;
+	height:20px;
+	width:240px;
+}
+
+#SelectedRegion
+{
+	z-index:4;
+	position:fixed;
+	top:68px;
+	left:30px;
+	height:20px;
+	width:200px;
+}
+
+#FileName
+{
+	z-index:4;
+	position:fixed;
+	top:50px;
+	left:32px;
+	height:20px;
+	color:#FFF;
+	display:inline;
+}
+
+#XIcon
+{
+	z-index:4;
+	position:fixed;
+	height:28px;
+	width:28px;
+	top:35px;
+	left:10px;
+}
+
+#Tab1
+{
+	z-index:3;
+	position:fixed;
+	height:20px;
+	width:32px;
+	left:232px;
+	top:0px;
+	background-color:#FFF;
+	opacity:0.8;
+	border:2px solid #000;
+	border-radius:5px;
+	margin-left:auto;
+	margin-right:auto;
+	cursor:pointer;
+}
+
+#Tab2
+{
+	z-index:3;
+	position:fixed;
+	height:20px;
+	width:32px;
+	left:0px;
+	bottom:100px;
+	background-color:#FFF;
+	opacity:0.8;
+	border:2px solid #000;
+	border-radius:5px;
+	margin-left:auto;
+	margin-right:auto;
+	cursor:pointer;
+}
+
+#Symbol
 {
 	position:relative;
-	text-align:bottom-left;
-	min-width:128px;
-	height:128px;
-	width:128px;
-	border:1px solid #000;
+	color:#FFF;
+	text-shadow: 2px 2px #000000;
+	margin-left:0;
+	margin-right:0;
+}
+
+#Target
+{
+	z-index:2;
+	position:absolute;
+	height:28px;
+	width:28px;
+	top:0px;
+	left:0px;
+}
+
+#Details
+{
+	z-index:3;
+	position:fixed;
+	height:100px;
+	width:230px;
+	background-color:#CCCCCC;
+	opacity:0.8;
+	border:1px solid #FFF;
+	border-radius:5px;
+}
+
+#ControllerBackground
+{
+	z-index:4;
+	position:absolute;
+	height:100%;
+	width:100%;
+	background-color:grey;
+	opacity:0.8;
+	border-top:2px solid #FFF;
+}
+
+#ButtonContainer
+{
+	height:100%;
+	width:30%;
+}
+
+#GridButton
+{
+	z-index:5;
+	position:relative;
+	cursor:pointer;
+}
+
+#ZoomContainer
+{
+	z-index:3;
+	position:fixed;
+	height:512px;
+	width:512px;
+	left:231px;
+	top:-600px;
+	background-color:grey;
+	opacity:0.6;
+	border:1px solid #CCCCCC;
 	margin:0px;
 	padding:0px;
+}
+
+.MapCell
+{
+	height:128px;
+	width:128px;
+	margin:0;
+	padding:0;
 	background-image:url(../Img/Blank.png);
 	background-repeat:no-repeat;
 	background-size:100% 100%;
+}
+
+.GridCell
+{
+	height:126px;
+	width:126px;
+	border:1px solid #000;
+	margin:0;
+	padding:0;
+}
+
+.Pos
+{
+	margin:5px;
+	padding:0;
+	width:25%;
+	color:#ffff66;
+	text-shadow:1px 1px #000;
+	display:inline;
+}
+
+.LockTags
+{
+	margin:5px;
+	padding:0;
+	width:25%;
+	color:#ffff66;
+	text-shadow:1px 1px #000;
+	display:inline;
+}
+
+.RegionTags
+{
+	margin:5px;
+	padding:0;
+	width:25%;
+	color:#ffff66;
+	text-shadow:1px 1px #000;
+	display:inline;
+}
+
+.ControllerButtons
+{
 	color:#FFF;
+	background-color:#AB1700;
+	margin:10px;
+	border:1px solid #FFF;
+	border-radius:5px;
+}
+
+.ZoomCell
+{
+	height:128px;
+	width:128px;
+	margin:0;
+	padding:0;
 }

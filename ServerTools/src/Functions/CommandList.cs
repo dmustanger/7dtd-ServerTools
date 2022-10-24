@@ -274,14 +274,8 @@ namespace ServerTools
                         case "gimmie":
                             Gimme.Command_gimmie = kvp.Value[0];
                             continue;
-                        case "setjail":
-                            Jail.Command_set = kvp.Value[0];
-                            continue;
                         case "forgive":
                             Jail.Command_forgive = kvp.Value[0];
-                            continue;
-                        case "setspawn":
-                            NewSpawnTele.Command_setspawn = kvp.Value[0];
                             continue;
                         case "ready":
                             NewSpawnTele.Command_ready = kvp.Value[0];
@@ -638,9 +632,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"suicide\" Replacement=\"suicide\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"gimme\" Replacement=\"gimme\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"gimmie\" Replacement=\"gimmie\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"setjail\" Replacement=\"setjail\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"forgive\" Replacement=\"forgive\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"setspawn\" Replacement=\"setspawn\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"ready\" Replacement=\"ready\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"vote\" Replacement=\"vote\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"trackanimal\" Replacement=\"trackanimal\" Hidden=\"false\" />");

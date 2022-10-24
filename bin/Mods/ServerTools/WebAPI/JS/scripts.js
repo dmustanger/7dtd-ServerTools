@@ -125,7 +125,6 @@ function SignIn() {
 				let request = new XMLHttpRequest();
 				request.open('POST', window.location.href.replace('st.html', 'SignIn'), true);
 				request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
-				request.setRequestHeader('User-Agent', 'C# program');
 				request.onerror = function() {
 					alert("Error");
 				};
@@ -493,8 +492,8 @@ function SaveConfig() {
 		document.getElementById("AcceptSave").checked = false;
 		if (ConfigXml.documentElement != null) {
 			let tableRows = document.getElementById("ConfigBody").rows;
-			let count = 0;
 			let newconfig = ""
+			let count = 0;
 			for (i = 0; i < tableRows.length; i++) {
 				let cells = tableRows[i].cells;
 				for (j = 0; j < cells.length; j++) {
@@ -507,7 +506,7 @@ function SaveConfig() {
 							if (checkBox.checked) {
 								newconfig += cells[j].attributes[1].value + "σ";
 								if (j == cells.length - 1) {
-									newconfig += "True" + "☼";
+									newconfig += "True" + "╛";
 								}
 								else {
 									newconfig += "True" + "╚";
@@ -516,7 +515,7 @@ function SaveConfig() {
 							else {
 								newconfig += cells[j].attributes[1].value + "σ";
 								if (j == cells.length - 1) {
-									newconfig += "False" + "☼";
+									newconfig += "False" + "╛";
 								}
 								else {
 									newconfig += "False" + "╚";
@@ -524,19 +523,20 @@ function SaveConfig() {
 							}
 						}
 						else {
-							var textBox = document.getElementById(_count);
+							var textBox = document.getElementById(count);
 							newconfig += cells[j].attributes[1].value + "σ";
 							if (j == cells.length - 1) {
-								newconfig += textBox.value + "☼";
+								newconfig += textBox.value + "╛";
 							}
 							else {
 								newconfig += textBox.value + "╚";
 							}
 						}
 					}
-					count++;
+					count += 1;
 				}
 			}
+			newconfig = newconfig.substring(0, newconfig.length - 1);
 			let request = new XMLHttpRequest();
 			request.open('POST', window.location.href.replace('st.html', 'SaveConfig'), true);
 			request.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
@@ -553,6 +553,10 @@ function SaveConfig() {
 				}
 				else if (request.status == 403 && request.readyState == 4) {
 					alert("No response from the server. It may be restarting");
+				}
+				else if (request.status == 406 && request.readyState == 4) {
+					Pin += request.responseText;
+					Config();
 				}
 			};
 			request.send(ClientId + "☼" + CryptoJS.SHA512(Pin).toString() + "☼" + newconfig);

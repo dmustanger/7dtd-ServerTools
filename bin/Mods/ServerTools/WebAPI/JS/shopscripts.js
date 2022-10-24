@@ -129,37 +129,10 @@ function Accepted(responseSplit) {
 						PurchaseNumber = itemSplit[8];
 					};
 					document.getElementById("Items").appendChild(div);
-					
-					let itemHeader = document.createElement('H3');
-					itemHeader.setAttribute("class", "ItemHeader");
-					
+
 					let itemSplit = itemsSplit[j].split('§');
-					if (itemSplit[5] == 1) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 2) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 3) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 4) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 5) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 6) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 7) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 8) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Quality: " + itemSplit[5] + "<span>";
-					}
-					document.getElementById(j).appendChild(itemHeader);
-					
+					SetPalette(itemSplit, j);
+
 					let img = document.createElement("img");
 					img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
 					img.setAttribute("class", "Icon");
@@ -201,35 +174,8 @@ function Accepted(responseSplit) {
 			};
 			document.getElementById("Items").appendChild(div);
 
-			let itemHeader = document.createElement('H3');
-			itemHeader.setAttribute("class", "ItemHeader");
-			
 			let itemSplit = responseSplit[4].split('§');
-			if (itemSplit[5] == 1) {
-				itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Quality: " + itemSplit[5] + "<span>";
-			}
-			else if (itemSplit[5] == 2) {
-				itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Quality: " + itemSplit[5] + "<span>";
-			}
-			else if (itemSplit[5] == 3) {
-				itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Quality: " + itemSplit[5] + "<span>";
-			}
-			else if (itemSplit[5] == 4) {
-				itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Quality: " + itemSplit[5] + "<span>";
-			}
-			else if (itemSplit[5] == 5) {
-				itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Quality: " + itemSplit[5] + "<span>";
-			}
-			else if (itemSplit[5] == 6) {
-				itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Quality: " + itemSplit[5] + "<span>";
-			}
-			else if (itemSplit[5] == 7) {
-				itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Quality: " + itemSplit[5] + "<span>";
-			}
-			else if (itemSplit[5] == 8) {
-				itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Quality: " + itemSplit[5] + "<span>";
-			}
-			document.getElementById(0).appendChild(itemHeader);
+			SetPalette(itemSplit, 0);
 
 			let img = document.createElement("img");
 			img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
@@ -292,33 +238,9 @@ function Filter(filter) {
 							PurchaseNumber = itemSplit[8];
 						};
 						document.getElementById("Items").appendChild(div);
-						let itemHeader = document.createElement('H3');
-						itemHeader.setAttribute("class", "ItemHeader");
-						if (itemSplit[5] == 1) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Quality: " + itemSplit[5] + "<span>";
-						}
-						else if (itemSplit[5] == 2) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Quality: " + itemSplit[5] + "<span>";
-						}
-						else if (itemSplit[5] == 3) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Quality: " + itemSplit[5] + "<span>";
-						}
-						else if (itemSplit[5] == 4) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Quality: " + itemSplit[5] + "<span>";
-						}
-						else if (itemSplit[5] == 5) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Quality: " + itemSplit[5] + "<span>";
-						}
-						else if (itemSplit[5] == 6) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Quality: " + itemSplit[5] + "<span>";
-						}
-						else if (itemSplit[5] == 7) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Quality: " + itemSplit[5] + "<span>";
-						}
-						else if (itemSplit[5] == 8) {
-							itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Quality: " + itemSplit[5] + "<span>";
-						}
-						document.getElementById(counter1).appendChild(itemHeader);
+						
+						SetPalette(itemSplit, counter1);
+
 						let img = document.createElement("img");
 						img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
 						img.setAttribute("class", "Icon");
@@ -437,33 +359,9 @@ function UpdatePerPage(number) {
 						PurchaseNumber = itemSplit[8];
 					};
 					document.getElementById("Items").appendChild(div);
-					let itemHeader = document.createElement('H3');
-					itemHeader.setAttribute("class", "ItemHeader");
-					if (itemSplit[5] == 1) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 2) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 3) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 4) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 5) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 6) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 7) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Quality: " + itemSplit[5] + "<span>";
-					}
-					else if (itemSplit[5] == 8) {
-						itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Quality: " + itemSplit[5] + "<span>";
-					}
-					document.getElementById(count).appendChild(itemHeader);
+					
+					SetPalette(itemSplit, count);
+
 					let img = document.createElement("img");
 					img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
 					img.setAttribute("class", "Icon");
@@ -542,33 +440,7 @@ function NextPage() {
 				};
 				document.getElementById("Items").appendChild(div);
 				
-				let itemHeader = document.createElement('H3');
-				itemHeader.setAttribute("class", "ItemHeader");
-				if (itemSplit[5] == 1) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 2) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 3) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 4) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 5) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 6) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 7) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 8) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Quality: " + itemSplit[5] + "<span>";
-				}
-				document.getElementById(counter1).appendChild(itemHeader);
+				SetPalette(itemSplit, counter1);
 	
 				let img = document.createElement("img");
 				img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
@@ -647,33 +519,7 @@ function LastPage() {
 				};
 				document.getElementById("Items").appendChild(div);
 				
-				let itemHeader = document.createElement('H3');
-				itemHeader.setAttribute("class", "ItemHeader");
-				if (itemSplit[5] == 1) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 2) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 3) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 4) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 5) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 6) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 7) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Quality: " + itemSplit[5] + "<span>";
-				}
-				else if (itemSplit[5] == 8) {
-					itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Quality: " + itemSplit[5] + "<span>";
-				}
-				document.getElementById(counter1).appendChild(itemHeader);
+				SetPalette(itemSplit, counter1);
 	
 				let img = document.createElement("img");
 				img.setAttribute("src", "Icon/" + itemSplit[3] + ".png");
@@ -725,8 +571,38 @@ function ShowFilters() {
 		FiltersOpen = false;
 		document.getElementById("FilterContainer").style.top = "-2000px";
 	}
-	else {
+	else if (!FiltersOpen) {
 		FiltersOpen = true;
 		document.getElementById("FilterContainer").style.top = "0px";
 	}
+};
+
+function SetPalette(itemSplit, target) {
+	let itemHeader = document.createElement('H3');
+	itemHeader.setAttribute("class", "ItemHeader");
+	if (itemSplit[5] == 1) {
+		itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #C2C2A3'>Quality: " + itemSplit[5] + "<span>";
+	}
+	else if (itemSplit[5] == 2) {
+		itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF751A'>Quality: " + itemSplit[5] + "<span>";
+	}
+	else if (itemSplit[5] == 3) {
+		itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6E600'>Quality: " + itemSplit[5] + "<span>";
+	}
+	else if (itemSplit[5] == 4) {
+		itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #33CC33'>Quality: " + itemSplit[5] + "<span>";
+	}
+	else if (itemSplit[5] == 5) {
+		itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #005CE6'>Quality: " + itemSplit[5] + "<span>";
+	}
+	else if (itemSplit[5] == 6) {
+		itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #B800E6'>Quality: " + itemSplit[5] + "<span>";
+	}
+	else if (itemSplit[5] == 7) {
+		itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #FF8400'>Quality: " + itemSplit[5] + "<span>";
+	}
+	else if (itemSplit[5] == 8) {
+		itemHeader.innerHTML = itemSplit[2] + "</br> Count: " + itemSplit[4] + "</br> <span style='color: #E6C300'>Quality: " + itemSplit[5] + "<span>";
+	}
+	document.getElementById(target).appendChild(itemHeader);
 };

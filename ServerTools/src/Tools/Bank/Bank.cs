@@ -9,7 +9,7 @@ namespace ServerTools
 {
     class Bank
     {
-        public static bool IsEnabled = false, Inside_Claim = false, Player_Transfers = false, Direct_Deposit = false;
+        public static bool IsEnabled = false, Inside_Claim = false, Player_Transfers = false, Direct_Deposit = false, Deposit_Message = false;
         public static string Command_bank = "bank", Command_deposit = "deposit", Command_withdraw = "withdraw", Command_transfer = "transfer";
         public static int Deposit_Fee_Percent = 5;
 
@@ -40,6 +40,17 @@ namespace ServerTools
             {
                 PersistentContainer.Instance.Players[_id].Bank += _amount;
                 PersistentContainer.DataChange = true;
+                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_id);
+                if (cInfo != null)
+                {
+                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                    {
+                        sw.WriteLine(string.Format("{0}: Bank addition for '{1}' '{2}' named '{3}' of '{4}' currency. Total = '{5}'", DateTime.Now, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, _amount, PersistentContainer.Instance.Players[_id].Bank));
+                        sw.WriteLine();
+                        sw.Flush();
+                        sw.Close();
+                    }
+                }
             }
         }
 
@@ -49,6 +60,17 @@ namespace ServerTools
             {
                 PersistentContainer.Instance.Players[_id].Bank -= _amount;
                 PersistentContainer.DataChange = true;
+                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_id);
+                if (cInfo != null)
+                {
+                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                    {
+                        sw.WriteLine(string.Format("{0}: Bank reduction for '{1}' '{2}' named '{3}' of '{4}' currency. Total = '{5}'", DateTime.Now, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, _amount, PersistentContainer.Instance.Players[_id].Bank));
+                        sw.WriteLine();
+                        sw.Flush();
+                        sw.Close();
+                    }
+                }
             }
         }
 
@@ -56,8 +78,16 @@ namespace ServerTools
         {
             if (!GeneralFunction.No_Currency)
             {
+                int oldValue = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
                 PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank = 0;
                 PersistentContainer.DataChange = true;
+                using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                {
+                    sw.WriteLine(string.Format("{0}: Bank for '{1}' '{2}' named '{3}' was cleared of '{4}' currency", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, oldValue));
+                    sw.WriteLine();
+                    sw.Flush();
+                    sw.Close();
+                }
             }
         }
 
@@ -349,10 +379,10 @@ namespace ServerTools
                                         {
                                             if (bankData.Value == id)
                                             {
-                                                TransferId.Remove(bankData.Key);
                                                 ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(bankData.Key);
-                                                if (cInfo2 != null)
+                                                if (cInfo2 != null && cInfo2 != _cInfo)
                                                 {
+                                                    TransferId.Remove(bankData.Key);
                                                     SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, value);
                                                     AddCurrencyToBank(cInfo2.CrossplatformId.CombinedString, value);
                                                     using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
@@ -364,12 +394,12 @@ namespace ServerTools
                                                     }
                                                     Phrases.Dict.TryGetValue("Bank15", out string phrase);
                                                     phrase = phrase.Replace("{Value}", value.ToString());
-                                                    phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                                    ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                                    Phrases.Dict.TryGetValue("Bank16", out phrase);
-                                                    phrase = phrase.Replace("{Value}", value.ToString());
                                                     phrase = phrase.Replace("{PlayerName}", cInfo2.playerName);
                                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                                    Phrases.Dict.TryGetValue("Bank16", out phrase);
+                                                    phrase = phrase.Replace("{Value}", value.ToString());
+                                                    phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                                                    ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                                 }
                                                 else
                                                 {

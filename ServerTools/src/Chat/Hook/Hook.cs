@@ -363,16 +363,6 @@ namespace ServerTools
                                     return false;
                                 }
                             }
-                            if (Jail.IsEnabled && messageLowerCase == Jail.Command_set && Permission(_cInfo, Jail.Command_set))
-                            {
-                                Jail.SetJail(_cInfo);
-                                return false;
-                            }
-                            if (NewSpawnTele.IsEnabled && messageLowerCase == NewSpawnTele.Command_setspawn && Permission(_cInfo, NewSpawnTele.Command_setspawn))
-                            {
-                                NewSpawnTele.SetNewSpawnTele(_cInfo);
-                                return false;
-                            }
                             if (AnimalTracking.IsEnabled)
                             {
                                 if (messageLowerCase == AnimalTracking.Command_trackanimal && Permission(_cInfo, AnimalTracking.Command_trackanimal) ||

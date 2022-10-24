@@ -16,14 +16,18 @@ namespace ServerTools
             return "Usage:\n" +
                 "  1. st-jl off\n" +
                 "  2. st-jl on\n" +
-                "  3. st-jl add <EOS/EntityId/PlayerName> <Time>\n" +
-                "  4. st-jl remove <EOS/EntityId/PlayerName>" +
-                "  5. st-jl list\n" +
+                "  3. st-jl set {X} {Y} {Z}\n" +
+                "  4. st-jl set\n" +
+                "  5. st-jl add <EOS/EntityId/PlayerName> <Time>\n" +
+                "  6. st-jl remove <EOS/EntityId/PlayerName>" +
+                "  7. st-jl list\n" +
                 "1. Turn off jail\n" +
                 "2. Turn on jail\n" +
-                "3. Adds a Id to the jail list for a specific time in minutes\n" +
-                "4. Removes a Id from the jail list\n" +
-                "5. Lists all Id in the jail list" +
+                "3. Set the position a jailed player will teleport using the specified x y z location\n" +
+                "4. Set the position a jailed player will teleport using your current location\n" +
+                "5. Adds a Id to the jail list for a specific time in minutes\n" +
+                "6. Removes a Id from the jail list\n" +
+                "7. Lists all Id in the jail list" +
                 "*Note Use -1 for time to jail indefinitely*";
         }
         public override string[] GetCommands()
@@ -69,6 +73,69 @@ namespace ServerTools
                     {
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Jail is already on"));
                         return;
+                    }
+                }
+                else if (_params[0].ToLower().Equals("set"))
+                {
+                    if (_params.Count != 1 && _params.Count != 4)
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 4, found '{0}'", _params.Count));
+                        return;
+                    }
+                    else if (_params.Count == 1)
+                    {
+                        ClientInfo cInfo = _senderInfo.RemoteClientInfo;
+                        if (cInfo != null)
+                        {
+                            EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                            if (player != null)
+                            {
+                                Vector3 position = player.GetPosition();
+                                int x = (int)position.x;
+                                int y = (int)position.y;
+                                int z = (int)position.z;
+                                string jposition = x + "," + y + "," + z;
+                                Jail.Jail_Position = jposition;
+                                Config.WriteXml();
+                                Config.LoadXml();
+                                Phrases.Dict.TryGetValue("Jail3", out string phrase);
+                                phrase = phrase.Replace("{Position}", jposition);
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] '{0}'", phrase));
+                                return;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (int.TryParse(_params[1], out int x))
+                        {
+                            if (int.TryParse(_params[2], out int y))
+                            {
+                                if (int.TryParse(_params[3], out int z))
+                                {
+                                    string jposition = x + "," + y + "," + z;
+                                    Jail.Jail_Position = jposition;
+                                    Config.WriteXml();
+                                    Config.LoadXml();
+                                    Phrases.Dict.TryGetValue("Jail3", out string phrase);
+                                    phrase = phrase.Replace("{Position}", jposition);
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] '{0}'", phrase));
+                                    return;
+                                }
+                                else
+                                {
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[3]));
+                                }
+                            }
+                            else
+                            {
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[2]));
+                            }
+                        }
+                        else
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[1]));
+                        }
                     }
                 }
                 else if (_params[0].ToLower().Equals("add"))

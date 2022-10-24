@@ -1,5 +1,32 @@
 ﻿CHANGELOG
 
+20.6.4
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added option Deposit_Message to Bank_Extended. This works 
+in conjunction with the Bank tool when Direct_Deposit is
+enabled. Controls if a message shows in chat
+-Fixed Bed tool delay not functioning
+-Fixed Kill_Notice missing custom zombies due to being
+created as a EntityPlayer for modding purposes
+-Fixed Lobby and Market desyncing due to an internal error
+-Fixed Lobby and Market detecting the player as outside the
+area immediately after using /lobby or /market. Might have
+been from the desync
+-Fixed Bank transfer showing the wrong phrase
+-Fixed Auto_Backup failing to build the .zip file
+-Fixed Web_Panel config update process
+-Updated javascript for the Shop Panel. Color palette is now
+controlled with a single function
+-Updated Allocs_Map and Discord_Link to function when the link
+ends with a backslash
+-Updated Interactive_Map to create a IMapPermission.xml
+-Updated Interactive_Map to include more functionality. This
+is a on going project and will be updated further
+-Removed chat command /setspawn and /setjail. Both can be set
+via console command
+
 20.6.3
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

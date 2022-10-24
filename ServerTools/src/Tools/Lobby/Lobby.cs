@@ -261,7 +261,8 @@ namespace ServerTools
                 {
                     for (int i = 0; i < _entityList.Count; i++)
                     {
-                        if (IsLobby(_entityList[i].position))
+                        Entity entity = _entityList[i];
+                        if (entity != null & !(entity is EntityPlayer) && entity.IsSpawned() && IsLobby(entity.position))
                         {
                             GameManager.Instance.World.RemoveEntity(_entityList[i].entityId, EnumRemoveEntityReason.Despawned);
                             Log.Out(string.Format("[SERVERTOOLS] Removed a hostile from the lobby @ '{0}'", _entityList[i].position));

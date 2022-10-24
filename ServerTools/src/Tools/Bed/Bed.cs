@@ -143,6 +143,8 @@ namespace ServerTools
                 {
                     Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                 }
+                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastBed = DateTime.Now;
+                PersistentContainer.DataChange = true;
             }
             catch (Exception e)
             {

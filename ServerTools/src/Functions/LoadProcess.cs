@@ -132,6 +132,8 @@ namespace ServerTools
                     GeneralFunction.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
                     CommandList.BuildList();
                     CommandList.Load();
+                    InteractiveMap.SetWorldSize();
+                    InteractiveMap.LocateMapFolder();
                     Mods.Load();
                     Phrases.Load();
                     HowToSetup.Load();
@@ -230,8 +232,6 @@ namespace ServerTools
                         Config.WriteXml();
                         Config.LoadXml();
                     }
-                    InteractiveMap.SetWorldSize();
-                    InteractiveMap.LocateMapFolder();
                     Track.Cleanup();
                     DroppedBagProtection.BuildList();
                     ActiveTools.Exec(true);

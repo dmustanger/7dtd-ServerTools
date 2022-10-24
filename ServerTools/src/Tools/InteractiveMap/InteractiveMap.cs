@@ -2,32 +2,365 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml;
 
 namespace ServerTools
 {
     class InteractiveMap
     {
-        public static bool IsEnabled = false, Disable = false;
+        public static bool IsEnabled = false, IsRunning = false, Disable = false;
         public static int RegionMax = 0;
         public static string Command_imap = "imap", Map_Directory = "";
 
         public static Dictionary<string, int> Access = new Dictionary<string, int>();
+        public static Dictionary<string, int> Dict = new Dictionary<string, int>();
 
+        private const string file = "IMapPermission.xml";
         private static readonly string NumSet = "1928374650";
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static FileSystemWatcher FolderWatcher;
+
+        private static XmlNodeList OldNodeList;
+
+        public static void Load()
+        {
+            LoadXml();
+            InitFileWatcher();
+            InitFolderWatcher();
+            IsRunning = true;
+        }
+
+        public static void Unload()
+        {
+            Dict.Clear();
+            FileWatcher.Dispose();
+            FolderWatcher.Dispose();
+            IsRunning = false;
+        }
+
+        public static void LoadXml()
+        {
+            try
+            {
+                if (!File.Exists(FilePath))
+                {
+                    UpdateXml();
+                }
+                XmlDocument xmlDoc = new XmlDocument();
+                try
+                {
+                    xmlDoc.Load(FilePath);
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    return;
+                }
+                bool upgrade = true;
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                if (childNodes != null)
+                {
+                    Dict.Clear();
+                    for (int i = 0; i < childNodes.Count; i++)
+                    {
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        {
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (line.HasAttributes)
+                            {
+                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
+                                {
+                                    upgrade = false;
+                                    continue;
+                                }
+                                else if (line.HasAttribute("Rule") && line.HasAttribute("Tier"))
+                                {
+                                    string rule = line.GetAttribute("Rule");
+                                    string tier = line.GetAttribute("Tier");
+                                    if (!int.TryParse(tier, out int value))
+                                    {
+                                        if (!Dict.ContainsKey(rule))
+                                        {
+                                            Dict.Add(rule, value);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (upgrade)
+                {
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    XmlNode node = nodeList[0];
+                    XmlElement line = (XmlElement)nodeList[0];
+                    if (line != null)
+                    {
+                        if (line.HasAttributes)
+                        {
+                            OldNodeList = nodeList;
+                            File.Delete(FilePath);
+                            UpgradeXml();
+                            return;
+                        }
+                        else
+                        {
+                            nodeList = node.ChildNodes;
+                            line = (XmlElement)nodeList[0];
+                            if (line != null)
+                            {
+                                if (line.HasAttributes)
+                                {
+                                    OldNodeList = nodeList;
+                                    File.Delete(FilePath);
+                                    UpgradeXml();
+                                    return;
+                                }
+                            }
+                            File.Delete(FilePath);
+                            UpdateXml();
+                            Log.Out(string.Format("[SERVERTOOLS] The existing IMapPermission.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    File.Delete(FilePath);
+                    UpdateXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in InteractiveMap.LoadXml: {0}", e.Message));
+                }
+            }
+        }
+
+        private static void UpdateXml()
+        {
+            try
+            {
+                FileWatcher.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<IMapPermission>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    if (Dict.ContainsKey("Regions"))
+                    {
+                        Dict.TryGetValue("Regions", out int tier);
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Regions\" Tier=\"{0}\" />", tier));
+                    }
+                    else
+                    {
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Regions\" Tier=\"0\" />"));
+                    }
+                    if (Dict.ContainsKey("Players"))
+                    {
+                        Dict.TryGetValue("Players", out int tier);
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Players\" Tier=\"{0}\" />", tier));
+                    }
+                    else
+                    {
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Players\" Tier=\"0\" />"));
+                    }
+                    if (Dict.ContainsKey("Claims"))
+                    {
+                        Dict.TryGetValue("Claims", out int tier);
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Claims\" Tier=\"{0}\" />", tier));
+                    }
+                    else
+                    {
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Claims\" Tier=\"0\" />"));
+                    }
+                    if (Dict.ContainsKey("Hostiles"))
+                    {
+                        Dict.TryGetValue("Hostiles", out int tier);
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Hostiles\" Tier=\"{0}\" />", tier));
+                    }
+                    else
+                    {
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Hostiles\" Tier=\"0\" />"));
+                    }
+                    if (Dict.ContainsKey("Animals"))
+                    {
+                        Dict.TryGetValue("Animals", out int tier);
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Animals\" Tier=\"{0}\" />", tier));
+                    }
+                    else
+                    {
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Animals\" Tier=\"0\" />"));
+                    }
+                    sw.WriteLine("</IMapPermission>");
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in InteractiveMap.UpdateXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
+        }
+
+        private static void InitFileWatcher()
+        {
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
+        }
+
+        private static void InitFolderWatcher()
+        {
+            FolderWatcher = new FileSystemWatcher(Map_Directory);
+            FolderWatcher.NotifyFilter = NotifyFilters.Attributes
+                | NotifyFilters.CreationTime
+                | NotifyFilters.DirectoryName
+                | NotifyFilters.FileName
+                | NotifyFilters.LastWrite;
+            FolderWatcher.Changed += new FileSystemEventHandler(OnFolderChanged);
+            FolderWatcher.Created += new FileSystemEventHandler(OnFolderChanged);
+            FolderWatcher.Deleted += new FileSystemEventHandler(OnFolderChanged);
+            FolderWatcher.IncludeSubdirectories = true;
+            FolderWatcher.EnableRaisingEvents = true;
+        }
+
+        private static void OnFileChanged(object source, FileSystemEventArgs e)
+        {
+            if (!File.Exists(FilePath))
+            {
+                UpdateXml();
+            }
+            LoadXml();
+        }
+
+        private static void OnFolderChanged(object source, FileSystemEventArgs e)
+        {
+            //Log.Out(string.Format("[SERVERTOOLS] OnFolderChanged"));
+            //Log.Out(string.Format("[SERVERTOOLS] FullPath: '{0}'", e.FullPath));
+            //Log.Out(string.Format("[SERVERTOOLS] ChangeType: '{0}'", e.ChangeType));
+        }
+
+        private static void UpgradeXml()
+        {
+            try
+            {
+                Dictionary<string,string> oldEntries = new Dictionary<string,string>();
+                for (int i = 0; i < OldNodeList.Count; i++)
+                {
+                    if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                    {
+                        XmlElement line = (XmlElement)OldNodeList[i];
+                        if (line.HasAttributes && line.Name == "Permission")
+                        {
+                            string rule = "", tier = "";
+                            if (line.HasAttribute("Rule"))
+                            {
+                                rule = line.GetAttribute("Rule");
+                            }
+                            if (line.HasAttribute("Tier"))
+                            {
+                                tier = line.GetAttribute("Tier");
+                            }
+                            if (!oldEntries.ContainsKey(rule))
+                            {
+                                oldEntries.Add(rule, tier);
+                            }
+                        }
+                    }
+                }
+                FileWatcher.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<LoginNotice>");
+                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    for (int i = 0; i < OldNodeList.Count; i++)
+                    {
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment)
+                        {
+                            sw.WriteLine(OldNodeList[i].OuterXml);
+                        }
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    if (oldEntries.ContainsKey("Regions"))
+                    {
+                        oldEntries.TryGetValue("Regions", out string tier);
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Regions\" Tier=\"{0}\" />", tier));
+                    }
+                    else
+                    {
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Regions\" Tier=\"0\" />"));
+                    }
+                    if (oldEntries.ContainsKey("Players"))
+                    {
+                        oldEntries.TryGetValue("Players", out string tier);
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Players\" Tier=\"{0}\" />", tier));
+                    }
+                    else
+                    {
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Players\" Tier=\"0\" />"));
+                    }
+                    if (oldEntries.ContainsKey("Claims"))
+                    {
+                        oldEntries.TryGetValue("Claims", out string tier);
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Claims\" Tier=\"{0}\" />", tier));
+                    }
+                    else
+                    {
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Claims\" Tier=\"0\" />"));
+                    }
+                    if (oldEntries.ContainsKey("Hostiles"))
+                    {
+                        oldEntries.TryGetValue("Hostiles", out string tier);
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Hostiles\" Tier=\"{0}\" />", tier));
+                    }
+                    else
+                    {
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Hostiles\" Tier=\"0\" />"));
+                    }
+                    if (oldEntries.ContainsKey("Animals"))
+                    {
+                        oldEntries.TryGetValue("Animals", out string tier);
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Animals\" Tier=\"{0}\" />", tier));
+                    }
+                    else
+                    {
+                        sw.WriteLine(string.Format("    <Permission Rule=\"Animals\" Tier=\"0\" />"));
+                    }
+                    sw.WriteLine("</LoginNotice>");
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in InteractiveMap.UpgradeXml: {0}", e.Message));
+            }
+            FileWatcher.EnableRaisingEvents = true;
+            LoadXml();
+        }
 
         public static void SetWorldSize()
         {
             string gameWorld = GamePrefs.GetString(EnumGamePrefs.GameWorld);
             if (gameWorld.ToLower() == "navezgane")
             {
-                RegionMax = (int)Math.Truncate(2500f / 512) + 2;
+                RegionMax = (int)Math.Truncate(3000f / 512) + 1;
             }
             else
             {
                 IChunkProvider chunkProvider = GameManager.Instance.World.ChunkCache.ChunkProvider;
                 float worldGenSize = chunkProvider.GetWorldSize().x;
-                RegionMax = (int)Math.Truncate(worldGenSize / 512) + 2;
+                RegionMax = (int)Math.Truncate(worldGenSize / 512) + 1;
             }
         }
 
@@ -42,7 +375,9 @@ namespace ServerTools
                     {
                         if (files1[i].Contains("mapinfo.json"))
                         {
-                            Map_Directory = files1[i].Replace("mapinfo.json", "2");
+                            Map_Directory = files1[i].Replace("mapinfo.json", "");
+                            Log.Out(string.Format("[SERVERTOOLS] Interactive_Map directory set to '{0}'", Map_Directory));
+                            return;
                         }
                     }
                 }
@@ -50,7 +385,6 @@ namespace ServerTools
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Unable to locate the required map files @ '{0}'", Map_Directory));
                 }
-                return;
             }
             string saveGameDir = GameIO.GetSaveGameDir();
             string[] files2 = Directory.GetFiles(saveGameDir, "*", SearchOption.AllDirectories);
@@ -60,7 +394,9 @@ namespace ServerTools
                 {
                     if (files2[i].Contains("mapinfo.json"))
                     {
-                        Map_Directory = files2[i].Replace("mapinfo.json", "2");
+                        Map_Directory = files2[i].Replace("mapinfo.json", "");
+                        Log.Out(string.Format("[SERVERTOOLS] Interactive_Map directory set to '{0}'", Map_Directory));
+                        return;
                     }
                 }
             }

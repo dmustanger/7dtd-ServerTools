@@ -33,7 +33,7 @@ namespace ServerTools
                             {
                                 int userPlatformPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId);
                                 int userCrossplatformPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId);
-                                if (SpectatorEnabled && (userPlatformPermissionLevel > Spectator_Admin_Level && userCrossplatformPermissionLevel > Spectator_Admin_Level))
+                                if (SpectatorEnabled && userPlatformPermissionLevel > Spectator_Admin_Level && userCrossplatformPermissionLevel > Spectator_Admin_Level)
                                 {
                                     if (player.IsSpectator)
                                     {
@@ -53,7 +53,7 @@ namespace ServerTools
                                         continue;
                                     }
                                 }
-                                if (GodEnabled && (userPlatformPermissionLevel > Godmode_Admin_Level && userCrossplatformPermissionLevel > Godmode_Admin_Level))
+                                if (GodEnabled && userPlatformPermissionLevel > Godmode_Admin_Level && userCrossplatformPermissionLevel > Godmode_Admin_Level)
                                 {
                                     if (player.Buffs.HasBuff("god"))
                                     {
@@ -92,7 +92,7 @@ namespace ServerTools
                                                 continue;
                                             }
                                         }
-                                        if (cInfo.ping < 350 && player.IsAlive())
+                                        if (cInfo.ping < 350)
                                         {
                                             if (SpeedDetector.IsEnabled && userPlatformPermissionLevel > SpeedDetector.Speed_Admin_Level && userCrossplatformPermissionLevel > SpeedDetector.Speed_Admin_Level)
                                             {
@@ -119,7 +119,7 @@ namespace ServerTools
                                         }
                                     }
                                 }
-                                else
+                                else if (player.IsSpawned())
                                 {
                                     TwoSecondMovement.Add(cInfo.entityId, player.position);
                                 }

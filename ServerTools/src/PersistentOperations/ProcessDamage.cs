@@ -37,7 +37,7 @@ namespace ServerTools
                             if (cInfoVictim != null)
                             {
                                 EntityPlayer victimPlayer = victim as EntityPlayer;
-                                if (attacker is EntityPlayer)
+                                if (attacker is EntityPlayer && victimPlayer.isEntityRemote)
                                 {
                                     ClientInfo cInfoAttacker = GeneralFunction.GetClientInfoFromEntityId(attacker.entityId);
                                     if (cInfoAttacker != null)
@@ -123,32 +123,13 @@ namespace ServerTools
                                         }
                                     }
                                 }
-                                else if (attacker is EntityZombie)
+                                else if (attacker is EntityZombie || attacker is EntityAnimal || !attacker.isEntityRemote)
                                 {
                                     if (NewPlayerProtection.IsEnabled && NewPlayerProtection.IsProtected(victimPlayer))
                                     {
                                         return true;
                                     }
-                                    if (KillNotice.IsEnabled && KillNotice.Zombie_Kills)
-                                    {
-                                        int[] attack = new int[] { attacker.entityId, strength(__instance) };
-                                        if (KillNotice.Damage.ContainsKey(victim.entityId))
-                                        {
-                                            KillNotice.Damage[victim.entityId] = attack;
-                                        }
-                                        else
-                                        {
-                                            KillNotice.Damage.Add(victim.entityId, attack);
-                                        }
-                                    }
-                                }
-                                else if (attacker is EntityAnimal)
-                                {
-                                    if (NewPlayerProtection.IsEnabled && NewPlayerProtection.IsProtected(victimPlayer))
-                                    {
-                                        return true;
-                                    }
-                                    if (KillNotice.IsEnabled && KillNotice.Animal_Kills)
+                                    if (KillNotice.IsEnabled && KillNotice.Other)
                                     {
                                         int[] attack = new int[] { attacker.entityId, strength(__instance) };
                                         if (KillNotice.Damage.ContainsKey(victim.entityId))

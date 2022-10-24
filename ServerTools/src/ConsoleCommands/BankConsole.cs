@@ -15,8 +15,10 @@ namespace ServerTools
             return "Usage:\n" +
                    "  1. st-bk off\n" +
                    "  2. st-bk on\n" +
+                   "  3. st-bk <EOS/EntityId/PlayerName>\n" +
                    "1. Turn off the bank\n" +
-                   "2. Turn on the bank\n";
+                   "2. Turn on the bank\n" +
+                   "3. Shows the current bank value of the specified player\n";
         }
 
         public override string[] GetCommands()
@@ -67,7 +69,21 @@ namespace ServerTools
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[0]);
+                    if (cInfo != null)
+                    {
+                        int currentBank = Bank.GetCurrency(cInfo.CrossplatformId.CombinedString);
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' named '{1}' has '{2}' '{3}' in their bank", _params[0], cInfo.playerName, currentBank, Wallet.Currency_Name));
+                    }
+                    else if (_params[0].Contains("_") && PersistentContainer.Instance.Players[_params[0]] != null)
+                    {
+                        int currentBank = PersistentContainer.Instance.Players[_params[0]].Bank;
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' named '{1}' has '{2}' '{3}' in their bank", _params[0], cInfo.playerName, currentBank, Wallet.Currency_Name));
+                    }
+                    else
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    }
                 }
             }
             catch (Exception e)

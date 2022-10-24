@@ -231,6 +231,14 @@ namespace ServerTools
             {
                 ProtectedZones.Load();
             }
+            if (InteractiveMap.IsRunning && !InteractiveMap.IsEnabled)
+            {
+                InteractiveMap.Unload();
+            }
+            else if (!InteractiveMap.IsRunning && InteractiveMap.IsEnabled)
+            {
+                InteractiveMap.Load();
+            }
             if (ClanManager.IsEnabled)
             {
                 ClanManager.ClanList();

@@ -69,10 +69,10 @@ namespace ServerTools
             string gameWorld = GamePrefs.GetString(EnumGamePrefs.GameWorld);
             if (gameWorld.ToLower() == "navezgane")
             {
-                positiveX = 2500;
-                positiveY = 2500;
-                negativeX = -2500;
-                negativeY = -2500;
+                positiveX = 3000;
+                positiveY = 3000;
+                negativeX = -3000;
+                negativeY = -3000;
             }
             else
             {
@@ -109,7 +109,6 @@ namespace ServerTools
             {
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)x, -1, (int)z), null, false));
             }
-            return;
         }
 
         public static void InsideBlock(ClientInfo _cInfo, EntityPlayer _player)

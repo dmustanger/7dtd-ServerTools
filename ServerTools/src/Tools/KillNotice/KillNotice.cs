@@ -8,8 +8,8 @@ namespace ServerTools
 {
     class KillNotice
     {
-        public static bool IsEnabled = false, IsRunning = false, PvP = false, Zombie_Kills = false, 
-            Animal_Kills = false, Show_Level = false, Show_Damage = false, Misc = false;
+        public static bool IsEnabled = false, IsRunning = false, PvP = false, Other = false, 
+            Show_Level = false, Show_Damage = false, Misc = false;
         public static Dictionary<int, int[]> Damage = new Dictionary<int, int[]>();
 
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();

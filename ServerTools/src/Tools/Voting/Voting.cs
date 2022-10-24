@@ -318,8 +318,6 @@ namespace ServerTools
                             {
                                 ItemOrBlockCounter(_cInfo, Reward_Count);
                             }
-                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastVote = DateTime.Now;
-                            PersistentContainer.DataChange = true;
                         }
                         catch
                         {
@@ -413,7 +411,6 @@ namespace ServerTools
                             phrase = phrase.Replace("{Date2}", date2.ToString());
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
-                        PersistentContainer.DataChange = true;
                     }
                     Phrases.Dict.TryGetValue("VoteReward7", out string phrase1);
                     phrase1 = phrase1.Replace("{Value}", Delay_Between_Uses.ToString());
@@ -423,6 +420,8 @@ namespace ServerTools
                     Phrases.Dict.TryGetValue("VoteReward11", out phrase1);
                     phrase1 = phrase1.Replace("{PlayerName}", _cInfo.playerName);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastVote = DateTime.Now;
+                    PersistentContainer.DataChange = true;
                 }
             }
             catch (Exception e)
@@ -556,11 +555,12 @@ namespace ServerTools
                         phrase = phrase.Replace("{Date2}", date2.ToString());
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    PersistentContainer.DataChange = true;
                 }
                 Phrases.Dict.TryGetValue("VoteReward7", out string phrase1);
                 phrase1 = phrase1.Replace("{Value}", Delay_Between_Uses.ToString());
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastVote = DateTime.Now;
+                PersistentContainer.DataChange = true;
             }
             catch (Exception e)
             {

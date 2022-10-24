@@ -154,8 +154,8 @@ namespace ServerTools
                                                             Block ladder = Block.GetBlockByName("ladderMetal");
                                                             if (ladder != null)
                                                             {
-                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze generation started at player position {0}. Please be patient", player.position));
-                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Inspect the maze for potential collapse after it spawns"));
+                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze generator started at position '{0}'. Please be patient", player.position));
+                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Inspect the maze for potential collapse after it spawns"));
                                                                 BlockValue steelBlockValue = Block.GetBlockValue("steelShapes:cube");
                                                                 BlockValue concreteBlockValue = Block.GetBlockValue("concreteShapes:cube");
                                                                 BlockValue stoneBlockValue = Block.GetBlockValue("terrStone");
