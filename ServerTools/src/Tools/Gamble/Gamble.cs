@@ -72,14 +72,14 @@ namespace ServerTools
                     int delay = Delay_Between_Uses;
                     if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                     {
-                        if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.ReadablePlatformUserIdentifier, out DateTime dt))
+                        if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
                         {
                             if (DateTime.Now < dt)
                             {
                                 delay = Delay_Between_Uses / 2;
                             }
                         }
-                        else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.ReadablePlatformUserIdentifier, out dt))
+                        else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
                         {
                             if (DateTime.Now < dt)
                             {

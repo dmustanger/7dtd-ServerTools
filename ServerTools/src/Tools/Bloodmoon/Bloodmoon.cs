@@ -7,11 +7,14 @@ namespace ServerTools
         public static bool IsEnabled = false, Show_On_Login = false, Show_On_Respawn = false;
         public static string Command_bloodmoon = "bloodmoon", Command_bm = "bm", Delay = "60";
 
+        private static string EventDelay = "";
+
         public static void SetDelay()
         {
-            if (EventSchedule.bloodmoon != Delay)
+            if (EventDelay != Delay)
             {
-                EventSchedule.bloodmoon = Delay;
+                EventDelay = Delay;
+                EventSchedule.Clear("Bloodmoon_");
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');
@@ -21,18 +24,7 @@ namespace ServerTools
                         {
                             if (DateTime.Now < time)
                             {
-                                EventSchedule.Add("Bloodmoon", time);
-                                return;
-                            }
-                        }
-                    }
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
-                        {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("Bloodmoon", time);
+                                EventSchedule.Add("Bloodmoon_" + time);
                                 return;
                             }
                         }
@@ -44,11 +36,7 @@ namespace ServerTools
                     {
                         if (DateTime.Now < time)
                         {
-                            EventSchedule.Add("Bloodmoon", time);
-                        }
-                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Delay + ":00", out DateTime secondaryTime))
-                        {
-                            EventSchedule.Add("Bloodmoon", secondaryTime);
+                            EventSchedule.Add("Bloodmoon_" + time);
                         }
                     }
                 }
@@ -56,7 +44,7 @@ namespace ServerTools
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
-                        EventSchedule.Add("Bloodmoon", DateTime.Now.AddMinutes(delay));
+                        EventSchedule.Add("Bloodmoon_" + DateTime.Now.AddMinutes(delay));
                     }
                     else
                     {

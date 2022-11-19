@@ -20,6 +20,10 @@ namespace ServerTools
             {
                 if (!string.IsNullOrEmpty(_message) && _cInfo != null && _mainName != Config.Server_Response_Name)
                 {
+                    if (_cInfo.CrossplatformId == null && _cInfo.PlatformId != null)
+                    {
+                        _cInfo.CrossplatformId = _cInfo.PlatformId;
+                    }
                     if (Mute.IsEnabled && Mute.Mutes.Contains(_cInfo.PlatformId.CombinedString) || Mute.Mutes.Contains(_cInfo.CrossplatformId.CombinedString))
                     {
                         if (Mute.Block_Commands && (_message.StartsWith(Chat_Command_Prefix1) || _message.StartsWith(Chat_Command_Prefix2)))
@@ -896,31 +900,25 @@ namespace ServerTools
                                 Report.Check(_cInfo, _message);
                                 return false;
                             }
-                            if (Bounties.IsEnabled && messageLowerCase == Bounties.Command_bounty && Permission(_cInfo, Bounties.Command_bounty))
+                            if (Bounties.IsEnabled && Wallet.IsEnabled && messageLowerCase == Bounties.Command_bounty && Permission(_cInfo, Bounties.Command_bounty))
                             {
                                 Bounties.BountyList(_cInfo);
                                 return false;
                             }
-                            if (Bounties.IsEnabled && messageLowerCase.StartsWith(Bounties.Command_bounty + " ") && Permission(_cInfo, Bounties.Command_bounty))
+                            if (Bounties.IsEnabled && Wallet.IsEnabled && messageLowerCase.StartsWith(Bounties.Command_bounty + " ") && Permission(_cInfo, Bounties.Command_bounty))
                             {
                                 _message = messageLowerCase.Replace(Bounties.Command_bounty + " ", "");
                                 Bounties.NewBounty(_cInfo, _message);
                                 return false;
                             }
-                            if (Lottery.IsEnabled && messageLowerCase == Lottery.Command_lottery && Permission(_cInfo, Lottery.Command_lottery))
+                            if (Lottery.IsEnabled && Wallet.IsEnabled && messageLowerCase == Lottery.Command_lottery && Permission(_cInfo, Lottery.Command_lottery))
                             {
-                                Lottery.Response(_cInfo);
+                                Lottery.Exec(_cInfo);
                                 return false;
                             }
-                            if (Lottery.IsEnabled && messageLowerCase == Lottery.Command_lottery_enter && Permission(_cInfo, Lottery.Command_lottery_enter))
+                            if (Lottery.IsEnabled && Wallet.IsEnabled && !Shutdown.ShuttingDown && messageLowerCase == Lottery.Command_lottery_enter && Permission(_cInfo, Lottery.Command_lottery_enter))
                             {
-                                Lottery.EnterLotto(_cInfo);
-                                return false;
-                            }
-                            if (Lottery.IsEnabled && messageLowerCase.StartsWith(Lottery.Command_lottery + " ") && Permission(_cInfo, Lottery.Command_lottery))
-                            {
-                                _message = _message.Replace(Lottery.Command_lottery + " ", "");
-                                Lottery.NewLotto(_cInfo, _message);
+                                Lottery.EnterLottery(_cInfo);
                                 return false;
                             }
                             if (NewSpawnTele.IsEnabled && NewSpawnTele.Return && messageLowerCase == NewSpawnTele.Command_ready && Permission(_cInfo, NewSpawnTele.Command_ready))

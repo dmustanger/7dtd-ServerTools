@@ -13,7 +13,7 @@ namespace ServerTools
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine("This was drafted for version 20.6.2");
+                sw.WriteLine("This was drafted for version 20.6.5");
                 sw.WriteLine();
                 sw.WriteLine("If you find mistakes or the file is out of date, let the dev team know.");
                 sw.WriteLine();
@@ -955,6 +955,16 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
+                sw.WriteLine("<Tool Name=\"Interactive_Map\" />");
+                sw.WriteLine("<Tool Name=\"Interactive_Map\" Enable=\"False\" />");
+                sw.WriteLine();
+                sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine();
+                sw.WriteLine("Typing /imap in game will open a clickable link. The link opens the steam browser to a map of the game world.");
+                sw.WriteLine("Requires Allocs Fixes installed to utilize this tool.");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine();
                 sw.WriteLine("<Tool Name=\"Invalid_Items\" />");
                 sw.WriteLine("<Tool Name=\"Invalid_Items\" Enable=\"False\" Ban=\"False\" Admin_Level=\"0\" Check_Storage=\"False\" />");
                 sw.WriteLine();
@@ -1685,6 +1695,18 @@ namespace ServerTools
                 sw.WriteLine("Command cost controls how much must be in a player's wallet to use the command.");
                 sw.WriteLine("Set Player_Check to true so they must be far enough from players to use this command.");
                 sw.WriteLine("Set Zombie_Check to true so they must be far enough from zombies to use this command.");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine("<Tool Name=\"Vault\" />");
+                sw.WriteLine("<Tool Name=\"Vault\" Inside_Claim=\"False\" />");
+                sw.WriteLine();
+                sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine("Set True or False for Inside_Claim");
+                sw.WriteLine();
+                sw.WriteLine("Vault is a special tool that allows players to place items in them securely without risk of loss. The items will carry over to new maps.");
+                sw.WriteLine("They have limited slots due to how powerful this is. You can adjust the number of slots a player has from 1 to 8, or 48. 48 is meant to help move items between maps or for admins.");
+                sw.WriteLine("Opening a second vault box will contain the same items as the first. This is similar to an Enderchest from Minecraft.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

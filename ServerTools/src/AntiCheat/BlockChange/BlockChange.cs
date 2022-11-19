@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -140,11 +139,14 @@ namespace ServerTools
                                                 {
                                                     BlockLogger.BrokeBlock(cInfo, oldBlock, newBlockInfo.pos);
                                                 }
-                                                int slot = player.inventory.holdingItemIdx;
-                                                ItemValue itemValue = cInfo.latestPlayerData.inventory[slot].itemValue;
-                                                if (itemValue != null && InfiniteAmmo.IsEnabled && itemValue.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo, player, slot, itemValue))
+                                                if (InfiniteAmmo.IsEnabled)
                                                 {
-                                                    return false;
+                                                    int slot = player.inventory.holdingItemIdx;
+                                                    ItemValue itemValue = cInfo.latestPlayerData.inventory[slot].itemValue;
+                                                    if (itemValue != null && itemValue.ItemClass.IsGun())
+                                                    {
+                                                        InfiniteAmmo.Exec(cInfo, player, slot, itemValue);
+                                                    }
                                                 }
                                             }
                                             else if (BlockLogger.IsEnabled)
@@ -169,7 +171,16 @@ namespace ServerTools
                                             }
                                             if (BlockLogger.IsEnabled)
                                             {
-                                                BlockLogger.RemovedBlock(cInfo, oldBlock, newBlockInfo.pos);
+                                                BlockLogger.BrokeBlock(cInfo, oldBlock, newBlockInfo.pos);
+                                            }
+                                            if (InfiniteAmmo.IsEnabled)
+                                            {
+                                                int slot = player.inventory.holdingItemIdx;
+                                                ItemValue itemValue = cInfo.latestPlayerData.inventory[slot].itemValue;
+                                                if (itemValue != null && itemValue.ItemClass.IsGun())
+                                                {
+                                                    InfiniteAmmo.Exec(cInfo, player, slot, itemValue);
+                                                }
                                             }
                                         }
                                     }
@@ -261,11 +272,14 @@ namespace ServerTools
                                                     return false;
                                                 }
                                             }
-                                            int slot = player.inventory.holdingItemIdx;
-                                            ItemValue itemValue = cInfo.latestPlayerData.inventory[slot].itemValue;
-                                            if (itemValue != null && InfiniteAmmo.IsEnabled && itemValue.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo, player, slot, itemValue))
+                                            if (InfiniteAmmo.IsEnabled)
                                             {
-                                                return false;
+                                                int slot = player.inventory.holdingItemIdx;
+                                                ItemValue itemValue = cInfo.latestPlayerData.inventory[slot].itemValue;
+                                                if (itemValue != null && itemValue.ItemClass.IsGun())
+                                                {
+                                                    InfiniteAmmo.Exec(cInfo, player, slot, itemValue);
+                                                }
                                             }
                                         }
                                     }
@@ -289,15 +303,22 @@ namespace ServerTools
                                                 return false;
                                             }
                                         }
-                                        int slot = player.inventory.holdingItemIdx;
-                                        ItemValue itemValue = cInfo.latestPlayerData.inventory[slot].itemValue;
-                                        if (itemValue != null && InfiniteAmmo.IsEnabled && itemValue.ItemClass.IsGun() && InfiniteAmmo.Exec(cInfo, player, slot, itemValue))
+                                        if (InfiniteAmmo.IsEnabled)
                                         {
-                                            return false;
+                                            int slot = player.inventory.holdingItemIdx;
+                                            ItemValue itemValue = cInfo.latestPlayerData.inventory[slot].itemValue;
+                                            if (itemValue != null && itemValue.ItemClass.IsGun())
+                                            {
+                                                InfiniteAmmo.Exec(cInfo, player, slot, itemValue);
+                                            }
                                         }
                                     }
                                 }
                             }
+                        }
+                        else
+                        {
+                            return false;
                         }
                     }
                 }

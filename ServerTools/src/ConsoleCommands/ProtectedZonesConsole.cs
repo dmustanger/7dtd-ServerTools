@@ -437,23 +437,25 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
-                    int.TryParse(_params[1], out int _listEntry);
-                    if (ProtectedZones.ProtectedList.Count >= _listEntry)
+                    int.TryParse(_params[1], out int listEntry);
+                    if (ProtectedZones.ProtectedList.Count >= listEntry)
                     {
-                        int[] _protectedSpace = ProtectedZones.ProtectedList[_listEntry - 1];
+                        int[] _protectedSpace = ProtectedZones.ProtectedList[listEntry - 1];
                         if (_protectedSpace[4] == 1)
                         {
                             _protectedSpace[4] = 0;
+                            ProtectedZones.ProtectedList[listEntry - 1] = _protectedSpace;
                             ProtectedZones.UpdateXml();
                             ProtectedZones.LoadXml();
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Deactivated protected zone #{0}", _listEntry));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Deactivated protected zone #{0}", listEntry));
                         }
                         else
                         {
                             _protectedSpace[4] = 1;
+                            ProtectedZones.ProtectedList[listEntry - 1] = _protectedSpace;
                             ProtectedZones.UpdateXml();
                             ProtectedZones.LoadXml();
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Activated protected zone #{0}", _listEntry));
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Activated protected zone #{0}", listEntry));
                         }
                         return;
                     }

@@ -1,5 +1,28 @@
 ﻿CHANGELOG
 
+20.6.5
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added Vault tool. Players can place a VaultBox which will contain
+their secure vault items. Items do not drop from this type of box.
+If someone else opens the same box, they will see their own vault
+items
+-Added console command ST-Vault size. Can be used to increase
+or decrease the size of a vault from 1 to 8, or 48 slots
+-Added explosion exploit prevention where players would log
+out to circumvent claims and game mode
+-Fixed a few data calls from various tools
+-Fixed Bloodmoon_Warrior attempting to reduce a players
+death count below 0
+-Update Invalid_Items detector to look for items inside the Vault
+-Updated Session_Bonus payout system. Payout is every 15 minutes
+-Updated event scheduling system
+-Updated Lottery tool. It accumulates until a player wins and 
+has a draw process for extra fun. Time begins when a player
+joins the lottery. Draw is one hour after a player joins it
+-Updated Infinite_Ammo tool. Now with 99% less false positives
+
 20.6.4
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

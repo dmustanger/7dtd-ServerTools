@@ -6,30 +6,29 @@ namespace ServerTools
 {
     class EventSchedule
     {
-        public static string autoBackup = "", autoSaveWorld = "", bloodmoon = "", breakTime = "", infoTicker = "",
-            nightAlert = "", playerLogs = "", realWorldTime = "", shutdown = "", watchList = "", zones = "";
+        public static List<string> Expired = new List<string>();
         public static Dictionary<string, DateTime> Schedule = new Dictionary<string, DateTime>();
 
-        public static void Add(string _classMethod, DateTime _time)
+        public static void Add(string _classMethod_Time)
         {
-            if (_time != null)
+            if (!string.IsNullOrEmpty(_classMethod_Time))
             {
-                if (Schedule.ContainsKey(_classMethod))
+                string[] split = _classMethod_Time.Split('_');
+                if (DateTime.TryParse(split[1], out DateTime dateTime))
                 {
-                    Schedule[_classMethod] = _time;
-                }
-                else
-                {
-                    Schedule.Add(_classMethod, _time);
+                    if (!Schedule.ContainsKey(_classMethod_Time))
+                    {
+                        Schedule.Add(_classMethod_Time, dateTime);
+                    }
                 }
             }
         }
 
-        public static void Remove(string _className)
+        public static void Remove(string _classMethod)
         {
-            if (Schedule.ContainsKey(_className))
+            if (Schedule.ContainsKey(_classMethod))
             {
-                Schedule.Remove(_className);
+                Schedule.Remove(_classMethod);
             }
         }
 
@@ -39,93 +38,119 @@ namespace ServerTools
             {
                 if (Schedule != null && Schedule.Count > 0)
                 {
-                    foreach (var entry in Schedule.ToArray())
+                    var schedule = Schedule.ToArray();
+                    for (int i = 0; i < schedule.Length; i++)
                     {
-                        switch (entry.Key)
+                        string[] split = schedule[i].Key.Split('_');
+                        switch (split[0])
                         {
                             case "AutoBackup":
-                                if (DateTime.Now >= entry.Value)
+                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
-                                    autoBackup = "";
+                                    Expired.Add(schedule[i].Key);
                                     AutoBackup.SetDelay();
                                     AutoBackup.Exec();
                                 }
                                 continue;
                             case "AutoSaveWorld":
-                                if (DateTime.Now >= entry.Value)
+                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
-                                    autoSaveWorld = "";
+                                    Expired.Add(schedule[i].Key);
                                     AutoSaveWorld.SetDelay();
                                     AutoSaveWorld.Save();
                                 }
                                 continue;
                             case "Bloodmoon":
-                                if (DateTime.Now >= entry.Value)
+                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
-                                    bloodmoon = "";
+                                    Expired.Add(schedule[i].Key);
                                     Bloodmoon.SetDelay();
                                     Bloodmoon.StatusCheck();
                                 }
                                 continue;
-                            case "BreakTime":
-                                if (DateTime.Now >= entry.Value)
+                            case "Bonus":
+                                if (DateTime.Now >= schedule[i].Value)
                                 {
-                                    breakTime = "";
+                                    Schedule.Remove(schedule[i].Key);
+                                    if (GeneralFunction.SessionBonus(split[1]))
+                                    {
+                                        Schedule.Add(schedule[i].Key, DateTime.Now.AddMinutes(15));
+                                    }
+                                }
+                                continue;
+                            case "BreakTime":
+                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                {
+                                    Expired.Add(schedule[i].Key);
                                     BreakTime.SetDelay();
                                     BreakTime.Exec();
                                 }
                                 continue;
                             case "InfoTicker":
-                                if (DateTime.Now >= entry.Value)
+                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
-                                    infoTicker = "";
+                                    Expired.Add(schedule[i].Key);
                                     InfoTicker.SetDelay();
                                     InfoTicker.Exec();
                                 }
                                 continue;
-                            case "NightAlert":
-                                if (DateTime.Now >= entry.Value)
+                            case "Lottery":
+                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
-                                    nightAlert = "";
+                                    Expired.Add(schedule[i].Key);
+                                    Lottery.DrawLottery();
+                                }
+                                continue;
+                            case "NightAlert":
+                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                {
+                                    Expired.Add(schedule[i].Key);
                                     NightAlert.SetDelay();
                                     NightAlert.Exec();
                                 }
                                 continue;
                             case "PlayerLogs":
-                                if (DateTime.Now >= entry.Value)
+                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
-                                    playerLogs = "";
+                                    Expired.Add(schedule[i].Key);
                                     PlayerLogs.SetDelay();
                                     PlayerLogs.Exec();
                                 }
                                 continue;
                             case "RealWorldTime":
-                                if (DateTime.Now >= entry.Value)
+                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
-                                    realWorldTime = "";
+                                    Expired.Add(schedule[i].Key);
                                     RealWorldTime.SetDelay();
                                     RealWorldTime.Exec();
                                 }
                                 continue;
-                            case "Shutdown":
-                                if (DateTime.Now >= entry.Value)
+                            case "Reset":
+                                if (DateTime.Now >= schedule[i].Value)
                                 {
-                                    Remove("Shutdown");
+                                    Schedule.Remove(schedule[i].Key);
+                                    Reset();
+                                }
+                                continue;
+                            case "Shutdown":
+                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                {
+                                    Expired.Add(schedule[i].Key);
                                     Shutdown.PrepareShutdown();
                                 }
                                 continue;
                             case "WatchList":
-                                if (DateTime.Now >= entry.Value)
+                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
-                                    watchList = "";
+                                    Expired.Add(schedule[i].Key);
                                     WatchList.SetDelay();
                                     WatchList.Exec();
                                 }
                                 continue;
                             case "Zones":
-                                if (DateTime.Now >= entry.Value)
+                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
-                                    zones = "";
+                                    Expired.Add(schedule[i].Key);
                                     Zones.SetDelay();
                                     Zones.ReminderExec();
                                 }
@@ -137,6 +162,74 @@ namespace ServerTools
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in EventSchedule.Exec: {0}", e.Message));
+            }
+        }
+
+        public static void Reset()
+        {
+            if (AutoBackup.IsEnabled)
+            {
+                AutoBackup.SetDelay();
+            }
+            if (AutoSaveWorld.IsEnabled)
+            {
+                AutoSaveWorld.SetDelay();
+            }
+            if (Bloodmoon.IsEnabled)
+            {
+                Bloodmoon.SetDelay();
+            }
+            if (BreakTime.IsEnabled)
+            {
+                BreakTime.SetDelay();
+            }
+            if (InfoTicker.IsEnabled)
+            {
+                InfoTicker.SetDelay();
+            }
+            if (NightAlert.IsEnabled)
+            {
+                NightAlert.SetDelay();
+            }
+            if (PlayerLogs.IsEnabled)
+            {
+                PlayerLogs.SetDelay();
+            }
+            if (RealWorldTime.IsEnabled)
+            {
+                RealWorldTime.SetDelay();
+            }
+            if (WatchList.IsEnabled)
+            {
+                WatchList.SetDelay();
+            }
+            if (Zones.IsEnabled)
+            {
+                Zones.SetDelay();
+            }
+            Schedule.Add("Reset_", DateTime.Today.AddDays(1).AddSeconds(1));
+        }
+
+        public static void Clear(string _toolName)
+        {
+            if (Schedule != null && Schedule.Count > 0)
+            {
+                var schedule = Schedule.ToArray();
+                for (int i = 0; i < schedule.Length; i++)
+                {
+                    if (schedule[i].Key.Contains(_toolName))
+                    {
+                        Schedule.Remove(_toolName);
+                    }
+                }
+            }
+        }
+
+        public static void RemoveBonusEntry(string _name)
+        {
+            if (Schedule.ContainsKey(_name))
+            {
+                Schedule.Remove(_name);
             }
         }
     }

@@ -318,12 +318,14 @@ namespace ServerTools
                                     Counter(cInfo, Reward_Count);
                                     if (Reduce_Death_Count)
                                     {
-                                        int deathCount = player.Died - 1;
-                                        player.Died = deathCount;
-                                        player.bPlayerStatsChanged = true;
-                                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(player));
-                                        Phrases.Dict.TryGetValue("BloodmoonWarrior2", out string phrase);
-                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        if (player.Died > 0)
+                                        {
+                                            player.Died -= 1;
+                                            player.bPlayerStatsChanged = true;
+                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(player));
+                                            Phrases.Dict.TryGetValue("BloodmoonWarrior2", out string phrase);
+                                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                        }
                                     }
                                     else
                                     {
@@ -368,18 +370,24 @@ namespace ServerTools
                     int count = Random.Next(minCount, maxCount + 1);
                     int quality = Random.Next(minCount, maxCount + 1);
                     ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type, 1, 1, true, null, 1f);
+                    itemValue.Quality = 0;
+                    itemValue.Modifications = new ItemValue[0];
+                    itemValue.CosmeticMods = new ItemValue[0];
+                    int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
+                    if (modSlots > 0)
+                    {
+                        itemValue.Modifications = new ItemValue[modSlots];
+                    }
+                    itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
                     if (itemValue.HasQuality)
                     {
-                        itemValue.Quality = 1;
                         if (quality > 0)
                         {
                             itemValue.Quality = quality;
                         }
-                        int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
-                        if (modSlots > 0)
+                        else
                         {
-                            itemValue.Modifications = new ItemValue[modSlots];
-                            itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
+                            itemValue.Quality = 1;
                         }
                     }
                     World world = GameManager.Instance.World;

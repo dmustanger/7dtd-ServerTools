@@ -7,11 +7,14 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static string Delay = "60";
 
+        private static string EventDelay = "";
+
         public static void SetDelay()
         {
-            if (EventSchedule.nightAlert != Delay)
+            if (EventDelay != Delay)
             {
-                EventSchedule.nightAlert = Delay;
+                EventDelay = Delay;
+                EventSchedule.Clear("NightAlert_");
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');
@@ -19,22 +22,7 @@ namespace ServerTools
                     {
                         if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
                         {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("NightAlert", time);
-                                return;
-                            }
-                        }
-                    }
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
-                        {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("NightAlert", time);
-                                return;
-                            }
+                            EventSchedule.Add("NightAlert_" + time);
                         }
                     }
                 }
@@ -44,11 +32,7 @@ namespace ServerTools
                     {
                         if (DateTime.Now < time)
                         {
-                            EventSchedule.Add("NightAlert", time);
-                        }
-                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Delay + ":00", out DateTime secondaryTime))
-                        {
-                            EventSchedule.Add("NightAlert", secondaryTime);
+                            EventSchedule.Add("NightAlert_" + time);
                         }
                     }
                 }
@@ -56,7 +40,7 @@ namespace ServerTools
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
-                        EventSchedule.Add("NightAlert", DateTime.Now.AddMinutes(delay));
+                        EventSchedule.Add("NightAlert_" + DateTime.Now.AddMinutes(delay));
                     }
                     else
                     {

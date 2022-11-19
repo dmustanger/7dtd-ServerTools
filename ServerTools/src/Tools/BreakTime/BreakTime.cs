@@ -9,11 +9,14 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static string Message = "It has been {Time} minutes since the last break reminder. Stretch and get some water.", Delay = "60";
 
+        private static string EventDelay = "";
+
         public static void SetDelay()
         {
-            if (EventSchedule.breakTime != Delay)
+            if (EventDelay != Delay)
             {
-                EventSchedule.breakTime = Delay;
+                EventDelay = Delay;
+                EventSchedule.Clear("BreakTime_");
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');
@@ -21,22 +24,7 @@ namespace ServerTools
                     {
                         if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
                         {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("BreakTime", time);
-                                return;
-                            }
-                        }
-                    }
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
-                        {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("BreakTime", time);
-                                return;
-                            }
+                            EventSchedule.Add("BreakTime_" + time);
                         }
                     }
                 }
@@ -44,21 +32,14 @@ namespace ServerTools
                 {
                     if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Delay + ":00", out DateTime time))
                     {
-                        if (DateTime.Now < time)
-                        {
-                            EventSchedule.Add("BreakTime", time);
-                        }
-                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Delay + ":00", out DateTime secondaryTime))
-                        {
-                            EventSchedule.Add("BreakTime", secondaryTime);
-                        }
+                        EventSchedule.Add("BreakTime_" + time);
                     }
                 }
                 else
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
-                        EventSchedule.Add("BreakTime", DateTime.Now.AddMinutes(delay));
+                        EventSchedule.Add("BreakTime_" + DateTime.Now.AddMinutes(delay));
                     }
                     else
                     {

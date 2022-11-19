@@ -46,8 +46,8 @@ namespace ServerTools
         {
             try
             {
-                string _steamId = _senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier;
-                int _entityId = _senderInfo.RemoteClientInfo.entityId;
+                string id = _senderInfo.RemoteClientInfo.CrossplatformId.CombinedString;
+                int entityId = _senderInfo.RemoteClientInfo.entityId;
                 if (_params[0].ToLower() == "new")
                 {
                     if (Event.Open)
@@ -60,16 +60,16 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or more, found {0}", _params.Count));
                         return;
                     }
-                    if (_senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier == null)
+                    if (_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString == null)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Unable to find a valid steam id to attach as the event operator. New events must be setup while in game");
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Unable to find a valid id to attach as the event operator. New events must be setup while in game");
                         return;
                     }
                     _params.RemoveAt(0);
                     string _name = string.Join(" ", _params.ToArray());
-                    if (PersistentContainer.Instance.Players[_steamId].Events != null && PersistentContainer.Instance.Players[_steamId].Events.Count > 0)
+                    if (PersistentContainer.Instance.Players[id].Events != null && PersistentContainer.Instance.Players[id].Events.Count > 0)
                     {
-                        List<List<string>> _events = PersistentContainer.Instance.Players[_steamId].Events;
+                        List<List<string>> _events = PersistentContainer.Instance.Players[id].Events;
                         for (int i = 0; i < _events.Count; i++)
                         {
                             List<string> _event = _events[i];
@@ -80,20 +80,20 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (Stage.ContainsKey(_steamId))
+                    if (Stage.ContainsKey(id))
                     {
-                        Stage.Remove(_steamId);
+                        Stage.Remove(id);
                     }
-                    if (Setup.ContainsKey(_steamId))
+                    if (Setup.ContainsKey(id))
                     {
-                        Setup.Remove(_steamId);
+                        Setup.Remove(id);
                     }
-                    Stage.Add(_steamId, 1);
+                    Stage.Add(id, 1);
                     List<string> _setup = new List<string>
                     {
                         _name
                     };
-                    Setup.Add(_steamId, _setup);
+                    Setup.Add(id, _setup);
                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have started to setup a new event. The name has been set to {0}", _name));
                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] What would you like players to receive for an invitation to the event? Type st-ev <invitation>");
                     return;
@@ -110,14 +110,14 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There is a open invitation for an event. Wait for it to complete or stop it if you are the event organizer");
                         return;
                     }
-                    if (Stage.ContainsKey(_steamId))
+                    if (Stage.ContainsKey(id))
                     {
-                        Stage.TryGetValue(_steamId, out int _stage);
+                        Stage.TryGetValue(id, out int _stage);
                         if (_stage == 5)
                         {
-                            Setup.TryGetValue(_steamId, out List<string> _setup);
+                            Setup.TryGetValue(id, out List<string> _setup);
                             Event.Invited = true;
-                            Event.Operator = _steamId;
+                            Event.Operator = id;
                             Event.EventName = _setup[0];
                             int.TryParse(_setup[2], out int _teams);
                             Event.TeamCount = _teams;
@@ -161,7 +161,7 @@ namespace ServerTools
                             if (cInfo != null)
                             {
                                 Event.Teams.TryGetValue(_player.Key, out int _team);
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Online player: Name {0}, Id {1}, is on team {2}.", cInfo.playerName, cInfo.PlatformId.ReadablePlatformUserIdentifier, _team));
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Online player: Name '{0}' Id '{1}' is on team '{2}'.", cInfo.playerName, cInfo.CrossplatformId.CombinedString, _team));
                             }
                             else
                             {
@@ -169,7 +169,7 @@ namespace ServerTools
                                 PlayerDataFile _pdf = GeneralFunction.GetPlayerDataFileFromId(_player.Key);
                                 if (_pdf != null)
                                 {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Offline player: Name {0}, Id {1}, is on team {2}.", _pdf.ecd.entityName, _player.Key, _team));
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Offline player: Name '{0}' Id '{1}' is on team '{2}'.", _pdf.ecd.entityName, _player.Key, _team));
                                 }
                             }
                         }
@@ -195,7 +195,7 @@ namespace ServerTools
                     }
                     if (Event.Open)
                     {
-                        if (Event.Operator == _steamId)
+                        if (Event.Operator == id)
                         {
                             int addTime = Timers.eventTime + (time * 60);
                             Timers.eventTime = addTime;
@@ -218,7 +218,7 @@ namespace ServerTools
                 {
                     if (Event.Open)
                     {
-                        if (Event.Operator == _steamId)
+                        if (Event.Operator == id)
                         {
                             foreach (var eventPlayer in Event.Teams)
                             {
@@ -228,20 +228,20 @@ namespace ServerTools
                                     EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];
                                     if (player != null && player.IsSpawned())
                                     {
-                                        string returnPos = PersistentContainer.Instance.Players[cInfo.PlatformId.ReadablePlatformUserIdentifier].EventReturnPosition;
+                                        string returnPos = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].EventReturnPosition;
                                         string[] cords = returnPos.Split(',');
                                         int.TryParse(cords[0], out int x);
                                         int.TryParse(cords[1], out int y);
                                         int.TryParse(cords[2], out int z);
                                         cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                                        Event.Teams.Remove(cInfo.PlatformId.ReadablePlatformUserIdentifier);
+                                        Event.Teams.Remove(cInfo.CrossplatformId.CombinedString);
                                         ChatHook.ChatMessage(null, "The event has ended. Thank you for playing.[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                     else
                                     {
-                                        PersistentContainer.Instance.Players[cInfo.PlatformId.ReadablePlatformUserIdentifier].EventOver = true;
+                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].EventOver = true;
                                         PersistentContainer.DataChange = true;
-                                        Event.Teams.Remove(cInfo.PlatformId.ReadablePlatformUserIdentifier);
+                                        Event.Teams.Remove(cInfo.CrossplatformId.CombinedString);
                                     }
                                 }
                                 else
@@ -267,7 +267,7 @@ namespace ServerTools
                     {
                         if (Event.Invited)
                         {
-                            if (Event.Operator == _steamId)
+                            if (Event.Operator == id)
                             {
                                 Event.Invited = false;
                                 Event.Operator = "";
@@ -292,9 +292,9 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower() == "list")
                 {
-                    if (PersistentContainer.Instance.Players[_steamId].Events != null && PersistentContainer.Instance.Players[_steamId].Events.Count > 0)
+                    if (PersistentContainer.Instance.Players[id].Events != null && PersistentContainer.Instance.Players[id].Events.Count > 0)
                     {
-                        List<List<string>> _events = PersistentContainer.Instance.Players[_steamId].Events;
+                        List<List<string>> _events = PersistentContainer.Instance.Players[id].Events;
                         for (int i = 0; i < _events.Count; i++)
                         {
                             List<string> _event = _events[i];
@@ -325,17 +325,17 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower() == "save")
                 {
-                    if (Stage.ContainsKey(_steamId))
+                    if (Stage.ContainsKey(id))
                     {
-                        Stage.TryGetValue(_steamId, out int _stage);
+                        Stage.TryGetValue(id, out int _stage);
                         if (_stage == 5)
                         {
-                            Setup.TryGetValue(_steamId, out List<string> _eventData);
-                            if (PersistentContainer.Instance.Players[_steamId].Events != null && PersistentContainer.Instance.Players[_steamId].Events.Count > 0)
+                            Setup.TryGetValue(id, out List<string> _eventData);
+                            if (PersistentContainer.Instance.Players[id].Events != null && PersistentContainer.Instance.Players[id].Events.Count > 0)
                             {
-                                List<List<string>> _events = PersistentContainer.Instance.Players[_steamId].Events;
+                                List<List<string>> _events = PersistentContainer.Instance.Players[id].Events;
                                 _events.Add(_eventData);
-                                PersistentContainer.Instance.Players[_steamId].Events = _events;
+                                PersistentContainer.Instance.Players[id].Events = _events;
                                 PersistentContainer.DataChange = true;
                             }
                             else
@@ -344,7 +344,7 @@ namespace ServerTools
                                 {
                                     _eventData
                                 };
-                                PersistentContainer.Instance.Players[_steamId].Events = _events;
+                                PersistentContainer.Instance.Players[id].Events = _events;
                                 PersistentContainer.DataChange = true;
                             }
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] The event setup has been saved to the list");
@@ -374,21 +374,21 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid id: {0}", _params[1]));
                         return;
                     }
-                    if (PersistentContainer.Instance.Players[_steamId].Events != null)
+                    if (PersistentContainer.Instance.Players[id].Events != null)
                     {
-                        if (PersistentContainer.Instance.Players[_steamId].Events.Count >= _id)
+                        if (PersistentContainer.Instance.Players[id].Events.Count >= _id)
                         {
-                            List<string> _event = PersistentContainer.Instance.Players[_steamId].Events[_id];
-                            if (Stage.ContainsKey(_steamId))
+                            List<string> _event = PersistentContainer.Instance.Players[id].Events[_id];
+                            if (Stage.ContainsKey(id))
                             {
-                                Stage.Remove(_steamId);
+                                Stage.Remove(id);
                             }
-                            if (Setup.ContainsKey(_steamId))
+                            if (Setup.ContainsKey(id))
                             {
-                                Setup.Remove(_steamId);
+                                Setup.Remove(id);
                             }
-                            Stage.Add(_steamId, 5);
-                            Setup.Add(_steamId, _event);
+                            Stage.Add(id, 5);
+                            Setup.Add(id, _event);
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Event has been loaded");
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Name: {0}", _event[0]));
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Invitation: {0}", _event[1]));
@@ -430,13 +430,13 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid id: {0}", _params[1]));
                         return;
                     }
-                    if (PersistentContainer.Instance.Players[_steamId].Events != null)
+                    if (PersistentContainer.Instance.Players[id].Events != null)
                     {
-                        if (PersistentContainer.Instance.Players[_steamId].Events.Count >= _id)
+                        if (PersistentContainer.Instance.Players[id].Events.Count >= _id)
                         {
-                            List<List<string>> _events = PersistentContainer.Instance.Players[_steamId].Events;
+                            List<List<string>> _events = PersistentContainer.Instance.Players[id].Events;
                             _events.RemoveAt(_id - 1);
-                            PersistentContainer.Instance.Players[_steamId].Events = _events;
+                            PersistentContainer.Instance.Players[id].Events = _events;
                             PersistentContainer.DataChange = true;
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed event id: {0}", _id));
                             return;
@@ -462,7 +462,7 @@ namespace ServerTools
                     }
                     if (Event.Open)
                     {
-                        if (Event.Operator == _steamId)
+                        if (Event.Operator == id)
                         {
                             if (Event.Teams.ContainsKey(_params[1]))
                             {
@@ -473,13 +473,13 @@ namespace ServerTools
                                     if (_player != null && _player.IsSpawned())
                                     {
                                         Event.Teams.Remove(_params[1]);
-                                        string _returnPos = PersistentContainer.Instance.Players[cInfo.PlatformId.ReadablePlatformUserIdentifier].EventReturnPosition;
+                                        string _returnPos = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].EventReturnPosition;
                                         string[] _cords = _returnPos.Split(',');
                                         int.TryParse(_cords[0], out int _x);
                                         int.TryParse(_cords[1], out int _y);
                                         int.TryParse(_cords[2], out int _z);
                                         cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
-                                        PersistentContainer.Instance.Players[cInfo.PlatformId.ReadablePlatformUserIdentifier].EventReturnPosition = "";
+                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].EventReturnPosition = "";
                                         PersistentContainer.DataChange = true;
                                         ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + "You have been removed from the event and sent to your return point.[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed event player with id: {0}. They have been sent to their return point", _params[1]));
@@ -487,7 +487,7 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        PersistentContainer.Instance.Players[cInfo.PlatformId.ReadablePlatformUserIdentifier].EventOver = true;
+                                        PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].EventOver = true;
                                         PersistentContainer.DataChange = true;
                                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find event player with id: {0}. They have been set to auto return", _params[1]));
                                         return;
@@ -521,17 +521,17 @@ namespace ServerTools
                 }
                 else if (_params.Count == 0)
                 {
-                    if (Stage.ContainsKey(_steamId))
+                    if (Stage.ContainsKey(id))
                     {
-                        Stage.TryGetValue(_steamId, out int _stage);
+                        Stage.TryGetValue(id, out int _stage);
                         if (_stage == 1)//New setup. Name set. Setting invitation
                         {
                             _params.RemoveAt(0);
                             string _invitation = string.Join(" ", _params.ToArray());
-                            Setup.TryGetValue(_steamId, out List<string> _setup);
+                            Setup.TryGetValue(id, out List<string> _setup);
                             _setup.Add(_invitation);
-                            Setup[_steamId] = _setup;
-                            Stage[_steamId] = 2;
+                            Setup[id] = _setup;
+                            Stage[id] = 2;
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The invitation has been set to {0}", _invitation));
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] How many teams and players in total? Type st-ev <teams> <players>");
                             return;
@@ -553,19 +553,19 @@ namespace ServerTools
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid event time {0}", _params[1]));
                                 return;
                             }
-                            Setup.TryGetValue(_steamId, out List<string> _setup);
+                            Setup.TryGetValue(id, out List<string> _setup);
                             _setup.Add(_params[0]);
                             _setup.Add(_params[1]);
                             _setup.Add(_params[2]);
-                            Setup[_steamId] = _setup;
-                            Stage[_steamId] = 3;
+                            Setup[id] = _setup;
+                            Stage[id] = 3;
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The team count has been set to {0}, player count to {1}, event time to {2} minutes", _params[0], _params[1], _params[2]));
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Where would you like team 1 to spawn? Stand where you want it and type st-ev");
                             return;
                         }
                         else if (_stage == 3)//Team count and player count set. Setting spawn points
                         {
-                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_entityId];
+                            EntityPlayer _player = GameManager.Instance.World.Players.dict[entityId];
                             if (_player != null)
                             {
                                 Vector3 _position = _player.GetPosition();
@@ -573,9 +573,9 @@ namespace ServerTools
                                 int _y = (int)_position.y;
                                 int _z = (int)_position.z;
                                 string _sposition = _x + "," + _y + "," + _z;
-                                Setup.TryGetValue(_steamId, out List<string> _setup);
+                                Setup.TryGetValue(id, out List<string> _setup);
                                 _setup.Add(_sposition);
-                                Setup[_steamId] = _setup;
+                                Setup[id] = _setup;
                                 int.TryParse(_setup[2], out int _teamCount);
                                 if (_setup.Count - 4 != _teamCount)
                                 {
@@ -585,7 +585,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    Stage[_steamId] = 4;
+                                    Stage[id] = 4;
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The spawn position for team {0} has been set to {1} {2} {3}", _setup.Count - 4, _x, _y, _z));
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Where would you like team {0} to respawn? Stand where you want it and type st-ev", _setup.Count - 4 - _teamCount + 1));
                                     return;
@@ -594,7 +594,7 @@ namespace ServerTools
                         }
                         else if (_stage == 4)//Spawn points set. Setting respawn points
                         {
-                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_entityId];
+                            EntityPlayer _player = GameManager.Instance.World.Players.dict[entityId];
                             if (_player != null)
                             {
                                 Vector3 _position = _player.GetPosition();
@@ -602,7 +602,7 @@ namespace ServerTools
                                 int _y = (int)_position.y;
                                 int _z = (int)_position.z;
                                 string _sposition = _x + "," + _y + "," + _z;
-                                Setup.TryGetValue(_steamId, out List<string> _setup);
+                                Setup.TryGetValue(id, out List<string> _setup);
                                 int.TryParse(_setup[2], out int _teamCount);
                                 if (_setup.Count - 4 - _teamCount != _teamCount)
                                 {
@@ -612,7 +612,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    Stage[_steamId] = 5;
+                                    Stage[id] = 5;
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Setup is complete. You can start the event with command st-ev start or st-ev save to record it to the list. You can save it while it is running.");
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] This will allow you to replay the event or start it at a later date");
                                     return;

@@ -244,14 +244,17 @@ namespace ServerTools
                 {
                     int count = _waypointLimit + PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].WaypointSpots;
                     var waypointList = waypoints.ToArray();
-                    for (int i = 0; i < count; i++)
+                    for (int i = 0; i < waypointList.Length; i++)
                     {
-                        Phrases.Dict.TryGetValue("Waypoints12", out string phrase);
-                        phrase = phrase.Replace("{Name}", waypointList[i].Key);
-                        phrase = phrase.Replace("{Position}", waypointList[i].Value);
-                        phrase = phrase.Replace("{Cost}", Command_Cost.ToString());
-                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        if (i <= count)
+                        {
+                            Phrases.Dict.TryGetValue("Waypoints12", out string phrase);
+                            phrase = phrase.Replace("{Name}", waypointList[i].Key);
+                            phrase = phrase.Replace("{Position}", waypointList[i].Value);
+                            phrase = phrase.Replace("{Cost}", Command_Cost.ToString());
+                            phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
                     }
                     if (Public_Waypoints && Dict.Count > 0)
                     {

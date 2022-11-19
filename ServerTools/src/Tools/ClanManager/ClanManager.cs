@@ -814,7 +814,7 @@ namespace ServerTools
             {
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Chat_Command_Prefix1, Command_leave);
             }
-            if (ClanMember.Contains(_cInfo.PlatformId.ReadablePlatformUserIdentifier))
+            if (ClanMember.Contains(_cInfo.CrossplatformId.CombinedString))
             {
                 _commands = string.Format("{0} {1}{2} or {3}{4}", _commands, ChatHook.Chat_Command_Prefix1, Command_chat, ChatHook.Chat_Command_Prefix1, Command_cc);
             }

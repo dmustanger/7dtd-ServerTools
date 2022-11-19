@@ -262,15 +262,15 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
                         return;
                     }
-                    string steamId = "";
+                    string id = "";
                     ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     if (cInfo != null)
                     {
-                        steamId = cInfo.PlatformId.ReadablePlatformUserIdentifier;
+                        id = cInfo.CrossplatformId.CombinedString;
                     }
                     else
                     {
-                        steamId = _params[1];
+                        id = _params[1];
                     }
                     if (!double.TryParse(_params[2], out double daysToExpire))
                     {
@@ -286,17 +286,17 @@ namespace ServerTools
                     {
                         expiryDate = DateTime.Now.AddDays(18250d);
                     }
-                    if (ChatColor.ExpireDate.ContainsKey(steamId))
+                    if (ChatColor.ExpireDate.ContainsKey(id))
                     {
-                        ChatColor.ExpireDate[steamId] = expiryDate;
+                        ChatColor.ExpireDate[id] = expiryDate;
                         ChatColor.UpdateXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Edited player id '{0}'. Expiry set to '{1}' on the reserved slots list", steamId, expiryDate));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Edited player id '{0}'. Expiry set to '{1}' on the reserved slots list", id, expiryDate));
                     }
-                    if (ReservedSlots.Dict.ContainsKey(steamId))
+                    if (ReservedSlots.Dict.ContainsKey(id))
                     {
-                        ReservedSlots.Dict[steamId] = expiryDate;
+                        ReservedSlots.Dict[id] = expiryDate;
                         ReservedSlots.UpdateXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Edited player id '{0}'. Expiry set to '{1}' on the reserved slots list", steamId, expiryDate));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Edited player id '{0}'. Expiry set to '{1}' on the reserved slots list", id, expiryDate));
                     }
                     return;
                 }
@@ -307,26 +307,26 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
-                    string steamId = "";
+                    string id = "";
                     ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     if (cInfo != null)
                     {
-                        steamId = cInfo.PlatformId.ReadablePlatformUserIdentifier;
+                        id = cInfo.CrossplatformId.CombinedString;
                     }
                     else
                     {
-                        steamId = _params[1];
+                        id = _params[1];
                     }
-                    if (ChatColor.Players.ContainsKey(steamId))
+                    if (ChatColor.Players.ContainsKey(id))
                     {
-                        ChatColor.Players.Remove(steamId);
-                        ChatColor.ExpireDate.Remove(steamId);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed player id '{0}' from the chat color prefix list", steamId));
+                        ChatColor.Players.Remove(id);
+                        ChatColor.ExpireDate.Remove(id);
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed player id '{0}' from the chat color prefix list", id));
                     }
-                    if (ReservedSlots.Dict.ContainsKey(steamId))
+                    if (ReservedSlots.Dict.ContainsKey(id))
                     {
-                        ReservedSlots.Dict.Remove(steamId);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed player id '{0}' from the reserved slots list", steamId));
+                        ReservedSlots.Dict.Remove(id);
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed player id '{0}' from the reserved slots list", id));
                     }
                     return;
                 }

@@ -48,7 +48,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
 # Tools
 
 - [Tools](#tools)
-  - [Admin_Chat_Commands](#admin_chat_commands)
+  - [AdminChatCommands](#adminchatcommands)
   - [Admin_List](#admin_list)
   - [Animal_Tracking](#animal_tracking)
   - [Auction](#auction)
@@ -488,7 +488,7 @@ Admin_Level controls the permission required in your ServerAdmin.xml to skip spe
 <br>
 <br>
 
-## Admin_Chat_Commands 
+## AdminChatCommands 
 ```xml
 <Tool Name="Admin_Chat_Commands" Enable="False" />
 ```

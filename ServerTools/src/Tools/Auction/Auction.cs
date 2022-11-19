@@ -463,6 +463,9 @@ namespace ServerTools
             ItemValue itemValue = new ItemValue(ItemClass.GetItem(_itemData.name, false).type);
             if (itemValue != null)
             {
+                itemValue.Quality = 0;
+                itemValue.Modifications = new ItemValue[0];
+                itemValue.CosmeticMods = new ItemValue[0];
                 if (itemValue.ItemClass.HasQuality)
                 {
                     itemValue.Quality = 1;

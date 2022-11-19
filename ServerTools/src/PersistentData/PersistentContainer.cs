@@ -22,6 +22,7 @@ namespace ServerTools
         private bool countryBan;
         private Dictionary<string, DateTime> blockPickUp;
         private DateTime lastWeather;
+        private int lotteryPot;
         private List<string> protectedZones;
         private string[] pollData;
         private Dictionary<string[], string> pollOld;
@@ -205,6 +206,18 @@ namespace ServerTools
             set
             {
                 lastWeather = value;
+            }
+        }
+
+        public int LotteryPot
+        {
+            get
+            {
+                return lotteryPot;
+            }
+            set
+            {
+                lotteryPot = value;
             }
         }
 

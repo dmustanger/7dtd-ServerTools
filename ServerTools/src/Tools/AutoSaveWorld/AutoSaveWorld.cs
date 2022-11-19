@@ -8,11 +8,14 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static string Delay = "60";
 
+        private static string EventDelay = "";
+
         public static void SetDelay()
         {
-            if (EventSchedule.autoSaveWorld != Delay)
+            if (EventDelay != Delay)
             {
-                EventSchedule.autoSaveWorld = Delay;
+                EventDelay = Delay;
+                EventSchedule.Clear("AutoSaveWorld_");
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');
@@ -20,22 +23,7 @@ namespace ServerTools
                     {
                         if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
                         {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("AutoSaveWorld", time);
-                                return;
-                            }
-                        }
-                    }
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
-                        {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("AutoSaveWorld", time);
-                                return;
-                            }
+                            EventSchedule.Add("AutoSaveWorld_" + time);
                         }
                     }
                 }
@@ -43,21 +31,14 @@ namespace ServerTools
                 {
                     if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Delay + ":00", out DateTime time))
                     {
-                        if (DateTime.Now < time)
-                        {
-                            EventSchedule.Add("AutoSaveWorld", time);
-                        }
-                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Delay + ":00", out DateTime secondaryTime))
-                        {
-                            EventSchedule.Add("AutoSaveWorld", secondaryTime);
-                        }
+                        EventSchedule.Add("AutoSaveWorld_" + time);
                     }
                 }
                 else
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
-                        EventSchedule.Add("AutoSaveWorld", DateTime.Now.AddMinutes(delay));
+                        EventSchedule.Add("AutoSaveWorld_" + DateTime.Now.AddMinutes(delay));
                     }
                     else
                     {

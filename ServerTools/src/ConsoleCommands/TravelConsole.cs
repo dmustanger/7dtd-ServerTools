@@ -7,15 +7,15 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools] - Enable or disable travel.";
+            return "[ServerTools] - Enable or disable Travel.";
         }
         public override string GetHelp()
         {
             return "Usage:\n" +
                    "  1. st-tvl off\n" +
                    "  2. st-tvl on\n" +
-                   "1. Turn off travel\n" +
-                   "2. Turn on travel\n";
+                   "1. Turn off Travel\n" +
+                   "2. Turn on Travel\n";
         }
         public override string[] GetCommands()
         {

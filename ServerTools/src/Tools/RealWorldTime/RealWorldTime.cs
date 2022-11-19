@@ -9,11 +9,14 @@ namespace ServerTools
         public static string Time_Zone = "UTC", Delay = "60";
         public static int Adjustment = 0;
 
+        private static string EventDelay = "";
+
         public static void SetDelay()
         {
-            if (EventSchedule.realWorldTime != Delay)
+            if (EventDelay != Delay)
             {
-                EventSchedule.realWorldTime = Delay;
+                EventDelay = Delay;
+                EventSchedule.Clear("RealWorldTime_");
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');
@@ -21,22 +24,7 @@ namespace ServerTools
                     {
                         if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
                         {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("RealWorldTime", time);
-                                return;
-                            }
-                        }
-                    }
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
-                        {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("RealWorldTime", time);
-                                return;
-                            }
+                            EventSchedule.Add("RealWorldTime_" + time);
                         }
                     }
                 }
@@ -44,21 +32,14 @@ namespace ServerTools
                 {
                     if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Delay + ":00", out DateTime time))
                     {
-                        if (DateTime.Now < time)
-                        {
-                            EventSchedule.Add("RealWorldTime", time);
-                        }
-                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Delay + ":00", out DateTime secondaryTime))
-                        {
-                            EventSchedule.Add("RealWorldTime", secondaryTime);
-                        }
+                        EventSchedule.Add("RealWorldTime_" + time);
                     }
                 }
                 else
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
-                        EventSchedule.Add("RealWorldTime", DateTime.Now.AddMinutes(delay));
+                        EventSchedule.Add("RealWorldTime_" + DateTime.Now.AddMinutes(delay));
                     }
                     else
                     {

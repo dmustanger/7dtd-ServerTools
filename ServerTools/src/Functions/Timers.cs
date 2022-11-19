@@ -9,7 +9,7 @@ namespace ServerTools
         public static bool CoreIsRunning = false, HalfSecondIsRunning = false;
         public static int StopServerMinutes = 0, eventTime = 0;
         private static int twoSecondTick, fiveSecondTick, tenSecondTick, twentySecondTick, oneMinTick, fiveMinTick, stopServerSeconds, eventInvitation,
-            eventOpen, horde, kickVote, lottery, muteVote, newPlayer, restartVote;
+            eventOpen, horde, kickVote, muteVote, newPlayer, restartVote;
 
         private static readonly System.Timers.Timer Core = new System.Timers.Timer();
         private static readonly System.Timers.Timer HalfSecond = new System.Timers.Timer();
@@ -322,9 +322,9 @@ namespace ServerTools
             };
         }
 
-        public static void AddPermissionTimer()
+        public static void SessionBonusTimer()
         {
-            System.Timers.Timer singleUseTimer = new System.Timers.Timer(500)
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(900000)
             {
                 AutoReset = false
             };
@@ -517,24 +517,6 @@ namespace ServerTools
                     KickVote.VoteOpen = false;
                     KickVote.ProcessKickVote();
                 }
-            }
-            if (Lottery.IsEnabled && Lottery.OpenLotto)
-            {
-                lottery++;
-                if (lottery == Lottery.Time * 60 - 60)
-                {
-                    Lottery.Alert();
-                }
-                if (lottery >= Lottery.Time * 60)
-                {
-                    lottery = 0;
-                    Lottery.OpenLotto = false;
-                    Lottery.StartLotto();
-                }
-            }
-            else
-            {
-                lottery = 0;
             }
             if (Hordes.IsEnabled)
             {

@@ -99,5 +99,14 @@ namespace ServerTools
                 }
             }
         }
+
+        public static void ClearFirstClaims()
+        {
+            List<string> id = PersistentContainer.Instance.Players.IDs;
+            for (int i = 0; i < id.Count; i++)
+            {
+                PersistentContainer.Instance.Players[id[i]].FirstClaimBlock = false;
+            }
+        }
     }
 }

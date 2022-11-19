@@ -19,6 +19,7 @@ namespace ServerTools
         public static List<Bounds> ZoneBounds = new List<Bounds>();
         public static Dictionary<int, string[]> ZoneSetup = new Dictionary<int, string[]>();
 
+        private static string EventDelay = "";
         private const string file = "Zones.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -263,9 +264,10 @@ namespace ServerTools
 
         public static void SetDelay()
         {
-            if (EventSchedule.zones != Reminder_Delay)
+            if (EventDelay != Reminder_Delay)
             {
-                EventSchedule.zones = Reminder_Delay;
+                EventDelay = Reminder_Delay;
+                EventSchedule.Clear("WatchList_");
                 if (Reminder_Delay.Contains(",") && Reminder_Delay.Contains(":"))
                 {
                     string[] times = Reminder_Delay.Split(',');
@@ -273,22 +275,7 @@ namespace ServerTools
                     {
                         if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
                         {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("Zones", time);
-                                return;
-                            }
-                        }
-                    }
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
-                        {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("Zones", time);
-                                return;
-                            }
+                            EventSchedule.Add("Zones_" + time);
                         }
                     }
                 }
@@ -296,21 +283,14 @@ namespace ServerTools
                 {
                     if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Reminder_Delay + ":00", out DateTime time))
                     {
-                        if (DateTime.Now < time)
-                        {
-                            EventSchedule.Add("Zones", time);
-                        }
-                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Reminder_Delay + ":00", out DateTime secondaryTime))
-                        {
-                            EventSchedule.Add("Zones", secondaryTime);
-                        }
+                        EventSchedule.Add("Zones_" + time);
                     }
                 }
                 else
                 {
                     if (int.TryParse(Reminder_Delay, out int delay))
                     {
-                        EventSchedule.Add("Zones", DateTime.Now.AddMinutes(delay));
+                        EventSchedule.Add("Zones_" + DateTime.Now.AddMinutes(delay));
                     }
                     else
                     {

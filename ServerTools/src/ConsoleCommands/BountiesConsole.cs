@@ -14,8 +14,8 @@ namespace ServerTools
             return "Usage:\n" +
                    "  1. st-bty off\n" +
                    "  2. st-bty on\n" +
-                   "  3. st-bty edit {Id/EOS/EntityId/PlayerName} {Value}\n" +
-                   "  4. st-bty remove {Id/EOS/EntityId/PlayerName}\n" +
+                   "  3. st-bty edit {EOS/Id/PlayerName} {Value}\n" +
+                   "  4. st-bty remove {EOS/Id/PlayerName}\n" +
                    "  5. st-bty list\n" +
                    "1. Turn off bounties\n" +
                    "2. Turn on bounties\n" +
@@ -80,14 +80,14 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Must input a valid interger: {0}", _params[2]));
                         return;
                     }
-                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                    if (_cInfo != null)
+                    ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    if (cInfo != null)
                     {
-                        Bounties.ConsoleEdit(_cInfo.PlatformId.ReadablePlatformUserIdentifier, _value);
+                        Bounties.ConsoleEdit(cInfo.CrossplatformId.CombinedString, _value);
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] No player found online with id or name: {0}. Checking steam id", _params[1]));
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] No player found online with id or name: {0}. Checking id", _params[1]));
                         if (_params[1].Length != 17)
                         {
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not edit: Invalid steam id {0}", _params[1]));
@@ -106,7 +106,7 @@ namespace ServerTools
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     if (_cInfo != null)
                     {
-                        Bounties.ConsoleRemoveBounty(_cInfo.PlatformId.ReadablePlatformUserIdentifier);
+                        Bounties.ConsoleRemoveBounty(_cInfo.CrossplatformId.CombinedString);
                     }
                     else
                     {

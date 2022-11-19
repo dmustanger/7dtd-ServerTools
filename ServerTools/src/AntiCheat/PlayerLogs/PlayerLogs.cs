@@ -12,14 +12,16 @@ namespace ServerTools
         public static int Days_Before_Log_Delete = 5;
         public static string Delay = "120";
 
+        private static string EventDelay = "";
         private static readonly string file = string.Format("PlayerLog_{0}.xml", DateTime.Today.ToString("M-d-yyyy"));
         private static readonly string FilePath = string.Format("{0}/Logs/PlayerLogs/{1}", API.ConfigPath, file);
 
         public static void SetDelay()
         {
-            if (EventSchedule.playerLogs != Delay)
+            if (EventDelay != Delay)
             {
-                EventSchedule.playerLogs = Delay;
+                EventDelay = Delay;
+                EventSchedule.Clear("PlayerLogs_");
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');
@@ -29,18 +31,7 @@ namespace ServerTools
                         {
                             if (DateTime.Now < time)
                             {
-                                EventSchedule.Add("PlayerLogs", time);
-                                return;
-                            }
-                        }
-                    }
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
-                        {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("PlayerLogs", time);
+                                EventSchedule.Add("PlayerLogs_" + time);
                                 return;
                             }
                         }
@@ -52,11 +43,7 @@ namespace ServerTools
                     {
                         if (DateTime.Now < time)
                         {
-                            EventSchedule.Add("PlayerLogs", time);
-                        }
-                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Delay + ":00", out DateTime secondaryTime))
-                        {
-                            EventSchedule.Add("PlayerLogs", secondaryTime);
+                            EventSchedule.Add("PlayerLogs_" + time);
                         }
                     }
                 }
@@ -64,7 +51,7 @@ namespace ServerTools
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
-                        EventSchedule.Add("PlayerLogs", DateTime.Now.AddSeconds(delay));
+                        EventSchedule.Add("PlayerLogs_" + DateTime.Now.AddSeconds(delay));
                     }
                     else
                     {

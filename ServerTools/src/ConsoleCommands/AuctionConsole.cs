@@ -126,7 +126,7 @@ namespace ServerTools
                                                 PersistentContainer.DataChange = true;
                                                 using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                                 {
-                                                    sw.WriteLine(string.Format("{0}: {1} {2} had their auction entry # {3} cancelled via console by {4}.", DateTime.Now, cInfo.PlatformId.ReadablePlatformUserIdentifier, cInfo.playerName, _id, _senderInfo.RemoteClientInfo.PlatformId.ReadablePlatformUserIdentifier));
+                                                    sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' had their auction entry # '{3}' cancelled via console by '{4}' '{5}'.", DateTime.Now, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, _id, _senderInfo.RemoteClientInfo.CrossplatformId.CombinedString));
                                                     sw.WriteLine();
                                                     sw.Flush();
                                                     sw.Close();
@@ -148,9 +148,9 @@ namespace ServerTools
                                             }
                                             else
                                             {
-                                                Dictionary<int, ItemDataSerializable> _auctionReturn = new Dictionary<int, ItemDataSerializable>();
-                                                _auctionReturn.Add(_id, _itemData);
-                                                PersistentContainer.Instance.Players[playerId].AuctionReturn = _auctionReturn;
+                                                Dictionary<int, ItemDataSerializable> auctionReturn = new Dictionary<int, ItemDataSerializable>();
+                                                auctionReturn.Add(_id, _itemData);
+                                                PersistentContainer.Instance.Players[playerId].AuctionReturn = auctionReturn;
                                             }
                                             Auction.AuctionItems.Remove(_id);
                                             PersistentContainer.Instance.Players[playerId].Auction.Remove(_id);

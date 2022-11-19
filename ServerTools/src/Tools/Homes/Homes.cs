@@ -61,14 +61,17 @@ namespace ServerTools
                 {
                     int count = _homeLimit + PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HomeSpots;
                     var homeList = homes.ToArray();
-                    for (int i = 0; i < count; i++)
+                    for (int i = 0; i < homeList.Length; i++)
                     {
-                        Phrases.Dict.TryGetValue("Homes2", out string phrase);
-                        phrase = phrase.Replace("{Name}", homeList[i].Key);
-                        phrase = phrase.Replace("{Position}", homeList[i].Value);
-                        phrase = phrase.Replace("{Cost}", Command_Cost.ToString());
-                        phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        if (i <= count)
+                        {
+                            Phrases.Dict.TryGetValue("Homes2", out string phrase);
+                            phrase = phrase.Replace("{Name}", homeList[i].Key);
+                            phrase = phrase.Replace("{Position}", homeList[i].Value);
+                            phrase = phrase.Replace("{Cost}", Command_Cost.ToString());
+                            phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
                     }
                 }
                 else
@@ -370,7 +373,7 @@ namespace ServerTools
             {
                 if (string.IsNullOrWhiteSpace(_homeName))
                 {
-                    Phrases.Dict.TryGetValue("Homes11", out string phrase);
+                    Phrases.Dict.TryGetValue("Homes17", out string phrase);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }

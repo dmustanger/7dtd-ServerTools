@@ -118,7 +118,7 @@ namespace ServerTools
                                         }
                                         else
                                         {
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player Id '{0' has not spawned or is dead. Unable to give item at this time", cInfo.PlatformId.ReadablePlatformUserIdentifier));
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player Id '{0}' '{1}' has not spawned or is dead. Unable to give item at this time", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString));
                                         }
                                     }
                                 }

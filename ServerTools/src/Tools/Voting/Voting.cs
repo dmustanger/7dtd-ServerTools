@@ -454,18 +454,24 @@ namespace ServerTools
                     {
                         int quality = Random.Next(itemData[2], itemData[3] + 1);
                         ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type);
+                        itemValue.Quality = 0;
+                        itemValue.Modifications = new ItemValue[0];
+                        itemValue.CosmeticMods = new ItemValue[0];
+                        int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
+                        if (modSlots > 0)
+                        {
+                            itemValue.Modifications = new ItemValue[modSlots];
+                        }
+                        itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
                         if (itemValue.HasQuality)
                         {
-                            itemValue.Quality = 1;
                             if (quality > 0)
                             {
                                 itemValue.Quality = quality;
                             }
-                            int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
-                            if (modSlots > 0)
+                            else
                             {
-                                itemValue.Modifications = new ItemValue[modSlots];
-                                itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
+                                itemValue.Quality = 1;
                             }
                         }
                         Give(_cInfo, itemValue, count);

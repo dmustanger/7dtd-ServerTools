@@ -134,6 +134,7 @@ namespace ServerTools
                     CommandList.Load();
                     InteractiveMap.SetWorldSize();
                     InteractiveMap.LocateMapFolder();
+                    EventSchedule.Schedule.Add("Reset_", DateTime.Today.AddDays(1).AddSeconds(1));
                     Mods.Load();
                     Phrases.Load();
                     HowToSetup.Load();
@@ -201,9 +202,10 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.WorldSeed = GameManager.Instance.World.Seed;
                         PersistentContainer.DataChange = true;
-                        if (!CleanBin.IsEnabled && PersistentContainer.Instance.Players.IDs.Count > 0)
+                        if (PersistentContainer.Instance.Players.IDs.Count > 0)
                         {
-                            Log.Out("[SERVERTOOLS] Detected a new world. You have old ServerTools data saved from the last map. Run the Clean_Bin tool to remove the data of your choice");
+                            CleanBin.ClearFirstClaims();
+                            Log.Out("[SERVERTOOLS] Detected a new world. Some old data has been cleaned up but the majority remains. Run the Clean_Bin tool to remove the data of your choice");
                         }
                     }
                     if (PersistentContainer.Instance.ConnectionTimeOut == null)
@@ -234,6 +236,7 @@ namespace ServerTools
                     }
                     Track.Cleanup();
                     DroppedBagProtection.BuildList();
+
                     ActiveTools.Exec(true);
                     Timers.Set_Link_Delay();
                     Timers.PersistentDataSave();

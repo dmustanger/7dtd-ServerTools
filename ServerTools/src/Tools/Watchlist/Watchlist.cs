@@ -14,6 +14,7 @@ namespace ServerTools
 
         public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
 
+        private static string EventDelay = "";
         private static string file = "WatchList.xml";
         private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -184,9 +185,10 @@ namespace ServerTools
 
         public static void SetDelay()
         {
-            if (EventSchedule.watchList != Delay)
+            if (EventDelay != Delay)
             {
-                EventSchedule.watchList = Delay;
+                EventDelay = Delay;
+                EventSchedule.Clear("WatchList_");
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');
@@ -194,22 +196,7 @@ namespace ServerTools
                     {
                         if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
                         {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("WatchList", time);
-                                return;
-                            }
-                        }
-                    }
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
-                        {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("WatchList", time);
-                                return;
-                            }
+                            EventSchedule.Add("WatchList_" + time);
                         }
                     }
                 }
@@ -217,21 +204,14 @@ namespace ServerTools
                 {
                     if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Delay + ":00", out DateTime time))
                     {
-                        if (DateTime.Now < time)
-                        {
-                            EventSchedule.Add("WatchList", time);
-                        }
-                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Delay + ":00", out DateTime secondaryTime))
-                        {
-                            EventSchedule.Add("WatchList", secondaryTime);
-                        }
+                        EventSchedule.Add("WatchList_" + time);
                     }
                 }
                 else
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
-                        EventSchedule.Add("WatchList", DateTime.Now.AddMinutes(delay));
+                        EventSchedule.Add("WatchList_" + DateTime.Now.AddMinutes(delay));
                     }
                     else
                     {
@@ -254,13 +234,13 @@ namespace ServerTools
                     for (int i = 0; i < clients.Count; i++)
                     {
                         ClientInfo cInfo = clients[i];
-                        if (cInfo != null)
+                        if (cInfo != null && cInfo.PlatformId != null && cInfo.CrossplatformId != null)
                         {
                             if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
                                 GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                             {
-                                if (Dict.ContainsKey(cInfo.PlatformId.ReadablePlatformUserIdentifier) ||
-                                Dict.ContainsKey(cInfo.CrossplatformId.ReadablePlatformUserIdentifier))
+                                if (Dict.ContainsKey(cInfo.PlatformId.CombinedString) ||
+                                Dict.ContainsKey(cInfo.CrossplatformId.CombinedString))
                                 {
                                     player.Add(cInfo);
                                 }
@@ -276,7 +256,7 @@ namespace ServerTools
                         for (int i = 0; i < player.Count; i++)
                         {
                             Phrases.Dict.TryGetValue("Watchlist1", out string phrase);
-                            if (Dict.TryGetValue(player[i].PlatformId.ReadablePlatformUserIdentifier, out string reason))
+                            if (Dict.TryGetValue(player[i].PlatformId.CombinedString, out string reason))
                             {
                                 phrase = phrase.Replace("{PlayerName}", player[i].playerName);
                                 phrase = phrase.Replace("{Reason}", reason);
@@ -285,7 +265,7 @@ namespace ServerTools
                                     ChatHook.ChatMessage(admin[j], Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
-                            else if (Dict.TryGetValue(player[i].CrossplatformId.ReadablePlatformUserIdentifier, out reason))
+                            else if (Dict.TryGetValue(player[i].CrossplatformId.CombinedString, out reason))
                             {
                                 phrase = phrase.Replace("{PlayerName}", player[i].playerName);
                                 phrase = phrase.Replace("{Reason}", reason);

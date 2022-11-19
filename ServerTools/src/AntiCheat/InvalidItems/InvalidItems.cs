@@ -196,106 +196,113 @@ namespace ServerTools
                     if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level &&
                         GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > Admin_Level)
                     {
+                        bool found = false;
                         for (int i = 0; i < _playerDataFile.inventory.Length; i++)
                         {
                             ItemStack itemStack = _playerDataFile.inventory[i];
-                            ItemValue itemValue = itemStack.itemValue;
-                            int count = _playerDataFile.inventory[i].count;
-                            if (count > 0 && itemValue != null && !itemValue.Equals(ItemValue.None))
+                            if (itemStack != null)
                             {
-                                string name = itemValue.ItemClass.GetItemName();
-                                if (Invalid_Stack)
+                                ItemValue itemValue = itemStack.itemValue;
+                                int count = _playerDataFile.inventory[i].count;
+                                if (count > 0 && itemValue != null && !itemValue.IsEmpty())
                                 {
-                                    int maxAllowed = itemValue.ItemClass.Stacknumber.Value;
-                                    if (count > maxAllowed)
+                                    string name = itemValue.ItemClass.Name ?? itemValue.ItemClass.GetItemName();
+                                    if (Invalid_Stack)
                                     {
-                                        MaxStack(_cInfo, name, count, maxAllowed);
-                                    }
-                                }
-                                if (Dict.Contains(name))
-                                {
-                                    if (Ban_Player)
-                                    {
-                                        Ban(_cInfo, name);
-                                    }
-                                    else
-                                    {
-                                        if (Flags.ContainsKey(_cInfo.entityId))
+                                        int maxAllowed = itemValue.ItemClass.Stacknumber.Value;
+                                        if (count > maxAllowed)
                                         {
-                                            if (Flags.TryGetValue(_cInfo.entityId, out int value))
-                                            {
-                                                if (value == 2)
-                                                {
-                                                    Flag3(_cInfo, name);
-                                                }
-                                                else
-                                                {
-                                                    Flag2(_cInfo, name);
-                                                }
-                                            }
+                                            MaxStack(_cInfo, name, count, maxAllowed);
+                                        }
+                                    }
+                                    if (Dict.Contains(name))
+                                    {
+                                        if (Ban_Player)
+                                        {
+                                            Ban(_cInfo, name);
                                         }
                                         else
                                         {
-                                            Flag1(_cInfo, name);
+                                            if (Flags.ContainsKey(_cInfo.entityId))
+                                            {
+                                                if (Flags.TryGetValue(_cInfo.entityId, out int value))
+                                                {
+                                                    if (value == 2)
+                                                    {
+                                                        Flag3(_cInfo, name);
+                                                    }
+                                                    else
+                                                    {
+                                                        Flag2(_cInfo, name);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Flag1(_cInfo, name);
+                                            }
                                         }
+                                        found = true;
                                     }
-                                    return;
                                 }
                             }
                         }
                         for (int i = 0; i < _playerDataFile.bag.Length; i++)
                         {
                             ItemStack itemStack = _playerDataFile.bag[i];
-                            ItemValue itemValue = itemStack.itemValue;
-                            int count = _playerDataFile.bag[i].count;
-                            if (count > 0 && itemValue != null && !itemValue.Equals(ItemValue.None))
+                            if (itemStack != null)
                             {
-                                string name = itemValue.ItemClass.GetItemName();
-                                if (Invalid_Stack)
+                                ItemValue itemValue = itemStack.itemValue;
+                                int count = _playerDataFile.bag[i].count;
+                                if (count > 0 && itemValue != null && !itemValue.IsEmpty())
                                 {
-                                    int maxAllowed = itemValue.ItemClass.Stacknumber.Value;
-                                    if (count > maxAllowed)
+                                    string name = itemValue.ItemClass.Name ?? itemValue.ItemClass.GetItemName();
+                                    if (Invalid_Stack)
                                     {
-                                        MaxStack(_cInfo, name, count, maxAllowed);
-                                    }
-                                }
-                                if (Dict.Contains(name))
-                                {
-                                    if (Ban_Player)
-                                    {
-                                        Ban(_cInfo, name);
-                                    }
-                                    else
-                                    {
-                                        if (Flags.ContainsKey(_cInfo.entityId))
+                                        int maxAllowed = itemValue.ItemClass.Stacknumber.Value;
+                                        if (count > maxAllowed)
                                         {
-                                            if (Flags.TryGetValue(_cInfo.entityId, out int value))
-                                            {
-                                                if (value == 2)
-                                                {
-                                                    Flag3(_cInfo, name);
-                                                }
-                                                else
-                                                {
-                                                    Flag2(_cInfo, name);
-                                                }
-                                            }
+                                            MaxStack(_cInfo, name, count, maxAllowed);
+                                        }
+                                    }
+                                    if (Dict.Contains(name))
+                                    {
+                                        if (Ban_Player)
+                                        {
+                                            Ban(_cInfo, name);
                                         }
                                         else
                                         {
-                                            Flag1(_cInfo, name);
+                                            if (Flags.ContainsKey(_cInfo.entityId))
+                                            {
+                                                if (Flags.TryGetValue(_cInfo.entityId, out int value))
+                                                {
+                                                    if (value == 2)
+                                                    {
+                                                        Flag3(_cInfo, name);
+                                                    }
+                                                    else
+                                                    {
+                                                        Flag2(_cInfo, name);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Flag1(_cInfo, name);
+                                            }
                                         }
+                                        found = true;
                                     }
-                                    return;
                                 }
                             }
                         }
                         for (int i = 0; i < _playerDataFile.equipment.GetSlotCount(); i++)
                         {
                             ItemValue itemValue = _playerDataFile.equipment.GetSlotItem(i);
-                            if (itemValue != null && !itemValue.Equals(ItemValue.None))
+                            if (itemValue != null && !itemValue.IsEmpty())
                             {
-                                string name = itemValue.ItemClass.GetItemName();
+                                string name = itemValue.ItemClass.Name ?? itemValue.ItemClass.GetItemName();
                                 if (Dict.Contains(name))
                                 {
                                     if (Ban_Player)
@@ -323,11 +330,49 @@ namespace ServerTools
                                             Flag1(_cInfo, name);
                                         }
                                     }
-                                    return;
+                                    found = true;
                                 }
                             }
                         }
-                        if (Flags.ContainsKey(_cInfo.entityId))
+                        if (Check_Storage)
+                        {
+                            int size = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].VaultSize;
+                            ItemDataSerializable[] itemData = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Vault;
+                            for (int i = 0; i < size; i++)
+                            {
+                                if (Dict.Contains(itemData[i].name))
+                                {
+                                    string name = itemData[i].name;
+                                    if (Ban_Player)
+                                    {
+                                        Ban(_cInfo, name);
+                                    }
+                                    else
+                                    {
+                                        if (Flags.ContainsKey(_cInfo.entityId))
+                                        {
+                                            if (Flags.TryGetValue(_cInfo.entityId, out int value))
+                                            {
+                                                if (value == 2)
+                                                {
+                                                    Flag3(_cInfo, name);
+                                                }
+                                                else
+                                                {
+                                                    Flag2(_cInfo, name);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Flag1(_cInfo, name);
+                                        }
+                                    }
+                                    found = true;
+                                }
+                            }
+                        }
+                        if (!found && Flags.ContainsKey(_cInfo.entityId))
                         {
                             Flags.Remove(_cInfo.entityId);
                         }
@@ -459,74 +504,79 @@ namespace ServerTools
                 LinkedList<Chunk> chunkArray = null;
                 DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
                 ChunkClusterList chunklist = GameManager.Instance.World.ChunkClusters;
-                for (int i = 0; i < chunklist.Count; i++)
+                if (chunklist != null && chunklist.Count > 0)
                 {
-                    ChunkCluster chunk = chunklist[i];
-                    chunkArray = chunk.GetChunkArray();
-                    if (chunkArray != null)
+                    for (int i = 0; i < chunklist.Count; i++)
                     {
-                        foreach (Chunk c in chunkArray)
+                        ChunkCluster chunk = chunklist[i];
+                        chunkArray = chunk.GetChunkArray();
+                        if (chunkArray != null)
                         {
-                            tiles = c.GetTileEntities();
-                            if (tiles != null)
+                            foreach (Chunk c in chunkArray)
                             {
-                                foreach (TileEntity tile in tiles.dict.Values)
+                                tiles = c.GetTileEntities();
+                                if (tiles != null)
                                 {
-                                    if (tile is TileEntitySecureLootContainer)
+                                    foreach (TileEntity tile in tiles.dict.Values)
                                     {
-                                        TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
-                                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(SecureLoot.GetOwner()) > Admin_Level)
+                                        if (tile != null && tile is TileEntitySecureLootContainer)
                                         {
-                                            ItemStack[] items = SecureLoot.items;
-                                            int slotNumber = 0;
-                                            for (int j = 0; j < items.Length; j++)
+                                            TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
+                                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(SecureLoot.GetOwner()) > Admin_Level)
                                             {
-                                                if (items[j] != null && !items[j].IsEmpty())
+                                                ItemStack[] items = SecureLoot.items;
+                                                if (items != null)
                                                 {
-                                                    string itemName = ItemClass.list[items[j].itemValue.type].Name;
-                                                    if (Dict.Contains(itemName))
+                                                    int slotNumber = 0;
+                                                    for (int j = 0; j < items.Length; j++)
                                                     {
-                                                        ItemStack itemStack = new ItemStack();
-                                                        SecureLoot.UpdateSlot(slotNumber, itemStack.Clone());
-                                                        tile.SetModified();
-                                                        Vector3i chestPos = SecureLoot.localChunkPos;
-                                                        using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
+                                                        if (items[j] != null && !items[j].IsEmpty())
                                                         {
-                                                            sw.WriteLine("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", items[j].count, itemName, chestPos, SecureLoot.GetOwner().CombinedString);
+                                                            string itemName = ItemClass.list[items[j].itemValue.type].Name;
+                                                            if (Dict.Contains(itemName))
+                                                            {
+                                                                SecureLoot.UpdateSlot(slotNumber, new ItemStack());
+                                                                tile.SetModified();
+                                                                Vector3i chestPos = SecureLoot.localChunkPos;
+                                                                using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
+                                                                {
+                                                                    sw.WriteLine("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", items[j].count, itemName, chestPos, SecureLoot.GetOwner().CombinedString);
+                                                                }
+                                                                Log.Out(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", items[j].count, itemName, chestPos, SecureLoot.GetOwner().CombinedString));
+                                                            }
                                                         }
-                                                        Log.Out(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", items[j].count, itemName, chestPos, SecureLoot.GetOwner().CombinedString));
+                                                        slotNumber++;
                                                     }
                                                 }
-                                                slotNumber++;
                                             }
                                         }
-                                    }
-                                    else if (tile is TileEntitySecureLootContainerSigned)
-                                    {
-                                        TileEntitySecureLootContainerSigned SecureLoot = (TileEntitySecureLootContainerSigned)tile;
-                                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(SecureLoot.GetOwner()) > Admin_Level)
+                                        else if (tile is TileEntitySecureLootContainerSigned)
                                         {
-                                            ItemStack[] items = SecureLoot.items;
-                                            int slotNumber = 0;
-                                            for (int j = 0; j < items.Length; j++)
+                                            TileEntitySecureLootContainerSigned SecureLoot = (TileEntitySecureLootContainerSigned)tile;
+                                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(SecureLoot.GetOwner()) > Admin_Level)
                                             {
-                                                if (items[j] != null && !items[j].IsEmpty())
+                                                ItemStack[] items = SecureLoot.items;
+                                                int slotNumber = 0;
+                                                for (int j = 0; j < items.Length; j++)
                                                 {
-                                                    string itemName = ItemClass.list[items[j].itemValue.type].Name;
-                                                    if (Dict.Contains(itemName))
+                                                    if (items[j] != null && !items[j].IsEmpty())
                                                     {
-                                                        ItemStack itemStack = new ItemStack();
-                                                        SecureLoot.UpdateSlot(slotNumber, itemStack.Clone());
-                                                        tile.SetModified();
-                                                        Vector3i chestPos = SecureLoot.localChunkPos;
-                                                        using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
+                                                        string itemName = ItemClass.list[items[j].itemValue.type].Name;
+                                                        if (Dict.Contains(itemName))
                                                         {
-                                                            sw.WriteLine("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", items[j].count, itemName, chestPos, SecureLoot.GetOwner().CombinedString);
+                                                            ItemStack itemStack = new ItemStack();
+                                                            SecureLoot.UpdateSlot(slotNumber, itemStack.Clone());
+                                                            tile.SetModified();
+                                                            Vector3i chestPos = SecureLoot.localChunkPos;
+                                                            using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
+                                                            {
+                                                                sw.WriteLine("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", items[j].count, itemName, chestPos, SecureLoot.GetOwner().CombinedString);
+                                                            }
+                                                            Log.Out(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", items[j].count, itemName, chestPos, SecureLoot.GetOwner().CombinedString));
                                                         }
-                                                        Log.Out(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from a secure loot located at '{2}' owned by '{3}'", items[j].count, itemName, chestPos, SecureLoot.GetOwner().CombinedString));
                                                     }
+                                                    slotNumber++;
                                                 }
-                                                slotNumber++;
                                             }
                                         }
                                     }
@@ -535,6 +585,7 @@ namespace ServerTools
                         }
                     }
                 }
+
             }
             catch (Exception e)
             {

@@ -142,63 +142,59 @@ namespace ServerTools
                 EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
-                    if (!MarketPlayers.Contains(_cInfo.entityId))
-                    {
-                        if (Player_Check)
-                        {
-                            if (Teleportation.PCheck(_cInfo, player))
-                            {
-                                return;
-                            }
-                        }
-                        if (Zombie_Check)
-                        {
-                            if (Teleportation.ZCheck(_cInfo, player))
-                            {
-                                return;
-                            }
-                        }
-                        string[] cords = Market_Position.Split(',').ToArray();
-                        if (int.TryParse(cords[0], out int i))
-                        {
-                            if (int.TryParse(cords[1], out int j))
-                            {
-                                if (int.TryParse(cords[2], out int k))
-                                {
-                                    MarketPlayers.Add(_cInfo.entityId);
-                                    if (Return)
-                                    {
-                                        Vector3 position = player.GetPosition();
-                                        int x = (int)position.x;
-                                        int y = (int)position.y;
-                                        int z = (int)position.z;
-                                        string mposition = x + "," + y + "," + z;
-                                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].MarketReturnPos = mposition;
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(i, j, k), null, false));
-                                        Phrases.Dict.TryGetValue("Market2", out string phrase);
-                                        phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                                        phrase = phrase.Replace("{Command_marketback}", Command_marketback);
-                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                    else
-                                    {
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(i, j, k), null, false));
-
-                                    }
-                                    if (Command_Cost >= 1 && Wallet.IsEnabled)
-                                    {
-                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                                    }
-                                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastMarket = DateTime.Now;
-                                    PersistentContainer.DataChange = true;
-                                }
-                            }
-                        }
-                    }
-                    else
+                    if (IsMarket(player.position))
                     {
                         Phrases.Dict.TryGetValue("Market11", out string phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        return;
+                    }
+                    if (Player_Check)
+                    {
+                        if (Teleportation.PCheck(_cInfo, player))
+                        {
+                            return;
+                        }
+                    }
+                    if (Zombie_Check)
+                    {
+                        if (Teleportation.ZCheck(_cInfo, player))
+                        {
+                            return;
+                        }
+                    }
+                    string[] cords = Market_Position.Split(',').ToArray();
+                    if (int.TryParse(cords[0], out int i))
+                    {
+                        if (int.TryParse(cords[1], out int j))
+                        {
+                            if (int.TryParse(cords[2], out int k))
+                            {
+                                if (Return)
+                                {
+                                    Vector3 position = player.GetPosition();
+                                    Phrases.Dict.TryGetValue("Market2", out string phrase);
+                                    phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                                    phrase = phrase.Replace("{Command_marketback}", Command_marketback);
+                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    int x = (int)position.x;
+                                    int y = (int)position.y;
+                                    int z = (int)position.z;
+                                    string mposition = x + "," + y + "," + z;
+                                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].MarketReturnPos = mposition;
+                                }
+                                if (!TeleportDetector.Ommissions.Contains(_cInfo.entityId))
+                                {
+                                    TeleportDetector.Ommissions.Add(_cInfo.entityId);
+                                }
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(i, j, k), null, false));
+                                if (Command_Cost >= 1 && Wallet.IsEnabled)
+                                {
+                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
+                                }
+                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastMarket = DateTime.Now;
+                                PersistentContainer.DataChange = true;
+                            }
+                        }
                     }
                 }
             }
@@ -211,10 +207,10 @@ namespace ServerTools
 
         public static void SendBack(ClientInfo _cInfo)
         {
-            if (MarketPlayers.Contains(_cInfo.entityId))
+            EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+            if (player != null)
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
-                if (player != null)
+                if (IsMarket(player.position))
                 {
                     string lastPos = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].MarketReturnPos;
                     if (lastPos != "")
@@ -224,7 +220,6 @@ namespace ServerTools
                         int.TryParse(returnCoords[1], out int y);
                         int.TryParse(returnCoords[2], out int z);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                        MarketPlayers.Remove(_cInfo.entityId);
                         PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].MarketReturnPos = "";
                         PersistentContainer.DataChange = true;
                     }
@@ -236,42 +231,32 @@ namespace ServerTools
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
-            }
-            else
-            {
-                Phrases.Dict.TryGetValue("Market3", out string phrase);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                else
+                {
+                    Phrases.Dict.TryGetValue("Market3", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                }
             }
         }
 
-        public static void InsideMarket(ClientInfo _cInfo, EntityAlive _player, List<Entity> _entityList)
+        public static void InsideMarket(ClientInfo _cInfo, EntityAlive _player)
         {
-            if (!IsMarket(_player.position))
+            if (IsMarket(_player.position))
             {
-                MarketPlayers.Remove(_cInfo.entityId);
-                if (Return)
+                if (!MarketPlayers.Contains(_cInfo.entityId))
                 {
-                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].MarketReturnPos = "";
-                    PersistentContainer.DataChange = true;
-                    Phrases.Dict.TryGetValue("Market5", out string phrase);
-                    phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                    phrase = phrase.Replace("{Command_marketback}", Command_marketback);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    MarketPlayers.Add(_cInfo.entityId);
                 }
             }
             else
             {
-                if (_entityList != null && _entityList.Count > 0)
+                if (MarketPlayers.Contains(_cInfo.entityId))
                 {
-                    for (int i = 0; i < _entityList.Count; i++)
-                    {
-                        Entity entity = _entityList[i];
-                        if (entity != null & !(entity is EntityPlayer) && entity.IsSpawned() && IsMarket(entity.position))
-                        {
-                            GameManager.Instance.World.RemoveEntity(_entityList[i].entityId, EnumRemoveEntityReason.Despawned);
-                            Log.Out(string.Format("[SERVERTOOLS] Removed a hostile from the market @ '{0}'", _entityList[i].position));
-                        }
-                    }
+                    MarketPlayers.Remove(_cInfo.entityId);
+                    Phrases.Dict.TryGetValue("Market5", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].MarketReturnPos = "";
+                    PersistentContainer.DataChange = true;
                 }
             }
         }

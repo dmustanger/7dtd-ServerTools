@@ -1,4 +1,5 @@
-﻿using ServerTools;
+﻿using HarmonyLib;
+using ServerTools;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -239,7 +240,24 @@ public static class Injections
         return true;
     }
 
-    public static bool GameManager_OpenTileEntityAllowed_Prefix(ref bool __result, ref bool __state, int _entityIdThatOpenedIt, TileEntity _te)
+    public static bool GameManager_ExplosionServer_Prefix(int _playerId)
+    {
+        try
+        {
+            Entity entity = GeneralFunction.GetEntity(_playerId);
+            if ((entity == null || !entity.IsSpawned()) && _playerId != -1)
+            {
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_ExplosionServer_Prefix: {0}", e.Message));
+        }
+        return true;
+    }
+
+    public static bool GameManager_OpenTileEntityAllowed_Prefix(ref bool __result, ref bool __state, int _entityIdThatOpenedIt, ref TileEntity _te)
     {
         try
         {
@@ -431,21 +449,6 @@ public static class Injections
         }
     }
 
-    public static void GameManager_ItemReloadServer_Postfix(int _entityId)
-    {
-        try
-        {
-            if (InfiniteAmmo.IsEnabled && InfiniteAmmo.Dict.ContainsKey(_entityId))
-            {
-                InfiniteAmmo.Dict.Remove(_entityId);
-            }
-        }
-        catch (Exception e)
-        {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_ItemReloadServer_Postfix: {0}", e.Message));
-        }
-    }
-
     public static void GameManager_PlayerSpawnedInWorld_Postfix(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos, int _entityId)
     {
         try
@@ -473,6 +476,21 @@ public static class Injections
         catch (Exception e)
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.EntityAlive_SetDead_Postfix: {0}", e.Message));
+        }
+    }
+
+    public static void NetPackagePlayerInventory_ProcessPackage_Prefix(NetPackagePlayerInventory __instance)
+    {
+        try
+        {
+            if (__instance.Sender != null)
+            {
+                InfiniteAmmo.Process(__instance);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackagePlayerInventory_ProcessPackage_Prefix: {0}", e.Message));
         }
     }
 
@@ -623,15 +641,19 @@ public static class Injections
         return true;
     }
 
-    public static void NetPackageDamageEntity_ProcessPackage_Prefix(ref NetPackageDamageEntity __instance)
+    public static void NetPackageDamageEntity_ProcessPackage_Prefix(NetPackageDamageEntity __instance)
     {
-        if (__instance.Sender != null && ProcessDamage.Exec(__instance))
+        if (__instance.Sender != null)
         {
-            if (ProcessDamage.bFatal(__instance))
+            Entity victim = GeneralFunction.GetEntity(ProcessDamage.EntityId(__instance));
+            if (victim != null)
             {
-                ProcessDamage.bFatal(__instance) = false;
+                Entity attacker = GeneralFunction.GetEntity(ProcessDamage.AttackerEntityId(__instance));
+                if (attacker != null)
+                {
+                    ProcessDamage.Exec(__instance, victim, attacker);
+                }
             }
-            ProcessDamage.strength(__instance) = 0;
         }
     }
 
@@ -703,6 +725,52 @@ public static class Injections
         catch (Exception e)
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageEntityAttach_ProcessPackage_Prefix: {0}", e.Message));
+        }
+        return true;
+    }
+
+    public static void LootManager_LootContainerOpened_Prefix(ref TileEntityLootContainer _tileEntity, int _entityIdThatOpenedIt)
+    {
+        try
+        {
+            if (_tileEntity != null && Vault.IsEnabled && _tileEntity.blockValue.Block.GetBlockName() == "VaultBox")
+            {
+                _tileEntity = Vault.Exec(_entityIdThatOpenedIt, _tileEntity);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.LootManager_LootContainerOpened_Prefix: {0}", e.Message));
+        }
+    }
+
+    public static void NetPackageTileEntity_Setup_Postfix(TileEntity _te)
+    {
+        try
+        {
+            if (_te != null && _te is TileEntityLootContainer && Vault.IsEnabled && _te.blockValue.Block.GetBlockName() == "VaultBox")
+            {
+                Vault.UpdateData(_te as TileEntityLootContainer);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageTileEntity_Setup_Postfix: {0}", e.Message));
+        }
+    }
+
+    public static bool GameManager_DropContentOfLootContainerServer_Prefix(BlockValue _bvOld)
+    {
+        try
+        {
+            if (_bvOld.Block.GetBlockName() == "VaultBox")
+            {
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_DropContentOfLootContainerServer_Prefix: {0}", e.Message));
         }
         return true;
     }

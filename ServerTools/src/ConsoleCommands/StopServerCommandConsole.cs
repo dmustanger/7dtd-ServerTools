@@ -45,7 +45,6 @@ namespace ServerTools
                         Shutdown.ShuttingDown = false;
                         Shutdown.NoEntry = false;
                         Shutdown.UI_Locked = false;
-                        Lottery.ShuttingDown = false;
                         if (ExitCommand.IsEnabled)
                         {
                             List<ClientInfo> clientList = GeneralFunction.ClientList();

@@ -13,6 +13,7 @@ namespace ServerTools
 
         public static List<string> ExemptionList = new List<string>();
 
+        private static string EventDelay = "";
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();
         private static List<string> MsgList = new List<string>();
 
@@ -195,9 +196,10 @@ namespace ServerTools
 
         public static void SetDelay()
         {
-            if (EventSchedule.infoTicker != Delay)
+            if (EventDelay != Delay)
             {
-                EventSchedule.infoTicker = Delay;
+                EventDelay = Delay;
+                EventSchedule.Clear("InfoTicker_");
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');
@@ -207,18 +209,7 @@ namespace ServerTools
                         {
                             if (DateTime.Now < time)
                             {
-                                EventSchedule.Add("InfoTicker", time);
-                                return;
-                            }
-                        }
-                    }
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
-                        {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("InfoTicker", time);
+                                EventSchedule.Add("InfoTicker_" + time);
                                 return;
                             }
                         }
@@ -230,11 +221,7 @@ namespace ServerTools
                     {
                         if (DateTime.Now < time)
                         {
-                            EventSchedule.Add("InfoTicker", time);
-                        }
-                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Delay + ":00", out DateTime secondaryTime))
-                        {
-                            EventSchedule.Add("InfoTicker", secondaryTime);
+                            EventSchedule.Add("InfoTicker_" + time);
                         }
                     }
                 }
@@ -242,7 +229,7 @@ namespace ServerTools
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
-                        EventSchedule.Add("InfoTicker", DateTime.Now.AddMinutes(delay));
+                        EventSchedule.Add("InfoTicker_" + DateTime.Now.AddMinutes(delay));
                     }
                     else
                     {

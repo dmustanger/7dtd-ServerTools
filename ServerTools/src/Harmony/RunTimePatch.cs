@@ -1,9 +1,6 @@
-﻿using Audio;
-using HarmonyLib;
+﻿using HarmonyLib;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -208,22 +205,6 @@ namespace ServerTools
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
                 }
 
-                original = AccessTools.Method(typeof(GameManager), "ItemReloadServer");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ItemReloadServer Class.Method was not found"));
-                }
-                else
-                {
-                    MethodInfo postfix = typeof(Injections).GetMethod("GameManager_ItemReloadServer_Postfix");
-                    if (postfix == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_ItemReloadServer.postfix"));
-                        return;
-                    }
-                    harmony.Patch(original, null, new HarmonyMethod(postfix));
-                }
-
                 original = AccessTools.Method(typeof(GameManager), "PlayerSpawnedInWorld");
                 if (original == null)
                 {
@@ -263,13 +244,19 @@ namespace ServerTools
                 }
                 else
                 {
+                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackagePlayerInventory_ProcessPackage_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerInventory_ProcessPackage_Prefix"));
+                        return;
+                    }
                     MethodInfo postfix = typeof(Injections).GetMethod("NetPackagePlayerInventory_ProcessPackage_Postfix");
                     if (postfix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerInventory_ProcessPackage_Postfix"));
                         return;
                     }
-                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                    harmony.Patch(original, new HarmonyMethod(prefix), new HarmonyMethod(postfix));
                 }
 
                 original = AccessTools.Method(typeof(ClientInfoCollection), "GetForNameOrId");
@@ -427,6 +414,70 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityAttach_ProcessPackage_Prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                original = AccessTools.Method(typeof(GameManager), "ExplosionServer");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ExplosionServer Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("GameManager_ExplosionServer_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_ExplosionServer_Prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                original = AccessTools.Method(typeof(LootManager), "LootContainerOpened");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: LootManager.LootContainerOpened Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("LootManager_LootContainerOpened_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: LootManager_LootContainerOpened_Prefix"));
+                        return;
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                original = AccessTools.Method(typeof(NetPackageTileEntity), "Setup", new Type[] { typeof(TileEntity), typeof(TileEntity.StreamModeWrite), typeof(byte) });
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageTileEntity.Setup Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo postfix = typeof(Injections).GetMethod("NetPackageTileEntity_Setup_Postfix");
+                    if (postfix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageTileEntity_Setup_Postfix"));
+                        return;
+                    }
+                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                }
+
+                original = AccessTools.Method(typeof(GameManager), "DropContentOfLootContainerServer", new Type[] { typeof(BlockValue), typeof(Vector3i), typeof(int) });
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.DropContentOfLootContainerServer Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("GameManager_DropContentOfLootContainerServer_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_DropContentOfLootContainerServer_Prefix"));
                         return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);

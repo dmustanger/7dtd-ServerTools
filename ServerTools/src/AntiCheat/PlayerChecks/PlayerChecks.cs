@@ -57,7 +57,7 @@ namespace ServerTools
                                 {
                                     if (player.Buffs.HasBuff("god"))
                                     {
-                                        Phrases.Dict.TryGetValue("Godemode2", out string phrase);
+                                        Phrases.Dict.TryGetValue("Godmode2", out string phrase);
                                         SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
                                         using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                         {
@@ -67,7 +67,7 @@ namespace ServerTools
                                             sw.Close();
                                         }
                                         Log.Warning(string.Format("[SERVERTOOLS] Detected id '{0}' '{1}' named '{2}' using god mode @ '{2}'", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, player.position));
-                                        Phrases.Dict.TryGetValue("Godemode1", out phrase);
+                                        Phrases.Dict.TryGetValue("Godmode1", out phrase);
                                         phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
                                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                                         continue;
@@ -107,7 +107,7 @@ namespace ServerTools
                                             }
                                             if (FlyingDetector.IsEnabled && userPlatformPermissionLevel > FlyingDetector.Flying_Admin_Level && userCrossplatformPermissionLevel > FlyingDetector.Flying_Admin_Level)
                                             {
-                                                if (!TeleportDetector.Ommissions.Contains(cInfo.entityId) && FlyingDetector.IsFlying(player.position))
+                                                if (FlyingDetector.IsFlying(player.position))
                                                 {
                                                     FlyingDetector.Detected(cInfo, player);
                                                 }

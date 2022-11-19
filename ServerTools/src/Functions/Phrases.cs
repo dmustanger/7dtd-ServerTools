@@ -673,54 +673,44 @@ namespace ServerTools
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("Lottery1", out phrase))
                     {
-                        phrase = "There is no open lottery. Type {Command_Prefix1}{Command_lottery} # to open a new lottery at that buy in price";
+                        phrase = "The lottery is now at {Value1}. Type {Command_Prefix1}{Command_lottery_enter} to buy a ticket for {Value2} {CoinName}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lottery2", out phrase))
                     {
-                        phrase = "A lottery is open for {Value1} {CoinName}. Minimum amount to enter is {Value2}. Enter it by typing {Command_Prefix1}{Command_lottery_enter}";
+                        phrase = "You have purchased lottery ticket number {Value}. The draw is in {Time} minutes";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lottery3", out phrase))
                     {
-                        phrase = "You must type a valid integer above zero for the lottery #";
+                        phrase = "You do not have enough {CoinName} to buy a ticket.";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lottery4", out phrase))
                     {
-                        phrase = "You have opened a new lottery for {Value} {CoinName}";
+                        phrase = "The lottery numbers are";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lottery5", out phrase))
                     {
-                        phrase = "A lottery has opened for {Value} {CoinName} and will draw soon. Type {Command_Prefix1}{Command_lottery_enter} to join";
+                        phrase = "We have winner!!! Thank you for playing everyone";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lottery6", out phrase))
                     {
-                        phrase = "You do not have enough {CoinName}. Earn some more and enter the lottery before it ends";
+                        phrase = "You won the lottery. Congratulations!";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery6\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lottery7", out phrase))
                     {
-                        phrase = "You have entered the lottery, good luck in the draw";
+                        phrase = "No winner this time. Thanks for playing everyone";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery7\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lottery8", out phrase))
                     {
-                        phrase = "You are already in the lottery, good luck in the draw";
+                        phrase = "The lottery is sold out";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery8\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Lottery9", out phrase))
-                    {
-                        phrase = "A lottery draw will begin in one minute. Type {Command_Prefix1}{Command_lottery_enter} to join";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Lottery9\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Lottery10", out phrase))
-                    {
-                        phrase = "Winner! {PlayerName} has won the lottery and received {Value} {CoinName}";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Lottery10\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************ Lobby ************************* -->");
@@ -3399,6 +3389,29 @@ namespace ServerTools
                         phrase = "You do not have permission to use that command";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"CommandPermission1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ************************* Vault ************************ -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("Vault1", out phrase))
+                    {
+                        phrase = "The vault can only be accessed inside of a claimed spaced";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Vault1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ****************!***** InfiniteAmmo ******************** -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("InfiniteAmmo1", out phrase))
+                    {
+                        phrase = "You have been detected and banned for using infinite ammo";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"InfiniteAmmo1\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("InfiniteAmmo2", out phrase))
+                    {
+                        phrase = "Detected {PlayerName} using infinite ammo. They have been banned";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"InfiniteAmmo2\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");

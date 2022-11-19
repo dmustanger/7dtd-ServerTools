@@ -78,6 +78,8 @@ namespace ServerTools
         private int sessionTime;
         private bool startingItems;
         private int totalTimePlayed;
+        private ItemDataSerializable[] vault;
+        private int vaultSize;
         private Dictionary<int, string[]> vehicles;
         private int voteWeekCount;
         private Dictionary<string, string> waypoints;
@@ -898,6 +900,30 @@ namespace ServerTools
             set
             {
                 totalTimePlayed = value;
+            }
+        }
+
+        public ItemDataSerializable[] Vault
+        {
+            get
+            {
+                return vault;
+            }
+            set
+            {
+                vault = value;
+            }
+        }
+
+        public int VaultSize
+        {
+            get
+            {
+                return vaultSize;
+            }
+            set
+            {
+                vaultSize = value;
             }
         }
 

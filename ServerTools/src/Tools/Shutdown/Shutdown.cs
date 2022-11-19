@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ServerTools
 {
@@ -9,11 +10,14 @@ namespace ServerTools
         public static int Countdown = 2, Alert_Count = 2;
         public static string Command_shutdown = "shutdown", Time = "240";
 
+        private static string EventDelay = "";
+
         public static void SetDelay()
         {
-            if (EventSchedule.shutdown != Time)
+            if (EventDelay != Time)
             {
-                EventSchedule.shutdown = Time;
+                EventDelay = Time;
+                EventSchedule.Clear("Shutdown_");
                 if (Time.Contains(",") && Time.Contains(":"))
                 {
                     string[] times = Time.Split(',');
@@ -21,22 +25,7 @@ namespace ServerTools
                     {
                         if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
                         {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("Shutdown", time);
-                                return;
-                            }
-                        }
-                    }
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + times[i] + ":00", out DateTime time))
-                        {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("Shutdown", time);
-                                return;
-                            }
+                            EventSchedule.Add("Shutdown_" + time);
                         }
                     }
                 }
@@ -44,21 +33,14 @@ namespace ServerTools
                 {
                     if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Time + ":00", out DateTime time))
                     {
-                        if (DateTime.Now < time)
-                        {
-                            EventSchedule.Add("Shutdown", time);
-                        }
-                        else if (DateTime.TryParse(DateTime.Today.AddDays(1).ToString("d") + " " + Time + ":00", out DateTime secondaryTime))
-                        {
-                            EventSchedule.Add("Shutdown", secondaryTime);
-                        }
+                        EventSchedule.Add("Shutdown_" + time);
                     }
                 }
                 else
                 {
                     if (int.TryParse(Time, out int delay))
                     {
-                        EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(delay));
+                        EventSchedule.Add("Shutdown_" + DateTime.Now.AddMinutes(delay));
                     }
                     else
                     {
@@ -73,7 +55,7 @@ namespace ServerTools
         {
             if (GeneralFunction.IsBloodmoon() && !Interrupt_Bloodmoon)
             {
-                EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(10));
+                EventSchedule.Add("Shutdown_" + DateTime.Now.AddMinutes(10));
                 if (Event.Open && !Event.OperatorWarned)
                 {
                     ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(Event.Operator);
@@ -91,11 +73,10 @@ namespace ServerTools
 
         public static void StartShutdown(int _countdown)
         {
-            if (Lottery.OpenLotto)
+            if (Lottery.IsEnabled)
             {
-                Lottery.StartLotto();
+                Lottery.DrawLotteryFast();
             }
-            Lottery.ShuttingDown = true;
             if (ExitCommand.IsEnabled)
             {
                 ExitCommand.Players.Clear();
@@ -122,7 +103,7 @@ namespace ServerTools
         {
             if (GeneralFunction.IsBloodmoon() && !Interrupt_Bloodmoon)
             {
-                EventSchedule.Add("Shutdown", DateTime.Now.AddMinutes(10));
+                EventSchedule.Add("Shutdown_" + DateTime.Now.AddMinutes(10));
                 if (Event.Open && !Event.OperatorWarned)
                 {
                     ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(Event.Operator);
@@ -208,25 +189,26 @@ namespace ServerTools
         {
             try
             {
-                if (_cInfo != null && _cInfo.CrossplatformId.CombinedString != null)
+                if (_cInfo != null)
                 {
-                    EventSchedule.Schedule.TryGetValue("Shutdown", out DateTime timeLeft);
-                    TimeSpan varTime = timeLeft - DateTime.Now;
-                    double fractionalMinutes = varTime.TotalMinutes;
-                    int remainingTime = (int)fractionalMinutes;
-                    if (remainingTime <= 10 && Event.Open)
+                    var schedule = EventSchedule.Schedule.ToArray();
+                    for (int i = 0; i < schedule.Length; i++)
                     {
-                        Phrases.Dict.TryGetValue("Shutdown2", out string phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        return;
+                        if (schedule[i].Key.Contains("Shutdown_") && DateTime.Now <= schedule[i].Value)
+                        {
+                            TimeSpan varTime = schedule[i].Value - DateTime.Now;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            int remainingTime = (int)fractionalMinutes;
+                            if (remainingTime < 0)
+                            {
+                                remainingTime = 0;
+                            }
+                            Phrases.Dict.TryGetValue("Shutdown1", out string phrase1);
+                            phrase1 = phrase1.Replace("{TimeLeft}", string.Format("{0:00} H : {1:00} M", remainingTime / 60, remainingTime % 60));
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            return;
+                        }
                     }
-                    if (remainingTime < 0)
-                    {
-                        remainingTime = 0;
-                    }
-                    Phrases.Dict.TryGetValue("Shutdown1", out string phrase1);
-                    phrase1 = phrase1.Replace("{TimeLeft}", string.Format("{0:00} H : {1:00} M", remainingTime / 60, remainingTime % 60));
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

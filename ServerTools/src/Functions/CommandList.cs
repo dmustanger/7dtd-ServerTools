@@ -595,6 +595,9 @@ namespace ServerTools
                         case "claims":
                             LandClaimCount.Command_claims = kvp.Value[0];
                             continue;
+                        case "vault":
+                            Vault.Command_vault = kvp.Value[0];
+                            continue;
                     }
                 }
             }
@@ -739,6 +742,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"map\" Replacement=\"map\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"discord\" Replacement=\"discord\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"claims\" Replacement=\"claims\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"vault\" Replacement=\"vault\" Hidden=\"false\" />");
         }
 
         private static void UpgradeXml()

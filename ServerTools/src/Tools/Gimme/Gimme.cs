@@ -18,7 +18,6 @@ namespace ServerTools
         private const string file = "Gimme.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static readonly System.Random Random = new System.Random();
 
         private static XmlNodeList OldNodeList;
 
@@ -375,7 +374,7 @@ namespace ServerTools
             {
                 if (Zombies)
                 {
-                    int itemOrEntity = Random.Next(1, 9);
+                    int itemOrEntity = new System.Random().Next(1, 9);
                     if (itemOrEntity != 4)
                     {
                         RandomItem(_cInfo);
@@ -407,21 +406,27 @@ namespace ServerTools
                     int.TryParse(item[2], out int maxCount);
                     int.TryParse(item[3], out int minQuality);
                     int.TryParse(item[4], out int maxQuality);
-                    int count = Random.Next(minCount, maxCount + 1);
-                    int quality = Random.Next(minQuality, maxQuality + 1);
+                    int count = new System.Random().Next(minCount, maxCount + 1);
+                    int quality = new System.Random().Next(minQuality, maxQuality + 1);
                     ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type);
+                    itemValue.Quality = 0;
+                    itemValue.Modifications = new ItemValue[0];
+                    itemValue.CosmeticMods = new ItemValue[0];
+                    int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
+                    if (modSlots > 0)
+                    {
+                        itemValue.Modifications = new ItemValue[modSlots];
+                    }
+                    itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
                     if (itemValue.HasQuality)
                     {
-                        itemValue.Quality = 1;
                         if (quality > 0)
                         {
                             itemValue.Quality = quality;
                         }
-                        int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
-                        if (modSlots > 0)
+                        else
                         {
-                            itemValue.Modifications = new ItemValue[modSlots];
-                            itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
+                            itemValue.Quality = 1;
                         }
                     }
                     World world = GameManager.Instance.World;
@@ -472,7 +477,7 @@ namespace ServerTools
                     if (Zombie_Id.Contains(","))
                     {
                         string[] zombieIds = Zombie_Id.Split(',');
-                        int count = Random.Next(1, zombieIds.Length + 1);
+                        int count = new System.Random().Next(1, zombieIds.Length + 1);
                         string zId = zombieIds[count];
                         if (int.TryParse(zId, out int zombieId))
                         {

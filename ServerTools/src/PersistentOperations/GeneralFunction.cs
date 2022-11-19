@@ -517,6 +517,124 @@ namespace ServerTools
                     }
                     XPathAlert("xui.xml");
                 }
+                if (File.Exists(XPathDir + "blocks.xml"))
+                {
+                    List<string> windowContent = new List<string>();
+                    using (FileStream fs = new FileStream(XPathDir + "blocks.xml", FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
+                        {
+                            while (!sr.EndOfStream)
+                            {
+                                windowContent.Add(sr.ReadLine());
+                            }
+                        }
+                    }
+                    int count = 0;
+                    for (int i = 0; i < windowContent.Count; i++)
+                    {
+                        string line = windowContent[i];
+                        if (line.Contains("VaultBox") || line.Contains("movement,melee,bullet,arrow,rocket"))
+                        {
+                            count += 1;
+                        }
+                    }
+                    if (count != 2)
+                    {
+                        File.Delete(XPathDir + "blocks.xml");
+                    }
+                }
+                if (!File.Exists(XPathDir + "blocks.xml"))
+                {
+                    using (StreamWriter sw = new StreamWriter(XPathDir + "blocks.xml", false, Encoding.UTF8))
+                    {
+                        sw.WriteLine("<configs>");
+                        sw.WriteLine();
+                        sw.WriteLine("<append xpath=\"/blocks\">");
+                        sw.WriteLine();
+                        sw.WriteLine("<block name=\"VaultBox\">");
+                        sw.WriteLine("	<property name=\"CreativeMode\" value=\"Player\"/>");
+                        sw.WriteLine("	<property name=\"Tags\" value=\"door\"/>");
+                        sw.WriteLine("	<property name=\"Class\" value=\"SecureLoot\"/>");
+                        sw.WriteLine("	<property name=\"CustomIcon\" value=\"cntChest02\"/>");
+                        sw.WriteLine("	<property name=\"Material\" value=\"MwoodReinforced\"/>");
+                        sw.WriteLine("	<property name=\"StabilitySupport\" value=\"false\"/>");
+                        sw.WriteLine("	<property name=\"Shape\" value=\"Ext3dModel\"/>");
+                        sw.WriteLine("	<property name=\"Texture\" value=\"293\"/>");
+                        sw.WriteLine("	<property name=\"Mesh\" value=\"models\"/>");
+                        sw.WriteLine("	<property name=\"IsTerrainDecoration\" value=\"true\"/>");
+                        sw.WriteLine("	<property name=\"FuelValue\" value=\"300\"/>");
+                        sw.WriteLine("	<property name=\"Model\" value=\"LootContainers/chest02\" param1=\"main_mesh\"/>");
+                        sw.WriteLine("	<property name=\"ShowModelOnFall\" value=\"false\"/>");
+                        sw.WriteLine("	<property name=\"HandleFace\" value=\"Bottom\"/>");
+                        sw.WriteLine("	<property name=\"ImposterExchange\" value=\"imposterQuarter\" param1=\"154\"/>");
+                        sw.WriteLine("	<property name=\"Collide\" value=\"movement,melee,bullet,arrow,rocket\"/>");
+                        sw.WriteLine("	<property name=\"LootList\" value=\"playerStorage\"/>");
+                        sw.WriteLine("	<property class=\"RepairItems\">");
+                        sw.WriteLine("		<property name=\"resourceWood\" value=\"10\"/>");
+                        sw.WriteLine("	</property>");
+                        sw.WriteLine("	<drop event=\"Fall\" name=\"terrDestroyedWoodDebris\" count=\"1\" prob=\"1\" stick_chance=\"1\"/>");
+                        sw.WriteLine("	<property name=\"LPHardnessScale\" value=\"8\"/>");
+                        sw.WriteLine("	<property name=\"DescriptionKey\" value=\"cntSecureStorageChestDesc\"/>");
+                        sw.WriteLine("	<property name=\"CanPickup\" value=\"true\"/>");
+                        sw.WriteLine("	<property name=\"EconomicValue\" value=\"0\"/>");
+                        sw.WriteLine("	<property name=\"EconomicBundleSize\" value=\"1\"/>");
+                        sw.WriteLine("	<property name=\"FilterTags\" value=\"MC_playerBlocks,SC_decor\"/>");
+                        sw.WriteLine("</block>");
+                        sw.WriteLine();
+                        sw.WriteLine("</append>");
+                        sw.WriteLine();
+                        sw.WriteLine("</configs>");
+                        sw.Flush();
+                        sw.Close();
+                    }
+                }
+                if (File.Exists(XPathDir + "recipes.xml"))
+                {
+                    List<string> windowContent = new List<string>();
+                    using (FileStream fs = new FileStream(XPathDir + "recipes.xml", FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
+                        {
+                            while (!sr.EndOfStream)
+                            {
+                                windowContent.Add(sr.ReadLine());
+                            }
+                        }
+                    }
+                    int count = 0;
+                    for (int i = 0; i < windowContent.Count; i++)
+                    {
+                        string line = windowContent[i];
+                        if (line.Contains("VaultBox"))
+                        {
+                            count += 1;
+                        }
+                    }
+                    if (count != 1)
+                    {
+                        File.Delete(XPathDir + "recipes.xml");
+                    }
+                }
+                if (!File.Exists(XPathDir + "recipes.xml"))
+                {
+                    using (StreamWriter sw = new StreamWriter(XPathDir + "recipes.xml", false, Encoding.UTF8))
+                    {
+                        sw.WriteLine("<configs>");
+                        sw.WriteLine();
+                        sw.WriteLine("<append xpath=\"/recipes\">");
+                        sw.WriteLine();
+                        sw.WriteLine("<recipe name=\"VaultBox\" count=\"1\">");
+                        sw.WriteLine("	<ingredient name=\"resourceWood\" count=\"10\"/>");
+                        sw.WriteLine("</recipe>");
+                        sw.WriteLine();
+                        sw.WriteLine("</append>");
+                        sw.WriteLine();
+                        sw.WriteLine("</configs>");
+                        sw.Flush();
+                        sw.Close();
+                    }
+                }
             }
         }
 
@@ -546,14 +664,34 @@ namespace ServerTools
                                 {
                                     Zones.ZoneCheck(cInfo, player, entityList);
                                 }
-                                if (Lobby.IsEnabled && Lobby.LobbyPlayers.Contains(cInfo.entityId))
+                                if (Lobby.IsEnabled)
                                 {
-                                    Lobby.InsideLobby(cInfo, player, entityList);
+                                    Lobby.InsideLobby(cInfo, player);
                                 }
-                                if (Market.IsEnabled && Market.MarketPlayers.Contains(cInfo.entityId))
+                                if (Market.IsEnabled)
                                 {
-                                    Market.InsideMarket(cInfo, player, entityList);
+                                    Market.InsideMarket(cInfo, player);
                                 }
+                            }
+                        }
+                    }
+                }
+                if (entityList != null && entityList.Count > 0)
+                {
+                    for (int i = 0; i < entityList.Count; i++)
+                    {
+                        Entity entity = entityList[i];
+                        if (entity != null & !(entity is EntityPlayer) && entity.IsSpawned())
+                        {
+                            if (Lobby.IsEnabled && Lobby.IsLobby(entity.position))
+                            {
+                                GameManager.Instance.World.RemoveEntity(entityList[i].entityId, EnumRemoveEntityReason.Despawned);
+                                Log.Out(string.Format("[SERVERTOOLS] Removed a hostile entity from the lobby @ '{0}'", entityList[i].position));
+                            }
+                            else if (Market.IsEnabled && Market.IsMarket(entity.position))
+                            {
+                                GameManager.Instance.World.RemoveEntity(entityList[i].entityId, EnumRemoveEntityReason.Despawned);
+                                Log.Out(string.Format("[SERVERTOOLS] Removed a hostile entity from the market @ '{0}'", entityList[i].position));
                             }
                         }
                     }
@@ -1367,7 +1505,7 @@ namespace ServerTools
                         }
                     }
                 }
-                if (ChatColor.IsEnabled && ChatColor.Players.ContainsKey(_cInfo.PlatformId.ReadablePlatformUserIdentifier))
+                if (ChatColor.IsEnabled && ChatColor.Players.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
                     if (ChatColor.Command_ccc != "")
                     {
@@ -1469,7 +1607,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (!ClanManager.ClanMember.Contains(_cInfo.PlatformId.ReadablePlatformUserIdentifier))
+                    if (!ClanManager.ClanMember.Contains(_cInfo.CrossplatformId.CombinedString))
                     {
                         if (ClanManager.Command_add != "")
                         {
@@ -2551,6 +2689,20 @@ namespace ServerTools
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             PersistentContainer.DataChange = true;
+        }
+
+        public static bool SessionBonus(string _id)
+        {
+            ClientInfo cInfo = GetClientInfoFromNameOrId(_id);
+            if (cInfo != null)
+            {
+                if (Wallet.IsEnabled && Wallet.Session_Bonus > 0)
+                {
+                    Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, Wallet.Session_Bonus, true);
+                }
+                return true;
+            }
+            return false;
         }
     }
 }

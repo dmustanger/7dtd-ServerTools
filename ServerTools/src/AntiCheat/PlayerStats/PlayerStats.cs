@@ -84,7 +84,7 @@ namespace ServerTools
                                         if (Ban_Enabled)
                                         {
                                             Phrases.Dict.TryGetValue("PlayerStats7", out string phrase);
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban {0} \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
                                             Phrases.Dict.TryGetValue("PlayerStats8", out phrase);
                                             phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
                                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
@@ -111,7 +111,7 @@ namespace ServerTools
                                         if (Ban_Enabled)
                                         {
                                             Phrases.Dict.TryGetValue("PlayerStats11", out string phrase);
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban {0} \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
                                             Phrases.Dict.TryGetValue("PlayerStats12", out phrase);
                                             phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
                                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
@@ -138,7 +138,7 @@ namespace ServerTools
                                         if (Ban_Enabled)
                                         {
                                             Phrases.Dict.TryGetValue("PlayerStats15", out string phrase);
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban {0} \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
                                             Phrases.Dict.TryGetValue("PlayerStats16", out phrase);
                                             phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
                                             ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);

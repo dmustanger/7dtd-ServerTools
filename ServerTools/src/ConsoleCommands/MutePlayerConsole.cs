@@ -68,7 +68,7 @@ namespace ServerTools
                             {
                                 if (muteTime == -1)
                                 {
-                                    Mute.Mutes.Add(cInfo.PlatformId.ReadablePlatformUserIdentifier);
+                                    Mute.Mutes.Add(cInfo.PlatformId.CombinedString);
                                     PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteTime = -1;
                                     PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteName = cInfo.playerName;
                                     PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].MuteDate = DateTime.Now;
