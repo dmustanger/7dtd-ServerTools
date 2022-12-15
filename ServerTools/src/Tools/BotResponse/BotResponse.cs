@@ -10,7 +10,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Whisper = false;
 
-        public static Dictionary<string, string> Dict = new Dictionary<string, string>();
+        public static Dictionary<string, string[]> Dict1 = new Dictionary<string, string[]>();
+        public static Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
 
         private const string file = "BotResponse.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -66,13 +67,20 @@ namespace ServerTools
                                     upgrade = false;
                                     continue;
                                 }
-                                else if (line.HasAttribute("Message") && line.HasAttribute("Response"))
+                                else if (line.HasAttribute("Message") && line.HasAttribute("Response") && line.HasAttribute("Exact") && line.HasAttribute("Whisper"))
                                 {
                                     string message = line.GetAttribute("Message").ToLower();
                                     string response = line.GetAttribute("Response");
-                                    if (!Dict.ContainsKey(message))
+                                    if (bool.TryParse(line.GetAttribute("Exact"), out bool exact))
                                     {
-                                        Dict.Add(message, response);
+                                        if (bool.TryParse(line.GetAttribute("Whisper"), out bool whisper))
+                                        {
+                                            string[] values = { response, exact.ToString().ToLower(), whisper.ToString().ToLower() };
+                                            if (!Dict.ContainsKey(message))
+                                            {
+                                                Dict.Add(message, values);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -143,9 +151,9 @@ namespace ServerTools
                     sw.WriteLine();
                     if (Dict.Count > 0)
                     {
-                        foreach (KeyValuePair<string, string> kvp in Dict)
+                        foreach (KeyValuePair<string, string[]> kvp in Dict)
                         {
-                            sw.WriteLine(string.Format("    <Chat Message=\"{0}\" Response=\"{1}\" />", kvp.Key, kvp.Value[0]));
+                            sw.WriteLine(string.Format("    <Chat Message=\"{0}\" Response=\"{1}\" Exact=\"{2}\" Whisper=\"{3}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2]));
                         }
                     }
                     sw.WriteLine("</BotResponse>");
@@ -206,7 +214,7 @@ namespace ServerTools
                             XmlElement line = (XmlElement)OldNodeList[i];
                             if (line.HasAttributes && line.Name == "Chat")
                             {
-                                string message = "", response = "";
+                                string message = "", response = "", exact = "", whisper = "";
                                 if (line.HasAttribute("Message"))
                                 {
                                     message = line.GetAttribute("Message");
@@ -215,7 +223,15 @@ namespace ServerTools
                                 {
                                     response = line.GetAttribute("Response");
                                 }
-                                sw.WriteLine(string.Format("    <Chat Message=\"{0}\" Response=\"{1}\" />", message, response));
+                                if (line.HasAttribute("Exact"))
+                                {
+                                    exact = line.GetAttribute("Exact");
+                                }
+                                if (line.HasAttribute("Whisper"))
+                                {
+                                    whisper = line.GetAttribute("Whisper");
+                                }
+                                sw.WriteLine(string.Format("    <Chat Message=\"{0}\" Response=\"{1}\" Exact=\"{2}\" Whisper=\"{3}\" />", message, response, exact, whisper));
                             }
                         }
                     }

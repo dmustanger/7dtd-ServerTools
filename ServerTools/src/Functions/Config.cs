@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.6.5.16";
+        public const string Version = "20.6.6.10";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -326,7 +326,7 @@ namespace ServerTools
                                                 }
                                                 if (AutoBackup.IsEnabled)
                                                 {
-                                                    AutoBackup.SetDelay();
+                                                    AutoBackup.SetDelay(false);
                                                 }
                                                 break;
                                             case "Auto_Backup_Extended":
@@ -395,7 +395,7 @@ namespace ServerTools
                                                 }
                                                 if (AutoSaveWorld.IsEnabled)
                                                 {
-                                                    AutoSaveWorld.SetDelay();
+                                                    AutoSaveWorld.SetDelay(false);
                                                 }
                                                 break;
                                             case "Bad_Word_Filter":
@@ -605,7 +605,7 @@ namespace ServerTools
                                                 }
                                                 if (Bloodmoon.IsEnabled)
                                                 {
-                                                    Bloodmoon.SetDelay();
+                                                    Bloodmoon.SetDelay(false);
                                                 }
                                                 break;
                                             case "Bloodmoon_Warrior":
@@ -669,16 +669,6 @@ namespace ServerTools
                                                 if (!bool.TryParse(line.GetAttribute("Enable"), out BotResponse.IsEnabled))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bot_Response entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
-                                                    continue;
-                                                }
-                                                if (!line.HasAttribute("Whisper"))
-                                                {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bot_Response entry in ServerToolsConfig.xml because of missing 'Whisper' attribute: {0}", line.OuterXml));
-                                                    continue;
-                                                }
-                                                if (!bool.TryParse(line.GetAttribute("Whisper"), out BotResponse.Whisper))
-                                                {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bot_Response entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Whisper' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 break;
@@ -755,7 +745,7 @@ namespace ServerTools
                                                 }
                                                 if (BreakTime.IsEnabled)
                                                 {
-                                                    BreakTime.SetDelay();
+                                                    BreakTime.SetDelay(false);
                                                 }
                                                 break;
                                             case "Chat_Color":
@@ -2039,7 +2029,7 @@ namespace ServerTools
                                                 }
                                                 if (InfoTicker.IsEnabled)
                                                 {
-                                                    InfoTicker.SetDelay();
+                                                    InfoTicker.SetDelay(false);
                                                 }
                                                 break;
                                             case "Invalid_Items":
@@ -2818,7 +2808,7 @@ namespace ServerTools
                                                 }
                                                 if (NightAlert.IsEnabled)
                                                 {
-                                                    NightAlert.SetDelay();
+                                                    NightAlert.SetDelay(false);
                                                 }
                                                 break;
                                             case "No_Vehicle_Pickup":
@@ -2928,7 +2918,7 @@ namespace ServerTools
                                                 }
                                                 if (PlayerLogs.IsEnabled)
                                                 {
-                                                    PlayerLogs.SetDelay();
+                                                    PlayerLogs.SetDelay(false);
                                                 }
                                                 break;
                                             case "Player_Stats":
@@ -3220,7 +3210,7 @@ namespace ServerTools
                                                 }
                                                 if (RealWorldTime.IsEnabled)
                                                 {
-                                                    RealWorldTime.SetDelay();
+                                                    RealWorldTime.SetDelay(false);
                                                 }
                                                 break;
                                             case "Report":
@@ -3769,6 +3759,26 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vault entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Inside_Claim' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
+                                                if (!line.HasAttribute("Slots"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vault entry in ServerToolsConfig.xml because of missing 'Slots' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!int.TryParse(line.GetAttribute("Slots"), out Vault.Slots))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vault entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Slots' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!line.HasAttribute("Lines"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vault entry in ServerToolsConfig.xml because of missing 'Lines' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out Vault.Lines))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vault entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Lines' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
                                                 break;
                                             case "Vehicle_Recall":
                                                 if (!line.HasAttribute("Enable"))
@@ -4037,7 +4047,6 @@ namespace ServerTools
                                                 if (line.HasAttribute("Currency_Name"))
                                                 {
                                                     Wallet.Currency_Name = line.GetAttribute("Currency_Name");
-                                                    continue;
                                                 }
                                                 if (!line.HasAttribute("Item_Name"))
                                                 {
@@ -4047,11 +4056,7 @@ namespace ServerTools
                                                 if (line.HasAttribute("Item_Name"))
                                                 {
                                                     string itemName = line.GetAttribute("Item_Name");
-                                                    if (Wallet.Item_Name != itemName)
-                                                    {
-                                                        Wallet.Item_Name = itemName;
-                                                        Wallet.SetItem(itemName);
-                                                    }
+                                                    Wallet.SetItem(itemName);
                                                 }
                                                 break;
                                             case "Watch_List":
@@ -4086,7 +4091,7 @@ namespace ServerTools
                                                 }
                                                 if (WatchList.IsEnabled)
                                                 {
-                                                    WatchList.SetDelay();
+                                                    WatchList.SetDelay(false);
                                                 }
                                                 break;
                                             case "Waypoints":
@@ -4354,7 +4359,7 @@ namespace ServerTools
                                                 }
                                                 if (Zones.IsEnabled)
                                                 {
-                                                    Zones.SetDelay();
+                                                    Zones.SetDelay(false);
                                                 }
                                                 break;
                                         }
@@ -4447,7 +4452,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Pickup\" Enable=\"{0}\" Admin_Only=\"{1}\" Admin_Level=\"{2}\" Reserved=\"{3}\" />", BlockPickup.IsEnabled, BlockPickup.Admin_Only, BlockPickup.Admin_Level, BlockPickup.Reserved));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Delay=\"{1}\" Show_On_Respawn=\"{2}\" />", Bloodmoon.IsEnabled, Bloodmoon.Delay, Bloodmoon.Show_On_Respawn));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon_Warrior\" Enable=\"{0}\" Zombie_Kills=\"{1}\" Chance=\"{2}\" Reduce_Death_Count=\"{3}\" Reward_Count=\"{4}\" />", BloodmoonWarrior.IsEnabled, BloodmoonWarrior.Zombie_Kills, BloodmoonWarrior.Chance, BloodmoonWarrior.Reduce_Death_Count, BloodmoonWarrior.Reward_Count));
-                sw.WriteLine(string.Format("        <Tool Name=\"Bot_Response\" Enable=\"{0}\" Whisper=\"{1}\" />", BotResponse.IsEnabled, BotResponse.Whisper));
+                sw.WriteLine(string.Format("        <Tool Name=\"Bot_Response\" Enable=\"{0}\" />", BotResponse.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bounties\" Enable=\"{0}\" Minimum_Bounty=\"{1}\" Kill_Streak=\"{2}\" Bonus=\"{3}\" />", Bounties.IsEnabled, Bounties.Minimum_Bounty, Bounties.Kill_Streak, Bounties.Bonus));
                 sw.WriteLine(string.Format("        <Tool Name=\"Break_Reminder\" Enable=\"{0}\" Break_Time=\"{1}\" Message=\"{2}\" />", BreakTime.IsEnabled, BreakTime.Delay, BreakTime.Message));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Color\" Enable=\"{0}\" Rotate=\"{1}\" Custom_Color=\"{2}\" />", ChatColor.IsEnabled, ChatColor.Rotate, ChatColor.Custom_Color));
@@ -4532,7 +4537,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Stuck\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" />", Stuck.IsEnabled, Stuck.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Suicide\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Player_Check=\"{2}\" Zombie_Check=\"{3}\" />", Suicide.IsEnabled, Suicide.Delay_Between_Uses, Suicide.Player_Check, Suicide.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Travel\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" Player_Check=\"{3}\" Zombie_Check=\"{4}\" />", Travel.IsEnabled, Travel.Delay_Between_Uses, Travel.Command_Cost, Travel.Player_Check, Travel.Zombie_Check));
-                sw.WriteLine(string.Format("        <Tool Name=\"Vault\" Enable=\"{0}\" Inside_Claim=\"{1}\" />", Vault.IsEnabled, Vault.Inside_Claim));
+                sw.WriteLine(string.Format("        <Tool Name=\"Vault\" Enable=\"{0}\" Inside_Claim=\"{1}\" Slots=\"{2}\" Lines=\"{3}\" />", Vault.IsEnabled, Vault.Inside_Claim, Vault.Slots, Vault.Lines));
                 sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Recall\" Enable=\"{0}\" Inside_Claim=\"{1}\" Distance=\"{2}\" Delay_Between_Uses=\"{3}\" Command_Cost=\"{4}\" />", VehicleRecall.IsEnabled, VehicleRecall.Inside_Claim, VehicleRecall.Distance, VehicleRecall.Delay_Between_Uses, VehicleRecall.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Recall_Extended\" Normal_Max=\"{0}\" Reserved_Max=\"{1}\" />", VehicleRecall.Normal_Max, VehicleRecall.Reserved_Max));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Link=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" />", Voting.IsEnabled, Voting.Link, Voting.API_Key, Voting.Delay_Between_Uses));

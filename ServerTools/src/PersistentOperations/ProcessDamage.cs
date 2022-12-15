@@ -182,18 +182,6 @@ namespace ServerTools
                         {
                             return true;
                         }
-                        if (Market.IsEnabled && Market.Damage_Z && GeneralFunction.IsBloodmoon() && Market.MarketPlayers.Contains(cInfoAttacker.entityId))
-                        {
-                            Phrases.Dict.TryGetValue("Market12", out string phrase);
-                            ChatHook.ChatMessage(cInfoAttacker, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            return true;
-                        }
-                        if (Lobby.IsEnabled && Lobby.Damage_Z && GeneralFunction.IsBloodmoon() && Lobby.LobbyPlayers.Contains(cInfoAttacker.entityId))
-                        {
-                            Phrases.Dict.TryGetValue("Lobby12", out string phrase);
-                            ChatHook.ChatMessage(cInfoAttacker, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            return true;
-                        }
                     }
                 }
                 else if (_victim is EntityAnimal && _victim.IsAlive() && _attacker is EntityPlayer)

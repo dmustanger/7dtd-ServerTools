@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace ServerTools
 {
@@ -822,8 +823,8 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    Phrases.Dict.TryGetValue("Auction15", out string _phrase);
-                                    ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Auction15", out string phrase);
+                                    ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 return false;
                             }
@@ -854,8 +855,8 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    Phrases.Dict.TryGetValue("Auction15", out string _phrase);
-                                    ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue("Auction15", out string phrase);
+                                    ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 return false;
                             }
@@ -954,21 +955,21 @@ namespace ServerTools
                                 phrase = phrase.Replace("{Message}", _pollData[2]);
                                 ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 Phrases.Dict.TryGetValue("Poll1", out phrase);
-                                int _yes = 0, _no = 0;
+                                int yes = 0, no = 0;
                                 Dictionary<string, bool> _pollVotes = PersistentContainer.Instance.PollVote;
                                 foreach (var _vote in _pollVotes)
                                 {
                                     if (_vote.Value)
                                     {
-                                        _yes++;
+                                        yes++;
                                     }
                                     else
                                     {
-                                        _no++;
+                                        no++;
                                     }
                                 }
-                                phrase = phrase.Replace("{YesVote}", _yes.ToString());
-                                phrase = phrase.Replace("{NoVote}", _no.ToString());
+                                phrase = phrase.Replace("{YesVote}", yes.ToString());
+                                phrase = phrase.Replace("{NoVote}", no.ToString());
                                 ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 return false;
                             }
@@ -1390,6 +1391,10 @@ namespace ServerTools
                                 GeneralFunction.Overlay(_cInfo);
                                 return false;
                             }
+                            if (messageLowerCase == "test")
+                            {
+                                
+                            }
                             if (!Passthrough)
                             {
                                 return false;
@@ -1648,24 +1653,77 @@ namespace ServerTools
                     if (_type == EChatType.Global)
                     {
                         GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, _message, _name, false, _recipientEntityIds);
+                        if (DiscordBot.IsEnabled && DiscordBot.Webhook != "" && DiscordBot.Webhook.StartsWith("https://discord.com/api/webhooks") &&
+                            !string.IsNullOrWhiteSpace(_name) && !_name.Contains(DiscordBot.Prefix))
+                        {
+                            if (_message.Contains("[") && _message.Contains("]"))
+                            {
+                                _message = Regex.Replace(_message, @"\[.*?\]", "");
+                            }
+                            if (!GeneralFunction.InvalidPrefix.Contains(_message[0]))
+                            {
+                                if (_name.Contains("[") && _name.Contains("]"))
+                                {
+                                    _name = Regex.Replace(_name, @"\[.*?\]", "");
+                                }
+                                if (_cInfo != null)
+                                {
+                                    if (DiscordBot.LastEntry != _message)
+                                    {
+                                        DiscordBot.LastPlayer = _cInfo.PlatformId.ToString();
+                                        DiscordBot.LastEntry = _message;
+                                        DiscordBot.Queue.Add("[Game] **" + _name + "** : " + DiscordBot.LastEntry);
+                                    }
+                                    else if (DiscordBot.LastPlayer != _cInfo.PlatformId.ToString())
+                                    {
+                                        DiscordBot.LastPlayer = _cInfo.PlatformId.ToString();
+                                        DiscordBot.LastEntry = _message;
+                                        DiscordBot.Queue.Add("[Game] **" + _name + "** : " + DiscordBot.LastEntry);
+                                    }
+                                }
+                                else if (DiscordBot.LastEntry != _message)
+                                {
+                                    DiscordBot.LastPlayer = "-1";
+                                    DiscordBot.LastEntry = _message;
+                                    DiscordBot.Queue.Add("[Game] **" + _name + "** : " + DiscordBot.LastEntry);
+                                }
+                            }
+                        }
                         if (BotResponse.IsEnabled)
                         {
                             string messageToLower = _message.ToLower();
                             List<string> responses = BotResponse.Dict.Keys.ToList();
                             for (int i = 0; i < responses.Count; i++)
                             {
-                                if (responses[i] == messageToLower)
+                                if (_message == responses[i])
                                 {
-                                    BotResponse.Dict.TryGetValue(responses[i], out string response);
-                                    if (BotResponse.Whisper)
+                                    BotResponse.Dict.TryGetValue(responses[i], out string[] response);
+                                    if (response[1] == "true")
                                     {
-                                        GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Whisper, -1, Config.Chat_Response_Color + response + "[-]", Config.Server_Response_Name, false, null);
+                                        if (response[2] == "true")
+                                        {
+                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Whisper, -1, response[0], Config.Server_Response_Name, false, null));
+                                        }
+                                        else
+                                        {
+                                            GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, Config.Chat_Response_Color + response[0] + "[-]", Config.Server_Response_Name, false, null);
+                                        }
                                     }
-                                    else
+                                }
+                                else if (_message.Contains(responses[i]))
+                                {
+                                    BotResponse.Dict.TryGetValue(responses[i], out string[] response);
+                                    if (response[1] == "false")
                                     {
-                                        GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, Config.Chat_Response_Color + response + "[-]", Config.Server_Response_Name, false, null);
+                                        if (response[2] == "whisper")
+                                        {
+                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Whisper, -1, response[0], Config.Server_Response_Name, false, null));
+                                        }
+                                        else
+                                        {
+                                            GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, Config.Chat_Response_Color + response[0] + "[-]", Config.Server_Response_Name, false, null);
+                                        }
                                     }
-                                    break;
                                 }
                             }
                         }

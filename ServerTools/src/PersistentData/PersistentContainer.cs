@@ -10,7 +10,8 @@ namespace ServerTools
     {
         public static bool DataChange = false;
 
-        private static string Filepath = string.Format("{0}/ServerTools.bin", API.ConfigPath);
+        private static string FilePath = string.Format("{0}/ServerTools.bin", API.ConfigPath);
+        private static string BackupFilePath = string.Format("{0}/ServerTools_Backup.bin", API.ConfigPath);
         private static PersistentContainer instance;
         private PersistentPlayers players;
         private static bool Saving = false;
@@ -37,7 +38,7 @@ namespace ServerTools
         private List<string> webBanList;
         private Dictionary<string, DateTime> webTimeoutList;
         private int worldSeed;
-        
+        private DateTime savePoint;
 
         public static PersistentContainer Instance
         {
@@ -67,20 +68,39 @@ namespace ServerTools
         {
         }
 
-        public void Save()
+        public void Save(bool _shutdown)
         {
             try
             {
-                if (DataChange)
+                if (DataChange && !Saving)
                 {
-                    if (!Saving)
+                    Saving = true;
+                    DateTime savePoint = DateTime.Now;
+                    Instance.SavePoint = savePoint;
+                    PersistentContainer container = Instance;
+                    using (Stream stream = File.Create(FilePath))
                     {
-                        Saving = true;
-                        using (Stream stream = File.Open(Filepath, FileMode.Create, FileAccess.ReadWrite))
+                        BinaryFormatter bFormatter = new BinaryFormatter();
+                        bFormatter.Serialize(stream, container);
+                    }
+                    if (!_shutdown)
+                    {
+                        System.Timers.Timer singleUseTimer = new System.Timers.Timer(10000)
                         {
-                            BinaryFormatter bFormatter = new BinaryFormatter();
-                            bFormatter.Serialize(stream, this);
-                        }
+                            AutoReset = false
+                        };
+                        singleUseTimer.Start();
+                        singleUseTimer.Elapsed += (sender, e) =>
+                        {
+                            singleUseTimer.Stop();
+                            using (Stream stream = File.Create(BackupFilePath))
+                            {
+                                BinaryFormatter bFormatter = new BinaryFormatter();
+                                bFormatter.Serialize(stream, container);
+                            }
+                            singleUseTimer.Close();
+                            singleUseTimer.Dispose();
+                        };
                     }
                     DataChange = false;
                 }
@@ -97,20 +117,29 @@ namespace ServerTools
         {
             try
             {
-                if (File.Exists(Filepath))
+                if (File.Exists(FilePath))
                 {
                     PersistentContainer obj;
-                    using (Stream stream = File.Open(Filepath, FileMode.Open, FileAccess.Read))
+                    using (Stream stream = File.Open(FilePath, FileMode.Open, FileAccess.Read))
                     {
                         BinaryFormatter bFormatter = new BinaryFormatter();
                         obj = (PersistentContainer)bFormatter.Deserialize(stream);
                     }
                     instance = obj;
+                    if ((instance.SavePoint == null || DateTime.Now.AddYears(-10) > instance.SavePoint) && File.Exists(BackupFilePath))
+                    {
+                        using (Stream stream = File.Open(BackupFilePath, FileMode.Open, FileAccess.Read))
+                        {
+                            BinaryFormatter bFormatter = new BinaryFormatter();
+                            obj = (PersistentContainer)bFormatter.Deserialize(stream);
+                        }
+                        instance = obj;
+                    }
                     return true;
                 }
                 else
                 {
-                    using (Stream stream = File.Open(Filepath, FileMode.Create, FileAccess.ReadWrite))
+                    using (Stream stream = File.Create(FilePath))
                     {
                         BinaryFormatter bFormatter = new BinaryFormatter();
                         bFormatter.Serialize(stream, this);
@@ -386,6 +415,18 @@ namespace ServerTools
             set
             {
                 worldSeed = value;
+            }
+        }
+
+        public DateTime SavePoint
+        {
+            get
+            {
+                return savePoint;
+            }
+            set
+            {
+                savePoint = value;
             }
         }
     }

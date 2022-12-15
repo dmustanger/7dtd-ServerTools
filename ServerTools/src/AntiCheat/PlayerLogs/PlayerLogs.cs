@@ -16,9 +16,9 @@ namespace ServerTools
         private static readonly string file = string.Format("PlayerLog_{0}.xml", DateTime.Today.ToString("M-d-yyyy"));
         private static readonly string FilePath = string.Format("{0}/Logs/PlayerLogs/{1}", API.ConfigPath, file);
 
-        public static void SetDelay()
+        public static void SetDelay(bool _reset)
         {
-            if (EventDelay != Delay)
+            if (EventDelay != Delay || _reset)
             {
                 EventDelay = Delay;
                 EventSchedule.Clear("PlayerLogs_");
@@ -27,31 +27,27 @@ namespace ServerTools
                     string[] times = Delay.Split(',');
                     for (int i = 0; i < times.Length; i++)
                     {
-                        if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
-                        {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("PlayerLogs_" + time);
-                                return;
-                            }
-                        }
+                        string[] timeSplit = times[i].Split(':');
+                        int.TryParse(timeSplit[0], out int hours);
+                        int.TryParse(timeSplit[1], out int minutes);
+                        DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                        EventSchedule.Schedule.Add("PlayerLogs_" + time, time);
                     }
                 }
                 else if (Delay.Contains(":"))
                 {
-                    if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Delay + ":00", out DateTime time))
-                    {
-                        if (DateTime.Now < time)
-                        {
-                            EventSchedule.Add("PlayerLogs_" + time);
-                        }
-                    }
+                    string[] timeSplit = Delay.Split(':');
+                    int.TryParse(timeSplit[0], out int hours);
+                    int.TryParse(timeSplit[1], out int minutes);
+                    DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                    EventSchedule.Schedule.Add("PlayerLogs_" + time, time);
                 }
                 else
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
-                        EventSchedule.Add("PlayerLogs_" + DateTime.Now.AddSeconds(delay));
+                        DateTime time = DateTime.Now.AddMinutes(delay);
+                        EventSchedule.Schedule.Add("PlayerLogs_" + time, time);
                     }
                     else
                     {

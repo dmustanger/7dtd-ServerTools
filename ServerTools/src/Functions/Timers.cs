@@ -322,21 +322,21 @@ namespace ServerTools
             };
         }
 
-        public static void SessionBonusTimer()
-        {
-            System.Timers.Timer singleUseTimer = new System.Timers.Timer(900000)
-            {
-                AutoReset = false
-            };
-            singleUseTimer.Start();
-            singleUseTimer.Elapsed += (sender, e) =>
-            {
-                Init16();
-                singleUseTimer.Stop();
-                singleUseTimer.Close();
-                singleUseTimer.Dispose();
-            };
-        }
+        //public static void nothing()
+        //{
+        //    System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+        //    {
+        //        AutoReset = false
+        //    };
+        //    singleUseTimer.Start();
+        //    singleUseTimer.Elapsed += (sender, e) =>
+        //    {
+        //        Init16();
+        //        singleUseTimer.Stop();
+        //        singleUseTimer.Close();
+        //        singleUseTimer.Dispose();
+        //    };
+        //}
 
         public static void WebPanelAlertTimer()
         {
@@ -388,14 +388,14 @@ namespace ServerTools
 
         public static void PersistentDataSave()
         {
-            System.Timers.Timer saveDelay = new System.Timers.Timer(120000)
+            System.Timers.Timer saveDelay = new System.Timers.Timer(60000)
             {
                 AutoReset = true
             };
             saveDelay.Start();
             saveDelay.Elapsed += (sender, e) =>
             {
-                PersistentContainer.Instance.Save();
+                PersistentContainer.Instance.Save(false);
             };
         }
 
@@ -471,7 +471,6 @@ namespace ServerTools
             if (fiveMinTick >= 300)
             {
                 fiveMinTick = 0;
-                StateManager.Save();
                 if (InvalidItems.Check_Storage)
                 {
                     InvalidItems.CheckStorage();
@@ -679,10 +678,10 @@ namespace ServerTools
                 _ladderValue);
         }
 
-        private static void Init16()
-        {
-            
-        }
+        //private static void Init16()
+        //{
+        //    
+        //}
 
         private static void Init17()
         {

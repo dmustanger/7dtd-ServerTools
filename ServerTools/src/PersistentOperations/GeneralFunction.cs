@@ -26,7 +26,7 @@ namespace ServerTools
         public static readonly string AlphaNumSet = "jJkqQr9Kl3wXAbyYz0ZLmFpPRsMn5NoO6dDe1EfStaBc2CgGhH7iITu4U8vWxV", NumSet = "1928374650";
         public static readonly char[] InvalidPrefix = new char[] { '!', '@', '#', '$', '%', '&', '/', '\\' };
 
-        public static DateTime StartTime = DateTime.Now;
+        public static DateTime StartTime;
 
         public static void CreateCustomXUi()
         {
@@ -40,7 +40,6 @@ namespace ServerTools
                         sw.WriteLine();
                         sw.WriteLine("<set xpath=\"/items/item[@name='casinoCoin']/property[@name='Tags']/@value\">dukes,currency</set>");
                         sw.WriteLine("<!-- ..... Wallet and Bank currency ^ ..... -->");
-                        sw.WriteLine("<!-- Replace with item name from servers items.xml if desired -->");
                         sw.WriteLine();
                         sw.WriteLine("</configs>");
                         sw.Flush();
@@ -666,11 +665,11 @@ namespace ServerTools
                                 }
                                 if (Lobby.IsEnabled)
                                 {
-                                    Lobby.InsideLobby(cInfo, player);
+                                    Lobby.IsLobby(player.position);
                                 }
                                 if (Market.IsEnabled)
                                 {
-                                    Market.InsideMarket(cInfo, player);
+                                    Market.IsMarket(player.position);
                                 }
                             }
                         }

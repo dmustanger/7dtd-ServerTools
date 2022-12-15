@@ -69,8 +69,7 @@ namespace ServerTools
             OutputLog.Shutdown();
             if (AutoRestart.IsEnabled)
             {
-                Log.Out("[SERVERTOOLS] Auto restart initialized");
-                Utils.RestartGame();
+                AutoRestart.Exec();
             }
         }
 
@@ -95,21 +94,11 @@ namespace ServerTools
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     }
-                    else if (NewPlayer.Block_During_Bloodmoon && GeneralFunction.IsBloodmoon() && ConnectionManager.Instance.ClientCount() > 1)
+                    else if (NewPlayer.Block_During_Bloodmoon && GeneralFunction.IsBloodmoon() && ConnectionManager.Instance.ClientCount() > 1 &&
+                        _cInfo.latestPlayerData.totalTimePlayed < 20)
                     {
                         Phrases.Dict.TryGetValue("NewPlayer1", out string phrase);
-                        PlayerDataFile pdf = GeneralFunction.GetPlayerDataFileFromUId(_cInfo.CrossplatformId);
-                        if (pdf != null)
-                        {
-                            if (pdf.totalTimePlayed < 5)
-                            {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
-                            }
-                        }
-                        else
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
-                        }
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     }
                     if (!string.IsNullOrEmpty(_cInfo.ip))
                     {
@@ -338,10 +327,6 @@ namespace ServerTools
                     {
                         InvalidItems.CheckInv(_cInfo, _playerDataFile);
                     }
-                    if (DupeLog.IsEnabled)
-                    {
-                        DupeLog.Exec(_cInfo, _playerDataFile);
-                    }
                     if (LevelUp.IsEnabled)
                     {
                         LevelUp.CheckLevel(_cInfo);
@@ -382,26 +367,6 @@ namespace ServerTools
                     if (FriendTeleport.Dict1.ContainsKey(_cInfo.entityId))
                     {
                         FriendTeleport.Dict1.Remove(_cInfo.entityId);
-                    }
-                    if (Wallet.IsEnabled && Wallet.Session_Bonus > 0)
-                    {
-                        if (GeneralFunction.Session.TryGetValue(id, out DateTime time))
-                        {
-                            TimeSpan varTime = DateTime.Now - time;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            int timepassed = (int)fractionalMinutes;
-                            if (timepassed > 60)
-                            {
-                                int sessionBonus = timepassed / 60 * Wallet.Session_Bonus;
-                                if (sessionBonus > 0)
-                                {
-                                    Wallet.AddCurrency(id, sessionBonus, true);
-                                }
-                            }
-                            int timePlayed = PersistentContainer.Instance.Players[id].TotalTimePlayed;
-                            PersistentContainer.Instance.Players[id].TotalTimePlayed = timePlayed + timepassed;
-                            PersistentContainer.DataChange = true;
-                        }
                     }
                     if (Bank.TransferId.ContainsKey(id))
                     {
@@ -471,6 +436,14 @@ namespace ServerTools
                     if (Lobby.LobbyPlayers.Contains(_cInfo.entityId))
                     {
                         Lobby.LobbyPlayers.Remove(_cInfo.entityId);
+                    }
+                    if (DupeLog.OldBags.ContainsKey(_cInfo.entityId))
+                    {
+                        DupeLog.OldBags.Remove(_cInfo.entityId);
+                    }
+                    if (DupeLog.OldInvs.ContainsKey(_cInfo.entityId))
+                    {
+                        DupeLog.OldInvs.Remove(_cInfo.entityId);
                     }
                     EventSchedule.RemoveBonusEntry("Bonus_" + id);
                 }

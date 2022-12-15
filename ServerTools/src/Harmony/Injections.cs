@@ -152,51 +152,20 @@ public static class Injections
         }
     }
 
-    public static void ChatMessageServer_Postfix(ClientInfo _cInfo, EChatType _chatType, string _msg, string _mainName)
+    public static bool ChatMessageServer_Prefix(ClientInfo _cInfo, EChatType _chatType, int _senderEntityId, string _msg, string _mainName, List<int> _recipientEntityIds)
     {
         try
         {
-            if (DiscordBot.IsEnabled && DiscordBot.Webhook != "" && DiscordBot.Webhook.StartsWith("https://discord.com/api/webhooks") &&
-                _chatType == EChatType.Global && !string.IsNullOrWhiteSpace(_mainName) && !_mainName.Contains(DiscordBot.Prefix))
+            if (!ChatHook.Hook(_cInfo, _chatType, _senderEntityId, _msg, _mainName, _recipientEntityIds))
             {
-                if (_msg.Contains("[") && _msg.Contains("]"))
-                {
-                    _msg = Regex.Replace(_msg, @"\[.*?\]", "");
-                }
-                if (!GeneralFunction.InvalidPrefix.Contains(_msg[0]))
-                {
-                    if (_mainName.Contains("[") && _mainName.Contains("]"))
-                    {
-                        _mainName = Regex.Replace(_mainName, @"\[.*?\]", "");
-                    }
-                    if (_cInfo != null)
-                    {
-                        if (DiscordBot.LastEntry != _msg)
-                        {
-                            DiscordBot.LastPlayer = _cInfo.PlatformId.ToString();
-                            DiscordBot.LastEntry = _msg;
-                            DiscordBot.Queue.Add("[Game] **" + _mainName + "** : " + DiscordBot.LastEntry);
-                        }
-                        else if (DiscordBot.LastPlayer != _cInfo.PlatformId.ToString())
-                        {
-                            DiscordBot.LastPlayer = _cInfo.PlatformId.ToString();
-                            DiscordBot.LastEntry = _msg;
-                            DiscordBot.Queue.Add("[Game] **" + _mainName + "** : " + DiscordBot.LastEntry);
-                        }
-                    }
-                    else if (DiscordBot.LastEntry != _msg)
-                    {
-                        DiscordBot.LastPlayer = "-1";
-                        DiscordBot.LastEntry = _msg;
-                        DiscordBot.Queue.Add("[Game] **" + _mainName + "** : " + DiscordBot.LastEntry);
-                    }
-                }
+                return false;
             }
         }
         catch (Exception e)
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ChatMessageServer_Postfix: {0}", e.Message));
         }
+        return true;
     }
 
     public static void GameManager_Cleanup_Finalizer()
@@ -412,43 +381,6 @@ public static class Injections
         return true;
     }
 
-    public static void World_SpawnEntityInWorld_Postfix(Entity _entity)
-    {
-        try
-        {
-            if (DroppedBagProtection.IsEnabled && _entity != null && _entity is EntityBackpack)
-            {
-                List<ClientInfo> clientList = GeneralFunction.ClientList();
-                if (clientList != null)
-                {
-                    for (int i = 0; i < clientList.Count; i++)
-                    {
-                        ClientInfo cInfo = clientList[i];
-                        if (cInfo.latestPlayerData != null && cInfo.latestPlayerData.droppedBackpackPosition != null && cInfo.latestPlayerData.droppedBackpackPosition == new Vector3i(_entity.position))
-                        {
-                            if (!DroppedBagProtection.Backpacks.ContainsKey(_entity.entityId))
-                            {
-                                DroppedBagProtection.Backpacks.Add(_entity.entityId, cInfo.entityId);
-                                PersistentContainer.Instance.Backpacks.Add(_entity.entityId, cInfo.entityId);
-                            }
-                            else
-                            {
-                                DroppedBagProtection.Backpacks[_entity.entityId] = cInfo.entityId;
-                                PersistentContainer.Instance.Backpacks[_entity.entityId] = cInfo.entityId;
-                            }
-                            PersistentContainer.DataChange = true;
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.World_SpawnEntityInWorld_Postfix: {0}", e.Message));
-        }
-    }
-
     public static void GameManager_PlayerSpawnedInWorld_Postfix(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos, int _entityId)
     {
         try
@@ -498,12 +430,18 @@ public static class Injections
     {
         try
         {
-            if (__instance.Sender != null && Wallet.UpdateRequired.ContainsKey(__instance.Sender.entityId))
+            if (__instance.Sender != null && Wallet.UpdateMainCurrency.ContainsKey(__instance.Sender.entityId))
             {
-                ClientInfo cInfo = __instance.Sender;
-                Wallet.UpdateRequired.TryGetValue(cInfo.entityId, out int value);
-                Wallet.UpdateRequired.Remove(cInfo.entityId);
-                Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, value, false);
+                if (Wallet.UpdateMainCurrency.ContainsKey(__instance.Sender.entityId) && Wallet.UpdateMainCurrency.TryGetValue(__instance.Sender.entityId, out int mainCurrencyCount))
+                {
+                    Wallet.UpdateMainCurrency.Remove(__instance.Sender.entityId);
+                    Wallet.AddCurrency(__instance.Sender.CrossplatformId.CombinedString, mainCurrencyCount, false);
+                }
+                if (Wallet.UpdateAltCurrency.ContainsKey(__instance.Sender.entityId) && Wallet.UpdateAltCurrency.TryGetValue(__instance.Sender.entityId, out List<string[]> altCurrency))
+                {
+                    Wallet.UpdateMainCurrency.Remove(__instance.Sender.entityId);
+                    Wallet.AddAltCurrency(__instance.Sender.CrossplatformId.CombinedString, altCurrency);
+                }
             }
         }
         catch (Exception e)
@@ -659,7 +597,7 @@ public static class Injections
 
     public static void ClientInfo_SendPackage_Postfix(ClientInfo __instance, NetPackage _package)
     {
-        if (__instance != null && _package != null && _package is NetPackageTeleportPlayer)
+        if (__instance != null && _package != null && (_package is NetPackageTeleportPlayer || _package is NetPackageEntityTeleport))
         {
             if (!TeleportDetector.Ommissions.Contains(__instance.entityId))
             {
@@ -759,12 +697,16 @@ public static class Injections
         }
     }
 
-    public static bool GameManager_DropContentOfLootContainerServer_Prefix(BlockValue _bvOld)
+    public static bool GameManager_DropContentOfLootContainerServer_Prefix(BlockValue _bvOld, int _lootEntityId)
     {
         try
         {
             if (_bvOld.Block.GetBlockName() == "VaultBox")
             {
+                if (Vault.VaultUser.ContainsKey(_lootEntityId))
+                {
+                    Vault.VaultUser.Remove(_lootEntityId);
+                }
                 return false;
             }
         }
@@ -773,5 +715,35 @@ public static class Injections
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_DropContentOfLootContainerServer_Prefix: {0}", e.Message));
         }
         return true;
+    }
+
+    public static void EntityAlive_FireEvent_Prefix(MinEventTypes _eventType, bool useInventory = true)
+    {
+        try
+        {
+            if (_eventType != MinEventTypes.onSelfPrimaryActionUpdate && _eventType != MinEventTypes.onSelfSecondaryActionUpdate)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Firevent: {0}", _eventType));
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.EntityAlive_FireEvent_Prefix: {0}", e.Message));
+        }
+    }
+
+    public static void GameManager_SavePlayerData_Postfix(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
+    {
+        try
+        {
+            if (_cInfo != null && _cInfo.latestPlayerData != null && _playerDataFile != null && DupeLog.IsEnabled)
+            {
+                DupeLog.Exec(_cInfo, _playerDataFile);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_SavePlayerData_Postfix: {0}", e.Message));
+        }
     }
 }

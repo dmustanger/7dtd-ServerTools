@@ -244,28 +244,6 @@ namespace ServerTools
             }
         }
 
-        public static void InsideLobby(ClientInfo _cInfo, EntityAlive _player)
-        {
-            if (IsLobby(_player.position))
-            {
-                if (!LobbyPlayers.Contains(_cInfo.entityId))
-                {
-                    LobbyPlayers.Add(_cInfo.entityId);
-                }
-            }
-            else
-            {
-                if (LobbyPlayers.Contains(_cInfo.entityId))
-                {
-                    LobbyPlayers.Remove(_cInfo.entityId);
-                    Phrases.Dict.TryGetValue("Lobby7", out string phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LobbyReturnPos = "";
-                    PersistentContainer.DataChange = true;
-                }
-            }
-        }
-
         public static bool IsLobby(Vector3 _position)
         {
             if (LobbyBounds.Contains(_position))

@@ -1,5 +1,33 @@
 ﻿CHANGELOG
 
+20.6.6
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added ServerTools_Backup.bin. It is saved 10 seconds after the
+main save and used as a redundancy for crashes and power loss 
+-Added Exact and Whisper option to BotResponse.xml. Exact forces
+the chat message to match in order for the response to trigger.
+If set to false, it only needs to contain it. Whisper will send 
+the response to only the player that sent the message.
+-Fixed Lottery tool quick draw triggered at server shutdown
+-Fixed Speed_Detector and Flying_Detector omission process
+when a player teleports
+-Fixed Bot_Response not working as intended
+-Fixed Vault not working as intended
+-Fixed Shop log not creating a txt file when the command was run
+-Fixed ServerToolsConfig.xml skipping the Item_Name option during 
+processing of Wallet_Extended
+-Fixed internal event scheduler setting times improperly
+-Updated save data interval
+-Updated Shop tool for particular mods using cvars
+-Updated Shop Panel to include armor stats automatically
+-Updated Dupe_Log tool. Reduced some potential of false positives
+-Updated Dropped_Bag_Protection tool. The bag will remain locked
+to outsiders after being accessed by an owner. The process has
+also been improved
+-Removed Whisper option from Bot_Response tool
+
 20.6.5
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

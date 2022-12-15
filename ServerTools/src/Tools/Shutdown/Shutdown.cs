@@ -6,7 +6,8 @@ namespace ServerTools
 {
     public static class Shutdown
     {
-        public static bool IsEnabled = false, Alert_On_Login = false, NoEntry = false, ShuttingDown = false, UI_Lock = false, UI_Locked = false, Interrupt_Bloodmoon = false;
+        public static bool IsEnabled = false, Alert_On_Login = false, NoEntry = false, ShuttingDown = false, 
+            UI_Lock = false, UI_Locked = false, Interrupt_Bloodmoon = false;
         public static int Countdown = 2, Alert_Count = 2;
         public static string Command_shutdown = "shutdown", Time = "240";
 
@@ -23,24 +24,27 @@ namespace ServerTools
                     string[] times = Time.Split(',');
                     for (int i = 0; i < times.Length; i++)
                     {
-                        if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
-                        {
-                            EventSchedule.Add("Shutdown_" + time);
-                        }
+                        string[] timeSplit = times[i].Split(':');
+                        int.TryParse(timeSplit[0], out int hours);
+                        int.TryParse(timeSplit[1], out int minutes);
+                        DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                        EventSchedule.Schedule.Add("Shutdown_" + time, time);
                     }
                 }
                 else if (Time.Contains(":"))
                 {
-                    if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Time + ":00", out DateTime time))
-                    {
-                        EventSchedule.Add("Shutdown_" + time);
-                    }
+                    string[] timeSplit = Time.Split(':');
+                    int.TryParse(timeSplit[0], out int hours);
+                    int.TryParse(timeSplit[1], out int minutes);
+                    DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                    EventSchedule.Schedule.Add("Shutdown_" + time, time);
                 }
                 else
                 {
                     if (int.TryParse(Time, out int delay))
                     {
-                        EventSchedule.Add("Shutdown_" + DateTime.Now.AddMinutes(delay));
+                        DateTime time = DateTime.Now.AddMinutes(delay);
+                        EventSchedule.Schedule.Add("Shutdown_" + time, time);
                     }
                     else
                     {
@@ -55,7 +59,8 @@ namespace ServerTools
         {
             if (GeneralFunction.IsBloodmoon() && !Interrupt_Bloodmoon)
             {
-                EventSchedule.Add("Shutdown_" + DateTime.Now.AddMinutes(10));
+                DateTime time = DateTime.Now.AddMinutes(10);
+                EventSchedule.Schedule.Add("Shutdown_" + time, time);
                 if (Event.Open && !Event.OperatorWarned)
                 {
                     ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(Event.Operator);
@@ -103,7 +108,8 @@ namespace ServerTools
         {
             if (GeneralFunction.IsBloodmoon() && !Interrupt_Bloodmoon)
             {
-                EventSchedule.Add("Shutdown_" + DateTime.Now.AddMinutes(10));
+                DateTime time = DateTime.Now.AddMinutes(10);
+                EventSchedule.Schedule.Add("Shutdown_" + time, time);
                 if (Event.Open && !Event.OperatorWarned)
                 {
                     ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(Event.Operator);
@@ -165,7 +171,7 @@ namespace ServerTools
 
         public static void Kick()
         {
-            PersistentContainer.Instance.Save();
+            PersistentContainer.Instance.Save(true);
             Phrases.Dict.TryGetValue("StopServer3", out string phrase);
             SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kickall \"{0}\"", phrase), null);
         }

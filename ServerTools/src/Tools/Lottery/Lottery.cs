@@ -46,7 +46,7 @@ namespace ServerTools
                     if (Entries.Count == 1)
                     {
                         DrawTime = DateTime.Now.AddHours(1);
-                        EventSchedule.Add("Lottery_" + DrawTime);
+                        EventSchedule.Schedule.Add("Lottery_" + DrawTime, DrawTime);
                     }
                     TimeSpan varTime = DrawTime - DateTime.Now;
                     double fractionalMinutes = varTime.TotalMinutes;
@@ -176,25 +176,29 @@ namespace ServerTools
 
         public static void DrawLotteryFast()
         {
-            int winningNumbers = new System.Random().Next(100, LastNumber + 1);
-            string numbers = winningNumbers.ToString();
-            Phrases.Dict.TryGetValue("Lottery4", out string phrase);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + numbers + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-            if (Entries.ContainsKey(winningNumbers))
+            if (Entries.Count > 0)
             {
-                Entries.TryGetValue(winningNumbers, out string id);
-                Wallet.AddCurrency(id, (Entries.Count + 1) * Entry_Cost + PersistentContainer.Instance.LotteryPot, true);
-                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(id);
-                if (cInfo != null)
+                int winningNumbers = new System.Random().Next(100, LastNumber + 1);
+                string numbers = winningNumbers.ToString();
+                Phrases.Dict.TryGetValue("Lottery4", out string phrase);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + numbers + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                if (Entries.ContainsKey(winningNumbers))
                 {
-                    Phrases.Dict.TryGetValue("Lottery6", out phrase);
-                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Entries.TryGetValue(winningNumbers, out string id);
+                    Wallet.AddCurrency(id, (Entries.Count + 1) * Entry_Cost + PersistentContainer.Instance.LotteryPot, true);
+                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(id);
+                    if (cInfo != null)
+                    {
+                        Phrases.Dict.TryGetValue("Lottery6", out phrase);
+                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    }
                 }
+                LastNumber = 98;
+                Entries.Clear();
+                PersistentContainer.Instance.LotteryPot = 0;
+                PersistentContainer.DataChange = true;
             }
-            Entries.Clear();
-            PersistentContainer.Instance.LotteryPot = 0;
-            PersistentContainer.DataChange = true;
         }
 
         public static void Alert()

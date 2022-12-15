@@ -207,7 +207,6 @@
     <Compile Include="src\PersistentData\PersistentContainer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayers.cs" />
-    <Compile Include="src\PersistentData\StateManager.cs" />
     <Compile Include="src\Tools\ExitCommand\ExitCommand.cs" />
     <Compile Include="src\Tools\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\TeleportDetector\TeleportDetector.cs" />
@@ -339,6 +338,9 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Mono.Data.Sqlite, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Data.Sqlite.1.0.61\lib\net40\Mono.Data.Sqlite.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.IO.Compression.FileSystem" />

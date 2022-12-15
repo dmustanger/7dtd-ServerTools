@@ -693,7 +693,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lottery5", out phrase))
                     {
-                        phrase = "We have winner!!! Thank you for playing everyone";
+                        phrase = "We have a winner!!! Thank you for playing everyone";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lottery5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lottery6", out phrase))

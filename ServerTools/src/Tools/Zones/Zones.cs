@@ -262,35 +262,38 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void SetDelay()
+        public static void SetDelay(bool _reset)
         {
-            if (EventDelay != Reminder_Delay)
+            if (EventDelay != Reminder_Delay || _reset)
             {
                 EventDelay = Reminder_Delay;
-                EventSchedule.Clear("WatchList_");
+                EventSchedule.Clear("Zones_");
                 if (Reminder_Delay.Contains(",") && Reminder_Delay.Contains(":"))
                 {
                     string[] times = Reminder_Delay.Split(',');
                     for (int i = 0; i < times.Length; i++)
                     {
-                        if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
-                        {
-                            EventSchedule.Add("Zones_" + time);
-                        }
+                        string[] timeSplit = times[i].Split(':');
+                        int.TryParse(timeSplit[0], out int hours);
+                        int.TryParse(timeSplit[1], out int minutes);
+                        DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                        EventSchedule.Schedule.Add("Zones_" + time, time);
                     }
                 }
                 else if (Reminder_Delay.Contains(":"))
                 {
-                    if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Reminder_Delay + ":00", out DateTime time))
-                    {
-                        EventSchedule.Add("Zones_" + time);
-                    }
+                    string[] timeSplit = Reminder_Delay.Split(':');
+                    int.TryParse(timeSplit[0], out int hours);
+                    int.TryParse(timeSplit[1], out int minutes);
+                    DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                    EventSchedule.Schedule.Add("Zones_" + time, time);
                 }
                 else
                 {
                     if (int.TryParse(Reminder_Delay, out int delay))
                     {
-                        EventSchedule.Add("Zones_" + DateTime.Now.AddMinutes(delay));
+                        DateTime time = DateTime.Now.AddMinutes(delay);
+                        EventSchedule.Schedule.Add("Zones_" + time, time);
                     }
                     else
                     {

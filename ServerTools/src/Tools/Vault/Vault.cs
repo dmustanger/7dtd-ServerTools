@@ -7,6 +7,7 @@ namespace ServerTools
     class Vault
     {
         public static bool IsEnabled = false, Inside_Claim = false;
+        public static int Slots = 4, Lines = 1;
         public static string Command_vault = "vault";
 
         public static Dictionary<int, string> VaultUser = new Dictionary<int, string>();
@@ -31,18 +32,18 @@ namespace ServerTools
                 {
                     VaultUser[_container.entityId] = cInfo.CrossplatformId.CombinedString;
                 }
-                int vaultSize = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].VaultSize;
-                if (vaultSize < 4)
+                int[] vaultSize = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].VaultSize;
+                if (vaultSize != null && vaultSize.Length == 2 && vaultSize[0] > 0 && vaultSize[1] > 0)
                 {
-                    _container.SetContainerSize(new Vector2i(4, 1), true);
+                    _container.SetContainerSize(new Vector2i(vaultSize[0], vaultSize[1]), true);
                 }
-                else if (vaultSize == 48)
+                else if (Slots > 0 && Lines > 0)
                 {
-                    _container.SetContainerSize(new Vector2i(8, 6), true);
+                    _container.SetContainerSize(new Vector2i(Slots, Lines), true);
                 }
                 else
                 {
-                    _container.SetContainerSize(new Vector2i(vaultSize, 1), true);
+                    _container.SetContainerSize(new Vector2i(0, 0), true);
                 }
                 if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Vault != null)
                 {

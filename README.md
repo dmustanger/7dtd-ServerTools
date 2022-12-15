@@ -1885,7 +1885,7 @@ Prefix controls the prefix for the message.
 Set True or False for Enable
 
 ### Description
-Enabling lets players type /playerlist or /plist to see all the current online player names and entity id.
+Enabling lets players type /list to see all the current online player names and entity id.
 
 ## POI_Protection
 ```xml

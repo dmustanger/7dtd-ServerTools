@@ -29,7 +29,7 @@ namespace ServerTools
                         if (cInfo != null)
                         {
                             EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
-                            if (player != null)
+                            if (player != null && player.IsSpawned() && player.IsAlive() && !TeleportDetector.Ommissions.Contains(player.entityId))
                             {
                                 int userPlatformPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId);
                                 int userCrossplatformPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId);
@@ -119,7 +119,7 @@ namespace ServerTools
                                         }
                                     }
                                 }
-                                else if (player.IsSpawned())
+                                else
                                 {
                                     TwoSecondMovement.Add(cInfo.entityId, player.position);
                                 }

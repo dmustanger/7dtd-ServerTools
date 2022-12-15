@@ -11,16 +11,20 @@ namespace ServerTools
         public static string Currency_Name = "coin", Item_Name = "casinoCoin";
         public static int Zombie_Kill = 10, Player_Kill = 25, Session_Bonus = 5;
 
-        public static Dictionary<int, int> UpdateRequired = new Dictionary<int, int>();
+        public static Dictionary<int, int> UpdateMainCurrency = new Dictionary<int, int>();
+        public static Dictionary<int, List<string[]>> UpdateAltCurrency = new Dictionary<int, List<string[]>>();
 
         public static void SetItem(string _item)
         {
             try
             {
+                if (Item_Name != _item)
+                {
+                    Item_Name = _item;
+                }
                 if (File.Exists(GeneralFunction.XPathDir + "items.xml"))
                 {
                     string[] arrLines = File.ReadAllLines(GeneralFunction.XPathDir + "items.xml");
-                    int lineNumber = 0;
                     for (int i = 0; i < arrLines.Length; i++)
                     {
                         if (arrLines[i].Contains("set xpath"))
@@ -31,7 +35,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                arrLines[lineNumber] = string.Format("<set xpath=\"/items/item[@name='{0}']/property[@name='Tags']/@value\">dukes,currency</set>", _item);
+                                arrLines[i] = string.Format("<set xpath=\"/items/item[@name='{0}']/property[@name='Tags']/@value\">dukes,currency</set>", _item);
                                 File.WriteAllLines(GeneralFunction.XPathDir + "items.xml", arrLines);
                                 break;
                             }
@@ -42,7 +46,6 @@ namespace ServerTools
             catch (XmlException e)
             {
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralFunction.XPathDir + "items.xml", e.Message));
-                return;
             }
         }
 
@@ -77,6 +80,42 @@ namespace ServerTools
                 }
             }
             return value;
+        }
+
+        public static List<string[]> GetOtherCurrency(string _id, List<string[]> otherCurrency)
+        {
+            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_id);
+            if (cInfo != null)
+            {
+                ItemStack[] stacks = cInfo.latestPlayerData.bag;
+                for (int i = 0; i < stacks.Length; i++)
+                {
+                    if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.HasAnyTags(FastTags.Parse("currency")) && 
+                        stacks[i].itemValue.ItemClass.Name != GeneralFunction.Currency_Item)
+                    {
+                        string[] entry = { i.ToString(), stacks[i].itemValue.ItemClass.Name, stacks[i].count.ToString() };
+                        otherCurrency.Add(entry);
+                    }
+                }
+            }
+            else
+            {
+                PlayerDataFile pdf = GeneralFunction.GetPlayerDataFileFromId(_id);
+                if (pdf != null)
+                {
+                    ItemStack[] stacks = pdf.bag;
+                    for (int i = 0; i < stacks.Length; i++)
+                    {
+                        if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.HasAnyTags(FastTags.Parse("currency")) &&
+                        stacks[i].itemValue.ItemClass.Name != GeneralFunction.Currency_Item)
+                        {
+                            string[] entry = { i.ToString(), stacks[i].itemValue.ItemClass.Name, stacks[i].count.ToString() };
+                            otherCurrency.Add(entry);
+                        }
+                    }
+                }
+            }
+            return otherCurrency;
         }
 
         public static void AddCurrency(string _id, int _amount, bool _directAllowed)
@@ -151,25 +190,51 @@ namespace ServerTools
                     }
                 }
             }
-            else
+        }
+
+        public static void AddAltCurrency(string _id, List<string[]> altCurrency)
+        {
+            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_id);
+            if (cInfo != null)
             {
-                PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].PlayerWallet += _amount;
-                PersistentContainer.DataChange = true;
+                for (int i = 0; i < altCurrency.Count; i++)
+                {
+                    ItemValue itemValue = ItemClass.GetItem(altCurrency[i][1], false);
+                    if (itemValue != null)
+                    {
+                        int count = int.Parse(altCurrency[i][2]);
+                        World world = GameManager.Instance.World;
+                        EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                        {
+                            entityClass = EntityClass.FromString("item"),
+                            id = EntityFactory.nextEntityID++,
+                            itemStack = new ItemStack(itemValue, count),
+                            pos = world.Players.dict[cInfo.entityId].position,
+                            rot = new Vector3(20f, 0f, 20f),
+                            lifetime = 60f,
+                            belongsPlayerId = cInfo.entityId
+                        });
+                        world.SpawnEntityInWorld(entityItem);
+                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
+                        world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                    }
+                }
             }
         }
 
         public static void RemoveCurrency(string _steamid, int _amount)
         {
-            int count = 0;
             ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_steamid);
             if (cInfo != null)
             {
                 EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
                 if (player != null)
                 {
+                    List<string[]> otherCurrency = new List<string[]>();
+                    otherCurrency = GetOtherCurrency(cInfo.CrossplatformId.CombinedString, otherCurrency);
+                    int count = GetCurrency(cInfo.CrossplatformId.CombinedString);
                     if (player.IsSpawned())
                     {
-                        count = GetCurrency(cInfo.CrossplatformId.CombinedString);
                         if (GameEventManager.GameEventSequences.ContainsKey("action_currency"))
                         {
                             GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
@@ -179,7 +244,8 @@ namespace ServerTools
                                 count -= _amount;
                                 if (count > 0)
                                 {
-                                    UpdateRequired.Add(cInfo.entityId, count);
+                                    UpdateMainCurrency.Add(cInfo.entityId, count);
+                                    UpdateAltCurrency.Add(cInfo.entityId, otherCurrency);
                                 }
                             }
                         }

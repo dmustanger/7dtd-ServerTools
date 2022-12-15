@@ -194,9 +194,9 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void SetDelay()
+        public static void SetDelay(bool _reset)
         {
-            if (EventDelay != Delay)
+            if (EventDelay != Delay || _reset)
             {
                 EventDelay = Delay;
                 EventSchedule.Clear("InfoTicker_");
@@ -205,31 +205,30 @@ namespace ServerTools
                     string[] times = Delay.Split(',');
                     for (int i = 0; i < times.Length; i++)
                     {
-                        if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + times[i] + ":00", out DateTime time))
+                        string[] timeSplit = times[i].Split(':');
+                        int.TryParse(timeSplit[0], out int hours);
+                        int.TryParse(timeSplit[1], out int minutes);
+                        DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                        if (EventSchedule.Schedule.ContainsKey("InfoTicker_" + time))
                         {
-                            if (DateTime.Now < time)
-                            {
-                                EventSchedule.Add("InfoTicker_" + time);
-                                return;
-                            }
+                            EventSchedule.Schedule.Add("InfoTicker_" + time, time);
                         }
                     }
                 }
                 else if (Delay.Contains(":"))
                 {
-                    if (DateTime.TryParse(DateTime.Today.ToString("d") + " " + Delay + ":00", out DateTime time))
-                    {
-                        if (DateTime.Now < time)
-                        {
-                            EventSchedule.Add("InfoTicker_" + time);
-                        }
-                    }
+                    string[] timeSplit = Delay.Split(':');
+                    int.TryParse(timeSplit[0], out int hours);
+                    int.TryParse(timeSplit[1], out int minutes);
+                    DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                    EventSchedule.Schedule.Add("InfoTicker_" + time, time);
                 }
                 else
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
-                        EventSchedule.Add("InfoTicker_" + DateTime.Now.AddMinutes(delay));
+                        DateTime time = DateTime.Now.AddMinutes(delay);
+                        EventSchedule.Schedule.Add("InfoTicker_" + time, time);
                     }
                     else
                     {

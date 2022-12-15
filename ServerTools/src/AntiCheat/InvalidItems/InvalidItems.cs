@@ -336,9 +336,8 @@ namespace ServerTools
                         }
                         if (Check_Storage)
                         {
-                            int size = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].VaultSize;
                             ItemDataSerializable[] itemData = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Vault;
-                            for (int i = 0; i < size; i++)
+                            for (int i = 0; i < itemData.Length; i++)
                             {
                                 if (Dict.Contains(itemData[i].name))
                                 {

@@ -122,7 +122,10 @@ namespace ServerTools
                         GeneralFunction.XPathDir = installPath + "/Config/";
                     }
 
-                    StateManager.Awake();
+                    if (PersistentContainer.Instance.Load())
+                    {
+                        Log.Out("[SERVERTOOLS] Data loaded");
+                    }
                     RunTimePatch.PatchAll();
                     Config.Load();
                     GeneralFunction.CreateCustomXUi();
@@ -130,6 +133,7 @@ namespace ServerTools
                     GeneralFunction.GetMeleeHandPlayer();
                     GeneralFunction.EntityIdList();
                     GeneralFunction.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
+                    GeneralFunction.StartTime = DateTime.Now;
                     CommandList.BuildList();
                     CommandList.Load();
                     InteractiveMap.SetWorldSize();
@@ -235,7 +239,6 @@ namespace ServerTools
                         Config.LoadXml();
                     }
                     Track.Cleanup();
-                    DroppedBagProtection.BuildList();
 
                     ActiveTools.Exec(true);
                     Timers.Set_Link_Delay();

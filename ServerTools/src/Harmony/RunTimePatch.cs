@@ -106,13 +106,13 @@ namespace ServerTools
                 }
                 else
                 {
-                    MethodInfo postfix = typeof(Injections).GetMethod("ChatMessageServer_Postfix");
-                    if (postfix == null)
+                    MethodInfo prefix = typeof(Injections).GetMethod("ChatMessageServer_Prefix");
+                    if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChatMessageServer.postfix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChatMessageServer.prefix"));
                         return;
                     }
-                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
                 original = AccessTools.Method(typeof(GameManager), "Cleanup");
@@ -187,22 +187,6 @@ namespace ServerTools
                         return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
-                }
-
-                original = AccessTools.Method(typeof(World), "SpawnEntityInWorld");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.SpawnEntityInWorld Class.Method was not found"));
-                }
-                else
-                {
-                    MethodInfo postfix = typeof(Injections).GetMethod("World_SpawnEntityInWorld_Postfix");
-                    if (postfix == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: World_SpawnEntityInWorld.postfix"));
-                        return;
-                    }
-                    harmony.Patch(original, null, new HarmonyMethod(postfix));
                 }
 
                 original = AccessTools.Method(typeof(GameManager), "PlayerSpawnedInWorld");
@@ -482,6 +466,38 @@ namespace ServerTools
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
+
+                original = AccessTools.Method(typeof(GameManager), "SavePlayerData");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.SavePlayerData Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo postfix = typeof(Injections).GetMethod("GameManager_SavePlayerData_Postfix");
+                    if (postfix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_SavePlayerData_Postfix"));
+                        return;
+                    }
+                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                }
+                
+                //original = AccessTools.Method(typeof(EntityAlive), "FireEvent");
+                //if (original == null)
+                //{
+                //    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.FireEvent Class.Method was not found"));
+                //}
+                //else
+                //{
+                //    MethodInfo prefix = typeof(Injections).GetMethod("EntityAlive_FireEvent_Prefix");
+                //    if (prefix == null)
+                //    {
+                //        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_FireEvent_Prefix"));
+                //        return;
+                //    }
+                //    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                //}
 
                 Log.Out("[SERVERTOOLS] Runtime patching complete");
             }

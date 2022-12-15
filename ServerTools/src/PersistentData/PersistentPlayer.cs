@@ -79,7 +79,7 @@ namespace ServerTools
         private bool startingItems;
         private int totalTimePlayed;
         private ItemDataSerializable[] vault;
-        private int vaultSize;
+        private int[] vaultSize;
         private Dictionary<int, string[]> vehicles;
         private int voteWeekCount;
         private Dictionary<string, string> waypoints;
@@ -915,7 +915,7 @@ namespace ServerTools
             }
         }
 
-        public int VaultSize
+        public int[] VaultSize
         {
             get
             {

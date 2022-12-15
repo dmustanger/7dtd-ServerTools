@@ -9,29 +9,6 @@ namespace ServerTools
         public static List<string> Expired = new List<string>();
         public static Dictionary<string, DateTime> Schedule = new Dictionary<string, DateTime>();
 
-        public static void Add(string _classMethod_Time)
-        {
-            if (!string.IsNullOrEmpty(_classMethod_Time))
-            {
-                string[] split = _classMethod_Time.Split('_');
-                if (DateTime.TryParse(split[1], out DateTime dateTime))
-                {
-                    if (!Schedule.ContainsKey(_classMethod_Time))
-                    {
-                        Schedule.Add(_classMethod_Time, dateTime);
-                    }
-                }
-            }
-        }
-
-        public static void Remove(string _classMethod)
-        {
-            if (Schedule.ContainsKey(_classMethod))
-            {
-                Schedule.Remove(_classMethod);
-            }
-        }
-
         public static void Exec()
         {
             try
@@ -48,7 +25,7 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    AutoBackup.SetDelay();
+                                    AutoBackup.SetDelay(true);
                                     AutoBackup.Exec();
                                 }
                                 continue;
@@ -56,7 +33,7 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    AutoSaveWorld.SetDelay();
+                                    AutoSaveWorld.SetDelay(true);
                                     AutoSaveWorld.Save();
                                 }
                                 continue;
@@ -64,7 +41,7 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    Bloodmoon.SetDelay();
+                                    Bloodmoon.SetDelay(true);
                                     Bloodmoon.StatusCheck();
                                 }
                                 continue;
@@ -82,7 +59,7 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    BreakTime.SetDelay();
+                                    BreakTime.SetDelay(true);
                                     BreakTime.Exec();
                                 }
                                 continue;
@@ -90,7 +67,7 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    InfoTicker.SetDelay();
+                                    InfoTicker.SetDelay(true);
                                     InfoTicker.Exec();
                                 }
                                 continue;
@@ -105,7 +82,7 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    NightAlert.SetDelay();
+                                    NightAlert.SetDelay(true);
                                     NightAlert.Exec();
                                 }
                                 continue;
@@ -113,7 +90,7 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    PlayerLogs.SetDelay();
+                                    PlayerLogs.SetDelay(true);
                                     PlayerLogs.Exec();
                                 }
                                 continue;
@@ -121,7 +98,7 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    RealWorldTime.SetDelay();
+                                    RealWorldTime.SetDelay(true);
                                     RealWorldTime.Exec();
                                 }
                                 continue;
@@ -143,7 +120,7 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    WatchList.SetDelay();
+                                    WatchList.SetDelay(true);
                                     WatchList.Exec();
                                 }
                                 continue;
@@ -151,7 +128,7 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    Zones.SetDelay();
+                                    Zones.SetDelay(true);
                                     Zones.ReminderExec();
                                 }
                                 continue;
@@ -165,47 +142,55 @@ namespace ServerTools
             }
         }
 
+        public static void Remove(string _classMethod)
+        {
+            if (Schedule.ContainsKey(_classMethod))
+            {
+                Schedule.Remove(_classMethod);
+            }
+        }
+
         public static void Reset()
         {
             if (AutoBackup.IsEnabled)
             {
-                AutoBackup.SetDelay();
+                AutoBackup.SetDelay(true);
             }
             if (AutoSaveWorld.IsEnabled)
             {
-                AutoSaveWorld.SetDelay();
+                AutoSaveWorld.SetDelay(true);
             }
             if (Bloodmoon.IsEnabled)
             {
-                Bloodmoon.SetDelay();
+                Bloodmoon.SetDelay(true);
             }
             if (BreakTime.IsEnabled)
             {
-                BreakTime.SetDelay();
+                BreakTime.SetDelay(true);
             }
             if (InfoTicker.IsEnabled)
             {
-                InfoTicker.SetDelay();
+                InfoTicker.SetDelay(true);
             }
             if (NightAlert.IsEnabled)
             {
-                NightAlert.SetDelay();
+                NightAlert.SetDelay(true);
             }
             if (PlayerLogs.IsEnabled)
             {
-                PlayerLogs.SetDelay();
+                PlayerLogs.SetDelay(true);
             }
             if (RealWorldTime.IsEnabled)
             {
-                RealWorldTime.SetDelay();
+                RealWorldTime.SetDelay(true);
             }
             if (WatchList.IsEnabled)
             {
-                WatchList.SetDelay();
+                WatchList.SetDelay(true);
             }
             if (Zones.IsEnabled)
             {
-                Zones.SetDelay();
+                Zones.SetDelay(true);
             }
             Schedule.Add("Reset_", DateTime.Today.AddDays(1).AddSeconds(1));
         }

@@ -146,7 +146,7 @@ namespace ServerTools
                             int.TryParse(cords[0], out int x);
                             int.TryParse(cords[1], out int y);
                             int.TryParse(cords[2], out int z);
-                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y + 1, z), null, false));
                             DeathTime.Remove(_cInfo.entityId);
                             LastDeathPos.Remove(_cInfo.entityId);
                             if (Command_Cost >= 1 && Wallet.IsEnabled)

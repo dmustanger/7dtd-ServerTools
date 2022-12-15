@@ -13,7 +13,7 @@ namespace ServerTools
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine("This was drafted for version 20.6.5");
+                sw.WriteLine("This was drafted for version 20.6.6");
                 sw.WriteLine();
                 sw.WriteLine("If you find mistakes or the file is out of date, let the dev team know.");
                 sw.WriteLine();
@@ -28,6 +28,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("Download and extract the contents of the latest release which will be packaged as a .zip file.");
                 sw.WriteLine("Copy the Mods folder you extracted from the.zip to your user data folder. If you have not specified a custom location, it should be located under your app data folder.");
+                sw.WriteLine("Alternatively you can place the installation files inside your main dedicated server. It must remain inside the Mods folder.");
                 sw.WriteLine("If this Mods folder already exists, you can take the ServerTools folder found inside of the Mods folder from the latest release and place it inside of your existing Mods directory.");
                 sw.WriteLine("Double check any new files were copied over properly. Some hosts do not allow .dll files to be transferred without permission.");
                 sw.WriteLine();
@@ -58,7 +59,6 @@ namespace ServerTools
                 sw.WriteLine("Bad_Word_Filter");
                 sw.WriteLine("Bank");
                 sw.WriteLine("Bed");
-                //sw.WriteLine("Black_Jack");
                 sw.WriteLine("Block_Logger");
                 sw.WriteLine("Block_Pickup");
                 sw.WriteLine("Bloodmoon");
@@ -147,6 +147,7 @@ namespace ServerTools
                 sw.WriteLine("Suicide");
                 sw.WriteLine("Tracking");
                 sw.WriteLine("Travel");
+                sw.WriteLine("Vault");
                 sw.WriteLine("Vehicle_Recall");
                 sw.WriteLine("Voting");
                 sw.WriteLine("Wall");
@@ -1683,7 +1684,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set a numeric value for Delay_Between_Uses");
-                sw.WriteLine("Set a numeric values for Command_Cost");
+                sw.WriteLine("Set a numeric value for Command_Cost");
                 sw.WriteLine("Set True or False for Player_Check");
                 sw.WriteLine("Set True or False for Zombie_Check");
                 sw.WriteLine();
@@ -1699,14 +1700,18 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine("<Tool Name=\"Vault\" />");
-                sw.WriteLine("<Tool Name=\"Vault\" Inside_Claim=\"False\" />");
+                sw.WriteLine("<Tool Name=\"Vault\" Inside_Claim=\"False\" Slots=\"4\" Lines=\"1\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set True or False for Inside_Claim");
+                sw.WriteLine("Set a numeric value for Slots");
+                sw.WriteLine("Set a numeric value for Lines");
                 sw.WriteLine();
                 sw.WriteLine("Vault is a special tool that allows players to place items in them securely without risk of loss. The items will carry over to new maps.");
-                sw.WriteLine("They have limited slots due to how powerful this is. You can adjust the number of slots a player has from 1 to 8, or 48. 48 is meant to help move items between maps or for admins.");
+                sw.WriteLine("They have limited slots due to how powerful this is. You can adjust the number of slots and lines are available. 48 slots is the maximum. 8 slots, 6 lines, 48 total.");
                 sw.WriteLine("Opening a second vault box will contain the same items as the first. This is similar to an Enderchest from Minecraft.");
+                sw.WriteLine("Slots controls how many item slots are available in a single line of their vault.");
+                sw.WriteLine("Lines controls how many item lines are available total of their vault.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -1935,11 +1940,15 @@ namespace ServerTools
                 sw.WriteLine("Type help to get a list of available console commands.");
                 sw.WriteLine("Type help 'command name' to get more detailed information about a specific command.");
                 sw.WriteLine("Type help * st- to see only ServerTools commands.");
-                sw.WriteLine("Type help * is a search process. You can search for various commands by typing help * commandName.");
+                sw.WriteLine("Typing help * is a search process. You can search for various commands by typing help * commandName.");
                 sw.WriteLine();
                 sw.WriteLine("Chat commands");
                 sw.WriteLine();
                 sw.WriteLine("Type /commands in chat to get a list of available chat commands. This will show only commands that are active for the player based on the enabling of the tools.");
+                sw.WriteLine();
+                sw.WriteLine("CommandList.xml");
+                sw.WriteLine();
+                sw.WriteLine("You can alter the various chat commands used to trigger tools. The CommandList.xml has the default command and alternate/replacement of your choice. Do not change the default, only the replacement.");
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();
