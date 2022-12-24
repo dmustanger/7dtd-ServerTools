@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Auction = false, Bank = false, Bounties = false, Delays = false,
             Homes = false, Jail = false, Lobby = false, Market = false, New_Spawn_Tele = false, Poll = false,
-            Protected_Zones = false, Shop_Log = false, Vehicles = false, Waypoints = false;
+            Protected_Zones = false, Shop_Log = false, Waypoints = false;
 
         public static void Exec()
         {
@@ -58,6 +58,7 @@ namespace ServerTools
                     PersistentContainer.Instance.Players[id[i]].LastScout = new DateTime();
                     PersistentContainer.Instance.Players[id[i]].LastStuck = new DateTime();
                     PersistentContainer.Instance.Players[id[i]].LastTravel = new DateTime();
+                    PersistentContainer.Instance.Players[id[i]].LastVehicle = new DateTime();
                     PersistentContainer.Instance.Players[id[i]].LastVote = new DateTime();
                     PersistentContainer.Instance.Players[id[i]].LastVoteWeek = new DateTime();
                     PersistentContainer.Instance.Players[id[i]].LastWaypoint = new DateTime();
@@ -88,10 +89,6 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[id[i]].NewSpawn = false;
                     PersistentContainer.Instance.Players[id[i]].NewSpawnPosition = string.Empty;
-                }
-                if (Vehicles)
-                {
-                    PersistentContainer.Instance.Players[id[i]].Vehicles = new Dictionary<int, string[]>();
                 }
                 if (Waypoints)
                 {

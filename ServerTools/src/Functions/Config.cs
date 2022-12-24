@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.6.6.10";
+        public const string Version = "20.6.7";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -904,6 +904,18 @@ namespace ServerTools
                                                     continue;
                                                 }
                                                 break;
+                                            case "Chunk_Reset":
+                                                if (!line.HasAttribute("Enable"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chunk_Reset entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!bool.TryParse(line.GetAttribute("Enable"), out ChunkReset.IsEnabled))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chunk_Reset entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                break;
                                             case "Clan_Manager":
                                                 if (!line.HasAttribute("Enable"))
                                                 {
@@ -1068,16 +1080,6 @@ namespace ServerTools
                                                 if (!bool.TryParse(line.GetAttribute("Shop_Log"), out CleanBin.Shop_Log))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Shop_Log' attribute: {0}", line.OuterXml));
-                                                    continue;
-                                                }
-                                                if (!line.HasAttribute("Vehicles"))
-                                                {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of missing 'Vehicles' attribute: {0}", line.OuterXml));
-                                                    continue;
-                                                }
-                                                if (!bool.TryParse(line.GetAttribute("Vehicles"), out CleanBin.Vehicles))
-                                                {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Vehicles' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 if (!line.HasAttribute("Waypoints"))
@@ -3213,6 +3215,18 @@ namespace ServerTools
                                                     RealWorldTime.SetDelay(false);
                                                 }
                                                 break;
+                                            case "Region_Reset":
+                                                if (!line.HasAttribute("Enable"))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Region_Reset entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                if (!bool.TryParse(line.GetAttribute("Enable"), out RegionReset.IsEnabled))
+                                                {
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Region_Reset entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
+                                                    continue;
+                                                }
+                                                break;
                                             case "Report":
                                                 if (!line.HasAttribute("Enable"))
                                                 {
@@ -3774,7 +3788,7 @@ namespace ServerTools
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vault entry in ServerToolsConfig.xml because of missing 'Lines' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
-                                                if (!int.TryParse(line.GetAttribute("Command_Cost"), out Vault.Lines))
+                                                if (!int.TryParse(line.GetAttribute("Lines"), out Vault.Lines))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vault entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Lines' attribute: {0}", line.OuterXml));
                                                     continue;
@@ -3829,28 +3843,6 @@ namespace ServerTools
                                                 if (!int.TryParse(line.GetAttribute("Command_Cost"), out VehicleRecall.Command_Cost))
                                                 {
                                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", line.OuterXml));
-                                                    continue;
-                                                }
-                                                break;
-                                            case "Vehicle_Recall_Extended":
-                                                if (!line.HasAttribute("Normal_Max"))
-                                                {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall_Extended entry in ServerToolsConfig.xml because of missing 'Normal_Max' attribute: {0}", line.OuterXml));
-                                                    continue;
-                                                }
-                                                if (!int.TryParse(line.GetAttribute("Normal_Max"), out VehicleRecall.Normal_Max))
-                                                {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Normal_Max' attribute: {0}", line.OuterXml));
-                                                    continue;
-                                                }
-                                                if (!line.HasAttribute("Reserved_Max"))
-                                                {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall_Extended entry in ServerToolsConfig.xml because of missing 'Reserved_Max' attribute: {0}", line.OuterXml));
-                                                    continue;
-                                                }
-                                                if (!int.TryParse(line.GetAttribute("Reserved_Max"), out VehicleRecall.Reserved_Max))
-                                                {
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Recall_Extended entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Reserved_Max' attribute: {0}", line.OuterXml));
                                                     continue;
                                                 }
                                                 break;
@@ -4461,10 +4453,11 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response_Extended\" Friend_Chat_Color=\"{0}\" Party_Chat_Color=\"{1}\" Passthrough=\"{2}\" />", ChatHook.Friend_Chat_Color, ChatHook.Party_Chat_Color, ChatHook.Passthrough));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Flood_Protection\" Enable=\"{0}\" Max_Length=\"{1}\" Messages_Per_Min=\"{2}\" Wait_Time=\"{3}\" />", ChatHook.ChatFlood, ChatHook.Max_Length, ChatHook.Messages_Per_Min, ChatHook.Wait_Time));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Logger\" Enable=\"{0}\" />", ChatLog.IsEnabled));
+                //sw.WriteLine(string.Format("        <Tool Name=\"Chunk_Reset\" Enable=\"{0}\" />", ChunkReset.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Clan_Manager\" Enable=\"{0}\" Max_Name_Length=\"{1}\" Private_Chat_Color=\"{2}\" />", ClanManager.IsEnabled, ClanManager.Max_Name_Length, ClanManager.Private_Chat_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Clean_Bin\" Enable=\"{0}\" Auction=\"{1}\" Bank=\"{2}\" Bounties=\"{3}\" Delays=\"{4}\" />", CleanBin.IsEnabled, CleanBin.Auction, CleanBin.Bank, CleanBin.Bounties, CleanBin.Delays));
                 sw.WriteLine(string.Format("        <Tool Name=\"Clean_Bin_Extended1\" Homes=\"{0}\" Jail=\"{1}\" Lobby=\"{2}\" Market=\"{3}\" New_Spawn_Tele=\"{4}\" />", CleanBin.Homes, CleanBin.Jail, CleanBin.Lobby, CleanBin.Market, CleanBin.New_Spawn_Tele));
-                sw.WriteLine(string.Format("        <Tool Name=\"Clean_Bin_Extended2\" Poll=\"{0}\" Protected_Zones=\"{1}\" Shop_Log=\"{2}\" Vehicles=\"{3}\" Waypoints=\"{4}\" />", CleanBin.Poll, CleanBin.Protected_Zones, CleanBin.Shop_Log, CleanBin.Vehicles, CleanBin.Waypoints));
+                sw.WriteLine(string.Format("        <Tool Name=\"Clean_Bin_Extended2\" Poll=\"{0}\" Protected_Zones=\"{1}\" Shop_Log=\"{2}\" Waypoints=\"{3}\" />", CleanBin.Poll, CleanBin.Protected_Zones, CleanBin.Shop_Log, CleanBin.Waypoints));
                 sw.WriteLine(string.Format("        <Tool Name=\"Console_Command_Log\" Enable=\"{0}\" />", ConsoleCommandLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Custom_Commands\" Enable=\"{0}\" />", CustomCommands.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Day7\" Enable=\"{0}\" />", Day7.IsEnabled));
@@ -4524,6 +4517,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Private_Message\" Enable=\"{0}\" />", Whisper.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Public_Waypoints\" Enable=\"{0}\" />", Waypoints.Public_Waypoints));
                 sw.WriteLine(string.Format("        <Tool Name=\"Real_World_Time\" Enable=\"{0}\" Delay=\"{1}\" Time_Zone=\"{2}\" Adjustment=\"{3}\" />", RealWorldTime.IsEnabled, RealWorldTime.Delay, RealWorldTime.Time_Zone, RealWorldTime.Adjustment));
+                sw.WriteLine(string.Format("        <Tool Name=\"Region_Reset\" Enable=\"{0}\" />", RegionReset.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Report\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Length=\"{2}\" Admin_Level=\"{3}\" />", Report.IsEnabled, Report.Delay, Report.Length, Report.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Reserved_Slots\" Enable=\"{0}\" Session_Time=\"{1}\" Admin_Level=\"{2}\" Reduced_Delay=\"{3}\" Bonus_Exp=\"{4}\" />", ReservedSlots.IsEnabled, ReservedSlots.Session_Time, ReservedSlots.Admin_Level, ReservedSlots.Reduced_Delay, ReservedSlots.Bonus_Exp));
                 sw.WriteLine(string.Format("        <Tool Name=\"Restart_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" Admin_Level=\"{3}\" />", RestartVote.IsEnabled, RestartVote.Players_Online, RestartVote.Votes_Needed, RestartVote.Admin_Level));
@@ -4539,7 +4533,6 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Travel\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" Player_Check=\"{3}\" Zombie_Check=\"{4}\" />", Travel.IsEnabled, Travel.Delay_Between_Uses, Travel.Command_Cost, Travel.Player_Check, Travel.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Vault\" Enable=\"{0}\" Inside_Claim=\"{1}\" Slots=\"{2}\" Lines=\"{3}\" />", Vault.IsEnabled, Vault.Inside_Claim, Vault.Slots, Vault.Lines));
                 sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Recall\" Enable=\"{0}\" Inside_Claim=\"{1}\" Distance=\"{2}\" Delay_Between_Uses=\"{3}\" Command_Cost=\"{4}\" />", VehicleRecall.IsEnabled, VehicleRecall.Inside_Claim, VehicleRecall.Distance, VehicleRecall.Delay_Between_Uses, VehicleRecall.Command_Cost));
-                sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Recall_Extended\" Normal_Max=\"{0}\" Reserved_Max=\"{1}\" />", VehicleRecall.Normal_Max, VehicleRecall.Reserved_Max));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Link=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" />", Voting.IsEnabled, Voting.Link, Voting.API_Key, Voting.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting_Extended\" Reward_Count=\"{0}\" Reward_Entity=\"{1}\" Entity_Id=\"{2}\" Weekly_Votes=\"{3}\" />", Voting.Reward_Count, Voting.Reward_Entity, Voting.Entity_Id, Voting.Weekly_Votes));
                 sw.WriteLine(string.Format("        <Tool Name=\"Wall\" Enable=\"{0}\" Player_Check=\"{1}\" Reserved=\"{2}\" />", Wall.IsEnabled, Wall.Player_Check, Wall.Reserved));

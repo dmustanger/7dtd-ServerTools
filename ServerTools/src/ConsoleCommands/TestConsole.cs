@@ -14,7 +14,9 @@ namespace ServerTools
         {
             return "Usage:\n" +
                 "  1. st-test\n" +
-                "1. Runs the test command\n";
+                "  2. st-test off\n" +
+                "1. Runs the test\n" +
+                "2. Disables the test\n";
         }
 
         public override string[] GetCommands()
@@ -31,7 +33,6 @@ namespace ServerTools
                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] The world is not loaded. Unable to run command");
                     return;
                 }
-                
             }
             catch (Exception e)
             {

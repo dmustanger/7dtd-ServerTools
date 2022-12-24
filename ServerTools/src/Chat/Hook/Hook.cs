@@ -872,17 +872,6 @@ namespace ServerTools
                             }
                             if (VehicleRecall.IsEnabled)
                             {
-                                if (messageLowerCase.StartsWith(VehicleRecall.Command_vehicle_remove + " ") && Permission(_cInfo, VehicleRecall.Command_vehicle_remove))
-                                {
-                                    messageLowerCase = messageLowerCase.Replace(VehicleRecall.Command_vehicle_remove + " ", "");
-                                    VehicleRecall.RemoveVehicle(_cInfo, messageLowerCase);
-                                    return false;
-                                }
-                                if (messageLowerCase.StartsWith(VehicleRecall.Command_vehicle_save) && Permission(_cInfo, VehicleRecall.Command_vehicle_save))
-                                {
-                                    VehicleRecall.SaveVehicle(_cInfo);
-                                    return false;
-                                }
                                 if (messageLowerCase.StartsWith(VehicleRecall.Command_vehicle + " ") && Permission(_cInfo, VehicleRecall.Command_vehicle))
                                 {
                                     messageLowerCase = messageLowerCase.Replace(VehicleRecall.Command_vehicle + " ", "");

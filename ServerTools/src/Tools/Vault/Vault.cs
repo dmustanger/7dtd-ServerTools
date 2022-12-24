@@ -8,7 +8,6 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Inside_Claim = false;
         public static int Slots = 4, Lines = 1;
-        public static string Command_vault = "vault";
 
         public static Dictionary<int, string> VaultUser = new Dictionary<int, string>();
 

@@ -63,7 +63,6 @@ namespace ServerTools
                 WebAPI.Unload();
             }
             Timers.CoreTimerStop();
-            RegionReset.Exec();
             Phrases.Unload();
             CommandList.Unload();
             OutputLog.Shutdown();
@@ -224,8 +223,11 @@ namespace ServerTools
                             {
                                 TeleportDetector.Exec(_cInfo);
                             }
-                            Teleportation.InsideWorld(_cInfo, player);
-                            Teleportation.InsideBlock(_cInfo, player);
+                            if (player.IsSpawned() && player.IsAlive())
+                            {
+                                Teleportation.InsideWorld(_cInfo, player);
+                                Teleportation.InsideBlock(_cInfo, player);
+                            }
                         }
                         if (PlayerChecks.TwoSecondMovement.ContainsKey(_cInfo.entityId))
                         {
@@ -444,6 +446,10 @@ namespace ServerTools
                     if (DupeLog.OldInvs.ContainsKey(_cInfo.entityId))
                     {
                         DupeLog.OldInvs.Remove(_cInfo.entityId);
+                    }
+                    if (RegionReset.RegionPlayer.Contains(_cInfo.entityId))
+                    {
+                        RegionReset.RegionPlayer.Remove(_cInfo.entityId);
                     }
                     EventSchedule.RemoveBonusEntry("Bonus_" + id);
                 }

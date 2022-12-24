@@ -10,10 +10,10 @@ namespace ServerTools
         public static bool IsAllowed(int _entityIdThatOpenedIt, TileEntityLootContainer lootContainer)
         {
             Entity entity = GameManager.Instance.World.GetEntity(lootContainer.entityId);
-            if (entity == null && entity is EntityBackpack)
+            if (entity != null && entity is EntityBackpack)
             {
                 EntityBackpack backpack = entity as EntityBackpack;
-                if (backpack.RefPlayerId == _entityIdThatOpenedIt)
+                if (backpack.RefPlayerId == _entityIdThatOpenedIt || backpack.OwnerId == _entityIdThatOpenedIt)
                 {
                     return true;
                 }

@@ -24,13 +24,11 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: PlayerLoginRPC.prefix"));
-                        return;
                     }
                     MethodInfo postfix = typeof(Injections).GetMethod("PlayerLoginRPC_Postfix");
                     if (postfix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: PlayerLoginRPC.postfix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), new HarmonyMethod(postfix));
                 }
@@ -46,7 +44,6 @@ namespace ServerTools
                     if (postfix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: ServerConsoleCommand.postfix"));
-                        return;
                     }
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
                 }
@@ -62,7 +59,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_ChangeBlocks.Prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -78,7 +74,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: AddFallingBlock.prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -94,7 +89,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: AddFallingBlocks.prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -110,7 +104,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChatMessageServer.prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -122,17 +115,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    Patches _patchInfo = Harmony.GetPatchInfo(original);
-                    if (_patchInfo == null)
+                    MethodInfo finalizer = typeof(Injections).GetMethod("GameManager_Cleanup_Finalizer");
+                    if (finalizer == null)
                     {
-                        MethodInfo Finalizer = typeof(Injections).GetMethod("GameManager_Cleanup_Finalizer");
-                        if (Finalizer == null)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_Cleanup.Finalizer"));
-                            return;
-                        }
-                        harmony.Patch(original, null, null, null, new HarmonyMethod(Finalizer));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_Cleanup.Finalizer"));
                     }
+                    harmony.Patch(original, null, null, null, new HarmonyMethod(finalizer));
                 }
 
                 original = AccessTools.Method(typeof(GameManager), "CollectEntityServer");
@@ -232,13 +220,11 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerInventory_ProcessPackage_Prefix"));
-                        return;
                     }
                     MethodInfo postfix = typeof(Injections).GetMethod("NetPackagePlayerInventory_ProcessPackage_Postfix");
                     if (postfix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerInventory_ProcessPackage_Postfix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), new HarmonyMethod(postfix));
                 }
@@ -254,7 +240,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: ClientInfoCollection_GetForNameOrId_Prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -270,7 +255,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerStats_ProcessPackage_Prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -286,7 +270,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityAddScoreServer_ProcessPackage_Prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -302,7 +285,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageChat_ProcessPackage_Prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -318,7 +300,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityPosAndRot_ProcessPackage_Prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -334,7 +315,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackagePlayerData_ProcessPackage_Prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -350,7 +330,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageDamageEntity_ProcessPackage_Prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -366,7 +345,6 @@ namespace ServerTools
                     if (postfix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: ClientInfo_SendPackage_Postfix"));
-                        return;
                     }
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
                 }
@@ -382,7 +360,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: PersistentPlayerList_PlaceLandProtectionBlock_Prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -398,7 +375,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityAttach_ProcessPackage_Prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -414,7 +390,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_ExplosionServer_Prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -430,7 +405,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: LootManager_LootContainerOpened_Prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -446,7 +420,6 @@ namespace ServerTools
                     if (postfix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageTileEntity_Setup_Postfix"));
-                        return;
                     }
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
                 }
@@ -462,7 +435,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_DropContentOfLootContainerServer_Prefix"));
-                        return;
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -478,26 +450,24 @@ namespace ServerTools
                     if (postfix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_SavePlayerData_Postfix"));
-                        return;
                     }
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
                 }
                 
-                //original = AccessTools.Method(typeof(EntityAlive), "FireEvent");
-                //if (original == null)
-                //{
-                //    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.FireEvent Class.Method was not found"));
-                //}
-                //else
-                //{
-                //    MethodInfo prefix = typeof(Injections).GetMethod("EntityAlive_FireEvent_Prefix");
-                //    if (prefix == null)
-                //    {
-                //        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive_FireEvent_Prefix"));
-                //        return;
-                //    }
-                //    harmony.Patch(original, new HarmonyMethod(prefix), null);
-                //}
+                original = AccessTools.Method(typeof(ConsoleCmdChunkReset), "Execute");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: ConsoleCmdChunkReset.Execute Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("ConsoleCmdChunkReset_Execute_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ConsoleCmdChunkReset_Execute_Prefix"));
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
 
                 Log.Out("[SERVERTOOLS] Runtime patching complete");
             }

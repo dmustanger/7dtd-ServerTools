@@ -25,8 +25,8 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    AutoBackup.SetDelay(true);
                                     AutoBackup.Exec();
+                                    AutoBackup.SetDelay(true);
                                 }
                                 continue;
                             case "AutoSaveWorld":
@@ -59,16 +59,16 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    BreakTime.SetDelay(true);
                                     BreakTime.Exec();
+                                    BreakTime.SetDelay(true);
                                 }
                                 continue;
                             case "InfoTicker":
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    InfoTicker.SetDelay(true);
                                     InfoTicker.Exec();
+                                    InfoTicker.SetDelay(true);
                                 }
                                 continue;
                             case "Lottery":
@@ -82,8 +82,8 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    NightAlert.SetDelay(true);
                                     NightAlert.Exec();
+                                    NightAlert.SetDelay(true);
                                 }
                                 continue;
                             case "PlayerLogs":
@@ -120,16 +120,16 @@ namespace ServerTools
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    WatchList.SetDelay(true);
                                     WatchList.Exec();
+                                    WatchList.SetDelay(true);
                                 }
                                 continue;
                             case "Zones":
                                 if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
-                                    Zones.SetDelay(true);
                                     Zones.ReminderExec();
+                                    Zones.SetDelay(true);
                                 }
                                 continue;
                         }

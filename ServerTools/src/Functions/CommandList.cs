@@ -415,12 +415,6 @@ namespace ServerTools
                         case "vehicle":
                             VehicleRecall.Command_vehicle = kvp.Value[0];
                             continue;
-                        case "vehicle save":
-                            VehicleRecall.Command_vehicle_save = kvp.Value[0];
-                            continue;
-                        case "vehicle remove":
-                            VehicleRecall.Command_vehicle_remove = kvp.Value[0];
-                            continue;
                         case "report":
                             Report.Command_report = kvp.Value[0];
                             continue;
@@ -595,9 +589,6 @@ namespace ServerTools
                         case "claims":
                             LandClaimCount.Command_claims = kvp.Value[0];
                             continue;
-                        case "vault":
-                            Vault.Command_vault = kvp.Value[0];
-                            continue;
                     }
                 }
             }
@@ -682,8 +673,6 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"fps\" Replacement=\"fps\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"loc\" Replacement=\"loc\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"vehicle\" Replacement=\"vehicle\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"vehicle save\" Replacement=\"vehicle save\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"vehicle remove\" Replacement=\"vehicle remove\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"report\" Replacement=\"report\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"bounty\" Replacement=\"bounty\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"lottery\" Replacement=\"lottery\" Hidden=\"false\" />");
@@ -742,7 +731,6 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"map\" Replacement=\"map\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"discord\" Replacement=\"discord\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"claims\" Replacement=\"claims\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"vault\" Replacement=\"vault\" Hidden=\"false\" />");
         }
 
         private static void UpgradeXml()

@@ -55,23 +55,26 @@ namespace ServerTools
 
         public static void Exec()
         {
-            DateTime time = DateTime.Now;
-            if (Adjustment != 0)
+            if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                time = DateTime.Now.AddHours(Adjustment);
-            }
-            Phrases.Dict.TryGetValue("RealWorldTime1", out string phrase);
-            phrase = phrase.Replace("{Time}", time.ToShortTimeString());
-            phrase = phrase.Replace("{TimeZone}", Time_Zone);
-            List<ClientInfo> clientList = GeneralFunction.ClientList();
-            if (clientList != null)
-            {
-                for (int i = 0; i < clientList.Count; i++)
+                DateTime time = DateTime.Now;
+                if (Adjustment != 0)
                 {
-                    ClientInfo cInfo = clientList[i];
-                    if (cInfo != null)
+                    time = DateTime.Now.AddHours(Adjustment);
+                }
+                Phrases.Dict.TryGetValue("RealWorldTime1", out string phrase);
+                phrase = phrase.Replace("{Time}", time.ToShortTimeString());
+                phrase = phrase.Replace("{TimeZone}", Time_Zone);
+                List<ClientInfo> clientList = GeneralFunction.ClientList();
+                if (clientList != null)
+                {
+                    for (int i = 0; i < clientList.Count; i++)
                     {
-                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        ClientInfo cInfo = clientList[i];
+                        if (cInfo != null)
+                        {
+                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
                     }
                 }
             }

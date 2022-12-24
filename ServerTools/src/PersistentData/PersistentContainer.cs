@@ -30,7 +30,7 @@ namespace ServerTools
         private bool pollOpen;
         private Dictionary<string, bool> pollVote;
         private bool proxyBan;
-        private List<string> regionReset;
+        private Dictionary<string, DateTime> regionReset;
         private List<string[]> shopLog;
         private List<string[]> track;
         private Dictionary<string, string> webAuthorizedList;
@@ -322,7 +322,7 @@ namespace ServerTools
             }
         }
 
-        public List<string> RegionReset
+        public Dictionary<string, DateTime> RegionReset
         {
             get
             {

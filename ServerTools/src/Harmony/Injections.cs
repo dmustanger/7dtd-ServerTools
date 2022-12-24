@@ -1,10 +1,7 @@
-﻿using HarmonyLib;
-using ServerTools;
+﻿using ServerTools;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 public static class Injections
 {
@@ -239,15 +236,12 @@ public static class Injections
                     if (DroppedBagProtection.IsEnabled && _te is TileEntityLootContainer)
                     {
                         TileEntityLootContainer lootContainer = _te as TileEntityLootContainer;
-                        if (lootContainer.bPlayerBackpack)
+                        if (lootContainer.bPlayerBackpack && !DroppedBagProtection.IsAllowed(_entityIdThatOpenedIt, lootContainer))
                         {
-                            if (!DroppedBagProtection.IsAllowed(_entityIdThatOpenedIt, lootContainer))
-                            {
-                                Phrases.Dict.TryGetValue("DroppedBagProtection1", out string phrase);
-                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                __result = false;
-                                return false;
-                            }
+                            Phrases.Dict.TryGetValue("DroppedBagProtection1", out string phrase);
+                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            __result = false;
+                            return false;
                         }
                     }
                     if (Shutdown.UI_Locked)
@@ -671,7 +665,7 @@ public static class Injections
     {
         try
         {
-            if (_tileEntity != null && Vault.IsEnabled && _tileEntity.blockValue.Block.GetBlockName() == "VaultBox")
+            if (_tileEntity != null && Vault.IsEnabled && !_tileEntity.bPlayerBackpack && _tileEntity.blockValue.Block.GetBlockName() == "VaultBox")
             {
                 _tileEntity = Vault.Exec(_entityIdThatOpenedIt, _tileEntity);
             }
@@ -686,9 +680,13 @@ public static class Injections
     {
         try
         {
-            if (_te != null && _te is TileEntityLootContainer && Vault.IsEnabled && _te.blockValue.Block.GetBlockName() == "VaultBox")
+            if (_te != null && _te is TileEntityLootContainer && Vault.IsEnabled)
             {
-                Vault.UpdateData(_te as TileEntityLootContainer);
+                TileEntityLootContainer tileEntity = (TileEntityLootContainer)_te;
+                if (!tileEntity.bPlayerBackpack && _te.blockValue.Block.GetBlockName() == "VaultBox")
+                {
+                    Vault.UpdateData(tileEntity);
+                }
             }
         }
         catch (Exception e)
@@ -717,21 +715,6 @@ public static class Injections
         return true;
     }
 
-    public static void EntityAlive_FireEvent_Prefix(MinEventTypes _eventType, bool useInventory = true)
-    {
-        try
-        {
-            if (_eventType != MinEventTypes.onSelfPrimaryActionUpdate && _eventType != MinEventTypes.onSelfSecondaryActionUpdate)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Firevent: {0}", _eventType));
-            }
-        }
-        catch (Exception e)
-        {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.EntityAlive_FireEvent_Prefix: {0}", e.Message));
-        }
-    }
-
     public static void GameManager_SavePlayerData_Postfix(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
     {
         try
@@ -745,5 +728,91 @@ public static class Injections
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_SavePlayerData_Postfix: {0}", e.Message));
         }
+    }
+
+    public static bool ConsoleCmdChunkReset_Execute_Prefix(List<string> _params)
+    {
+        try
+        {
+            World world = GameManager.Instance.World;
+            if (_params.Count >= 2)
+            {
+                int num;
+                if (!int.TryParse(_params[0], out num))
+                {
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("x1 is not a valid integer");
+                    return false;
+                }
+                int num2;
+                if (!int.TryParse(_params[1], out num2))
+                {
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("z1 is not a valid integer");
+                    return false;
+                }
+                int num3 = num;
+                int num4 = num2;
+                if (_params.Count >= 3 && !int.TryParse(_params[2], out num3))
+                {
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("x2 is not a valid integer");
+                    return false;
+                }
+                if (_params.Count >= 4 && !int.TryParse(_params[3], out num4))
+                {
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("z2 is not a valid integer");
+                    return false;
+                }
+                Vector2i vector2i = new Vector2i((num <= num3) ? num : num3, (num2 <= num4) ? num2 : num4);
+                Vector2i vector2i2 = new Vector2i((num <= num3) ? num3 : num, (num2 <= num4) ? num4 : num2);
+                if (vector2i2.x - vector2i.x > 16384 || vector2i2.y - vector2i.y > 16384)
+                {
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("area too big");
+                    return false;
+                }
+                int num5 = World.toChunkXZ(vector2i.x);
+                int num6 = World.toChunkXZ(vector2i.y);
+                int num7 = World.toChunkXZ(vector2i2.x);
+                int num8 = World.toChunkXZ(vector2i2.y);
+
+                HashSetLong hashSetLong = new HashSetLong();
+                for (int i = num5; i <= num7; i++)
+                {
+                    for (int j = num6; j <= num8; j++)
+                    {
+                        hashSetLong.Add(WorldChunkCache.MakeChunkKey(i, j));
+                    }
+                }
+                ChunkCluster chunkCache = world.ChunkCache;
+                ChunkProviderGenerateWorld chunkProviderGenerateWorld = world.ChunkCache.ChunkProvider as ChunkProviderGenerateWorld;
+                if (chunkProviderGenerateWorld != null)
+                {
+                    //chunkProviderGenerateWorld.RemoveChunks(hashSetLong);
+                    foreach (long key in hashSetLong)
+                    {
+                        if (!chunkProviderGenerateWorld.GenerateSingleChunk(chunkCache, key, true))
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Failed regenerating chunk at position {0}/{1}", WorldChunkCache.extractX(key) << 4, WorldChunkCache.extractZ(key) << 4));
+                        }
+                    }
+                    world.m_ChunkManager.ResendChunksToClients(hashSetLong);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Reset chunks covering area {0}/{1} to {2}/{3} (chunk coordinates {4} to {5}).", new object[]
+                    {
+                    num,
+                    num2,
+                    num3,
+                    num4,
+                    vector2i,
+                    vector2i2
+                    }));
+                    return false;
+                }
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("Can not reset chunks on this game");
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ConsoleCmdChunkReset_Execute_Prefix: {0}", e.Message));
+        }
+        return true;
     }
 }

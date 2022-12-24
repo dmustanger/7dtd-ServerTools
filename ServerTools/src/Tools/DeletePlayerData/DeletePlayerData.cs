@@ -53,6 +53,7 @@ namespace ServerTools
                             _p.LastMarket = new DateTime();
                             _p.LastStuck = new DateTime();
                             _p.LastTravel = new DateTime();
+                            _p.LastVehicle = new DateTime();
                             _p.LastVote = new DateTime();
                             _p.LastVoteWeek = new DateTime();
                             _p.LastWhisper = "";
@@ -69,7 +70,6 @@ namespace ServerTools
                             _p.SessionTime = 0;
                             _p.StartingItems = false;
                             _p.TotalTimePlayed = 0;
-                            _p.Vehicles = new Dictionary<int, string[]>();
                             _p.VoteWeekCount = 0;
                             _p.WebPass = "";
                             _p.ZoneDeathTime = new DateTime();

@@ -200,12 +200,10 @@ namespace ServerTools
                     if (PersistentContainer.Instance.WorldSeed == 0)
                     {
                         PersistentContainer.Instance.WorldSeed = GameManager.Instance.World.Seed;
-                        PersistentContainer.DataChange = true;
                     }
                     else if (PersistentContainer.Instance.WorldSeed != GameManager.Instance.World.Seed)
                     {
                         PersistentContainer.Instance.WorldSeed = GameManager.Instance.World.Seed;
-                        PersistentContainer.DataChange = true;
                         if (PersistentContainer.Instance.Players.IDs.Count > 0)
                         {
                             CleanBin.ClearFirstClaims();
@@ -216,19 +214,26 @@ namespace ServerTools
                     {
                         Dictionary<string, DateTime> timeOuts = new Dictionary<string, DateTime>();
                         PersistentContainer.Instance.ConnectionTimeOut = timeOuts;
-                        PersistentContainer.DataChange = true;
                     }
                     if (PersistentContainer.Instance.ShopLog == null)
                     {
                         List<string[]> log = new List<string[]>();
                         PersistentContainer.Instance.ShopLog = log;
-                        PersistentContainer.DataChange = true;
                     }
                     if (PersistentContainer.Instance.Track == null)
                     {
                         List<string[]> track = new List<string[]>();
                         PersistentContainer.Instance.Track = track;
-                        PersistentContainer.DataChange = true;
+                    }
+                    if (PersistentContainer.Instance.RegionReset == null)
+                    {
+                        Dictionary<string, DateTime> regionResets = new Dictionary<string, DateTime>();
+                        PersistentContainer.Instance.RegionReset = regionResets;
+                    }
+                    PersistentContainer.DataChange = true;
+                    if (RegionReset.IsEnabled && RegionReset.Regions.Count > 0)
+                    {
+                        RegionReset.Exec();
                     }
                     if (CleanBin.IsEnabled)
                     {

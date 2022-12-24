@@ -1,5 +1,23 @@
 ﻿CHANGELOG
 
+20.6.7
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added Region_Reset tool. Set regions to automatically reset on 
+a schedule. Daily, weekly or monthly reset available
+-Added a buff to help identify when located inside of a region 
+that will reset
+-Added internal game fix to console command chunk reset. Should
+address the mismatch header error after server restarts
+-Fixed an option call during the load process
+-Fixed Dropped_Bag_Protection not working an intended
+-Fixed issue with the Vault tool and access to backpacks
+-Updated console command st-RegionReset to utilize the same
+code as Region_Reset tool
+-Updated Vehicle_Recall to build the players vehicle list
+automatically. The vehicle limit has been removed
+
 20.6.6
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

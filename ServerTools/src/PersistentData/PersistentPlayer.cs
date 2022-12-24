@@ -58,6 +58,7 @@ namespace ServerTools
         private DateTime lastScout;
         private DateTime lastStuck;
         private DateTime lastTravel;
+        private DateTime lastVehicle;
         private DateTime lastVote;
         private DateTime lastVoteWeek;
         private DateTime lastWaypoint;
@@ -80,7 +81,6 @@ namespace ServerTools
         private int totalTimePlayed;
         private ItemDataSerializable[] vault;
         private int[] vaultSize;
-        private Dictionary<int, string[]> vehicles;
         private int voteWeekCount;
         private Dictionary<string, string> waypoints;
         private int waypointSpots;
@@ -675,6 +675,18 @@ namespace ServerTools
             }
         }
 
+        public DateTime LastVehicle
+        {
+            get
+            {
+                return lastVehicle;
+            }
+            set
+            {
+                lastVehicle = value;
+            }
+        }
+
         public DateTime LastVote
         {
             get
@@ -924,18 +936,6 @@ namespace ServerTools
             set
             {
                 vaultSize = value;
-            }
-        }
-
-        public Dictionary<int, string[]> Vehicles
-        {
-            get
-            {
-                return vehicles;
-            }
-            set
-            {
-                vehicles = value;
             }
         }
 

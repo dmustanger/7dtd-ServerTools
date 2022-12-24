@@ -116,6 +116,7 @@ namespace ServerTools
                 p.LastScout = new DateTime();
                 p.LastStuck = new DateTime();
                 p.LastTravel = new DateTime();
+                p.LastVehicle = new DateTime();
                 p.LastVote = new DateTime();
                 p.LastVoteWeek = new DateTime();
                 p.LastWhisper = "";
@@ -134,7 +135,6 @@ namespace ServerTools
                 p.SessionTime = 0;
                 p.StartingItems = false;
                 p.TotalTimePlayed = 0;
-                p.Vehicles = new Dictionary<int, string[]>();
                 p.VoteWeekCount = 0;
                 p.Waypoints = new Dictionary<string, string>();
                 p.WaypointSpots = 0;

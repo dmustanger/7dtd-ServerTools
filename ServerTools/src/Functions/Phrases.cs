@@ -1511,59 +1511,24 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("VehicleRecall6", out phrase))
                     {
-                        phrase = "You are outside of your claimed space or a friends. Command is unavailable";
+                        phrase = "You do not own this vehicle";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall6\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("VehicleRecall7", out phrase))
                     {
-                        phrase = "Saved {Type} for recall with Id {Value}";
+                        phrase = "Someone is using this vehicle. Unable to recall it";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall7\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("VehicleRecall8", out phrase))
                     {
-                        phrase = "You are at the maximum vehicle count. Remove one from your list before saving more";
+                        phrase = "Vehicle has been recalled to your location";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall8\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("VehicleRecall9", out phrase))
                     {
-                        phrase = "This vehicle has already been saved";
+                        phrase = "This vehicle is out of range";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall9\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("VehicleRecall10", out phrase))
-                    {
-                        phrase = "Someone is using this vehicle. Unable to recall it";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall10\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("VehicleRecall11", out phrase))
-                    {
-                        phrase = "Vehicle has been recalled to your location";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall11\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("VehicleRecall12", out phrase))
-                    {
-                        phrase = "This vehicle is out of range. Unable to recall";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall12\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("VehicleRecall13", out phrase))
-                    {
-                        phrase = "This id is not on your vehicle list";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall13\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("VehicleRecall14", out phrase))
-                    {
-                        phrase = "Unable to locate this vehicle";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall14\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("VehicleRecall15", out phrase))
-                    {
-                        phrase = "Removed {Id} from your vehicle list";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall15\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("VehicleRecall16", out phrase))
-                    {
-                        phrase = "You are not using a vehicle. Unable to save";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"VehicleRecall16\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* World_Radius ********************* -->");

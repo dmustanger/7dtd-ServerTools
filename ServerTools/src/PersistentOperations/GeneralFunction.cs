@@ -304,12 +304,12 @@ namespace ServerTools
                         string line = buffContent[i];
                         if (line.Contains("PvE_Zone") || line.Contains("PvP_Ally_Zone") || line.Contains("PvP_Stranger_Zone") || 
                             line.Contains("PvP_Zone") || line.Contains("pvp_ally_damage") || line.Contains("pvp_stranger_damage") ||
-                            line.Contains("pvp_damage"))
+                            line.Contains("pvp_damage") || line.Contains("region_reset"))
                         {
                             count += 1;
                         }
                     }
-                    if (count != 16)
+                    if (count != 18)
                     {
                         File.Delete(XPathDir + "buffs.xml");
                     }
@@ -434,6 +434,13 @@ namespace ServerTools
                         sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_set\" value=\"0\" tags=\"explosive\"/>");
                         sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\" tags=\"explosive\"/>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_damage\"/>");
+                        sw.WriteLine("	</effect_group>");
+                        sw.WriteLine("</buff>");
+                        sw.WriteLine();
+                        sw.WriteLine("<buff name=\"region_reset\" name_key=\"Region_reset\" description_key=\"The region you are in will reset. Building here is NOT recommended\" icon=\"ui_game_symbol_brick\" icon_color=\"255, 153, 51\">");
+                        sw.WriteLine("	<stack_type value=\"replace\"/>");
+                        sw.WriteLine("	<effect_group>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"region_reset\"/>");
                         sw.WriteLine("	</effect_group>");
                         sw.WriteLine("</buff>");
                         sw.WriteLine();
@@ -670,6 +677,10 @@ namespace ServerTools
                                 if (Market.IsEnabled)
                                 {
                                     Market.IsMarket(player.position);
+                                }
+                                if (RegionReset.IsEnabled)
+                                {
+                                    RegionReset.IsResetRegion(cInfo, player);
                                 }
                             }
                         }
@@ -2400,36 +2411,13 @@ namespace ServerTools
                 }
                 if (VehicleRecall.IsEnabled)
                 {
-                    if (CommandList.Dict.TryGetValue(VehicleRecall.Command_vehicle_save, out string[] values1))
+                    if (CommandList.Dict.TryGetValue(VehicleRecall.Command_vehicle, out string[] values))
                     {
-                        if (bool.TryParse(values1[1], out bool hidden))
+                        if (bool.TryParse(values[1], out bool hidden))
                         {
                             if (!hidden)
                             {
-                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, VehicleRecall.Command_vehicle_save);
-                            }
-                        }
-                    }
-                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Vehicles != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Vehicles.Count > 0)
-                    {
-                        if (CommandList.Dict.TryGetValue(VehicleRecall.Command_vehicle, out string[] values2))
-                        {
-                            if (bool.TryParse(values2[1], out bool hidden))
-                            {
-                                if (!hidden)
-                                {
-                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, VehicleRecall.Command_vehicle);
-                                }
-                            }
-                        }
-                        if (CommandList.Dict.TryGetValue(VehicleRecall.Command_vehicle_remove, out string[] values3))
-                        {
-                            if (bool.TryParse(values3[1], out bool hidden))
-                            {
-                                if (!hidden)
-                                {
-                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, VehicleRecall.Command_vehicle_remove);
-                                }
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, VehicleRecall.Command_vehicle);
                             }
                         }
                     }
