@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace ServerTools
 {
-    class Zones
+    public class Zones
     {
         public static bool IsEnabled = false, IsRunning = false, Zone_Message = false, Set_Home = false, BuffProtection = false;
         public static string Reminder_Delay = "20";
@@ -36,6 +36,7 @@ namespace ServerTools
         public static void Unload()
         {
             ZoneList.Clear();
+            ZoneBounds.Clear();
             Reminder.Clear();
             ZonePlayer.Clear();
             FileWatcher.Dispose();
@@ -71,7 +72,6 @@ namespace ServerTools
                     ZoneList.Clear();
                     ZoneBounds.Clear();
                     Reminder.Clear();
-                    ZonePlayer.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
                         if (childNodes[i].NodeType != XmlNodeType.Comment)

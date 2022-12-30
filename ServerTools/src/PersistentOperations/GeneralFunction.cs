@@ -680,7 +680,7 @@ namespace ServerTools
                                 }
                                 if (RegionReset.IsEnabled)
                                 {
-                                    RegionReset.IsResetRegion(cInfo, player);
+                                    RegionReset.IsRegenRegion(cInfo, player);
                                 }
                             }
                         }

@@ -52,6 +52,11 @@ namespace ServerTools
         private static void GameStartDone()
         {
             Log.Out(string.Format("[SERVERTOOLS] The server has completed loading. Beginning to process ServerTools"));
+            if (!Directory.Exists(ConfigPath))
+            {
+                Directory.CreateDirectory(ConfigPath);
+                Log.Out(string.Format("[SERVERTOOLS] Created new ServerTools directory at '{0}'", ConfigPath));
+            }
             LoadProcess.Load();
         }
 

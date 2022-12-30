@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ServerTools
 {
-    class Bed
+    public class Bed
     {
         public static bool IsEnabled = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 10;

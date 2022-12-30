@@ -15,8 +15,8 @@ namespace ServerTools
         public static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
         public static Dictionary<ClientInfo, DateTime> Kicked = new Dictionary<ClientInfo, DateTime>();
 
-        private static string file = "ReservedSlots.xml";
-        private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private const string file = "ReservedSlots.xml";
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         private static XmlNodeList OldNodeList;

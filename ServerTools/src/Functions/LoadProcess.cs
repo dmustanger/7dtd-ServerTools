@@ -18,27 +18,22 @@ namespace ServerTools
                 {
                     Loaded = true;
                     string gamePath = API.GamePath;
-                    string configPath = gamePath + "/ServerTools";
+                    string configPath = API.ConfigPath;
                     string installPath = gamePath + "/Mods/ServerTools";
                     if (!Directory.Exists(installPath))
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in a mods folder located at '{0}'", API.GamePath + "/Mods"));
+                        Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in a mods folder located at '{0}'", installPath));
                         return;
                     }
-                    else if (!File.Exists(gamePath + "/Mods/ServerTools/ServerTools.dll"))
+                    else if (!File.Exists(installPath + "/ServerTools.dll"))
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in a mods folder located at '{0}'", API.GamePath + "/Mods"));
+                        Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools.dll file in the mods folder located at '{0}'", installPath));
                         return;
                     }
-                    if (!Directory.Exists(configPath))
+                    if (Directory.Exists(configPath))
                     {
-                        Directory.CreateDirectory(configPath);
-                        Log.Out(string.Format("[SERVERTOOLS] Created new ServerTools directory at '{0}'", configPath));
+                        Log.Out(string.Format("[SERVERTOOLS] Located xml and log directory at '{0}'", API.ConfigPath));
                         Log.Out("[SERVERTOOLS] Tool XML and log files for ServerTools will be placed in this folder");
-                    }
-                    else
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Located xml and log directory at '{0}'", configPath));
                     }
                     if (!Directory.Exists(configPath + "/Logs/ChatLogs"))
                     {
@@ -121,7 +116,6 @@ namespace ServerTools
                     {
                         GeneralFunction.XPathDir = installPath + "/Config/";
                     }
-
                     if (PersistentContainer.Instance.Load())
                     {
                         Log.Out("[SERVERTOOLS] Data loaded");
@@ -142,7 +136,6 @@ namespace ServerTools
                     Mods.Load();
                     Phrases.Load();
                     HowToSetup.Load();
-
                     if (Fps.IsEnabled)
                     {
                         Fps.SetTarget();
@@ -196,7 +189,6 @@ namespace ServerTools
                             Log.Out("[SERVERTOOLS] Unable to locate game icons. Shop, Auction and Web panels will be affected by this");
                         }
                     }
-
                     if (PersistentContainer.Instance.WorldSeed == 0)
                     {
                         PersistentContainer.Instance.WorldSeed = GameManager.Instance.World.Seed;
@@ -231,7 +223,7 @@ namespace ServerTools
                         PersistentContainer.Instance.RegionReset = regionResets;
                     }
                     PersistentContainer.DataChange = true;
-                    if (RegionReset.IsEnabled && RegionReset.Regions.Count > 0)
+                    if (RegionReset.IsEnabled)
                     {
                         RegionReset.Exec();
                     }
@@ -244,7 +236,6 @@ namespace ServerTools
                         Config.LoadXml();
                     }
                     Track.Cleanup();
-
                     ActiveTools.Exec(true);
                     Timers.Set_Link_Delay();
                     Timers.PersistentDataSave();

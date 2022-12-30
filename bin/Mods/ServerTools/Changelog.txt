@@ -1,5 +1,15 @@
 ﻿CHANGELOG
 
+20.6.8
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Fixed error at startup that could cause a type cast error
+when the main ServerTools folder had not been created yet
+-Fixed event scheduler triggering time points outside of their
+intended range after server restart
+-Reduced overall file size of ServerTools
+
 20.6.7
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

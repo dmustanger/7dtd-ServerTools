@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ServerTools
 {
-    class EventSchedule
+    public class EventSchedule
     {
         public static List<string> Expired = new List<string>();
         public static Dictionary<string, DateTime> Schedule = new Dictionary<string, DateTime>();
@@ -19,10 +19,11 @@ namespace ServerTools
                     for (int i = 0; i < schedule.Length; i++)
                     {
                         string[] split = schedule[i].Key.Split('_');
+                        DateTime dateTime = DateTime.Now;
                         switch (split[0])
                         {
                             case "AutoBackup":
-                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTime.AddSeconds(-20) <= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
                                     AutoBackup.Exec();
@@ -30,7 +31,7 @@ namespace ServerTools
                                 }
                                 continue;
                             case "AutoSaveWorld":
-                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTime.AddSeconds(-20) <= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
                                     AutoSaveWorld.SetDelay(true);
@@ -38,7 +39,7 @@ namespace ServerTools
                                 }
                                 continue;
                             case "Bloodmoon":
-                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTime.AddSeconds(-20) <= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
                                     Bloodmoon.SetDelay(true);
@@ -46,17 +47,17 @@ namespace ServerTools
                                 }
                                 continue;
                             case "Bonus":
-                                if (DateTime.Now >= schedule[i].Value)
+                                if (dateTime >= schedule[i].Value)
                                 {
                                     Schedule.Remove(schedule[i].Key);
                                     if (GeneralFunction.SessionBonus(split[1]))
                                     {
-                                        Schedule.Add(schedule[i].Key, DateTime.Now.AddMinutes(15));
+                                        Schedule.Add(schedule[i].Key, dateTime.AddMinutes(15));
                                     }
                                 }
                                 continue;
                             case "BreakTime":
-                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTime.AddSeconds(-20) <= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
                                     BreakTime.Exec();
@@ -64,7 +65,7 @@ namespace ServerTools
                                 }
                                 continue;
                             case "InfoTicker":
-                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTime.AddSeconds(-20) <= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
                                     InfoTicker.Exec();
@@ -72,14 +73,14 @@ namespace ServerTools
                                 }
                                 continue;
                             case "Lottery":
-                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTime.AddSeconds(-20) <= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
                                     Lottery.DrawLottery();
                                 }
                                 continue;
                             case "NightAlert":
-                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTime.AddSeconds(-20) <= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
                                     NightAlert.Exec();
@@ -87,7 +88,7 @@ namespace ServerTools
                                 }
                                 continue;
                             case "PlayerLogs":
-                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTime.AddSeconds(-20) <= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
                                     PlayerLogs.SetDelay(true);
@@ -95,7 +96,7 @@ namespace ServerTools
                                 }
                                 continue;
                             case "RealWorldTime":
-                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTime.AddSeconds(-20) <= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
                                     RealWorldTime.SetDelay(true);
@@ -103,21 +104,21 @@ namespace ServerTools
                                 }
                                 continue;
                             case "Reset":
-                                if (DateTime.Now >= schedule[i].Value)
+                                if (dateTime >= schedule[i].Value)
                                 {
                                     Schedule.Remove(schedule[i].Key);
                                     Reset();
                                 }
                                 continue;
                             case "Shutdown":
-                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTime.AddSeconds(-20) <= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
                                     Shutdown.PrepareShutdown();
                                 }
                                 continue;
                             case "WatchList":
-                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTime.AddSeconds(-20) <= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
                                     WatchList.Exec();
@@ -125,7 +126,7 @@ namespace ServerTools
                                 }
                                 continue;
                             case "Zones":
-                                if (!Expired.Contains(schedule[i].Key) && DateTime.Now >= schedule[i].Value)
+                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTime.AddSeconds(-20) <= schedule[i].Value)
                                 {
                                     Expired.Add(schedule[i].Key);
                                     Zones.ReminderExec();

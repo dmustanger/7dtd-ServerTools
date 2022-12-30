@@ -1159,6 +1159,19 @@ namespace ServerTools
                 Dict.Remove("Real world time");
                 Log.Out("[SERVERTOOLS] Real world time disabled");
             }
+            if (RegionReset.IsEnabled)
+            {
+                if (!Dict.Contains("Region reset"))
+                {
+                    Dict.Add("Region reset");
+                    Log.Out("[SERVERTOOLS] Region reset enabled");
+                }
+            }
+            else if (Dict.Contains("Region reset") && !_initiating)
+            {
+                Dict.Remove("Region reset");
+                Log.Out("[SERVERTOOLS] Region reset disabled");
+            }
             if (ReservedSlots.IsEnabled)
             {
                 if (!Dict.Contains("Reserved slots"))

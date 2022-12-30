@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace ServerTools
 {
-    class RegionReset
+    public class RegionReset
     {
         public static bool IsEnabled = false, IsRunning = false;
 
@@ -15,10 +15,10 @@ namespace ServerTools
         public static List<Bounds> RegionBounds = new List<Bounds>();
         public static List<int> RegionPlayer = new List<int>();
 
-        private const string FileName = "RegionReset.xml";
-        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, FileName);
-        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, FileName);
-
+        private const string file = "RegionReset.xml";
+        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        
         private static XmlNodeList OldNodeList;
 
         public static void Load()
@@ -26,15 +26,16 @@ namespace ServerTools
             LoadXml();
             InitFileWatcher();
         }
-
+        
         public static void Unload()
         {
             Regions.Clear();
             RegionBounds.Clear();
+            RegionPlayer.Clear();
             FileWatcher.Dispose();
             IsRunning = false;
         }
-
+        
         public static void LoadXml()
         {
             try
@@ -50,7 +51,7 @@ namespace ServerTools
                 }
                 catch (XmlException e)
                 {
-                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", FileName, e.Message));
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
                 bool upgrade = true;
@@ -212,7 +213,7 @@ namespace ServerTools
             }
             FileWatcher.EnableRaisingEvents = true;
         }
-
+        
         private static void InitFileWatcher()
         {
             FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
@@ -221,7 +222,7 @@ namespace ServerTools
             FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
-
+        
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
             if (!File.Exists(FilePath))
@@ -231,7 +232,7 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void IsResetRegion(ClientInfo _cInfo, EntityPlayer _player)
+        public static void IsRegenRegion(ClientInfo _cInfo, EntityPlayer _player)
         {
             for (int i = 0; i < RegionBounds.Count; i++)
             {
@@ -251,14 +252,13 @@ namespace ServerTools
                 SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "region_reset"), null);
             }
         }
-
+        
         public static void Exec()
         {
             try
             {
                 if (Regions.Count > 0)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Region reset has begun. Please be patient"));
                     int count = 0;
                     foreach (var region in Regions)
                     {
@@ -296,7 +296,6 @@ namespace ServerTools
                         }
                         count += 1;
                     }
-                    Log.Out(string.Format("[SERVERTOOLS] Region reset has completed"));
                 }
             }
             catch (Exception e)
@@ -304,7 +303,7 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in RegionReset.Exec: {0}", e.Message));
             }
         }
-
+        
         private static void UpgradeXml()
         {
             try
@@ -320,9 +319,10 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Region Name=\"r.-1.-1.7rg\" Time=\"week\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.StartsWith("<!-- <Region Name=\"r.0.0.7rg\"") &&
-                            !OldNodeList[i].OuterXml.StartsWith("<!-- <Region Name=\"r.-1.-1.7rg\"") && 
-                            !OldNodeList[i].OuterXml.StartsWith("<!-- <Region Name=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Region Name=\"r.0.0.7rg\"") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Region Name=\"r.-1.-1.7rg\"") && 
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Region Name=\"\"") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- Possible time"))
                         {
                             sw.WriteLine(OldNodeList[i].OuterXml);
                         }

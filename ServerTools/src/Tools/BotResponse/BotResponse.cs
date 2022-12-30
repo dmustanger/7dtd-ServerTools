@@ -199,8 +199,8 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Chat Message=\"Any admin on\" Response=\"From the skies comes a bolt of lightning\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.StartsWith("<!-- <Chat Message=\"Any admin on\"") &&
-                            !OldNodeList[i].OuterXml.StartsWith("<!-- <Chat Message=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Chat Message=\"Any admin on\"") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Chat Message=\"\""))
                         {
                             sw.WriteLine(OldNodeList[i].OuterXml);
                         }

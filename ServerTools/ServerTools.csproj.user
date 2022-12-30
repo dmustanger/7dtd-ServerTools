@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ReferencePath>F:\Modding Mods\owncloud\development\7dtd-ServerTools-master-20.6.2\7dtd-binaries\</ReferencePath>
+    <ReferencePath>D:\7DaysToDieServers\DedicatedStable\7DaysToDieServer_Data\Managed\</ReferencePath>
     <ProjectView>ShowAllFiles</ProjectView>
   </PropertyGroup>
 </Project>

@@ -425,8 +425,8 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Item Name=\"gunPistolExample\" SecondaryName=\"pistol\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"3\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.StartsWith("<!-- <Item Name=\"gunPistolExample\"") && 
-                            !OldNodeList[i].OuterXml.StartsWith("<!-- <Item Name=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"gunPistolExample\"") && 
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\""))
                         {
                             sw.WriteLine(OldNodeList[i].OuterXml);
                         }
