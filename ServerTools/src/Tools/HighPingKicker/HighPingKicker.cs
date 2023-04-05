@@ -15,10 +15,8 @@ namespace ServerTools
 
         private const string file = "HighPingImmunity.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static Dictionary<string, int> FlagCounts = new Dictionary<string, int>();
+        private static Dictionary<int, int> Violations = new Dictionary<int, int>();
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-
-        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -29,7 +27,7 @@ namespace ServerTools
         public static void Unload()
         {
             Dict.Clear();
-            FlagCounts.Clear();
+            Violations.Clear();
             FileWatcher.Dispose();
             IsRunning = false;
         }
@@ -52,70 +50,46 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                Violations.Clear();
+                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
-                    Dict.Clear();
-                    FlagCounts.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
-                            {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("SteamId") && line.HasAttribute("Name"))
-                                {
-                                    string id = line.GetAttribute("SteamId");
-                                    string name = line.GetAttribute("Name");
-                                    if (!Dict.ContainsKey(id))
-                                    {
-                                        Dict.Add(id, name);
-                                    }
-                                }
-                            }
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes || !line.HasAttribute("Id") || !line.HasAttribute("Name"))
+                        {
+                            continue;
+                        }
+                        string id = line.GetAttribute("Id");
+                        if (id == "")
+                        {
+                            continue;
+                        }
+                        string name = line.GetAttribute("Name");
+                        if (!Dict.ContainsKey(id))
+                        {
+                            Dict.Add(id, name);
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing HighPingImmunity.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -141,15 +115,14 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<HighPing>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- <Player Id=\"76561191234567890\" Name=\"Example\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- <Player Id=\"Steam_12345678909876543\" Name=\"Example\" /> -->");
+                    sw.WriteLine("    <Player Id=\"\" Name=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, string> c in Dict)
                         {
-                            sw.WriteLine(string.Format("    <Player Id=\"{0}\" Name=\"{1}\" />", c.Key, c.Value));
+                            sw.WriteLine("    <Player Id=\"{0}\" Name=\"{1}\" />", c.Key, c.Value);
                         }
                     }
                     sw.WriteLine("</HighPing>");
@@ -182,51 +155,41 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void Exec(ClientInfo _cInfo)
+        public static void Exec()
         {
             try
             {
-                if (Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString) || GameManager.Instance.adminTools.IsAdmin(_cInfo))
+                List<ClientInfo> clients = GeneralOperations.ClientList();
+                if (clients == null || clients.Count < 1)
                 {
                     return;
                 }
-                else
+                int clientCount = clients.Count;
+                for (int i = 0; i < clientCount; i++)
                 {
-                    if (_cInfo.ping >= Max_Ping)
+                    ClientInfo cInfo = clients[i];
+                    if (Dict.ContainsKey(cInfo.PlatformId.CombinedString) || Dict.ContainsKey(cInfo.CrossplatformId.CombinedString))
                     {
-                        if (Flags == 1)
+                        continue;
+                    }
+                    else if (cInfo.ping >= Max_Ping)
+                    {
+                        if (Violations.ContainsKey(cInfo.entityId))
                         {
-                            KickPlayer(_cInfo);
+                            Violations[cInfo.entityId] += 1;
                         }
                         else
                         {
-                            if (!FlagCounts.ContainsKey(_cInfo.CrossplatformId.CombinedString))
-                            {
-                                FlagCounts.Add(_cInfo.CrossplatformId.CombinedString, 1);
-                            }
-                            else
-                            {
-                                FlagCounts.TryGetValue(_cInfo.CrossplatformId.CombinedString, out int _savedsamples);
-                                {
-                                    if (_savedsamples + 1 < Flags)
-                                    {
-                                        FlagCounts[_cInfo.CrossplatformId.CombinedString] = _savedsamples + 1;
-                                    }
-                                    else
-                                    {
-                                        FlagCounts.Remove(_cInfo.CrossplatformId.CombinedString);
-                                        KickPlayer(_cInfo);
-                                    }
-                                }
-                            }
+                            Violations.Add(cInfo.entityId, 1);
+                        }
+                        if (Violations[cInfo.entityId] >= Flags)
+                        {
+                            KickPlayer(cInfo);
                         }
                     }
-                    else
+                    else if (Violations.ContainsKey(cInfo.entityId))
                     {
-                        if (FlagCounts.ContainsKey(_cInfo.CrossplatformId.CombinedString))
-                        {
-                            FlagCounts.Remove(_cInfo.CrossplatformId.CombinedString);
-                        }
+                        Violations.Remove(cInfo.entityId);
                     }
                 }
             }
@@ -240,16 +203,15 @@ namespace ServerTools
         {
             try
             {
-                Phrases.Dict.TryGetValue("HighPing1", out string phrase1);
-                phrase1 = phrase1.Replace("{PlayerName}", _cInfo.playerName);
-                phrase1 = phrase1.Replace("{PlayerPing}", _cInfo.ping.ToString());
-                phrase1 = phrase1.Replace("{MaxPing}", Max_Ping.ToString());
-                ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                Phrases.Dict.TryGetValue("HighPing2", out string phrase2);
-                phrase2 = phrase2.Replace("{PlayerPing}", _cInfo.ping.ToString());
-                phrase2 = phrase2.Replace("{MaxPing}", Max_Ping.ToString());
-                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("Kick {0} \"{1}\"", _cInfo.entityId, phrase2), null);
-                Log.Out(string.Format("[SERVERTOOLS] Kicked player id {0} for high ping", _cInfo.CrossplatformId.CombinedString));
+                Violations.Remove(_cInfo.entityId);
+                Phrases.Dict.TryGetValue("HighPing1", out string phrase);
+                phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
+                phrase = phrase.Replace("{Value}", _cInfo.ping.ToString());
+                phrase = phrase.Replace("{MaxPing}", Max_Ping.ToString());
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, phrase), null);
+                Log.Out(string.Format("[SERVERTOOLS] Kicked player with id '{0}' '{1}' named '{2}' for high ping violation of '{3}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _cInfo.ping));
+                return;
             }
             catch (Exception e)
             {
@@ -257,7 +219,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -266,37 +228,29 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<HighPing>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- <Player Id=\"76561191234567890\" Name=\"Example\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- <Player Id=\"Steam_12345678909876543\" Name=\"Example\" /> -->");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.StartsWith("<!-- <Player Id=\"76561191234567890\"") &&
-                            !OldNodeList[i].OuterXml.StartsWith("    <!-- <Player Id=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_12345678909876543") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Player Id=\"\" Name=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Player")
                             {
                                 string id = "", name = "";
-                                if (line.HasAttribute("SteamId"))
-                                {
-                                    id = line.GetAttribute("SteamId");
-                                    if (id.Contains("_"))
-                                    {
-                                        id.Insert(0, "Steam_");
-                                    }
-                                }
-                                else if (line.HasAttribute("Id"))
+                                if (line.HasAttribute("Id"))
                                 {
                                     id = line.GetAttribute("Id");
+
                                 }
                                 if (line.HasAttribute("Name"))
                                 {

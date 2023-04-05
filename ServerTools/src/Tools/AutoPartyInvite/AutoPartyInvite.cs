@@ -34,16 +34,16 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue("AutoPartyInvite2", out string phrase);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
-            PersistentPlayerData ppd1 = GeneralFunction.GetPersistentPlayerDataFromEntityId(_cInfo.entityId);
+            PersistentPlayerData ppd1 = GeneralOperations.GetPersistentPlayerDataFromEntityId(_cInfo.entityId);
             if (ppd1 != null)
             {
-                List<ClientInfo> clients = GeneralFunction.ClientList();
+                List<ClientInfo> clients = GeneralOperations.ClientList();
                 for (int i = 0; i < clients.Count; i++)
                 {
                     ClientInfo client = clients[i];
                     if (_cInfo.entityId != client.entityId && !invites.Contains(client.entityId.ToString()))
                     {
-                        PersistentPlayerData ppd2 = GeneralFunction.GetPersistentPlayerDataFromEntityId(client.entityId);
+                        PersistentPlayerData ppd2 = GeneralOperations.GetPersistentPlayerDataFromEntityId(client.entityId);
                         if (ppd2 != null)
                         {
                             if (ppd1.ACL.Contains(client.CrossplatformId) && ppd2.ACL.Contains(_cInfo.CrossplatformId))
@@ -63,7 +63,7 @@ namespace ServerTools
         {
             if (GameManager.Instance.World.Players.dict.Count > 1)
             {
-                foreach (KeyValuePair<int, EntityPlayer> player in GeneralFunction.GetEntityPlayers())
+                foreach (KeyValuePair<int, EntityPlayer> player in GeneralOperations.GetEntityPlayers())
                 {
                     if (_player.entityId != player.Value.entityId)
                     {
@@ -71,7 +71,7 @@ namespace ServerTools
                         {
                             return;
                         }
-                        PersistentPlayerData ppd2 = GeneralFunction.GetPersistentPlayerDataFromEntityId(player.Key);
+                        PersistentPlayerData ppd2 = GeneralOperations.GetPersistentPlayerDataFromEntityId(player.Key);
                         if (ppd2 != null && ppd2.ACL != null)
                         {
                             if (PersistentContainer.Instance.Players[ppd2.UserIdentifier.CombinedString].AutoPartyInvite != null &&
@@ -82,7 +82,7 @@ namespace ServerTools
                                 {
                                     if (autoInvites[i][0] == _cInfo.entityId.ToString())
                                     {
-                                        PersistentPlayerData ppd1 = GeneralFunction.GetPersistentPlayerDataFromEntityId(_player.entityId);
+                                        PersistentPlayerData ppd1 = GeneralOperations.GetPersistentPlayerDataFromEntityId(_player.entityId);
                                         if (ppd1 != null && ppd1.ACL != null && ppd1.ACL.Contains(ppd2.UserIdentifier) && ppd2.ACL.Contains(ppd1.UserIdentifier))
                                         {
                                             EntityPlayer player2 = player.Value;
@@ -112,7 +112,7 @@ namespace ServerTools
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
-            ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromEntityId(entityId);
+            ClientInfo cInfo2 = GeneralOperations.GetClientInfoFromEntityId(entityId);
             if (cInfo2 != null)
             {
                 if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AutoPartyInvite.Count > 0)

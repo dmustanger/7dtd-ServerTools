@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -13,7 +12,6 @@ namespace ServerTools
         public static string Market_Position = "0,0,0", Command_marketback = "marketback", Command_mback = "mback", 
             Command_set = "setmarket", Command_market = "market";
 
-        public static List<int> MarketPlayers = new List<int>();
         public static Bounds MarketBounds = new Bounds();
 
         public static void SetBounds(string _position)
@@ -31,15 +29,18 @@ namespace ServerTools
                             MarketBounds.center = new Vector3(x, y, z);
                             int size = Market_Size * 2;
                             MarketBounds.size = new Vector3(size, size, size);
+                            Log.Out(string.Format("[SERVERTOOLS] Market has been set to position '{0}'", _position));
+                            return;
                         }
                     }
                 }
             }
+            Log.Out(string.Format("[SERVERTOOLS] Unable to set market bounds using position '{0}'", _position));
         }
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (!Bloodmoon && GeneralFunction.IsBloodmoon())
+            if (!Bloodmoon && GeneralOperations.IsBloodmoon())
             {
                 Phrases.Dict.TryGetValue("Market13", out string phrase);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -139,7 +140,7 @@ namespace ServerTools
         {
             if (Market_Position != "0,0,0" || Market_Position != "0 0 0" || Market_Position != "")
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (IsMarket(player.position))
@@ -174,7 +175,7 @@ namespace ServerTools
                                     Vector3 position = player.GetPosition();
                                     Phrases.Dict.TryGetValue("Market2", out string phrase);
                                     phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                                    phrase = phrase.Replace("{Command_marketback}", Command_marketback);
+                                    phrase = phrase.Replace("{Command_mback}", Command_mback);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     int x = (int)position.x;
                                     int y = (int)position.y;
@@ -207,13 +208,13 @@ namespace ServerTools
 
         public static void SendBack(ClientInfo _cInfo)
         {
-            EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+            EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
             if (player != null)
             {
                 if (IsMarket(player.position))
                 {
                     string lastPos = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].MarketReturnPos;
-                    if (lastPos != "")
+                    if (lastPos != null && lastPos != "")
                     {
                         string[] returnCoords = lastPos.Split(',');
                         int.TryParse(returnCoords[0], out int x);
@@ -225,38 +226,14 @@ namespace ServerTools
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("Market5", out string phrase);
-                        phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                        phrase = phrase.Replace("{Command_marketback}", Command_marketback);
+                        Phrases.Dict.TryGetValue("Market3", out string phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("Market3", out string phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                }
-            }
-        }
-
-        public static void InsideMarket(ClientInfo _cInfo, EntityAlive _player)
-        {
-            if (IsMarket(_player.position))
-            {
-                if (!MarketPlayers.Contains(_cInfo.entityId))
-                {
-                    MarketPlayers.Add(_cInfo.entityId);
-                }
-            }
-            else
-            {
-                if (MarketPlayers.Contains(_cInfo.entityId))
-                {
-                    MarketPlayers.Remove(_cInfo.entityId);
                     Phrases.Dict.TryGetValue("Market5", out string phrase);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].MarketReturnPos = "";
-                    PersistentContainer.DataChange = true;
                 }
             }
         }
@@ -276,31 +253,31 @@ namespace ServerTools
             {
                 Phrases.Dict.TryGetValue("Market10", out string phrase);
                 ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                if (GeneralFunction.PvEViolations.ContainsKey(_cInfo2.entityId))
+                if (GeneralOperations.PvEViolations.ContainsKey(_cInfo2.entityId))
                 {
-                    GeneralFunction.PvEViolations.TryGetValue(_cInfo2.entityId, out int violations);
+                    GeneralOperations.PvEViolations.TryGetValue(_cInfo2.entityId, out int violations);
                     violations++;
-                    GeneralFunction.PvEViolations[_cInfo2.entityId] = violations;
-                    if (GeneralFunction.Jail_Violation > 0 && violations == GeneralFunction.Jail_Violation)
+                    GeneralOperations.PvEViolations[_cInfo2.entityId] = violations;
+                    if (GeneralOperations.Jail_Violation > 0 && violations == GeneralOperations.Jail_Violation)
                     {
-                        GeneralFunction.JailPlayer(_cInfo2);
+                        GeneralOperations.JailPlayer(_cInfo2);
                     }
-                    if (GeneralFunction.Kill_Violation > 0 && violations == GeneralFunction.Kill_Violation)
+                    if (GeneralOperations.Kill_Violation > 0 && violations == GeneralOperations.Kill_Violation)
                     {
-                        GeneralFunction.KillPlayer(_cInfo2);
+                        GeneralOperations.KillPlayer(_cInfo2);
                     }
-                    if (GeneralFunction.Kick_Violation > 0 && violations == GeneralFunction.Kick_Violation)
+                    if (GeneralOperations.Kick_Violation > 0 && violations == GeneralOperations.Kick_Violation)
                     {
-                        GeneralFunction.KickPlayer(_cInfo2);
+                        GeneralOperations.KickPlayer(_cInfo2);
                     }
-                    else if (GeneralFunction.Ban_Violation > 0 && violations == GeneralFunction.Ban_Violation)
+                    else if (GeneralOperations.Ban_Violation > 0 && violations == GeneralOperations.Ban_Violation)
                     {
-                        GeneralFunction.BanPlayer(_cInfo2);
+                        GeneralOperations.BanPlayer(_cInfo2);
                     }
                 }
                 else
                 {
-                    GeneralFunction.PvEViolations.Add(_cInfo2.entityId, 1);
+                    GeneralOperations.PvEViolations.Add(_cInfo2.entityId, 1);
                 }
                 return false;
             }

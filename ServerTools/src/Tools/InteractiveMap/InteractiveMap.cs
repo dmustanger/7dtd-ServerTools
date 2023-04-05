@@ -22,8 +22,6 @@ namespace ServerTools
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static FileSystemWatcher FolderWatcher;
 
-        private static XmlNodeList OldNodeList;
-
         public static void Load()
         {
             LoadXml();
@@ -58,72 +56,48 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
-                    Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes || !line.HasAttribute("Rule") || !line.HasAttribute("Tier"))
+                        {
+                            continue;
+                        }
+                        string rule = line.GetAttribute("Rule");
+                        if (rule == "")
+                        {
+                            continue;
+                        }
+                        string tier = line.GetAttribute("Tier");
+                        if (int.TryParse(tier, out int value))
+                        {
+                            if (!Dict.ContainsKey(rule))
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Rule") && line.HasAttribute("Tier"))
-                                {
-                                    string rule = line.GetAttribute("Rule");
-                                    string tier = line.GetAttribute("Tier");
-                                    if (!int.TryParse(tier, out int value))
-                                    {
-                                        if (!Dict.ContainsKey(rule))
-                                        {
-                                            Dict.Add(rule, value);
-                                        }
-                                    }
-                                }
+                                Dict.Add(rule, value);
                             }
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing IMapPermission.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -149,9 +123,7 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<IMapPermission>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
                     if (Dict.ContainsKey("Regions"))
                     {
                         Dict.TryGetValue("Regions", out int tier);
@@ -248,16 +220,16 @@ namespace ServerTools
             //Log.Out(string.Format("[SERVERTOOLS] ChangeType: '{0}'", e.ChangeType));
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
                 Dictionary<string,string> oldEntries = new Dictionary<string,string>();
-                for (int i = 0; i < OldNodeList.Count; i++)
+                for (int i = 0; i < nodeList.Count; i++)
                 {
-                    if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                    if (nodeList[i].NodeType != XmlNodeType.Comment)
                     {
-                        XmlElement line = (XmlElement)OldNodeList[i];
+                        XmlElement line = (XmlElement)nodeList[i];
                         if (line.HasAttributes && line.Name == "Permission")
                         {
                             string rule = "", tier = "";
@@ -280,17 +252,16 @@ namespace ServerTools
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    sw.WriteLine("<LoginNotice>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("<IMapPermission>");
+                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment)
+                        if (nodeList[i].NodeType == XmlNodeType.Comment &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
                     if (oldEntries.ContainsKey("Regions"))
                     {
                         oldEntries.TryGetValue("Regions", out string tier);
@@ -336,7 +307,7 @@ namespace ServerTools
                     {
                         sw.WriteLine(string.Format("    <Permission Rule=\"Animals\" Tier=\"0\" />"));
                     }
-                    sw.WriteLine("</LoginNotice>");
+                    sw.WriteLine("</IMapPermission>");
                     sw.Flush();
                     sw.Close();
                 }
@@ -410,10 +381,10 @@ namespace ServerTools
         {
             try
             {
-                if (File.Exists(GeneralFunction.XPathDir + "XUi/windows.xml"))
+                if (File.Exists(GeneralOperations.XPathDir + "XUi/windows.xml"))
                 {
                     string link = string.Format("http://{0}:{1}/imap.html", WebAPI.BaseAddress, WebAPI.Port);
-                    List<string> lines = File.ReadAllLines(GeneralFunction.XPathDir + "XUi/windows.xml").ToList();
+                    List<string> lines = File.ReadAllLines(GeneralOperations.XPathDir + "XUi/windows.xml").ToList();
                     for (int i = 0; i < lines.Count; i++)
                     {
                         if (lines[i].Contains("browserIMap"))
@@ -421,7 +392,7 @@ namespace ServerTools
                             if (!lines[i + 7].Contains(link))
                             {
                                 lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", link);
-                                File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
+                                File.WriteAllLines(GeneralOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
                             }
                             return;
                         }
@@ -448,7 +419,7 @@ namespace ServerTools
                             lines.Add("</append>");
                             lines.Add("");
                             lines.Add("</configs>");
-                            File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
+                            File.WriteAllLines(GeneralOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
                             return;
                         }
                     }
@@ -456,7 +427,7 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralFunction.XPathDir + "XUi/windows.xml", e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralOperations.XPathDir + "XUi/windows.xml", e.Message));
             }
         }
 
@@ -471,7 +442,7 @@ namespace ServerTools
                 }
                 string ip = _cInfo.ip;
                 bool duplicate = false;
-                List<ClientInfo> clientList = GeneralFunction.ClientList();
+                List<ClientInfo> clientList = GeneralOperations.ClientList();
                 if (clientList != null && clientList.Count > 1)
                 {
                     for (int i = 0; i < clientList.Count; i++)
@@ -484,10 +455,10 @@ namespace ServerTools
                         }
                     }
                 }
-                long ipLong = GeneralFunction.ConvertIPToLong(_cInfo.ip);
-                if (duplicate || (ipLong >= GeneralFunction.ConvertIPToLong("10.0.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("10.255.255.255")) ||
-                    (ipLong >= GeneralFunction.ConvertIPToLong("172.16.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("172.31.255.255")) ||
-                    (ipLong >= GeneralFunction.ConvertIPToLong("192.168.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("192.168.255.255")) ||
+                long ipLong = GeneralOperations.ConvertIPToLong(_cInfo.ip);
+                if (duplicate || (ipLong >= GeneralOperations.ConvertIPToLong("10.0.0.0") && ipLong <= GeneralOperations.ConvertIPToLong("10.255.255.255")) ||
+                    (ipLong >= GeneralOperations.ConvertIPToLong("172.16.0.0") && ipLong <= GeneralOperations.ConvertIPToLong("172.31.255.255")) ||
+                    (ipLong >= GeneralOperations.ConvertIPToLong("192.168.0.0") && ipLong <= GeneralOperations.ConvertIPToLong("192.168.255.255")) ||
                     _cInfo.ip == "127.0.0.1")
                 {
                     string securityId = "";

@@ -255,6 +255,14 @@ namespace ServerTools
             {
                 ChunkReset.Load();
             }
+            if (BigHead.IsEnabled && !BigHead.IsRunning)
+            {
+                BigHead.Enable();
+            }
+            else if (!BigHead.IsEnabled && BigHead.IsRunning)
+            {
+                BigHead.Disable();
+            }
             if (ClanManager.IsEnabled)
             {
                 ClanManager.ClanList();

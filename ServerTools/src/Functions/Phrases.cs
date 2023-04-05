@@ -12,8 +12,6 @@ namespace ServerTools
 
         public static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
 
-        //private static List<string> PhraseList = new List<string>();
-
         private const string file = "Phrases.xml";
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
@@ -44,40 +42,39 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            bool upgrade = true;
             XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-            if (childNodes != null && childNodes.Count > 0)
+            Dict.Clear();
+            if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
             {
-                Dict.Clear();
                 for (int i = 0; i < childNodes.Count; i++)
                 {
-                    if (childNodes[i].NodeType != XmlNodeType.Comment)
+                    if (childNodes[i].NodeType == XmlNodeType.Comment)
                     {
-                        XmlElement line = (XmlElement)childNodes[i];
-                        if (line.HasAttributes)
+                        continue;
+                    }
+                    XmlElement line = (XmlElement)childNodes[i];
+                    if (!line.HasAttributes)
+                    {
+                        continue;
+                    }
+                    if (line.HasAttribute("Name") && line.HasAttribute("Message"))
+                    {
+                        string name = line.GetAttribute("Name");
+                        if (name == "")
                         {
-                            if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                            {
-                                upgrade = false;
-                                continue;
-                            }
-                            else if (line.HasAttribute("Name") && line.HasAttribute("Message"))
-                            {
-                                string name = line.GetAttribute("Name");
-                                string message = line.GetAttribute("Message");
-                                if (!Dict.ContainsKey(name))
-                                {
-                                    Dict.Add(name, message);
-                                }
-                            }
+                            continue;
+                        }
+                        string message = line.GetAttribute("Message");
+                        if (!Dict.ContainsKey(name))
+                        {
+                            Dict.Add(name, message);
                         }
                     }
                 }
             }
-            if (upgrade)
+            else
             {
                 UpgradeXml(childNodes);
-                return;
             }
         }
 
@@ -91,22 +88,15 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Phrases>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************** High_Ping_Kicker ****************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("HighPing1", out phrase))
                     {
-                        phrase = "Auto Kicking {PlayerName} for high ping of {PlayerPing}. Maxping is {MaxPing}";
+                        phrase = "Auto Kicked: {PlayerName} for high ping of {Value}. Maxping is {MaxPing}";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"HighPing1\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("HighPing2", out phrase))
-                    {
-                        phrase = "Auto Kicked: Ping is too high at {PlayerPing}. Max ping is {MaxPing}";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"HighPing2\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine("    <Phrase Name=\"HighPing1\" Message=\"{0}\" />", phrase);
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************** Invalid_Items ********************* -->");
@@ -727,7 +717,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lobby2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lobby3", out phrase))
                     {
-                        phrase = "You can go back by typing {Command_Prefix1}{Command_lobbyback} when you are ready to leave the lobby";
+                        phrase = "You can go back by typing {Command_Prefix1}{Command_lback} when you are ready to leave the lobby";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lobby3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Lobby4", out phrase))
@@ -791,7 +781,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Market1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Market2", out phrase))
                     {
-                        phrase = "You can go back by typing {Command_Prefix1}{Command_marketback} when you are ready to leave the market";
+                        phrase = "You can go back by typing {Command_Prefix1}{Command_mback} when you are ready to leave the market";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Market2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Market3", out phrase))
@@ -1344,6 +1334,16 @@ namespace ServerTools
                         phrase = "You have no saved death position";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Died4\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Died5", out phrase))
+                    {
+                        phrase = "You are too low a level to use this command";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Died5\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Died6", out phrase))
+                    {
+                        phrase = "You are too high a level to use this command";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Died6\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* Restart_Vote ********************* -->");
@@ -1418,6 +1418,11 @@ namespace ServerTools
                         phrase = "You have already voted";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"RestartVote14\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("RestartVote15", out phrase))
+                    {
+                        phrase = "Unable to start a restart vote during the bloodmoon";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"RestartVote15\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- *********************** Location *********************** -->");
@@ -3248,24 +3253,14 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Wall2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Wall3", out phrase))
                     {
-                        phrase = "Wall corners do not line up, unable to form a wall";
+                        phrase = "Walls can only be built inside your claimed space.";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Wall3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Wall4", out phrase))
                     {
-                        phrase = "Walls can only be built inside your claimed space. Position not saved";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Wall4\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Wall5", out phrase))
-                    {
-                        phrase = "Walls can only be constructed out of cube shaped blocks. Position not saved";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Wall5\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("Wall6", out phrase))
-                    {
                         phrase = "Command restricted to reserved only";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"Wall6\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Wall4\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************** Bed ************************* -->");
@@ -3365,7 +3360,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Vault1\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
-                    sw.WriteLine("    <!-- ****************!***** InfiniteAmmo ******************** -->");
+                    sw.WriteLine("    <!-- ********************** InfiniteAmmo ******************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("InfiniteAmmo1", out phrase))
                     {
@@ -3377,6 +3372,15 @@ namespace ServerTools
                         phrase = "Detected {PlayerName} using infinite ammo. They have been banned";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"InfiniteAmmo2\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- *********************** Overlay ************************ -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("Overlay1", out phrase))
+                    {
+                        phrase = "Your overlay is set off. Unable to open link in steam browser";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Overlay1\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
@@ -3442,29 +3446,31 @@ namespace ServerTools
                     return;
                 }
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                for (int i = 0; i < childNodes.Count; i++)
+                if (childNodes != null)
                 {
-                    if (childNodes[i].NodeType == XmlNodeType.Comment)
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        continue;
-                    }
-                    if (childNodes[i].Name == "Phrase" && childNodes[i].Attributes.Count > 0)
-                    {
-                        for (int j = 0; j < _oldChildNodes.Count; j++)
+                        if (childNodes[i].NodeType != XmlNodeType.Comment)
                         {
-                            if (_oldChildNodes[j].NodeType == XmlNodeType.Comment)
+                            if (childNodes[i].Name == "Phrase" && childNodes[i].Attributes.Count > 0)
                             {
-                                continue;
-                            }
-                            if (_oldChildNodes[j].Name == "Phrase" && _oldChildNodes[j].Attributes.Count > 0 && _oldChildNodes[j].Attributes[0].Value == childNodes[i].Attributes[0].Value)
-                            {
-                                childNodes[i].Attributes[1].Value = _oldChildNodes[j].Attributes[1].Value;
-                                break;
+                                for (int j = 0; j < _oldChildNodes.Count; j++)
+                                {
+                                    if (_oldChildNodes[j].NodeType == XmlNodeType.Comment)
+                                    {
+                                        continue;
+                                    }
+                                    if (_oldChildNodes[j].Name == "Phrase" && _oldChildNodes[j].Attributes.Count > 0 && _oldChildNodes[j].Attributes[0].Value == childNodes[i].Attributes[0].Value)
+                                    {
+                                        childNodes[i].Attributes[1].Value = _oldChildNodes[j].Attributes[1].Value;
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
+                    xmlDoc.Save(FilePath);
                 }
-                xmlDoc.Save(FilePath);
             }
             catch (Exception e)
             {

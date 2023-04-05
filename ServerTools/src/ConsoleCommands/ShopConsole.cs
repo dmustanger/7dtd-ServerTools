@@ -302,10 +302,10 @@ namespace ServerTools
                         if (shopLog.Count > 0)
                         {
                             bool found = false;
-                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[2]);
+                            ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[2]);
                             if (cInfo != null)
                             {
-                                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                                EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                 if (player != null)
                                 {
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Shop records:"));

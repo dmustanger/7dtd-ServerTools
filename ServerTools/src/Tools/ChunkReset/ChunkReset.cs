@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -11,12 +12,12 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false;
 
         public static Dictionary<string, string> Chunks = new Dictionary<string, string>();
+        public static List<Bounds> ChunkBounds = new List<Bounds>();
+        public static List<int> ChunkPlayer = new List<int>();
 
         private const string FileName = "ChunkReset.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, FileName);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, FileName);
-
-        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -49,89 +50,82 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", FileName, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Chunks.Clear();
+                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
-                    Chunks.Clear();
+                    string saveGameRegionDir = GameIO.GetSaveGameRegionDir();
+                    RegionFileManager regionFileManager = new RegionFileManager(saveGameRegionDir, saveGameRegionDir, 0, true);
+                    List<long> chunkKeys = new List<long>();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes || !line.HasAttribute("Position") || !line.HasAttribute("Time"))
+                        {
+                            continue;
+                        }
+                        string position = line.GetAttribute("Position");
+                        if (position == "")
+                        {
+                            continue;
+                        }
+                        string time = line.GetAttribute("Time");
+                        if (position == "0,0" || position == "")
+                        {
+                            continue;
+                        }
+                        if (!position.Contains(","))
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Chunk reset position is invalid: {0}", position));
+                            continue;
+                        }
+                        string[] positionSplit = position.Split(',');
+                        if (!int.TryParse(positionSplit[0], out int x))
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Chunk reset position x is invalid: {0}", positionSplit[0]));
+                            continue;
+                        }
+                        if (!int.TryParse(positionSplit[1], out int z))
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Chunk reset position z is invalid: {0}", positionSplit[1]));
+                            continue;
+                        }
+                        int num = World.toChunkXZ(x);
+                        int num2 = World.toChunkXZ(z);
+                        long key = WorldChunkCache.MakeChunkKey(num, num2);
+                        if (!chunkKeys.Contains(key))
+                        {
+                            chunkKeys.Add(key);
+                            Chunks.Add(position, time);
+                            if (!regionFileManager.ContainsChunkSync(key))
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Position") && line.HasAttribute("Time"))
-                                {
-                                    string position = line.GetAttribute("Position");
-                                    string time = line.GetAttribute("Time");
-                                    if (!position.Contains(","))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Chunk reset position is invalid: {0}", position));
-                                        continue;
-                                    }
-                                    string[] positionSplit = position.Split(',');
-                                    if (!int.TryParse(positionSplit[0], out int x))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Chunk reset position x is invalid: {0}", positionSplit[0]));
-                                        continue;
-                                    }
-                                    if (!int.TryParse(positionSplit[1], out int z))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Chunk reset position z is invalid: {0}", positionSplit[1]));
-                                        continue;
-                                    }
-                                    if (!Chunks.ContainsKey(position))
-                                    {
-                                        Chunks.Add(position, time);
-                                    }
-                                }
+                                continue;
                             }
+                            Chunk chunk = regionFileManager.GetChunkSync(key);
+                            Bounds bounds = chunk.GetAABB();
+                            Bounds chunkBounds = new Bounds();
+                            chunkBounds.SetMinMax(new Vector3(bounds.min.x, 0, bounds.min.z), new Vector3(bounds.max.x, 200, bounds.max.z));
+                            ChunkBounds.Add(chunkBounds);
                         }
                     }
-                    if (Chunks.Count > 0)
-                    {
-                        Schedule();
-                    }
+                    regionFileManager.Cleanup();
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing ChunkReset.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -157,13 +151,11 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<ChunkReset>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- A chunk is 16x16 blocks. Only one position is needed inside a chunk for reset -->");
                     sw.WriteLine("    <!-- Possible time: day, week, month -->");
-                    sw.WriteLine("    <!-- <Chunk Position=\"50,71\" Time=\"week\" /> -->");
-                    sw.WriteLine("    <!-- <Chunk Position=\"-17,-200\" Time=\"month\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <!-- <Chunk Position=\"0,0\" Time=\"week\" /> -->");
+                    sw.WriteLine("    <Chunk Position=\"\" Time=\"\" />");
                     if (Chunks.Count > 0)
                     {
                         foreach (KeyValuePair<string, string> kvp in Chunks)
@@ -201,11 +193,24 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void Schedule()
+        public static void IsResetChunk(ClientInfo _cInfo, EntityPlayer _player)
         {
-            foreach (var chunk in Chunks)
+            for (int i = 0; i < ChunkBounds.Count; i++)
             {
-                Chunk chunkTest = (Chunk)GameManager.Instance.World.GetChunkSync(new Vector3i(10, 10, 10));
+                if (ChunkBounds[i].Contains(_player.position))
+                {
+                    if (!ChunkPlayer.Contains(_player.entityId))
+                    {
+                        ChunkPlayer.Add(_player.entityId);
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "chunk_reset"), null);
+                    }
+                    return;
+                }
+            }
+            if (ChunkPlayer.Contains(_player.entityId))
+            {
+                ChunkPlayer.Remove(_player.entityId);
+                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "chunk_reset"), null);
             }
         }
 
@@ -215,7 +220,43 @@ namespace ServerTools
             {
                 if (Chunks.Count > 0)
                 {
-                    
+                    int count = 0;
+                    foreach (var chunk in Chunks)
+                    {
+                        if (!PersistentContainer.Instance.ChunkReset.ContainsKey(chunk.Key))
+                        {
+                            Bounds bounds = ChunkBounds[count];
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                            PersistentContainer.Instance.ChunkReset.Add(chunk.Key, DateTime.Now);
+                            PersistentContainer.DataChange = true;
+                        }
+                        else
+                        {
+                            PersistentContainer.Instance.ChunkReset.TryGetValue(chunk.Key, out DateTime lastReset);
+                            if (chunk.Value == "day" && DateTime.Now.AddDays(1) >= lastReset)
+                            {
+                                Bounds bounds = ChunkBounds[count];
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                                PersistentContainer.Instance.ChunkReset[chunk.Key] = DateTime.Now;
+                                PersistentContainer.DataChange = true;
+                            }
+                            else if (chunk.Value == "week" && DateTime.Now.AddDays(7) >= lastReset)
+                            {
+                                Bounds bounds = ChunkBounds[count];
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                                PersistentContainer.Instance.ChunkReset[chunk.Key] = DateTime.Now;
+                                PersistentContainer.DataChange = true;
+                            }
+                            else if (chunk.Value == "month" && DateTime.Now.AddMonths(1) >= lastReset)
+                            {
+                                Bounds bounds = ChunkBounds[count];
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                                PersistentContainer.Instance.ChunkReset[chunk.Key] = DateTime.Now;
+                                PersistentContainer.DataChange = true;
+                            }
+                        }
+                        count += 1;
+                    }
                 }
             }
             catch (Exception e)
@@ -224,7 +265,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -233,27 +274,25 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<ChunkReset>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- A chunk is 16x16 blocks. Only one position is needed inside a chunk for reset -->");
                     sw.WriteLine("    <!-- Possible time: day, week, month -->");
-                    sw.WriteLine("    <!-- <Chunk Position=\"50,71\" Time=\"week\" /> -->");
-                    sw.WriteLine("    <!-- <Chunk Position=\"-17,-200\" Time=\"month\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <!-- <Chunk Position=\"0,0\" Time=\"week\" /> -->");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.StartsWith("<!-- <Chunk Position=\"50,71\"") &&
-                            !OldNodeList[i].OuterXml.StartsWith("<!-- <Chunk Position=\"-17,-200\"") && 
-                            !OldNodeList[i].OuterXml.StartsWith("<!-- <Chunk Position=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Version") &&
+                            !nodeList[i].OuterXml.Contains("<!-- A chunk") && !nodeList[i].OuterXml.Contains("<!-- Possible time") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Chunk Position"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Chunk Position=\"\" Time=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Chunk")
                             {
                                 string position = "", time = "";

@@ -194,9 +194,9 @@ namespace ServerTools
                 int telnetPanelPort = GamePrefs.GetInt(EnumGamePrefs.TelnetPort);
                 if (Port == controlPanelPort || Port == telnetPanelPort)
                 {
-                    Log.Out("[SERVERTOOLS] Web_API port was set identically to the server control panel or telnet port. " +
+                    Log.Out(string.Format("[SERVERTOOLS] Web_API port was set identically to the server control panel or telnet port. " +
                         "You must use a unique and unused port that is open to transmission. Web_API has been disabled. " +
-                        "This means the potential to use Discordian and the Web_Panel have been disabled");
+                        "This means the potential to use Discordian and various tool panels have been disabled"));
                     return;
                 }
                 if (Port > 1000 && Port < 65536)
@@ -323,7 +323,7 @@ namespace ServerTools
                 {
                     Thread.Abort();
                 }
-                if (IsEnabled && IsRunning && !GeneralFunction.Shutdown_Initiated)
+                if (IsEnabled && IsRunning && !GeneralOperations.Shutdown_Initiated)
                 {
                     Start();
                 }
@@ -568,7 +568,7 @@ namespace ServerTools
                                                     {
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             if (!Authorized.ContainsValue(DiscordBot.TokenKey + salt))
                                                             {
                                                                 Authorized.Add(clientData[0], DiscordBot.TokenKey + salt);
@@ -607,7 +607,7 @@ namespace ServerTools
                                                     {
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             if (!Authorized.ContainsValue(pass + salt))
                                                             {
                                                                 Authorized[clientData[0]] = pass + salt;
@@ -650,7 +650,7 @@ namespace ServerTools
                                                     {
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             if (!Authorized.ContainsValue(pass + salt))
                                                             {
                                                                 Authorized[clientData[0]] = pass + salt;
@@ -689,7 +689,7 @@ namespace ServerTools
                                                     string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                     if (clientData[1].ToUpper() == keyHash)
                                                     {
-                                                        string salt = GeneralFunction.CreatePassword(4);
+                                                        string salt = GeneralOperations.CreatePassword(4);
                                                         pass += salt;
                                                         if (!Authorized.ContainsKey(clientData[0]))
                                                         {
@@ -786,7 +786,7 @@ namespace ServerTools
                                                                 passCut + passCut + passCut + passCut);
                                                             PersistentContainer.Instance.Players[clientData[0]].WebPass = newPass;
                                                             PersistentContainer.DataChange = true;
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             newPass += salt;
                                                             Authorized[clientData[0]] = newPass;
                                                             AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -834,7 +834,7 @@ namespace ServerTools
                                                         string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                         if (clientData[1].ToUpper() == keyHash)
                                                         {
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             pass += salt;
                                                             Authorized[clientData[0]] = pass;
                                                             AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -896,7 +896,7 @@ namespace ServerTools
                                                         string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                         if (clientData[1].ToUpper() == keyHash)
                                                         {
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             pass += salt;
                                                             Authorized[clientData[0]] = pass;
                                                             AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -973,11 +973,11 @@ namespace ServerTools
                                                         string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                         if (clientData[1].ToUpper() == keyHash)
                                                         {
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             pass += salt;
                                                             Authorized[clientData[0]] = pass;
                                                             AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
-                                                            List<ClientInfo> clientList = GeneralFunction.ClientList();
+                                                            List<ClientInfo> clientList = GeneralOperations.ClientList();
                                                             if (clientList != null)
                                                             {
                                                                 for (int i = 0; i < clientList.Count; i++)
@@ -985,7 +985,7 @@ namespace ServerTools
                                                                     ClientInfo cInfo = clientList[i];
                                                                     if (cInfo != null)
                                                                     {
-                                                                        EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                                                                        EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                                                         if (player != null && player.Progression != null)
                                                                         {
                                                                             if (cInfo.playerName.Contains("☼") || cInfo.playerName.Contains("§"))
@@ -1070,7 +1070,7 @@ namespace ServerTools
                                                         string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                         if (clientData[1].ToUpper() == keyHash)
                                                         {
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             pass += salt;
                                                             Authorized[clientData[0]] = pass;
                                                             AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -1125,7 +1125,7 @@ namespace ServerTools
                                                         string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                         if (clientData[1].ToUpper() == keyHash)
                                                         {
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             pass += salt;
                                                             Authorized[clientData[0]] = pass;
                                                             AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
@@ -1225,12 +1225,12 @@ namespace ServerTools
                                                         string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                         if (clientData[1].ToUpper() == keyHash)
                                                         {
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             pass += salt;
                                                             Authorized[clientData[0]] = pass;
                                                             AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
                                                             responseMessage += salt;
-                                                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(clientData[2]);
+                                                            ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(clientData[2]);
                                                             if (cInfo != null)
                                                             {
                                                                 SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0}", cInfo.CrossplatformId.CombinedString), null);
@@ -1282,12 +1282,12 @@ namespace ServerTools
                                                         string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                         if (clientData[1].ToUpper() == keyHash)
                                                         {
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             pass += salt;
                                                             Authorized[clientData[0]] = pass;
                                                             AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
                                                             responseMessage += salt;
-                                                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(clientData[2]);
+                                                            ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(clientData[2]);
                                                             if (cInfo != null)
                                                             {
                                                                 SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 year", cInfo.CrossplatformId.CombinedString), null);
@@ -1296,7 +1296,7 @@ namespace ServerTools
                                                             }
                                                             else
                                                             {
-                                                                PersistentPlayerData ppd = GeneralFunction.GetPersistentPlayerDataFromId(clientData[2]);
+                                                                PersistentPlayerData ppd = GeneralOperations.GetPersistentPlayerDataFromId(clientData[2]);
                                                                 if (ppd != null)
                                                                 {
                                                                     SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 year", ppd.UserIdentifier.CombinedString), null);
@@ -1345,14 +1345,14 @@ namespace ServerTools
                                                         string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                         if (clientData[1].ToUpper() == keyHash)
                                                         {
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             pass += salt;
                                                             Authorized[clientData[0]] = pass;
                                                             AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
                                                             responseMessage += salt;
                                                             if (Mute.IsEnabled)
                                                             {
-                                                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(clientData[2]);
+                                                                ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(clientData[2]);
                                                                 if (cInfo != null)
                                                                 {
                                                                     if (Mute.Mutes.Contains(cInfo.CrossplatformId.CombinedString))
@@ -1375,7 +1375,7 @@ namespace ServerTools
                                                                 }
                                                                 else
                                                                 {
-                                                                    PersistentPlayerData ppd = GeneralFunction.GetPersistentPlayerDataFromId(clientData[2]);
+                                                                    PersistentPlayerData ppd = GeneralOperations.GetPersistentPlayerDataFromId(clientData[2]);
                                                                     if (ppd != null)
                                                                     {
                                                                         if (Mute.Mutes.Contains(ppd.UserIdentifier.CombinedString))
@@ -1447,14 +1447,14 @@ namespace ServerTools
                                                         string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                         if (clientData[1].ToUpper() == keyHash)
                                                         {
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             pass += salt;
                                                             Authorized[clientData[0]] = pass;
                                                             AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
                                                             responseMessage += salt;
                                                             if (Jail.IsEnabled)
                                                             {
-                                                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(clientData[2]);
+                                                                ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(clientData[2]);
                                                                 if (cInfo != null)
                                                                 {
                                                                     if (Jail.Jailed.Contains(cInfo.CrossplatformId.CombinedString))
@@ -1508,7 +1508,7 @@ namespace ServerTools
                                                                 }
                                                                 else
                                                                 {
-                                                                    PersistentPlayerData ppd = GeneralFunction.GetPersistentPlayerDataFromId(clientData[2]);
+                                                                    PersistentPlayerData ppd = GeneralOperations.GetPersistentPlayerDataFromId(clientData[2]);
                                                                     if (ppd != null)
                                                                     {
                                                                         if (Jail.Jailed.Contains(ppd.UserIdentifier.CombinedString))
@@ -1579,14 +1579,14 @@ namespace ServerTools
                                                         string keyHash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                                                         if (clientData[1].ToUpper() == keyHash)
                                                         {
-                                                            string salt = GeneralFunction.CreatePassword(4);
+                                                            string salt = GeneralOperations.CreatePassword(4);
                                                             pass += salt;
                                                             Authorized[clientData[0]] = pass;
                                                             AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
                                                             responseMessage += salt;
                                                             if (Voting.IsEnabled)
                                                             {
-                                                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(clientData[2]);
+                                                                ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(clientData[2]);
                                                                 if (cInfo != null)
                                                                 {
                                                                     Voting.ItemOrBlockCounter(cInfo, Voting.Reward_Count);
@@ -1630,7 +1630,7 @@ namespace ServerTools
                                         if (Shop.IsEnabled && Shop.Panel && Shop.PanelAccess.ContainsKey(_ip))
                                         {
                                             Shop.PanelAccess.TryGetValue(_ip, out int entityId);
-                                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                            ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                             if (cInfo != null)
                                             {
                                                 if (PageHits.ContainsKey(_ip))
@@ -1639,7 +1639,7 @@ namespace ServerTools
                                                 }
                                                 for (int i = 0; i < 10; i++)
                                                 {
-                                                    string salt = GeneralFunction.CreatePassword(4);
+                                                    string salt = GeneralOperations.CreatePassword(4);
                                                     string keyHash = "";
                                                     byte[] bytes = Encoding.UTF8.GetBytes(_ip + salt);
                                                     using (SHA512 sha512 = SHA512.Create())
@@ -1687,7 +1687,7 @@ namespace ServerTools
                                                         {
                                                             Found = true;
                                                             Shop.PanelAccess.TryGetValue(customers[i].Key, out int entityId);
-                                                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                                            ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                                             if (cInfo != null)
                                                             {
                                                                 if (PageHits.ContainsKey(_ip))
@@ -1696,7 +1696,7 @@ namespace ServerTools
                                                                 }
                                                                 for (int j = 0; j < 10; j++)
                                                                 {
-                                                                    string salt = GeneralFunction.CreatePassword(4);
+                                                                    string salt = GeneralOperations.CreatePassword(4);
                                                                     bytes = Encoding.UTF8.GetBytes(customers[i].Key + salt);
                                                                     using (SHA512 sha512 = SHA512.Create())
                                                                     {
@@ -1758,7 +1758,7 @@ namespace ServerTools
                                                         Shop.PanelAccess.TryGetValue(id, out int entityId);
                                                         Shop.PanelAccess.Remove(id);
                                                         Authorized.Remove(postUppercase);
-                                                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                                        ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                                         if (cInfo != null)
                                                         {
                                                             cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close browserShop", true));
@@ -1792,7 +1792,7 @@ namespace ServerTools
                                                         string keyHash = "", salt = "";
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            salt = GeneralFunction.CreatePassword(4);
+                                                            salt = GeneralOperations.CreatePassword(4);
                                                             byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
                                                             using (SHA512 sha512 = SHA512.Create())
                                                             {
@@ -1811,10 +1811,10 @@ namespace ServerTools
                                                         {
                                                             string[] item = Shop.Dict.ElementAt(shopNumber);
                                                             Shop.PanelAccess.TryGetValue(id, out int entityId);
-                                                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                                            ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                                             if (cInfo != null)
                                                             {
-                                                                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                                                                EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                                                 if (player != null)
                                                                 {
                                                                     int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
@@ -1898,7 +1898,7 @@ namespace ServerTools
                                         if (Auction.IsEnabled && Auction.Panel && Auction.PanelAccess.ContainsKey(_ip))
                                         {
                                             Auction.PanelAccess.TryGetValue(_ip, out int entityId);
-                                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                            ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                             if (cInfo != null)
                                             {
                                                 if (PageHits.ContainsKey(_ip))
@@ -1907,7 +1907,7 @@ namespace ServerTools
                                                 }
                                                 for (int i = 0; i < 10; i++)
                                                 {
-                                                    string salt = GeneralFunction.CreatePassword(4);
+                                                    string salt = GeneralOperations.CreatePassword(4);
                                                     string keyHash = "";
                                                     byte[] bytes = Encoding.UTF8.GetBytes(_ip + salt);
                                                     using (SHA512 sha512 = SHA512.Create())
@@ -1955,7 +1955,7 @@ namespace ServerTools
                                                         {
                                                             Found = true;
                                                             Auction.PanelAccess.TryGetValue(customers[i].Key, out int entityId);
-                                                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                                            ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                                             if (cInfo != null)
                                                             {
                                                                 if (PageHits.ContainsKey(_ip))
@@ -1964,7 +1964,7 @@ namespace ServerTools
                                                                 }
                                                                 for (int j = 0; j < 10; j++)
                                                                 {
-                                                                    string salt = GeneralFunction.CreatePassword(4);
+                                                                    string salt = GeneralOperations.CreatePassword(4);
                                                                     bytes = Encoding.UTF8.GetBytes(customers[i].Key + salt);
                                                                     using (SHA512 sha512_2 = SHA512.Create())
                                                                     {
@@ -2020,7 +2020,7 @@ namespace ServerTools
                                                     Auction.PanelAccess.TryGetValue(id, out int entityId);
                                                     Auction.PanelAccess.Remove(id);
                                                     Authorized.Remove(postUppercase);
-                                                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                                     if (cInfo != null)
                                                     {
                                                         cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close browserAuction", true));
@@ -2053,7 +2053,7 @@ namespace ServerTools
                                                         string keyHash = "", salt = "";
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            salt = GeneralFunction.CreatePassword(4);
+                                                            salt = GeneralOperations.CreatePassword(4);
                                                             byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
                                                             using (SHA512 sha512 = SHA512.Create())
                                                             {
@@ -2072,10 +2072,10 @@ namespace ServerTools
                                                         {
                                                             Auction.AuctionItems.TryGetValue(itemId, out string playerId);
                                                             Auction.PanelAccess.TryGetValue(id, out int entityId);
-                                                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                                            ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                                             if (cInfo != null)
                                                             {
-                                                                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                                                                EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                                                 if (player != null)
                                                                 {
                                                                     if (cInfo.CrossplatformId.CombinedString != playerId)
@@ -2184,7 +2184,7 @@ namespace ServerTools
                                                         string keyHash = "", salt = "";
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            salt = GeneralFunction.CreatePassword(4);
+                                                            salt = GeneralOperations.CreatePassword(4);
                                                             byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
                                                             using (SHA512 sha512 = SHA512.Create())
                                                             {
@@ -2206,10 +2206,10 @@ namespace ServerTools
                                                                 PersistentContainer.Instance.Players[playerId].Auction.ContainsKey(itemId))
                                                             {
                                                                 Auction.PanelAccess.TryGetValue(id, out int entityId);
-                                                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                                                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                                                 if (cInfo != null)
                                                                 {
-                                                                    EntityPlayer player = GeneralFunction.GetEntityPlayer(entityId);
+                                                                    EntityPlayer player = GeneralOperations.GetEntityPlayer(entityId);
                                                                     if (player != null)
                                                                     {
                                                                         if (PersistentContainer.Instance.Players[playerId].Auction.TryGetValue(itemId, out ItemDataSerializable itemData))
@@ -2294,7 +2294,7 @@ namespace ServerTools
                                         if (RIO.IsEnabled && RIO.Access.ContainsKey(_ip))
                                         {
                                             RIO.Access.TryGetValue(_ip, out int entityId);
-                                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                            ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                             if (cInfo != null)
                                             {
                                                 bool valid = true;
@@ -2430,7 +2430,7 @@ namespace ServerTools
                                                                         }
                                                                         if (RIO.Bet > 0)
                                                                         {
-                                                                            ClientInfo cInfoWinner = GeneralFunction.GetClientInfoFromEntityId(winnerId);
+                                                                            ClientInfo cInfoWinner = GeneralOperations.GetClientInfoFromEntityId(winnerId);
                                                                             if (cInfoWinner != null)
                                                                             {
                                                                                 Wallet.AddCurrency(cInfoWinner.CrossplatformId.CombinedString, RIO.Bet * count, true);
@@ -2535,7 +2535,7 @@ namespace ServerTools
                                                         {
                                                             if (RIO.Access.TryGetValue(allPlayers[i].Key, out int entityId))
                                                             {
-                                                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                                                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                                                 if (cInfo != null)
                                                                 {
                                                                     bool valid = true;
@@ -2670,7 +2670,7 @@ namespace ServerTools
                                                                                             }
                                                                                             if (RIO.Bet > 0)
                                                                                             {
-                                                                                                ClientInfo cInfoWinner = GeneralFunction.GetClientInfoFromEntityId(winnerId);
+                                                                                                ClientInfo cInfoWinner = GeneralOperations.GetClientInfoFromEntityId(winnerId);
                                                                                                 if (cInfoWinner != null)
                                                                                                 {
                                                                                                     Wallet.AddCurrency(cInfoWinner.CrossplatformId.CombinedString, RIO.Bet * count, true);
@@ -2779,7 +2779,7 @@ namespace ServerTools
                                                         string keyHash = "", salt = "";
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            salt = GeneralFunction.CreatePassword(4);
+                                                            salt = GeneralOperations.CreatePassword(4);
                                                             byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
                                                             using (SHA512 sha512 = SHA512.Create())
                                                             {
@@ -2905,7 +2905,7 @@ namespace ServerTools
                                                                             }
                                                                             if (RIO.Bet > 0)
                                                                             {
-                                                                                ClientInfo cInfoWinner = GeneralFunction.GetClientInfoFromEntityId(winnerId);
+                                                                                ClientInfo cInfoWinner = GeneralOperations.GetClientInfoFromEntityId(winnerId);
                                                                                 if (cInfoWinner != null)
                                                                                 {
                                                                                     Wallet.AddCurrency(cInfoWinner.CrossplatformId.CombinedString, RIO.Bet * count, true);
@@ -2942,7 +2942,7 @@ namespace ServerTools
                                                         }
                                                         RIO.Access.Remove(id);
                                                         Authorized.Remove(exitRioDataUppercase);
-                                                        ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                                        ClientInfo cInfo2 = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                                         if (cInfo2 != null)
                                                         {
                                                             cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("xui close browserRio", true));
@@ -2972,7 +2972,7 @@ namespace ServerTools
                                                         string keyHash = "", salt = "";
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            salt = GeneralFunction.CreatePassword(4);
+                                                            salt = GeneralOperations.CreatePassword(4);
                                                             byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
                                                             using (SHA512 sha512 = SHA512.Create())
                                                             {
@@ -3029,7 +3029,7 @@ namespace ServerTools
                                                         string keyHash = "", salt = "";
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            salt = GeneralFunction.CreatePassword(4);
+                                                            salt = GeneralOperations.CreatePassword(4);
                                                             byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
                                                             using (SHA512 sha512 = SHA512.Create())
                                                             {
@@ -3072,7 +3072,7 @@ namespace ServerTools
                                                         string keyHash = "", salt = "";
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            salt = GeneralFunction.CreatePassword(4);
+                                                            salt = GeneralOperations.CreatePassword(4);
                                                             byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
                                                             using (SHA512 sha512 = SHA512.Create())
                                                             {
@@ -3149,7 +3149,7 @@ namespace ServerTools
                                                         string keyHash = "", salt = "";
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            salt = GeneralFunction.CreatePassword(4);
+                                                            salt = GeneralOperations.CreatePassword(4);
                                                             byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
                                                             using (SHA512 sha512 = SHA512.Create())
                                                             {
@@ -3217,7 +3217,7 @@ namespace ServerTools
                                                         string keyHash = "", salt = "";
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            salt = GeneralFunction.CreatePassword(4);
+                                                            salt = GeneralOperations.CreatePassword(4);
                                                             byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
                                                             using (SHA512 sha512 = SHA512.Create())
                                                             {
@@ -3261,7 +3261,7 @@ namespace ServerTools
                                                         string keyHash = "", salt = "";
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            salt = GeneralFunction.CreatePassword(4);
+                                                            salt = GeneralOperations.CreatePassword(4);
                                                             byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
                                                             using (SHA512 sha512 = SHA512.Create())
                                                             {
@@ -3297,7 +3297,7 @@ namespace ServerTools
                                                         {
                                                             if (InteractiveMap.Access.TryGetValue(allPlayers[i].Key, out int entityId))
                                                             {
-                                                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                                                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                                                 if (cInfo != null)
                                                                 {
                                                                     if (PageHits.ContainsKey(_ip))
@@ -3341,7 +3341,7 @@ namespace ServerTools
                                             }
                                             for (int i = 0; i < 10; i++)
                                             {
-                                                string salt = GeneralFunction.CreatePassword(4);
+                                                string salt = GeneralOperations.CreatePassword(4);
                                                 string keyHash = "";
                                                 byte[] bytes = Encoding.UTF8.GetBytes(_ip + salt);
                                                 using (SHA512 sha512 = SHA512.Create())
@@ -3365,12 +3365,12 @@ namespace ServerTools
                                         //        PageHits.Remove(_ip);
                                         //    }
                                         //    InteractiveMap.Access.TryGetValue(_ip, out int entityId);
-                                        //    ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId);
+                                        //    ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                         //    if (cInfo != null)
                                         //    {
                                         //        for (int i = 0; i < 10; i++)
                                         //        {
-                                        //            string salt = GeneralFunction.CreatePassword(4);
+                                        //            string salt = GeneralOperations.CreatePassword(4);
                                         //            string keyHash = "";
                                         //            byte[] bytes = Encoding.UTF8.GetBytes(_ip + salt);
                                         //            using (SHA512 sha512 = SHA512.Create())
@@ -3413,7 +3413,7 @@ namespace ServerTools
                                                         string keyHash = "", salt = "";
                                                         for (int i = 0; i < 10; i++)
                                                         {
-                                                            salt = GeneralFunction.CreatePassword(4);
+                                                            salt = GeneralOperations.CreatePassword(4);
                                                             byte[] bytes = Encoding.UTF8.GetBytes(id + salt);
                                                             using (SHA512 sha512 = SHA512.Create())
                                                             {

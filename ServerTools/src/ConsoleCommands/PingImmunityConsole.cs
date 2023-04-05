@@ -54,7 +54,7 @@ namespace ServerTools
                     }
                     else if (_params[1].Contains("_"))
                     {
-                        PersistentPlayerData ppd = GeneralFunction.GetPersistentPlayerDataFromId(_params[1]);
+                        PersistentPlayerData ppd = GeneralOperations.GetPersistentPlayerDataFromId(_params[1]);
                         if (ppd != null)
                         {
                             if (HighPingKicker.Dict.ContainsKey(ppd.UserIdentifier.CombinedString))
@@ -81,7 +81,7 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         if (!HighPingKicker.Dict.ContainsKey(cInfo.CrossplatformId.CombinedString))
@@ -97,7 +97,7 @@ namespace ServerTools
                     }
                     else if (_params[1].Contains("_"))
                     {
-                        PersistentPlayerData ppd = GeneralFunction.GetPersistentPlayerDataFromId(_params[1]);
+                        PersistentPlayerData ppd = GeneralOperations.GetPersistentPlayerDataFromId(_params[1]);
                         if (ppd != null)
                         {
                             if (!HighPingKicker.Dict.ContainsKey(_params[1]))

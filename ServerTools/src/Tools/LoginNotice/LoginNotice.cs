@@ -17,8 +17,6 @@ namespace ServerTools
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-        private static XmlNodeList OldNodeList;
-
         public static void Load()
         {
             LoadXml();
@@ -51,79 +49,57 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict1.Clear();
+                Dict2.Clear();
+                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
-                    Dict1.Clear();
-                    Dict2.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes)
+                        {
+                            continue;
+                        }
+                        if (line.HasAttribute("Id") && line.HasAttribute("Name") && line.HasAttribute("Message") && line.HasAttribute("Expiry"))
+                        {
+                            string id = line.GetAttribute("Id");
+                            string[] nameMessage = new string[2];
+                            nameMessage[0] = line.GetAttribute("Name");
+                            nameMessage[1] = line.GetAttribute("Message");
+                            if (id == "")
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Id") && line.HasAttribute("Name") && line.HasAttribute("Message") && line.HasAttribute("Expiry"))
-                                {
-
-                                    string id = line.GetAttribute("Id");
-                                    string[] nameMessage = new string[2];
-                                    nameMessage[0] = line.GetAttribute("Name");
-                                    nameMessage[1] = line.GetAttribute("Message");
-                                    if (!DateTime.TryParse(line.GetAttribute("Expiry"), out DateTime expiry))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring LoginNotice.xml entry because of invalid (Date-Time) value for 'Expiry' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!Dict1.ContainsKey(id))
-                                    {
-                                        Dict1.Add(id, nameMessage);
-                                        Dict2.Add(id, expiry);
-                                    }
-                                }
+                                continue;
+                            }
+                            if (!DateTime.TryParse(line.GetAttribute("Expiry"), out DateTime expiry))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring LoginNotice.xml entry because of invalid (Date-Time) value for 'Expiry' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!Dict1.ContainsKey(id))
+                            {
+                                Dict1.Add(id, nameMessage);
+                                Dict2.Add(id, expiry);
                             }
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing LoginNotice.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -149,10 +125,9 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LoginNotice>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
                     sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Macaroni\" Message=\"Time to kick ass and chew bubble gum\" Expiry=\"2050-01-11 07:30:00\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Player Id=\"\" Name=\"\" Message=\"\" Expiry=\"\" />");
                     if (Dict1.Count > 0)
                     {
                         foreach (KeyValuePair<string, string[]> kvp in Dict1)
@@ -248,7 +223,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -257,23 +232,22 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LoginNotice>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Macaroni\" Message=\"Time to kick ass and chew bubble gum\" Expiry=\"2050-01-11 07:30:00\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891\"") &&
-                            !OldNodeList[i].OuterXml.Contains("    <!-- <Player Id=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Player Id=\"\" Name=\"\" Message=\"\" Expiry=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Player")
                             {
                                 string id = "", name = "", message = "", expiry = "";

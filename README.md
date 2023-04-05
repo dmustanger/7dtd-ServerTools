@@ -23,6 +23,10 @@ Enable each part of the mod you want via ServerToolsConfig.xml<br>
 Once a module/tool is enabled, if it has an xml it will be generated and placed in the same ServerTools folder.<br>
 <br>
 
+# Optimization
+- [Optimization](#optimization)
+  - [Thread_Handle](#thread_handle)
+
 # AntiCheat
 
 - [AntiCheat](#anticheat)
@@ -1525,17 +1529,19 @@ Players_Online is the amount needed to start a vote.
 
 ## Kill_Notice
 ```xml
-<Tool Name="Kill_Notice" Enable="True" PvP="True" Zombie_Kills="True" Animal_Kills="True" Show_Level="False" />
+<Tool Name="Kill_Notice" Enable="True" Player="True" Zombie="True" Animal="True" Show_Level="False" />
 <Tool Name="Kill_Notice_Extended" Show_Damage="False" />
 ```
 ### Attributes
 #### Normal
 * __Enable__  
 Set True or False for Enable
-* __PvP__  
-Set True or False for PvP
-* __Zombie_Kills__  
-Set True or False for Zombie_Kills
+* __Player__  
+Set True or False for Player
+* __Zombie__  
+Set True or False for Zombie
+* __Animal__  
+Set True or False for Zombie
 * __Show_Level__  
 Set True or False for Show_Level
 
@@ -1544,9 +1550,10 @@ Set True or False for Show_Level
 Set True or False for Show_Damage
 
 ### Description
-If a player kills another player or zombie kills a player, a chat notice will show it.
-PvP controls whether it shows players killing a player.
-Zombie_Kills controls whether it shows zombies killing a player.
+If a player, zombie or animal kills a player, a chat notice will show it.
+Player controls whether it shows players killing a player.
+Zombie controls whether it shows zombies killing a player.
+Animal controls whether it shows animals killing a player.
 Show_Level controls if the player level is shown in the notice.
 
 ## Level_Up

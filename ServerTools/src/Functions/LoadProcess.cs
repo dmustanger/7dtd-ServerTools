@@ -33,7 +33,7 @@ namespace ServerTools
                     if (Directory.Exists(configPath))
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Located xml and log directory at '{0}'", API.ConfigPath));
-                        Log.Out("[SERVERTOOLS] Tool XML and log files for ServerTools will be placed in this folder");
+                        Log.Out(string.Format("[SERVERTOOLS] Tool XML and log files for ServerTools will be placed in this folder"));
                     }
                     if (!Directory.Exists(configPath + "/Logs/ChatLogs"))
                     {
@@ -114,20 +114,20 @@ namespace ServerTools
                     }
                     if (Directory.Exists(installPath + "/Config"))
                     {
-                        GeneralFunction.XPathDir = installPath + "/Config/";
+                        GeneralOperations.XPathDir = installPath + "/Config/";
                     }
                     if (PersistentContainer.Instance.Load())
                     {
-                        Log.Out("[SERVERTOOLS] Data loaded");
+                        Log.Out(string.Format("[SERVERTOOLS] Data loaded"));
                     }
                     RunTimePatch.PatchAll();
                     Config.Load();
-                    GeneralFunction.CreateCustomXUi();
-                    GeneralFunction.GetCurrencyName();
-                    GeneralFunction.GetMeleeHandPlayer();
-                    GeneralFunction.EntityIdList();
-                    GeneralFunction.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
-                    GeneralFunction.StartTime = DateTime.Now;
+                    GeneralOperations.CreateCustomXUi();
+                    GeneralOperations.GetCurrencyName();
+                    GeneralOperations.GetMeleeHandPlayer();
+                    GeneralOperations.EntityIdList();
+                    GeneralOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
+                    GeneralOperations.StartTime = DateTime.Now;
                     CommandList.BuildList();
                     CommandList.Load();
                     InteractiveMap.SetWorldSize();
@@ -136,10 +136,7 @@ namespace ServerTools
                     Mods.Load();
                     Phrases.Load();
                     HowToSetup.Load();
-                    if (Fps.IsEnabled)
-                    {
-                        Fps.SetTarget();
-                    }
+                    GameManager.Instance.waitForTargetFPS.TargetFPS = 80;
                     if (SleeperRespawn.IsEnabled)
                     {
                         try
@@ -148,7 +145,7 @@ namespace ServerTools
                         }
                         catch (XmlException e)
                         {
-                            Log.Out("[SERVERTOOLS] Failed to reset sleeper spawn points. Error = {0}", e.Message);
+                            Log.Out(string.Format("[SERVERTOOLS] Failed to reset sleeper spawn points. Error = {0}", e.Message));
                         }
                     }
                     try
@@ -173,7 +170,7 @@ namespace ServerTools
                     }
                     catch (XmlException e)
                     {
-                        Log.Out("[SERVERTOOLS] Failed to delete old logs. Error = {0}", e.Message);
+                        Log.Out(string.Format("[SERVERTOOLS] Failed to delete old logs. Error = {0}", e.Message));
                     }
 
                     if (Directory.Exists(GameIO.GetGamePath().Replace("..", "")))
@@ -181,12 +178,12 @@ namespace ServerTools
                         DirectoryInfo parent = Directory.GetParent(GameIO.GetGamePath().Replace("..", "")).Parent;
                         if (Directory.Exists(parent.FullName + "/Data/ItemIcons"))
                         {
-                            Log.Out("[SERVERTOOLS] Located folder containing game icons");
+                            Log.Out(string.Format("[SERVERTOOLS] Located folder containing game icons"));
                             WebAPI.Icon_Folder = parent.FullName + "/Data/ItemIcons";
                         }
                         else
                         {
-                            Log.Out("[SERVERTOOLS] Unable to locate game icons. Shop, Auction and Web panels will be affected by this");
+                            Log.Out(string.Format("[SERVERTOOLS] Unable to locate game icons. Shop, Auction and Web panels will be affected by this"));
                         }
                     }
                     if (PersistentContainer.Instance.WorldSeed == 0)
@@ -199,7 +196,7 @@ namespace ServerTools
                         if (PersistentContainer.Instance.Players.IDs.Count > 0)
                         {
                             CleanBin.ClearFirstClaims();
-                            Log.Out("[SERVERTOOLS] Detected a new world. Some old data has been cleaned up but the majority remains. Run the Clean_Bin tool to remove the data of your choice");
+                            Log.Out(string.Format("[SERVERTOOLS] Detected a new world. Some old data has been cleaned up but the majority remains. Run the Clean_Bin tool to remove the data of your choice"));
                         }
                     }
                     if (PersistentContainer.Instance.ConnectionTimeOut == null)
@@ -227,20 +224,36 @@ namespace ServerTools
                     {
                         RegionReset.Exec();
                     }
+                    if (ChunkReset.IsEnabled)
+                    {
+                        ChunkReset.Exec();
+                    }
                     if (CleanBin.IsEnabled)
                     {
                         CleanBin.Exec();
-                        Log.Out("[SERVERTOOLS] ServerTools.bin has been cleaned. The tool will now disable automatically");
-                        CleanBin.IsEnabled = false;
+                        CleanBin.IsEnabled = false; 
+                        CleanBin.Auction = false;
+                        CleanBin.Bank = false;
+                        CleanBin.Bounties = false;
+                        CleanBin.Delays = false;
+                        CleanBin.Homes = false;
+                        CleanBin.Jail = false;
+                        CleanBin.Lobby = false;
+                        CleanBin.Market = false;
+                        CleanBin.New_Spawn_Tele = false;
+                        CleanBin.Poll = false;
+                        CleanBin.Protected_Zones = false;
+                        CleanBin.Shop_Log = false;
+                        CleanBin.Waypoints = false;
                         Config.WriteXml();
-                        Config.LoadXml();
+                        ActiveTools.Exec(false);
+                        Log.Out(string.Format("[SERVERTOOLS] ServerTools.bin has been cleaned. The Clean_Bin tool and all of its options are now disabled"));
                     }
                     Track.Cleanup();
                     ActiveTools.Exec(true);
                     Timers.Set_Link_Delay();
                     Timers.PersistentDataSave();
-
-                    Log.Out("[SERVERTOOLS] Running ServerTools Config v.{0}", Config.Version);
+                    Log.Out(string.Format("[SERVERTOOLS] Running ServerTools Config v.{0}", Config.Version));
                 }
             }
             catch (Exception e)

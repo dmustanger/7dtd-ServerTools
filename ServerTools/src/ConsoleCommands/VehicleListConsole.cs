@@ -46,7 +46,7 @@ namespace ServerTools
                             Entity attachedPlayer = entity.AttachedMainEntity;
                             if (attachedPlayer != null)
                             {
-                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(attachedPlayer.entityId);
+                                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(attachedPlayer.entityId);
                                 if (cInfo != null)
                                 {
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle.", i, entity.entityId, x, y, z, cInfo.playerName));
@@ -76,7 +76,7 @@ namespace ServerTools
                             Entity attachedPlayer = entity.AttachedMainEntity;
                             if (attachedPlayer != null)
                             {
-                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(attachedPlayer.entityId);
+                                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(attachedPlayer.entityId);
                                 if (cInfo != null)
                                 {
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle", i, entity.entityId, x, y, z, cInfo.playerName));
@@ -106,7 +106,7 @@ namespace ServerTools
                             Entity attachedPlayer = entity.AttachedMainEntity;
                             if (attachedPlayer != null)
                             {
-                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(attachedPlayer.entityId);
+                                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(attachedPlayer.entityId);
                                 if (cInfo != null)
                                 {
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle", i, entity.entityId, x, y, z, cInfo.playerName));
@@ -136,7 +136,7 @@ namespace ServerTools
                             Entity attachedPlayer = entity.AttachedMainEntity;
                             if (attachedPlayer != null)
                             {
-                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(attachedPlayer.entityId);
+                                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(attachedPlayer.entityId);
                                 if (cInfo != null)
                                 {
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle", i, entity.entityId, x, y, z, cInfo.playerName));
@@ -166,7 +166,7 @@ namespace ServerTools
                             Entity attachedPlayer = entity.AttachedMainEntity;
                             if (attachedPlayer != null)
                             {
-                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(attachedPlayer.entityId);
+                                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(attachedPlayer.entityId);
                                 if (cInfo != null)
                                 {
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, located at x {2}  y {3} z {4}, player {5} is in this vehicle", i, entity.entityId, x, y, z, cInfo.playerName));

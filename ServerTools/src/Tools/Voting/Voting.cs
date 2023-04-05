@@ -25,8 +25,6 @@ namespace ServerTools
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static readonly System.Random Random = new System.Random();
 
-        private static XmlNodeList OldNodeList;
-
         public static void Load()
         {
             LoadXml();
@@ -59,85 +57,84 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                Items.Clear();
+                if (childNodes != null && childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
                 {
-                    Dict.Clear();
-                    Items.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes)
+                        {
+                            continue;
+                        }
+                        if (line.HasAttribute("ItemOrBlock") && line.HasAttribute("MinCount") && line.HasAttribute("MaxCount") &&
+                            line.HasAttribute("MinQuality") && line.HasAttribute("MaxQuality"))
+                        {
+                            string item = line.GetAttribute("ItemOrBlock");
+                            if (item == "")
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("ItemOrBlock") && line.HasAttribute("MinCount") && line.HasAttribute("MaxCount") &&
-                                    line.HasAttribute("MinQuality") && line.HasAttribute("MaxQuality"))
-                                {
-                                    if (!int.TryParse(line.GetAttribute("MinCount"), out int minCount))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinCount' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!int.TryParse(line.GetAttribute("MaxCount"), out int maxCount))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxCount' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!int.TryParse(line.GetAttribute("MinQuality"), out int minQuality))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinQuality' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!int.TryParse(line.GetAttribute("MaxQuality"), out int maxQuality))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxQuality' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    string item = line.GetAttribute("ItemOrBlock");
-
-                                    ItemValue itemValue = ItemClass.GetItem(item, false);
-                                    if (itemValue.type == ItemValue.None.type)
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Item not found: {0}", item));
-                                        continue;
-                                    }
-                                    if (minCount > itemValue.ItemClass.Stacknumber.Value)
-                                    {
-                                        minCount = itemValue.ItemClass.Stacknumber.Value;
-                                    }
-                                    else if (minCount < 1)
-                                    {
-                                        minCount = 1;
-                                    }
-                                    if (maxCount > itemValue.ItemClass.Stacknumber.Value)
-                                    {
-                                        maxCount = itemValue.ItemClass.Stacknumber.Value;
-                                    }
-                                    else if (maxCount < 1)
-                                    {
-                                        maxCount = 1;
-                                    }
-                                    if (minQuality < 1)
-                                    {
-                                        minQuality = 1;
-                                    }
-                                    if (maxQuality < 1)
-                                    {
-                                        maxQuality = 1;
-                                    }
-                                    if (!Dict.ContainsKey(item))
-                                    {
-                                        int[] c = new int[] { minCount, maxCount, minQuality, maxQuality };
-                                        Dict.Add(item, c);
-                                    }
-                                }
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MinCount"), out int minCount))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinCount' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MaxCount"), out int maxCount))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxCount' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MinQuality"), out int minQuality))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinQuality' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MaxQuality"), out int maxQuality))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxQuality' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            ItemValue itemValue = ItemClass.GetItem(item, false);
+                            if (itemValue.type == ItemValue.None.type)
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Item not found: {0}", item));
+                                continue;
+                            }
+                            if (minCount > itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                minCount = itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (minCount < 1)
+                            {
+                                minCount = 1;
+                            }
+                            if (maxCount > itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                maxCount = itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (maxCount < 1)
+                            {
+                                maxCount = 1;
+                            }
+                            if (minQuality < 1)
+                            {
+                                minQuality = 1;
+                            }
+                            if (maxQuality < 1)
+                            {
+                                maxQuality = 1;
+                            }
+                            if (item != "" && !Dict.ContainsKey(item))
+                            {
+                                int[] c = new int[] { minCount, maxCount, minQuality, maxQuality };
+                                Dict.Add(item, c);
                             }
                         }
                     }
@@ -146,39 +143,18 @@ namespace ServerTools
                         Items = new List<string>(Dict.Keys);
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing VoteReward.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -204,11 +180,10 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<VoteRewards>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
                     sw.WriteLine("    <!-- <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, int[]> kvp in Dict)
@@ -488,7 +463,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null && player.IsSpawned())
                 {
                     World world = GameManager.Instance.World;
@@ -578,7 +553,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null && player.IsSpawned())
                 {
                     Vector3 pos = player.GetPosition();
@@ -640,9 +615,9 @@ namespace ServerTools
         {
             try
             {
-                if (File.Exists(GeneralFunction.XPathDir + "XUi/windows.xml"))
+                if (File.Exists(GeneralOperations.XPathDir + "XUi/windows.xml"))
                 {
-                    List<string> lines = File.ReadAllLines(GeneralFunction.XPathDir + "XUi/windows.xml").ToList();
+                    List<string> lines = File.ReadAllLines(GeneralOperations.XPathDir + "XUi/windows.xml").ToList();
                     for (int i = 0; i < lines.Count; i++)
                     {
                         if (lines[i].Contains("browserVote"))
@@ -650,7 +625,7 @@ namespace ServerTools
                             if (!lines[i + 7].Contains(_link))
                             {
                                 lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", _link);
-                                File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
+                                File.WriteAllLines(GeneralOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
                             }
                             return;
                         }
@@ -678,18 +653,18 @@ namespace ServerTools
                             lines.Add("</append>");
                             lines.Add("");
                             lines.Add("</configs>");
-                            File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
+                            File.WriteAllLines(GeneralOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
                         }
                     }
                 }
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralFunction.XPathDir + "XUi/windows.xml", e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralOperations.XPathDir + "XUi/windows.xml", e.Message));
             }
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -698,25 +673,24 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<VoteRewards>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Items that do not require a quality should be set to 1 for MinQuality and MaxQuality -->");
                     sw.WriteLine("    <!-- <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Items that do not") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Reward ItemOrBlock=\"meleeToolTorch\"") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Reward ItemOrBlock=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Items that") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Reward ItemOrBlock=\"meleeToolTorch\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Reward")
                             {
                                 string itemBlock = "", minCount = "", maxCount = "", minQuality = "", maxQuality = "";

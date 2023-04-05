@@ -62,7 +62,7 @@ namespace ServerTools
 
         private static void GameShutdown()
         {
-            GeneralFunction.Shutdown_Initiated = true;
+            GeneralOperations.Shutdown_Initiated = true;
             if (WebAPI.IsEnabled && WebAPI.IsRunning)
             {
                 WebAPI.Unload();
@@ -98,7 +98,7 @@ namespace ServerTools
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     }
-                    else if (NewPlayer.Block_During_Bloodmoon && GeneralFunction.IsBloodmoon() && ConnectionManager.Instance.ClientCount() > 1 &&
+                    else if (NewPlayer.Block_During_Bloodmoon && GeneralOperations.IsBloodmoon() && ConnectionManager.Instance.ClientCount() > 1 &&
                         _cInfo.latestPlayerData.totalTimePlayed < 20)
                     {
                         Phrases.Dict.TryGetValue("NewPlayer1", out string phrase);
@@ -137,14 +137,14 @@ namespace ServerTools
                         _cInfo.CrossplatformId = _cInfo.PlatformId;
                     }
                     string id = _cInfo.CrossplatformId.CombinedString;
-                    EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                    EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
                         if (_respawnReason == RespawnType.NewGame)
                         {
-                            if (player.distanceWalked < 1 && player.totalTimePlayed <= 1 && !GeneralFunction.NewPlayerQue.Contains(_cInfo))
+                            if (_cInfo.latestPlayerData.distanceWalked < 1 && _cInfo.latestPlayerData.totalTimePlayed <= 1 && !GeneralOperations.NewPlayerQue.Contains(_cInfo))
                             {
-                                GeneralFunction.NewPlayerQue.Add(_cInfo);
+                                GeneralOperations.NewPlayerQue.Add(_cInfo);
                             }
                         }
                         else if (_respawnReason == RespawnType.LoadedGame)
@@ -153,7 +153,11 @@ namespace ServerTools
                         }
                         else if (_respawnReason == RespawnType.EnterMultiplayer)
                         {
-                            GeneralFunction.SessionTime(_cInfo);
+                            if (player is EntityPlayerLocal)
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' is set as a primary player. Optimization may fail or crash the server due to this connection", _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
+                            }
+                            GeneralOperations.SessionTime(_cInfo);
                             PersistentContainer.Instance.Players[id].PlayerName = _cInfo.playerName;
                             PersistentContainer.Instance.Players[id].LastJoined = DateTime.Now;
                             PersistentContainer.DataChange = true;
@@ -161,9 +165,9 @@ namespace ServerTools
                             {
                                 player.Detach();
                             }
-                            if (player.distanceWalked < 1 && player.totalTimePlayed <= 1 && !GeneralFunction.NewPlayerQue.Contains(_cInfo))
+                            if (player.distanceWalked < 1 && player.totalTimePlayed <= 1 && !GeneralOperations.NewPlayerQue.Contains(_cInfo))
                             {
-                                GeneralFunction.NewPlayerQue.Add(_cInfo);
+                                GeneralOperations.NewPlayerQue.Add(_cInfo);
                             }
                             else
                             {
@@ -172,7 +176,11 @@ namespace ServerTools
                         }
                         else if (_respawnReason == RespawnType.JoinMultiplayer)
                         {
-                            GeneralFunction.SessionTime(_cInfo);
+                            if (player is EntityPlayerLocal)
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' is set as a primary player. Optimization may fail or crash the server due to this connection", _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
+                            }
+                            GeneralOperations.SessionTime(_cInfo);
                             PersistentContainer.Instance.Players[id].PlayerName = _cInfo.playerName;
                             PersistentContainer.Instance.Players[id].LastJoined = DateTime.Now;
                             PersistentContainer.DataChange = true;
@@ -180,9 +188,9 @@ namespace ServerTools
                             {
                                 player.Detach();
                             }
-                            if (player.distanceWalked < 1 && player.totalTimePlayed <= 1 && !GeneralFunction.NewPlayerQue.Contains(_cInfo))
+                            if (player.distanceWalked < 1 && player.totalTimePlayed <= 1 && !GeneralOperations.NewPlayerQue.Contains(_cInfo))
                             {
-                                GeneralFunction.NewPlayerQue.Add(_cInfo);
+                                GeneralOperations.NewPlayerQue.Add(_cInfo);
                             }
                             else
                             {
@@ -200,9 +208,9 @@ namespace ServerTools
                                 Zones.ZonePlayer.TryGetValue(player.entityId, out string[] zone);
                                 Zones.ZonePlayer.Remove(player.entityId);
                                 Zones.Reminder.Remove(player.entityId);
-                                if (zone[9] != GeneralFunction.Player_Killing_Mode.ToString())
+                                if (zone[9] != GeneralOperations.Player_Killing_Mode.ToString())
                                 {
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup(string.Format("sgs PlayerKillingMode {0}", GeneralFunction.Player_Killing_Mode), true));
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup(string.Format("sgs PlayerKillingMode {0}", GeneralOperations.Player_Killing_Mode), true));
                                 }
                                 if (Zones.Zone_Message && zone[5] != "")
                                 {
@@ -216,10 +224,6 @@ namespace ServerTools
                             if (Bloodmoon.IsEnabled && Bloodmoon.Show_On_Respawn)
                             {
                                 Bloodmoon.Exec(_cInfo);
-                            }
-                            if (ProcessDamage.lastEntityKilled == _cInfo.entityId)
-                            {
-                                ProcessDamage.lastEntityKilled = 0;
                             }
                         }
                         else if (_respawnReason == RespawnType.Teleport)
@@ -266,10 +270,6 @@ namespace ServerTools
 
         private static bool ChatMessage(ClientInfo _cInfo, EChatType _type, int _senderId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
         {
-            if (_cInfo != null && _cInfo.CrossplatformId == null && _cInfo.PlatformId != null)
-            {
-                _cInfo.CrossplatformId = _cInfo.PlatformId;
-            }
             return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _recipientEntityIds);
         }
 
@@ -277,37 +277,7 @@ namespace ServerTools
         {
             try
             {
-                if (_cInfo != null && _type == EnumGameMessages.EntityWasKilled)
-                {
-                    EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
-                    if (player != null)
-                    {
-                        if (_cInfo.CrossplatformId == null && _cInfo.PlatformId != null)
-                        {
-                            _cInfo.CrossplatformId = _cInfo.PlatformId;
-                        }
-                        if (KillNotice.IsEnabled && KillNotice.Other && string.IsNullOrEmpty(_secondaryName))
-                        {
-                            if (KillNotice.Damage.ContainsKey(player.entityId))
-                            {
-                                KillNotice.Damage.TryGetValue(player.entityId, out int[] damage);
-                                EntityZombie zombie = GeneralFunction.GetZombie(damage[0]);
-                                if (zombie != null)
-                                {
-                                    KillNotice.ZombieKilledPlayer(zombie, player, _cInfo, damage[1]);
-                                }
-                                else
-                                {
-                                    EntityAnimal animal = GeneralFunction.GetAnimal(damage[0]);
-                                    if (animal != null)
-                                    {
-                                        KillNotice.AnimalKilledPlayer(animal, player, _cInfo, damage[1]);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                
             }
             catch (Exception e)
             {
@@ -326,18 +296,7 @@ namespace ServerTools
                     {
                         _cInfo.CrossplatformId = _cInfo.PlatformId;
                     }
-                    if (HighPingKicker.IsEnabled)
-                    {
-                        HighPingKicker.Exec(_cInfo);
-                    }
-                    if (InvalidItems.IsEnabled || InvalidItems.Invalid_Stack)
-                    {
-                        InvalidItems.CheckInv(_cInfo, _playerDataFile);
-                    }
-                    if (LevelUp.IsEnabled)
-                    {
-                        LevelUp.CheckLevel(_cInfo);
-                    }
+        
                 }
             }
             catch (Exception e)
@@ -408,17 +367,17 @@ namespace ServerTools
                     {
                         BlockPickup.PickupEnabled.Remove(_cInfo.entityId);
                     }
-                    if (Wall.WallEnabled.ContainsKey(_cInfo.entityId))
+                    if (Wall.WallEnabled.Contains(_cInfo.entityId))
                     {
                         Wall.WallEnabled.Remove(_cInfo.entityId);
                     }
-                    if (GeneralFunction.NewPlayerQue.Contains(_cInfo))
+                    if (GeneralOperations.NewPlayerQue.Contains(_cInfo))
                     {
-                        GeneralFunction.NewPlayerQue.Remove(_cInfo);
+                        GeneralOperations.NewPlayerQue.Remove(_cInfo);
                     }
-                    if (GeneralFunction.BlockChatCommands.Contains(_cInfo))
+                    if (GeneralOperations.BlockChatCommands.Contains(_cInfo))
                     {
-                        GeneralFunction.BlockChatCommands.Remove(_cInfo);
+                        GeneralOperations.BlockChatCommands.Remove(_cInfo);
                     }
                     if (RIO.IsEnabled && WebAPI.IsEnabled && WebAPI.IsRunning)
                     {
@@ -436,14 +395,6 @@ namespace ServerTools
                     {
                         InteractiveMap.Access.Remove(_cInfo.ip);
                     }
-                    if (Market.MarketPlayers.Contains(_cInfo.entityId))
-                    {
-                        Market.MarketPlayers.Remove(_cInfo.entityId);
-                    }
-                    if (Lobby.LobbyPlayers.Contains(_cInfo.entityId))
-                    {
-                        Lobby.LobbyPlayers.Remove(_cInfo.entityId);
-                    }
                     if (DupeLog.OldBags.ContainsKey(_cInfo.entityId))
                     {
                         DupeLog.OldBags.Remove(_cInfo.entityId);
@@ -460,7 +411,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    Log.Out("[SERVERTOOLS] Player disconnected");
+                    Log.Out(string.Format("[SERVERTOOLS] Player disconnected"));
                 }
             }
             catch (Exception e)
@@ -473,7 +424,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (_cInfo.CrossplatformId == null && _cInfo.PlatformId != null)
@@ -498,7 +449,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        GeneralFunction.NewPlayerQue.Add(_cInfo);
+                        GeneralOperations.NewPlayerQue.Add(_cInfo);
                     }
                 }
             }
@@ -677,7 +628,7 @@ namespace ServerTools
 
         public static void PlayerDied(EntityAlive __instance)
         {
-            ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(__instance.entityId);
+            ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(__instance.entityId);
             if (cInfo != null)
             {
                 if (cInfo.CrossplatformId == null && cInfo.PlatformId != null)
@@ -692,10 +643,6 @@ namespace ServerTools
                 if (Died.IsEnabled)
                 {
                     Died.PlayerKilled(__instance);
-                }
-                if (ProcessDamage.lastEntityKilled == cInfo.entityId)
-                {
-                    ProcessDamage.lastEntityKilled = 0;
                 }
                 if (Bloodmoon.IsEnabled && Bloodmoon.Show_On_Respawn)
                 {

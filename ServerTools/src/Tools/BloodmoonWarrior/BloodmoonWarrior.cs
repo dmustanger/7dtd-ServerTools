@@ -22,8 +22,6 @@ namespace ServerTools
         private static readonly System.Random Random = new System.Random();
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-        private static XmlNodeList OldNodeList;
-
         private static List<string> List
         {
             get { return new List<string>(Dict.Keys); }
@@ -60,133 +58,113 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                if (childNodes == null)
                 {
-                    Dict.Clear();
+                    return;
+                }
+                Dict.Clear();
+                if (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
+                {
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes)
+                        {
+                            continue;
+                        }
+                        if (line.HasAttribute("Name") && line.HasAttribute("SecondaryName") && line.HasAttribute("MinCount") && line.HasAttribute("MaxCount") &&
+                            line.HasAttribute("MinQuality") && line.HasAttribute("MaxQuality"))
+                        {
+                            string name = line.GetAttribute("Name");
+                            if (name == "")
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Name") && line.HasAttribute("SecondaryName") && line.HasAttribute("MinCount") && line.HasAttribute("MaxCount") &&
-                                    line.HasAttribute("MinQuality") && line.HasAttribute("MaxQuality"))
-                                {
-                                    if (!int.TryParse(line.GetAttribute("MinCount"), out int minCount))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MinCount' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!int.TryParse(line.GetAttribute("MaxCount"), out int maxCount))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MaxCount' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!int.TryParse(line.GetAttribute("MinQuality"), out int minQuality))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MinQuality' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!int.TryParse(line.GetAttribute("MaxQuality"), out int maxQuality))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MaxQuality' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    string name = line.GetAttribute("Name");
-                                    if (!GeneralFunction.IsValidItem(name))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry. Item name not found: {0}", name));
-                                        continue;
-                                    }
-                                    ItemValue itemValue = ItemClass.GetItem(name, false);
-                                    if (minCount > itemValue.ItemClass.Stacknumber.Value)
-                                    {
-                                        minCount = itemValue.ItemClass.Stacknumber.Value;
-                                    }
-                                    else if (minCount < 1)
-                                    {
-                                        minCount = 1;
-                                    }
-                                    if (maxCount > itemValue.ItemClass.Stacknumber.Value)
-                                    {
-                                        maxCount = itemValue.ItemClass.Stacknumber.Value;
-                                    }
-                                    else if (maxCount < 1)
-                                    {
-                                        maxCount = 1;
-                                    }
-                                    int exchange;
-                                    if (minCount > maxCount)
-                                    {
-                                        exchange = maxCount;
-                                        maxCount = minCount;
-                                        minCount = exchange;
-                                    }
-                                    if (minQuality > maxQuality)
-                                    {
-                                        exchange = maxQuality;
-                                        maxQuality = minQuality;
-                                        minQuality = exchange;
-                                    }
-                                    string secondaryname;
-                                    if (line.HasAttribute("SecondaryName"))
-                                    {
-                                        secondaryname = line.GetAttribute("SecondaryName");
-                                    }
-                                    else
-                                    {
-                                        secondaryname = name;
-                                    }
-                                    if (!Dict.ContainsKey(name))
-                                    {
-                                        string[] c = new string[] { secondaryname, minCount.ToString(), maxCount.ToString(), minQuality.ToString(), maxQuality.ToString() };
-                                        Dict.Add(name, c);
-                                    }
-                                }
+                                continue;
+                            }
+                            if (!GeneralOperations.IsValidItem(name))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry. Item name not found: {0}", name));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MinCount"), out int minCount))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MinCount' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MaxCount"), out int maxCount))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MaxCount' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MinQuality"), out int minQuality))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MinQuality' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MaxQuality"), out int maxQuality))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MaxQuality' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            ItemValue itemValue = ItemClass.GetItem(name, false);
+                            if (minCount > itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                minCount = itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (minCount < 1)
+                            {
+                                minCount = 1;
+                            }
+                            if (maxCount > itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                maxCount = itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (maxCount < 1)
+                            {
+                                maxCount = 1;
+                            }
+                            int exchange;
+                            if (minCount > maxCount)
+                            {
+                                exchange = maxCount;
+                                maxCount = minCount;
+                                minCount = exchange;
+                            }
+                            if (minQuality > maxQuality)
+                            {
+                                exchange = maxQuality;
+                                maxQuality = minQuality;
+                                minQuality = exchange;
+                            }
+                            string secondaryname;
+                            if (line.HasAttribute("SecondaryName"))
+                            {
+                                secondaryname = line.GetAttribute("SecondaryName");
+                            }
+                            else
+                            {
+                                secondaryname = name;
+                            }
+                            if (!Dict.ContainsKey(name))
+                            {
+                                string[] c = new string[] { secondaryname, minCount.ToString(), maxCount.ToString(), minQuality.ToString(), maxQuality.ToString() };
+                                Dict.Add(name, c);
                             }
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing BloodmoonWarrior.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        Log.Out(string.Format("[SERVERTOOLS] The existing BloodmoonWarrior.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
                     }
                 }
             }
@@ -213,10 +191,9 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<BloodmoonWarrior>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Item Name=\"gunPistolExample\" SecondaryName=\"pistol\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"3\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Item Name=\"\" SecondaryName=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, string[]> kvp in Dict)
@@ -260,10 +237,10 @@ namespace ServerTools
             {
                 if (!BloodmoonStarted)
                 {
-                    if (GeneralFunction.IsBloodmoon())
+                    if (GeneralOperations.IsBloodmoon())
                     {
                         BloodmoonStarted = true;
-                        List<ClientInfo> clientList = GeneralFunction.ClientList();
+                        List<ClientInfo> clientList = GeneralOperations.ClientList();
                         if (clientList != null)
                         {
                             for (int i = 0; i < clientList.Count; i++)
@@ -271,7 +248,7 @@ namespace ServerTools
                                 ClientInfo cInfo = clientList[i];
                                 if (cInfo != null)
                                 {
-                                    EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                                    EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                     if (player != null && player.IsSpawned() && player.IsAlive() && player.Died > 0 && player.Progression.GetLevel() >= 10 && Random.Next(0, 100) <= Chance)
                                     {
                                         WarriorList.Add(cInfo.entityId);
@@ -285,7 +262,7 @@ namespace ServerTools
                         }
                     }
                 }
-                else if (!GeneralFunction.IsBloodmoon())
+                else if (!GeneralOperations.IsBloodmoon())
                 {
                     BloodmoonStarted = false;
                     RewardWarriors();
@@ -305,14 +282,14 @@ namespace ServerTools
                 for (int i = 0; i < warriors.Count; i++)
                 {
                     int warrior = warriors[i];
-                    EntityPlayer player = GeneralFunction.GetEntityPlayer(warrior);
+                    EntityPlayer player = GeneralOperations.GetEntityPlayer(warrior);
                     if (player != null && player.IsAlive())
                     {
                         if (KilledZombies.TryGetValue(warrior, out int _killedZ))
                         {
                             if (_killedZ >= Zombie_Kills)
                             {
-                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(warrior);
+                                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(warrior);
                                 if (cInfo != null)
                                 {
                                     Counter(cInfo, Reward_Count);
@@ -352,7 +329,18 @@ namespace ServerTools
             _counter--;
             if (_counter != 0)
             {
-                RandomItem(_cInfo);
+                System.Timers.Timer singleUseTimer = new System.Timers.Timer(500)
+                {
+                    AutoReset = false
+                };
+                singleUseTimer.Start();
+                singleUseTimer.Elapsed += (sender, e) =>
+                {
+                    Counter(_cInfo, _counter);
+                    singleUseTimer.Stop();
+                    singleUseTimer.Close();
+                    singleUseTimer.Dispose();
+                };
             }
         }
 
@@ -412,7 +400,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -421,23 +409,22 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<BloodmoonWarrior>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Item Name=\"gunPistolExample\" SecondaryName=\"pistol\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"3\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"gunPistolExample\"") && 
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Item Name=\"gunPistolExample\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Item Name=\"\" SecondaryName=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Item")
                             {
                                 string name = "", secondaryName = "", minCount = "", maxCount = "", minQuality = "", maxQuality = "";

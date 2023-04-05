@@ -13,7 +13,7 @@ namespace ServerTools
 
         public static void Exec()
         {
-            Log.Out("[SERVERTOOLS] Auto restart initialized");
+            Log.Out(string.Format("[SERVERTOOLS] Auto restart initialized"));
             string[] commandLineArgs = Environment.GetCommandLineArgs();
             string text = commandLineArgs[0];
             IAntiCheatClient antiCheatClient = PlatformManager.MultiPlatform.AntiCheatClient;
@@ -69,7 +69,7 @@ namespace ServerTools
                 WorkingDirectory = Directory.GetCurrentDirectory(),
                 Arguments = stringBuilder.ToString()
             });
-            Application.Quit();
+            //Application.Quit();
         }
     }
 }

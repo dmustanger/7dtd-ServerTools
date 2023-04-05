@@ -44,8 +44,8 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out("[SERVERTOOLS] Invalid Bloodmoon Delay detected. Use a single integer, 24h time or multiple 24h time entries");
-                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                        Log.Out(string.Format("[SERVERTOOLS] Invalid Bloodmoon Delay detected. Use a single integer, 24h time or multiple 24h time entries"));
+                        Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
                     }
                 }
             }
@@ -54,13 +54,13 @@ namespace ServerTools
         public static void Exec(ClientInfo _cInfo)
         {
             int daysRemaining = Day7.DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
-            if (daysRemaining == 0 && !GeneralFunction.IsBloodmoon())
+            if (daysRemaining == 0 && !GeneralOperations.IsBloodmoon())
             {
                 Phrases.Dict.TryGetValue("Bloodmoon2", out string phrase);
                 phrase = phrase.Replace("{Time}", GameManager.Instance.World.DuskHour.ToString());
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
-            else if (GeneralFunction.IsBloodmoon())
+            else if (GeneralOperations.IsBloodmoon())
             {
                 Phrases.Dict.TryGetValue("Bloodmoon3", out string phrase);
                 phrase = phrase.Replace("{Time}", GameManager.Instance.World.DawnHour.ToString());
@@ -79,13 +79,13 @@ namespace ServerTools
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
                 int daysRemaining = Day7.DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
-                if (daysRemaining == 0 && !GeneralFunction.IsBloodmoon())
+                if (daysRemaining == 0 && !GeneralOperations.IsBloodmoon())
                 {
                     Phrases.Dict.TryGetValue("Bloodmoon2", out string phrase);
                     phrase = phrase.Replace("{Time}", GameManager.Instance.World.DuskHour.ToString());
                     ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 }
-                else if (GeneralFunction.IsBloodmoon())
+                else if (GeneralOperations.IsBloodmoon())
                 {
                     Phrases.Dict.TryGetValue("Bloodmoon3", out string phrase);
                     phrase = phrase.Replace("{Time}", GameManager.Instance.World.DawnHour.ToString());

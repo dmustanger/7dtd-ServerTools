@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -9,7 +8,7 @@ namespace ServerTools
     class DiscordLink
     {
         public static bool IsEnabled = false;
-        public static string Command_discord = "discord", Invitation_Link = "http://discord.gg/linkHere";
+        public static string Command_discord = "discord", Link = "http://discord.gg/linkHere";
 
         public static void Exec(ClientInfo _cInfo)
         {
@@ -25,13 +24,13 @@ namespace ServerTools
         {
             try
             {
-                if (File.Exists(GeneralFunction.XPathDir + "XUi/windows.xml"))
+                if (File.Exists(GeneralOperations.XPathDir + "XUi/windows.xml"))
                 {
                     if (_link.EndsWith("/") || _link.EndsWith("\\"))
                     {
                         _link.Remove(_link.Length - 1);
                     }
-                    List<string> lines = File.ReadAllLines(GeneralFunction.XPathDir + "XUi/windows.xml").ToList();
+                    List<string> lines = File.ReadAllLines(GeneralOperations.XPathDir + "XUi/windows.xml").ToList();
                     for (int i = 0; i < lines.Count; i++)
                     {
                         if (lines[i].Contains("browserDiscord"))
@@ -39,7 +38,7 @@ namespace ServerTools
                             if (!lines[i + 7].Contains(_link))
                             {
                                 lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", _link);
-                                File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
+                                File.WriteAllLines(GeneralOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
                             }
                             return;
                         }
@@ -66,7 +65,7 @@ namespace ServerTools
                             lines.Add("</append>");
                             lines.Add("");
                             lines.Add("</configs>");
-                            File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
+                            File.WriteAllLines(GeneralOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
                             return;
                         }
                     }
@@ -74,7 +73,7 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralFunction.XPathDir + "XUi/windows.xml", e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralOperations.XPathDir + "XUi/windows.xml", e.Message));
             }
         }
     }

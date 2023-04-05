@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -48,67 +49,66 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
                 if (childNodes != null)
                 {
                     Dict.Clear();
-                    for (int i = 0; i < childNodes.Count; i++)
+                    if (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        for (int i = 0; i < childNodes.Count; i++)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            if (childNodes[i].NodeType == XmlNodeType.Comment)
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Word"))
-                                {
-                                    string word = line.GetAttribute("Word");
-                                    word = word.ToLower();
-                                    if (!Dict.Contains(word))
-                                    {
-                                        Dict.Add(word);
-                                    }
-                                }
+                                continue;
+                            }
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (!line.HasAttributes || !line.HasAttribute("Word"))
+                            {
+                                continue;
+                            }
+                            string word = line.GetAttribute("Word").ToLower();
+                            if (word == "")
+                            {
+                                continue;
+                            }
+                            if (!Dict.Contains(word))
+                            {
+                                Dict.Add(word);
                             }
                         }
                     }
-                }
-                if (upgrade)
-                {
-                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    else
                     {
-                        if (line.HasAttributes)
+                        XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                        XmlNode node = nodeList[0];
+                        XmlElement line = (XmlElement)nodeList[0];
+                        if (line != null)
                         {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
+                            if (line.HasAttributes)
                             {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
+                                OldNodeList = nodeList;
+                                File.Delete(FilePath);
+                                UpgradeXml();
+                                return;
                             }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing BadWords.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
+                            else
+                            {
+                                nodeList = node.ChildNodes;
+                                line = (XmlElement)nodeList[0];
+                                if (line != null)
+                                {
+                                    if (line.HasAttributes)
+                                    {
+                                        OldNodeList = nodeList;
+                                        File.Delete(FilePath);
+                                        UpgradeXml();
+                                        return;
+                                    }
+                                }
+                                File.Delete(FilePath);
+                                UpdateXml();
+                                Log.Out(string.Format("[SERVERTOOLS] The existing BadWords.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
+                            }
                         }
                     }
                 }
@@ -136,10 +136,9 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<BadWordFilter>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("<!-- <Bad Word=\"\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- <Bad Word=\"penis\" /> -->");
+                    sw.WriteLine("    <Bad Word=\"\" />");
                     if (Dict.Count > 0)
                     {
                         for (int i = 0; i < Dict.Count; i++)
@@ -186,17 +185,17 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<BadWordFilter>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- <Bad Word=\"\" /> -->");
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- <Bad Word=\"penis\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Bad Word=\"\""))
+                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Bad Word=\"penis") &&
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Bad Word=\"\" />");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType != XmlNodeType.Comment)

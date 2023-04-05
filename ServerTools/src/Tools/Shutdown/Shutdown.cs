@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -48,8 +49,8 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out("[SERVERTOOLS] Invalid Shutdown Time detected. Use a single integer, 24h time or multiple 24h time entries");
-                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                        Log.Out(string.Format("[SERVERTOOLS] Invalid Shutdown Time detected. Use a single integer, 24h time or multiple 24h time entries"));
+                        Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
                     }
                 }
             }
@@ -57,13 +58,13 @@ namespace ServerTools
 
         public static void PrepareShutdown()
         {
-            if (GeneralFunction.IsBloodmoon() && !Interrupt_Bloodmoon)
+            if (GeneralOperations.IsBloodmoon() && !Interrupt_Bloodmoon)
             {
                 DateTime time = DateTime.Now.AddMinutes(10);
                 EventSchedule.Schedule.Add("Shutdown_" + time, time);
                 if (Event.Open && !Event.OperatorWarned)
                 {
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(Event.Operator);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(Event.Operator);
                     if (cInfo != null)
                     {
                         Event.OperatorWarned = true;
@@ -106,13 +107,13 @@ namespace ServerTools
 
         public static void TimeRemaining(int _newCount)
         {
-            if (GeneralFunction.IsBloodmoon() && !Interrupt_Bloodmoon)
+            if (GeneralOperations.IsBloodmoon() && !Interrupt_Bloodmoon)
             {
                 DateTime time = DateTime.Now.AddMinutes(10);
                 EventSchedule.Schedule.Add("Shutdown_" + time, time);
                 if (Event.Open && !Event.OperatorWarned)
                 {
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(Event.Operator);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(Event.Operator);
                     if (cInfo != null)
                     {
                         Event.OperatorWarned = true;
@@ -135,12 +136,8 @@ namespace ServerTools
             Phrases.Dict.TryGetValue("StopServer1", out phrase);
             phrase = phrase.Replace("{Value}", 1.ToString());
             Alert(phrase, 1);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync("saveworld", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync("mem clean", null);
-            if (VehicleManager.Instance != null)
-            {
-                VehicleManager.Instance.Update();
-            }
+            SdtdConsole.Instance.ExecuteSync("saveworld", null);
+            SdtdConsole.Instance.ExecuteSync("mem clean", null);
             if (UI_Lock)
             {
                 Phrases.Dict.TryGetValue("StopServer4", out phrase);
@@ -151,7 +148,7 @@ namespace ServerTools
         public static void Lock()
         {
             UI_Locked = true;
-            List<ClientInfo> clients = GeneralFunction.ClientList();
+            List<ClientInfo> clients = GeneralOperations.ClientList();
             if (clients != null)
             {
                 for (int i = 0; i < clients.Count; i++)
@@ -173,7 +170,7 @@ namespace ServerTools
         {
             PersistentContainer.Instance.Save(true);
             Phrases.Dict.TryGetValue("StopServer3", out string phrase);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kickall \"{0}\"", phrase), null);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kickall \"{0}\"", phrase), null);
         }
 
         public static void Alert(string _message, int _count)
@@ -187,8 +184,8 @@ namespace ServerTools
 
         public static void Close()
         {
-            Log.Out("[SERVERTOOLS] Running shutdown");
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync("shutdown", null);
+            Log.Out(string.Format("[SERVERTOOLS] Running shutdown"));
+            Application.Quit();
         }
 
         public static void NextShutdown(ClientInfo _cInfo)

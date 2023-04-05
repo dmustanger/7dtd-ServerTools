@@ -19,8 +19,6 @@ namespace ServerTools
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-        private static XmlNodeList OldNodeList;
-
         private static List<string> List
         {
             get { return new List<string>(Dict.Keys); }
@@ -57,135 +55,114 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
-                    Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes)
+                        {
+                            continue;
+                        }
+                        if (line.HasAttribute("Name") && line.HasAttribute("SecondaryName") && line.HasAttribute("MinCount") && line.HasAttribute("MaxCount") &&
+                            line.HasAttribute("MinQuality") && line.HasAttribute("MaxQuality"))
+                        {
+                            string name = line.GetAttribute("Name");
+                            if (name == "")
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Name") && line.HasAttribute("SecondaryName") && line.HasAttribute("MinCount") && line.HasAttribute("MaxCount") &&
-                                    line.HasAttribute("MinQuality") && line.HasAttribute("MaxQuality"))
-                                {
-                                    if (!int.TryParse(line.GetAttribute("MinCount"), out int minCount))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MinCount' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!int.TryParse(line.GetAttribute("MaxCount"), out int maxCount))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MaxCount' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!int.TryParse(line.GetAttribute("MinQuality"), out int minQuality))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MinQuality' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!int.TryParse(line.GetAttribute("MaxQuality"), out int maxQuality))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MaxQuality' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    string name = line.GetAttribute("Name");
-                                    if (!GeneralFunction.IsValidItem(name))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry. Name not found: {0}", name));
-                                        continue;
-                                    }
-                                    ItemValue itemValue = ItemClass.GetItem(name, false);
-                                    if (minCount > itemValue.ItemClass.Stacknumber.Value)
-                                    {
-                                        minCount = itemValue.ItemClass.Stacknumber.Value;
-                                    }
-                                    else if (minCount < 1)
-                                    {
-                                        minCount = 1;
-                                    }
-                                    if (maxCount > itemValue.ItemClass.Stacknumber.Value)
-                                    {
-                                        maxCount = itemValue.ItemClass.Stacknumber.Value;
-                                    }
-                                    else if (maxCount < 1)
-                                    {
-                                        maxCount = 1;
-                                    }
-                                    int exchange;
-                                    if (minCount > maxCount)
-                                    {
-                                        exchange = maxCount;
-                                        maxCount = minCount;
-                                        minCount = exchange;
-                                    }
-                                    if (minQuality > maxQuality)
-                                    {
-                                        exchange = maxQuality;
-                                        maxQuality = minQuality;
-                                        minQuality = exchange;
-                                    }
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MinCount"), out int minCount))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MinCount' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MaxCount"), out int maxCount))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MaxCount' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MinQuality"), out int minQuality))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MinQuality' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MaxQuality"), out int maxQuality))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry because of invalid (non-numeric) value for 'MaxQuality' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
 
-                                    string secondary;
-                                    if (line.HasAttribute("SecondaryName"))
-                                    {
-                                        secondary = line.GetAttribute("SecondaryName");
-                                    }
-                                    else
-                                    {
-                                        secondary = name;
-                                    }
-                                    if (!Dict.ContainsKey(name))
-                                    {
-                                        string[] c = new string[] { secondary, minCount.ToString(), maxCount.ToString(), minQuality.ToString(), maxQuality.ToString() };
-                                        Dict.Add(name, c);
-                                    }
-                                }
+                            if (!GeneralOperations.IsValidItem(name))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme.xml entry. Name not found: {0}", name));
+                                continue;
+                            }
+                            ItemValue itemValue = ItemClass.GetItem(name, false);
+                            if (minCount > itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                minCount = itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (minCount < 1)
+                            {
+                                minCount = 1;
+                            }
+                            if (maxCount > itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                maxCount = itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (maxCount < 1)
+                            {
+                                maxCount = 1;
+                            }
+                            int exchange;
+                            if (minCount > maxCount)
+                            {
+                                exchange = maxCount;
+                                maxCount = minCount;
+                                minCount = exchange;
+                            }
+                            if (minQuality > maxQuality)
+                            {
+                                exchange = maxQuality;
+                                maxQuality = minQuality;
+                                minQuality = exchange;
+                            }
+                            string secondary;
+                            if (line.HasAttribute("SecondaryName"))
+                            {
+                                secondary = line.GetAttribute("SecondaryName");
+                            }
+                            else
+                            {
+                                secondary = name;
+                            }
+                            if (!Dict.ContainsKey(name))
+                            {
+                                string[] c = new string[] { secondary, minCount.ToString(), maxCount.ToString(), minQuality.ToString(), maxQuality.ToString() };
+                                Dict.Add(name, c);
                             }
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing Gimme.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -211,12 +188,11 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Gimme>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 1 for both min and max -->");
                     sw.WriteLine("    <!-- <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"boiled water\" MinCount=\"1\" MaxCount=\"6\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Item Name=\"\" SecondaryName=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, string[]> kvp in Dict)
@@ -529,7 +505,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -538,26 +514,25 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Gimme>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 1 for both min and max -->");
                     sw.WriteLine("    <!-- <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"boiled water\" MinCount=\"1\" MaxCount=\"6\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Secondary name") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- Items that do") && !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"drinkJarBoiledWater\"") && 
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Secondary name") &&
+                            !nodeList[i].OuterXml.Contains("<!-- Items that do") && !nodeList[i].OuterXml.Contains("<!-- <Item Name=\"drinkJarBoiledWater\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Item Name=\"\" SecondaryName=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Item")
                             {
                                 string name = "", secondary = "", minCount = "", maxCount = "", minQuality = "", maxQuality = "";

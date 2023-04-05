@@ -16,8 +16,6 @@ namespace ServerTools
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-        private static XmlNodeList OldNodeList;
-
         public static void Load()
         {
             LoadXml();
@@ -48,35 +46,32 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
-                    Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes || !line.HasAttribute("Default") || !line.HasAttribute("Replacement") || !line.HasAttribute("Hidden"))
+                        {
+                            continue;
+                        }
+                        string defaultCommand = line.GetAttribute("Default");
+                        string replacement = line.GetAttribute("Replacement").ToLower();
+                        if (defaultCommand == "" || replacement == "")
+                        {
+                            continue;
+                        }
+                        if (bool.TryParse(line.GetAttribute("Hidden"), out bool hidden))
+                        {
+                            if (defaultCommand != "" && replacement != "" && !Dict.ContainsKey(defaultCommand))
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Default") && line.HasAttribute("Replacement") && line.HasAttribute("Hidden"))
-                                {
-                                    string defaultCommand = line.GetAttribute("Default");
-                                    string replacement = line.GetAttribute("Replacement").ToLower();
-                                    if (bool.TryParse(line.GetAttribute("Hidden"), out bool hidden))
-                                    {
-                                        if (!Dict.ContainsKey(defaultCommand))
-                                        {
-                                            Dict.Add(defaultCommand, new string[] { replacement, hidden.ToString() });
-                                        }
-                                    }
-                                }
+                                Dict.Add(defaultCommand, new string[] { replacement, hidden.ToString() });
                             }
                         }
                     }
@@ -85,39 +80,18 @@ namespace ServerTools
                         Exec();
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing CommandList.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -141,12 +115,11 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<CommandList>");
-                sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                 sw.WriteLine("    <!-- Leave the default alone. Only edit the replacement to your desired command -->");
                 sw.WriteLine("    <!-- All capital letters in commands will be reduced to lowercase -->");
                 sw.WriteLine("    <!-- If hidden is set to true, the command will not show in response to using /commands -->");
-                sw.WriteLine();
-                sw.WriteLine();
+                sw.WriteLine("    <!-- <Command Default=\"gimme\" Replacement=\"give\" Hidden=\"false\" /> -->");
                 if (Dict.Count > 0)
                 {
                     foreach (KeyValuePair<string, string[]> kvp in Dict)
@@ -205,7 +178,7 @@ namespace ServerTools
                         case "home save":
                             Homes.Command_save = kvp.Value[0];
                             continue;
-                        case "home del":
+                        case "home delete":
                             Homes.Command_delete = kvp.Value[0];
                             continue;
                         case "go home":
@@ -242,7 +215,7 @@ namespace ServerTools
                             Mute.Command_mutelist = kvp.Value[0];
                             continue;
                         case "commands":
-                            GeneralFunction.Command_commands = kvp.Value[0];
+                            GeneralOperations.Command_commands = kvp.Value[0];
                             continue;
                         case "day7":
                             Day7.Command_day7 = kvp.Value[0];
@@ -493,11 +466,11 @@ namespace ServerTools
                         case "ws":
                             Waypoints.Command_ws = kvp.Value[0];
                             continue;
-                        case "waypoint del":
-                            Waypoints.Command_waypoint_del = kvp.Value[0];
+                        case "waypoint delete":
+                            Waypoints.Command_waypoint_delete = kvp.Value[0];
                             continue;
-                        case "way del":
-                            Waypoints.Command_way_del = kvp.Value[0];
+                        case "way delete":
+                            Waypoints.Command_way_delete = kvp.Value[0];
                             continue;
                         case "wd":
                             Waypoints.Command_wd = kvp.Value[0];
@@ -560,7 +533,7 @@ namespace ServerTools
                             AutoPartyInvite.Command_party_remove = kvp.Value[0];
                             continue;
                         case "expire":
-                            GeneralFunction.Command_expire = kvp.Value[0];
+                            GeneralOperations.Command_expire = kvp.Value[0];
                             continue;
                         case "pickup":
                             BlockPickup.Command_pickup = kvp.Value[0];
@@ -575,7 +548,7 @@ namespace ServerTools
                             RIO.Command_rio = kvp.Value[0];
                             continue;
                         case "overlay":
-                            GeneralFunction.Command_overlay = kvp.Value[0];
+                            GeneralOperations.Command_overlay = kvp.Value[0];
                             continue;
                         case "imap":
                             InteractiveMap.Command_imap = kvp.Value[0];
@@ -588,6 +561,9 @@ namespace ServerTools
                             continue;
                         case "claims":
                             LandClaimCount.Command_claims = kvp.Value[0];
+                            continue;
+                        case "donate":
+                            DonationLink.Command_donate = kvp.Value[0];
                             continue;
                     }
                 }
@@ -603,7 +579,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"home\" Replacement=\"home\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"fhome\" Replacement=\"fhome\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"home save\" Replacement=\"home save\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"home del\" Replacement=\"home del\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"home delete\" Replacement=\"home delete\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"go home\" Replacement=\"go home\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"sethome\" Replacement=\"sethome\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"go way\" Replacement=\"go way\" Hidden=\"false\" />");
@@ -699,8 +675,8 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"waypoint save\" Replacement=\"waypoint save\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"way save\" Replacement=\"way save\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"ws\" Replacement=\"ws\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"waypoint del\" Replacement=\"waypoint del\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"way del\" Replacement=\"way del\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"waypoint delete\" Replacement=\"waypoint delete\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"way delete\" Replacement=\"way delete\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"wd\" Replacement=\"wd\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"admin\" Replacement=\"admin\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"pmessage\" Replacement=\"pmessage\" Hidden=\"false\" />");
@@ -731,9 +707,10 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"map\" Replacement=\"map\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"discord\" Replacement=\"discord\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"claims\" Replacement=\"claims\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"donate\" Replacement=\"donate\" Hidden=\"false\" />");
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -743,45 +720,43 @@ namespace ServerTools
                     List<string> commandList = Commands;
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CommandList>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Leave the default alone. Only edit the replacement to your desired command -->");
                     sw.WriteLine("    <!-- All capital letters in commands will be reduced to lowercase -->");
                     sw.WriteLine("    <!-- If hidden is set to true, the command will not show in response to using /commands -->");
-                    if (OldNodeList != null)
+                    sw.WriteLine("    <!-- <Command Default=\"gimme\" Replacement=\"give\" Hidden=\"false\" /> -->");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        for (int i = 0; i < OldNodeList.Count; i++)
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- All capital letters in commands") &&
+                            !nodeList[i].OuterXml.Contains("<!-- Leave the default alone.") && !nodeList[i].OuterXml.Contains("<!-- If hidden is set to true") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Command Default=\"gimme") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- All capital letters in commands") &&
-                                !OldNodeList[i].OuterXml.Contains("<!-- Leave the default alone.") && !OldNodeList[i].OuterXml.Contains("<!-- If hidden is set to true"))
-                            {
-                                sw.WriteLine(OldNodeList[i].OuterXml);
-                            }
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
-                        sw.WriteLine();
-                        sw.WriteLine();
-                        for (int i = 0; i < OldNodeList.Count; i++)
+                    }
+                    for (int i = 0; i < nodeList.Count; i++)
+                    {
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                            XmlElement line = (XmlElement)nodeList[i];
+                            if (line.HasAttributes && line.Name == "Command")
                             {
-                                XmlElement line = (XmlElement)OldNodeList[i];
-                                if (line.HasAttributes && line.Name == "Command")
+                                string defaultCommand = "", replacement = "", hidden = "";
+                                if (line.HasAttribute("Default") && line.HasAttribute("Replacement") && line.HasAttribute("Hidden"))
                                 {
-                                    string defaultCommand = "", replacement = "", hidden = "";
-                                    if (line.HasAttribute("Default") && line.HasAttribute("Replacement") && line.HasAttribute("Hidden"))
+                                    defaultCommand = line.GetAttribute("Default");
+                                    replacement = line.GetAttribute("Replacement");
+                                    hidden = line.GetAttribute("Hidden");
+                                    if (commandList.Count > 0)
                                     {
-                                        defaultCommand = line.GetAttribute("Default");
-                                        replacement = line.GetAttribute("Replacement");
-                                        hidden = line.GetAttribute("Hidden");
-                                        if (commandList.Count > 0)
+                                        for (int j = 0; j < commandList.Count; j++)
                                         {
-                                            for (int j = 0; j < commandList.Count; j++)
+                                            if (commandList[j].Contains(defaultCommand))
                                             {
-                                                if (commandList[j].Contains(defaultCommand))
-                                                {
-                                                    commandList.RemoveAt(j);
-                                                    sw.WriteLine(string.Format("    <Command Default=\"{0}\" Replacement=\"{1}\" Hidden=\"{2}\" />", defaultCommand, replacement, hidden));
-                                                    break;
-                                                }
+                                                commandList.RemoveAt(j);
+                                                sw.WriteLine(string.Format("    <Command Default=\"{0}\" Replacement=\"{1}\" Hidden=\"{2}\" />", defaultCommand, replacement, hidden));
+                                                break;
                                             }
                                         }
                                     }

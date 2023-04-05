@@ -14,13 +14,19 @@ namespace ServerTools
 
         public static void CallForVote1(ClientInfo _cInfo)
         {
-            TimeSpan varTime = DateTime.Now - GeneralFunction.StartTime;
+            if (GeneralOperations.IsBloodmoon())
+            {
+                Phrases.Dict.TryGetValue("RestartVote15", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                return;
+            }
+            TimeSpan varTime = DateTime.Now - GeneralOperations.StartTime;
             double fractionalMinutes = varTime.TotalMinutes;
             int timepassed = (int)fractionalMinutes;
             if (timepassed >= 30)
             {
                 bool adminOnline = false;
-                List<ClientInfo> clientList = GeneralFunction.ClientList();
+                List<ClientInfo> clientList = GeneralOperations.ClientList();
                 if (clientList != null)
                 {
                     for (int i = 0; i < clientList.Count; i++)

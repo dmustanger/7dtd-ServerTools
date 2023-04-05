@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace ServerTools
 {
     class TestConsole : ConsoleCmdAbstract
     {
+
         public override string GetDescription()
         {
             return "[ServerTools] - Test a command";

@@ -90,12 +90,12 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (Player_Check)
                     {
-                        List<ClientInfo> clientList = GeneralFunction.ClientList();
+                        List<ClientInfo> clientList = GeneralOperations.ClientList();
                         if (clientList != null)
                         {
                             for (int i = 0; i < clientList.Count; i++)
@@ -103,7 +103,7 @@ namespace ServerTools
                                 ClientInfo cInfo2 = clientList[i];
                                 if (cInfo2 != null)
                                 {
-                                    EntityPlayer player2 = GeneralFunction.GetEntityPlayer(cInfo2.entityId);
+                                    EntityPlayer player2 = GeneralOperations.GetEntityPlayer(cInfo2.entityId);
                                     if (player2 != null)
                                     {
                                         Vector3 pos2 = player2.GetPosition();

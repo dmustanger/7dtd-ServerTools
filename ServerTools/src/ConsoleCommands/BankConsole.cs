@@ -69,7 +69,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[0]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[0]);
                     if (cInfo != null)
                     {
                         int currentBank = Bank.GetCurrency(cInfo.CrossplatformId.CombinedString);

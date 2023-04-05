@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 namespace ServerTools
@@ -18,13 +17,13 @@ namespace ServerTools
             {
                 if (OutputLog.ActiveLog.Count > 0)
                 {
-                    List<string> _log = OutputLog.ActiveLog;
-                    _log.Reverse();
+                    List<string> log = OutputLog.ActiveLog;
+                    log.Reverse();
                     for (int i = 0; i < 50; i++)
                     {
-                        if (!string.IsNullOrEmpty(_log[i]) && _log[i].Contains(_ip) && _log[i].Contains("NET: LiteNetLib: Client disconnect from:"))
+                        if (!string.IsNullOrEmpty(log[i]) && log[i].Contains(_ip) && log[i].Contains("NET: LiteNetLib: Client disconnect from:"))
                         {
-                            if (_log[i].ToLower().Contains("timeout"))
+                            if (log[i].ToLower().Contains("timeout"))
                             {
                                 Players.Remove(_cInfo.entityId);
                                 return;
@@ -50,69 +49,73 @@ namespace ServerTools
         {
             try
             {
-                PlayerDataFile pdf = GeneralFunction.GetPlayerDataFileFromUId(_cInfo.CrossplatformId);
-                if (pdf != null)
+                PlayerDataFile pdf = GeneralOperations.GetPlayerDataFileFromUId(_cInfo.CrossplatformId);
+                if (pdf == null)
                 {
-                    Vector3i pos = new Vector3i((int)pdf.ecd.pos.x, (int)pdf.ecd.pos.y, (int)pdf.ecd.pos.z);
-                    if (GameManager.Instance.World.IsChunkAreaLoaded(pos.x, pos.y, pos.z))
+                    return;
+                }
+                Vector3i pos = new Vector3i((int)pdf.ecd.pos.x, (int)pdf.ecd.pos.y, (int)pdf.ecd.pos.z);
+                if (!GameManager.Instance.World.IsChunkAreaLoaded(pos.x, pos.y, pos.z))
+                {
+                    return;
+                }
+                Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(pos.x, pos.y, pos.z);
+                if (chunk == null)
+                {
+                    return;
+                }
+                BlockValue blockValue = Block.GetBlockValue("cntStorageChest");
+                if (blockValue.Block == null)
+                {
+                    return;
+                }
+                GameManager.Instance.World.SetBlockRPC(chunk.ClrIdx, pos, blockValue);
+                if (GameManager.Instance.World.GetTileEntity(chunk.ClrIdx, pos) is TileEntityLootContainer tileEntityLootContainer)
+                {
+                    if (All || Bag)
                     {
-                        Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(pos.x, pos.y, pos.z);
-                        if (chunk != null)
+                        for (int i = 0; i < pdf.bag.Length; i++)
                         {
-                            BlockValue blockValue = Block.GetBlockValue("cntStorageChest");
-                            if (blockValue.Block != null)
+                            if (!pdf.bag[i].IsEmpty())
                             {
-                                GameManager.Instance.World.SetBlockRPC(chunk.ClrIdx, pos, blockValue);
-                                if (GameManager.Instance.World.GetTileEntity(chunk.ClrIdx, pos) is TileEntityLootContainer tileEntityLootContainer)
-                                {
-                                    if (All || Bag)
-                                    {
-                                        for (int i = 0; i < pdf.bag.Length; i++)
-                                        {
-                                            if (!pdf.bag[i].IsEmpty())
-                                            {
-                                                tileEntityLootContainer.AddItem(pdf.bag[i]);
-                                                pdf.bag[i] = ItemStack.Empty.Clone();
-                                            }
-                                        }
-                                    }
-                                    if (All || Belt)
-                                    {
-                                        for (int i = 0; i < pdf.inventory.Length; i++)
-                                        {
-                                            if (!pdf.inventory[i].IsEmpty())
-                                            {
-                                                tileEntityLootContainer.AddItem(pdf.inventory[i]);
-                                                pdf.inventory[i] = ItemStack.Empty.Clone();
-                                            }
-                                        }
-                                    }
-                                    if (All || Equipment)
-                                    {
-                                        ItemValue[] _equipmentValues = pdf.equipment.GetItems();
-                                        for (int i = 0; i < _equipmentValues.Length; i++)
-                                        {
-                                            if (!_equipmentValues[i].IsEmpty())
-                                            {
-                                                ItemStack _itemStack = new ItemStack(_equipmentValues[i], 1);
-                                                tileEntityLootContainer.AddItem(_itemStack);
-                                                _equipmentValues[i].Clear();
-                                            }
-                                        }
-                                    }
-                                    if (tileEntityLootContainer.IsEmpty())
-                                    {
-                                        GameManager.Instance.World.SetBlockRPC(chunk.ClrIdx, pos, BlockValue.Air);
-                                    }
-                                    else
-                                    {
-                                        tileEntityLootContainer.SetModified();
-                                    }
-                                    GeneralFunction.SavePlayerDataFile(_cInfo.CrossplatformId.ToString(), pdf);
-                                }
+                                tileEntityLootContainer.AddItem(pdf.bag[i]);
+                                pdf.bag[i] = ItemStack.Empty.Clone();
                             }
                         }
                     }
+                    if (All || Belt)
+                    {
+                        for (int i = 0; i < pdf.inventory.Length; i++)
+                        {
+                            if (!pdf.inventory[i].IsEmpty())
+                            {
+                                tileEntityLootContainer.AddItem(pdf.inventory[i]);
+                                pdf.inventory[i] = ItemStack.Empty.Clone();
+                            }
+                        }
+                    }
+                    if (All || Equipment)
+                    {
+                        ItemValue[] _equipmentValues = pdf.equipment.GetItems();
+                        for (int i = 0; i < _equipmentValues.Length; i++)
+                        {
+                            if (!_equipmentValues[i].IsEmpty())
+                            {
+                                ItemStack _itemStack = new ItemStack(_equipmentValues[i], 1);
+                                tileEntityLootContainer.AddItem(_itemStack);
+                                _equipmentValues[i].Clear();
+                            }
+                        }
+                    }
+                    if (tileEntityLootContainer.IsEmpty())
+                    {
+                        GameManager.Instance.World.SetBlockRPC(chunk.ClrIdx, pos, BlockValue.Air);
+                    }
+                    else
+                    {
+                        tileEntityLootContainer.SetModified();
+                    }
+                    GeneralOperations.SavePlayerDataFile(_cInfo.CrossplatformId.ToString(), pdf);
                 }
             }
             catch (Exception e)
@@ -125,34 +128,33 @@ namespace ServerTools
         {
             try
             {
-                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(_id);
-                if (cInfo != null)
+                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(_id);
+                if (cInfo == null)
                 {
-                    if (GameManager.Instance.World.Players.dict.ContainsKey(cInfo.entityId))
+                    return;
+                }
+                EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];
+                if (player == null)
+                {
+                    return;
+                }
+                if (Players.TryGetValue(cInfo.entityId, out Vector3 pos))
+                {
+                    if (player.position != pos)
                     {
-                        EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];
-                        if (player != null)
+                        Phrases.Dict.TryGetValue("ExitCommand1", out string phrase);
+                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        return;
+                    }
+                    else
+                    {
+                        PlayerDataFile playerDataFile = GeneralOperations.GetPlayerDataFileFromUId(cInfo.CrossplatformId);
+                        if (playerDataFile != null)
                         {
-                            if (Players.TryGetValue(cInfo.entityId, out Vector3 pos))
-                            {
-                                if (player.position != pos)
-                                {
-                                    Phrases.Dict.TryGetValue("ExitCommand1", out string phrase);
-                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    return;
-                                }
-                                else
-                                {
-                                    PlayerDataFile playerDataFile = GeneralFunction.GetPlayerDataFileFromUId(cInfo.CrossplatformId);
-                                    if (playerDataFile != null)
-                                    {
-                                        GeneralFunction.SavePlayerDataFile(cInfo.CrossplatformId.ToString(), playerDataFile);
-                                    }
-                                    Players.Remove(cInfo.entityId);
-                                    Disconnect(cInfo);
-                                }
-                            }
+                            GeneralOperations.SavePlayerDataFile(cInfo.CrossplatformId.ToString(), playerDataFile);
                         }
+                        Players.Remove(cInfo.entityId);
+                        Disconnect(cInfo);
                     }
                 }
             }

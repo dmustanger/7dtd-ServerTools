@@ -22,6 +22,7 @@ namespace ServerTools
         private Dictionary<string, string> clanRequestToJoin;
         private bool countryBanImmune;
         private Dictionary<string, DateTime> customCommandDelays;
+        private Dictionary<string, string> customReturnPositions;
         private bool eventOver;
         private string eventReturnPosition;
         private bool eventSpawn;
@@ -75,7 +76,7 @@ namespace ServerTools
         private string playerName;
         private int playerWallet;
         private bool proxyBanImmune;
-        private Dictionary<string, string> customReturnPositions;
+        private bool reducedDelay;
         private int sessionTime;
         private bool startingItems;
         private int totalTimePlayed;
@@ -864,6 +865,18 @@ namespace ServerTools
             set
             {
                 proxyBanImmune = value;
+            }
+        }
+
+        public bool ReducedDelay
+        {
+            get
+            {
+                return reducedDelay;
+            }
+            set
+            {
+                reducedDelay = value;
             }
         }
 

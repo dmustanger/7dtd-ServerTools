@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -27,41 +29,60 @@ namespace ServerTools
             {
                 if (_senderInfo.RemoteClientInfo == null)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Invalid operation. This command must be used manually by an administrator in game");
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid operation. This command must be used manually by an administrator in game");
                     return;
                 }
                 if (_params.Count != 1)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
                 if (!int.TryParse(_params[0], out int _entityId))
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid entityId value '{0}'", _entityId));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid entityId value '{0}'", _entityId));
                     return;
                 }
-                Entity Entity = GameManager.Instance.World.Entities.dict[_entityId];
-                if (Entity == null)
+                Entity entity = GeneralOperations.GetEntity(_entityId);
+                if (entity == null)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid entityId. Entity not found '{0}'", _entityId));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid entityId. Entity not found '{0}'", _entityId));
                     return;
                 }
-                if (Entity is EntityPlayer)
+                if (entity is EntityPlayer)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Entity with id '{0}' can not be a player", _entityId));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Entity with id '{0}' can not be a player", _entityId));
                     return;
                 }
-                EntityPlayer _player = GeneralFunction.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
-                if (_player != null)
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
+                if (player != null)
                 {
-                    Entity.SetRotation(new UnityEngine.Vector3(_player.position.x, _player.position.y, _player.position.z));
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Rotated entity {0} to face away from you", _entityId));
+                    ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                    {
+                        ThreadManager.StartCoroutine(SetRot(entity, new Vector3(player.position.x, player.position.y, player.position.z)));
+                    }, null);
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Rotated entity {0} to face away from you", _entityId));
                 }
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in EntityRotateConsole.Execute: {0}", e.Message));
             }
+        }
+
+        public static IEnumerator SetRot(Entity _entity, Vector3 _position)
+        {
+            try
+            {
+                if (_entity != null && _position != null)
+                {
+                    _entity.SetRotation(_position);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in EntityRotateConsole.SetPos: {0}", e.StackTrace));
+            }
+            yield break;
         }
     }
 }

@@ -18,8 +18,6 @@ namespace ServerTools
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-        private static XmlNodeList OldNodeList;
-
         public static void Load()
         {
             LoadXml();
@@ -51,102 +49,81 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
-                    Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes)
+                        {
+                            continue;
+                        }
+                        if (line.HasAttribute("Name") && line.HasAttribute("Count") && line.HasAttribute("Quality"))
+                        {
+                            string item = line.GetAttribute("Name");
+                            if (item == "")
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Name") && line.HasAttribute("Count") && line.HasAttribute("Quality"))
-                                {
-                                    if (!int.TryParse(line.GetAttribute("Count"), out int count))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Invalid (non-numeric) value for 'Count' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!int.TryParse(line.GetAttribute("Quality"), out int quality))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Invalid (non-numeric) value for 'Quality' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    string item = line.GetAttribute("Name");
-                                    ItemValue itemValue = ItemClass.GetItem(item, false);
-                                    if (itemValue.type == ItemValue.None.type)
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Item not found: {0}", item));
-                                        continue;
-                                    }
-                                    if (count > itemValue.ItemClass.Stacknumber.Value)
-                                    {
-                                        count = itemValue.ItemClass.Stacknumber.Value;
-                                        Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} was set above the max stack value. It has been reduced to the maximum of {1}", item, count));
-                                    }
-                                    if (count > itemValue.ItemClass.Stacknumber.Value)
-                                    {
-                                        count = itemValue.ItemClass.Stacknumber.Value;
-                                    }
-                                    else if (count < 1)
-                                    {
-                                        count = 1;
-                                    }
-                                    if (quality < 1)
-                                    {
-                                        quality = 1;
-                                    }
-                                    int[] c = new int[] { count, quality };
-                                    if (!Dict.ContainsKey(item))
-                                    {
-                                        Dict.Add(item, c);
-                                    }
-                                }
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("Count"), out int count))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Invalid (non-numeric) value for 'Count' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("Quality"), out int quality))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Invalid (non-numeric) value for 'Quality' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            ItemValue itemValue = ItemClass.GetItem(item, false);
+                            if (itemValue.type == ItemValue.None.type)
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring StartingItems.xml entry. Item not found: {0}", item));
+                                continue;
+                            }
+                            if (count > itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                count = itemValue.ItemClass.Stacknumber.Value;
+                                Log.Out(string.Format("[SERVERTOOLS] StartingItems.xml entry {0} was set above the max stack value. It has been reduced to the maximum of {1}", item, count));
+                            }
+                            if (count > itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                count = itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (count < 1)
+                            {
+                                count = 1;
+                            }
+                            if (quality < 1)
+                            {
+                                quality = 1;
+                            }
+                            int[] c = new int[] { count, quality };
+                            if (!Dict.ContainsKey(item))
+                            {
+                                Dict.Add(item, c);
                             }
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing StartingItems.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -172,10 +149,9 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<StartingItems>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
                     sw.WriteLine("    <!-- <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Item Name=\"\" Count=\"\" Quality=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, int[]> kvp in Dict)
@@ -278,7 +254,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -287,23 +263,22 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<StartingItems>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"foodCanChili\"") && 
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Item Name=\"foodCanChili") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Item Name=\"\" Count=\"\" Quality=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Item")
                             {
                                 string name = "", count = "", quality = "";

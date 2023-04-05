@@ -85,7 +85,7 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 4, found '{0}'", _params.Count));
                         return;
                     }
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         int[] vaultSize = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].VaultSize;
@@ -136,7 +136,7 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].VaultSize = new int[] { Vault.Slots, Vault.Lines };
@@ -154,7 +154,7 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("max"))
                 {
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].VaultSize = new int[] { 8, 6 };
@@ -172,7 +172,7 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("clear"))
                 {
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Vault = new ItemDataSerializable[48];

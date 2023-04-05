@@ -11,7 +11,7 @@ namespace ServerTools
         {
             if (!GameManager.Instance.World.aiDirector.BloodMoonComponent.BloodMoonActive)
             {
-                Dictionary<int, EntityPlayer> players = GeneralFunction.GetEntityPlayers();
+                Dictionary<int, EntityPlayer> players = GeneralOperations.GetEntityPlayers();
                 if (players != null && players.Count >= Players)
                 {
                     int counter = 0;

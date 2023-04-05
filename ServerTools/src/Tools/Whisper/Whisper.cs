@@ -65,7 +65,7 @@ namespace ServerTools
             }
             else
             {
-                ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(lastwhisper);
+                ClientInfo cInfo2 = GeneralOperations.GetClientInfoFromNameOrId(lastwhisper);
                 if (cInfo2 == null)
                 {
                     Phrases.Dict.TryGetValue("Whisper4", out string _phrase4);

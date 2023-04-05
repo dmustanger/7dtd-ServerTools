@@ -9,7 +9,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (GeneralFunction.Session.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime _time))
+            if (GeneralOperations.Session.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime _time))
             {
                 TimeSpan varTime = DateTime.Now - _time;
                 double fractionalMinutes = varTime.TotalMinutes;

@@ -46,8 +46,8 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out("[SERVERTOOLS] Invalid Real_World_Time Delay detected. Use a single integer, 24h time or multiple 24h time entries");
-                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                        Log.Out(string.Format("[SERVERTOOLS] Invalid Real_World_Time Delay detected. Use a single integer, 24h time or multiple 24h time entries"));
+                        Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
                     }
                 }
             }
@@ -65,7 +65,7 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue("RealWorldTime1", out string phrase);
                 phrase = phrase.Replace("{Time}", time.ToShortTimeString());
                 phrase = phrase.Replace("{TimeZone}", Time_Zone);
-                List<ClientInfo> clientList = GeneralFunction.ClientList();
+                List<ClientInfo> clientList = GeneralOperations.ClientList();
                 if (clientList != null)
                 {
                     for (int i = 0; i < clientList.Count; i++)

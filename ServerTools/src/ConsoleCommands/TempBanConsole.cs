@@ -38,7 +38,7 @@ namespace ServerTools
                 {
                     _time = 15;
                 }
-                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[0]);
+                ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[0]);
                 if (cInfo != null)
                 {
                     if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&

@@ -45,8 +45,8 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out("[SERVERTOOLS] Invalid Auto_Save_World Delay_Between_Saves detected. Use a single integer, 24h time or multiple 24h time entries");
-                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                        Log.Out(string.Format("[SERVERTOOLS] Invalid Auto_Save_World Delay_Between_Saves detected. Use a single integer, 24h time or multiple 24h time entries"));
+                        Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
                     }
                 }
             }
@@ -54,10 +54,10 @@ namespace ServerTools
 
         public static void Save()
         {
-            Log.Out("[SERVERTOOLS] World save has begun.");
+            Log.Out(string.Format("[SERVERTOOLS] World save has begun."));
             GameManager.Instance.SaveLocalPlayerData();
             GameManager.Instance.SaveWorld();
-            Log.Out("[SERVERTOOLS] World save complete.");
+            Log.Out(string.Format("[SERVERTOOLS] World save complete."));
         }
     }
 }

@@ -35,10 +35,10 @@ namespace ServerTools
                 }
                 if (_params.Count == 3)
                 {
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[0]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[0]);
                     if (cInfo != null)
                     {
-                        PersistentPlayerData persistentPlayerData = GeneralFunction.GetPersistentPlayerDataFromEntityId(cInfo.entityId);
+                        PersistentPlayerData persistentPlayerData = GeneralOperations.GetPersistentPlayerDataFromEntityId(cInfo.entityId);
                         if (persistentPlayerData != null)
                         {
                             List<Vector3i> claimBlockList = persistentPlayerData.GetLandProtectionBlocks();
@@ -62,7 +62,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        PersistentPlayerData persistentPlayerData = GeneralFunction.GetPersistentPlayerDataFromId(_params[0]);
+                        PersistentPlayerData persistentPlayerData = GeneralOperations.GetPersistentPlayerDataFromId(_params[0]);
                         if (persistentPlayerData != null)
                         {
                             List<Vector3i> _claimBlockList = persistentPlayerData.GetLandProtectionBlocks();
@@ -114,7 +114,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        PersistentPlayerData persistentPlayerData = GeneralFunction.GetPersistentPlayerDataFromId(_params[0]);
+                        PersistentPlayerData persistentPlayerData = GeneralOperations.GetPersistentPlayerDataFromId(_params[0]);
                         if (persistentPlayerData != null)
                         {
                             List<Vector3i> claimBlockList = persistentPlayerData.GetLandProtectionBlocks();

@@ -14,7 +14,7 @@ namespace ServerTools
 
         public static void ListFriends(ClientInfo _cInfo)
         {
-            EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+            EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
             if (player != null)
             {
                 bool found = false;
@@ -26,7 +26,7 @@ namespace ServerTools
                     {
                         if (player != player2 && player.IsFriendsWith(player2))
                         {
-                            ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromEntityId(player2.entityId);
+                            ClientInfo cInfo2 = GeneralOperations.GetClientInfoFromEntityId(player2.entityId);
                             if (cInfo2 != null)
                             {
                                 found = true;
@@ -48,7 +48,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo, string _message)
         {
-            EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+            EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
             if (player != null)
             {
                 if (Player_Check)
@@ -68,7 +68,7 @@ namespace ServerTools
                 ClientInfo friend = ConsoleHelper.ParseParamIdOrName(_message);
                 if (friend != null)
                 {
-                    EntityPlayer friendPlayer = GeneralFunction.GetEntityPlayer(friend.entityId);
+                    EntityPlayer friendPlayer = GeneralOperations.GetEntityPlayer(friend.entityId);
                     if (friendPlayer != null)
                     {
                         if (!player.IsFriendsWith(friendPlayer))
@@ -181,10 +181,10 @@ namespace ServerTools
 
         public static void TeleFriend(ClientInfo _cInfo, int _invitingFriend)
         {
-            ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromEntityId(_invitingFriend);
+            ClientInfo cInfo2 = GeneralOperations.GetClientInfoFromEntityId(_invitingFriend);
             if (cInfo2 != null)
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     Phrases.Dict.TryGetValue("FriendTeleport7", out string phrase1);

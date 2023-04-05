@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public static void Exec()
         {
-            List<ClientInfo> clientList = GeneralFunction.ClientList();
+            List<ClientInfo> clientList = GeneralOperations.ClientList();
             if (clientList != null && clientList.Count > 0)
             {
                 List<string[]> track = PersistentContainer.Instance.Track;
@@ -16,7 +16,7 @@ namespace ServerTools
                     ClientInfo cInfo = clientList[i];
                     if (cInfo != null)
                     {
-                        EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                        EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                         if (player != null && player.IsSpawned())
                         {
                             string pos = (int)player.position.x + "," + (int)player.position.y + "," + (int)player.position.z;
@@ -62,7 +62,7 @@ namespace ServerTools
                     }
                     PersistentContainer.Instance.Track = _trackLog;
                     PersistentContainer.DataChange = true;
-                    Log.Out("[SERVERTOOLS] Tracking log clean up complete");
+                    Log.Out(string.Format("[SERVERTOOLS] Tracking log clean up complete"));
                 }
             }
             catch (Exception e)

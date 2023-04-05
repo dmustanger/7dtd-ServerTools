@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -87,83 +88,22 @@ namespace ServerTools
                         }
                         if (_params[0].ToLower() == "all")
                         {
-                            List<ClientInfo> cInfoList = GeneralFunction.ClientList();
-                            if (cInfoList != null)
+                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
                             {
-                                for (int i = 0; i < cInfoList.Count; i++)
-                                {
-                                    ClientInfo cInfo = cInfoList[i];
-                                    if (cInfo != null)
-                                    {
-                                        EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
-                                        if (player != null && player.IsSpawned() && !player.IsDead())
-                                        {
-                                            EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                                            {
-                                                entityClass = EntityClass.FromString("item"),
-                                                id = EntityFactory.nextEntityID++,
-                                                itemStack = new ItemStack(itemValue, itemCount),
-                                                pos = world.Players.dict[cInfo.entityId].position,
-                                                rot = new Vector3(20f, 0f, 20f),
-                                                lifetime = 60f,
-                                                belongsPlayerId = cInfo.entityId
-                                            });
-                                            world.SpawnEntityInWorld(entityItem);
-                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
-                                            world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                                            Phrases.Dict.TryGetValue("GiveItem1", out string phrase);
-                                            phrase = phrase.Replace("{Value}", itemCount.ToString());
-                                            phrase = phrase.Replace("{ItemName}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
-                                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                        }
-                                        else
-                                        {
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player Id '{0}' '{1}' has not spawned or is dead. Unable to give item at this time", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString));
-                                        }
-                                    }
-                                }
-                            }
+                                ThreadManager.StartCoroutine(SpawnItems(itemValue, itemCount, world));
+                            }, null);
                         }
                         else
                         {
-                            ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
-                            if (cInfo != null)
+                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
                             {
-                                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
-                                if (player != null && player.IsSpawned() && !player.IsDead())
-                                {
-                                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                                    {
-                                        entityClass = EntityClass.FromString("item"),
-                                        id = EntityFactory.nextEntityID++,
-                                        itemStack = new ItemStack(itemValue, itemCount),
-                                        pos = world.Players.dict[cInfo.entityId].position,
-                                        rot = new Vector3(20f, 0f, 20f),
-                                        lifetime = 60f,
-                                        belongsPlayerId = cInfo.entityId
-                                    });
-                                    world.SpawnEntityInWorld(entityItem);
-                                    cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
-                                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                                    Phrases.Dict.TryGetValue("GiveItem1", out string _phrase);
-                                    _phrase = _phrase.Replace("{Value}", itemCount.ToString());
-                                    _phrase = _phrase.Replace("{ItemName}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
-                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                }
-                                else
-                                {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player Id '{0}' has not spawned or is dead. Unable to give item at this time", _params[0]));
-                                }
-                            }
-                            else
-                            {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player Id '{0}' not found", _params[0]));
-                            }
+                                ThreadManager.StartCoroutine(SpawnItem(itemValue, itemCount, world, _params[0]));
+                            }, null);
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find item '{0}'", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find item '{0}'", _params[1]));
                         return;
                     }
                 }
@@ -172,6 +112,110 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in GiveItemConsole.Execute: {0}", e.Message));
             }
+        }
+
+        public static IEnumerator SpawnItems(ItemValue _itemValue, int _itemCount, World _world)
+        {
+            try
+            {
+                if (_itemValue != null && _world != null)
+                {
+                    ClientInfo cInfo;
+                    EntityPlayer player;
+                    EntityItem entityItem;
+                    List<ClientInfo> cInfoList = GeneralOperations.ClientList();
+                    if (cInfoList != null)
+                    {
+                        for (int i = 0; i < cInfoList.Count; i++)
+                        {
+                            cInfo = cInfoList[i];
+                            if (cInfo != null)
+                            {
+                                player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
+                                if (player != null && player.IsSpawned() && !player.IsDead())
+                                {
+                                    entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                                    {
+                                        entityClass = EntityClass.FromString("item"),
+                                        id = EntityFactory.nextEntityID++,
+                                        itemStack = new ItemStack(_itemValue, _itemCount),
+                                        pos = _world.Players.dict[cInfo.entityId].position,
+                                        rot = new Vector3(20f, 0f, 20f),
+                                        lifetime = 60f,
+                                        belongsPlayerId = cInfo.entityId
+                                    });
+                                    _world.SpawnEntityInWorld(entityItem);
+                                    cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
+                                    _world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                    Phrases.Dict.TryGetValue("GiveItem1", out string phrase);
+                                    phrase = phrase.Replace("{Value}", _itemCount.ToString());
+                                    phrase = phrase.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                                else
+                                {
+                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' '{1}' is not spawned or is dead. Unable to give item", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in GiveItemConsole.SpawnItems: {0}", e.StackTrace));
+            }
+            yield break;
+        }
+
+        public static IEnumerator SpawnItem(ItemValue _itemValue, int _itemCount, World _world, string _target)
+        {
+            try
+            {
+                if (_itemValue != null && _world != null)
+                {
+                    EntityPlayer player;
+                    EntityItem entityItem;
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_target);
+                    if (cInfo != null)
+                    {
+                        player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
+                        if (player != null && player.IsSpawned() && !player.IsDead())
+                        {
+                            entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                            {
+                                entityClass = EntityClass.FromString("item"),
+                                id = EntityFactory.nextEntityID++,
+                                itemStack = new ItemStack(_itemValue, _itemCount),
+                                pos = _world.Players.dict[cInfo.entityId].position,
+                                rot = new Vector3(20f, 0f, 20f),
+                                lifetime = 60f,
+                                belongsPlayerId = cInfo.entityId
+                            });
+                            _world.SpawnEntityInWorld(entityItem);
+                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
+                            _world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                            Phrases.Dict.TryGetValue("GiveItem1", out string phrase);
+                            phrase = phrase.Replace("{Value}", _itemCount.ToString());
+                            phrase = phrase.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' is not spawned or is dead. Unable to give item", _target));
+                        }
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' not found", _target));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in GiveItemConsole.SpawnItem: {0}", e.StackTrace));
+            }
+            yield break;
         }
     }
 }

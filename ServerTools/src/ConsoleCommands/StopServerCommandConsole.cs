@@ -47,7 +47,7 @@ namespace ServerTools
                         Shutdown.UI_Locked = false;
                         if (ExitCommand.IsEnabled)
                         {
-                            List<ClientInfo> clientList = GeneralFunction.ClientList();
+                            List<ClientInfo> clientList = GeneralOperations.ClientList();
                             if (clientList != null)
                             {
                                 for (int i = 0; i < clientList.Count; i++)
@@ -56,7 +56,7 @@ namespace ServerTools
                                     if (!ExitCommand.Players.ContainsKey(cInfo.entityId) && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > ExitCommand.Admin_Level &&
                                         GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > ExitCommand.Admin_Level))
                                     {
-                                        EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                                        EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                         if (player != null)
                                         {
                                             ExitCommand.Players.Add(cInfo.entityId, player.position);

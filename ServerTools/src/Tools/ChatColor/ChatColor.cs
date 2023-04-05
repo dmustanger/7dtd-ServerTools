@@ -15,11 +15,10 @@ namespace ServerTools
         public static Dictionary<string, string[]> Players = new Dictionary<string, string[]>();
         public static Dictionary<string, DateTime> ExpireDate = new Dictionary<string, DateTime>();
 
+        private static char[] Symbols = { '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '?', '/', '\\' };
         private const string file = "ChatColor.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-
-        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -53,87 +52,71 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Players.Clear();
+                ExpireDate.Clear();
+                if (childNodes != null && childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
                 {
-                    Players.Clear();
-                    ExpireDate.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes)
+                        {
+                            continue;
+                        }
+                        if (line.HasAttribute("Id") && line.HasAttribute("Name") && line.HasAttribute("NameColor") &&
+                              line.HasAttribute("Prefix") && line.HasAttribute("PrefixColor") && line.HasAttribute("Expires"))
+                        {
+                            string id = line.GetAttribute("Id");
+                            if (id == "")
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Id") && line.HasAttribute("Name") && line.HasAttribute("NameColor") &&
-                                      line.HasAttribute("Prefix") && line.HasAttribute("PrefixColor") && line.HasAttribute("Expires"))
-                                {
-                                    string id = line.GetAttribute("Id");
-                                    string name = line.GetAttribute("Name");
-                                    string nameColor = line.GetAttribute("NameColor");
-                                    string prefix = line.GetAttribute("Prefix");
-                                    string prefixColor = line.GetAttribute("PrefixColor");
-                                    DateTime dt = DateTime.Parse(line.GetAttribute("Expires"));
-                                    if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(nameColor))
-                                    {
-                                        ColorList.Colors.TryGetValue(nameColor, out string colorArray);
-                                        nameColor = colorArray;
-                                    }
-                                    if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(prefixColor))
-                                    {
-                                        ColorList.Colors.TryGetValue(prefixColor, out string colorArray);
-                                        prefixColor = colorArray;
-                                    }
-                                    if (!Players.ContainsKey(id))
-                                    {
-                                        string[] c = new string[] { name, nameColor, prefix, prefixColor };
-                                        Players.Add(id, c);
-                                        ExpireDate.Add(id, dt);
-                                    }
-                                }
+                                continue;
+                            }
+                            string name = line.GetAttribute("Name");
+                            string nameColor = line.GetAttribute("NameColor").ToLower();
+                            string prefix = line.GetAttribute("Prefix");
+                            string prefixColor = line.GetAttribute("PrefixColor").ToLower();
+                            if (!DateTime.TryParse(line.GetAttribute("Expires"), out DateTime dt))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColor.xml entry. Invalid (date) value for 'Expires' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(nameColor))
+                            {
+                                ColorList.Colors.TryGetValue(nameColor, out string colorArray);
+                                nameColor = colorArray;
+                            }
+                            if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(prefixColor))
+                            {
+                                ColorList.Colors.TryGetValue(prefixColor, out string colorArray);
+                                prefixColor = colorArray;
+                            }
+                            if (!Players.ContainsKey(id))
+                            {
+                                string[] c = new string[] { name, nameColor, prefix, prefixColor };
+                                Players.Add(id, c);
+                                ExpireDate.Add(id, dt);
                             }
                         }
                     }
+                    return;
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing ChatColor.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -153,21 +136,21 @@ namespace ServerTools
         public static void UpdateXml()
         {
             FileWatcher.EnableRaisingEvents = false;
+
             using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ChatColor>");
-                sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                 sw.WriteLine("    <!-- NameColor and PrefixColor can come from the ColorList.xml -->");
                 sw.WriteLine("    <!-- <Player Id=\"Steam_12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"2050-01-11 07:30:00\" /> -->");
-                sw.WriteLine();
-                sw.WriteLine();
+                sw.WriteLine("    <Player Id=\"\" Name=\"\" NameColor=\"\" Prefix=\"\" PrefixColor=\"\" Expires=\"\" />");
                 if (Players.Count > 0)
                 {
                     foreach (KeyValuePair<string, string[]> kvp in Players)
                     {
-                        ExpireDate.TryGetValue(kvp.Key, out DateTime _expiry);
-                        sw.WriteLine(string.Format("    <Player Id=\"{0}\" Name=\"{1}\" NameColor=\"{2}\" Prefix=\"{3}\" PrefixColor=\"{4}\" Expires=\"{5}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3], _expiry));
+                        ExpireDate.TryGetValue(kvp.Key, out DateTime expiry);
+                        sw.WriteLine(string.Format("    <Player Id=\"{0}\" Name=\"{1}\" NameColor=\"{2}\" Prefix=\"{3}\" PrefixColor=\"{4}\" Expires=\"{5}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3], expiry));
                     }
                 }
                 sw.WriteLine("</ChatColor>");
@@ -518,7 +501,237 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml()
+        public static string ApplyNameColor(ClientInfo _cInfo, EChatType _chatType, string _name)
+        {
+            if (_name.Length < 8 || _name[7] != ']')
+            {
+                string nameColor = "";
+                string prefix = "";
+                string prefixColor = "";
+                DateTime dt = new DateTime();
+                if (ExpireDate.ContainsKey(_cInfo.PlatformId.CombinedString))
+                {
+                    ExpireDate.TryGetValue(_cInfo.PlatformId.CombinedString, out dt);
+                }
+                else if (ExpireDate.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+                {
+                    ExpireDate.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt);
+                }
+                if (DateTime.Now < dt)
+                {
+                    string[] chatColorData;
+                    Players.TryGetValue(_cInfo.PlatformId.CombinedString, out chatColorData);
+                    if (chatColorData == null)
+                    {
+                        Players.TryGetValue(_cInfo.CrossplatformId.CombinedString, out chatColorData);
+                    }
+                    nameColor = chatColorData[1];
+                    prefix = chatColorData[2];
+                    prefixColor = chatColorData[3];
+                }
+                if (prefix == "" && ClanManager.IsEnabled && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName != null &&
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName != "")
+                {
+                    prefix = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
+                }
+                if (ChatHook.Normal_Player_Color_Prefix)
+                {
+                    if (ChatHook.Normal_Player_Name_Color != "")
+                    {
+                        nameColor = ChatHook.Normal_Player_Name_Color;
+                    }
+                    if (prefix == "" && ChatHook.Normal_Player_Prefix != "")
+                    {
+                        prefix = ChatHook.Normal_Player_Prefix;
+                        if (ChatHook.Normal_Player_Prefix_Color != "")
+                        {
+                            prefixColor = ChatHook.Normal_Player_Prefix_Color;
+                        }
+                    }
+                }
+                
+                if (_chatType == EChatType.Friends)
+                {
+                    prefix = prefix.Insert(0, "(Friends)");
+                    if (ChatHook.Friend_Chat_Color.StartsWith("[") && ChatHook.Friend_Chat_Color.EndsWith("]"))
+                    {
+                        prefix = prefix.Insert(0, ChatHook.Friend_Chat_Color);
+                    }
+                    prefix = prefix.Insert(prefix.Length, "[-]");
+                }
+                else if (_chatType == EChatType.Party)
+                {
+                    prefix = prefix.Insert(0, "(Party)");
+                    if (ChatHook.Party_Chat_Color.StartsWith("[") && ChatHook.Party_Chat_Color.EndsWith("]"))
+                    {
+                        prefix = prefix.Insert(0, ChatHook.Party_Chat_Color);
+                    }
+                    prefix = prefix.Insert(prefix.Length, "[-]");
+                }
+                if (prefix != "" && prefixColor.StartsWith("[") && prefixColor.EndsWith("]"))
+                {
+                    if (prefixColor.Contains(","))
+                    {
+                        bool complete = false;
+                        int prefixIndex = 0;
+                        int colorCount = 0;
+                        string lastColor = "";
+                        string[] colors = prefixColor.Split(',');
+                        for (int i = 0; i < 20; i++)
+                        {
+                            if (complete)
+                            {
+                                break;
+                            }
+                            for (int j = 0; j < colors.Length; j++)
+                            {
+                                if (prefixIndex < prefix.Length)
+                                {
+                                    if (prefix[prefixIndex] != ' ')
+                                    {
+                                        if (lastColor != colors[j])
+                                        {
+                                            prefix = prefix.Insert(prefixIndex, colors[j]);
+                                            prefixIndex += 8;
+                                            colorCount++;
+                                            lastColor = colors[j];
+                                        }
+                                        else
+                                        {
+                                            prefixIndex += 1;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        prefixIndex += 1;
+                                    }
+                                }
+                                else
+                                {
+                                    for (int k = 0; k < colorCount; k++)
+                                    {
+                                        prefix = prefix.Insert(prefixIndex, "[-]");
+                                    }
+                                    complete = true;
+                                    break;
+                                }
+                            }
+                            if (!complete)
+                            {
+                                if (prefixIndex < prefix.Length)
+                                {
+                                    colors.Reverse();
+                                }
+                                else
+                                {
+                                    for (int k = 0; k < colorCount; k++)
+                                    {
+                                        prefix = prefix.Insert(prefixIndex, "[-]");
+                                    }
+                                    complete = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        prefix = prefix.Insert(0, prefixColor);
+                        prefix = prefix.Insert(prefix.Length, "[-]");
+                    }
+                }
+                if (nameColor != "" && nameColor.StartsWith("[") && nameColor.EndsWith("]"))
+                {
+                    if (nameColor.Contains(","))
+                    {
+                        bool complete = false;
+                        int nameIndex = 0;
+                        int colorCount = 0;
+                        string lastColor = "";
+                        string[] colors = nameColor.Split(',');
+                        for (int i = 0; i < 20; i++)
+                        {
+                            if (complete)
+                            {
+                                break;
+                            }
+                            for (int j = 0; j < colors.Length; j++)
+                            {
+                                if (nameIndex < _name.Length)
+                                {
+                                    if (_name[nameIndex] != ' ')
+                                    {
+                                        if (lastColor != colors[j])
+                                        {
+                                            _name = _name.Insert(nameIndex, colors[j]);
+                                            nameIndex += 8;
+                                            colorCount++;
+                                            lastColor = colors[j];
+                                        }
+                                        else
+                                        {
+                                            nameIndex += 1;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        nameIndex += 1;
+                                    }
+                                }
+                                else
+                                {
+                                    for (int k = 0; k < colorCount; k++)
+                                    {
+                                        _name = _name.Insert(nameIndex, "[-]");
+                                    }
+                                    complete = true;
+                                    break;
+                                }
+                            }
+                            if (!complete)
+                            {
+                                if (nameIndex < _name.Length)
+                                {
+                                    colors.Reverse();
+                                }
+                                else
+                                {
+                                    for (int k = 0; k < colorCount; k++)
+                                    {
+                                        _name = _name.Insert(nameIndex, "[-]");
+                                    }
+                                    complete = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        _name = _name.Insert(0, nameColor);
+                        _name = _name.Insert(_name.Length, "[-]");
+                    }
+                }
+                if (prefix != "")
+                {
+                    _name = string.Format("{0} {1}", prefix, _name);
+                }
+            }
+            return _name;
+        }
+
+        public static string ApplyMessageColor(string _msg)
+        {
+            if (ChatHook.Message_Color_Enabled && !Symbols.Contains(_msg[0]) && ChatHook.Message_Color != "" && ChatHook.Message_Color.StartsWith("[") && 
+                ChatHook.Message_Color.EndsWith("]") && (_msg.Length < 8 || (_msg[0] != '[' && _msg[7] != ']')))
+            {
+                _msg = _msg.Insert(0, ChatHook.Message_Color);
+                _msg = _msg.Insert(_msg.Length, "[-]");
+            }
+            return _msg;
+        }
+        
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -527,37 +740,29 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<ChatColor>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- NameColor and PrefixColor can come from the ColorList.xml -->");
                     sw.WriteLine("    <!-- <Player Id=\"Steam_12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"2050-01-11 07:30:00\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- NameColor and") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_12345678901234567\"") && !OldNodeList[i].OuterXml.Contains("<!-- <Player Id=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- NameColor and") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_12345678901234567") && 
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Player Id=\"\" Name=\"\" NameColor=\"\" Prefix=\"\" PrefixColor=\"\" Expires=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Player")
                             {
                                 string id = "", name = "", nameColor = "", prefix = "", prefixColor = "";
                                 DateTime dateTime = DateTime.Now;
-                                if (line.HasAttribute("SteamId"))
-                                {
-                                    id = line.GetAttribute("SteamId");
-                                    if (!id.Contains("_"))
-                                    {
-                                        id.Insert(0, "Steam_");
-                                    }
-                                }
-                                else if (line.HasAttribute("Id"))
+                                if (line.HasAttribute("Id"))
                                 {
                                     id = line.GetAttribute("Id");
                                 }

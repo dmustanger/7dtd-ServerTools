@@ -46,10 +46,10 @@ namespace ServerTools
                 }
                 if (_params[1].Contains("r."))
                 {
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[0]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[0]);
                     if (cInfo != null)
                     {
-                        EntityPlayer entityPlayer = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                        EntityPlayer entityPlayer = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                         if (entityPlayer != null)
                         {
                             Vector3 pos = entityPlayer.GetPosition();
@@ -157,7 +157,7 @@ namespace ServerTools
             {
                 if (int.TryParse(_id, out int id))
                 {
-                    GeneralFunction.EntityId.TryGetValue(id, out int entityId);
+                    GeneralOperations.EntityId.TryGetValue(id, out int entityId);
                     bool posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_pos, 15, out int _x, out int _y, out int _z, new Vector3(_radius, _radius, _radius), true);
                     if (!posFound)
                     {

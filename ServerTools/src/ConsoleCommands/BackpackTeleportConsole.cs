@@ -92,7 +92,7 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack id value: {0}", _entityId));
                         return;
                     }
-                    Entity Entity = GeneralFunction.GetEntity(_entityId);
+                    Entity Entity = GeneralOperations.GetEntity(_entityId);
                     if (Entity == null)
                     {
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid backpack. Backpack not found: {0}", _entityId));

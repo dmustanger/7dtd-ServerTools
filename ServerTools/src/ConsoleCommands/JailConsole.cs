@@ -87,7 +87,7 @@ namespace ServerTools
                         ClientInfo cInfo = _senderInfo.RemoteClientInfo;
                         if (cInfo != null)
                         {
-                            EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                            EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                             if (player != null)
                             {
                                 Vector3 position = player.GetPosition();
@@ -162,7 +162,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
+                        ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                         if (cInfo != null)
                         {
                             if (Jail.Jailed.Contains(cInfo.CrossplatformId.CombinedString))
@@ -172,7 +172,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                                EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                 if (player != null && player.IsSpawned())
                                 {
                                     string[] cords = Jail.Jail_Position.Split(',');
@@ -239,10 +239,10 @@ namespace ServerTools
                         }
                         else
                         {
-                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
+                            ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                             if (cInfo != null)
                             {
-                                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                                EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                 if (player != null)
                                 {
                                     EntityBedrollPositionList position = player.SpawnPoints;

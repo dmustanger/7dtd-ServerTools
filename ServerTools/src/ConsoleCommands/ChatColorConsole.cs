@@ -84,7 +84,7 @@ namespace ServerTools
                 else if (_params[0].ToLower().Equals("add"))
                 {
                     string id = "", playerName = "";
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         id = cInfo.PlatformId.CombinedString;
@@ -92,7 +92,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        PlayerDataFile pdf = GeneralFunction.GetPlayerDataFileFromId(_params[1]);
+                        PlayerDataFile pdf = GeneralOperations.GetPlayerDataFileFromId(_params[1]);
                         if (pdf != null)
                         {
                             id = _params[1];
@@ -226,7 +226,7 @@ namespace ServerTools
                 else if (_params[0].ToLower().Equals("edit"))
                 {
                     string id = "", playerName = "";
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         id = cInfo.CrossplatformId.CombinedString;
@@ -234,7 +234,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        PlayerDataFile pdf = GeneralFunction.GetPlayerDataFileFromId(_params[1]);
+                        PlayerDataFile pdf = GeneralOperations.GetPlayerDataFileFromId(_params[1]);
                         if (pdf != null)
                         {
                             id = _params[1];
@@ -328,14 +328,14 @@ namespace ServerTools
                         return;
                     }
                     string id = "";
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         id = cInfo.CrossplatformId.CombinedString;
                     }
                     else
                     {
-                        PersistentPlayerData ppd = GeneralFunction.GetPersistentPlayerDataFromId(_params[1]);
+                        PersistentPlayerData ppd = GeneralOperations.GetPersistentPlayerDataFromId(_params[1]);
                         if (ppd != null)
                         {
                             id = ppd.UserIdentifier.CombinedString;

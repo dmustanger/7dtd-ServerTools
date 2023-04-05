@@ -20,8 +20,6 @@ namespace ServerTools
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static readonly FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-        private static XmlNodeList OldNodeList;
-
         public static void Load()
         {
             LoadXml();
@@ -54,103 +52,84 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                Destination.Clear();
+                if (childNodes != null && childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
                 {
-                    Dict.Clear();
-                    Destination.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes)
+                        {
+                            continue;
+                        }
+                        if (line.HasAttribute("Name") && line.HasAttribute("Corner1") && line.HasAttribute("Corner2") && line.HasAttribute("Destination"))
+                        {
+                            string name = line.GetAttribute("Name");
+                            string corner1 = line.GetAttribute("Corner1");
+                            string corner2 = line.GetAttribute("Corner2");
+                            if (name == "" && corner1 == "" && corner2 == "")
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Name") && line.HasAttribute("Corner1") && line.HasAttribute("Corner2") && line.HasAttribute("Destination"))
-                                {
-                                    string name = line.GetAttribute("Name");
-                                    string[] corner1 = line.GetAttribute("Corner1").Split(',');
-                                    string[] corner2 = line.GetAttribute("Corner2").Split(',');
-                                    string destination = line.GetAttribute("Destination");
-                                    int.TryParse(corner1[0], out int x1);
-                                    int.TryParse(corner1[1], out int y1);
-                                    int.TryParse(corner1[2], out int z1);
-                                    int.TryParse(corner2[0], out int x2);
-                                    int.TryParse(corner2[1], out int y2);
-                                    int.TryParse(corner2[2], out int z2);
-                                    if (x1 > x2)
-                                    {
-                                        int alt = x2;
-                                        x2 = x1;
-                                        x1 = alt;
-                                    }
-                                    if (y1 > y2)
-                                    {
-                                        int alt = y2;
-                                        y2 = y1;
-                                        y1 = alt;
-                                    }
-                                    if (y1 == y2)
-                                    {
-                                        y2++;
-                                    }
-                                    if (z1 > z2)
-                                    {
-                                        int alt = z2;
-                                        z2 = z1;
-                                        z1 = alt;
-                                    }
-                                    string c1 = x1 + "," + y1 + "," + z1;
-                                    string c2 = x2 + "," + y2 + "," + z2;
-                                    string[] box = { c1, c2, destination };
-                                    if (!Dict.ContainsKey(name))
-                                    {
-                                        Dict.Add(name, box);
-                                    }
-                                }
+                                continue;
+                            }
+                            string[] corner1Split = corner1.Split(',');
+                            string[] corner2Split = corner2.Split(',');
+                            string destination = line.GetAttribute("Destination");
+                            int.TryParse(corner1Split[0], out int x1);
+                            int.TryParse(corner1Split[1], out int y1);
+                            int.TryParse(corner1Split[2], out int z1);
+                            int.TryParse(corner2Split[0], out int x2);
+                            int.TryParse(corner2Split[1], out int y2);
+                            int.TryParse(corner2Split[2], out int z2);
+                            if (x1 > x2)
+                            {
+                                int alt = x2;
+                                x2 = x1;
+                                x1 = alt;
+                            }
+                            if (y1 > y2)
+                            {
+                                int alt = y2;
+                                y2 = y1;
+                                y1 = alt;
+                            }
+                            if (y1 == y2)
+                            {
+                                y2++;
+                            }
+                            if (z1 > z2)
+                            {
+                                int alt = z2;
+                                z2 = z1;
+                                z1 = alt;
+                            }
+                            string c1 = x1 + "," + y1 + "," + z1;
+                            string c2 = x2 + "," + y2 + "," + z2;
+                            string[] box = { c1, c2, destination };
+                            if (!Dict.ContainsKey(name))
+                            {
+                                Dict.Add(name, box);
                             }
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing Travel.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -176,11 +155,10 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Travel>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
                     sw.WriteLine("    <!-- <Location Name=\"zone1\" Corner1=\"0,100,0\" Corner2=\"10,100,10\" Destination=\"-100,-1,-100\" /> -->");
                     sw.WriteLine("    <!-- <Location Name=\"zone2\" Corner1=\"-1,100,-1\" Corner2=\"-10,100,-10\" Destination=\"100,-1,100\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Location Name=\"\" Corner1=\"\" Corner2=\"\" Destination=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, string[]> kvpBox in Dict)
@@ -334,7 +312,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (Dict.Count > 0)
@@ -397,7 +375,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -406,24 +384,24 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Travel>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- <Location Name=\"Zone1\" Corner1=\"0,100,0\" Corner2=\"10,100,10\" Destination=\"-100,-1,-100\" /> -->");
-                    sw.WriteLine("    <!-- <Location Name=\"Zone2\" Corner1=\"-1,100,-1\" Corner2=\"-10,100,-10\" Destination=\"100,-1,100\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- <Location Name=\"zone1\" Corner1=\"0,100,0\" Corner2=\"10,100,10\" Destination=\"-100,-1,-100\" /> -->");
+                    sw.WriteLine("    <!-- <Location Name=\"zone2\" Corner1=\"-1,100,-1\" Corner2=\"-10,100,-10\" Destination=\"100,-1,100\" /> -->");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone1\"") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone2\"") && !OldNodeList[i].OuterXml.Contains("<!-- <Location Name=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone1\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone2\"") && !nodeList[i].OuterXml.Contains("<!-- <Location Name=\"\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Location Name=\"\" Corner1=\"\" Corner2=\"\" Destination=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Location")
                             {
                                 string name = "", c1 = "", c2 = "", destination = "";

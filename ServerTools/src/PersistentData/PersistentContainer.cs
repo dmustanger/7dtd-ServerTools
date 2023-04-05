@@ -18,6 +18,7 @@ namespace ServerTools
 
         private Dictionary<int, int> backpacks;
         private string bannedCountries;
+        private Dictionary<string, DateTime> chunkReset;
         private Dictionary<int, List<int>> clientMuteList;
         private Dictionary<string, DateTime> connectionTimeOut;
         private bool countryBan;
@@ -175,6 +176,18 @@ namespace ServerTools
             set
             {
                 bannedCountries = value;
+            }
+        }
+
+        public Dictionary<string, DateTime> ChunkReset
+        {
+            get
+            {
+                return chunkReset;
+            }
+            set
+            {
+                chunkReset = value;
             }
         }
 

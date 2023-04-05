@@ -8,10 +8,10 @@ using UnityEngine;
 
 namespace ServerTools
 {
-    public class GeneralFunction
+    public class GeneralOperations
     {
-        public static bool AreaRunning = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false, 
-            No_Currency = false, Net_Package_Detector = false, Debug = false, Allow_Bicycle = false;
+        public static bool Running = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false, 
+            No_Currency = false, Net_Package_Detector = false, Debug = false, Allow_Bicycle = false, Encryption_Off = false;
         public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0, 
             MeleeHandPlayer = 0;
         public static string AppPath, Currency_Item, XPathDir, Command_expire = "expire", Command_commands = "commands", Command_overlay = "overlay";
@@ -161,14 +161,14 @@ namespace ServerTools
                     for (int i = 0; i < windowContent.Count; i++)
                     {
                         string line = windowContent[i];
-                        if (line.Contains(AllocsMap.Link) || line.Contains(DiscordLink.Invitation_Link) || line.Contains(Voting.Link) ||
+                        if (line.Contains(AllocsMap.Link) || line.Contains(DiscordLink.Link) || line.Contains(Voting.Link) ||
                             line.Contains("rio.html") || line.Contains("shop.html") || line.Contains("auction.html") ||
-                            line.Contains("imap.html"))
+                            line.Contains("imap.html") || line.Contains(DonationLink.Link))
                         {
                             count += 1;
                         }
                     }
-                    if (count != 7)
+                    if (count != 8)
                     {
                         File.Delete(XPathDir + "XUi/windows.xml");
                     }
@@ -202,7 +202,7 @@ namespace ServerTools
                         sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                         sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                         sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", DiscordLink.Invitation_Link));
+                        sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", DiscordLink.Link));
                         sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                         sw.WriteLine("          <sprite depth=\"4\" name=\"microphoneIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_mic\" />");
                         sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
@@ -279,6 +279,20 @@ namespace ServerTools
                         sw.WriteLine("      </panel>");
                         sw.WriteLine("  </window>");
                         sw.WriteLine();
+                        sw.WriteLine("  <window name=\"browserDonation\" controller=\"ServerInfo\">");
+                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Donation Link\" />");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                        sw.WriteLine("          <label name=\"ServerDescription\" />");
+                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", DonationLink.Link);
+                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                        sw.WriteLine("          <sprite depth=\"4\" name=\"coinIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_coin\" />");
+                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
+                        sw.WriteLine("      </panel>");
+                        sw.WriteLine("  </window>");
+                        sw.WriteLine();
                         sw.WriteLine("</append>");
                         sw.WriteLine();
                         sw.WriteLine("</configs>");
@@ -304,12 +318,12 @@ namespace ServerTools
                         string line = buffContent[i];
                         if (line.Contains("PvE_Zone") || line.Contains("PvP_Ally_Zone") || line.Contains("PvP_Stranger_Zone") || 
                             line.Contains("PvP_Zone") || line.Contains("pvp_ally_damage") || line.Contains("pvp_stranger_damage") ||
-                            line.Contains("pvp_damage") || line.Contains("region_reset"))
+                            line.Contains("pvp_damage") || line.Contains("region_reset") || line.Contains("chunk_reset"))
                         {
                             count += 1;
                         }
                     }
-                    if (count != 18)
+                    if (count != 20)
                     {
                         File.Delete(XPathDir + "buffs.xml");
                     }
@@ -323,6 +337,8 @@ namespace ServerTools
                         sw.WriteLine("<append xpath=\"/buffs\">");
                         sw.WriteLine();
                         sw.WriteLine("<buff name=\"pve_zone\" name_key=\"PvE_Zone\" description_key=\"You are inside a PvE area\" tooltip_key=\"PvE_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"0,102,153\">");
+                        sw.WriteLine("	<display_value_key value=\"PvE Zone\"/>");
+                        sw.WriteLine("	<display_value value=\"xxx\"/>");
                         sw.WriteLine("	<stack_type value=\"replace\"/>");
                         sw.WriteLine("	<effect_group>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
@@ -333,6 +349,8 @@ namespace ServerTools
                         sw.WriteLine("</buff>");
                         sw.WriteLine();
                         sw.WriteLine("<buff name=\"pvp_ally_zone\" name_key=\"PvP_Ally_Zone\" description_key=\"You are inside a area with active damage for allies\" tooltip_key=\"PvP_Ally_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,204,0\">");
+                        sw.WriteLine("	<display_value_key value=\"Ally PvP Zone\"/>");
+                        sw.WriteLine("	<display_value value=\"xxx\"/>");
                         sw.WriteLine("	<stack_type value=\"replace\"/>");
                         sw.WriteLine("	<effect_group>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
@@ -349,6 +367,8 @@ namespace ServerTools
                         sw.WriteLine("</buff>");
                         sw.WriteLine();
                         sw.WriteLine("<buff name=\"pvp_stranger_zone\" name_key=\"PvP_Stranger_Zone\" description_key=\"You are inside a area with active damage for strangers\" tooltip_key=\"PvP_Stranger_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"255,153,0\">");
+                        sw.WriteLine("	<display_value_key value=\"Stranger PvP Zone\"/>");
+                        sw.WriteLine("	<display_value value=\"xxx\"/>");
                         sw.WriteLine("	<stack_type value=\"replace\"/>");
                         sw.WriteLine("	<effect_group>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
@@ -365,6 +385,8 @@ namespace ServerTools
                         sw.WriteLine("</buff>");
                         sw.WriteLine();
                         sw.WriteLine("<buff name=\"pvp_zone\" name_key=\"PvP_Zone\" description_key=\"You are inside a area with active damage for everyone\" tooltip_key=\"PvP_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,0,0\">");
+                        sw.WriteLine("	<display_value_key value=\"PvP Zone\"/>");
+                        sw.WriteLine("	<display_value value=\"xxx\"/>");
                         sw.WriteLine("	<stack_type value=\"replace\"/>");
                         sw.WriteLine("	<effect_group>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
@@ -438,9 +460,20 @@ namespace ServerTools
                         sw.WriteLine("</buff>");
                         sw.WriteLine();
                         sw.WriteLine("<buff name=\"region_reset\" name_key=\"Region_reset\" description_key=\"The region you are in will reset. Building here is NOT recommended\" icon=\"ui_game_symbol_brick\" icon_color=\"255, 153, 51\">");
+                        sw.WriteLine("	<display_value_key value=\"     Region will reset\"/>");
+                        sw.WriteLine("	<display_value value=\"xxx\"/>");
                         sw.WriteLine("	<stack_type value=\"replace\"/>");
                         sw.WriteLine("	<effect_group>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"region_reset\"/>");
+                        sw.WriteLine("	</effect_group>");
+                        sw.WriteLine("</buff>");
+                        sw.WriteLine();
+                        sw.WriteLine("<buff name=\"chunk_reset\" name_key=\"Chunk_reset\" description_key=\"The chunk you are in will reset. Building here is NOT recommended\" icon=\"ui_game_symbol_brick\" icon_color=\"204, 102, 0\">");
+                        sw.WriteLine("	<display_value_key value=\"     Chunk will reset\"/>");
+                        sw.WriteLine("	<display_value value=\"xxx\"/>");
+                        sw.WriteLine("	<stack_type value=\"replace\"/>");
+                        sw.WriteLine("	<effect_group>");
+                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"chunk_reset\"/>");
                         sw.WriteLine("	</effect_group>");
                         sw.WriteLine("</buff>");
                         sw.WriteLine();
@@ -471,12 +504,12 @@ namespace ServerTools
                         string line = xuiContent[i];
                         if (line.Contains("browserMap") || line.Contains("browserDiscord") || line.Contains("browserVote") ||
                             line.Contains("browserRio") || line.Contains("browserShop") || line.Contains("browserAuction") ||
-                            line.Contains("browserIMap"))
+                            line.Contains("browserIMap") || line.Contains("browserDonation"))
                         {
                             count += 1;
                         }
                     }
-                    if (count != 14)
+                    if (count != 16)
                     {
                         File.Delete(XPathDir + "XUi/xui.xml");
                     }
@@ -515,6 +548,10 @@ namespace ServerTools
                         sw.WriteLine();
                         sw.WriteLine("  <window_group name=\"browserIMap\">");
                         sw.WriteLine("      <window name=\"browserIMap\" />");
+                        sw.WriteLine("  </window_group>");
+                        sw.WriteLine();
+                        sw.WriteLine("  <window_group name=\"browserDonation\">");
+                        sw.WriteLine("      <window name=\"browserDonation\" />");
                         sw.WriteLine("  </window_group>");
                         sw.WriteLine();
                         sw.WriteLine("</append>");
@@ -558,35 +595,35 @@ namespace ServerTools
                         sw.WriteLine();
                         sw.WriteLine("<append xpath=\"/blocks\">");
                         sw.WriteLine();
-                        sw.WriteLine("<block name=\"VaultBox\">");
-                        sw.WriteLine("	<property name=\"CreativeMode\" value=\"Player\"/>");
-                        sw.WriteLine("	<property name=\"Tags\" value=\"door\"/>");
-                        sw.WriteLine("	<property name=\"Class\" value=\"SecureLoot\"/>");
-                        sw.WriteLine("	<property name=\"CustomIcon\" value=\"cntChest02\"/>");
-                        sw.WriteLine("	<property name=\"Material\" value=\"MwoodReinforced\"/>");
-                        sw.WriteLine("	<property name=\"StabilitySupport\" value=\"false\"/>");
-                        sw.WriteLine("	<property name=\"Shape\" value=\"Ext3dModel\"/>");
-                        sw.WriteLine("	<property name=\"Texture\" value=\"293\"/>");
-                        sw.WriteLine("	<property name=\"Mesh\" value=\"models\"/>");
-                        sw.WriteLine("	<property name=\"IsTerrainDecoration\" value=\"true\"/>");
-                        sw.WriteLine("	<property name=\"FuelValue\" value=\"300\"/>");
-                        sw.WriteLine("	<property name=\"Model\" value=\"LootContainers/chest02\" param1=\"main_mesh\"/>");
-                        sw.WriteLine("	<property name=\"ShowModelOnFall\" value=\"false\"/>");
-                        sw.WriteLine("	<property name=\"HandleFace\" value=\"Bottom\"/>");
-                        sw.WriteLine("	<property name=\"ImposterExchange\" value=\"imposterQuarter\" param1=\"154\"/>");
-                        sw.WriteLine("	<property name=\"Collide\" value=\"movement,melee,bullet,arrow,rocket\"/>");
-                        sw.WriteLine("	<property name=\"LootList\" value=\"playerStorage\"/>");
-                        sw.WriteLine("	<property class=\"RepairItems\">");
-                        sw.WriteLine("		<property name=\"resourceWood\" value=\"10\"/>");
-                        sw.WriteLine("	</property>");
-                        sw.WriteLine("	<drop event=\"Fall\" name=\"terrDestroyedWoodDebris\" count=\"1\" prob=\"1\" stick_chance=\"1\"/>");
-                        sw.WriteLine("	<property name=\"LPHardnessScale\" value=\"8\"/>");
-                        sw.WriteLine("	<property name=\"DescriptionKey\" value=\"cntSecureStorageChestDesc\"/>");
-                        sw.WriteLine("	<property name=\"CanPickup\" value=\"true\"/>");
-                        sw.WriteLine("	<property name=\"EconomicValue\" value=\"0\"/>");
-                        sw.WriteLine("	<property name=\"EconomicBundleSize\" value=\"1\"/>");
-                        sw.WriteLine("	<property name=\"FilterTags\" value=\"MC_playerBlocks,SC_decor\"/>");
-                        sw.WriteLine("</block>");
+                        sw.WriteLine("<!--  <block name=\"VaultBox\">");
+                        sw.WriteLine("      <property name=\"CreativeMode\" value=\"Player\"/>");
+                        sw.WriteLine("      <property name=\"Tags\" value=\"door\"/>");
+                        sw.WriteLine("      <property name=\"Class\" value=\"SecureLoot\"/>");
+                        sw.WriteLine("      <property name=\"CustomIcon\" value=\"cntChest02\"/>");
+                        sw.WriteLine("      <property name=\"Material\" value=\"MwoodReinforced\"/>");
+                        sw.WriteLine("      <property name=\"StabilitySupport\" value=\"false\"/>");
+                        sw.WriteLine("      <property name=\"Shape\" value=\"Ext3dModel\"/>");
+                        sw.WriteLine("      <property name=\"Texture\" value=\"293\"/>");
+                        sw.WriteLine("      <property name=\"Mesh\" value=\"models\"/>");
+                        sw.WriteLine("      <property name=\"IsTerrainDecoration\" value=\"true\"/>");
+                        sw.WriteLine("      <property name=\"FuelValue\" value=\"300\"/>");
+                        sw.WriteLine("      <property name=\"Model\" value=\"LootContainers/chest02\" param1=\"main_mesh\"/>");
+                        sw.WriteLine("      <property name=\"ShowModelOnFall\" value=\"false\"/>");
+                        sw.WriteLine("      <property name=\"HandleFace\" value=\"Bottom\"/>");
+                        sw.WriteLine("      <property name=\"ImposterExchange\" value=\"imposterQuarter\" param1=\"154\"/>");
+                        sw.WriteLine("      <property name=\"Collide\" value=\"movement,melee,bullet,arrow,rocket\"/>");
+                        sw.WriteLine("      <property name=\"LootList\" value=\"playerStorage\"/>");
+                        sw.WriteLine("      <property class=\"RepairItems\">");
+                        sw.WriteLine("      <property name=\"resourceWood\" value=\"10\"/>");
+                        sw.WriteLine("  </property>");
+                        sw.WriteLine("  <drop event=\"Fall\" name=\"terrDestroyedWoodDebris\" count=\"1\" prob=\"1\" stick_chance=\"1\"/>");
+                        sw.WriteLine("  <property name=\"LPHardnessScale\" value=\"8\"/>");
+                        sw.WriteLine("  <property name=\"DescriptionKey\" value=\"cntSecureStorageChestDesc\"/>");
+                        sw.WriteLine("  <property name=\"CanPickup\" value=\"true\"/>");
+                        sw.WriteLine("  <property name=\"EconomicValue\" value=\"0\"/>");
+                        sw.WriteLine("  <property name=\"EconomicBundleSize\" value=\"1\"/>");
+                        sw.WriteLine("  <property name=\"FilterTags\" value=\"MC_playerBlocks,SC_decor\"/>");
+                        sw.WriteLine("</block> -->");
                         sw.WriteLine();
                         sw.WriteLine("</append>");
                         sw.WriteLine();
@@ -630,9 +667,9 @@ namespace ServerTools
                         sw.WriteLine();
                         sw.WriteLine("<append xpath=\"/recipes\">");
                         sw.WriteLine();
-                        sw.WriteLine("<recipe name=\"VaultBox\" count=\"1\">");
+                        sw.WriteLine("<!-- <recipe name=\"VaultBox\" count=\"1\">");
                         sw.WriteLine("	<ingredient name=\"resourceWood\" count=\"10\"/>");
-                        sw.WriteLine("</recipe>");
+                        sw.WriteLine("</recipe> -->");
                         sw.WriteLine();
                         sw.WriteLine("</append>");
                         sw.WriteLine();
@@ -651,62 +688,65 @@ namespace ServerTools
 
         public static void CheckArea()
         {
-            if (!AreaRunning)
+            if (!Running)
             {
-                AreaRunning = true;
-                List<Entity> entityList = GameManager.Instance.World.Entities.list;
+                Running = true;
+                ClientInfo cInfo;
+                EntityPlayer player;
                 List<ClientInfo> clientList = ClientList();
-                if (clientList != null)
+                if (clientList == null || clientList.Count < 1)
                 {
-                    for (int i = 0; i < clientList.Count; i++)
+                    Running = false;
+                    return;
+                }
+                for (int i = 0; i < clientList.Count; i++)
+                {
+                    cInfo = clientList[i];
+                    if (cInfo == null || TeleportDetector.Ommissions.Contains(cInfo.entityId))
                     {
-                        ClientInfo cInfo = clientList[i];
-                        if (cInfo != null && !TeleportDetector.Ommissions.Contains(cInfo.entityId))
-                        {
-                            EntityPlayer player = GetEntityPlayer(cInfo.entityId);
-                            if (player != null && player.IsSpawned() && !player.IsDead() && player.position != null)
-                            {
-                                if (Zones.IsEnabled && Zones.ZoneList.Count > 0)
-                                {
-                                    Zones.ZoneCheck(cInfo, player, entityList);
-                                }
-                                if (Lobby.IsEnabled)
-                                {
-                                    Lobby.IsLobby(player.position);
-                                }
-                                if (Market.IsEnabled)
-                                {
-                                    Market.IsMarket(player.position);
-                                }
-                                if (RegionReset.IsEnabled)
-                                {
-                                    RegionReset.IsRegenRegion(cInfo, player);
-                                }
-                            }
-                        }
+                        continue;
+                    }
+                    player = GetEntityPlayer(cInfo.entityId);
+                    if (player == null || !player.IsSpawned() || player.IsDead() || player.position == null)
+                    {
+                        continue;
+                    }
+                    if (Zones.IsEnabled && Zones.ZoneList.Count > 0)
+                    {
+                        Zones.ZoneCheck(cInfo, player);
+                    }
+                    if (RegionReset.IsEnabled)
+                    {
+                        RegionReset.IsResetRegion(cInfo, player);
+                    }
+                    if (ChunkReset.IsEnabled)
+                    {
+                        ChunkReset.IsResetChunk(cInfo, player);
                     }
                 }
-                if (entityList != null && entityList.Count > 0)
+                List<Entity> entityList = GameManager.Instance.World.Entities.list;
+                if (entityList == null || entityList.Count < 1)
                 {
-                    for (int i = 0; i < entityList.Count; i++)
+                    Running = false;
+                    return;
+                }
+                for (int i = 0; i < entityList.Count; i++)
+                {
+                    Entity entity = entityList[i];
+                    if (entity == null || (entity is EntityPlayer) || !entity.IsSpawned() || entity.IsDead())
                     {
-                        Entity entity = entityList[i];
-                        if (entity != null & !(entity is EntityPlayer) && entity.IsSpawned())
-                        {
-                            if (Lobby.IsEnabled && Lobby.IsLobby(entity.position))
-                            {
-                                GameManager.Instance.World.RemoveEntity(entityList[i].entityId, EnumRemoveEntityReason.Despawned);
-                                Log.Out(string.Format("[SERVERTOOLS] Removed a hostile entity from the lobby @ '{0}'", entityList[i].position));
-                            }
-                            else if (Market.IsEnabled && Market.IsMarket(entity.position))
-                            {
-                                GameManager.Instance.World.RemoveEntity(entityList[i].entityId, EnumRemoveEntityReason.Despawned);
-                                Log.Out(string.Format("[SERVERTOOLS] Removed a hostile entity from the market @ '{0}'", entityList[i].position));
-                            }
-                        }
+                        continue;
+                    }
+                    if (Lobby.IsEnabled && Lobby.IsLobby(entity.position) && !entity.IsMarkedForUnload())
+                    {
+                        entity.MarkToUnload();
+                    }
+                    else if (Market.IsEnabled && Market.IsMarket(entity.position) && !entity.IsMarkedForUnload())
+                    {
+                        entity.MarkToUnload();
                     }
                 }
-                AreaRunning = false;
+                Running = false;
             }
         }
 
@@ -1165,7 +1205,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in GeneralFunctions.CreatePassword: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in GeneralOperationss.CreatePassword: {0}", e.Message));
             }
             return pass;
         }
@@ -1185,7 +1225,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in GeneralFunctions.ConvertIPToLong: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in GeneralOperationss.ConvertIPToLong: {0}", e.Message));
             }
             return 0;
         }
@@ -1253,6 +1293,7 @@ namespace ServerTools
             try
             {
                 string commands = "";
+                EntityPlayer player = GetEntityPlayer(_cInfo.entityId);
                 if (AdminList.IsEnabled && AdminList.Command_adminlist != "")
                 {
                     if (CommandList.Dict.TryGetValue(AdminList.Command_adminlist, out string[] values))
@@ -1776,6 +1817,48 @@ namespace ServerTools
                         }
                     }
                 }
+                if (Gamble.IsEnabled)
+                {
+                    if (Gamble.Command_gamble != "")
+                    {
+                        if (CommandList.Dict.TryGetValue(Gamble.Command_gamble, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Gamble.Command_gamble);
+                                }
+                            }
+                        }
+                    }
+                    if (Gamble.Command_gamble_bet != "")
+                    {
+                        if (CommandList.Dict.TryGetValue(Gamble.Command_gamble_bet, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Gamble.Command_gamble_bet);
+                                }
+                            }
+                        }
+                    }
+                    if (Gamble.Command_gamble_payout != "")
+                    {
+                        if (CommandList.Dict.TryGetValue(Gamble.Command_gamble_payout, out string[] values))
+                        {
+                            if (bool.TryParse(values[1], out bool hidden))
+                            {
+                                if (!hidden)
+                                {
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Gamble.Command_gamble_payout);
+                                }
+                            }
+                        }
+                    }
+                }
                 if (Gimme.IsEnabled)
                 {
                     if (Gimme.Command_gimme != "")
@@ -2058,7 +2141,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (Lobby.Return && Lobby.LobbyPlayers.Contains(_cInfo.entityId))
+                    if (Lobby.Return && Lobby.IsLobby(player.position))
                     {
                         if (Lobby.Command_lobbyback != "")
                         {
@@ -2148,7 +2231,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (Market.Return && Market.MarketPlayers.Contains(_cInfo.entityId))
+                    if (Market.Return && Market.IsMarket(player.position))
                     {
                         if (Market.Command_marketback != "")
                         {
@@ -2508,15 +2591,15 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (Waypoints.Command_waypoint_del != "")
+                    if (Waypoints.Command_waypoint_delete != "")
                     {
-                        if (CommandList.Dict.TryGetValue(Waypoints.Command_waypoint_del, out string[] values))
+                        if (CommandList.Dict.TryGetValue(Waypoints.Command_waypoint_delete, out string[] values))
                         {
                             if (bool.TryParse(values[1], out bool hidden))
                             {
                                 if (!hidden)
                                 {
-                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_waypoint_del);
+                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Waypoints.Command_waypoint_delete);
                                 }
                             }
                         }
@@ -2655,7 +2738,8 @@ namespace ServerTools
         {
             Auction.SetLink();
             AllocsMap.SetLink(AllocsMap.Link);
-            DiscordLink.SetLink(DiscordLink.Invitation_Link);
+            DiscordLink.SetLink(DiscordLink.Link);
+            DonationLink.SetLink(DonationLink.Link);
             Shop.SetLink();
             RIO.SetLink();
             InteractiveMap.SetLink();

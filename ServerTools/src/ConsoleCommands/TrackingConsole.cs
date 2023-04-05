@@ -45,7 +45,7 @@ namespace ServerTools
                         }
                         if (int.TryParse(_params[1], out int range))
                         {
-                            EntityPlayer player = GeneralFunction.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
+                            EntityPlayer player = GeneralOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
                             if (player != null)
                             {
                                 List<string[]> tracking = PersistentContainer.Instance.Track;

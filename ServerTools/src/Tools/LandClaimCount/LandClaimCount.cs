@@ -17,8 +17,6 @@ namespace ServerTools
 		private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
 		private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-		private static XmlNodeList OldNodeList;
-
 		public static void Load()
 		{
 			LoadXml();
@@ -50,76 +48,52 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
-                    Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
-                            {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Id") && line.HasAttribute("Name") && line.HasAttribute("Limit"))
-                                {
-                                    string id = line.GetAttribute("Id");
-                                    string[] nameAndLimit = new string[2];
-                                    nameAndLimit[0] = line.GetAttribute("Name");
-                                    if (!int.TryParse(line.GetAttribute("Limit"), out int limit))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring LandClaimCount.xml entry because of invalid (integer) value for 'Limit' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    nameAndLimit[1] = line.GetAttribute("Limit");
-                                    if (!Dict.ContainsKey(id))
-                                    {
-                                        Dict.Add(id, nameAndLimit);
-                                    }
-                                }
-                            }
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes || !line.HasAttribute("Id") || !line.HasAttribute("Name") || !line.HasAttribute("Limit"))
+                        {
+                            continue;
+                        }
+                        string id = line.GetAttribute("Id");
+                        if (id == "")
+                        {
+                            continue;
+                        }
+                        string[] nameAndLimit = new string[2];
+                        nameAndLimit[0] = line.GetAttribute("Name");
+                        if (!int.TryParse(line.GetAttribute("Limit"), out int limit))
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring LandClaimCount.xml entry because of invalid (integer) value for 'Limit' attribute: {0}", line.OuterXml));
+                            continue;
+                        }
+                        nameAndLimit[1] = line.GetAttribute("Limit");
+                        if (!Dict.ContainsKey(id))
+                        {
+                            Dict.Add(id, nameAndLimit);
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing LandClaimCount.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -145,11 +119,10 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LandClaimCount>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
                     sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"SaladFace\" Limit=\"2\" /> -->");
                     sw.WriteLine("    <!-- <Player Id=\"EOS_7a6b5c6d1e1f9g1h2i345678911234567890\" Name=\"SaladFace\" Limit=\"2\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Player Id=\"\" Name=\"\" Limit=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, string[]> kvp in Dict)
@@ -189,60 +162,66 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
-            if (player != null)
+            EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
+            if (player == null)
             {
-                EntityBedrollPositionList positionList = player.SpawnPoints;
-                if (positionList != null)
+                return;
+            }
+            PersistentPlayerData ppd = GeneralOperations.GetPersistentPlayerDataFromEntityId(player.entityId);
+            if (ppd != null && ppd.LPBlocks != null)
+            {
+                string claimLimit = GameStats.GetInt(EnumGameStats.LandClaimCount).ToString();
+                if (Dict.ContainsKey(_cInfo.PlatformId.CombinedString))
                 {
-                    string claimLimit = GameStats.GetInt(EnumGameStats.LandClaimCount).ToString();
-                    if (Dict.ContainsKey(_cInfo.PlatformId.CombinedString))
-                    {
-                        Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out string[] nameAndLimit);
-                        claimLimit = nameAndLimit[1];
-                    }
-                    else if (Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
-                    {
-                        Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out string[] nameAndLimit);
-                        claimLimit = nameAndLimit[1];
-                    }
-                    Phrases.Dict.TryGetValue("LandClaim1", out string phrase);
-                    phrase = phrase.Replace("{Value1}", positionList.Count.ToString());
-                    phrase = phrase.Replace("{Value2}", claimLimit);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out string[] nameAndLimit);
+                    claimLimit = nameAndLimit[1];
                 }
+                else if (Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+                {
+                    Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out string[] nameAndLimit);
+                    claimLimit = nameAndLimit[1];
+                }
+                Phrases.Dict.TryGetValue("LandClaim1", out string phrase);
+                phrase = phrase.Replace("{Value1}", ppd.LPBlocks.Count.ToString());
+                phrase = phrase.Replace("{Value2}", claimLimit);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            }
+            else
+            {
+                string claimLimit = GameStats.GetInt(EnumGameStats.LandClaimCount).ToString();
+                Phrases.Dict.TryGetValue("LandClaim1", out string phrase);
+                phrase = phrase.Replace("{Value1}", "0");
+                phrase = phrase.Replace("{Value2}", claimLimit);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
         public static void RemoveExtraLandClaims(PersistentPlayerData _owner)
         {
-			int claimLimit = GameStats.GetInt(EnumGameStats.LandClaimCount);
-			if (Dict.ContainsKey(_owner.PlatformUserIdentifier.CombinedString) || Dict.ContainsKey(_owner.UserIdentifier.CombinedString))
+            int claimLimit = GameStats.GetInt(EnumGameStats.LandClaimCount);
+            string[] nameAndLimit;
+            if (Dict.ContainsKey(_owner.PlatformUserIdentifier.CombinedString) && Dict.TryGetValue(_owner.PlatformUserIdentifier.CombinedString, out nameAndLimit))
             {
-				if (Dict.TryGetValue(_owner.PlatformUserIdentifier.CombinedString, out string[] nameAndLimit))
+                claimLimit = int.Parse(nameAndLimit[1]);
+            }
+            else if (Dict.ContainsKey(_owner.UserIdentifier.CombinedString) && Dict.TryGetValue(_owner.UserIdentifier.CombinedString, out nameAndLimit))
+            {
+                claimLimit = int.Parse(nameAndLimit[1]);
+            }
+            if (_owner.LPBlocks.Count > claimLimit)
+            {
+                int numToRemove = _owner.LPBlocks.Count - claimLimit;
+                for (int i = 0; i < numToRemove; i++)
                 {
-					claimLimit = int.Parse(nameAndLimit[1]);
-				}
-				else if (Dict.TryGetValue(_owner.UserIdentifier.CombinedString, out nameAndLimit))
-                {
-					claimLimit = int.Parse(nameAndLimit[1]);
-				}
-			}
-			int numToRemove = _owner.LPBlocks.Count - claimLimit;
-			for (int i = 0; i < numToRemove; i++)
-			{
-				Vector3i blockPos = _owner.LPBlocks[0];
-				BlockLandClaim.HandleDeactivateLandClaim(blockPos);
-				_owner.LPBlocks.RemoveAt(0);
-				if (GameManager.Instance.World != null)
-				{
-					NavObjectManager.Instance.UnRegisterNavObjectByPosition(blockPos.ToVector3(), "land_claim");
-					SingletonMonoBehaviour<ConnectionManager>.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.LandClaim, blockPos.ToVector3()), false, -1, -1, -1, -1);
-				}
-			}
+                    Vector3i blockPos = _owner.LPBlocks[0];
+                    BlockLandClaim.HandleDeactivateLandClaim(blockPos);
+                    _owner.LPBlocks.RemoveAt(0);
+                    ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.LandClaim, blockPos.ToVector3()), false, -1, -1, -1, -1);
+                }
+            }
 		}
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -251,24 +230,24 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LandClaimCount>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"SaladFace\" Limit=\"2\" /> -->");
                     sw.WriteLine("    <!-- <Player Id=\"EOS_7a6b5c6d1e1f9g1h2i345678911234567890\" Name=\"SaladFace\" Limit=\"2\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891\"") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Player Id=\"EOS_7a6b5c6d1e1f9g1h2i345678911234567890\"") && !OldNodeList[i].OuterXml.Contains("    <!-- <Player Id=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"EOS_7a6b5c6d1e1f9g1h2i345678911234567890\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Player Id=\"\" Name=\"\" Limit=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Player")
                             {
                                 string id = "", name = "", limit = "";

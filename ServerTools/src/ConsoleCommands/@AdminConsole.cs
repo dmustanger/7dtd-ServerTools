@@ -29,7 +29,7 @@ public class @AdminsConsole : ConsoleCmdAbstract
         try
         {
             string message = string.Join(" ", _params.ToArray());
-            List<ClientInfo> cInfoList = GeneralFunction.ClientList();
+            List<ClientInfo> cInfoList = GeneralOperations.ClientList();
             if (cInfoList != null)
             {
                 for (int i = 0; i < cInfoList.Count; i++)

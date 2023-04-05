@@ -186,7 +186,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (Zombie_Check)
@@ -264,7 +264,7 @@ namespace ServerTools
                         int.TryParse(cords[0], out int x);
                         int.TryParse(cords[1], out int y);
                         int.TryParse(cords[2], out int z);
-                        if (GeneralFunction.ClaimedBySelfOrAlly(_cInfo, new Vector3i(x, y, z)))
+                        if (GeneralOperations.ClaimedBySelfOrAlly(_cInfo, new Vector3i(x, y, z)))
                         {
                             if (_friends)
                             {
@@ -308,11 +308,11 @@ namespace ServerTools
             {
                 if (!Event.Teams.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
-                    EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                    EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
                         Vector3 position = player.GetPosition();
-                        EnumLandClaimOwner owner = GeneralFunction.ClaimedByWho(_cInfo.CrossplatformId, new Vector3i(position.x, position.y, position.z));
+                        EnumLandClaimOwner owner = GeneralOperations.ClaimedByWho(_cInfo.CrossplatformId, new Vector3i(position.x, position.y, position.z));
                         if (owner == EnumLandClaimOwner.Ally || owner == EnumLandClaimOwner.Self)
                         {
                             ReservedCheck(_cInfo, _home);
@@ -381,7 +381,7 @@ namespace ServerTools
                 {      
                     if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.Count < _homeTotal + PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HomeSpots)
                     {
-                        EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                        EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                         if (player != null)
                         {
                             Vector3 position = player.GetPosition();
@@ -414,7 +414,7 @@ namespace ServerTools
                 }
                 else if (_homeTotal > 0)
                 {
-                    EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                    EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
                         Dictionary<string, string> homes = new Dictionary<string, string>();
@@ -476,16 +476,16 @@ namespace ServerTools
                 int x = (int)_position.x;
                 int y = (int)_position.y;
                 int z = (int)_position.z;
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
-                    List<ClientInfo> clientList = GeneralFunction.ClientList();
+                    List<ClientInfo> clientList = GeneralOperations.ClientList();
                     if (clientList != null)
                     {
                         for (int i = 0; i < clientList.Count; i++)
                         {
                             ClientInfo cInfo2 = clientList[i];
-                            EntityPlayer player2 = GeneralFunction.GetEntityPlayer(cInfo2.entityId);
+                            EntityPlayer player2 = GeneralOperations.GetEntityPlayer(cInfo2.entityId);
                             if (player2 != null)
                             {
                                 if (player.IsFriendsWith(player2) && player.GetDistance(player2) <= 25)

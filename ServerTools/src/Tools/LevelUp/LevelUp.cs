@@ -19,8 +19,6 @@ namespace ServerTools
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-        private static XmlNodeList OldNodeList;
-
         public static void Load()
         {
             LoadXml();
@@ -52,73 +50,50 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                if (childNodes != null && childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
                 {
-                    Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
-                            {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Required") && line.HasAttribute("Command"))
-                                {
-                                    if (!int.TryParse(line.GetAttribute("Required"), out int level))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring LevelUp.xml entry because of invalid (non-numeric) value for 'Required' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    string command = line.GetAttribute("Command");
-                                    if (!Dict.ContainsKey(level))
-                                    {
-                                        Dict.Add(level, command);
-                                    }
-                                }
-                            }
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes || !line.HasAttribute("Required") || !line.HasAttribute("Command"))
+                        {
+                            continue;
+                        }
+                        string required = line.GetAttribute("Required");
+                        if (required == "")
+                        {
+                            continue;
+                        }
+                        if (!int.TryParse(required, out int level))
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring LevelUp.xml entry because of invalid (non-numeric) value for 'Required' attribute: {0}", line.OuterXml));
+                            continue;
+                        }
+                        string command = line.GetAttribute("Command");
+                        if (!Dict.ContainsKey(level))
+                        {
+                            Dict.Add(level, command);
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing LevelUp.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -144,17 +119,16 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Levels>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine(     "<!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Command triggers console commands. Use ^ to separate multiple commands -->");
                     sw.WriteLine("    <!-- Possible variables for commands include whisper, global, {PlayerName}, {Id}, {EOS}, {PlayerId}, {Delay} -->");
                     sw.WriteLine("    <!-- <Level Required=\"300\" Command=\"global MAX LEVEL! Congratulations {PlayerName}!\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Level Required=\"\" Command=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<int, string> kvp in Dict)
                         {
-                            sw.WriteLine(string.Format("    <Level Required=\"{0}\" Command=\"{1}\"  />", kvp.Key, kvp.Value));
+                            sw.WriteLine("    <Level Required=\"{0}\" Command=\"{1}\"  />", kvp.Key, kvp.Value);
                         }
                     }
                     sw.WriteLine("</Levels>");
@@ -187,52 +161,25 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void CheckLevel(ClientInfo _cInfo)
+        public static void Exec()
         {
             try
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
-                if (player != null)
+                List<ClientInfo> clients = GeneralOperations.ClientList();
+                if (clients == null || clients.Count < 1)
                 {
-                    if (PlayerLevels.ContainsKey(player.entityId))
+                    return;
+                }
+                int clientCount = clients.Count;
+                for (int i = 0; i < clientCount; i++)
+                {
+                    ClientInfo cInfo = clients[i];
+                    EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
+                    if (player == null)
                     {
-                        PlayerLevels.TryGetValue(player.entityId, out int level);
-                        if (player.Progression.Level > level)
-                        {
-                            PlayerLevels[player.entityId] = player.Progression.Level;
-                            if (Xml_Only)
-                            {
-                                if (Dict.ContainsKey(player.Progression.Level))
-                                {
-                                    Dict.TryGetValue(player.Progression.Level, out string command);
-                                    ProcessCommand(_cInfo, command);
-                                    if (Announce)
-                                    {
-                                        Phrases.Dict.TryGetValue("LevelUp1", out string phrase);
-                                        phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                        phrase = phrase.Replace("{Value}", player.Progression.Level.ToString());
-                                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (Dict.ContainsKey(player.Progression.Level))
-                                {
-                                    Dict.TryGetValue(player.Progression.Level, out string command);
-                                    ProcessCommand(_cInfo, command);
-                                }
-                                if (Announce)
-                                {
-                                    Phrases.Dict.TryGetValue("LevelUp1", out string phrase);
-                                    phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-                                    phrase = phrase.Replace("{Value}", player.Progression.Level.ToString());
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                                }
-                            }
-                        }
+                        continue;
                     }
-                    else
+                    if (!PlayerLevels.ContainsKey(player.entityId))
                     {
                         PlayerLevels.Add(player.entityId, player.Progression.Level);
                         if (player.Progression.Level == 1)
@@ -240,9 +187,49 @@ namespace ServerTools
                             if (Dict.ContainsKey(player.Progression.Level))
                             {
                                 Dict.TryGetValue(player.Progression.Level, out string command);
-                                ProcessCommand(_cInfo, command);
+                                ProcessCommand(cInfo, command);
                             }
                         }
+                        continue;
+                    }
+                    PlayerLevels.TryGetValue(player.entityId, out int level);
+                    if (player.Progression.Level <= level)
+                    {
+                        continue;
+                    }
+                    PlayerLevels[player.entityId] = player.Progression.Level;
+                    if (Xml_Only)
+                    {
+                        if (!Dict.ContainsKey(player.Progression.Level))
+                        {
+                            continue;
+                        }
+                        Dict.TryGetValue(player.Progression.Level, out string command);
+                        ProcessCommand(cInfo, command);
+                        if (Announce)
+                        {
+                            Phrases.Dict.TryGetValue("LevelUp1", out string phrase);
+                            phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
+                            phrase = phrase.Replace("{Value}", player.Progression.Level.ToString());
+                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        }
+                        continue;
+                    }
+                    else
+                    {
+                        if (Dict.ContainsKey(player.Progression.Level))
+                        {
+                            Dict.TryGetValue(player.Progression.Level, out string command);
+                            ProcessCommand(cInfo, command);
+                        }
+                        if (Announce)
+                        {
+                            Phrases.Dict.TryGetValue("LevelUp1", out string phrase);
+                            phrase = phrase.Replace("{PlayerName}", cInfo.playerName);
+                            phrase = phrase.Replace("{Value}", player.Progression.Level.ToString());
+                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        }
+                        continue;
                     }
                 }
             }
@@ -297,7 +284,7 @@ namespace ServerTools
         {
             try
             {
-                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_playerId);
+                ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_playerId);
                 if (cInfo != null)
                 {
                     for (int i = 0; i < _commands.Count; i++)
@@ -369,7 +356,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -378,26 +365,25 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Levels>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Command triggers console commands. Use ^ to separate multiple commands -->");
                     sw.WriteLine("    <!-- Possible variables for commands include whisper, global, {PlayerName}, {Id}, {EOS}, {PlayerId}, {Delay} -->");
                     sw.WriteLine("    <!-- <Level Required=\"300\" Command=\"global MAX LEVEL! Congratulations {PlayerName}!\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Command triggers console") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- Possible variables") && !OldNodeList[i].OuterXml.Contains("<!-- <Level Required=\"300\"") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Level Required=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Command triggers console") &&
+                            !nodeList[i].OuterXml.Contains("<!-- Possible variables") && !nodeList[i].OuterXml.Contains("<!-- <Level Required=\"300\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Level Required=\"\" Command=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Level")
                             {
                                 string level = "", command = "";

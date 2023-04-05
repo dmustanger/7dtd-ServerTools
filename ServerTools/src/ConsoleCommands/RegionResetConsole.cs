@@ -50,7 +50,7 @@ namespace ServerTools
                     }
                     else if (_params.Count == 2)
                     {
-                        EntityPlayer player = GeneralFunction.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
+                        EntityPlayer player = GeneralOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
                         if (_senderInfo.RemoteClientInfo == null || player == null)
                         {
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Invalid user data. Unable to retrieve your position in game");
@@ -193,7 +193,7 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Invalid user data. Unable to retrieve your position in game");
                         return;
                     }
-                    EntityPlayer player = GeneralFunction.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
+                    EntityPlayer player = GeneralOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
                     if (player != null)
                     {
                         double regionX, regionZ;

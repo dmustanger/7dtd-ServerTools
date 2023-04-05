@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace ServerTools
 {
@@ -9,36 +7,34 @@ namespace ServerTools
         public static bool IsEnabled = false, Player_Check = false, Reserved = false;
         public static string Command_wall = "wall";
 
-        public static Dictionary<int, Vector3i> WallEnabled = new Dictionary<int, Vector3i>();
+        public static List<int> WallEnabled = new List<int>();
 
         public static void Exec(ClientInfo _cInfo)
         {
             if (Reserved)
             {
-                if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+                if (!ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) && !ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
-                    if (!WallEnabled.ContainsKey(_cInfo.entityId))
-                    {
-                        WallEnabled.Add(_cInfo.entityId, new Vector3i(Vector3i.zero));
-                        Phrases.Dict.TryGetValue("Wall1", out string phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                    else
-                    {
-                        WallEnabled.Remove(_cInfo.entityId);
-                        Phrases.Dict.TryGetValue("Wall2", out string phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    Phrases.Dict.TryGetValue("Wall4", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    return;
+                }
+                if (!WallEnabled.Contains(_cInfo.entityId))
+                {
+                    WallEnabled.Add(_cInfo.entityId);
+                    Phrases.Dict.TryGetValue("Wall1", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    Phrases.Dict.TryGetValue("Wall6", out string phrase);
+                    WallEnabled.Remove(_cInfo.entityId);
+                    Phrases.Dict.TryGetValue("Wall2", out string phrase);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
-            else if (!WallEnabled.ContainsKey(_cInfo.entityId))
+            else if (!WallEnabled.Contains(_cInfo.entityId))
             {
-                WallEnabled.Add(_cInfo.entityId, new Vector3i(Vector3i.zero));
+                WallEnabled.Add(_cInfo.entityId);
                 Phrases.Dict.TryGetValue("Wall1", out string phrase);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
@@ -50,214 +46,151 @@ namespace ServerTools
             }
         }
 
-        public static void BuildWall(ClientInfo _cInfo, EntityPlayer _player, Vector3i _pos1, Vector3i _pos2, BlockValue _value)
+        public static void BuildWall(ClientInfo _cInfo, Vector3i _blockPosition, BlockValue _value)
         {
-            if ((_pos1.ToVector3() - _pos2.ToVector3()).magnitude > 1)
+            if (GeneralOperations.ClaimedByWho(_cInfo.CrossplatformId, _blockPosition) != EnumLandClaimOwner.Self)
             {
-                if (_pos1.x == _pos2.x || _pos1.z == _pos2.z)
+                Phrases.Dict.TryGetValue("Wall3", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            }
+            List<Vector3i> potentialPositions = new List<Vector3i>();
+            List<Vector3i> wallPositions = new List<Vector3i>();
+            int startPosition = _blockPosition.z + 1;
+            int endPosition = _blockPosition.z + 10;
+            for (int i = startPosition; i <= endPosition; i++)
+            {
+                if (GameManager.Instance.World.GetBlock(new Vector3i(_blockPosition.x, _blockPosition.y, i)).Equals(_value))
                 {
-                    List<Vector3i> blockPositions = new List<Vector3i>();
-                    int alt;
-                    if (_pos1.x > _pos2.x)
+                    if (GeneralOperations.ClaimedByWho(_cInfo.CrossplatformId, new Vector3i(_blockPosition.x, _blockPosition.y, i)) == EnumLandClaimOwner.Self)
                     {
-                        alt = _pos2.x;
-                        _pos2.x = _pos1.x;
-                        _pos1.x = alt;
+                        wallPositions.AddRange(potentialPositions);
                     }
-                    if (_pos1.y > _pos2.y)
-                    {
-                        alt = _pos2.y;
-                        _pos2.y = _pos1.y;
-                        _pos1.y = alt;
-                    }
-                    if (_pos1.z > _pos2.z)
-                    {
-                        alt = _pos2.z;
-                        _pos2.z = _pos1.z;
-                        _pos1.z = alt;
-                    }
-                    for (int i = _pos1.x; i <= _pos2.x; i++)
-                    {
-                        for (int j = _pos1.y; j <= _pos2.y; j++)
-                        {
-                            for (int k = _pos1.z; k <= _pos2.z; k++)
-                            {
-                                if (GameManager.Instance.World.GetBlock(new Vector3i(i, j, k)).Equals(BlockValue.Air))
-                                {
-                                    blockPositions.Add(new Vector3i(i, j, k));
-                                }
-                            }
-                        }
-                    }
-                    if (blockPositions.Count > 0)
-                    {
-                        string blockName = _value.Block.GetBlockName().Replace(":cube", "");
-                        Vector3 position = _player.position;
-                        List<Chunk> chunks = new List<Chunk>();
-                        List<BlockChangeInfo> blockList = new List<BlockChangeInfo>();
-                        DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
-                        Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x, (int)position.y, (int)position.z);
-                        if (chunk != null && !chunks.Contains(chunk))
-                        {
-                            chunks.Add(chunk);
-                        }
-                        chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x - 15, (int)position.y, (int)position.z);
-                        if (chunk != null && !chunks.Contains(chunk))
-                        {
-                            chunks.Add(chunk);
-                        }
-                        chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x - 30, (int)position.y, (int)position.z);
-                        if (chunk != null && !chunks.Contains(chunk))
-                        {
-                            chunks.Add(chunk);
-                        }
-                        chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x + 15, (int)position.y, (int)position.z);
-                        if (chunk != null && !chunks.Contains(chunk))
-                        {
-                            chunks.Add(chunk);
-                        }
-                        chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x + 30, (int)position.y, (int)position.z);
-                        if (chunk != null && !chunks.Contains(chunk))
-                        {
-                            chunks.Add(chunk);
-                        }
-                        chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x, (int)position.y, (int)position.z - 15);
-                        if (chunk != null && !chunks.Contains(chunk))
-                        {
-                            chunks.Add(chunk);
-                        }
-                        chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x, (int)position.y, (int)position.z - 30);
-                        if (chunk != null && !chunks.Contains(chunk))
-                        {
-                            chunks.Add(chunk);
-                        }
-                        chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x, (int)position.y, (int)position.z + 15);
-                        if (chunk != null && !chunks.Contains(chunk))
-                        {
-                            chunks.Add(chunk);
-                        }
-                        chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x, (int)position.y, (int)position.z + 30);
-                        if (chunk != null && !chunks.Contains(chunk))
-                        {
-                            chunks.Add(chunk);
-                        }
-                        for (int i = 0; i < chunks.Count; i++)
-                        {
-                            tiles = chunks[i].GetTileEntities();
-                            foreach (TileEntity tile in tiles.dict.Values)
-                            {
-                                bool modified = false;
-                                if (blockPositions.Count > 0)
-                                {
-                                    TileEntitySecureLootContainer SecureLootContainer = null;
-                                    if (tile is TileEntitySecureLootContainer)
-                                    {
-                                        SecureLootContainer = (TileEntitySecureLootContainer)tile;
-                                    }
-                                    else if (tile is TileEntitySecureLootContainerSigned)
-                                    {
-                                        SecureLootContainer = (TileEntitySecureLootContainerSigned)tile;
-                                    }
-                                    if (SecureLootContainer != null && (SecureLootContainer.IsUserAllowed(_cInfo.PlatformId) || SecureLootContainer.IsUserAllowed(_cInfo.CrossplatformId)) && !SecureLootContainer.IsUserAccessing())
-                                    {
-                                        ItemStack[] items = SecureLootContainer.items;
-                                        for (int j = 0; j < items.Length; j++)
-                                        {
-                                            ItemStack item = items[j];
-                                            if (item != null && !item.IsEmpty())
-                                            {
-                                                if (item.itemValue.ItemClass.GetItemName().Contains(blockName))
-                                                {
-                                                    int count = item.count;
-                                                    for (int k = 0; k < count; k++)
-                                                    {
-                                                        if (blockPositions.Count > 0)
-                                                        {
-                                                            blockList.Add(new BlockChangeInfo(0, blockPositions[0], _value));
-                                                            blockPositions.RemoveAt(0);
-                                                            if (items[j].count > 1)
-                                                            {
-                                                                items[j].count -= 1;
-                                                            }
-                                                            else
-                                                            {
-                                                                items[j] = ItemStack.Empty.Clone();
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            break;
-                                                        }
-                                                    }
-                                                    modified = true;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else if (tile.GetType().ToString() == "TileEntityLootContainer")
-                                    {
-                                        TileEntityLootContainer LootContainer = (TileEntityLootContainer)tile;
-                                        if (LootContainer != null && !LootContainer.IsUserAccessing())
-                                        {
-                                            ItemStack[] items = LootContainer.items;
-                                            for (int j = 0; j < items.Length; j++)
-                                            {
-                                                ItemStack item = items[j];
-                                                if (item != null && !item.IsEmpty())
-                                                {
-                                                    if (item.itemValue.ItemClass.GetItemName().Contains(blockName))
-                                                    {
-                                                        int count = item.count;
-                                                        for (int k = 0; k < count; k++)
-                                                        {
-                                                            if (blockPositions.Count > 0)
-                                                            {
-                                                                blockList.Add(new BlockChangeInfo(0, blockPositions[0], _value));
-                                                                blockPositions.RemoveAt(0);
-                                                                if (items[j].count > 1)
-                                                                {
-                                                                    items[j].count -= 1;
-                                                                }
-                                                                else
-                                                                {
-                                                                    items[j] = ItemStack.Empty.Clone();
-                                                                }
-                                                            }
-                                                            else
-                                                            {
-                                                                break;
-                                                            }
-                                                        }
-                                                        modified = true;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                if (modified)
-                                {
-                                    tile.SetModified();
-                                }
-                            }
-                        }
-                        if (blockList.Count > 0)
-                        {
-                            GameManager.Instance.SetBlocksRPC(blockList, null);
-                        }
-                    }
+                    break;
                 }
-                else
+                potentialPositions.Add(new Vector3i(_blockPosition.x, _blockPosition.y, i));
+            }
+            potentialPositions.Clear();
+            startPosition = _blockPosition.z - 1;
+            endPosition = _blockPosition.z - 10;
+            for (int i = startPosition; i >= endPosition; i--)
+            {
+                if (GameManager.Instance.World.GetBlock(new Vector3i(_blockPosition.x, _blockPosition.y, i)).Equals(_value))
                 {
-                    Phrases.Dict.TryGetValue("Wall3", out string phrase);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    if (GeneralOperations.ClaimedByWho(_cInfo.CrossplatformId, new Vector3i(_blockPosition.x, _blockPosition.y, i)) == EnumLandClaimOwner.Self)
+                    {
+                        wallPositions.AddRange(potentialPositions);
+                    }
+                    break;
+                }
+                potentialPositions.Add(new Vector3i(_blockPosition.x, _blockPosition.y, i));
+            }
+            potentialPositions.Clear();
+            startPosition = _blockPosition.x + 1;
+            endPosition = _blockPosition.x + 10;
+            for (int i = startPosition; i <= endPosition; i++)
+            {
+                if (GameManager.Instance.World.GetBlock(new Vector3i(i, _blockPosition.y, _blockPosition.z)).Equals(_value))
+                {
+                    if (GeneralOperations.ClaimedByWho(_cInfo.CrossplatformId, new Vector3i(i, _blockPosition.y, _blockPosition.z)) == EnumLandClaimOwner.Self)
+                    {
+                        wallPositions.AddRange(potentialPositions);
+                    }
+                    break;
+                }
+                potentialPositions.Add(new Vector3i(i, _blockPosition.y, _blockPosition.z));
+            }
+            potentialPositions.Clear();
+            startPosition = _blockPosition.x - 1;
+            endPosition = _blockPosition.x - 10;
+            for (int i = startPosition; i >= endPosition; i--)
+            {
+                if (GameManager.Instance.World.GetBlock(new Vector3i(i, _blockPosition.y, _blockPosition.z)).Equals(_value))
+                {
+                    if (GeneralOperations.ClaimedByWho(_cInfo.CrossplatformId, new Vector3i(i, _blockPosition.y, _blockPosition.z)) == EnumLandClaimOwner.Self)
+                    {
+                        wallPositions.AddRange(potentialPositions);
+                    }
+                    break;
+                }
+                potentialPositions.Add(new Vector3i(i, _blockPosition.y, _blockPosition.z));
+            }
+            int blockCount = wallPositions.Count;
+            if (blockCount < 0)
+            {
+                return;
+            }
+            List<Chunk> chunks = new List<Chunk>();
+            for (int i = 0; i < blockCount; i++)
+            {
+                Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(wallPositions[i].x, wallPositions[i].y, wallPositions[i].z);
+                if (chunk != null && !chunks.Contains(chunk))
+                {
+                    chunks.Add(chunk);
                 }
             }
-            WallEnabled[_cInfo.entityId] = new Vector3i(Vector3i.zero);
+            int availableBlocks = 0;
+            DictionaryList<Vector3i, TileEntity> tiles;
+            for (int i = 0; i < chunks.Count; i++)
+            {
+                if (blockCount == 0)
+                {
+                    break;
+                }
+                tiles = chunks[i].GetTileEntities();
+                foreach (TileEntity tile in tiles.dict.Values)
+                {
+                    if (blockCount == 0)
+                    {
+                        break;
+                    }
+                    if (tile.GetType().ToString() != "TileEntityLootContainer")
+                    {
+                        continue;
+                    }
+                    TileEntityLootContainer lootContainer = (TileEntityLootContainer)tile;
+                    if (lootContainer == null || lootContainer.IsUserAccessing())
+                    {
+                        continue;
+                    }
+                    ItemStack[] items = lootContainer.items;
+                    for (int j = 0; j < items.Length; j++)
+                    {
+                        if (blockCount == 0)
+                        {
+                            break;
+                        }
+                        ItemStack item = items[j];
+                        if (item == null || item.IsEmpty())
+                        {
+                            continue;
+                        }
+                        if (item.itemValue.Equals(_value))
+                        {
+                            if (items[j].count > blockCount)
+                            {
+                                availableBlocks += blockCount;
+                                items[j].count -= blockCount;
+                            }
+                            else
+                            {
+                                availableBlocks += items[j].count;
+                                items[j] = ItemStack.Empty.Clone();
+                            }
+                            lootContainer.SetModified();
+                            continue;
+                        }
+                    }
+                }
+            }
+            if (availableBlocks > 0)
+            {
+                List<BlockChangeInfo> blockList = new List<BlockChangeInfo>();
+                for (int i = 0; i < availableBlocks; i++)
+                {
+                    blockList.Add(new BlockChangeInfo(0, wallPositions[i], _value));
+                }
+                GameManager.Instance.SetBlocksRPC(blockList, null);
+            }
         }
     }
 }

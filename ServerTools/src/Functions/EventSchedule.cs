@@ -50,7 +50,7 @@ namespace ServerTools
                                 if (dateTime >= schedule[i].Value)
                                 {
                                     Schedule.Remove(schedule[i].Key);
-                                    if (GeneralFunction.SessionBonus(split[1]))
+                                    if (GeneralOperations.SessionBonus(split[1]))
                                     {
                                         Schedule.Add(schedule[i].Key, dateTime.AddMinutes(15));
                                     }

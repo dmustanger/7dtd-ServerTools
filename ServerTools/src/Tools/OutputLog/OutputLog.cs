@@ -7,8 +7,9 @@ namespace ServerTools
 
     class OutputLog
     {
-        public static bool IsEnabled = false;
+        public static bool IsEnabled = false, Vehicle_Manager_Off = false;
         public static List<string> ActiveLog = new List<string>();
+        public static string lastOutput = "";
 
         //private static string Debug = string.Format("{0}/{1}", API.ConfigPath, DebugFile);
         //private const string DebugFile = "Debug.txt";
@@ -41,15 +42,19 @@ namespace ServerTools
         {
             try
             {
-                ActiveLog.Add(msg);
-                //using (StreamWriter sw = new StreamWriter(Debug, true, Encoding.UTF8))
-                //{
-                //    sw.WriteLine(string.Format("msg: {0} / trace {1} / type {2}", msg, trace, type));
-                //    sw.WriteLine();
-                //    sw.Flush();
-                //    sw.Close();
-                //    sw.Dispose();
-                //}
+                if (!lastOutput.Equals(msg))
+                {
+                    lastOutput = msg;
+                    ActiveLog.Add(msg);
+                    //using (StreamWriter sw = new StreamWriter(Debug, true, Encoding.UTF8))
+                    //{
+                    //    sw.WriteLine(string.Format("msg: {0} / trace {1} / type {2}", msg, trace, type));
+                    //    sw.WriteLine();
+                    //    sw.Flush();
+                    //    sw.Close();
+                    //    sw.Dispose();
+                    //}
+                }
             }
             catch (Exception e)
             {

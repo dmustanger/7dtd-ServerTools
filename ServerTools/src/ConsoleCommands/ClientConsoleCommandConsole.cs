@@ -31,7 +31,7 @@ namespace ServerTools
                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or more, found {0}", _params.Count));
                     return;
                 }
-                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[0]);
+                ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[0]);
                 if (cInfo != null)
                 {
                     _params.RemoveAt(0);

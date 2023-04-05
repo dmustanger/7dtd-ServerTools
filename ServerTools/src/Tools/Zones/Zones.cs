@@ -24,7 +24,6 @@ namespace ServerTools
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-        private static XmlNodeList OldNodeList;
         private static readonly System.Random Random = new System.Random();
 
         public static void Load()
@@ -65,130 +64,80 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                ZoneList.Clear();
+                ZoneBounds.Clear();
+                Reminder.Clear();
+                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
-                    ZoneList.Clear();
-                    ZoneBounds.Clear();
-                    Reminder.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes)
+                        {
+                            continue;
+                        }
+                        if (line.HasAttribute("Name") && line.HasAttribute("Corner1") && line.HasAttribute("Corner2") && line.HasAttribute("Circle") &&
+                            line.HasAttribute("EntryMessage") && line.HasAttribute("ExitMessage") && line.HasAttribute("EntryCommand") && line.HasAttribute("ExitCommand") &&
+                            line.HasAttribute("ReminderNotice") && line.HasAttribute("PvPvE") && line.HasAttribute("NoZombie"))
+                        {
+                            string name = line.GetAttribute("Name");
+                            if (name == "")
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
+                                continue;
+                            }
+                            string[] zone = { name, line.GetAttribute("Corner1"), line.GetAttribute("Corner2"), line.GetAttribute("Circle"),
+                                line.GetAttribute("EntryMessage"), line.GetAttribute("ExitMessage"), line.GetAttribute("EntryCommand"), line.GetAttribute("ExitCommand"),
+                                line.GetAttribute("ReminderNotice"), line.GetAttribute("PvPvE"), line.GetAttribute("NoZombie") };
+                            if (zone[3].ToLower() == "false")
+                            {
+                                if (!zone[1].Contains(",") || !zone[2].Contains(","))
                                 {
-                                    upgrade = false;
+                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring Zones.xml entry. Improper format in corner1 or corner2 attribute: {0}", line.OuterXml));
                                     continue;
                                 }
-                                else if (line.HasAttribute("Name") && line.HasAttribute("Corner1") && line.HasAttribute("Corner2") && line.HasAttribute("Circle") &&
-                                    line.HasAttribute("EntryMessage") && line.HasAttribute("ExitMessage") && line.HasAttribute("EntryCommand") && line.HasAttribute("ExitCommand") &&
-                                    line.HasAttribute("ReminderNotice") && line.HasAttribute("PvPvE") && line.HasAttribute("NoZombie"))
+                                string[] corner1 = zone[1].Split(',');
+                                string[] corner2 = zone[2].Split(',');
+                                int.TryParse(corner1[0], out int x1);
+                                int.TryParse(corner1[1], out int y1);
+                                int.TryParse(corner1[2], out int z1);
+                                int.TryParse(corner2[0], out int x2);
+                                int.TryParse(corner2[1], out int y2);
+                                int.TryParse(corner2[2], out int z2);
+                                Vector3 vector1 = new Vector3((x1 <= x2) ? x1 : x2, (y1 <= y2) ? y1 : y2, (z1 <= z2) ? z1 : z2);
+                                Vector3 vector2 = new Vector3((x1 <= x2) ? x2 : x1, (y1 <= y2) ? y2 : y1, (z1 <= z2) ? z2 : z1);
+                                zone[1] = vector1.x + "," + vector1.y + "," + vector1.z;
+                                zone[2] = vector2.x + "," + vector2.y + "," + vector2.z;
+                                Bounds bounds = new Bounds();
+                                bounds.SetMinMax(vector1, vector2);
+                                if (!ZoneList.Contains(zone))
                                 {
-                                    int c1 = 0, c2 = 0, c3 = 0, d1 = 0, d2 = 0, d3 = 0;
-                                    string[] zone = { line.GetAttribute("Name"), line.GetAttribute("Corner1"), line.GetAttribute("Corner2"), line.GetAttribute("Circle"),
-                                        line.GetAttribute("EntryMessage"), line.GetAttribute("ExitMessage"), line.GetAttribute("EntryCommand"), line.GetAttribute("ExitCommand"),
-                                        line.GetAttribute("ReminderNotice"), line.GetAttribute("PvPvE"), line.GetAttribute("NoZombie") };
-                                    if (zone[3].ToLower() == "false")
+                                    ZoneList.Add(zone);
+                                    if (!ZoneBounds.Contains(bounds))
                                     {
-                                        if (zone[1].Contains(",") && zone[2].Contains(","))
-                                        {
-                                            string[] corner1 = zone[1].Split(',');
-                                            string[] corner2 = zone[2].Split(',');
-                                            int.TryParse(corner1[0], out int x1);
-                                            int.TryParse(corner1[1], out int y1);
-                                            int.TryParse(corner1[2], out int z1);
-                                            int.TryParse(corner2[0], out int x2);
-                                            int.TryParse(corner2[1], out int y2);
-                                            int.TryParse(corner2[2], out int z2);
-                                            int alt;
-                                            if (x1 > x2)
-                                            {
-                                                alt = x2;
-                                                x2 = x1;
-                                                x1 = alt;
-                                            }
-                                            if (y1 > y2)
-                                            {
-                                                alt = y2;
-                                                y2 = y1;
-                                                y1 = alt;
-                                            }
-                                            else if (y1 == y2)
-                                            {
-                                                y2++;
-                                            }
-                                            if (z1 > z2)
-                                            {
-                                                alt = z2;
-                                                z2 = z1;
-                                                z1 = alt;
-                                            }
-                                            zone[1] = x1 + "," + y1 + "," + z1;
-                                            zone[2] = x2 + "," + y2 + "," + z2;
-                                            c1 = (x1 + x2) / 2;
-                                            c2 = (y1 + y2) / 2;
-                                            c3 = (z1 + z2) / 2;
-                                            d1 = (int)Vector2.Distance(new Vector2(x1, 0), new Vector2(x2, 0));
-                                            d2 = (int)Vector2.Distance(new Vector2(y1, 0), new Vector2(y2, 0));
-                                            d3 = (int)Vector2.Distance(new Vector2(z1, 0), new Vector2(z2, 0));
-                                        }
-                                        else
-                                        {
-                                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Zones.xml entry. Improper format in corner1 or corner2 attribute: {0}", line.OuterXml));
-                                            continue;
-                                        }
-                                    }
-                                    Bounds newBounds = new Bounds(new Vector3(c1, c2, c3), new Vector3(d1, d2, d3));
-                                    if (!ZoneList.Contains(zone))
-                                    {
-                                        ZoneList.Add(zone);
-                                        if (!ZoneBounds.Contains(newBounds))
-                                        {
-                                            ZoneBounds.Add(newBounds);
-                                        }
+                                        ZoneBounds.Add(bounds);
                                     }
                                 }
                             }
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing Zones.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -214,21 +163,20 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Zones>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Do not use decimals in the corner positions -->");
                     sw.WriteLine("    <!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
                     sw.WriteLine("    <!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
                     sw.WriteLine("    <!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
                     sw.WriteLine("    <!-- Possible variables for commands include {PlayerName}, {EntityId}, {Id}, {EOS}, {Delay}, whisper, global -->");
                     sw.WriteLine("    <!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Zone Name=\"\" Corner1=\"\" Corner2=\"\" Circle=\"\" EntryMessage=\"\" ExitMessage=\"\" EntryCommand=\"\" ExitCommand=\"\" ReminderNotice=\"\" PvPvE=\"\" NoZombie=\"\" />");
                     if (ZoneList.Count > 0)
                     {
                         for (int i = 0; i < ZoneList.Count; i++)
                         {
-                            string[] _zone = ZoneList[i];
-                            sw.WriteLine(string.Format("    <Zone Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Circle=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" EntryCommand=\"{6}\" ExitCommand=\"{7}\" ReminderNotice=\"{8}\" PvPvE=\"{9}\" NoZombie=\"{10}\" />", _zone[0], _zone[1], _zone[2], _zone[3], _zone[4], _zone[5], _zone[6], _zone[7], _zone[8], _zone[9], _zone[10]));
+                            string[] zone = ZoneList[i];
+                            sw.WriteLine("    <Zone Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Circle=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" EntryCommand=\"{6}\" ExitCommand=\"{7}\" ReminderNotice=\"{8}\" PvPvE=\"{9}\" NoZombie=\"{10}\" />", zone[0], zone[1], zone[2], zone[3], zone[4], zone[5], zone[6], zone[7], zone[8], zone[9], zone[10]);
                         }
                     }
                     sw.WriteLine("</Zones>");
@@ -297,22 +245,21 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out("[SERVERTOOLS] Invalid Zones Reminder_Delay detected. Use a single integer, 24h time or multiple 24h time entries");
-                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                        Log.Out(string.Format("[SERVERTOOLS] Invalid Zones Reminder_Delay detected. Use a single integer, 24h time or multiple 24h time entries"));
+                        Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
                     }
                 }
             }
         }
 
-        public static void ZoneCheck(ClientInfo _cInfo, EntityAlive _player, List<Entity> _entityList)
+        public static void ZoneCheck(ClientInfo _cInfo, EntityAlive _player)
         {
             try
             {
                 for (int i = 0; i < ZoneList.Count; i++)
                 {
                     string[] zone = ZoneList[i];
-                    Bounds bounds = ZoneBounds[i];
-                    if (InsideZone(bounds, zone, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z))
+                    if (InsideZone(ZoneBounds[i], zone, _player.position.x, _player.position.y, _player.position.z))
                     {
                         if (ZonePlayer.ContainsKey(_player.entityId))
                         {
@@ -321,108 +268,14 @@ namespace ServerTools
                             {
                                 ZonePlayer[_player.entityId] = zone;
                                 Reminder[_player.entityId] = DateTime.Now;
-                                if (BuffProtection)
-                                {
-                                    switch (zone[9])
-                                    {
-                                        case "0":
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
-                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
-                                            break;
-                                        case "1":
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
-                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
-                                            break;
-                                        case "2":
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
-                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
-                                            break;
-                                        case "3":
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
-                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
-                                            break;
-                                    }
-                                }
-                                if (Zone_Message && info[5] != "")
-                                {
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + info[5] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                }
-                                if (info[7] != "")
-                                {
-                                    ProcessCommand(_cInfo, info[7]);
-                                }
-                                if (Zone_Message && zone[4] != "")
-                                {
-                                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                }
-                                if (zone[6] != "")
-                                {
-                                    ProcessCommand(_cInfo, zone[6]);
-                                }
-                                if (bool.TryParse(zone[10], out bool allowed))
-                                {
-                                    if (!allowed && _entityList != null && _entityList.Count > 0)
-                                    {
-                                        for (int j = 0; j < _entityList.Count; j++)
-                                        {
-                                            if (InsideZone(bounds, zone, (int)_entityList[j].position.x, (int)_entityList[j].position.y, (int)_entityList[j].position.z))
-                                            {
-                                                GameManager.Instance.World.RemoveEntity(_entityList[j].entityId, EnumRemoveEntityReason.Despawned);
-                                                Log.Out(string.Format("[SERVERTOOLS] Removed a hostile from a zone @ '{0}'", _entityList[j].position));
-                                            }
-                                        }
-                                    }
-                                }
+                                NewZone(_cInfo, zone);
                             }
                         }
                         else
                         {
                             ZonePlayer.Add(_player.entityId, zone);
                             Reminder.Add(_player.entityId, DateTime.Now);
-                            if (BuffProtection)
-                            {
-                                switch (zone[9])
-                                {
-                                    case "0":
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
-                                        break;
-                                    case "1":
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
-                                        break;
-                                    case "2":
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
-                                        break;
-                                    case "3":
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
-                                        break;
-                                }
-                            }
-                            if (Zone_Message && zone[4] != "")
-                            {
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            }
-                            if (zone[6] != "")
-                            {
-                                ProcessCommand(_cInfo, zone[6]);
-                            }
-                            if (bool.TryParse(zone[10], out bool allowed))
-                            {
-                                if (!allowed && _entityList != null && _entityList.Count > 0)
-                                {
-                                    for (int j = 0; j < _entityList.Count; j++)
-                                    {
-                                        if (InsideZone(bounds, zone, (int)_entityList[j].position.x, (int)_entityList[j].position.y, (int)_entityList[j].position.z))
-                                        {
-                                            GameManager.Instance.World.RemoveEntity(_entityList[j].entityId, EnumRemoveEntityReason.Despawned);
-                                            Log.Out(string.Format("[SERVERTOOLS] Removed a hostile from a zone @ '{0}'", _entityList[j].position));
-                                        }
-                                    }
-                                }
-                            }
+                            NewZone(_cInfo, zone);
                         }
                         return;
                     }
@@ -432,52 +285,77 @@ namespace ServerTools
                     ZonePlayer.TryGetValue(_player.entityId, out string[] zone);
                     ZonePlayer.Remove(_player.entityId);
                     Reminder.Remove(_player.entityId);
-                    if (BuffProtection)
-                    {
-                        switch (zone[9])
-                        {
-                            case "0":
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
-                                break;
-                            case "1":
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
-                                break;
-                            case "2":
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
-                                break;
-                            case "3":
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
-                                break;
-                        }
-                        switch (GeneralFunction.Player_Killing_Mode)
-                        {
-                            case 0:
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
-                                break;
-                            case 1:
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
-                                break;
-                            case 2:
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
-                                break;
-                            case 3:
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
-                                break;
-                        }
-                    }
-                    if (Zone_Message && zone[5] != "")
-                    {
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + zone[5] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                    if (zone[7] != "")
-                    {
-                        ProcessCommand(_cInfo, zone[7]);
-                    }
+                    RemoveZone(_cInfo, zone);
                 }
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in Zones.ZoneCheck: {0}", e.Message));
+            }
+        }
+
+        public static void NewZone(ClientInfo _cInfo, string[] _zone)
+        {
+            if (BuffProtection)
+            {
+                switch (_zone[9])
+                {
+                    case "0":
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
+                        break;
+                    case "1":
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
+                        break;
+                    case "2":
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
+                        break;
+                    case "3":
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
+                        break;
+                }
+            }
+            if (Zone_Message && _zone[4] != "")
+            {
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _zone[4] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            }
+            if (_zone[6] != "")
+            {
+                ProcessCommand(_cInfo, _zone[6]);
+            }
+        }
+
+        public static void RemoveZone(ClientInfo _cInfo, string[] _zone)
+        {
+            if (BuffProtection)
+            {
+                switch (_zone[9])
+                {
+                    case "0":
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
+                        break;
+                    case "1":
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
+                        break;
+                    case "2":
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
+                        break;
+                    case "3":
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
+                        break;
+                }
+                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup(string.Format("sgs PlayerKillingMode {0}", GeneralOperations.Player_Killing_Mode), true));
+            }
+            if (Zone_Message && _zone[5] != "")
+            {
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _zone[5] + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+            }
+            if (_zone[7] != "")
+            {
+                ProcessCommand(_cInfo, _zone[7]);
             }
         }
 
@@ -526,7 +404,7 @@ namespace ServerTools
         {
             try
             {
-                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_playerId);
+                ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_playerId);
                 if (cInfo != null)
                 {
                     for (int i = 0; i < _commands.Count; i++)
@@ -581,7 +459,7 @@ namespace ServerTools
                 }
                 if (_command.Contains("{RandomId}"))
                 {
-                    List<ClientInfo> clientList = GeneralFunction.ClientList();
+                    List<ClientInfo> clientList = GeneralOperations.ClientList();
                     if (clientList != null)
                     {
                         ClientInfo cInfo2 = clientList.ElementAt(Random.Next(clientList.Count));
@@ -593,7 +471,7 @@ namespace ServerTools
                 }
                 if (_command.Contains("{RandomEOS}"))
                 {
-                    List<ClientInfo> clientList = GeneralFunction.ClientList();
+                    List<ClientInfo> clientList = GeneralOperations.ClientList();
                     if (clientList != null)
                     {
                         ClientInfo cInfo2 = clientList.ElementAt(Random.Next(clientList.Count));
@@ -684,51 +562,26 @@ namespace ServerTools
             {
                 if (ZoneList.Count > 0)
                 {
-                    for (int i = 0; i < ZoneList.Count; i++)
+                    List<Entity> entities = GameManager.Instance.World.Entities.list;
+                    int entityCount = entities.Count;
+                    for (int i = 0; i < entityCount; i++)
                     {
-                        string[] zone = ZoneList[i];
-                        if (zone[10].ToLower() == "true")
+                        if (entities[i] == null)
                         {
-                            List<Entity> Entities = GameManager.Instance.World.Entities.list;
-                            for (int j = 0; j < Entities.Count; j++)
+                            continue;
+                        }
+                        Entity entity = entities[i];
+                        if (entity is EntityZombie || entity is EntityEnemyAnimal || entity is EntityVulture || entity is EntityZombieCop ||
+                            entity is EntityZombieDog)
+                        {
+                            int zoneCount = ZoneList.Count;
+                            for (int j = 0; j < zoneCount; j++)
                             {
-                                Entity entity = Entities[j];
-                                if (entity != null)
+                                if (ZoneList[j][10].ToLower() == "true" && InsideZone(ZoneBounds[j], ZoneList[j], entity.position.x, entity.position.y, entity.position.z))
                                 {
-                                    if (entity is EntityZombie || entity is EntityEnemyAnimal || entity is EntityVulture || entity is EntityZombieCop ||
-                                        entity is EntityZombieDog)
-                                    {
-                                        Vector3 vec = entity.position;
-                                        int X = (int)entity.position.x;
-                                        int Y = (int)entity.position.y;
-                                        int Z = (int)entity.position.z;
-                                        if (zone[3].ToLower() == "true")
-                                        {
-                                            string[] corner1 = zone[1].Split(',');
-                                            int.TryParse(corner1[0], out int xMin);
-                                            int.TryParse(corner1[1], out int yMin);
-                                            int.TryParse(corner1[2], out int zMin);
-                                            if (int.TryParse(zone[2], out int radius))
-                                            {
-                                                if (VectorCircle(xMin, zMin, X, Z, radius))
-                                                {
-                                                    GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
-                                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed {0} from zone {1} @ {2} {3} {4}",
-                                                        EntityClass.list[entity.entityClass].entityClassName, zone[0], X, Y, Z));
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Bounds bounds = ZoneBounds[i];
-                                            if (VectorBox(bounds, new Vector3(X, Y, Z)))
-                                            {
-                                                GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
-                                                Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed {0} from zone {1} @ {2} {3} {4}",
-                                                    EntityClass.list[entity.entityClass].entityClassName, zone[0], X, Y, Z));
-                                            }
-                                        }
-                                    }
+                                    GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
+                                    Log.Out(string.Format("[SERVERTOOLS] Zone zombie removed '{0}' from zone '{1}' @ '{2}'",
+                                        EntityClass.list[entity.entityClass].entityClassName, ZoneList[j][0], entity.position));
                                 }
                             }
                         }
@@ -747,7 +600,7 @@ namespace ServerTools
             {
                 foreach (KeyValuePair<int, DateTime> time in Reminder.ToArray())
                 {
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(time.Key);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(time.Key);
                     if (cInfo != null)
                     {
                         DateTime dt = time.Value;
@@ -773,77 +626,7 @@ namespace ServerTools
             }
         }
 
-        public static bool IsValid(ClientInfo _cInfo1, ClientInfo _cInfo2)
-        {
-            try
-            {
-                if (ZonePlayer.ContainsKey(_cInfo1.entityId))
-                {
-                    ZonePlayer.TryGetValue(_cInfo1.entityId, out string[] zone1);
-                    if (ZonePlayer.ContainsKey(_cInfo2.entityId))
-                    {
-                        ZonePlayer.TryGetValue(_cInfo2.entityId, out string[] zone2);
-                        if (zone1[9] != zone2[9])
-                        {
-                            Phrases.Dict.TryGetValue("Zones3", out string phrase);
-                            ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            return false;
-                        }
-                        else if (zone1[9] == "0")
-                        {
-                            Phrases.Dict.TryGetValue("Zones9", out string phrase);
-                            ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            return false;
-                        }
-                        else if (zone1[9] == "1")
-                        {
-                            PersistentPlayerData ppd1 = GeneralFunction.GetPersistentPlayerDataFromId(_cInfo1.CrossplatformId.CombinedString);
-                            PersistentPlayerData ppd2 = GeneralFunction.GetPersistentPlayerDataFromId(_cInfo2.CrossplatformId.CombinedString);
-                            if ((ppd1 != null && ppd1.ACL != null && !ppd1.ACL.Contains(_cInfo2.CrossplatformId)) || (ppd2 != null && ppd2.ACL != null && !ppd2.ACL.Contains(_cInfo1.CrossplatformId)))
-                            {
-                                Phrases.Dict.TryGetValue("Zones10", out string phrase);
-                                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                return false;
-                            }
-                        }
-                        else if (zone1[9] == "2")
-                        {
-                            PersistentPlayerData ppd1 = GeneralFunction.GetPersistentPlayerDataFromId(_cInfo1.CrossplatformId.CombinedString);
-                            PersistentPlayerData ppd2 = GeneralFunction.GetPersistentPlayerDataFromId(_cInfo2.CrossplatformId.CombinedString);
-                            if ((ppd1 != null && ppd1.ACL != null && ppd1.ACL.Contains(_cInfo2.CrossplatformId)) || (ppd2 != null && ppd2.ACL != null && ppd2.ACL.Contains(_cInfo1.CrossplatformId)))
-                            {
-                                Phrases.Dict.TryGetValue("Zones11", out string phrase);
-                                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                return false;
-                            }
-                        }
-                    }
-                    else if (zone1[9] != GeneralFunction.Player_Killing_Mode.ToString())
-                    {
-                        Phrases.Dict.TryGetValue("Zones3", out string phrase);
-                        ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        return false;
-                    }
-                }
-                else if (ZonePlayer.ContainsKey(_cInfo2.entityId))
-                {
-                    ZonePlayer.TryGetValue(_cInfo2.entityId, out string[] zone);
-                    if (zone[9] != GeneralFunction.Player_Killing_Mode.ToString())
-                    {
-                        Phrases.Dict.TryGetValue("Zones3", out string phrase);
-                        ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        return false;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.IsValid: {0}", e.Message));
-            }
-            return true;
-        }
-
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -852,30 +635,30 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Zones>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
                     sw.WriteLine("    <!-- Do not use decimals in the corner positions -->");
                     sw.WriteLine("    <!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
                     sw.WriteLine("    <!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
                     sw.WriteLine("    <!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
                     sw.WriteLine("    <!-- Possible variables for commands include {PlayerName}, {EntityId}, {Id}, {EOS}, {Delay}, whisper, global -->");
                     sw.WriteLine("    <!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Do not use decimals") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- Overlapping zones:") && !OldNodeList[i].OuterXml.Contains("<!-- PvPvE: 0") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- EntryCommand and ExitCommand") && !OldNodeList[i].OuterXml.Contains("<!-- Possible variables for commands") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Zone Name=\"Example\"") && !OldNodeList[i].OuterXml.Contains("<!-- <Zone Name=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Do not use") &&
+                            !nodeList[i].OuterXml.Contains("<!-- Overlapping zones") && !nodeList[i].OuterXml.Contains("<!-- PvPvE") &&
+                            !nodeList[i].OuterXml.Contains("<!-- EntryCommand") && !nodeList[i].OuterXml.Contains("<!-- Possible") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Zone Name=\"Example\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Zone Name=\"\" Corner1=\"\" Corner2=\"\" Circle=\"\" EntryMessage=\"\" ExitMessage=\"\" EntryCommand=\"\" ExitCommand=\"\" ReminderNotice=\"\" PvPvE=\"\" NoZombie=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Zone")
                             {
                                 string name = "", corner1 = "", corner2 = "", circle = "", entryMessage = "", exitMessage = "", entryCommand = "",

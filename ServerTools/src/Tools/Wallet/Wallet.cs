@@ -22,9 +22,9 @@ namespace ServerTools
                 {
                     Item_Name = _item;
                 }
-                if (File.Exists(GeneralFunction.XPathDir + "items.xml"))
+                if (File.Exists(GeneralOperations.XPathDir + "items.xml"))
                 {
-                    string[] arrLines = File.ReadAllLines(GeneralFunction.XPathDir + "items.xml");
+                    string[] arrLines = File.ReadAllLines(GeneralOperations.XPathDir + "items.xml");
                     for (int i = 0; i < arrLines.Length; i++)
                     {
                         if (arrLines[i].Contains("set xpath"))
@@ -36,7 +36,7 @@ namespace ServerTools
                             else
                             {
                                 arrLines[i] = string.Format("<set xpath=\"/items/item[@name='{0}']/property[@name='Tags']/@value\">dukes,currency</set>", _item);
-                                File.WriteAllLines(GeneralFunction.XPathDir + "items.xml", arrLines);
+                                File.WriteAllLines(GeneralOperations.XPathDir + "items.xml", arrLines);
                                 break;
                             }
                         }
@@ -45,20 +45,20 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralFunction.XPathDir + "items.xml", e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralOperations.XPathDir + "items.xml", e.Message));
             }
         }
 
         public static int GetCurrency(string _id)
         {
             int value = 0;
-            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_id);
+            ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_id);
             if (cInfo != null)
             {
                 ItemStack[] stacks = cInfo.latestPlayerData.bag;
                 for (int i = 0; i < stacks.Length; i++)
                 {
-                    if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.Name == GeneralFunction.Currency_Item)
+                    if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.Name == GeneralOperations.Currency_Item)
                     {
                         value += stacks[i].count;
                     }
@@ -66,13 +66,13 @@ namespace ServerTools
             }
             else
             {
-                PlayerDataFile pdf = GeneralFunction.GetPlayerDataFileFromId(_id);
+                PlayerDataFile pdf = GeneralOperations.GetPlayerDataFileFromId(_id);
                 if (pdf != null)
                 {
                     ItemStack[] stacks = pdf.bag;
                     for (int i = 0; i < stacks.Length; i++)
                     {
-                        if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.Name == GeneralFunction.Currency_Item)
+                        if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.Name == GeneralOperations.Currency_Item)
                         {
                             value += stacks[i].count;
                         }
@@ -84,14 +84,14 @@ namespace ServerTools
 
         public static List<string[]> GetOtherCurrency(string _id, List<string[]> otherCurrency)
         {
-            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_id);
+            ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_id);
             if (cInfo != null)
             {
                 ItemStack[] stacks = cInfo.latestPlayerData.bag;
                 for (int i = 0; i < stacks.Length; i++)
                 {
                     if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.HasAnyTags(FastTags.Parse("currency")) && 
-                        stacks[i].itemValue.ItemClass.Name != GeneralFunction.Currency_Item)
+                        stacks[i].itemValue.ItemClass.Name != GeneralOperations.Currency_Item)
                     {
                         string[] entry = { i.ToString(), stacks[i].itemValue.ItemClass.Name, stacks[i].count.ToString() };
                         otherCurrency.Add(entry);
@@ -100,14 +100,14 @@ namespace ServerTools
             }
             else
             {
-                PlayerDataFile pdf = GeneralFunction.GetPlayerDataFileFromId(_id);
+                PlayerDataFile pdf = GeneralOperations.GetPlayerDataFileFromId(_id);
                 if (pdf != null)
                 {
                     ItemStack[] stacks = pdf.bag;
                     for (int i = 0; i < stacks.Length; i++)
                     {
                         if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.HasAnyTags(FastTags.Parse("currency")) &&
-                        stacks[i].itemValue.ItemClass.Name != GeneralFunction.Currency_Item)
+                        stacks[i].itemValue.ItemClass.Name != GeneralOperations.Currency_Item)
                         {
                             string[] entry = { i.ToString(), stacks[i].itemValue.ItemClass.Name, stacks[i].count.ToString() };
                             otherCurrency.Add(entry);
@@ -120,10 +120,10 @@ namespace ServerTools
 
         public static void AddCurrency(string _id, int _amount, bool _directAllowed)
         {
-            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_id);
+            ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_id);
             if (cInfo != null)
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                 if (player != null)
                 {
                     if (player.IsSpawned())
@@ -140,7 +140,7 @@ namespace ServerTools
                             }
                             return;
                         }
-                        ItemValue itemValue = ItemClass.GetItem(GeneralFunction.Currency_Item, false);
+                        ItemValue itemValue = ItemClass.GetItem(GeneralOperations.Currency_Item, false);
                         if (itemValue != null)
                         {
                             List<int> stackList = new List<int>();
@@ -194,7 +194,7 @@ namespace ServerTools
 
         public static void AddAltCurrency(string _id, List<string[]> altCurrency)
         {
-            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_id);
+            ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_id);
             if (cInfo != null)
             {
                 for (int i = 0; i < altCurrency.Count; i++)
@@ -224,37 +224,43 @@ namespace ServerTools
 
         public static void RemoveCurrency(string _steamid, int _amount)
         {
-            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_steamid);
-            if (cInfo != null)
+            ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_steamid);
+            if (cInfo == null)
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
-                if (player != null)
+                return;
+            }
+            EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
+            if (player == null)
+            {
+                return;
+            }
+            List<string[]> otherCurrency = new List<string[]>();
+            otherCurrency = GetOtherCurrency(cInfo.CrossplatformId.CombinedString, otherCurrency);
+            int count = GetCurrency(cInfo.CrossplatformId.CombinedString);
+            if (player.IsSpawned())
+            {
+                if (!GameEventManager.GameEventSequences.ContainsKey("action_currency"))
                 {
-                    List<string[]> otherCurrency = new List<string[]>();
-                    otherCurrency = GetOtherCurrency(cInfo.CrossplatformId.CombinedString, otherCurrency);
-                    int count = GetCurrency(cInfo.CrossplatformId.CombinedString);
-                    if (player.IsSpawned())
+                    return;
+                }
+                GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
+                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
+                if (count >= _amount)
+                {
+                    count -= _amount;
+                    if (count > 0)
                     {
-                        if (GameEventManager.GameEventSequences.ContainsKey("action_currency"))
+                        UpdateMainCurrency.Add(cInfo.entityId, count);
+                        if (otherCurrency.Count > 0)
                         {
-                            GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
-                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
-                            if (count >= _amount)
-                            {
-                                count -= _amount;
-                                if (count > 0)
-                                {
-                                    UpdateMainCurrency.Add(cInfo.entityId, count);
-                                    UpdateAltCurrency.Add(cInfo.entityId, otherCurrency);
-                                }
-                            }
+                            UpdateAltCurrency.Add(cInfo.entityId, otherCurrency);
                         }
                     }
-                    else
-                    {
-                        Timers.Wallet_Remove_SingleUseTimer(cInfo.CrossplatformId.CombinedString, count);
-                    }
                 }
+            }
+            else
+            {
+                Timers.Wallet_Remove_SingleUseTimer(cInfo.CrossplatformId.CombinedString, count);
             }
         }
     }

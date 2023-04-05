@@ -25,8 +25,6 @@ namespace ServerTools
         private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, "Shop.xml");
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, "Shop.xml");
 
-        private static XmlNodeList OldNodeList;
-
         public static void Load()
         {
             LoadXml();
@@ -61,1028 +59,1028 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", "Shop.xml", e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                Categories.Clear();
+                PanelItems = "";
+                CategoryString = "";
+                string qualityCategories = "";
+                Dictionary<string, int> itemList = new Dictionary<string, int>();
+                List<string[]> shopLog = PersistentContainer.Instance.ShopLog;
+                GeneralOperations.EntityId.TryGetValue(3, out int entityId);
+                Entity entity = EntityFactory.CreateEntity(entityId, new Vector3(1, 10, 1));
+                EntityAlive player = entity as EntityAlive;
+                if (childNodes != null && childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
                 {
-                    Dict.Clear();
-                    Categories.Clear();
-                    PanelItems = "";
-                    CategoryString = "";
-                    string qualityCategories = "";
-                    Dictionary<string, int> itemList = new Dictionary<string, int>();
-                    List<string[]> shopLog = PersistentContainer.Instance.ShopLog;
-                    GeneralFunction.EntityId.TryGetValue(3, out int entityId);
-                    Entity entity = EntityFactory.CreateEntity(entityId, new Vector3(1, 10, 1));
-                    EntityAlive player = entity as EntityAlive;
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes)
+                        {
+                            continue;
+                        }
+                        string name = "";
+                        string secondaryname;
+                        if (line.HasAttribute("Name"))
+                        {
+                            name = line.GetAttribute("Name");
+                        }
+                        if (name == "")
+                        {
+                            continue;
+                        }
+                        if (line.HasAttribute("SecondaryName"))
+                        {
+                            secondaryname = line.GetAttribute("SecondaryName");
+                        }
+                        else
+                        {
+                            secondaryname = name;
+                        }
+                        int count = 0;
+                        if (line.HasAttribute("Count"))
+                        {
+                            count = int.Parse(line.GetAttribute("Count"));
+                        }
+                        int quality = 0;
+                        if (line.HasAttribute("Quality"))
+                        {
+                            quality = int.Parse(line.GetAttribute("Quality"));
+                        }
+                        int price = 0;
+                        if (line.HasAttribute("Price"))
+                        {
+                            price = int.Parse(line.GetAttribute("Price"));
+                        }
+                        string category = "";
+                        if (line.HasAttribute("Category"))
+                        {
+                            category = line.GetAttribute("Category").ToLower();
+                        }
+                        string panelMessage = "";
+                        if (line.HasAttribute("PanelMessage"))
+                        {
+                            panelMessage = line.GetAttribute("PanelMessage");
+                        }
+                        ItemValue itemValue = ItemClass.GetItem(name, false);
+                        if (itemValue.type == ItemValue.None.type || itemValue.ItemClass == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop.xml entry. Item could not be found: {0}", name));
+                            continue;
+                        }
+                        name = itemValue.ItemClass.Name;
+                        if (count > itemValue.ItemClass.Stacknumber.Value)
+                        {
+                            count = itemValue.ItemClass.Stacknumber.Value;
+                        }
+                        if (quality < 1)
+                        {
+                            quality = 1;
+                        }
+                        if (itemValue.HasQuality)
+                        {
+                            itemValue.Quality = quality;
+                        }
+                        int id = Dict.Count;
+                        string[] item = new string[] { id.ToString(), name, secondaryname, count.ToString(), quality.ToString(), price.ToString(), category, panelMessage };
+                        if (!Dict.Contains(item))
+                        {
+                            Dict.Add(item);
+                            if (category.Contains(","))
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
+                                string[] categories = category.Split(',');
+                                for (int j = 0; j < categories.Length; j++)
                                 {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                string name = "";
-                                if (line.HasAttribute("Name"))
-                                {
-                                    name = line.GetAttribute("Name");
-                                }
-                                string secondaryname;
-                                if (line.HasAttribute("SecondaryName"))
-                                {
-                                    secondaryname = line.GetAttribute("SecondaryName");
-                                }
-                                else
-                                {
-                                    secondaryname = name;
-                                }
-                                int count = 0;
-                                if (line.HasAttribute("Count"))
-                                {
-                                    count = int.Parse(line.GetAttribute("Count"));
-                                }
-                                int quality = 0;
-                                if (line.HasAttribute("Quality"))
-                                {
-                                    quality = int.Parse(line.GetAttribute("Quality"));
-                                }
-                                int price = 0;
-                                if (line.HasAttribute("Price"))
-                                {
-                                    price = int.Parse(line.GetAttribute("Price"));
-                                }
-                                string category = "";
-                                if (line.HasAttribute("Category"))
-                                {
-                                    category = line.GetAttribute("Category").ToLower();
-                                }
-                                string panelMessage = "";
-                                if (line.HasAttribute("PanelMessage"))
-                                {
-                                    panelMessage = line.GetAttribute("PanelMessage");
-                                }
-                                ItemValue itemValue = ItemClass.GetItem(name, false);
-                                if (itemValue.type == ItemValue.None.type || itemValue.ItemClass == null)
-                                {
-                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop.xml entry. Item could not be found: {0}", name));
-                                    continue;
-                                }
-                                name = itemValue.ItemClass.Name;
-                                if (count > itemValue.ItemClass.Stacknumber.Value)
-                                {
-                                    count = itemValue.ItemClass.Stacknumber.Value;
-                                }
-                                if (quality < 1)
-                                {
-                                    quality = 1;
-                                }
-                                if (itemValue.HasQuality)
-                                {
-                                    itemValue.Quality = quality;
-                                }
-                                int id = Dict.Count;
-                                string[] item = new string[] { id.ToString(), name, secondaryname, count.ToString(), quality.ToString(), price.ToString(), category, panelMessage };
-                                if (!Dict.Contains(item))
-                                {
-                                    Dict.Add(item);
-                                    if (category.Contains(","))
+                                    if (!Categories.Contains(categories[j]))
                                     {
-                                        string[] categories = category.Split(',');
-                                        for (int j = 0; j < categories.Length; j++)
-                                        {
-                                            if (!Categories.Contains(categories[j]))
-                                            {
-                                                Categories.Add(categories[j]);
-                                                CategoryString += categories[j] + "§";
-                                            }
-                                        }
+                                        Categories.Add(categories[j]);
+                                        CategoryString += categories[j] + "§";
                                     }
-                                    else if (!Categories.Contains(category))
+                                }
+                            }
+                            else if (!Categories.Contains(category))
+                            {
+                                Categories.Add(category);
+                                CategoryString += category + "§";
+                            }
+                            if (!qualityCategories.Contains("Quality:" + quality.ToString()))
+                            {
+                                qualityCategories += "Quality:" + quality.ToString() + "§";
+                            }
+                            string stats = "";
+                            if (itemValue.ItemClass.DisplayType == null)
+                            {
+                                continue;
+                            }
+                            switch (itemValue.ItemClass.DisplayType)
+                            {
+                                case "rangedGunNoMag":
+                                    float rangedDamage1 = EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (rangedDamage1 != 0)
                                     {
-                                        Categories.Add(category);
-                                        CategoryString += category + "§";
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Ranged Damage: " + rangedDamage1;
                                     }
-                                    if (!qualityCategories.Contains("Quality:" + quality.ToString()))
+                                    int magazineSize1 = (int)EffectManager.GetValue(PassiveEffects.MagazineSize, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (magazineSize1 != 0)
                                     {
-                                        qualityCategories += "Quality:" + quality.ToString() + "§";
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Magazine Size: " + magazineSize1;
                                     }
-                                    string stats = "";
-                                    if (itemValue.ItemClass.DisplayType == null)
+                                    int range1 = (int)EffectManager.GetValue(PassiveEffects.MaxRange, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (range1 != 0)
                                     {
-                                        continue;
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Effective Range: " + range1;
                                     }
-                                    switch (itemValue.ItemClass.DisplayType)
+                                    int durability1 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability1 != 0)
                                     {
-                                        case "rangedGunNoMag":
-                                            float rangedDamage1 = EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (rangedDamage1 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Ranged Damage: " + rangedDamage1;
-                                            }
-                                            int magazineSize1 = (int)EffectManager.GetValue(PassiveEffects.MagazineSize, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (magazineSize1 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Magazine Size: " + magazineSize1;
-                                            }
-                                            int range1 = (int)EffectManager.GetValue(PassiveEffects.MaxRange, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (range1 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Effective Range: " + range1;
-                                            }
-                                            int durability1 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability1 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Max Durability: " + durability1;
-                                            }
-                                            break;
-                                        case "rangedGun":
-                                            float rangedDamage2 = EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (rangedDamage2 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Ranged Damage: " + rangedDamage2;
-                                            }
-                                            int magazineSize2 = (int)EffectManager.GetValue(PassiveEffects.MagazineSize, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (magazineSize2 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Magazine Size: " + magazineSize2;
-                                            }
-                                            int roundsPerMin2 = (int)EffectManager.GetValue(PassiveEffects.RoundsPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (roundsPerMin2 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Rounds Per Minute: " + roundsPerMin2;
-                                            }
-                                            int range2 = (int)EffectManager.GetValue(PassiveEffects.MaxRange, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (range2 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Effective Range: " + range2;
-                                            }
-                                            int durability2 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability2 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Max Durability: " + durability2;
-                                            }
-                                            break;
-                                        case "rangedShotgunNoMag":
-                                            float rangedDamage3 = EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (rangedDamage3 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Ranged Damage: " + rangedDamage3;
-                                            }
-                                            int pellets3 = (int)EffectManager.GetValue(PassiveEffects.RoundRayCount, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (pellets3 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Pellets: " + pellets3;
-                                            }
-                                            int magazineSize3 = (int)EffectManager.GetValue(PassiveEffects.MagazineSize, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (magazineSize3 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Magazine Size: " + magazineSize3;
-                                            }
-                                            int range3 = (int)EffectManager.GetValue(PassiveEffects.MaxRange, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (range3 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Effective Range: " + range3;
-                                            }
-                                            int durability3 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability3 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Max Durability: " + durability3;
-                                            }
-                                            break;
-                                        case "rangedShotgun":
-                                            float rangedDamage4 = EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (rangedDamage4 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Ranged Damage: " + rangedDamage4;
-                                            }
-                                            int pellets4 = (int)EffectManager.GetValue(PassiveEffects.RoundRayCount, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (pellets4 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Pellets: " + pellets4;
-                                            }
-                                            int magazineSize4 = (int)EffectManager.GetValue(PassiveEffects.MagazineSize, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (magazineSize4 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Magazine Size: " + magazineSize4;
-                                            }
-                                            int roundsPerMin4 = (int)EffectManager.GetValue(PassiveEffects.RoundsPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (roundsPerMin4 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Rounds Per Minute: " + roundsPerMin4;
-                                            }
-                                            int range4 = (int)EffectManager.GetValue(PassiveEffects.MaxRange, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (range4 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Effective Range: " + range4;
-                                            }
-                                            int durability4 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability4 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Max Durability: " + durability4;
-                                            }
-                                            break;
-                                        case "meleeRepairTool":
-                                            int meleeDamage5 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (meleeDamage5 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Melee Damage: " + meleeDamage5;
-                                            }
-                                            int repairAmount5 = (int)EffectManager.GetValue(PassiveEffects.RepairAmount, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (repairAmount5 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Repair Amount: " + repairAmount5;
-                                            }
-                                            int blockDamage5 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (blockDamage5 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Block Damage: " + blockDamage5;
-                                            }
-                                            int stamina5 = (int)EffectManager.GetValue(PassiveEffects.StaminaLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (stamina5 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Stamina Cost: " + stamina5;
-                                            }
-                                            int attacksPerMin5 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (attacksPerMin5 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Attacks Per Min: " + attacksPerMin5;
-                                            }
-                                            int durability5 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability5 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Max Durability: " + durability5;
-                                            }
-                                            break;
-                                        case "rangedRepairTool":
-                                            int meleeDamage6 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (meleeDamage6 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Melee Damage: " + meleeDamage6;
-                                            }
-                                            int repairAmount6 = (int)EffectManager.GetValue(PassiveEffects.RepairAmount, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (repairAmount6 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Repair Amount: " + repairAmount6;
-                                            }
-                                            int blockDamage6 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (blockDamage6 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Block Damage: " + blockDamage6;
-                                            }
-                                            int range6 = (int)EffectManager.GetValue(PassiveEffects.MaxRange, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (range6 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Effective Range: " + range6;
-                                            }
-                                            int attacksPerMin6 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (attacksPerMin6 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Attacks Per Min: " + attacksPerMin6;
-                                            }
-                                            int durability6 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability6 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Max Durability: " + durability6;
-                                            }
-                                            break;
-                                        case "melee":
-                                            int meleeDamage7 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (meleeDamage7 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Melee Damage: " + meleeDamage7;
-                                            }
-                                            int bonusDamage7 = (int)EffectManager.GetValue(PassiveEffects.DamageBonus, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (bonusDamage7 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Power Attack Damage: " + bonusDamage7;
-                                            }
-                                            int blockDamage7 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (blockDamage7 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Block Damage: " + blockDamage7;
-                                            }
-                                            int stamina7 = (int)EffectManager.GetValue(PassiveEffects.StaminaLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (stamina7 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Stamina Cost: " + stamina7;
-                                            }
-                                            int attacksPerMin7 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (attacksPerMin7 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Attacks Per Min: " + attacksPerMin7;
-                                            }
-                                            int durability7 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability7 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Max Durability: " + durability7;
-                                            }
-                                            break;
-                                        case "motorTool":
-                                            int meleeDamage8 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (meleeDamage8 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Melee Damage: " + meleeDamage8;
-                                            }
-                                            int blockDamage8 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (blockDamage8 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Block Damage: " + blockDamage8;
-                                            }
-                                            int attacksPerMin8 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (attacksPerMin8 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Attacks Per Min: " + attacksPerMin8;
-                                            }
-                                            int durability8 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability8 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Max Durability: " + durability8;
-                                            }
-                                            break;
-                                        case "meleeSpear":
-                                            int meleeDamage9 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (meleeDamage9 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Melee Damage: " + meleeDamage9;
-                                            }
-                                            int bonusDamage9 = (int)EffectManager.GetValue(PassiveEffects.DamageBonus, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (bonusDamage9 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Power Attack Damage: " + bonusDamage9;
-                                            }
-                                            int targetArmor = (int)EffectManager.GetValue(PassiveEffects.TargetArmor, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (targetArmor != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Target Armor: " + targetArmor;
-                                            }
-                                            int blockDamage9 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (blockDamage9 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Block Damage: " + blockDamage9;
-                                            }
-                                            int stamina9 = (int)EffectManager.GetValue(PassiveEffects.StaminaLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (stamina9 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Stamina Cost: " + stamina9;
-                                            }
-                                            int attacksPerMin9 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (attacksPerMin9 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Attacks Per Min: " + attacksPerMin9;
-                                            }
-                                            int durability9 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability9 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Max Durability: " + durability9;
-                                            }
-                                            break;
-                                        case "meleeHeavy":
-                                            int meleeDamage10 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (meleeDamage10 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Melee Damage: " + meleeDamage10;
-                                            }
-                                            int bonusDamage10 = (int)EffectManager.GetValue(PassiveEffects.DamageBonus, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (bonusDamage10 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Power Attack Damage: " + bonusDamage10;
-                                            }
-                                            int blockDamage10 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (blockDamage10 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Block Damage: " + blockDamage10;
-                                            }
-                                            int stamina10 = (int)EffectManager.GetValue(PassiveEffects.StaminaLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (stamina10 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Stamina Cost: " + stamina10;
-                                            }
-                                            int attacksPerMin10 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (attacksPerMin10 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Attacks Per Min: " + attacksPerMin10;
-                                            }
-                                            int durability10 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability10 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Max Durability: " + durability10;
-                                            }
-                                            break;
-                                        case "rangedBow":
-                                            int meleeDamage11 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (meleeDamage11 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Ranged Damage: " + meleeDamage11;
-                                            }
-                                            int projectileVelocity11 = (int)EffectManager.GetValue(PassiveEffects.ProjectileVelocity, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (projectileVelocity11 > 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Projectile Velocity: " + projectileVelocity11;
-                                            }
-                                            int durability11 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability11 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Max Durability: " + durability11;
-                                            }
-                                            break;
-                                        case "meleeTurret":
-                                            int meleeDamage12 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (meleeDamage12 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Melee Damage: " + meleeDamage12;
-                                            }
-                                            int blockDamage12 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (blockDamage12 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Block Damage: " + blockDamage12;
-                                            }
-                                            int attacksPerMin12 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (attacksPerMin12 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Attacks Per Min: " + attacksPerMin12;
-                                            }
-                                            int durability12 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability12 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Health/Max Durability: " + durability12;
-                                            }
-                                            break;
-                                        case "armorLight":
-                                            float damageResistance13 = EffectManager.GetValue(PassiveEffects.PhysicalDamageResist, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (damageResistance13 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Light Armor Rating: " + Math.Round(damageResistance13, 1);
-                                            }
-                                            float explosionResistance13 = EffectManager.GetValue(PassiveEffects.ElementalDamageResist, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (explosionResistance13 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Explosion Resistance: " + Math.Round(explosionResistance13, 1);
-                                            }
-                                            float critResistence13 = EffectManager.GetValue(PassiveEffects.BuffResistance, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (critResistence13 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Crit Resistance: " + Math.Round(critResistence13, 1);
-                                            }
-                                            float stamina13 = EffectManager.GetValue(PassiveEffects.StaminaChangeOT, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (stamina13 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Stamina /s: -" + stamina13;
-                                            }
-                                            float mobility13 = EffectManager.GetValue(PassiveEffects.Mobility, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (mobility13 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Mobility: -" + Math.Round(mobility13, 1);
-                                            }
-                                            float noise13 = EffectManager.GetValue(PassiveEffects.NoiseMultiplier, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (noise13 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Noise Increase: " + Math.Round(noise13, 1);
-                                            }
-                                            int durability13 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability13 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Max Durability: " + durability13;
-                                            }
-                                            int hypothermalResistence13 = (int)EffectManager.GetValue(PassiveEffects.HypothermalResist, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (hypothermalResistence13 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Hypothermal Resistance: " + hypothermalResistence13;
-                                            }
-                                            break;
-                                        case "armorHeavy":
-                                            float damageResistance14 = EffectManager.GetValue(PassiveEffects.PhysicalDamageResist, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (damageResistance14 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Heavy Armor Rating: " + Math.Round(damageResistance14, 1);
-                                            }
-                                            float explosionResistance14 = EffectManager.GetValue(PassiveEffects.ElementalDamageResist, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (explosionResistance14 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Explosion Resistance: " + Math.Round(explosionResistance14, 1);
-                                            }
-                                            float critResistance14 = EffectManager.GetValue(PassiveEffects.BuffResistance, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (critResistance14 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Crit Resistance: " + Math.Round(critResistance14, 1);
-                                            }
-                                            float stamina14 = EffectManager.GetValue(PassiveEffects.StaminaChangeOT, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (stamina14 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Stamina /s: -" + stamina14;
-                                            }
-                                            float mobility14 = EffectManager.GetValue(PassiveEffects.Mobility, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (mobility14 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Mobility: -" + Math.Round(mobility14, 1);
-                                            }
-                                            float noise14 = EffectManager.GetValue(PassiveEffects.NoiseMultiplier, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (noise14 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Noise Increase: " + Math.Round(noise14, 1);
-                                            }
-                                            int durability14 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (durability14 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Max Durability: " + durability14;
-                                            }
-                                            int hypothermalResistence14 = (int)EffectManager.GetValue(PassiveEffects.HypothermalResist, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (hypothermalResistence14 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Hypothermal Resistance: " + hypothermalResistence14;
-                                            }
-                                            break;
-                                        case "ammoLauncher":
-                                            int explosionDamage15 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (explosionDamage15 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Explosion Damage: " + explosionDamage15;
-                                            }
-                                            int blockDamage15 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (blockDamage15 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Block Damage: " + blockDamage15;
-                                            }
-                                            int explosionRadius15 = (int)EffectManager.GetValue(PassiveEffects.ExplosionRadius, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (explosionRadius15 != 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Explosion Radius: " + explosionRadius15;
-                                            }
-                                            break;
-                                        case "medical":
-                                            int healthUp16 = (int)EffectManager.GetValue(PassiveEffects.HealthGain, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (healthUp16 > 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Health Gain: " + healthUp16;
-                                            }
-                                            int healthDown16 = (int)EffectManager.GetValue(PassiveEffects.HealthLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                            if (healthDown16 < 0)
-                                            {
-                                                if (stats.Length > 0)
-                                                {
-                                                    stats += " </br> ";
-                                                }
-                                                stats += "Health Loss: " + healthDown16;
-                                            }
-                                            break;
-                                        case null:
-                                            break;
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Max Durability: " + durability1;
                                     }
-                                    if (itemValue.ItemClass.GetItemName().ToLower().Contains("arrow") || itemValue.ItemClass.DisplayType.ToLower().Contains("arrow"))
+                                    break;
+                                case "rangedGun":
+                                    float rangedDamage2 = EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (rangedDamage2 != 0)
                                     {
-                                        int meleeDamage = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                        if (meleeDamage != 0)
+                                        if (stats.Length > 0)
                                         {
-                                            if (stats.Length > 0)
-                                            {
-                                                stats += " </br> ";
-                                            }
-                                            stats += "Ranged Damage: " + meleeDamage;
+                                            stats += " </br> ";
                                         }
-                                        int blockDamage = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                        if (blockDamage != 0)
-                                        {
-                                            if (stats.Length > 0)
-                                            {
-                                                stats += " </br> ";
-                                            }
-                                            stats += "Block Damage: " + blockDamage;
-                                        }
-                                        int projectileVelocity = (int)EffectManager.GetValue(PassiveEffects.ProjectileVelocity, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                        if (projectileVelocity > 0)
-                                        {
-                                            if (stats.Length > 0)
-                                            {
-                                                stats += " </br> ";
-                                            }
-                                            stats += "Projectile Velocity: " + projectileVelocity;
-                                        }
+                                        stats += "Ranged Damage: " + rangedDamage2;
                                     }
-                                    else if (itemValue.ItemClass.GetItemName().ToLower().Contains("food") || itemValue.ItemClass.DisplayType.ToLower().Contains("food"))
+                                    int magazineSize2 = (int)EffectManager.GetValue(PassiveEffects.MagazineSize, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (magazineSize2 != 0)
                                     {
-                                        int foodUp = (int)EffectManager.GetValue(PassiveEffects.FoodGain, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                        if (foodUp > 0)
+                                        if (stats.Length > 0)
                                         {
-                                            if (stats.Length > 0)
-                                            {
-                                                stats += " </br> ";
-                                            }
-                                            stats += "Food: " + foodUp;
+                                            stats += " </br> ";
                                         }
-                                        int foodDown = (int)EffectManager.GetValue(PassiveEffects.FoodLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                        if (foodDown < 0)
-                                        {
-                                            if (stats.Length > 0)
-                                            {
-                                                stats += " </br> ";
-                                            }
-                                            stats += "Food: " + foodDown;
-                                        }
-                                        int healthUp = (int)EffectManager.GetValue(PassiveEffects.HealthGain, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                        if (healthUp > 0)
-                                        {
-                                            if (stats.Length > 0)
-                                            {
-                                                stats += " </br> ";
-                                            }
-                                            stats += "Health: " + healthUp;
-                                        }
-                                        int healthDown = (int)EffectManager.GetValue(PassiveEffects.HealthLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                        if (healthDown < 0)
-                                        {
-                                            if (stats.Length > 0)
-                                            {
-                                                stats += " </br> ";
-                                            }
-                                            stats += "Health: " + healthDown;
-                                        }
-                                        int waterUp = (int)EffectManager.GetValue(PassiveEffects.WaterGain, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                        if (waterUp > 0)
-                                        {
-                                            if (stats.Length > 0)
-                                            {
-                                                stats += " </br> ";
-                                            }
-                                            stats += "Water: " + waterUp;
-                                        }
-                                        int waterDown = (int)EffectManager.GetValue(PassiveEffects.WaterLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                        if (waterDown < 0)
-                                        {
-                                            if (stats.Length > 0)
-                                            {
-                                                stats += " </br> ";
-                                            }
-                                            stats += "Water: " + waterDown;
-                                        }
-                                        int staminaMax = (int)EffectManager.GetValue(PassiveEffects.StaminaMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
-                                        if (staminaMax != 0)
-                                        {
-                                            if (stats.Length > 0)
-                                            {
-                                                stats += " </br> ";
-                                            }
-                                            stats += "Max Stamina Bonus: " + staminaMax;
-                                        }
+                                        stats += "Magazine Size: " + magazineSize2;
                                     }
-
+                                    int roundsPerMin2 = (int)EffectManager.GetValue(PassiveEffects.RoundsPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (roundsPerMin2 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Rounds Per Minute: " + roundsPerMin2;
+                                    }
+                                    int range2 = (int)EffectManager.GetValue(PassiveEffects.MaxRange, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (range2 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Effective Range: " + range2;
+                                    }
+                                    int durability2 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability2 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Max Durability: " + durability2;
+                                    }
+                                    break;
+                                case "rangedShotgunNoMag":
+                                    float rangedDamage3 = EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (rangedDamage3 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Ranged Damage: " + rangedDamage3;
+                                    }
+                                    int pellets3 = (int)EffectManager.GetValue(PassiveEffects.RoundRayCount, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (pellets3 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Pellets: " + pellets3;
+                                    }
+                                    int magazineSize3 = (int)EffectManager.GetValue(PassiveEffects.MagazineSize, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (magazineSize3 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Magazine Size: " + magazineSize3;
+                                    }
+                                    int range3 = (int)EffectManager.GetValue(PassiveEffects.MaxRange, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (range3 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Effective Range: " + range3;
+                                    }
+                                    int durability3 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability3 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Max Durability: " + durability3;
+                                    }
+                                    break;
+                                case "rangedShotgun":
+                                    float rangedDamage4 = EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (rangedDamage4 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Ranged Damage: " + rangedDamage4;
+                                    }
+                                    int pellets4 = (int)EffectManager.GetValue(PassiveEffects.RoundRayCount, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (pellets4 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Pellets: " + pellets4;
+                                    }
+                                    int magazineSize4 = (int)EffectManager.GetValue(PassiveEffects.MagazineSize, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (magazineSize4 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Magazine Size: " + magazineSize4;
+                                    }
+                                    int roundsPerMin4 = (int)EffectManager.GetValue(PassiveEffects.RoundsPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (roundsPerMin4 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Rounds Per Minute: " + roundsPerMin4;
+                                    }
+                                    int range4 = (int)EffectManager.GetValue(PassiveEffects.MaxRange, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (range4 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Effective Range: " + range4;
+                                    }
+                                    int durability4 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability4 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Max Durability: " + durability4;
+                                    }
+                                    break;
+                                case "meleeRepairTool":
+                                    int meleeDamage5 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (meleeDamage5 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Melee Damage: " + meleeDamage5;
+                                    }
+                                    int repairAmount5 = (int)EffectManager.GetValue(PassiveEffects.RepairAmount, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (repairAmount5 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Repair Amount: " + repairAmount5;
+                                    }
+                                    int blockDamage5 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (blockDamage5 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Block Damage: " + blockDamage5;
+                                    }
+                                    int stamina5 = (int)EffectManager.GetValue(PassiveEffects.StaminaLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (stamina5 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Stamina Cost: " + stamina5;
+                                    }
+                                    int attacksPerMin5 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (attacksPerMin5 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Attacks Per Min: " + attacksPerMin5;
+                                    }
+                                    int durability5 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability5 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Max Durability: " + durability5;
+                                    }
+                                    break;
+                                case "rangedRepairTool":
+                                    int meleeDamage6 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (meleeDamage6 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Melee Damage: " + meleeDamage6;
+                                    }
+                                    int repairAmount6 = (int)EffectManager.GetValue(PassiveEffects.RepairAmount, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (repairAmount6 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Repair Amount: " + repairAmount6;
+                                    }
+                                    int blockDamage6 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (blockDamage6 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Block Damage: " + blockDamage6;
+                                    }
+                                    int range6 = (int)EffectManager.GetValue(PassiveEffects.MaxRange, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (range6 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Effective Range: " + range6;
+                                    }
+                                    int attacksPerMin6 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (attacksPerMin6 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Attacks Per Min: " + attacksPerMin6;
+                                    }
+                                    int durability6 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability6 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Max Durability: " + durability6;
+                                    }
+                                    break;
+                                case "melee":
+                                    int meleeDamage7 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (meleeDamage7 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Melee Damage: " + meleeDamage7;
+                                    }
+                                    int bonusDamage7 = (int)EffectManager.GetValue(PassiveEffects.DamageBonus, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (bonusDamage7 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Power Attack Damage: " + bonusDamage7;
+                                    }
+                                    int blockDamage7 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (blockDamage7 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Block Damage: " + blockDamage7;
+                                    }
+                                    int stamina7 = (int)EffectManager.GetValue(PassiveEffects.StaminaLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (stamina7 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Stamina Cost: " + stamina7;
+                                    }
+                                    int attacksPerMin7 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (attacksPerMin7 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Attacks Per Min: " + attacksPerMin7;
+                                    }
+                                    int durability7 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability7 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Max Durability: " + durability7;
+                                    }
+                                    break;
+                                case "motorTool":
+                                    int meleeDamage8 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (meleeDamage8 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Melee Damage: " + meleeDamage8;
+                                    }
+                                    int blockDamage8 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (blockDamage8 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Block Damage: " + blockDamage8;
+                                    }
+                                    int attacksPerMin8 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (attacksPerMin8 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Attacks Per Min: " + attacksPerMin8;
+                                    }
+                                    int durability8 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability8 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Max Durability: " + durability8;
+                                    }
+                                    break;
+                                case "meleeSpear":
+                                    int meleeDamage9 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (meleeDamage9 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Melee Damage: " + meleeDamage9;
+                                    }
+                                    int bonusDamage9 = (int)EffectManager.GetValue(PassiveEffects.DamageBonus, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (bonusDamage9 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Power Attack Damage: " + bonusDamage9;
+                                    }
+                                    int targetArmor = (int)EffectManager.GetValue(PassiveEffects.TargetArmor, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (targetArmor != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Target Armor: " + targetArmor;
+                                    }
+                                    int blockDamage9 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (blockDamage9 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Block Damage: " + blockDamage9;
+                                    }
+                                    int stamina9 = (int)EffectManager.GetValue(PassiveEffects.StaminaLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (stamina9 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Stamina Cost: " + stamina9;
+                                    }
+                                    int attacksPerMin9 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (attacksPerMin9 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Attacks Per Min: " + attacksPerMin9;
+                                    }
+                                    int durability9 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability9 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Max Durability: " + durability9;
+                                    }
+                                    break;
+                                case "meleeHeavy":
+                                    int meleeDamage10 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (meleeDamage10 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Melee Damage: " + meleeDamage10;
+                                    }
+                                    int bonusDamage10 = (int)EffectManager.GetValue(PassiveEffects.DamageBonus, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (bonusDamage10 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Power Attack Damage: " + bonusDamage10;
+                                    }
+                                    int blockDamage10 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (blockDamage10 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Block Damage: " + blockDamage10;
+                                    }
+                                    int stamina10 = (int)EffectManager.GetValue(PassiveEffects.StaminaLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (stamina10 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Stamina Cost: " + stamina10;
+                                    }
+                                    int attacksPerMin10 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (attacksPerMin10 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Attacks Per Min: " + attacksPerMin10;
+                                    }
+                                    int durability10 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability10 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Max Durability: " + durability10;
+                                    }
+                                    break;
+                                case "rangedBow":
+                                    int meleeDamage11 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (meleeDamage11 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Ranged Damage: " + meleeDamage11;
+                                    }
+                                    int projectileVelocity11 = (int)EffectManager.GetValue(PassiveEffects.ProjectileVelocity, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (projectileVelocity11 > 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Projectile Velocity: " + projectileVelocity11;
+                                    }
+                                    int durability11 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability11 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Max Durability: " + durability11;
+                                    }
+                                    break;
+                                case "meleeTurret":
+                                    int meleeDamage12 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (meleeDamage12 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Melee Damage: " + meleeDamage12;
+                                    }
+                                    int blockDamage12 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (blockDamage12 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Block Damage: " + blockDamage12;
+                                    }
+                                    int attacksPerMin12 = (int)EffectManager.GetValue(PassiveEffects.AttacksPerMinute, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (attacksPerMin12 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Attacks Per Min: " + attacksPerMin12;
+                                    }
+                                    int durability12 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability12 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Health/Max Durability: " + durability12;
+                                    }
+                                    break;
+                                case "armorLight":
+                                    float damageResistance13 = EffectManager.GetValue(PassiveEffects.PhysicalDamageResist, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (damageResistance13 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Light Armor Rating: " + Math.Round(damageResistance13, 1);
+                                    }
+                                    float explosionResistance13 = EffectManager.GetValue(PassiveEffects.ElementalDamageResist, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (explosionResistance13 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Explosion Resistance: " + Math.Round(explosionResistance13, 1);
+                                    }
+                                    float critResistence13 = EffectManager.GetValue(PassiveEffects.BuffResistance, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (critResistence13 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Crit Resistance: " + Math.Round(critResistence13, 1);
+                                    }
+                                    float stamina13 = EffectManager.GetValue(PassiveEffects.StaminaChangeOT, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (stamina13 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Stamina /s: -" + stamina13;
+                                    }
+                                    float mobility13 = EffectManager.GetValue(PassiveEffects.Mobility, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (mobility13 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Mobility: -" + Math.Round(mobility13, 1);
+                                    }
+                                    float noise13 = EffectManager.GetValue(PassiveEffects.NoiseMultiplier, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (noise13 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Noise Increase: " + Math.Round(noise13, 1);
+                                    }
+                                    int durability13 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability13 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Max Durability: " + durability13;
+                                    }
+                                    int hypothermalResistence13 = (int)EffectManager.GetValue(PassiveEffects.HypothermalResist, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (hypothermalResistence13 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Hypothermal Resistance: " + hypothermalResistence13;
+                                    }
+                                    break;
+                                case "armorHeavy":
+                                    float damageResistance14 = EffectManager.GetValue(PassiveEffects.PhysicalDamageResist, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (damageResistance14 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Heavy Armor Rating: " + Math.Round(damageResistance14, 1);
+                                    }
+                                    float explosionResistance14 = EffectManager.GetValue(PassiveEffects.ElementalDamageResist, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (explosionResistance14 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Explosion Resistance: " + Math.Round(explosionResistance14, 1);
+                                    }
+                                    float critResistance14 = EffectManager.GetValue(PassiveEffects.BuffResistance, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (critResistance14 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Crit Resistance: " + Math.Round(critResistance14, 1);
+                                    }
+                                    float stamina14 = EffectManager.GetValue(PassiveEffects.StaminaChangeOT, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (stamina14 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Stamina /s: -" + stamina14;
+                                    }
+                                    float mobility14 = EffectManager.GetValue(PassiveEffects.Mobility, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (mobility14 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Mobility: -" + Math.Round(mobility14, 1);
+                                    }
+                                    float noise14 = EffectManager.GetValue(PassiveEffects.NoiseMultiplier, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (noise14 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Noise Increase: " + Math.Round(noise14, 1);
+                                    }
+                                    int durability14 = (int)EffectManager.GetValue(PassiveEffects.DegradationMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (durability14 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Max Durability: " + durability14;
+                                    }
+                                    int hypothermalResistence14 = (int)EffectManager.GetValue(PassiveEffects.HypothermalResist, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (hypothermalResistence14 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Hypothermal Resistance: " + hypothermalResistence14;
+                                    }
+                                    break;
+                                case "ammoLauncher":
+                                    int explosionDamage15 = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (explosionDamage15 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Explosion Damage: " + explosionDamage15;
+                                    }
+                                    int blockDamage15 = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (blockDamage15 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Block Damage: " + blockDamage15;
+                                    }
+                                    int explosionRadius15 = (int)EffectManager.GetValue(PassiveEffects.ExplosionRadius, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (explosionRadius15 != 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Explosion Radius: " + explosionRadius15;
+                                    }
+                                    break;
+                                case "medical":
+                                    int healthUp16 = (int)EffectManager.GetValue(PassiveEffects.HealthGain, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (healthUp16 > 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Health Gain: " + healthUp16;
+                                    }
+                                    int healthDown16 = (int)EffectManager.GetValue(PassiveEffects.HealthLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                    if (healthDown16 < 0)
+                                    {
+                                        if (stats.Length > 0)
+                                        {
+                                            stats += " </br> ";
+                                        }
+                                        stats += "Health Loss: " + healthDown16;
+                                    }
+                                    break;
+                                case null:
+                                    break;
+                            }
+                            if (itemValue.ItemClass.GetItemName().ToLower().Contains("arrow") || itemValue.ItemClass.DisplayType.ToLower().Contains("arrow"))
+                            {
+                                int meleeDamage = (int)EffectManager.GetValue(PassiveEffects.EntityDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                if (meleeDamage != 0)
+                                {
                                     if (stats.Length > 0)
                                     {
                                         stats += " </br> ";
                                     }
-                                    stats += "Price: " + price + " </br> ";
-                                    string sold = "Sold: 0";
-                                    if (shopLog.Count > 0)
+                                    stats += "Ranged Damage: " + meleeDamage;
+                                }
+                                int blockDamage = (int)EffectManager.GetValue(PassiveEffects.BlockDamage, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                if (blockDamage != 0)
+                                {
+                                    if (stats.Length > 0)
                                     {
-                                        int sellCount = 0;
-                                        for (int j = 0; j < shopLog.Count; j++)
-                                        {
-                                            if (shopLog[j].Contains(name))
-                                            {
-                                                sellCount += 1;
-                                            }
-                                        }
-                                        if (sellCount > 0)
-                                        {
-                                            sold = "Sold: " + sellCount;
-                                        }
+                                        stats += " </br> ";
                                     }
-                                    stats += sold;
-                                    itemList.Add(category + "§" + name + "§" + secondaryname + "§" + itemValue.ItemClass.GetIconName() + "§" + count + "§" +
-                                        quality + "§" + price + "§" + stats + "§" + id + "§" + panelMessage + "╚", price);
+                                    stats += "Block Damage: " + blockDamage;
+                                }
+                                int projectileVelocity = (int)EffectManager.GetValue(PassiveEffects.ProjectileVelocity, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                if (projectileVelocity > 0)
+                                {
+                                    if (stats.Length > 0)
+                                    {
+                                        stats += " </br> ";
+                                    }
+                                    stats += "Projectile Velocity: " + projectileVelocity;
                                 }
                             }
+                            else if (itemValue.ItemClass.GetItemName().ToLower().Contains("food") || itemValue.ItemClass.DisplayType.ToLower().Contains("food"))
+                            {
+                                int foodUp = (int)EffectManager.GetValue(PassiveEffects.FoodGain, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                if (foodUp > 0)
+                                {
+                                    if (stats.Length > 0)
+                                    {
+                                        stats += " </br> ";
+                                    }
+                                    stats += "Food: " + foodUp;
+                                }
+                                int foodDown = (int)EffectManager.GetValue(PassiveEffects.FoodLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                if (foodDown < 0)
+                                {
+                                    if (stats.Length > 0)
+                                    {
+                                        stats += " </br> ";
+                                    }
+                                    stats += "Food: " + foodDown;
+                                }
+                                int healthUp = (int)EffectManager.GetValue(PassiveEffects.HealthGain, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                if (healthUp > 0)
+                                {
+                                    if (stats.Length > 0)
+                                    {
+                                        stats += " </br> ";
+                                    }
+                                    stats += "Health: " + healthUp;
+                                }
+                                int healthDown = (int)EffectManager.GetValue(PassiveEffects.HealthLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                if (healthDown < 0)
+                                {
+                                    if (stats.Length > 0)
+                                    {
+                                        stats += " </br> ";
+                                    }
+                                    stats += "Health: " + healthDown;
+                                }
+                                int waterUp = (int)EffectManager.GetValue(PassiveEffects.WaterGain, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                if (waterUp > 0)
+                                {
+                                    if (stats.Length > 0)
+                                    {
+                                        stats += " </br> ";
+                                    }
+                                    stats += "Water: " + waterUp;
+                                }
+                                int waterDown = (int)EffectManager.GetValue(PassiveEffects.WaterLoss, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                if (waterDown < 0)
+                                {
+                                    if (stats.Length > 0)
+                                    {
+                                        stats += " </br> ";
+                                    }
+                                    stats += "Water: " + waterDown;
+                                }
+                                int staminaMax = (int)EffectManager.GetValue(PassiveEffects.StaminaMax, itemValue, quality - 1, player, null, itemValue.ItemClass.ItemTags, false, false, false, false, 1, false);
+                                if (staminaMax != 0)
+                                {
+                                    if (stats.Length > 0)
+                                    {
+                                        stats += " </br> ";
+                                    }
+                                    stats += "Max Stamina Bonus: " + staminaMax;
+                                }
+                            }
+
+                            if (stats.Length > 0)
+                            {
+                                stats += " </br> ";
+                            }
+                            stats += "Price: " + price + " </br> ";
+                            string sold = "Sold: 0";
+                            if (shopLog.Count > 0)
+                            {
+                                int sellCount = 0;
+                                for (int j = 0; j < shopLog.Count; j++)
+                                {
+                                    if (shopLog[j].Contains(name))
+                                    {
+                                        sellCount += 1;
+                                    }
+                                }
+                                if (sellCount > 0)
+                                {
+                                    sold = "Sold: " + sellCount;
+                                }
+                            }
+                            stats += sold;
+                            itemList.Add(category + "§" + name + "§" + secondaryname + "§" + itemValue.ItemClass.GetIconName() + "§" + count + "§" +
+                                quality + "§" + price + "§" + stats + "§" + id + "§" + panelMessage + "╚", price);
                         }
                     }
                     foreach (var item in itemList.OrderBy(key => key.Value))
@@ -1103,39 +1101,18 @@ namespace ServerTools
                         CategoryString = CategoryString.Remove(CategoryString.Length - 1);
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing Shop.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -1161,12 +1138,10 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Shop>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
                     sw.WriteLine("    <!-- Items with no quality should be set to 1 -->");
-                    sw.WriteLine("    <!-- <Item Name=\"\" SecondaryName=\"\" Count=\"\" Quality=\"\" Price=\"\" Category=\"\" PanelMessage=\"\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Item Name=\"\" SecondaryName=\"\" Count=\"\" Quality=\"\" Price=\"\" Category=\"\" PanelMessage=\"\" />");
                     if (Dict.Count > 0)
                     {
                         for (int i = 0; i < Dict.Count; i++)
@@ -1208,10 +1183,10 @@ namespace ServerTools
         {
             try
             {
-                if (File.Exists(GeneralFunction.XPathDir + "XUi/windows.xml"))
+                if (File.Exists(GeneralOperations.XPathDir + "XUi/windows.xml"))
                 {
                     string link = string.Format("http://{0}:{1}/shop.html", WebAPI.BaseAddress, WebAPI.Port);
-                    List<string> lines = File.ReadAllLines(GeneralFunction.XPathDir + "XUi/windows.xml").ToList();
+                    List<string> lines = File.ReadAllLines(GeneralOperations.XPathDir + "XUi/windows.xml").ToList();
                     for (int i = 0; i < lines.Count; i++)
                     {
                         if (lines[i].Contains("browserShop"))
@@ -1219,7 +1194,7 @@ namespace ServerTools
                             if (!lines[i + 7].Contains(link))
                             {
                                 lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", link);
-                                File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
+                                File.WriteAllLines(GeneralOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
                             }
                             return;
                         }
@@ -1247,7 +1222,7 @@ namespace ServerTools
                             lines.Add("</append>");
                             lines.Add("");
                             lines.Add("</configs>");
-                            File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
+                            File.WriteAllLines(GeneralOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
                             return;
                         }
                     }
@@ -1255,7 +1230,7 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralFunction.XPathDir + "XUi/windows.xml", e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralOperations.XPathDir + "XUi/windows.xml", e.Message));
             }
         }
 
@@ -1265,7 +1240,7 @@ namespace ServerTools
             {
                 if (Dict.Count > 0)
                 {
-                    EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                    EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
                         if (Market.IsEnabled && Inside_Market)
@@ -1361,7 +1336,7 @@ namespace ServerTools
                 {
                     string ip = _cInfo.ip;
                     bool duplicate = false;
-                    List<ClientInfo> clientList = GeneralFunction.ClientList();
+                    List<ClientInfo> clientList = GeneralOperations.ClientList();
                     if (clientList != null && clientList.Count > 1)
                     {
                         for (int i = 0; i < clientList.Count; i++)
@@ -1374,10 +1349,10 @@ namespace ServerTools
                             }
                         }
                     }
-                    long ipLong = GeneralFunction.ConvertIPToLong(_cInfo.ip);
-                    if (duplicate || (ipLong >= GeneralFunction.ConvertIPToLong("10.0.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("10.255.255.255")) ||
-                        (ipLong >= GeneralFunction.ConvertIPToLong("172.16.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("172.31.255.255")) ||
-                        (ipLong >= GeneralFunction.ConvertIPToLong("192.168.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("192.168.255.255")) ||
+                    long ipLong = GeneralOperations.ConvertIPToLong(_cInfo.ip);
+                    if (duplicate || (ipLong >= GeneralOperations.ConvertIPToLong("10.0.0.0") && ipLong <= GeneralOperations.ConvertIPToLong("10.255.255.255")) ||
+                        (ipLong >= GeneralOperations.ConvertIPToLong("172.16.0.0") && ipLong <= GeneralOperations.ConvertIPToLong("172.31.255.255")) ||
+                        (ipLong >= GeneralOperations.ConvertIPToLong("192.168.0.0") && ipLong <= GeneralOperations.ConvertIPToLong("192.168.255.255")) ||
                         _cInfo.ip == "127.0.0.1")
                     {
                         string securityId = "";
@@ -1632,12 +1607,12 @@ namespace ServerTools
             System.Random rnd = new System.Random();
             for (int i = 0; i < _length; i++)
             {
-                pass += GeneralFunction.NumSet.ElementAt(rnd.Next(0, 10));
+                pass += GeneralOperations.NumSet.ElementAt(rnd.Next(0, 10));
             }
             return pass;
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -1646,25 +1621,23 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Shop>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
                     sw.WriteLine("    <!-- Items with no quality should be set to 1 -->");
-                    sw.WriteLine("    <!-- <Item Name=\"\" SecondaryName=\"\" Count=\"\" Quality=\"\" Price=\"\" Category=\"\" PanelMessage=\"\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Secondary name is") && 
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Item Name=\"\"") && !OldNodeList[i].OuterXml.Contains("<!-- Items with no"))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Secondary name") &&
+                            !nodeList[i].OuterXml.Contains("<!-- Items with") && !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Item Name=\"\" SecondaryName=\"\" Count=\"\" Quality=\"\" Price=\"\" Category=\"\" PanelMessage=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && (line.Name == "Shop" || line.Name == "Item"))
                             {
                                 string name = "", secondaryName = "", count = "", quality = "", price = "", category = "", panelMessage = "";

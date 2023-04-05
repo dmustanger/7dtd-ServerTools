@@ -19,8 +19,6 @@ namespace ServerTools
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-        private static XmlNodeList OldNodeList;
-
         public static void Load()
         {
             LoadXml();
@@ -53,77 +51,55 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                Dict1.Clear();
+                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
-                    Dict.Clear();
-                    Dict1.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes)
+                        {
+                            continue;
+                        }
+                        if (line.HasAttribute("Id") && line.HasAttribute("Name") && line.HasAttribute("Expires"))
+                        {
+                            string id = line.GetAttribute("Id");
+                            string name = line.GetAttribute("Name");
+                            if (id == "")
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Id") && line.HasAttribute("Name") && line.HasAttribute("Expires"))
-                                {
-                                    if (!DateTime.TryParse(line.GetAttribute("Expires"), out DateTime dt))
-                                    {
-                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots.xml entry. Invalid (date) value for 'Expires' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!Dict.ContainsKey(line.GetAttribute("Id")))
-                                    {
-                                        Dict.Add(line.GetAttribute("Id"), dt);
-                                    }
-                                    if (!Dict1.ContainsKey(line.GetAttribute("Id")))
-                                    {
-                                        Dict1.Add(line.GetAttribute("Id"), line.GetAttribute("Name"));
-                                    }
-                                }
+                                continue;
+                            }
+                            if (!DateTime.TryParse(line.GetAttribute("Expires"), out DateTime dt))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots.xml entry. Invalid (date) value for 'Expires' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!Dict.ContainsKey(id))
+                            {
+                                Dict.Add(id, dt);
+                                Dict1.Add(id, name);
                             }
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing ReservedSlots.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -147,11 +123,10 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ReservedSlots>");
-                sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                 sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Tron\" Expires=\"2050-10-29 10:30:00\" /> -->");
                 sw.WriteLine("    <!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123\" Name=\"Yoggi\" Expires=\"2050-01-11 07:30:00\" /> -->");
-                sw.WriteLine();
-                sw.WriteLine();
+                sw.WriteLine("    <Player Id=\"\" Name=\"\" Expires=\"\" />");
                 if (Dict.Count > 0)
                 {
                     foreach (KeyValuePair<string, DateTime> kvp in Dict)
@@ -159,10 +134,6 @@ namespace ServerTools
                         Dict1.TryGetValue(kvp.Key, out string _name);
                         sw.WriteLine(string.Format("    <Player Id=\"{0}\" Name=\"{1}\" Expires=\"{2}\" />", kvp.Key, _name, kvp.Value.ToString()));
                     }
-                }
-                else
-                {
-                    sw.WriteLine(string.Format("    <!-- <Player Id=\"\" Name=\"\" Expires=\"\" /> -->"));
                 }
                 sw.WriteLine("</ReservedSlots>");
                 sw.Flush();
@@ -266,76 +237,77 @@ namespace ServerTools
             {
                 List<ClientInfo> reserved = new List<ClientInfo>();
                 List<ClientInfo> normal = new List<ClientInfo>();
-                List<ClientInfo> clientList = GeneralFunction.ClientList();
-                if (clientList != null)
+                List<ClientInfo> clientList = GeneralOperations.ClientList();
+                if (clientList == null)
                 {
-                    if (AdminCheck(_cInfo, _platformId, _crossplatformId))//admin is joining
+                    return true;
+                }
+                if (AdminCheck(_cInfo, _platformId, _crossplatformId))//admin is joining
+                {
+                    for (int i = 0; i < clientList.Count; i++)
                     {
-                        for (int i = 0; i < clientList.Count; i++)
+                        ClientInfo cInfo2 = clientList[i];
+                        if (cInfo2 != null && cInfo2.PlatformId != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
                         {
-                            ClientInfo cInfo2 = clientList[i];
-                            if (cInfo2 != null && cInfo2.PlatformId != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
+                            if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId))//not admin
                             {
-                                if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId))//not admin
+                                if (ReservedCheck(cInfo2.PlatformId, cInfo2.CrossplatformId))//reserved player
                                 {
-                                    if (ReservedCheck(cInfo2.PlatformId, cInfo2.CrossplatformId))//reserved player
-                                    {
-                                        reserved.Add(cInfo2);
-                                    }
-                                    else
-                                    {
-                                        normal.Add(cInfo2);
-                                    }
+                                    reserved.Add(cInfo2);
                                 }
-                            }
-                        }
-                    }
-                    else if (ReservedCheck(_platformId, _crossplatformId))//reserved player is joining
-                    {
-                        for (int i = 0; i < clientList.Count; i++)
-                        {
-                            ClientInfo cInfo2 = clientList[i];
-                            if (cInfo2 != null && cInfo2.PlatformId != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
-                            {
-                                if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId) && !ReservedCheck(cInfo2.PlatformId, cInfo2.CrossplatformId))
+                                else
                                 {
                                     normal.Add(cInfo2);
                                 }
                             }
                         }
                     }
-                    if (normal.Count > 0)
+                }
+                else if (ReservedCheck(_platformId, _crossplatformId))//reserved player is joining
+                {
+                    for (int i = 0; i < clientList.Count; i++)
                     {
-                        if (normal.Count > 1)
+                        ClientInfo cInfo2 = clientList[i];
+                        if (cInfo2 != null && cInfo2.PlatformId != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
                         {
-                            normal.RandomizeList();
+                            if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId) && !ReservedCheck(cInfo2.PlatformId, cInfo2.CrossplatformId))
+                            {
+                                normal.Add(cInfo2);
+                            }
                         }
-                        Phrases.Dict.TryGetValue("Reserved1", out string phrase);
-                        phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", normal[0].CrossplatformId.CombinedString, phrase), null);
-                        return true;
                     }
-                    else if (reserved.Count > 0)
+                }
+                if (normal.Count > 0)
+                {
+                    if (normal.Count > 1)
                     {
-                        if (reserved.Count > 1)
-                        {
-                            reserved.RandomizeList();
-                        }
-                        Phrases.Dict.TryGetValue("Reserved1", out string phrase);
-                        phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", reserved[0].CrossplatformId.CombinedString, phrase), null);
-                        return true;
+                        normal.RandomizeList();
                     }
+                    Phrases.Dict.TryGetValue("Reserved1", out string phrase);
+                    phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", normal[0].CrossplatformId.CombinedString, phrase), null);
+                    return true;
+                }
+                else if (reserved.Count > 0)
+                {
+                    if (reserved.Count > 1)
+                    {
+                        reserved.RandomizeList();
+                    }
+                    Phrases.Dict.TryGetValue("Reserved1", out string phrase);
+                    phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", reserved[0].CrossplatformId.CombinedString, phrase), null);
+                    return true;
                 }
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlots.FullServer: {0}", e.Message));
             }
-            return false;
+            return true;
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -344,25 +316,24 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<ReservedSlots>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Tron\" Expires=\"2050-10-29 10:30:00\" /> -->");
                     sw.WriteLine("    <!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123\" Name=\"Yoggi\" Expires=\"2050-01-11 07:30:00\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Player Id=\"\"") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891\"") && 
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Version") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Player Id=\"\" Name=\"\" Expires=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Player")
                             {
                                 string id = "", name = "", expires = "";

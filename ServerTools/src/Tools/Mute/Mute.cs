@@ -62,7 +62,7 @@ namespace ServerTools
                 {
                     if (int.TryParse(_playerEntityId, out int id))
                     {
-                        ClientInfo playerToMute = GeneralFunction.GetClientInfoFromEntityId(id);
+                        ClientInfo playerToMute = GeneralOperations.GetClientInfoFromEntityId(id);
                         if (playerToMute == null)
                         {
                             Phrases.Dict.TryGetValue("Mute1", out string phrase);
@@ -142,7 +142,7 @@ namespace ServerTools
                                 }
                                 PersistentContainer.Instance.ClientMuteList = PrivateMutes;
                                 PersistentContainer.DataChange = true;
-                                PlayerDataFile pdf = GeneralFunction.GetPlayerDataFileFromEntityId(id);
+                                PlayerDataFile pdf = GeneralOperations.GetPlayerDataFileFromEntityId(id);
                                 if (pdf != null)
                                 {
                                     Phrases.Dict.TryGetValue("Mute4", out string phrase);
@@ -191,7 +191,7 @@ namespace ServerTools
                 {
                     if (mute.Value.Contains(_cInfo.entityId))
                     {
-                        PlayerDataFile pdf = GeneralFunction.GetPlayerDataFileFromEntityId(mute.Key);
+                        PlayerDataFile pdf = GeneralOperations.GetPlayerDataFileFromEntityId(mute.Key);
                         if (pdf != null)
                         {
                             Phrases.Dict.TryGetValue("Mute9", out string phrase);

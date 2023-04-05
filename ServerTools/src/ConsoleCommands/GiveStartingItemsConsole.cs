@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Threading;
+using System.Collections;
 
 namespace ServerTools
 {
@@ -32,19 +33,22 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     else
                     {
-                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[0]);
+                        ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[0]);
                         if (cInfo != null)
                         {
-                            SpawnItems(cInfo);
+                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                            {
+                                ThreadManager.StartCoroutine(SpawnItems(cInfo));
+                            }, null);
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with id '{0}' is not online", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with id '{0}' is not online", _params[0]));
                         }
                     }
                 }
@@ -55,7 +59,7 @@ namespace ServerTools
             }
         }
 
-        public static void SpawnItems(ClientInfo _cInfo)
+        public static IEnumerator SpawnItems(ClientInfo _cInfo)
         {
             try
             {
@@ -64,27 +68,28 @@ namespace ServerTools
                     World world = GameManager.Instance.World;
                     if (world.Players.dict.ContainsKey(_cInfo.entityId))
                     {
-                        EntityPlayer _player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
-                        if (_player != null && _player.IsSpawned() && !_player.IsDead())
+                        EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
+                        if (player != null && player.IsSpawned() && !player.IsDead())
                         {
+                            ItemValue itemValue;
+                            EntityItem entityItem;
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].StartingItems = true;
                             PersistentContainer.DataChange = true;
-                            List<string> _itemList = StartingItems.Dict.Keys.ToList();
-                            for (int i = 0; i < _itemList.Count; i++)
+                            List<string> itemList = StartingItems.Dict.Keys.ToList();
+                            for (int i = 0; i < itemList.Count; i++)
                             {
-                                string _item = _itemList[i];
-                                StartingItems.Dict.TryGetValue(_item, out int[]  _itemData);
-                                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
-                                if (_itemValue.HasQuality && _itemData[1] > 0)
+                                string item = itemList[i];
+                                StartingItems.Dict.TryGetValue(item, out int[] itemData);
+                                itemValue = new ItemValue(ItemClass.GetItem(item, false).type, false);
+                                if (itemValue.HasQuality && itemData[1] > 0)
                                 {
-                                    _itemValue.Quality = _itemData[1];
+                                    itemValue.Quality = itemData[1];
                                 }
-                                EntityItem entityItem = new EntityItem();
                                 entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                                 {
                                     entityClass = EntityClass.FromString("item"),
                                     id = EntityFactory.nextEntityID++,
-                                    itemStack = new ItemStack(_itemValue, _itemData[0]),
+                                    itemStack = new ItemStack(itemValue, itemData[0]),
                                     pos = world.Players.dict[_cInfo.entityId].position,
                                     rot = new Vector3(20f, 0f, 20f),
                                     lifetime = 60f,
@@ -96,13 +101,13 @@ namespace ServerTools
                                 Thread.Sleep(TimeSpan.FromSeconds(1));
                             }
                             Log.Out(string.Format("[SERVERTOOLS] '{0}' with id '{1}' received their starting items", _cInfo.playerName, _cInfo.CrossplatformId.CombinedString));
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] '{0}' with id '{1}' received their starting items", _cInfo.playerName, _cInfo.CrossplatformId.CombinedString));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] '{0}' with id '{1}' received their starting items", _cInfo.playerName, _cInfo.CrossplatformId.CombinedString));
                             Phrases.Dict.TryGetValue("StartingItems1", out string _phrase);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with id '{0}' has not spawned. Unable to give starting items", _cInfo.CrossplatformId.CombinedString));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with id '{0}' has not spawned. Unable to give starting items", _cInfo.CrossplatformId.CombinedString));
                         }
                     }
                 }
@@ -111,6 +116,7 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in GiveStartingItemsConsole.SpawnItems: {0}", e.Message));
             }
+            yield break;
         }
     }
 }

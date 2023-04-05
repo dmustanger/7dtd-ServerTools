@@ -51,8 +51,8 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out("[SERVERTOOLS] Invalid Player_Logs Interval detected. Use a single integer, 24h time or multiple 24h time entries");
-                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                        Log.Out(string.Format("[SERVERTOOLS] Invalid Player_Logs Interval detected. Use a single integer, 24h time or multiple 24h time entries"));
+                        Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
                     }
                 }
             }
@@ -87,13 +87,15 @@ namespace ServerTools
                         }
                         string dt = DateTime.Now.ToString("HH:mm:ss");
                         PlayerDataFile playerDataFile;
+                        EntityPlayer player;
+                        ClientInfo cInfo;
                         List<EntityPlayer> playerList = GameManager.Instance.World.Players.list;
                         for (int i = 0; i < playerList.Count; i++)
                         {
-                            EntityPlayer player = playerList[i];
+                            player = playerList[i];
                             if (player != null)
                             {
-                                ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(player.entityId);
+                                cInfo = GeneralOperations.GetClientInfoFromEntityId(player.entityId);
                                 if (cInfo != null)
                                 {
                                     playerDataFile = cInfo.latestPlayerData;
@@ -118,21 +120,15 @@ namespace ServerTools
                                                 var y = (int)player.position.y;
                                                 var z = (int)player.position.z;
                                                 double regionX, regionZ;
+                                                regionX = Math.Truncate(player.position.x / 512);
                                                 if (player.position.x < 0)
                                                 {
-                                                    regionX = Math.Truncate(player.position.x / 512) - 1;
+                                                    regionX -= 1;
                                                 }
-                                                else
-                                                {
-                                                    regionX = Math.Truncate(player.position.x / 512);
-                                                }
+                                                regionZ = Math.Truncate(player.position.z / 512);
                                                 if (player.position.z < 0)
                                                 {
-                                                    regionZ = Math.Truncate(player.position.z / 512) - 1;
-                                                }
-                                                else
-                                                {
-                                                    regionZ = Math.Truncate(player.position.z / 512);
+                                                    regionZ -= 1;
                                                 }
                                                 string ip = cInfo.ip;
                                                 XmlNode newEntry = xmlDoc.CreateTextNode("\n");
@@ -283,7 +279,7 @@ namespace ServerTools
 
         private static XmlNode PrintVehicle(int _vehicleId, XmlNode _playerNode, XmlDocument _xmlDoc)
         {
-            EntityVehicle vehicle = (EntityVehicle)GeneralFunction.GetEntity(_vehicleId);
+            EntityVehicle vehicle = (EntityVehicle)GeneralOperations.GetEntity(_vehicleId);
             if (vehicle != null)
             {
                 XmlNode newEntry = _xmlDoc.CreateTextNode(string.Format("       Id {0} / Health {1} / Speed {2}\n", vehicle.entityId, vehicle.Health, (int)vehicle.speedForward));

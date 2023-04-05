@@ -20,8 +20,6 @@ namespace ServerTools
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static readonly System.Random Random = new System.Random();
 
-        private static XmlNodeList OldNodeList;
-
         public static void Load()
         {
             LoadXml();
@@ -53,88 +51,67 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
-                    Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes)
+                        {
+                            continue;
+                        }
+                        if (line.HasAttribute("Trigger") && line.HasAttribute("Command") && line.HasAttribute("DelayBetweenUses") && line.HasAttribute("Hidden") &&
+                            line.HasAttribute("Reserved") && line.HasAttribute("Cost") && line.HasAttribute("Bloodmoon"))
+                        {
+                            string trigger = line.GetAttribute("Trigger").ToLower();
+                            if (trigger == "")
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Trigger") && line.HasAttribute("Command") && line.HasAttribute("DelayBetweenUses") && line.HasAttribute("Hidden") &&
-                                    line.HasAttribute("Reserved") && line.HasAttribute("Cost") && line.HasAttribute("Bloodmoon"))
-                                {
-                                    string trigger = line.GetAttribute("Trigger").ToLower();
-                                    string command = line.GetAttribute("Command");
-                                    string delay = line.GetAttribute("DelayBetweenUses");
-                                    string hidden = line.GetAttribute("Hidden");
-                                    if (!bool.TryParse(line.GetAttribute("Reserved").ToLower(), out bool reserved))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring CustomCommands.xml entry. Invalid (true/false) value for 'Reserved' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!int.TryParse(line.GetAttribute("Cost"), out int cost))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring CustomCommands.xml entry. Invalid (non-numeric) value for 'Cost' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!bool.TryParse(line.GetAttribute("Bloodmoon").ToLower(), out bool bloodmoon))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring CustomCommands.xml entry. Invalid (true/false) value for 'Bloodmoon' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    string[] c = { command, delay, hidden, reserved.ToString(), cost.ToString(), bloodmoon.ToString() };
-                                    if (!Dict.ContainsKey(trigger))
-                                    {
-                                        Dict.Add(trigger, c);
-                                    }
-                                }
+                                continue;
+                            }
+                            string command = line.GetAttribute("Command");
+                            string delay = line.GetAttribute("DelayBetweenUses");
+                            string hidden = line.GetAttribute("Hidden");
+                            if (!bool.TryParse(line.GetAttribute("Reserved").ToLower(), out bool reserved))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring CustomCommands.xml entry. Invalid (true/false) value for 'Reserved' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("Cost"), out int cost))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring CustomCommands.xml entry. Invalid (non-numeric) value for 'Cost' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!bool.TryParse(line.GetAttribute("Bloodmoon").ToLower(), out bool bloodmoon))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring CustomCommands.xml entry. Invalid (true/false) value for 'Bloodmoon' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            string[] c = { command, delay, hidden, reserved.ToString(), cost.ToString(), bloodmoon.ToString() };
+                            if (!Dict.ContainsKey(trigger))
+                            {
+                                Dict.Add(trigger, c);
                             }
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing CustomCommands.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -161,12 +138,10 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CustomCommands>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, {SetTeleport}, {Teleport}, whisper, global -->");
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {SetTeleport}, {RemoveTeleport}, {Teleport}, whisper, global -->");
                     sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Cost=\"0\" Bloodmoon=\"true\" /> -->");
-                    sw.WriteLine("    <!-- <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Reserved=\"false\" Cost=\"\" Bloodmoon=\"\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Reserved=\"false\" Cost=\"\" Bloodmoon=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, string[]> kvp in Dict)
@@ -320,7 +295,7 @@ namespace ServerTools
         {
             try
             {
-                if (GeneralFunction.IsBloodmoon())
+                if (GeneralOperations.IsBloodmoon())
                 {
                     Phrases.Dict.TryGetValue("CustomCommands5", out string phrase);
                     phrase = phrase.Replace("{Command}", _command);
@@ -502,7 +477,7 @@ namespace ServerTools
         {
             try
             {
-                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_playerId);
+                ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_playerId);
                 if (cInfo != null)
                 {
                     for (int i = 0; i < commands.Count; i++)
@@ -559,49 +534,58 @@ namespace ServerTools
                     }
                     if (_command.Contains("{RandomId}"))
                     {
-                        List<ClientInfo> clientList = GeneralFunction.ClientList();
+                        List<ClientInfo> clientList = GeneralOperations.ClientList();
                         if (clientList != null)
                         {
                             ClientInfo cInfo2 = clientList.ElementAt(Random.Next(clientList.Count));
                             if (cInfo2 != null)
                             {
-                                _command = _command.Replace("{RandomId}", cInfo2.PlatformId.CombinedString);
+                                _command = _command.Replace("{RandomId}", cInfo2.CrossplatformId.CombinedString);
                             }
                         }
                     }
-                    if (_command.Contains("{RandomEOS}"))
+                    if (_command.Contains("{SetTeleport}"))
                     {
-                        List<ClientInfo> clientList = GeneralFunction.ClientList();
-                        if (clientList != null)
-                        {
-                            ClientInfo cInfo2 = clientList.ElementAt(Random.Next(clientList.Count));
-                            if (cInfo2 != null)
-                            {
-                                _command = _command.Replace("{RandomEOS}", cInfo2.CrossplatformId.CombinedString);
-                            }
-                        }
-                    }
-                    if (_command.Contains("{SetReturn}"))
-                    {
+                        _command = _command.Substring(_command.IndexOf('}') + 1);
+                        _command.Trim(' ');
+                        EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
+                        string position = player.position.x + "," + player.position.y + "," + player.position.z;
                         if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions != null)
                         {
-                            if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.ContainsKey(_trigger))
+                            if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.ContainsKey(_command))
                             {
-                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.Remove(_trigger);
+                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions[_command] = position;
                             }
-                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.Add(_trigger, _cInfo.latestPlayerData.ecd.pos.ToString());
+                            else
+                            {
+                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.Add(_command, position);
+                            }
                         }
                         else
                         {
                             Dictionary<string, string> positions = new Dictionary<string, string>();
-                            positions.Add(_trigger, _cInfo.latestPlayerData.ecd.pos.ToString());
+                            positions.Add(_command, position);
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions = positions;
                         }
                         PersistentContainer.DataChange = true;
                     }
-                    else if (_command.Contains("{Return}"))
+                    else if (_command.Contains("{RemoveTeleport}"))
                     {
-                        _command = _command.Replace("{Return} ", "");
+                        _command = _command.Substring(_command.IndexOf('}') + 1);
+                        _command.Trim(' ');
+                        if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions != null)
+                        {
+                            if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.ContainsKey(_command))
+                            {
+                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.Remove(_command);
+                                PersistentContainer.DataChange = true;
+                            }
+                        }
+                    }
+                    else if (_command.Contains("{Teleport}"))
+                    {
+                        _command = _command.Substring(_command.IndexOf('}') + 1);
+                        _command.Trim(' ');
                         if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.ContainsKey(_command))
                         {
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].CustomReturnPositions.TryGetValue(_command, out string position);
@@ -614,24 +598,24 @@ namespace ServerTools
                     }
                     else
                     {
-                        if (_command.Contains("global "))
+                        if (_command.ToLower().StartsWith("global"))
                         {
-                            _command = _command.Replace("global ", "");
+                            _command = _command.Replace("global", "");
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                         }
-                        else if (_command.StartsWith("whisper "))
+                        else if (_command.ToLower().StartsWith("whisper"))
                         {
-                            _command = _command.Replace("whisper ", "");
+                            _command = _command.Replace("whisper", "");
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _command + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
-                        else if (_command.StartsWith("tp "))
+                        else if (_command.ToLower().StartsWith("tp"))
                         {
-                            _command = _command.Replace("tp ", "tele ");
+                            _command = _command.Replace("tp", "teleportplayer");
                             SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
                         }
-                        else if (_command.StartsWith("teleportplayer "))
+                        else if (_command.ToLower().StartsWith("tele"))
                         {
-                            _command = _command.Replace("teleportplayer ", "tele ");
+                            _command = _command.Replace("tele", "teleportplayer");
                             SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
                         }
                         else
@@ -647,7 +631,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -656,25 +640,24 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CustomCommands>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {RandomEOS}, {SetReturn}, {Return}, whisper, global -->");
-                    sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Permission=\"false\" Cost=\"0\" Bloodmoon=\"false\" /> -->");
-                    sw.WriteLine("    <!-- <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Reserved=\"false\" Permission=\"\" Cost=\"\" Bloodmoon=\"\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {SetTeleport}, {RemoveTeleport}, {Teleport}, whisper, global -->");
+                    sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Cost=\"0\" Bloodmoon=\"true\" /> -->");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- Possible variables") && 
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Custom Trigger="))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Possible variables") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Custom Trigger") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Custom Trigger=\"\" Command=\"\" DelayBetweenUses=\"\" Hidden=\"\" Reserved=\"false\" Cost=\"\" Bloodmoon=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && (line.Name == "Custom" || line.Name == "Command"))
                             {
                                 string trigger = "", command = "", delay = "0", hidden = "false", reserved = "false", cost = "0", bloodmoon = "false";

@@ -64,7 +64,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (!int.TryParse(_vehicle, out int vehicleId))
@@ -144,7 +144,7 @@ namespace ServerTools
 
         public static void TeleVehicle(ClientInfo _cInfo, Entity _player, int _vehicleId)
         {
-            Entity entity = GeneralFunction.GetEntity(_vehicleId);
+            Entity entity = GeneralOperations.GetEntity(_vehicleId);
             if (entity != null && entity is EntityVehicle)
             {
                 EntityVehicle vehicle = (EntityVehicle)entity;

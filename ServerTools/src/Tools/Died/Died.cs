@@ -7,7 +7,7 @@ namespace ServerTools
     class Died
     {
         public static bool IsEnabled = false;
-        public static int Time = 2, Delay_Between_Uses = 120, Command_Cost = 0;
+        public static int Time = 2, Delay_Between_Uses = 120, Command_Cost = 0, Min_Level = 0, Max_Level = 0;
         public static string Command_died = "died";
         public static Dictionary<int, DateTime> DeathTime = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> LastDeathPos = new Dictionary<int, string>();
@@ -22,7 +22,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    TeleportPlayer(_cInfo);
+                    PlayerLevel(_cInfo);
                 }
             }
             else
@@ -73,7 +73,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    TeleportPlayer(_cInfo);
+                    PlayerLevel(_cInfo);
                 }
             }
             else
@@ -97,7 +97,7 @@ namespace ServerTools
             }
             if (currency >= Command_Cost)
             {
-                TeleportPlayer(_cInfo);
+                PlayerLevel(_cInfo);
             }
             else
             {
@@ -105,6 +105,29 @@ namespace ServerTools
                 phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
+        }
+
+        private static void PlayerLevel(ClientInfo _cInfo)
+        {
+
+            EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
+            if (player == null)
+            {
+                return;
+            }
+            if (Min_Level > 0 && player.Progression.Level < Min_Level)
+            {
+                Phrases.Dict.TryGetValue("Died5", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                return;
+            }
+            if (Max_Level > 0 && player.Progression.Level > Max_Level)
+            {
+                Phrases.Dict.TryGetValue("Died6", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                return;
+            }
+            TeleportPlayer(_cInfo);
         }
 
         private static void TeleportPlayer(ClientInfo _cInfo)

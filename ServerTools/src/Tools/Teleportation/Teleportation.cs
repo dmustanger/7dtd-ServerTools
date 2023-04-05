@@ -14,7 +14,7 @@ namespace ServerTools
                 Entity entity = Entities[i];
                 if (entity != null && _player != entity && entity.IsSpawned() && entity is EntityZombie)
                 {
-                    EntityAlive entityAlive = GeneralFunction.GetEntityPlayer(entity.entityId);
+                    EntityAlive entityAlive = GeneralOperations.GetEntityPlayer(entity.entityId);
                     if (entityAlive != null)
                     {
                         if ((entityAlive.position - entity.position).magnitude <= 100)
@@ -31,7 +31,7 @@ namespace ServerTools
 
         public static bool PCheck(ClientInfo _cInfo, EntityPlayer _player)
         {
-            List<EntityPlayer> players = GeneralFunction.ListPlayers();
+            List<EntityPlayer> players = GeneralOperations.ListPlayers();
             if (players.Count > 1)
             {
                 for (int i = 0; i < players.Count; i++)
@@ -53,7 +53,7 @@ namespace ServerTools
 
         public static bool VehicleCheck(ClientInfo _cInfo)
         {
-            EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+            EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
             if (player.AttachedToEntity != null)
             {
                 Phrases.Dict.TryGetValue("Teleport3", out string phrase);
@@ -122,7 +122,7 @@ namespace ServerTools
 
         public static void StillInsideBlock(ClientInfo _cInfo, Vector3 _position)
         {
-            EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+            EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
             if (player != null && player.position == _position)
             {
                 BlockValue blockValue = GameManager.Instance.World.GetBlock(new Vector3i(_position));

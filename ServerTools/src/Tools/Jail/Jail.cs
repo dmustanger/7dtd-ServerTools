@@ -20,10 +20,10 @@ namespace ServerTools
             {
                 for (int i = 0; i < Jailed.Count; i++)
                 {
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(Jailed[i]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(Jailed[i]);
                     if (cInfo != null)
                     {
-                        EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                        EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                         if (player.Spawned && player.IsAlive())
                         {
                             string[] cords = Jail_Position.Split(',');
@@ -63,7 +63,7 @@ namespace ServerTools
                         int timepassed = (int)fractionalMinutes;
                         if (timepassed >= jailTime)
                         {
-                            ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(id);
+                            ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(id);
                             if (cInfo != null)
                             {
                                 EntityPlayer player = GameManager.Instance.World.Players.dict[cInfo.entityId];

@@ -30,19 +30,19 @@ namespace ServerTools
                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
-                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[0]);
+                ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[0]);
                 if (cInfo != null)
                 {
                     Phrases.Dict.TryGetValue("ResetPlayer1", out string phrase);
                     SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
-                    GameManager.Instance.World.aiDirector.RemoveEntity(GeneralFunction.GetEntityPlayer(cInfo.entityId));
+                    GameManager.Instance.World.aiDirector.RemoveEntity(GeneralOperations.GetEntityPlayer(cInfo.entityId));
                     GC.Collect();
                     MemoryPools.Cleanup();
                     ResetProfileExec(cInfo.CrossplatformId.CombinedString);
                 }
                 else if (_params[0].Contains("_"))
                 {
-                    PersistentPlayerData ppd = GeneralFunction.GetPersistentPlayerDataFromId(_params[0]);
+                    PersistentPlayerData ppd = GeneralOperations.GetPersistentPlayerDataFromId(_params[0]);
                     if (ppd != null)
                     {
                         GC.Collect();
@@ -81,9 +81,9 @@ namespace ServerTools
 
         public static void RemovePersistentData(string _id)
         {
-            GeneralFunction.RemoveAllClaims(_id);
-            GeneralFunction.RemovePersistentPlayerData(_id);
-            GeneralFunction.RemoveAllACL(_id);
+            GeneralOperations.RemoveAllClaims(_id);
+            GeneralOperations.RemovePersistentPlayerData(_id);
+            GeneralOperations.RemoveAllACL(_id);
         }
 
         public static void RemoveProfile(string _id)

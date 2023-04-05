@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -13,7 +12,6 @@ namespace ServerTools
         public static string Lobby_Position = "0,0,0", Command_lobbyback = "lobbyback", Command_lback = "lback", 
             Command_set = "setlobby", Command_lobby = "lobby";
 
-        public static List<int> LobbyPlayers = new List<int>();
         public static Bounds LobbyBounds = new Bounds();
 
         public static void SetBounds(string _position)
@@ -42,7 +40,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (!Bloodmoon && GeneralFunction.IsBloodmoon())
+            if (!Bloodmoon && GeneralOperations.IsBloodmoon())
             {
                 Phrases.Dict.TryGetValue("Lobby13", out string phrase);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -146,7 +144,7 @@ namespace ServerTools
         {
             if (Lobby_Position != "0,0,0" && Lobby_Position != "0 0 0" && Lobby_Position != "")
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (IsLobby(player.position))
@@ -181,7 +179,7 @@ namespace ServerTools
                                     Vector3 position = player.GetPosition();
                                     Phrases.Dict.TryGetValue("Lobby3", out string phrase);
                                     phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                                    phrase = phrase.Replace("{Command_lobbyback}", Command_lobbyback);
+                                    phrase = phrase.Replace("{Command_lback}", Command_lback);
                                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     int x = (int)position.x;
                                     int y = (int)position.y;
@@ -214,18 +212,18 @@ namespace ServerTools
 
         public static void SendBack(ClientInfo _cInfo)
         {
-            EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+            EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
             if (player != null)
             {
                 if (IsLobby(player.position))
                 {
                     string lastPos = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LobbyReturnPos;
-                    if (lastPos != "")
+                    if (lastPos != null && lastPos != "")
                     {
-                        string[] returnCoords = lastPos.Split(',');
-                        int.TryParse(returnCoords[0], out int x);
-                        int.TryParse(returnCoords[1], out int y);
-                        int.TryParse(returnCoords[2], out int z);
+                        string[] returnPos = lastPos.Split(',');
+                        int.TryParse(returnPos[0], out int x);
+                        int.TryParse(returnPos[1], out int y);
+                        int.TryParse(returnPos[2], out int z);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                         PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LobbyReturnPos = "";
                         PersistentContainer.DataChange = true;
@@ -259,31 +257,31 @@ namespace ServerTools
             {
                 Phrases.Dict.TryGetValue("Lobby11", out string phrase);
                 ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                if (GeneralFunction.PvEViolations.ContainsKey(_cInfo2.entityId))
+                if (GeneralOperations.PvEViolations.ContainsKey(_cInfo2.entityId))
                 {
-                    GeneralFunction.PvEViolations.TryGetValue(_cInfo2.entityId, out int _violations);
+                    GeneralOperations.PvEViolations.TryGetValue(_cInfo2.entityId, out int _violations);
                     _violations++;
-                    GeneralFunction.PvEViolations[_cInfo2.entityId] = _violations;
-                    if (GeneralFunction.Jail_Violation > 0 && _violations == GeneralFunction.Jail_Violation)
+                    GeneralOperations.PvEViolations[_cInfo2.entityId] = _violations;
+                    if (GeneralOperations.Jail_Violation > 0 && _violations == GeneralOperations.Jail_Violation)
                     {
-                        GeneralFunction.JailPlayer(_cInfo2);
+                        GeneralOperations.JailPlayer(_cInfo2);
                     }
-                    if (GeneralFunction.Kill_Violation > 0 && _violations == GeneralFunction.Kill_Violation)
+                    if (GeneralOperations.Kill_Violation > 0 && _violations == GeneralOperations.Kill_Violation)
                     {
-                        GeneralFunction.KillPlayer(_cInfo2);
+                        GeneralOperations.KillPlayer(_cInfo2);
                     }
-                    if (GeneralFunction.Kick_Violation > 0 && _violations == GeneralFunction.Kick_Violation)
+                    if (GeneralOperations.Kick_Violation > 0 && _violations == GeneralOperations.Kick_Violation)
                     {
-                        GeneralFunction.KickPlayer(_cInfo2);
+                        GeneralOperations.KickPlayer(_cInfo2);
                     }
-                    else if (GeneralFunction.Ban_Violation > 0 && _violations == GeneralFunction.Ban_Violation)
+                    else if (GeneralOperations.Ban_Violation > 0 && _violations == GeneralOperations.Ban_Violation)
                     {
-                        GeneralFunction.BanPlayer(_cInfo2);
+                        GeneralOperations.BanPlayer(_cInfo2);
                     }
                 }
                 else
                 {
-                    GeneralFunction.PvEViolations.Add(_cInfo2.entityId, 1);
+                    GeneralOperations.PvEViolations.Add(_cInfo2.entityId, 1);
                 }
                 return false;
             }

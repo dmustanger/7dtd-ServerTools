@@ -9,7 +9,7 @@ namespace ServerTools
 
         public static void SendAdmins(ClientInfo _sender, string _message)
         {
-            List<ClientInfo> clientList = GeneralFunction.ClientList();
+            List<ClientInfo> clientList = GeneralOperations.ClientList();
             if (clientList != null)
             {
                 for (int i = 0; i < clientList.Count; i++)

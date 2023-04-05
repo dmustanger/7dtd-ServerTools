@@ -50,7 +50,7 @@ namespace ServerTools
             PersistentPlayer p = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString];
             if (p != null)
             {
-                GeneralFunction.Session.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime time);
+                GeneralOperations.Session.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime time);
                 TimeSpan varTime = DateTime.Now - time;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int timepassed = (int)fractionalMinutes;
@@ -269,7 +269,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (Max_Extra_Lives > 0)
@@ -392,16 +392,16 @@ namespace ServerTools
             try
             {
                 NoEntry.Add(_cInfo.CrossplatformId.CombinedString);
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     Phrases.Dict.TryGetValue("Hardcore14", out string phrase);
                     SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} {1}", _cInfo.CrossplatformId.CombinedString, phrase), null);
                 }
-                GeneralFunction.SavePersistentPlayerDataXML();
-                GeneralFunction.RemoveAllClaims(_cInfo.CrossplatformId.CombinedString);
-                GeneralFunction.RemovePersistentPlayerData(_cInfo.CrossplatformId.CombinedString);
-                GeneralFunction.RemoveAllACL(_cInfo.CrossplatformId.CombinedString);
+                GeneralOperations.SavePersistentPlayerDataXML();
+                GeneralOperations.RemoveAllClaims(_cInfo.CrossplatformId.CombinedString);
+                GeneralOperations.RemovePersistentPlayerData(_cInfo.CrossplatformId.CombinedString);
+                GeneralOperations.RemoveAllACL(_cInfo.CrossplatformId.CombinedString);
                 Timers.HardcoreDeleteFiles(_cInfo);
             }
             catch (Exception e)

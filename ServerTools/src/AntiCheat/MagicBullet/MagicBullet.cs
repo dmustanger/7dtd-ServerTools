@@ -23,7 +23,7 @@ namespace ServerTools
             {
                 if (_instance.Sender.entityId == entityId(_instance) && playerKills(_instance) == 1 && !Kill.Contains(entityId(_instance)))
                 {
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromEntityId(entityId(_instance));
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId(_instance));
                     if (cInfo != null)
                     {
                         Phrases.Dict.TryGetValue("MagicBullet1", out string phrase);

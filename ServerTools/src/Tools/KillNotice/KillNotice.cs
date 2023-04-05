@@ -8,8 +8,8 @@ namespace ServerTools
 {
     class KillNotice
     {
-        public static bool IsEnabled = false, IsRunning = false, PvP = false, Other = false, 
-            Show_Level = false, Show_Damage = false, Misc = false;
+        public static bool IsEnabled = false, IsRunning = false, Player = false, Zombie = false,
+            Animal = false, Show_Level = false, Show_Damage = false;
         public static Dictionary<int, int[]> Damage = new Dictionary<int, int[]>();
 
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();
@@ -17,8 +17,6 @@ namespace ServerTools
         private const string file = "KillNotice.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-
-        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -51,75 +49,53 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
-                    Dict.Clear();
+                    XmlElement line;
+                    ItemValue itemValue;
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
-                            {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Name") && line.HasAttribute("NewName"))
-                                {
-                                    string name = line.GetAttribute("Name");
-                                    string newName = line.GetAttribute("NewName");
-                                    ItemValue itemValue = ItemClass.GetItem(name, false);
-                                    if (itemValue.type == ItemValue.None.type)
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring KillNotice.xml entry. Weapon not found: {0}", name));
-                                        continue;
-                                    }
-                                    else if (!Dict.ContainsKey(name))
-                                    {
-                                        Dict.Add(name, newName);
-                                    }
-                                }
-                            }
+                            continue;
+                        }
+                        line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes || !line.HasAttribute("Name") || !line.HasAttribute("NewName"))
+                        {
+                            continue;
+                        }
+                        string name = line.GetAttribute("Name");
+                        if (name == "")
+                        {
+                            continue;
+                        }
+                        string newName = line.GetAttribute("NewName");
+                        itemValue = ItemClass.GetItem(name, false);
+                        if (itemValue.type == ItemValue.None.type)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring KillNotice.xml entry. Weapon not found: {0}", name));
+                            continue;
+                        }
+                        else if (!Dict.ContainsKey(name))
+                        {
+                            Dict.Add(name, newName);
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing CommandList.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -145,10 +121,9 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<KillNotice>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- <Weapon Name=\"\" NewName=\"\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
+                    sw.WriteLine("    <!-- <Weapon Name=\"meleeToolRepairT0StoneAxe\" NewName=\"Stone Axe\" /> -->");
+                    sw.WriteLine("    <Weapon Name=\"\" NewName=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, string> kvp in Dict)
@@ -209,18 +184,49 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void PlayerKilledPlayer(ClientInfo _cInfo, EntityPlayer _victim, ClientInfo _cInfo2, EntityPlayer _killer, ItemValue _itemValue, int _damage)
+        public static void Exec(EntityAlive __deadEntity, EntityAlive ___entityKiller, DamageResponse ___RecordedDamage)
+        {
+            if (__deadEntity is EntityPlayer)
+            {
+                ClientInfo cInfoDead = GeneralOperations.GetClientInfoFromEntityId(__deadEntity.entityId);
+                if (cInfoDead != null)
+                {
+                    if (Player && ___entityKiller is EntityPlayer)
+                    {
+                        ClientInfo cInfoKiller = GeneralOperations.GetClientInfoFromEntityId(___entityKiller.entityId);
+                        if (cInfoKiller != null)
+                        {
+                            if (___RecordedDamage.Source != null && ___RecordedDamage.Source.AttackingItem != null)
+                            {
+                                PlayerKilledPlayer(cInfoDead, __deadEntity, cInfoKiller, ___entityKiller, ___RecordedDamage.Source.AttackingItem, ___RecordedDamage.Strength);
+                            }
+                        }
+                    }
+                    else if (Zombie && ___entityKiller is EntityZombie)
+                    {
+                        ZombieKilledPlayer(___entityKiller, __deadEntity, cInfoDead, ___RecordedDamage.Strength);
+                    }
+                    else if (Animal && ___entityKiller is EntityAnimal || ___entityKiller is EntityEnemyAnimal)
+                    {
+                        AnimalKilledPlayer(___entityKiller, __deadEntity, cInfoDead, ___RecordedDamage.Strength);
+                    }
+                }
+            }
+        }
+
+        public static void PlayerKilledPlayer(ClientInfo _cInfo, EntityAlive _victim, ClientInfo _cInfo2, EntityAlive _killer, ItemValue _itemValue, int _damage)
         {
             try
             {
-                string item = _itemValue.ItemClass.Name;
+                ItemClass itemClass = _itemValue.ItemClass;
+                string item = itemClass.Name;
                 if (Dict.ContainsKey(item))
                 {
                     Dict.TryGetValue(item, out item);
                 }
-                else if (string.IsNullOrEmpty(_itemValue.ItemClass.GetLocalizedItemName()))
+                else if (string.IsNullOrEmpty(itemClass.GetLocalizedItemName()))
                 {
-                    item = _itemValue.ItemClass.GetLocalizedItemName();
+                    item = itemClass.GetLocalizedItemName();
                 }
                 if (Show_Level)
                 {
@@ -269,7 +275,7 @@ namespace ServerTools
             }
         }
 
-        public static void ZombieKilledPlayer(EntityZombie _zombie, EntityPlayer _victim, ClientInfo _cInfo, int _damage)
+        public static void ZombieKilledPlayer(EntityAlive _zombie, EntityAlive _victim, ClientInfo _cInfo, int _damage)
         {
             try
             {
@@ -320,7 +326,7 @@ namespace ServerTools
             }
         }
 
-        public static void AnimalKilledPlayer(EntityAnimal _animal, EntityPlayer _victim, ClientInfo _cInfo, int _damage)
+        public static void AnimalKilledPlayer(EntityAlive _animal, EntityAlive _victim, ClientInfo _cInfo, int _damage)
         {
             try
             {
@@ -379,7 +385,7 @@ namespace ServerTools
             ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -388,23 +394,23 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<KillNotice>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
-                    sw.WriteLine("    <!-- <Weapon Name=\"\" NewName=\"\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- <Weapon Name=\"meleeToolRepairT0StoneAxe\" NewName=\"Stone Axe\" /> -->");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Weapon Name=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Weapon Name=\"\"") && 
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Weapon Name=\"\" NewName=\"\" />");
                     bool blank = true;
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Weapon")
                             {
                                 blank = false;

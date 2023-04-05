@@ -12,7 +12,7 @@ namespace ServerTools
 
         public static bool Exec(NetPackageEntityAttach __instance, EntityPlayer _player)
         {
-            Entity entity = GeneralFunction.GetEntity(vehicleId(__instance));
+            Entity entity = GeneralOperations.GetEntity(vehicleId(__instance));
             if (entity != null)//if null, they are most likely dettaching
             {
                 OwnedEntityData[] ownedEntities = _player.GetOwnedEntities();
@@ -21,7 +21,7 @@ namespace ServerTools
                     for (int i = 0; i < ownedEntities.Length; i++)
                     {
                         OwnedEntityData entityData = ownedEntities[i];
-                        Entity ownedEntity = GeneralFunction.GetEntity(entityData.Id);
+                        Entity ownedEntity = GeneralOperations.GetEntity(entityData.Id);
                         if (ownedEntity != null && ownedEntity is EntityDrone && entity is EntityVehicle)
                         {
                             return false;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -50,74 +51,77 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
                 if (childNodes != null)
                 {
                     Dict.Clear();
-                    for (int i = 0; i < childNodes.Count; i++)
+                    if (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        for (int i = 0; i < childNodes.Count; i++)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
+                            if (childNodes[i].NodeType == XmlNodeType.Comment)
                             {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
+                                continue;
+                            }
+                            XmlElement line = (XmlElement)childNodes[i];
+                            if (!line.HasAttributes)
+                            {
+                                continue;
+                            }
+                            if (line.HasAttribute("Message") && line.HasAttribute("Response") && line.HasAttribute("Exact") && line.HasAttribute("Whisper"))
+                            {
+                                string message = line.GetAttribute("Message").ToLower();
+                                if (message == "")
                                 {
-                                    upgrade = false;
                                     continue;
                                 }
-                                else if (line.HasAttribute("Message") && line.HasAttribute("Response") && line.HasAttribute("Exact") && line.HasAttribute("Whisper"))
+                                string response = line.GetAttribute("Response");
+                                if (bool.TryParse(line.GetAttribute("Exact"), out bool exact))
                                 {
-                                    string message = line.GetAttribute("Message").ToLower();
-                                    string response = line.GetAttribute("Response");
-                                    if (bool.TryParse(line.GetAttribute("Exact"), out bool exact))
+                                    if (bool.TryParse(line.GetAttribute("Whisper"), out bool whisper))
                                     {
-                                        if (bool.TryParse(line.GetAttribute("Whisper"), out bool whisper))
+                                        string[] values = { response, exact.ToString().ToLower(), whisper.ToString().ToLower() };
+                                        if (!Dict.ContainsKey(message))
                                         {
-                                            string[] values = { response, exact.ToString().ToLower(), whisper.ToString().ToLower() };
-                                            if (!Dict.ContainsKey(message))
-                                            {
-                                                Dict.Add(message, values);
-                                            }
+                                            Dict.Add(message, values);
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
-                if (upgrade)
-                {
-                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    else
                     {
-                        if (line.HasAttributes)
+                        XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                        XmlNode node = nodeList[0];
+                        XmlElement line = (XmlElement)nodeList[0];
+                        if (line != null)
                         {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
+                            if (line.HasAttributes)
                             {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
+                                OldNodeList = nodeList;
+                                File.Delete(FilePath);
+                                UpgradeXml();
+                                return;
                             }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing BotResponse.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
+                            else
+                            {
+                                nodeList = node.ChildNodes;
+                                line = (XmlElement)nodeList[0];
+                                if (line != null)
+                                {
+                                    if (line.HasAttributes)
+                                    {
+                                        OldNodeList = nodeList;
+                                        File.Delete(FilePath);
+                                        UpgradeXml();
+                                        return;
+                                    }
+                                }
+                                File.Delete(FilePath);
+                                UpdateXml();
+                                Log.Out(string.Format("[SERVERTOOLS] The existing BotResponse.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
+                            }
                         }
                     }
                 }
@@ -145,10 +149,9 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<BotResponse>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Chat Message=\"Any admin on\" Response=\"From the skies comes a bolt of lightning\" /> -->");
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Chat Message=\"\" Response=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, string[]> kvp in Dict)
@@ -195,18 +198,17 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<BotResponse>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Chat Message=\"Any admin on\" Response=\"From the skies comes a bolt of lightning\" /> -->");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Chat Message=\"Any admin on\"") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Chat Message=\"\""))
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(OldNodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
+                    sw.WriteLine("    <Chat Message=\"\" Response=\"\" />");
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType != XmlNodeType.Comment)

@@ -10,11 +10,11 @@ namespace ServerTools
 
         public static void CreateXPath()
         {
-            if (!string.IsNullOrEmpty(GeneralFunction.XPathDir))
+            if (!string.IsNullOrEmpty(GeneralOperations.XPathDir))
             {
-                if (!File.Exists(GeneralFunction.XPathDir + "blocks.xml"))
+                if (!File.Exists(GeneralOperations.XPathDir + "blocks.xml"))
                 {
-                    using (StreamWriter sw = new StreamWriter(GeneralFunction.XPathDir + "blocks.xml", false, Encoding.UTF8))
+                    using (StreamWriter sw = new StreamWriter(GeneralOperations.XPathDir + "blocks.xml", false, Encoding.UTF8))
                     {
                         sw.WriteLine("<configs>");
                         sw.WriteLine();
@@ -42,11 +42,11 @@ namespace ServerTools
 
         public static void RemoveXPath()
         {
-            if (!string.IsNullOrEmpty(GeneralFunction.XPathDir))
+            if (!string.IsNullOrEmpty(GeneralOperations.XPathDir))
             {
-                if (File.Exists(GeneralFunction.XPathDir + "blocks.xml"))
+                if (File.Exists(GeneralOperations.XPathDir + "blocks.xml"))
                 {
-                    File.Delete(GeneralFunction.XPathDir + "blocks.xml");
+                    File.Delete(GeneralOperations.XPathDir + "blocks.xml");
                     Log.Out(string.Format("[SERVERTOOLS] Oversized_Traps has deleted a file named blocks.xml upon deactivation. This will only take affect after the server restarts"));
                 }
             }

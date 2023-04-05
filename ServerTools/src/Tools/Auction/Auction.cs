@@ -26,10 +26,10 @@ namespace ServerTools
         {
             try
             {
-                if (File.Exists(GeneralFunction.XPathDir + "XUi/windows.xml"))
+                if (File.Exists(GeneralOperations.XPathDir + "XUi/windows.xml"))
                 {
                     string link = string.Format("http://{0}:{1}/auction.html", WebAPI.BaseAddress, WebAPI.Port);
-                    List<string> lines = File.ReadAllLines(GeneralFunction.XPathDir + "XUi/windows.xml").ToList();
+                    List<string> lines = File.ReadAllLines(GeneralOperations.XPathDir + "XUi/windows.xml").ToList();
                     for (int i = 0; i < lines.Count; i++)
                     {
                         if (lines[i].Contains("browserAuction"))
@@ -37,7 +37,7 @@ namespace ServerTools
                             if (!lines[i + 7].Contains(link))
                             {
                                 lines[i + 7] = string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", link);
-                                File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
+                                File.WriteAllLines(GeneralOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
                             }
                             return;
                         }
@@ -64,7 +64,7 @@ namespace ServerTools
                             lines.Add("</append>");
                             lines.Add("");
                             lines.Add("</configs>");
-                            File.WriteAllLines(GeneralFunction.XPathDir + "XUi/windows.xml", lines.ToArray());
+                            File.WriteAllLines(GeneralOperations.XPathDir + "XUi/windows.xml", lines.ToArray());
                             return;
                         }
                     }
@@ -72,7 +72,7 @@ namespace ServerTools
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralFunction.XPathDir + "XUi/windows.xml", e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", GeneralOperations.XPathDir + "XUi/windows.xml", e.Message));
             }
         }
 
@@ -80,7 +80,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (int.TryParse(_price, out int auctionPrice))
@@ -288,7 +288,7 @@ namespace ServerTools
                     {
                         string ip = _cInfo.ip;
                         bool duplicate = false;
-                        List<ClientInfo> clientList = GeneralFunction.ClientList();
+                        List<ClientInfo> clientList = GeneralOperations.ClientList();
                         if (clientList != null && clientList.Count > 1)
                         {
                             for (int i = 0; i < clientList.Count; i++)
@@ -301,10 +301,10 @@ namespace ServerTools
                                 }
                             }
                         }
-                        long ipLong = GeneralFunction.ConvertIPToLong(_cInfo.ip);
-                        if (duplicate || (ipLong >= GeneralFunction.ConvertIPToLong("10.0.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("10.255.255.255")) ||
-                            (ipLong >= GeneralFunction.ConvertIPToLong("172.16.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("172.31.255.255")) ||
-                            (ipLong >= GeneralFunction.ConvertIPToLong("192.168.0.0") && ipLong <= GeneralFunction.ConvertIPToLong("192.168.255.255")) ||
+                        long ipLong = GeneralOperations.ConvertIPToLong(_cInfo.ip);
+                        if (duplicate || (ipLong >= GeneralOperations.ConvertIPToLong("10.0.0.0") && ipLong <= GeneralOperations.ConvertIPToLong("10.255.255.255")) ||
+                            (ipLong >= GeneralOperations.ConvertIPToLong("172.16.0.0") && ipLong <= GeneralOperations.ConvertIPToLong("172.31.255.255")) ||
+                            (ipLong >= GeneralOperations.ConvertIPToLong("192.168.0.0") && ipLong <= GeneralOperations.ConvertIPToLong("192.168.255.255")) ||
                             _cInfo.ip == "127.0.0.1")
                         {
                             string securityId = "";
@@ -508,7 +508,7 @@ namespace ServerTools
                 float fee = _itemData.price * ((float)Tax / 100);
                 int adjustedPrice = _itemData.price - (int)fee;
                 Wallet.AddCurrency(_id, adjustedPrice, true);
-                string playerName = GeneralFunction.GetPlayerDataFileFromId(_id).ecd.entityName;
+                string playerName = GeneralOperations.GetPlayerDataFileFromId(_id).ecd.entityName;
                 using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                 {
                     sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' has purchased auction entry '{3}', profits went to ID '{4}' named '{5}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _purchase, _id, playerName));
@@ -522,7 +522,7 @@ namespace ServerTools
                 phrase = phrase.Replace("{Value}", _itemData.price.ToString());
                 phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                ClientInfo cInfo2 = GeneralFunction.GetClientInfoFromNameOrId(_id);
+                ClientInfo cInfo2 = GeneralOperations.GetClientInfoFromNameOrId(_id);
                 if (cInfo2 != null)
                 {
                     Phrases.Dict.TryGetValue("Auction10", out string phrase1);
@@ -537,7 +537,7 @@ namespace ServerTools
             {
                 if (AuctionItems.ContainsKey(itemId))
                 {
-                    EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                    EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
                         if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.Count > 0)
@@ -643,7 +643,7 @@ namespace ServerTools
             System.Random rnd = new System.Random();
             for (int i = 0; i < _length; i++)
             {
-                pass += GeneralFunction.NumSet.ElementAt(rnd.Next(0, 10));
+                pass += GeneralOperations.NumSet.ElementAt(rnd.Next(0, 10));
             }
             return pass;
         }

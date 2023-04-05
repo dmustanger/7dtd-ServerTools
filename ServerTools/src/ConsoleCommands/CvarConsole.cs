@@ -46,10 +46,10 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[3]));
                         return;
                     }
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
-                        EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                        EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                         if (player != null)
                         {
                             if (player.Buffs.CVars.ContainsKey(_params[2]))
@@ -79,10 +79,10 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
-                        EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                        EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                         if (player != null)
                         {
                             if (player.Buffs.CVars.Count > 0)

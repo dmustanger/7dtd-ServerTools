@@ -97,7 +97,7 @@ namespace ServerTools
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] No client info found. Join the server as a client before using this command"));
                             return;
                         }
-                        EntityPlayer player = GeneralFunction.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
+                        EntityPlayer player = GeneralOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
                         if (player != null)
                         {
                             int x = (int)player.position.x, z = (int)player.position.z;
@@ -182,7 +182,7 @@ namespace ServerTools
                                     }
                                     if (chunks.Count > 0)
                                     {
-                                        List<ClientInfo> clientList = GeneralFunction.ClientList();
+                                        List<ClientInfo> clientList = GeneralOperations.ClientList();
                                         if (clientList != null && clientList.Count > 0)
                                         {
                                             for (int i = 0; i < clientList.Count; i++)
@@ -306,7 +306,7 @@ namespace ServerTools
                             }
                             if (chunks.Count > 0)
                             {
-                                List<ClientInfo> clientList = GeneralFunction.ClientList();
+                                List<ClientInfo> clientList = GeneralOperations.ClientList();
                                 if (clientList != null && clientList.Count > 0)
                                 {
                                     for (int i = 0; i < clientList.Count; i++)

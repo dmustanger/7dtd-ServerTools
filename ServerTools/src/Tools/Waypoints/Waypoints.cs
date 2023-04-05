@@ -13,7 +13,7 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, Player_Check = false, Zombie_Check = false, Vehicle = false, Public_Waypoints = false, No_POI = false;
         public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Reserved_Max_Waypoints = 4, Command_Cost = 0;
         public static string Command_go_way = "go way", Command_waypoint = "waypoint", Command_way = "way", Command_wp = "wp", Command_fwaypoint = "fwaypoint", Command_fway = "fway", Command_fwp = "fwp", 
-            Command_waypoint_save = "waypoint save", Command_way_save = "way save", Command_ws = "ws", Command_waypoint_del = "waypoint del", Command_way_del = "way del", Command_wd = "wd";
+            Command_waypoint_save = "waypoint save", Command_way_save = "way save", Command_ws = "ws", Command_waypoint_delete = "waypoint delete", Command_way_delete = "way delete", Command_wd = "wd";
 
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> FriendPosition = new Dictionary<int, string>();
@@ -22,8 +22,6 @@ namespace ServerTools
         private const string file = "Waypoints.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-
-        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -56,81 +54,57 @@ namespace ServerTools
                     Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                     return;
                 }
-                bool upgrade = true;
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                Dict.Clear();
+                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
-                    Dict.Clear();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
-                        if (childNodes[i].NodeType != XmlNodeType.Comment)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (line.HasAttributes)
-                            {
-                                if (line.HasAttribute("Version") && line.GetAttribute("Version") == Config.Version)
-                                {
-                                    upgrade = false;
-                                    continue;
-                                }
-                                else if (line.HasAttribute("Name") && line.HasAttribute("Position") && line.HasAttribute("Cost"))
-                                {
-                                    string name = line.GetAttribute("Name");
-                                    string position = line.GetAttribute("Position");
-                                    string cost = line.GetAttribute("Cost");
-                                    if (!int.TryParse(cost, out int value))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Waypoints.xml entry. Invalid (non-numeric) value for 'Cost' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (!position.Contains(","))
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Ignoring Waypoints.xml entry. Invalid value for 'Position' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    string[] waypoint = { position, cost };
-                                    if (!Dict.ContainsKey(name))
-                                    {
-                                        Dict.Add(name, waypoint);
-                                    }
-                                }
-                            }
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes || !line.HasAttribute("Name") || !line.HasAttribute("Position") || !line.HasAttribute("Cost"))
+                        {
+                            continue;
+                        }
+                        string name = line.GetAttribute("Name");
+                        if (name == "")
+                        {
+                            continue;
+                        }
+                        string position = line.GetAttribute("Position");
+                        string cost = line.GetAttribute("Cost");
+                        if (!int.TryParse(cost, out int value))
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Waypoints.xml entry. Invalid (non-numeric) value for 'Cost' attribute: {0}", line.OuterXml));
+                            continue;
+                        }
+                        if (!position.Contains(","))
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Waypoints.xml entry. Invalid value for 'Position' attribute: {0}", line.OuterXml));
+                            continue;
+                        }
+                        string[] waypoint = { position, cost };
+                        if (!Dict.ContainsKey(name))
+                        {
+                            Dict.Add(name, waypoint);
                         }
                     }
                 }
-                if (upgrade)
+                else
                 {
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    XmlNode node = nodeList[0];
-                    XmlElement line = (XmlElement)nodeList[0];
-                    if (line != null)
+                    if (nodeList != null)
                     {
-                        if (line.HasAttributes)
-                        {
-                            OldNodeList = nodeList;
-                            File.Delete(FilePath);
-                            UpgradeXml();
-                            return;
-                        }
-                        else
-                        {
-                            nodeList = node.ChildNodes;
-                            line = (XmlElement)nodeList[0];
-                            if (line != null)
-                            {
-                                if (line.HasAttributes)
-                                {
-                                    OldNodeList = nodeList;
-                                    File.Delete(FilePath);
-                                    UpgradeXml();
-                                    return;
-                                }
-                            }
-                            File.Delete(FilePath);
-                            UpdateXml();
-                            Log.Out(string.Format("[SERVERTOOLS] The existing Waypoints.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -156,10 +130,11 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<PublicWaypoints>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Waypoint Name=\"Example\" Position=\"-500,20,500\" Cost=\"150\" /> -->");
                     sw.WriteLine();
                     sw.WriteLine();
+                    sw.WriteLine("    <Waypoint Name=\"\" Position=\"\" Cost=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, string[]> kvp in Dict)
@@ -404,7 +379,7 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
                     if (Vehicle)
@@ -445,15 +420,15 @@ namespace ServerTools
                     int y = (int)position.y;
                     int z = (int)position.z;
                     Vector3i vec3i = new Vector3i(x, y, z);
-                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypoint))
-                    {
-                        CommandCost(_cInfo, _waypoint, position, _friends, Command_Cost);
-                    }
-                    else if (Dict.ContainsKey(_waypoint))
+                    if (Dict.ContainsKey(_waypoint))
                     {
                         Dict.TryGetValue(_waypoint, out string[] waypointData);
                         int.TryParse(waypointData[1], out int cost);
                         CommandCost(_cInfo, _waypoint, position, _friends, cost);
+                    }
+                    else
+                    {
+                        CommandCost(_cInfo, _waypoint, position, _friends, Command_Cost);
                     }
                 }
             }
@@ -467,12 +442,11 @@ namespace ServerTools
         {
             try
             {
-                int currency = 0;
-                if (Wallet.IsEnabled)
+                if (!Wallet.IsEnabled || _cost < 1)
                 {
-                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                    Exec(_cInfo, _waypoint, _position, _friends, _cost);
                 }
-                if (currency >= _cost)
+                else if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= _cost)
                 {
                     Exec(_cInfo, _waypoint, _position, _friends, _cost);
                 }
@@ -489,69 +463,50 @@ namespace ServerTools
             }
         }
 
-        private static void Exec(ClientInfo _cInfo, string _waypoint, Vector3 _position, bool _friends, int _cost)
+        private static void Exec(ClientInfo _cInfo, string _waypointName, Vector3 _position, bool _friends, int _cost)
         {
             try
             {
-                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypoint))
+                string waypointPosition = "";
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypointName))
                 {
                     Dictionary<string, string> waypoints = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints;
-                    waypoints.TryGetValue(_waypoint, out string waypointPos);
-                    string[] cords = waypointPos.Split(',');
-                    int.TryParse(cords[0], out int x);
-                    int.TryParse(cords[1], out int y);
-                    int.TryParse(cords[2], out int z);
-                    if (GeneralFunction.ClaimedByNone(new Vector3i(x, y, z)))
-                    {
-                        if (_friends)
-                        {
-                            FriendInvite(_cInfo, _position, waypointPos);
-                        }
-                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                        if (Command_Cost >= 1 && Wallet.IsEnabled)
-                        {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                        }
-                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint = DateTime.Now;
-                        PersistentContainer.DataChange = true;
-                    }
-                    else
-                    {
-                        Phrases.Dict.TryGetValue("Waypoints2", out string phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    waypoints.TryGetValue(_waypointName, out waypointPosition);
                 }
-                else if (Dict.ContainsKey(_waypoint))
+                else if (Dict.ContainsKey(_waypointName))
                 {
-                    Dict.TryGetValue(_waypoint, out string[] waypointData);
-                    string[] cords = waypointData[0].Split(',');
-                    int.TryParse(cords[0], out int x);
-                    int.TryParse(cords[1], out int y);
-                    int.TryParse(cords[2], out int z);
-                    if (GeneralFunction.ClaimedByNone(new Vector3i(x, y, z)))
-                    {
-                        if (_friends)
-                        {
-                            FriendInvite(_cInfo, _position, waypointData[0]);
-                        }
-                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                        if (Command_Cost >= 1 && Wallet.IsEnabled)
-                        {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                        }
-                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint = DateTime.Now;
-                        PersistentContainer.DataChange = true;
-                    }
-                    else
-                    {
-                        Phrases.Dict.TryGetValue("Waypoints2", out string phrase);
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    Dict.TryGetValue(_waypointName, out string[] waypointData);
                 }
                 else
                 {
                     Phrases.Dict.TryGetValue("Waypoints4", out string phrase);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    return;
+                }
+                string[] cords = waypointPosition.Split(',');
+                int.TryParse(cords[0], out int x);
+                int.TryParse(cords[1], out int y);
+                int.TryParse(cords[2], out int z);
+                if (GeneralOperations.ClaimedByNone(new Vector3i(x, y, z)))
+                {
+                    if (_friends)
+                    {
+                        FriendInvite(_cInfo, _position, waypointPosition);
+                    }
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                    if (_cost >= 1 && Wallet.IsEnabled)
+                    {
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
+                    }
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint = DateTime.Now;
+                    PersistentContainer.DataChange = true;
+                    return;
+                }
+                else
+                {
+                    Phrases.Dict.TryGetValue("Waypoints2", out string phrase);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    return;
                 }
             }
             catch (Exception e)
@@ -567,11 +522,11 @@ namespace ServerTools
                 if (!Event.Teams.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                 {
                     World world = GameManager.Instance.World;
-                    EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                    EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
                         Vector3 position = player.GetPosition();
-                        if (GeneralFunction.ClaimedByNone(new Vector3i(position)))
+                        if (GeneralOperations.ClaimedByNone(new Vector3i(position)))
                         {
                             ReservedCheck(_cInfo, _waypoint);
                         }
@@ -639,7 +594,7 @@ namespace ServerTools
                 {
                     if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.Count < _waypointTotal + PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].WaypointSpots)
                     {
-                        EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                        EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                         if (player != null)
                         {
                             Vector3 position = player.GetPosition();
@@ -674,7 +629,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                    EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
                         Dictionary<string, string> waypoints = new Dictionary<string, string>();
@@ -732,16 +687,16 @@ namespace ServerTools
                 int x = (int)_position.x;
                 int y = (int)_position.y;
                 int z = (int)_position.z;
-                EntityPlayer player = GeneralFunction.GetEntityPlayer(_cInfo.entityId);
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                 if (player != null)
                 {
-                    List<ClientInfo> clientList = GeneralFunction.ClientList();
+                    List<ClientInfo> clientList = GeneralOperations.ClientList();
                     if (clientList != null)
                     {
                         for (int i = 0; i < clientList.Count; i++)
                         {
                             ClientInfo cInfo2 = clientList[i];
-                            EntityPlayer player2 = GeneralFunction.GetEntityPlayer(cInfo2.entityId);
+                            EntityPlayer player2 = GeneralOperations.GetEntityPlayer(cInfo2.entityId);
                             if (player2 != null)
                             {
                                 if (player.IsFriendsWith(player2))
@@ -813,7 +768,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -822,41 +777,41 @@ namespace ServerTools
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<PublicWaypoints>");
-                    sw.WriteLine(string.Format("<ST Version=\"{0}\" />", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Waypoint Name=\"Example\" Position=\"-500,20,500\" Cost=\"150\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Waypoint Name=\"Example\"") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Waypoint Name=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Waypoint Name=\"Example") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine();
                     sw.WriteLine();
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    sw.WriteLine("    <Waypoint Name=\"\" Position=\"\" Cost=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            continue;
-                        }
-                        XmlElement line = (XmlElement)OldNodeList[i];
-                        if (line.HasAttributes && line.Name == "Waypoint")
-                        {
-                            string name = "", position = "", cost = "";
-                            if (line.HasAttribute("Name"))
+                            XmlElement line = (XmlElement)nodeList[i];
+                            if (line.HasAttributes && line.Name == "Waypoint")
                             {
-                                name = line.GetAttribute("Name");
+                                string name = "", position = "", cost = "";
+                                if (line.HasAttribute("Name"))
+                                {
+                                    name = line.GetAttribute("Name");
+                                }
+                                if (line.HasAttribute("Position"))
+                                {
+                                    position = line.GetAttribute("Position");
+                                }
+                                if (line.HasAttribute("Cost"))
+                                {
+                                    cost = line.GetAttribute("Cost");
+                                }
+                                sw.WriteLine(string.Format("    <Waypoint Name=\"{0}\" Position=\"{1}\" Cost=\"{2}\" />", name, position, cost));
                             }
-                            if (line.HasAttribute("Position"))
-                            {
-                                position = line.GetAttribute("Position");
-                            }
-                            if (line.HasAttribute("Cost"))
-                            {
-                                cost = line.GetAttribute("Cost");
-                            }
-                            sw.WriteLine(string.Format("    <Waypoint Name=\"{0}\" Position=\"{1}\" Cost=\"{2}\" />", name, position, cost));
                         }
                     }
                     sw.WriteLine("</PublicWaypoints>");

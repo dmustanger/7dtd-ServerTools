@@ -13,7 +13,7 @@ namespace ServerTools
         public static string Destination = "", Save_Directory = "", Delay = "240";
 
         private static string EventDelay = "";
-        private static Thread th;
+        private static Thread BackupThread;
 
         public static void SetDelay(bool _reset)
         {
@@ -50,8 +50,8 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out("[SERVERTOOLS] Invalid AutoBackup Delay_Between_Saves detected. Use a single integer, 24h time or multiple 24h time entries");
-                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                        Log.Out(string.Format("[SERVERTOOLS] Invalid AutoBackup Delay_Between_Saves detected. Use a single integer, 24h time or multiple 24h time entries"));
+                        Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
                     }
                 }
             }
@@ -59,29 +59,17 @@ namespace ServerTools
 
         public static void Exec()
         {
-            Log.Out("[SERVERTOOLS] Autobackup Exec");
+            Log.Out(string.Format("[SERVERTOOLS] Autobackup Exec"));
             if (!IsRunning && !Shutdown.ShuttingDown)
             {
-                try
+                IsRunning = true;
+                Log.Out(string.Format("[SERVERTOOLS] Starting auto backup process"));
+                BackupThread = new Thread(new ThreadStart(Prepare))
                 {
-                    Log.Out("[SERVERTOOLS] Starting auto backup process");
-                    IsRunning = true;
-                    th = new Thread(new ThreadStart(Prepare))
-                    {
-                        IsBackground = true,
-                        Priority = ThreadPriority.BelowNormal
-                    };
-                    th.Start();
-                }
-                catch (Exception e)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Exec: {0}", e.Message));
-                    if (e.Message.Contains("112"))
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Auto backup does not have enough free space to work with on the selected drive. Please make space available before operating the backup process."));
-                    }
-                }
-                IsRunning = false;
+                    IsBackground = true,
+                    Priority = ThreadPriority.BelowNormal
+                };
+                BackupThread.Start();
             }
         }
 
@@ -113,7 +101,7 @@ namespace ServerTools
                         if (files != null && files.Length > Backup_Count)//files are not null and too many exist
                         {
                             DeleteFiles(files);//exec file delete
-                            Log.Out("[SERVERTOOLS] Auto backup clean up complete");
+                            Log.Out(string.Format("[SERVERTOOLS] Auto backup clean up complete"));
                         }
                         DirectoryInfo destDirInfo = new DirectoryInfo(API.ConfigPath + "/WorldBackup/");//destination dir
                         if (destDirInfo != null)
@@ -137,7 +125,7 @@ namespace ServerTools
                         if (files != null && files.Length > Backup_Count)//files are not null or empty
                         {
                             DeleteFiles(files);//exec file delete
-                            Log.Out("[SERVERTOOLS] Auto backup clean up complete");
+                            Log.Out(string.Format("[SERVERTOOLS] Auto backup clean up complete"));
                         }
                         DirectoryInfo destDirInfo = new DirectoryInfo(destination);//destination dir
                         if (destDirInfo != null)
@@ -154,8 +142,9 @@ namespace ServerTools
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Prepare: {0}", e.Message));
-                th.Abort();
             }
+            BackupThread.Abort();
+            IsRunning = false;
         }
 
         private static void DeleteFiles(string[] _files)

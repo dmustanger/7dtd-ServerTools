@@ -156,7 +156,7 @@ namespace ServerTools
                 ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 Entries.TryGetValue(_winningNumbers, out string id);
                 Wallet.AddCurrency(id, (Entries.Count + 1) * Entry_Cost + PersistentContainer.Instance.LotteryPot, true);
-                ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(id);
+                ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(id);
                 if (cInfo != null)
                 {
                     Phrases.Dict.TryGetValue("Lottery6", out phrase);
@@ -187,7 +187,7 @@ namespace ServerTools
                 {
                     Entries.TryGetValue(winningNumbers, out string id);
                     Wallet.AddCurrency(id, (Entries.Count + 1) * Entry_Cost + PersistentContainer.Instance.LotteryPot, true);
-                    ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(id);
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(id);
                     if (cInfo != null)
                     {
                         Phrases.Dict.TryGetValue("Lottery6", out phrase);

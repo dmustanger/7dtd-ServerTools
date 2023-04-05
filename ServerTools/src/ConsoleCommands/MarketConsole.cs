@@ -84,7 +84,7 @@ namespace ServerTools
                         ClientInfo cInfo = _senderInfo.RemoteClientInfo;
                         if (cInfo != null)
                         {
-                            EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                            EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                             if (cInfo != null)
                             {
                                 Vector3 position = player.GetPosition();

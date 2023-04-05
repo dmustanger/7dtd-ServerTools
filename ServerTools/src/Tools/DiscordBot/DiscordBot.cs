@@ -9,8 +9,9 @@ namespace ServerTools
     public class DiscordBot
     {
         public static bool IsEnabled = false, TokenLoaded = false;
-        public static string TokenKey, Webhook = "", LastEntry = "", LastPlayer = "", Prefix = "[Discord]",
+        public static string TokenKey, Webhook = "", LastEntry = "", Prefix = "[Discord]",
             Prefix_Color = "[FFFFFF]", Name_Color = "[FFFFFF]", Message_Color = "[FFFFFF]";
+        public static int LastPlayer;
         public static List<string> Queue = new List<string>();
 
         private const string file = "ServerToolsToken.txt";
@@ -22,13 +23,13 @@ namespace ServerTools
             {
                 if (!File.Exists(FilePath))
                 {
-                    TokenKey = GeneralFunction.CreatePassword(22);
+                    TokenKey = GeneralOperations.CreatePassword(22);
                     using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                     {
                         sw.WriteLine(TokenKey);
                     }
                     TokenLoaded = true;
-                    Log.Out("[SERVERTOOLS] Created and loaded security token for Discordian bot");
+                    Log.Out(string.Format("[SERVERTOOLS] Created and loaded security token for Discordian bot"));
                 }
                 else if (!TokenLoaded)
                 {
@@ -40,7 +41,7 @@ namespace ServerTools
                         }
                     }
                     TokenLoaded = true;
-                    Log.Out("[SERVERTOOLS] Loaded security token for Discordian bot");
+                    Log.Out(string.Format("[SERVERTOOLS] Loaded security token for Discordian bot"));
                 }
             }
             catch (Exception e)
@@ -68,7 +69,9 @@ namespace ServerTools
                     client.Headers[HttpRequestHeader.ContentType] = "application/json";
                     client.UploadString(Webhook, "{\"content\":\"" + Queue[0].Replace("\"", "") + "\"}");
                     client.Dispose();
+                    Queue.RemoveAt(0);
                 }
+                return;
             }
             catch (Exception e)
             {
@@ -80,11 +83,11 @@ namespace ServerTools
                     }
                     if (e.Message.Contains("(401)"))
                     {
-                        Log.Out("[SERVERTOOLS] The Discord webhook you have provided is not authorized. Check the token you have provided in the ServerToolsConfig.xml");
+                        Log.Out(string.Format("[SERVERTOOLS] The Discord webhook you have provided is not authorized. Check the token you have provided in the ServerToolsConfig.xml"));
                     }
                     else if (e.Message.Contains("(403)"))
                     {
-                        Log.Out("[SERVERTOOLS] The Discord network has returned an error to the webhook request. Unable to send message");
+                        Log.Out(string.Format("[SERVERTOOLS] The Discord network has returned an error to the webhook request. Unable to send message"));
                     }
                     else
                     {
@@ -92,7 +95,6 @@ namespace ServerTools
                     }
                 }
             }
-            Queue.RemoveAt(0);
         }
     }
 }

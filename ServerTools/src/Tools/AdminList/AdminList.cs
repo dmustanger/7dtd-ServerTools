@@ -12,7 +12,7 @@ namespace ServerTools
         {
             List<string> admins = new List<string>();
             List<string> mods = new List<string>();
-            List<ClientInfo> clientList = GeneralFunction.ClientList();
+            List<ClientInfo> clientList = GeneralOperations.ClientList();
             if (clientList != null)
             {
                 for (int i = 0; i < clientList.Count; i++)

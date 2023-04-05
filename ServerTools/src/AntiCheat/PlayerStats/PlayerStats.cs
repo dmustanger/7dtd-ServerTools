@@ -18,7 +18,7 @@ namespace ServerTools
         {
             try
             {
-                List<ClientInfo> clientList = GeneralFunction.ClientList();
+                List<ClientInfo> clientList = GeneralOperations.ClientList();
                 if (clientList != null)
                 {
                     for (int i = 0; i < clientList.Count; i++)
@@ -29,7 +29,7 @@ namespace ServerTools
                             if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
                                 GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                             {
-                                EntityPlayer player = GeneralFunction.GetEntityPlayer(cInfo.entityId);
+                                EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                 if (player != null && player.IsSpawned())
                                 {
                                     var p_Health = player.Stats.Health.Value;

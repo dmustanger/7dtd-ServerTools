@@ -9,7 +9,11 @@ namespace ServerTools
 
         public static void GetInfo(ClientInfo _cInfo)
         {
-            string fps = GameManager.Instance.fps.Counter.ToString();
+            float fps = GameManager.Instance.fps.Counter;
+            if (fps > 80)
+            {
+                fps = 80;
+            }
             int playerCount = ConnectionManager.Instance.ClientCount();
             int zombies = 0, animals = 0, bicycles = 0, miniBikes = 0, motorcycles = 0, fourByFour = 0, gyros = 0, supplyCrates = 0;
             int daysRemaining = DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
@@ -61,10 +65,10 @@ namespace ServerTools
             Response(_cInfo, fps, daysRemaining, playerCount, zombies, animals, bicycles, miniBikes, motorcycles, fourByFour, gyros, supplyCrates);
         }
 
-        public static void Response(ClientInfo _cInfo, string _fps, int _daysRemaining, int _playerCount, int _zombies, int _animals, int _bicycles, int _miniBikes, int _motorcycles, int _4x4, int _gyros, int _supplyCrates)
+        public static void Response(ClientInfo _cInfo, float _fps, int _daysRemaining, int _playerCount, int _zombies, int _animals, int _bicycles, int _miniBikes, int _motorcycles, int _4x4, int _gyros, int _supplyCrates)
         {
             Phrases.Dict.TryGetValue("Day7_1", out string phrase);
-            phrase = phrase.Replace("{Value}", _fps);
+            phrase = phrase.Replace("{Value}", _fps.ToString());
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             if (_daysRemaining == 0 && !GameManager.Instance.World.aiDirector.BloodMoonComponent.BloodMoonActive)
             {

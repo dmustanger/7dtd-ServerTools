@@ -72,7 +72,7 @@ namespace ServerTools
                     Invited = false;
                     foreach (var teamPlayer in Teams)
                     {
-                        ClientInfo eventClientInfo = GeneralFunction.GetClientInfoFromNameOrId(teamPlayer.Key);
+                        ClientInfo eventClientInfo = GeneralOperations.GetClientInfoFromNameOrId(teamPlayer.Key);
                         if (eventClientInfo != null)
                         {
                             EntityPlayer eventPlayer = GameManager.Instance.World.Players.dict[eventClientInfo.entityId];
@@ -147,7 +147,7 @@ namespace ServerTools
         {
             foreach (var eventPlayer in Teams)
             {
-                ClientInfo eventClientInfo = GeneralFunction.GetClientInfoFromNameOrId(eventPlayer.Key);
+                ClientInfo eventClientInfo = GeneralOperations.GetClientInfoFromNameOrId(eventPlayer.Key);
                 if (eventClientInfo != null)
                 {
                     EntityPlayer player = GameManager.Instance.World.Players.dict[eventClientInfo.entityId];

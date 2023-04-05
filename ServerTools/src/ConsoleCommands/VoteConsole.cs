@@ -116,7 +116,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        ClientInfo cInfo = GeneralFunction.GetClientInfoFromNameOrId(_params[1]);
+                        ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                         if (cInfo != null)
                         {
                             PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].LastVote = DateTime.Now.AddYears(-1);
@@ -159,7 +159,7 @@ namespace ServerTools
                     }
                     else if (_params[1].Contains("EOS_"))
                     {
-                        PersistentPlayerData ppd = GeneralFunction.GetPersistentPlayerDataFromId(_params[1]);
+                        PersistentPlayerData ppd = GeneralOperations.GetPersistentPlayerDataFromId(_params[1]);
                         if (ppd != null)
                         {
                             id = ppd.UserIdentifier.CombinedString;

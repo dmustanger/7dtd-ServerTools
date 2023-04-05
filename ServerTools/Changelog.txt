@@ -1,5 +1,62 @@
 ﻿CHANGELOG
 
+20.6.9
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added prevention for output log spam
+-Added prevention for players spawning out of world bounds
+-Added Big_Head tool. All zombies will have big heads
+-Added Confetti tool. Turn on confetti when a player or
+zombie dies
+-Added options Min_Level and Max_Level to Died tool. Sets the
+minimum and maximum level a player must be
+-Added console command st-ReduceDelay. Can be turned on or
+off individual players to reduce their command delays
+-Added Donation_Link tool. Creates a clickable link that will
+take the player to the web address using the steam browser
+-Added Chunk_Reset tool. Set individual chunks to automatically
+reset on a schedule. Daily, weekly or monthly reset available
+-Added Custom_Commands variable {RemoveTeleport}
+-Added timer to Bloodmoon_Warrior reward payout
+-Fixed Region_Reset utilizing regions with negative numbers
+-Fixed Land_Claim_Count not working as intended
+-Fixed Bank failing to deposit funds correctly
+-Fixed Kill_Notice not working as intended
+-Fixed Bloodmoon_Warrior only giving 1 item for the reward
+count at max
+-Fixed Custom_Commands variables {SetTeleport} and {Teleport} 
+not working as intended
+-Fixed Lobby and Market Return option not working as intended
+-Fixed Infinite_Ammo displaying as enabled while Invalid_Items
+was enabled
+-Changed Damage_Detector option Log to function despite
+the main tool being enabled
+-Changed entity despawn process to avoid multi threading
+race conditions
+-Changed various console command process to avoid multi 
+threading race conditions
+-Changed Pickup tool to allow secure doors
+-Changed Pickup tool process for block exchange
+-Changed Wall tool for ease of use and updated the HowToSetup
+with clear instructions on how it works
+-Changed Invalid_Items, Level_Up and High_Ping_Kicker to
+use a timer and changed the data utilized at time of process
+-Changed console command st-SpawnActiveBlocks so that you can
+spawn the block you are holding at the time of use
+-Updated console command st-SpawnActiveBlocks to run an
+automatic block correction process
+-Updated console command st-Maze with a cleaner code process
+during the automatic block corrections
+-Updated console command st-SpawnActiveBlocks for better
+performance and improved process
+-Updated xml backup and update process
+-Updated chat color, prefix and message process to avoid mod
+conflicts and alteration of the senders id
+-Removed Set_Target and Low_FPS options from FPS tool. Target
+is now set automatically
+-Removed Magic_Bullet_Detector tool until a later patch
+
 20.6.8
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions
