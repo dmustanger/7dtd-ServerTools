@@ -10,7 +10,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false;
         public static int Backup_Count = 5, Compression_Level = 0;
-        public static string Destination = "", Save_Directory = "", Delay = "240";
+        public static string Save_Destination = "", Target_Directory = "", Delay = "240";
 
         private static string EventDelay = "";
         private static Thread BackupThread;
@@ -77,7 +77,7 @@ namespace ServerTools
         {
             try
             {
-                string saveDirectory = Save_Directory;
+                string saveDirectory = Target_Directory;
                 if (string.IsNullOrEmpty(saveDirectory))
                 {
                     saveDirectory = GameIO.GetSaveGameDir();
@@ -90,7 +90,7 @@ namespace ServerTools
                 DirectoryInfo saveDirInfo = new DirectoryInfo(saveDirectory);//save dir
                 if (saveDirInfo != null)
                 {
-                    if (string.IsNullOrEmpty(Destination))
+                    if (string.IsNullOrEmpty(Save_Destination))
                     {
                         if (!Directory.Exists(API.ConfigPath + "/WorldBackup"))
                         {
@@ -111,7 +111,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        string destination = Destination.RemoveLineBreaks();
+                        string destination = Save_Destination.RemoveLineBreaks();
                         if (!destination.EndsWith("/"))
                         {
                             destination += "/";

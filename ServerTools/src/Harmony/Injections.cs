@@ -600,35 +600,32 @@ public static class Injections
         return true;
     }
 
-    public static void LootManager_LootContainerOpened_Prefix(ref TileEntityLootContainer _tileEntity, int _entityIdThatOpenedIt)
+    public static bool LootManager_LootContainerOpened_Prefix(ref TileEntityLootContainer _tileEntity, int _entityIdThatOpenedIt)
     {
-        if (_tileEntity != null && Vault.IsEnabled && !_tileEntity.bPlayerBackpack && _tileEntity.blockValue.Block.GetBlockName() == "VaultBox")
+        if (_tileEntity != null && _tileEntity.blockValue.Block.GetBlockName() == "VaultBox")
         {
-            _tileEntity = Vault.Exec(_entityIdThatOpenedIt, _tileEntity);
+            return Vault.Exec(_entityIdThatOpenedIt, ref _tileEntity);
         }
+        return true;
     }
 
-    public static void NetPackageTileEntity_Setup_Postfix(NetPackageTileEntity __instance, TileEntity _te)
+    public static void NetPackageTileEntity_Setup_Postfix(TileEntity _te, byte _handle)
     {
-        if (__instance.Sender == null || _te == null || !(_te is TileEntityLootContainer) || !Vault.IsEnabled)
+        if (_te == null || !(_te is TileEntityLootContainer) || !Vault.IsEnabled)
         {
             return;
         }
-        TileEntityLootContainer tileEntity = (TileEntityLootContainer)_te;
-        if (tileEntity != null && !tileEntity.bPlayerBackpack && _te.blockValue.Block.GetBlockName() == "VaultBox")
+        TileEntityLootContainer lootContainer = (TileEntityLootContainer)_te;
+        if (lootContainer != null && lootContainer.blockValue.Block.GetBlockName() == "VaultBox" && _handle != 255)
         {
-            Vault.UpdateData(__instance.Sender, tileEntity);
+            Vault.UpdateData(lootContainer);
         }
     }
 
-    public static bool GameManager_DropContentOfLootContainerServer_Prefix(GameManager __instance, BlockValue _bvOld, Vector3i _worldPos, int _lootEntityId)
+    public static bool GameManager_DropContentOfLootContainerServer_Prefix(BlockValue _bvOld)
     {
         if (_bvOld.Block.GetBlockName() == "VaultBox")
         {
-            if (Vault.VaultUser.ContainsKey(_lootEntityId))
-            {
-                Vault.VaultUser.Remove(_lootEntityId);
-            }
             return false;
         }
         return true;
@@ -748,10 +745,46 @@ public static class Injections
 
     public static void EntityAlive_OnEntityDeath_Prefix(EntityAlive __instance, EntityAlive ___entityThatKilledMe, DamageResponse ___RecordedDamage)
     {
-        if (KillNotice.IsEnabled)
+        if (__instance != null && ___entityThatKilledMe != null)
         {
-            KillNotice.Exec(__instance, ___entityThatKilledMe, ___RecordedDamage);
+            if (__instance is EntityPlayer)
+            {
+                ClientInfo cInfoAttacker = GeneralOperations.GetClientInfoFromEntityId(___entityThatKilledMe.entityId);
+                if (cInfoAttacker != null)
+                {
+                    if (Wallet.IsEnabled && Wallet.PVP && Wallet.Player_Kill > 0)
+                    {
+                        Wallet.AddCurrency(cInfoAttacker.CrossplatformId.CombinedString, Wallet.Player_Kill, true);
+                    }
+                    ClientInfo cInfoVictim = GeneralOperations.GetClientInfoFromEntityId(__instance.entityId);
+                    if (cInfoVictim != null)
+                    {
+                        if (Bounties.IsEnabled)
+                        {
+                            Bounties.PlayerKilled((EntityPlayer)__instance, (EntityPlayer)___entityThatKilledMe, cInfoVictim, cInfoAttacker);
+                        }
+                    }
+                }
+            }
+            else if (__instance is EntityZombie && ___entityThatKilledMe is EntityPlayer)
+            {
+                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(___entityThatKilledMe.entityId);
+                if (cInfo != null)
+                {
+                    if (Wallet.IsEnabled && Wallet.Zombie_Kill > 0)
+                    {
+                        Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, Wallet.Zombie_Kill, true);
+                    }
+                    if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.BloodmoonStarted && BloodmoonWarrior.WarriorList.Contains(cInfo.entityId))
+                    {
+                        BloodmoonWarrior.KilledZombies[cInfo.entityId] += 1;
+                    }
+                }
+            }
+            if (KillNotice.IsEnabled)
+            {
+                KillNotice.Exec(__instance, ___entityThatKilledMe, ___RecordedDamage);
+            }
         }
     }
-    
 }

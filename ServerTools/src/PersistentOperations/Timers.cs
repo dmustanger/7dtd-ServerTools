@@ -6,10 +6,10 @@ namespace ServerTools
 {
     class Timers
     {
-        public static bool CoreIsRunning = false, HalfSecondIsRunning = false, ThreadTwo = false;
+        public static bool CoreIsRunning = false, HalfSecondIsRunning = false;
         public static int StopServerMinutes = 0, eventTime = 0;
         private static int twoSecondTick, fiveSecondTick, tenSecondTick, twentySecondTick, oneMinTick, fiveMinTick, stopServerSeconds, eventInvitation,
-            eventOpen, horde, kickVote, muteVote, newPlayer, restartVote;
+            eventOpen, horde, kickVote, muteVote, newPlayer, restartVote, bloodMoans;
 
         private static readonly System.Timers.Timer Core = new System.Timers.Timer();
         private static readonly System.Timers.Timer HalfSecond = new System.Timers.Timer();
@@ -467,70 +467,82 @@ namespace ServerTools
                     BloodmoonWarrior.Exec();
                 }
             }
-            if (fiveMinTick >= 300)
+            if (InvalidItems.IsEnabled)
             {
-                fiveMinTick = 0;
-                if (InvalidItems.IsEnabled)
+                if (fiveMinTick >= 300)
                 {
+                    fiveMinTick = 0;
                     InvalidItems.CheckStorage();
                 }
             }
-            newPlayer++;
-            if (newPlayer >= 5)
+            if (BloodMoans.IsEnabled)
             {
-                newPlayer = 0;
-                if (GeneralOperations.NewPlayerQue.Count > 0)
+                bloodMoans++;
+                if (bloodMoans >= BloodMoans.Countdown)
                 {
+                    bloodMoans = 0;
+                    if (GeneralOperations.IsBloodmoon())
+                    {
+                        BloodMoans.Exec();
+                    }
+                }
+            }
+            if (GeneralOperations.NewPlayerQue.Count > 0)
+            {
+                newPlayer++;
+                if (newPlayer >= 5)
+                {
+                    newPlayer = 0;
                     ClientInfo cInfo = GeneralOperations.NewPlayerQue[0];
                     GeneralOperations.NewPlayerQue.RemoveAt(0);
                     API.NewPlayerExec(cInfo);
                 }
             }
-            restartVote++;
-            if (restartVote >= 60)
+            if (RestartVote.IsEnabled && RestartVote.VoteOpen)
             {
-                restartVote = 0;
-                if (RestartVote.IsEnabled && RestartVote.VoteOpen)
+                restartVote++;
+                if (restartVote >= 60)
                 {
+                    restartVote = 0;
                     RestartVote.VoteOpen = false;
                     RestartVote.ProcessRestartVote();
                 }
             }
-            muteVote++;
-            if (muteVote >= 60)
+            if (MuteVote.IsEnabled && MuteVote.VoteOpen)
             {
-                muteVote = 0;
-                if (MuteVote.IsEnabled && MuteVote.VoteOpen)
+                muteVote++;
+                if (muteVote >= 60)
                 {
+                    muteVote = 0;
                     MuteVote.VoteOpen = false;
                     MuteVote.ProcessMuteVote();
                 }
             }
-            kickVote++;
-            if (kickVote >= 60)
+            if (KickVote.IsEnabled && KickVote.VoteOpen)
             {
-                kickVote = 0;
-                if (KickVote.IsEnabled && KickVote.VoteOpen)
+                kickVote++;
+                if (kickVote >= 60)
                 {
+                    kickVote = 0;
                     KickVote.VoteOpen = false;
                     KickVote.ProcessKickVote();
                 }
             }
-            horde++;
-            if (horde >= 1200)
+            if (Hordes.IsEnabled)
             {
-                horde = 0;
-                if (Hordes.IsEnabled)
+                horde++;
+                if (horde >= 1200)
                 {
+                    horde = 0;
                     Hordes.Exec();
                 }
             }
-            eventInvitation++;
-            if (eventInvitation >= 900)
+            if (Event.Invited)
             {
-                eventInvitation = 0;
-                if (Event.Invited)
+                eventInvitation++;
+                if (eventInvitation >= 900)
                 {
+                    eventInvitation = 0;
                     Event.Invited = false;
                     Event.CheckOpen();
                 }

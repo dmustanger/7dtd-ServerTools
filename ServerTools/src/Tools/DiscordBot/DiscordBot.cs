@@ -94,6 +94,7 @@ namespace ServerTools
                         Log.Out(string.Format("[SERVERTOOLS] Error in DiscordBot.WebHook: {0}", e.Message));
                     }
                 }
+                Queue.RemoveAt(0);
             }
         }
     }

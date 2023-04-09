@@ -105,6 +105,7 @@
     <Compile Include="src\Tools\AutoRestart\AutoRestart.cs" />
     <Compile Include="src\Tools\Bed\Bed.cs" />
     <Compile Include="src\Tools\BigHead\BigHead.cs" />
+    <Compile Include="src\Tools\BloodMoans\BloodMoans.cs" />
     <Compile Include="src\Tools\ChunkReset\ChunkReset.cs" />
     <Compile Include="src\Tools\Confetti\Confetti.cs" />
     <Compile Include="src\Tools\DonationLink\DonationLink.cs" />

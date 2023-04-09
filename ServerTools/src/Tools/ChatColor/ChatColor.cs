@@ -529,27 +529,26 @@ namespace ServerTools
                     prefix = chatColorData[2];
                     prefixColor = chatColorData[3];
                 }
-                if (prefix == "" && ClanManager.IsEnabled && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName != null &&
-                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName != "")
-                {
-                    prefix = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName;
-                }
-                if (ChatHook.Normal_Player_Color_Prefix)
+                else if (ChatHook.Normal_Player_Color_Prefix)
                 {
                     if (ChatHook.Normal_Player_Name_Color != "")
                     {
                         nameColor = ChatHook.Normal_Player_Name_Color;
                     }
-                    if (prefix == "" && ChatHook.Normal_Player_Prefix != "")
+                    if (ChatHook.Normal_Player_Prefix != "")
                     {
                         prefix = ChatHook.Normal_Player_Prefix;
-                        if (ChatHook.Normal_Player_Prefix_Color != "")
-                        {
-                            prefixColor = ChatHook.Normal_Player_Prefix_Color;
-                        }
+                    }
+                    if (ChatHook.Normal_Player_Prefix_Color != "")
+                    {
+                        prefixColor = ChatHook.Normal_Player_Prefix_Color;
                     }
                 }
-                
+                if (ClanManager.IsEnabled && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName != null &&
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName != "")
+                {
+                    prefix = prefix.Insert(prefix.Length, PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName);
+                }
                 if (_chatType == EChatType.Friends)
                 {
                     prefix = prefix.Insert(0, "(Friends)");

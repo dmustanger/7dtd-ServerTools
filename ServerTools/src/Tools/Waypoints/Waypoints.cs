@@ -590,7 +590,7 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }
-                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.Count > 0)
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null)
                 {
                     if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.Count < _waypointTotal + PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].WaypointSpots)
                     {
@@ -602,11 +602,9 @@ namespace ServerTools
                             int y = (int)position.y;
                             int z = (int)position.z;
                             string wposition = x + "," + y + "," + z;
-                            Dictionary<string, string> waypoints = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints;
-                            if (!waypoints.ContainsKey(_waypoint))
+                            if (!PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypoint))
                             {
-                                waypoints.Add(_waypoint, wposition);
-                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints = waypoints;
+                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.Add(_waypoint, wposition);
                                 PersistentContainer.DataChange = true;
                                 Phrases.Dict.TryGetValue("Waypoints8", out string phrase);
                                 phrase = phrase.Replace("{Name}", _waypoint);
@@ -615,16 +613,16 @@ namespace ServerTools
                             }
                             else
                             {
-                                Phrases.Dict.TryGetValue("Waypoints15", out string _phrase);
-                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue("Waypoints15", out string phrase);
+                                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
                     else
                     {
-                        Phrases.Dict.TryGetValue("Waypoints5", out string _phrase);
-                        _phrase = _phrase.Replace("{Value}", _waypointTotal.ToString());
-                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Waypoints5", out string phrase);
+                        phrase = phrase.Replace("{Value}", _waypointTotal.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
@@ -632,12 +630,12 @@ namespace ServerTools
                     EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
-                        Dictionary<string, string> waypoints = new Dictionary<string, string>();
                         Vector3 position = player.GetPosition();
                         int x = (int)position.x;
                         int y = (int)position.y;
                         int z = (int)position.z;
                         string wposition = x + "," + y + "," + z;
+                        Dictionary<string, string> waypoints = new Dictionary<string, string>();
                         waypoints.Add(_waypoint, wposition);
                         PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints = waypoints;
                         PersistentContainer.DataChange = true;

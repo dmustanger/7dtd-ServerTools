@@ -496,6 +496,19 @@ namespace ServerTools
                 Dict.Remove("Block pickup");
                 Log.Out(string.Format("[SERVERTOOLS] Block pickup disabled"));
             }
+            if (BloodMoans.IsEnabled)
+            {
+                if (!Dict.Contains("Blood moans"))
+                {
+                    Dict.Add("Blood moans");
+                    Log.Out(string.Format("[SERVERTOOLS] Blood moans enabled"));
+                }
+            }
+            else if (Dict.Contains("Blood moans") && !_initiating)
+            {
+                Dict.Remove("Blood moans");
+                Log.Out(string.Format("[SERVERTOOLS] Blood moans disabled"));
+            }
             if (Bloodmoon.IsEnabled)
             {
                 if (!Dict.Contains("Bloodmoon"))

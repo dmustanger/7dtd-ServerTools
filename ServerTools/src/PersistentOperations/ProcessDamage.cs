@@ -47,14 +47,6 @@ namespace ServerTools
                                         int slot = attackingPlayer.inventory.holdingItemIdx;
                                         InfiniteAmmo.Exec(cInfoAttacker, attackingPlayer, slot, ___attackingItem);
                                     }
-                                    if (Bounties.IsEnabled)
-                                    {
-                                        Bounties.PlayerKilled(victimPlayer, attackingPlayer, cInfoVictim, cInfoAttacker);
-                                    }
-                                    if (Wallet.IsEnabled && Wallet.PVP && Wallet.Player_Kill > 0)
-                                    {
-                                        Wallet.AddCurrency(cInfoAttacker.CrossplatformId.CombinedString, Wallet.Player_Kill, true);
-                                    }
                                 }
                                 if (NewPlayerProtection.IsEnabled)
                                 {
@@ -116,14 +108,6 @@ namespace ServerTools
                             {
                                 int slot = attackingPlayer.inventory.holdingItemIdx;
                                 InfiniteAmmo.Exec(cInfoAttacker, attackingPlayer, slot, ___attackingItem);
-                            }
-                            if (Wallet.IsEnabled && Wallet.Zombie_Kill > 0)
-                            {
-                                Wallet.AddCurrency(cInfoAttacker.CrossplatformId.CombinedString, Wallet.Zombie_Kill, true);
-                            }
-                            if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.BloodmoonStarted && BloodmoonWarrior.WarriorList.Contains(cInfoAttacker.entityId))
-                            {
-                                BloodmoonWarrior.KilledZombies[cInfoAttacker.entityId] += 1;
                             }
                         }
                     }

@@ -206,7 +206,7 @@ namespace ServerTools
                     {
                         ZombieKilledPlayer(___entityKiller, __deadEntity, cInfoDead, ___RecordedDamage.Strength);
                     }
-                    else if (Animal && ___entityKiller is EntityAnimal || ___entityKiller is EntityEnemyAnimal)
+                    else if (Animal && (___entityKiller is EntityAnimal || ___entityKiller is EntityEnemyAnimal))
                     {
                         AnimalKilledPlayer(___entityKiller, __deadEntity, cInfoDead, ___RecordedDamage.Strength);
                     }

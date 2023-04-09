@@ -57,13 +57,15 @@ namespace ServerTools
                     string saveGameRegionDir = GameIO.GetSaveGameRegionDir();
                     RegionFileManager regionFileManager = new RegionFileManager(saveGameRegionDir, saveGameRegionDir, 0, true);
                     List<long> chunkKeys = new List<long>();
+                    XmlElement line;
+                    Chunk chunk;
                     for (int i = 0; i < childNodes.Count; i++)
                     {
                         if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
                             continue;
                         }
-                        XmlElement line = (XmlElement)childNodes[i];
+                        line = (XmlElement)childNodes[i];
                         if (!line.HasAttributes || !line.HasAttribute("Position") || !line.HasAttribute("Time"))
                         {
                             continue;
@@ -105,10 +107,10 @@ namespace ServerTools
                             {
                                 continue;
                             }
-                            Chunk chunk = regionFileManager.GetChunkSync(key);
+                            chunk = regionFileManager.GetChunkSync(key);
                             Bounds bounds = chunk.GetAABB();
                             Bounds chunkBounds = new Bounds();
-                            chunkBounds.SetMinMax(new Vector3(bounds.min.x, 0, bounds.min.z), new Vector3(bounds.max.x, 200, bounds.max.z));
+                            chunkBounds.SetMinMax(new Vector3(bounds.min.x, 0, bounds.min.z), new Vector3(bounds.max.x, 250, bounds.max.z));
                             ChunkBounds.Add(chunkBounds);
                         }
                     }
@@ -202,7 +204,7 @@ namespace ServerTools
                     if (!ChunkPlayer.Contains(_player.entityId))
                     {
                         ChunkPlayer.Add(_player.entityId);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "chunk_reset"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "chunk_reset"), null);
                     }
                     return;
                 }
@@ -210,7 +212,7 @@ namespace ServerTools
             if (ChunkPlayer.Contains(_player.entityId))
             {
                 ChunkPlayer.Remove(_player.entityId);
-                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "chunk_reset"), null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "chunk_reset"), null);
             }
         }
 
@@ -226,31 +228,42 @@ namespace ServerTools
                         if (!PersistentContainer.Instance.ChunkReset.ContainsKey(chunk.Key))
                         {
                             Bounds bounds = ChunkBounds[count];
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
-                            PersistentContainer.Instance.ChunkReset.Add(chunk.Key, DateTime.Now);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                            if (chunk.Value == "day")
+                            {
+                                PersistentContainer.Instance.RegionReset.Add(chunk.Key, DateTime.Now.AddDays(1));
+                            }
+                            else if (chunk.Value == "week")
+                            {
+                                PersistentContainer.Instance.RegionReset.Add(chunk.Key, DateTime.Now.AddDays(7));
+                            }
+                            else if (chunk.Value == "month")
+                            {
+                                PersistentContainer.Instance.RegionReset.Add(chunk.Key, DateTime.Now.AddMonths(1));
+                            }
                             PersistentContainer.DataChange = true;
                         }
                         else
                         {
                             PersistentContainer.Instance.ChunkReset.TryGetValue(chunk.Key, out DateTime lastReset);
-                            if (chunk.Value == "day" && DateTime.Now.AddDays(1) >= lastReset)
+                            if (chunk.Value == "day" && DateTime.Now >= lastReset)
                             {
                                 Bounds bounds = ChunkBounds[count];
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
                                 PersistentContainer.Instance.ChunkReset[chunk.Key] = DateTime.Now;
                                 PersistentContainer.DataChange = true;
                             }
-                            else if (chunk.Value == "week" && DateTime.Now.AddDays(7) >= lastReset)
+                            else if (chunk.Value == "week" && DateTime.Now >= lastReset)
                             {
                                 Bounds bounds = ChunkBounds[count];
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
                                 PersistentContainer.Instance.ChunkReset[chunk.Key] = DateTime.Now;
                                 PersistentContainer.DataChange = true;
                             }
-                            else if (chunk.Value == "month" && DateTime.Now.AddMonths(1) >= lastReset)
+                            else if (chunk.Value == "month" && DateTime.Now >= lastReset)
                             {
                                 Bounds bounds = ChunkBounds[count];
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
                                 PersistentContainer.Instance.ChunkReset[chunk.Key] = DateTime.Now;
                                 PersistentContainer.DataChange = true;
                             }

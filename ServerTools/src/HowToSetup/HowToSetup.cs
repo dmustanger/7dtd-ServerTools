@@ -13,7 +13,7 @@ namespace ServerTools
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine("This was drafted for version 20.6.9");
+                sw.WriteLine("This was drafted for version 20.6.10");
                 sw.WriteLine();
                 sw.WriteLine("If you find mistakes or the file is out of date, let the dev team know.");
                 sw.WriteLine();
@@ -62,6 +62,7 @@ namespace ServerTools
                 sw.WriteLine("Big_Head");
                 sw.WriteLine("Block_Logger");
                 sw.WriteLine("Block_Pickup");
+                sw.WriteLine("Blood_Moans");
                 sw.WriteLine("Bloodmoon");
                 sw.WriteLine("Bloodmoon_Warrior");
                 sw.WriteLine("Bot_Response");
@@ -377,6 +378,17 @@ namespace ServerTools
                 sw.WriteLine("This will only work inside of their own claimed space, not an allies.");
                 sw.WriteLine("Admin_Only will lock the tool to only admins.");
                 sw.WriteLine("Admin_Level controls the level an admin must be to allow block pick with no limitations. The tool is still enabled the same way using chat command /pickup.");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine("<Tool Name=\"Blood_Moans\" />");
+                sw.WriteLine("<Tool Name=\"Blood_Moans\" Enable=\"False\" />");
+                sw.WriteLine();
+                sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine();
+                sw.WriteLine("While enabled, the server will pick random sounds to play for players during the bloodmoon.");
+                sw.WriteLine("This will trigger every twenty to thirty seconds but only inside the player's head.");
+                sw.WriteLine("They can hear footsteps, zombie groans and moans, doors opening, glass breaking, rumbles, corpse harvesting, vomit and leg breaks.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -1985,7 +1997,7 @@ namespace ServerTools
                 sw.WriteLine("If Zone_Message is false, players will not receive a message upon entering or exiting a protected zone.");
                 sw.WriteLine("EntryCommand and ExitCommand will run console commands upon entering and exiting the zone.");
                 sw.WriteLine("Multiple console commands can be run using ^ to separate them.");
-                sw.WriteLine("Reminder notice is the message the player receives if they stay in the same zone long enough.");
+                sw.WriteLine("Reminder notice is the message the player receives if they stay in the same zone long enough. Reminder_Delay control the time.");
                 sw.WriteLine("Remove zombies from zones by setting No_Zombie to true.");
                 sw.WriteLine("Set_Home controls whether players can set a home inside of zones.");
                 sw.WriteLine();

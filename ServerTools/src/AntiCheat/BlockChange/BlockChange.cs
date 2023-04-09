@@ -175,7 +175,8 @@ namespace ServerTools
                                     continue;
                                 }
                                 if (oldBlock.shape.IsTerrain() || oldBlock.IsTerrainDecoration || oldBlock.IsPlant() || oldBlock.isMultiBlock
-                                    || oldBlockValue.ischild || oldBlock.shape is BlockShapeModelEntity || oldBlock.shape is BlockShapeWater)
+                                    || oldBlockValue.ischild || oldBlock.shape is BlockShapeModelEntity || oldBlock.shape is BlockShapeWater ||
+                                    oldBlock is BlockWorkstation)
                                 {
                                     Phrases.Dict.TryGetValue("Pickup7", out string phrase);
                                     ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

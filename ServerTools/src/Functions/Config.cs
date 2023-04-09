@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.6.9";
+        public const string Version = "20.6.10";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -304,23 +304,23 @@ namespace ServerTools
                                     }
                                     break;
                                 case "Auto_Backup_Extended":
-                                    if (!line.HasAttribute("Save_Directory"))
+                                    if (!line.HasAttribute("Target_Directory"))
                                     {
-                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup_Extended entry in ServerToolsConfig.xml because of missing 'Save_Directory' attribute: {0}", line.OuterXml));
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup_Extended entry in ServerToolsConfig.xml because of missing 'Target_Directory' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
                                     else
                                     {
-                                        AutoBackup.Save_Directory = line.GetAttribute("Save_Directory");
+                                        AutoBackup.Target_Directory = line.GetAttribute("Target_Directory");
                                     }
-                                    if (!line.HasAttribute("Destination"))
+                                    if (!line.HasAttribute("Save_Destination"))
                                     {
-                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup_Extended entry in ServerToolsConfig.xml because of missing 'Destination' attribute: {0}", line.OuterXml));
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup_Extended entry in ServerToolsConfig.xml because of missing 'Save_Destination' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
                                     else
                                     {
-                                        AutoBackup.Destination = line.GetAttribute("Destination");
+                                        AutoBackup.Save_Destination = line.GetAttribute("Save_Destination");
                                     }
                                     break;
                                 case "Auto_Party_Invite":
@@ -556,6 +556,18 @@ namespace ServerTools
                                     if (!bool.TryParse(line.GetAttribute("Reserved"), out BlockPickup.Reserved))
                                     {
                                         Log.Warning(string.Format("[SERVERTOOLS] Ignoring Block_Pickup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Reserved' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    break;
+                                case "Blood_Moans":
+                                    if (!line.HasAttribute("Enable"))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Blood_Moans entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!bool.TryParse(line.GetAttribute("Enable"), out BloodMoans.IsEnabled))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Blood_Moans entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
                                     break;
@@ -4478,7 +4490,7 @@ namespace ServerTools
                 sw.WriteLine("        <Tool Name=\"Auction\" Enable=\"{0}\" No_Admins=\"{1}\" Admin_Level=\"{2}\" Total_Items=\"{3}\" Tax=\"{4}\" />", Auction.IsEnabled, Auction.No_Admins, Auction.Admin_Level, Auction.Total_Items, Auction.Tax);
                 sw.WriteLine("        <Tool Name=\"Auction_Extended\" Panel=\"{0}\" Panel_Name=\"{1}\" />", Auction.Panel, Auction.Panel_Name);
                 sw.WriteLine("        <Tool Name=\"Auto_Backup\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" Compression_Level=\"{2}\" Backup_Count=\"{3}\" />", AutoBackup.IsEnabled, AutoBackup.Delay, AutoBackup.Compression_Level, AutoBackup.Backup_Count);
-                sw.WriteLine("        <Tool Name=\"Auto_Backup_Extended\" Save_Directory=\"{0}\" Destination=\"{1}\" />", AutoBackup.Save_Directory, AutoBackup.Destination);
+                sw.WriteLine("        <Tool Name=\"Auto_Backup_Extended\" Target_Directory=\"{0}\" Save_Destination=\"{1}\" />", AutoBackup.Target_Directory, AutoBackup.Save_Destination);
                 sw.WriteLine("        <Tool Name=\"Auto_Party_Invite\" Enable=\"{0}\" />", AutoPartyInvite.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Auto_Restart\" Enable=\"{0}\" />", AutoRestart.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Auto_Save_World\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" />", AutoSaveWorld.IsEnabled, AutoSaveWorld.Delay);
@@ -4489,6 +4501,7 @@ namespace ServerTools
                 sw.WriteLine("        <Tool Name=\"Big_Head\" Enable=\"{0}\" />", BigHead.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Block_Logger\" Enable=\"{0}\" />", BlockLogger.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Block_Pickup\" Enable=\"{0}\" Admin_Only=\"{1}\" Admin_Level=\"{2}\" Reserved=\"{3}\" />", BlockPickup.IsEnabled, BlockPickup.Admin_Only, BlockPickup.Admin_Level, BlockPickup.Reserved);
+                sw.WriteLine("        <Tool Name=\"Blood_Moans\" Enable=\"{0}\" />", BloodMoans.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Delay=\"{1}\" Show_On_Respawn=\"{2}\" />", Bloodmoon.IsEnabled, Bloodmoon.Delay, Bloodmoon.Show_On_Respawn);
                 sw.WriteLine("        <Tool Name=\"Bloodmoon_Warrior\" Enable=\"{0}\" Zombie_Kills=\"{1}\" Chance=\"{2}\" Reduce_Death_Count=\"{3}\" Reward_Count=\"{4}\" />", BloodmoonWarrior.IsEnabled, BloodmoonWarrior.Zombie_Kills, BloodmoonWarrior.Chance, BloodmoonWarrior.Reduce_Death_Count, BloodmoonWarrior.Reward_Count);
                 sw.WriteLine("        <Tool Name=\"Bot_Response\" Enable=\"{0}\" />", BotResponse.IsEnabled);

@@ -53,6 +53,7 @@ namespace ServerTools
                     return;
                 }
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                XmlElement line;
                 Regions.Clear();
                 RegionBounds.Clear();
                 if (childNodes != null && childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
@@ -63,7 +64,7 @@ namespace ServerTools
                         {
                             continue;
                         }
-                        XmlElement line = (XmlElement)childNodes[i];
+                        line = (XmlElement)childNodes[i];
                         if (!line.HasAttributes || !line.HasAttribute("Name") || !line.HasAttribute("Time"))
                         {
                             continue;
@@ -244,31 +245,42 @@ namespace ServerTools
                         {
                             bounds = RegionBounds[count];
                             SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
-                            PersistentContainer.Instance.RegionReset.Add(region.Key, DateTime.Now);
+                            if (region.Value == "day")
+                            {
+                                PersistentContainer.Instance.RegionReset.Add(region.Key, DateTime.Now.AddDays(1));
+                            }
+                            else if (region.Value == "week")
+                            {
+                                PersistentContainer.Instance.RegionReset.Add(region.Key, DateTime.Now.AddDays(7));
+                            }
+                            else if (region.Value == "month")
+                            {
+                                PersistentContainer.Instance.RegionReset.Add(region.Key, DateTime.Now.AddMonths(1));
+                            }
                             PersistentContainer.DataChange = true;
                         }
                         else
                         {
                             PersistentContainer.Instance.RegionReset.TryGetValue(region.Key, out DateTime lastReset);
-                            if (region.Value == "day" && DateTime.Now.AddDays(1) >= lastReset)
+                            if (region.Value == "day" && DateTime.Now >= lastReset)
                             {
                                 bounds = RegionBounds[count];
                                 SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
-                                PersistentContainer.Instance.RegionReset[region.Key] = DateTime.Now;
+                                PersistentContainer.Instance.RegionReset[region.Key] = DateTime.Now.AddDays(1);
                                 PersistentContainer.DataChange = true;
                             }
-                            else if (region.Value == "week" && DateTime.Now.AddDays(7) >= lastReset)
+                            else if (region.Value == "week" && DateTime.Now >= lastReset)
                             {
                                 bounds = RegionBounds[count];
                                 SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
-                                PersistentContainer.Instance.RegionReset[region.Key] = DateTime.Now;
+                                PersistentContainer.Instance.RegionReset[region.Key] = DateTime.Now.AddDays(7);
                                 PersistentContainer.DataChange = true;
                             }
-                            else if (region.Value == "month" && DateTime.Now.AddMonths(1) >= lastReset)
+                            else if (region.Value == "month" && DateTime.Now >= lastReset)
                             {
                                 bounds = RegionBounds[count];
                                 SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
-                                PersistentContainer.Instance.RegionReset[region.Key] = DateTime.Now;
+                                PersistentContainer.Instance.RegionReset[region.Key] = DateTime.Now.AddMonths(1);
                                 PersistentContainer.DataChange = true;
                             }
                         }

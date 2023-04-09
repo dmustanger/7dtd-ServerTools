@@ -216,38 +216,15 @@ namespace ServerTools
             {
                 EventDelay = Reminder_Delay;
                 EventSchedule.Clear("Zones_");
-                if (Reminder_Delay.Contains(",") && Reminder_Delay.Contains(":"))
+                if (int.TryParse(Reminder_Delay, out int delay))
                 {
-                    string[] times = Reminder_Delay.Split(',');
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        string[] timeSplit = times[i].Split(':');
-                        int.TryParse(timeSplit[0], out int hours);
-                        int.TryParse(timeSplit[1], out int minutes);
-                        DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                        EventSchedule.Schedule.Add("Zones_" + time, time);
-                    }
-                }
-                else if (Reminder_Delay.Contains(":"))
-                {
-                    string[] timeSplit = Reminder_Delay.Split(':');
-                    int.TryParse(timeSplit[0], out int hours);
-                    int.TryParse(timeSplit[1], out int minutes);
-                    DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                    DateTime time = DateTime.Now.AddMinutes(delay);
                     EventSchedule.Schedule.Add("Zones_" + time, time);
                 }
                 else
                 {
-                    if (int.TryParse(Reminder_Delay, out int delay))
-                    {
-                        DateTime time = DateTime.Now.AddMinutes(delay);
-                        EventSchedule.Schedule.Add("Zones_" + time, time);
-                    }
-                    else
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Invalid Zones Reminder_Delay detected. Use a single integer, 24h time or multiple 24h time entries"));
-                        Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
-                    }
+                    Log.Out(string.Format("[SERVERTOOLS] Invalid Zones Reminder_Delay detected. Use a single integer"));
+                    Log.Out(string.Format("[SERVERTOOLS] Example: 20 or 40"));
                 }
             }
         }
@@ -571,17 +548,14 @@ namespace ServerTools
                             continue;
                         }
                         Entity entity = entities[i];
-                        if (entity is EntityZombie || entity is EntityEnemyAnimal || entity is EntityVulture || entity is EntityZombieCop ||
-                            entity is EntityZombieDog)
+                        if (!entity.IsMarkedForUnload() && (entity is EntityZombie || entity is EntityEnemyAnimal || entity is EntityVulture))
                         {
                             int zoneCount = ZoneList.Count;
                             for (int j = 0; j < zoneCount; j++)
                             {
                                 if (ZoneList[j][10].ToLower() == "true" && InsideZone(ZoneBounds[j], ZoneList[j], entity.position.x, entity.position.y, entity.position.z))
                                 {
-                                    GameManager.Instance.World.RemoveEntity(entity.entityId, EnumRemoveEntityReason.Despawned);
-                                    Log.Out(string.Format("[SERVERTOOLS] Zone zombie removed '{0}' from zone '{1}' @ '{2}'",
-                                        EntityClass.list[entity.entityClass].entityClassName, ZoneList[j][0], entity.position));
+                                    entity.MarkToUnload();
                                 }
                             }
                         }

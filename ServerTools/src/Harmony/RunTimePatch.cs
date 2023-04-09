@@ -516,7 +516,6 @@ namespace ServerTools
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
-                
 
                 Log.Out(string.Format("[SERVERTOOLS] Runtime patching complete"));
             }

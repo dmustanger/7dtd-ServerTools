@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -967,7 +966,7 @@ namespace ServerTools
                                 Session.Exec(_cInfo);
                                 return false;
                             }
-                            if (Waypoints.IsEnabled && Waypoints.Public_Waypoints)
+                            if (Waypoints.IsEnabled || Waypoints.Public_Waypoints)
                             {
                                 if (messageLowerCase == Waypoints.Command_go_way && Permission(_cInfo, Waypoints.Command_go_way))
                                 {

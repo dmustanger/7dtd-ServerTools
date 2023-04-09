@@ -28,7 +28,7 @@ namespace ServerTools
                     }
                     else if (id.Contains("_"))
                     {
-                        if (ConsoleHelper.ParseParamPartialNameOrId(id, out PlatformUserIdentifierAbs platformUserIdentifierAbs, out ClientInfo clientInfo, true) == 1 && platformUserIdentifierAbs != null)
+                        if (GeneralOperations.GetPersistentPlayerDataFromId(id) != null)
                         {
                             PersistentPlayer p = new PersistentPlayer(id);
                             Players.Add(id, p);

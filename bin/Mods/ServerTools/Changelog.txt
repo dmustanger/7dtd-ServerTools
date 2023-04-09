@@ -1,5 +1,28 @@
 ﻿CHANGELOG
 
+20.6.10
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added Blood_Moans tool. Chooses a random player to
+haunt with various sounds like footsteps, groans and more.
+Instructions are in the HowToSetup file
+-Fixed Discord Webhook getting stuck in an error loop
+-Fixed Public_Waypoints chat commands not working as 
+intended without Waypoints enabled too
+-Fixed Public_Waypoints causing an index error on use
+-Fixed Normal_Player_Chat_Color tool taking over the chat
+color from the Chat_Color tool
+-Fixed Vault tool showing slots inside a VaultBox when the 
+tool is disabled
+-Fixed Vault tool not working as intended
+-Fixed specific animals triggering the Kill_Notice regardless
+of the Animal option being enabled
+-Fixed Region_Reset and Chunk_Reset triggering at the wrong
+time
+-Changed Block_Pickup to not allow workstations
+-Changed VaultBox to have zero economic value for trade
+
 20.6.9
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

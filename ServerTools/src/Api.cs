@@ -155,7 +155,7 @@ namespace ServerTools
                         {
                             if (player is EntityPlayerLocal)
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' is set as a primary player. Optimization may fail or crash the server due to this connection", _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
+                                Log.Out(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' is set as a primary player. ServerTools should only be used on dedicated servers", _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                             }
                             GeneralOperations.SessionTime(_cInfo);
                             PersistentContainer.Instance.Players[id].PlayerName = _cInfo.playerName;
@@ -178,7 +178,7 @@ namespace ServerTools
                         {
                             if (player is EntityPlayerLocal)
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' is set as a primary player. Optimization may fail or crash the server due to this connection", _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
+                                Log.Out(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' is set as a primary player. ServerTools should only be used on dedicated servers", _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                             }
                             GeneralOperations.SessionTime(_cInfo);
                             PersistentContainer.Instance.Players[id].PlayerName = _cInfo.playerName;
