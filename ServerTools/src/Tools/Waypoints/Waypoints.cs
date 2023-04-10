@@ -278,7 +278,8 @@ namespace ServerTools
                 {
                     if (Delay_Between_Uses < 1)
                     {
-                        if ((PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypoint)) ||
+                        if ((PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && 
+                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypoint)) ||
                             Dict.ContainsKey(_waypoint))
                         {
                             Checks(_cInfo, _waypoint, _friends);
@@ -468,7 +469,8 @@ namespace ServerTools
             try
             {
                 string waypointPosition = "";
-                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypointName))
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && 
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypointName))
                 {
                     Dictionary<string, string> waypoints = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints;
                     waypoints.TryGetValue(_waypointName, out waypointPosition);
@@ -476,6 +478,7 @@ namespace ServerTools
                 else if (Dict.ContainsKey(_waypointName))
                 {
                     Dict.TryGetValue(_waypointName, out string[] waypointData);
+                    waypointPosition = waypointData[0];
                 }
                 else
                 {

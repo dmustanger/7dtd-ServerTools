@@ -1,12 +1,20 @@
 ﻿CHANGELOG
 
+20.6.11
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Fixed Public_Waypoints causing an index out of range error
+-Fixed Vault causing an issue when opening certain loot
+
 20.6.10
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions
 
--Added Blood_Moans tool. Chooses a random player to
-haunt with various sounds like footsteps, groans and more.
-Instructions are in the HowToSetup file
+-Added Blood_Moans tool. During a bloodmoon, every 20 to 30
+seconds a random sound like footsteps, groans and more will
+be activated on the player side only. Instructions are in the 
+HowToSetup file
 -Fixed Discord Webhook getting stuck in an error loop
 -Fixed Public_Waypoints chat commands not working as 
 intended without Waypoints enabled too
@@ -20,8 +28,10 @@ tool is disabled
 of the Animal option being enabled
 -Fixed Region_Reset and Chunk_Reset triggering at the wrong
 time
+-Changed Auto_Backup option names to Save_Destination and
+Target_Directory
 -Changed Block_Pickup to not allow workstations
--Changed VaultBox to have zero economic value for trade
+-Changed VaultBox to not be sellable to traders
 
 20.6.9
 Built using Alpha 20 stable assets

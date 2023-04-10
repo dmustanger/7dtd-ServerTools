@@ -1,5 +1,12 @@
 ﻿CHANGELOG
 
+20.6.11
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Fixed Public_Waypoints causing an index out of range error
+-Fixed Vault causing an issue when opening certain loot
+
 20.6.10
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

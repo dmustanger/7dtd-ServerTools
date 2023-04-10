@@ -602,31 +602,50 @@ public static class Injections
 
     public static bool LootManager_LootContainerOpened_Prefix(ref TileEntityLootContainer _tileEntity, int _entityIdThatOpenedIt)
     {
-        if (_tileEntity != null && _tileEntity.blockValue.Block.GetBlockName() == "VaultBox")
+        try
         {
-            return Vault.Exec(_entityIdThatOpenedIt, ref _tileEntity);
+            if (_tileEntity != null && _tileEntity is TileEntityLootContainer && _tileEntity.bPlayerStorage &&
+                _tileEntity.blockValue.Block != null && _tileEntity.blockValue.Block.GetBlockName() == "VaultBox")
+            {
+                return Vault.Exec(_entityIdThatOpenedIt, ref _tileEntity);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.LootManager_LootContainerOpened_Prefix: {0}", e.Message));
         }
         return true;
     }
 
-    public static void NetPackageTileEntity_Setup_Postfix(TileEntity _te, byte _handle)
+    public static void NetPackageTileEntity_Setup_Postfix(NetPackageTileEntity __instance, TileEntity _te, byte _handle)
     {
-        if (_te == null || !(_te is TileEntityLootContainer) || !Vault.IsEnabled)
+        try
         {
-            return;
+            if (__instance == null || _te == null || !Vault.IsEnabled)
+            {
+                return;
+            }
+            if (_te is TileEntityLootContainer)
+            {
+                TileEntityLootContainer lootContainer = (TileEntityLootContainer)_te;
+                if (lootContainer != null && lootContainer.bPlayerStorage && lootContainer.blockValue.Block != null &&
+                    lootContainer.blockValue.Block.GetBlockName() == "VaultBox" && _handle != 255)
+                {
+                    Vault.UpdateData(lootContainer);
+                }
+            }
         }
-        TileEntityLootContainer lootContainer = (TileEntityLootContainer)_te;
-        if (lootContainer != null && lootContainer.blockValue.Block.GetBlockName() == "VaultBox" && _handle != 255)
+        catch (Exception e)
         {
-            Vault.UpdateData(lootContainer);
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageTileEntity_Setup_Postfix: {0}", e.Message));
         }
     }
 
-    public static bool GameManager_DropContentOfLootContainerServer_Prefix(BlockValue _bvOld)
+    public static bool GameManager_DropContentOfLootContainerServer_Prefix(ref BlockValue _bvOld)
     {
         if (_bvOld.Block.GetBlockName() == "VaultBox")
         {
-            return false;
+            _bvOld = BlockValue.Air;
         }
         return true;
     }

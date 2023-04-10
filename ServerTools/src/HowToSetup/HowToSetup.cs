@@ -388,7 +388,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("While enabled, the server will pick random sounds to play for players during the bloodmoon.");
                 sw.WriteLine("This will trigger every twenty to thirty seconds but only inside the player's head.");
-                sw.WriteLine("They can hear footsteps, zombie groans and moans, doors opening, glass breaking, rumbles, corpse harvesting, vomit and leg breaks.");
+                sw.WriteLine("They can hear zombie groans and moans, doors opening, glass breaking, rumbles, corpse harvesting, vomit and leg breaks.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
