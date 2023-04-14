@@ -263,6 +263,14 @@ namespace ServerTools
             {
                 BigHead.Disable();
             }
+            if (InvalidBuffs.IsRunning && !InvalidBuffs.IsEnabled)
+            {
+                InvalidBuffs.Unload();
+            }
+            else if (!InvalidBuffs.IsRunning && InvalidBuffs.IsEnabled)
+            {
+                InvalidBuffs.Load();
+            }
             if (ClanManager.IsEnabled)
             {
                 ClanManager.ClanList();

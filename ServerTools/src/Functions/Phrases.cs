@@ -3383,6 +3383,15 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Overlay1\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ****************** RegionChunkReset ******************** -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("RegionChunkReset1", out phrase))
+                    {
+                        phrase = "The server is busy. Please try again";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"RegionChunkReset1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("</Phrases>");

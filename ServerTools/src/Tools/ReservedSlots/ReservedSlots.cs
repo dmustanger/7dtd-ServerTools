@@ -323,7 +323,8 @@ namespace ServerTools
                     {
                         if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Version") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123"))
+                            !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123") &&
+                            !nodeList[i].OuterXml.Contains("<Player Id=\""))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);
                         }

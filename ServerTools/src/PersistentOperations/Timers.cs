@@ -87,6 +87,22 @@ namespace ServerTools
             };
         }
 
+        public static void Wallet_Add_SingleUseTimer(string _playerId, int _amount, bool _allowed)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init2(_playerId, _amount, _allowed);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
         public static void StartingItemsTimer(ClientInfo _cInfo)
         {
             System.Timers.Timer singleUseTimer = new System.Timers.Timer(3000)
@@ -193,7 +209,7 @@ namespace ServerTools
             };
         }
 
-        public static void Set_Link_Delay()
+        public static void Chunk_Region_ResetTimer()
         {
             System.Timers.Timer singleUseTimer = new System.Timers.Timer(10000)
             {
@@ -203,22 +219,6 @@ namespace ServerTools
             singleUseTimer.Elapsed += (sender, e) =>
             {
                 Init9();
-                singleUseTimer.Stop();
-                singleUseTimer.Close();
-                singleUseTimer.Dispose();
-            };
-        }
-
-        public static void Wallet_Add_SingleUseTimer(string _playerId, int _amount, bool _allowed)
-        {
-            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
-            {
-                AutoReset = false
-            };
-            singleUseTimer.Start();
-            singleUseTimer.Elapsed += (sender, e) =>
-            {
-                Init2(_playerId, _amount, _allowed);
                 singleUseTimer.Stop();
                 singleUseTimer.Close();
                 singleUseTimer.Dispose();
@@ -404,7 +404,7 @@ namespace ServerTools
             if (twoSecondTick >= 2)
             {
                 twoSecondTick = 0;
-                if (PlayerChecks.GodEnabled || PlayerChecks.SpectatorEnabled || FlyingDetector.IsEnabled || SpeedDetector.IsEnabled)
+                if (GodMode.IsEnabled || PlayerChecks.SpectatorEnabled || FlyingDetector.IsEnabled || SpeedDetector.IsEnabled)
                 {
                     PlayerChecks.TwoSecondExec();
                 }
@@ -649,7 +649,7 @@ namespace ServerTools
 
         private static void Init9()
         {
-            GeneralOperations.SetWindowLinks();
+            LoadProcess.Chunk_Region_Reset();
         }
 
         private static void Init10(string _playerId, int _amount)

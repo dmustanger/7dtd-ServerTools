@@ -7,7 +7,7 @@ using UnityEngine;
 public static class Injections
 {
 
-    public static void PlayerLoginRPC_Prefix(ClientInfo _cInfo, string _playerName, ValueTuple<PlatformUserIdentifierAbs, string> _platformUserAndToken, ValueTuple<PlatformUserIdentifierAbs, string> _crossplatformUserAndToken, out bool __state)
+    public static void PlayerLoginRPC_Prefix(ClientInfo _cInfo, ValueTuple<PlatformUserIdentifierAbs, string> _platformUserAndToken, ValueTuple<PlatformUserIdentifierAbs, string> _crossplatformUserAndToken, out bool __state)
     {
         __state = false;
         try
@@ -147,22 +147,6 @@ public static class Injections
         }
     }
 
-    public static void ChatMessageServer_Prefix(ClientInfo _cInfo, EChatType _chatType, int _senderEntityId, ref string _msg, ref string _mainName, List<int> _recipientEntityIds)
-    {
-        try
-        {
-            if (_cInfo != null)
-            {
-                _mainName = ChatColor.ApplyNameColor(_cInfo, _chatType, _mainName);
-                _msg = ChatColor.ApplyMessageColor(_msg);
-            }
-        }
-        catch (Exception e)
-        {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ChatMessageServer_Prefix: {0}", e.Message));
-        }
-    }
-
     public static void GameManager_Cleanup_Finalizer()
     {
         try
@@ -204,7 +188,7 @@ public static class Injections
         return true;
     }
 
-    public static bool GameManager_ExplosionServer_Prefix(GameManager __instance, int _clrIdx, Vector3 _worldPos, Vector3i _blockPos, Quaternion _rotation, ExplosionData _explosionData, int _playerId, float _delay, bool _bRemoveBlockAtExplPosition, ItemValue _itemValueExplosive)
+    public static bool GameManager_ExplosionServer_Prefix(int _playerId)
     {
         Entity entity = GeneralOperations.GetEntity(_playerId);
         if ((entity == null || !entity.IsSpawned()) && _playerId != -1)
@@ -283,7 +267,7 @@ public static class Injections
         return true;
     }
 
-    public static void GameManager_OpenTileEntityAllowed_Postfix(bool __state, int _entityIdThatOpenedIt, TileEntity _te)
+    public static void GameManager_OpenTileEntityAllowed_Postfix(bool __state, int _entityIdThatOpenedIt)
     {
         try
         {
@@ -302,7 +286,7 @@ public static class Injections
         }
     }
 
-    public static void GameManager_PlayerSpawnedInWorld_Postfix(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos, int _entityId)
+    public static void GameManager_PlayerSpawnedInWorld_Postfix(ClientInfo _cInfo)
     {
         if (SpeedDetector.Flags.ContainsKey(_cInfo.entityId))
         {
@@ -432,8 +416,7 @@ public static class Injections
         try
         {
             ClientInfo clientInfo = null;
-            int entityId;
-            if (int.TryParse(_nameOrId, out entityId))
+            if (int.TryParse(_nameOrId, out int entityId))
             {
                 clientInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                 if (clientInfo != null)
@@ -450,8 +433,7 @@ public static class Injections
             }
             if (_nameOrId.Contains("Local_") || _nameOrId.Contains("EOS_") || _nameOrId.Contains("Steam_") || _nameOrId.Contains("XBL_") || _nameOrId.Contains("PSN_") || _nameOrId.Contains("EGS_"))
             {
-                PlatformUserIdentifierAbs userIdentifier;
-                if (PlatformUserIdentifierAbs.TryFromCombinedString(_nameOrId, out userIdentifier))
+                if (PlatformUserIdentifierAbs.TryFromCombinedString(_nameOrId, out PlatformUserIdentifierAbs userIdentifier))
                 {
                     clientInfo = GeneralOperations.GetClientInfoFromUId(userIdentifier);
                     if (clientInfo != null)
@@ -545,8 +527,7 @@ public static class Injections
         {
             if (LandClaimCount.IsEnabled && __instance != null && pos != null && owner != null)
             {
-                PersistentPlayerData persistentPlayerData;
-                if (__instance.m_lpBlockMap.TryGetValue(pos, out persistentPlayerData) && persistentPlayerData != null)
+                if (__instance.m_lpBlockMap.TryGetValue(pos, out PersistentPlayerData persistentPlayerData) && persistentPlayerData != null)
                 {
                     persistentPlayerData.RemoveLandProtectionBlock(pos);
                 }
@@ -641,11 +622,11 @@ public static class Injections
         }
     }
 
-    public static bool GameManager_DropContentOfLootContainerServer_Prefix(ref BlockValue _bvOld)
+    public static bool GameManager_DropContentOfLootContainerServer_Prefix(BlockValue _bvOld)
     {
         if (_bvOld.Block.GetBlockName() == "VaultBox")
         {
-            _bvOld = BlockValue.Air;
+            return false;
         }
         return true;
     }
@@ -665,14 +646,12 @@ public static class Injections
             World world = GameManager.Instance.World;
             if (_params.Count >= 2)
             {
-                int num;
-                if (!int.TryParse(_params[0], out num))
+                if (!int.TryParse(_params[0], out int num))
                 {
                     SdtdConsole.Instance.Output("x1 is not a valid integer");
                     return false;
                 }
-                int num2;
-                if (!int.TryParse(_params[1], out num2))
+                if (!int.TryParse(_params[1], out int num2))
                 {
                     SdtdConsole.Instance.Output("z1 is not a valid integer");
                     return false;

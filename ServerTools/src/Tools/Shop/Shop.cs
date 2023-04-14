@@ -1627,7 +1627,8 @@ namespace ServerTools
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Secondary name") &&
-                            !nodeList[i].OuterXml.Contains("<!-- Items with") && !nodeList[i].OuterXml.Contains("<!-- <Version"))
+                            !nodeList[i].OuterXml.Contains("<!-- Items with") && !nodeList[i].OuterXml.Contains("<Item Name=\"\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);
                         }

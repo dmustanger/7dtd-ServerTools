@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.6.11";
+        public const string Version = "20.6.12";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -1829,7 +1829,7 @@ namespace ServerTools
                                         Log.Warning(string.Format("[SERVERTOOLS] Ignoring Godmode_Detector entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    if (!bool.TryParse(line.GetAttribute("Enable"), out PlayerChecks.GodEnabled))
+                                    if (!bool.TryParse(line.GetAttribute("Enable"), out GodMode.IsEnabled))
                                     {
                                         Log.Warning(string.Format("[SERVERTOOLS] Ignoring Godmode_Detector entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                         continue;
@@ -1839,7 +1839,7 @@ namespace ServerTools
                                         Log.Warning(string.Format("[SERVERTOOLS] Ignoring Godmode_Detector entry in ServerToolsConfig.xml because of missing 'Admin_Level' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    if (!int.TryParse(line.GetAttribute("Admin_Level"), out PlayerChecks.Godmode_Admin_Level))
+                                    if (!int.TryParse(line.GetAttribute("Admin_Level"), out GodMode.Admin_Level))
                                     {
                                         Log.Warning(string.Format("[SERVERTOOLS] Ignoring Godmode_Detector entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", line.OuterXml));
                                         continue;
@@ -2092,6 +2092,27 @@ namespace ServerTools
                                         InfoTicker.SetDelay(false);
                                     }
                                     break;
+                                case "Interactive_Map":
+                                    if (!line.HasAttribute("Enable"))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Interactive_Map entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!bool.TryParse(line.GetAttribute("Enable"), out InteractiveMap.IsEnabled))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Interactive_Map entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!line.HasAttribute("Map_Directory"))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Interactive_Map entry in ServerToolsConfig.xml because of missing 'Map_Directory' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    if (line.HasAttribute("Map_Directory"))
+                                    {
+                                        InteractiveMap.Map_Directory = line.GetAttribute("Map_Directory");
+                                    }
+                                    break;
                                 case "Invalid_Items":
                                     if (!line.HasAttribute("Enable"))
                                     {
@@ -2124,25 +2145,16 @@ namespace ServerTools
                                         continue;
                                     }
                                     break;
-                                case "Interactive_Map":
+                                case "Invalid_Buffs":
                                     if (!line.HasAttribute("Enable"))
                                     {
-                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Interactive_Map entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Buffs entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    if (!bool.TryParse(line.GetAttribute("Enable"), out InteractiveMap.IsEnabled))
+                                    if (!bool.TryParse(line.GetAttribute("Enable"), out InvalidBuffs.IsEnabled))
                                     {
-                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Interactive_Map entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Buffs entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                         continue;
-                                    }
-                                    if (!line.HasAttribute("Map_Directory"))
-                                    {
-                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Interactive_Map entry in ServerToolsConfig.xml because of missing 'Map_Directory' attribute: {0}", line.OuterXml));
-                                        continue;
-                                    }
-                                    if (line.HasAttribute("Map_Directory"))
-                                    {
-                                        InteractiveMap.Map_Directory = line.GetAttribute("Map_Directory");
                                     }
                                     break;
                                 case "Invalid_Item_Stack":
@@ -4251,19 +4263,38 @@ namespace ServerTools
                                         Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_API entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
+                                    if (!line.HasAttribute("IP_Address"))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_API entry in ServerToolsConfig.xml because of missing 'IP_Address' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        string ip = line.GetAttribute("IP_Address");
+                                        if (WebAPI.BaseAddress != ip)
+                                        {
+                                            WebAPI.BaseAddress = ip;
+                                            WebAPI.LinksRequireUpdate = true;
+                                        }
+                                    }
+                                    int port;
                                     if (!line.HasAttribute("Port"))
                                     {
                                         Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_API entry in ServerToolsConfig.xml because of missing 'Port' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    if (!int.TryParse(line.GetAttribute("Port"), out int port))
+                                    else if (!int.TryParse(line.GetAttribute("Port"), out port))
                                     {
                                         Log.Warning(string.Format("[SERVERTOOLS] Ignoring Web_API entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Port' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
-                                    else if (port != WebAPI.Port)
+                                    if (WebAPI.Port != port)
                                     {
                                         WebAPI.Port = port;
+                                        WebAPI.LinksRequireUpdate = true;
+                                    }
+                                    if (WebAPI.LinksRequireUpdate)
+                                    {
                                         GeneralOperations.SetWindowLinks();
                                     }
                                     break;
@@ -4464,8 +4495,9 @@ namespace ServerTools
                 sw.WriteLine("        <Tool Name=\"Damage_Detector_Extended\" Log=\"{0}\"  />", DamageDetector.LogEnabled);
                 sw.WriteLine("        <Tool Name=\"Dupe_Log\" Enable=\"{0}\" />", DupeLog.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Flying_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", FlyingDetector.IsEnabled, FlyingDetector.Flying_Admin_Level, FlyingDetector.Flag_Limit);
-                sw.WriteLine("        <Tool Name=\"Godmode_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" />", PlayerChecks.GodEnabled, PlayerChecks.Godmode_Admin_Level);
+                sw.WriteLine("        <Tool Name=\"Godmode_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" />", GodMode.IsEnabled, GodMode.Admin_Level);
                 sw.WriteLine("        <Tool Name=\"Infinite_Ammo\" Enable=\"{0}\" />", InfiniteAmmo.IsEnabled);
+                sw.WriteLine("        <Tool Name=\"Invalid_Buffs\" Enable=\"{0}\" />", InvalidBuffs.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Invalid_Items\" Enable=\"{0}\" Ban=\"{1}\" Admin_Level=\"{2}\" />", InvalidItems.IsEnabled, InvalidItems.Ban_Player, InvalidItems.Admin_Level);
                 sw.WriteLine("        <Tool Name=\"Invalid_Item_Stack\" Enable=\"{0}\" />", InvalidItems.Invalid_Stack);
                 sw.WriteLine("        <Tool Name=\"Jail\" Enable=\"{0}\" Jail_Size=\"{1}\" Jail_Position=\"{2}\" Jail_Shock=\"{3}\" />", Jail.IsEnabled, Jail.Jail_Size, Jail.Jail_Position, Jail.Jail_Shock);
@@ -4605,7 +4637,7 @@ namespace ServerTools
                 sw.WriteLine("        <Tool Name=\"Watch_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Delay=\"{2}\" />", WatchList.IsEnabled, WatchList.Admin_Level, WatchList.Delay);
                 sw.WriteLine("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints=\"{1}\" Reserved_Max_Waypoints=\"{2}\" Command_Cost=\"{3}\" Delay_Between_Uses=\"{4}\" />", Waypoints.IsEnabled, Waypoints.Max_Waypoints, Waypoints.Reserved_Max_Waypoints, Waypoints.Command_Cost, Waypoints.Delay_Between_Uses);
                 sw.WriteLine("        <Tool Name=\"Waypoints_Extended\" Player_Check=\"{0}\" Zombie_Check=\"{1}\" Vehicle=\"{2}\" No_POI=\"{3}\" />", Waypoints.Player_Check, Waypoints.Zombie_Check, Waypoints.Vehicle, Waypoints.No_POI);
-                sw.WriteLine("        <Tool Name=\"Web_API\" Enable=\"{0}\" Port=\"{1}\" />", WebAPI.IsEnabled, WebAPI.Port);
+                sw.WriteLine("        <Tool Name=\"Web_API\" Enable=\"{0}\" IP_Address=\"{1}\" Port=\"{2}\" />", WebAPI.IsEnabled, WebAPI.BaseAddress, WebAPI.Port);
                 sw.WriteLine("        <Tool Name=\"Web_Panel\" Enable=\"{0}\" Timeout=\"{1}\" />", WebPanel.IsEnabled, WebPanel.Timeout);
                 sw.WriteLine("        <Tool Name=\"Workstation_Lock\" Enable=\"{0}\" />", WorkstationLock.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"World_Radius\" Enable=\"{0}\" Normal_Player=\"{1}\" Reserved=\"{2}\" Admin_Level=\"{3}\" />", WorldRadius.IsEnabled, WorldRadius.Normal_Player, WorldRadius.Reserved, WorldRadius.Admin_Level);

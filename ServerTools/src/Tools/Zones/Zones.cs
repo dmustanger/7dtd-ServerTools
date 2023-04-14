@@ -621,7 +621,7 @@ namespace ServerTools
                         if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Do not use") &&
                             !nodeList[i].OuterXml.Contains("<!-- Overlapping zones") && !nodeList[i].OuterXml.Contains("<!-- PvPvE") &&
                             !nodeList[i].OuterXml.Contains("<!-- EntryCommand") && !nodeList[i].OuterXml.Contains("<!-- Possible") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Zone Name=\"Example\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Zone Name=\"Example\"") && !nodeList[i].OuterXml.Contains("<Zone Name=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);

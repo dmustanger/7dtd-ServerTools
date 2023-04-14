@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Xml;
 using UnityEngine;
 
 namespace ServerTools
@@ -302,7 +303,7 @@ namespace ServerTools
                 if (File.Exists(XPathDir + "buffs.xml"))
                 {
                     List<string> buffContent = new List<string>();
-                    using (FileStream fs = new FileStream(XPathDir + "buffs.xml", FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (FileStream fs = new FileStream(XPathDir + "buffs.xml", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
                         using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
                         {
@@ -316,14 +317,14 @@ namespace ServerTools
                     for (int i = 0; i < buffContent.Count; i++)
                     {
                         string line = buffContent[i];
-                        if (line.Contains("PvE_Zone") || line.Contains("PvP_Ally_Zone") || line.Contains("PvP_Stranger_Zone") || 
-                            line.Contains("PvP_Zone") || line.Contains("pvp_ally_damage") || line.Contains("pvp_stranger_damage") ||
-                            line.Contains("pvp_damage") || line.Contains("region_reset") || line.Contains("chunk_reset"))
+                        if (line.Contains("<buff name=\"pve_zone\"") || line.Contains("<buff name=\"pvp_ally_zone\"") || line.Contains("<buff name=\"pvp_stranger_zone\"") || 
+                            line.Contains("<buff name=\"pvp_zone\"") || line.Contains("<buff name=\"pvp_ally_damage\"") || line.Contains("<buff name=\"pvp_stranger_damage\"") ||
+                            line.Contains("<buff name=\"pvp_damage\"") || line.Contains("<buff name=\"region_reset\"") || line.Contains("<buff name=\"chunk_reset\""))
                         {
                             count += 1;
                         }
                     }
-                    if (count != 20)
+                    if (count != 9)
                     {
                         File.Delete(XPathDir + "buffs.xml");
                     }
@@ -403,6 +404,7 @@ namespace ServerTools
                         sw.WriteLine("</buff>");
                         sw.WriteLine();
                         sw.WriteLine("<buff name=\"pvp_ally_damage\" hidden=\"true\">");
+                        sw.WriteLine("	<display_value_key value=\"PvP Ally Damage\"/>");
                         sw.WriteLine("	<stack_type value=\"replace\"/>");
                         sw.WriteLine("	<duration value=\"1\"/>");
                         sw.WriteLine("	<effect_group>");
@@ -422,6 +424,7 @@ namespace ServerTools
                         sw.WriteLine("</buff>");
                         sw.WriteLine();
                         sw.WriteLine("<buff name=\"pvp_stranger_damage\" hidden=\"true\">");
+                        sw.WriteLine("	<display_value_key value=\"PvP Stranger Damage\"/>");
                         sw.WriteLine("	<stack_type value=\"replace\"/>");
                         sw.WriteLine("	<duration value=\"1\"/>");
                         sw.WriteLine("	<effect_group>");
@@ -441,6 +444,7 @@ namespace ServerTools
                         sw.WriteLine("</buff>");
                         sw.WriteLine();
                         sw.WriteLine("<buff name=\"pvp_damage\" hidden=\"true\">");
+                        sw.WriteLine("	<display_value_key value=\"PvP Damage\"/>");
                         sw.WriteLine("	<stack_type value=\"replace\"/>");
                         sw.WriteLine("	<duration value=\"1\"/>");
                         sw.WriteLine("	<effect_group>");
@@ -733,15 +737,16 @@ namespace ServerTools
                 for (int i = 0; i < entityList.Count; i++)
                 {
                     Entity entity = entityList[i];
-                    if (entity == null || (entity is EntityPlayer) || !entity.IsSpawned() || entity.IsDead())
+                    if (entity == null || (!(entity is EntityZombie) && !(entity is EntityEnemyAnimal)) || !entity.IsSpawned() ||
+                        entity.IsDead() || entity.IsMarkedForUnload())
                     {
                         continue;
                     }
-                    if (Lobby.IsEnabled && Lobby.IsLobby(entity.position) && !entity.IsMarkedForUnload())
+                    if (Lobby.IsEnabled && Lobby.IsLobby(entity.position))
                     {
                         entity.MarkToUnload();
                     }
-                    else if (Market.IsEnabled && Market.IsMarket(entity.position) && !entity.IsMarkedForUnload())
+                    else if (Market.IsEnabled && Market.IsMarket(entity.position))
                     {
                         entity.MarkToUnload();
                     }
@@ -771,21 +776,21 @@ namespace ServerTools
         {
             if (ConnectionManager.Instance.Clients != null && ConnectionManager.Instance.Clients.Count > 0)
             {
-                return SingletonMonoBehaviour<ConnectionManager>.Instance.Clients.List.ToList();
+                return ConnectionManager.Instance.Clients.List.ToList();
             }
             return null;
         }
 
         public static ClientInfo GetClientInfoFromNameOrId(string _id)
         {
-            ClientInfo cInfo = SingletonMonoBehaviour<ConnectionManager>.Instance.Clients.GetForNameOrId(_id);
+            ClientInfo cInfo = ConnectionManager.Instance.Clients.GetForNameOrId(_id);
             if (cInfo != null)
             {
                 return cInfo;
             }
             else if (int.TryParse(_id, out int entityId))
             {
-                cInfo = SingletonMonoBehaviour<ConnectionManager>.Instance.Clients.ForEntityId(entityId);
+                cInfo = ConnectionManager.Instance.Clients.ForEntityId(entityId);
                 if (cInfo != null)
                 {
                     return cInfo;
@@ -796,17 +801,17 @@ namespace ServerTools
 
         public static ClientInfo GetClientInfoFromEntityId(int _entityId)
         {
-            return SingletonMonoBehaviour<ConnectionManager>.Instance.Clients.ForEntityId(_entityId);
+            return ConnectionManager.Instance.Clients.ForEntityId(_entityId);
         }
 
         public static ClientInfo GetClientInfoFromUId(PlatformUserIdentifierAbs _uId)
         {
-            return SingletonMonoBehaviour<ConnectionManager>.Instance.Clients.ForUserId(_uId);
+            return ConnectionManager.Instance.Clients.ForUserId(_uId);
         }
 
         public static ClientInfo GetClientInfoFromName(string _name)
         {
-            return SingletonMonoBehaviour<ConnectionManager>.Instance.Clients.GetForPlayerName(_name);
+            return ConnectionManager.Instance.Clients.GetForPlayerName(_name);
         }
 
         public static List<EntityPlayer> ListPlayers()
@@ -816,22 +821,19 @@ namespace ServerTools
 
         public static EntityPlayer GetEntityPlayer(int _id)
         {
-            EntityPlayer entityPlayer;
-            GameManager.Instance.World.Players.dict.TryGetValue(_id, out entityPlayer);
+            GameManager.Instance.World.Players.dict.TryGetValue(_id, out EntityPlayer entityPlayer);
             return entityPlayer;
         }
 
         public static Entity GetEntity(int _id)
         {
-            Entity entity;
-            GameManager.Instance.World.Entities.dict.TryGetValue(_id, out entity);
+            GameManager.Instance.World.Entities.dict.TryGetValue(_id, out Entity entity);
             return entity;
         }
 
         public static EntityZombie GetZombie(int _id)
         {
-            Entity entity;
-            GameManager.Instance.World.Entities.dict.TryGetValue(_id, out entity);
+            GameManager.Instance.World.Entities.dict.TryGetValue(_id, out Entity entity);
             if (entity != null && entity is EntityZombie)
             {
                 return entity as EntityZombie;
@@ -841,8 +843,7 @@ namespace ServerTools
 
         public static EntityAnimal GetAnimal(int _id)
         {
-            Entity entity;
-            GameManager.Instance.World.Entities.dict.TryGetValue(_id, out entity);
+            GameManager.Instance.World.Entities.dict.TryGetValue(_id, out Entity entity);
             if (entity != null && entity is EntityAnimal)
             {
                 return entity as EntityAnimal;
@@ -989,7 +990,7 @@ namespace ServerTools
                 if (block != null && block is BlockLandClaim)
                 {
                     world.SetBlockRPC(0, _position, BlockValue.Air);
-                    SingletonMonoBehaviour<ConnectionManager>.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.LandClaim, _position.ToVector3()), false, -1, -1, -1, -1);
+                    ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.LandClaim, _position.ToVector3()), false, -1, -1, -1, -1);
                     world.ObjectOnMapRemove(EnumMapObjectType.LandClaim, _position.ToVector3());
                     LandClaimBoundsHelper.RemoveBoundsHelper(_position.ToVector3());
                 }
@@ -2736,13 +2737,12 @@ namespace ServerTools
 
         public static void SetWindowLinks()
         {
+            WebAPI.LinksRequireUpdate = false;
             Auction.SetLink();
-            AllocsMap.SetLink(AllocsMap.Link);
-            DiscordLink.SetLink(DiscordLink.Link);
-            DonationLink.SetLink(DonationLink.Link);
-            Shop.SetLink();
-            RIO.SetLink();
             InteractiveMap.SetLink();
+            RIO.SetLink();
+            Shop.SetLink();
+            Log.Out(string.Format("[SERVERTOOLS] Links for Auction, Interactive_Map, RIO and Shop have been synced with the Web_API"));
         }
 
         public static void Overlay(ClientInfo _cInfo)

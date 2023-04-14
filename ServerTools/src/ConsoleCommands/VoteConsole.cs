@@ -176,7 +176,7 @@ namespace ServerTools
                         SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid id '{0}'. Use their EOS id when offline", _params[1]));
                         return;
                     }
-                    Voting.ItemOrBlockCounter(cInfo, Voting.Reward_Count);
+                    Voting.ItemOrBlockSpawn(cInfo, Voting.Reward_Count);
                 }
                 else
                 {

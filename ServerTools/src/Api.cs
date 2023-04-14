@@ -90,19 +90,25 @@ namespace ServerTools
                     if (Hardcore.IsEnabled && Hardcore.NoEntry.Contains(_cInfo.CrossplatformId.CombinedString))
                     {
                         Phrases.Dict.TryGetValue("Hardcore13", out string phrase);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                    }
+                    else if (LoadProcess.ResettingChunks)
+                    {
+                        Phrases.Dict.TryGetValue("RegionChunkReset1", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     }
                     else if (Shutdown.NoEntry)
                     {
                         Phrases.Dict.TryGetValue("Shutdown4", out string phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     }
                     else if (NewPlayer.Block_During_Bloodmoon && GeneralOperations.IsBloodmoon() && ConnectionManager.Instance.ClientCount() > 1 &&
                         _cInfo.latestPlayerData.totalTimePlayed < 20)
                     {
                         Phrases.Dict.TryGetValue("NewPlayer1", out string phrase);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     }
                     if (!string.IsNullOrEmpty(_cInfo.ip))
                     {
@@ -199,10 +205,6 @@ namespace ServerTools
                         }
                         else if (_respawnReason == RespawnType.Died)
                         {
-                            if (player.AttachedToEntity != null)
-                            {
-                                player.Detach();
-                            }
                             if (Zones.IsEnabled && Zones.ZonePlayer.ContainsKey(_cInfo.entityId))
                             {
                                 Zones.ZonePlayer.TryGetValue(player.entityId, out string[] zone);

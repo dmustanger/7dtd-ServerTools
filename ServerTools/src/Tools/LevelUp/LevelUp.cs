@@ -373,7 +373,7 @@ namespace ServerTools
                     {
                         if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Command triggers console") &&
                             !nodeList[i].OuterXml.Contains("<!-- Possible variables") && !nodeList[i].OuterXml.Contains("<!-- <Level Required=\"300\"") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
+                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<Level Required=\"\""))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);
                         }

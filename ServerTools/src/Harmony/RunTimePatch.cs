@@ -96,21 +96,6 @@ namespace ServerTools
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
-                original = AccessTools.Method(typeof(GameManager), "ChatMessageServer");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ChatMessageServer Class.Method was not found"));
-                }
-                else
-                {
-                    MethodInfo prefix = typeof(Injections).GetMethod("ChatMessageServer_Prefix");
-                    if (prefix == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChatMessageServer_Prefix"));
-                    }
-                    harmony.Patch(original, new HarmonyMethod(prefix), null);
-                }
-
                 original = AccessTools.Method(typeof(GameManager), "Cleanup");
                 if (original == null)
                 {

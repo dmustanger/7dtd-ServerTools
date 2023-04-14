@@ -390,7 +390,7 @@ namespace ServerTools
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone1\"") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone2\"") && !nodeList[i].OuterXml.Contains("<!-- <Location Name=\"\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone2\"") && !nodeList[i].OuterXml.Contains("<Location Name=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);

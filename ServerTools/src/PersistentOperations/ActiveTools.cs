@@ -55,7 +55,7 @@ namespace ServerTools
                 Dict.Remove("Flying detector");
                 Log.Out(string.Format("[SERVERTOOLS] Flying detector disabled"));
             }
-            if (PlayerChecks.GodEnabled)
+            if (GodMode.IsEnabled)
             {
                 if (!Dict.Contains("God mode"))
                 {

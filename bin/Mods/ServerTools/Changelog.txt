@@ -1,5 +1,27 @@
 ﻿CHANGELOG
 
+20.6.12
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added auto kick while server is running Region and Chunk
+reset during server startup
+-Added IP_Address option to Web_API. Controls the server IP 
+used for the Web_API and the corresponding pop up links such 
+as Auction, Shop, Web_Panel. If left blank, it will attempt to 
+find it automatically. Recommend inputting your IP manually
+-Added Invalid_Buffs tool. Checks for buffs that should not
+be found on a player, removes it and adds a log notice
+-Fixed Bank allowing withdrawl when it does not hold enough
+-Fixed VaultBox dropping items when destroyed
+-Fixed Region_Reset working with negative region values
+-Fixed Market and Lobby area removing the wrong entity. It
+will now only remove zombie and enemy animals
+-Fixed Chat_Color applying too many times
+-Fixed xml version updates creating duplicate example lines
+-Changed Region_Reset processing time to avoid potential
+chunk corruption
+
 20.6.11
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

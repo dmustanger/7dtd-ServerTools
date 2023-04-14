@@ -62,17 +62,29 @@ namespace ServerTools
             {
                 return;
             }
-            PersistentContainer.Instance.Players[_id].Bank -= _amount;
-            PersistentContainer.DataChange = true;
-            ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_id);
-            if (cInfo != null)
+            if (PersistentContainer.Instance.Players[_id].Bank >= _amount)
             {
-                using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                PersistentContainer.Instance.Players[_id].Bank -= _amount;
+                PersistentContainer.DataChange = true;
+                ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_id);
+                if (cInfo != null)
                 {
-                    sw.WriteLine(string.Format("{0}: Bank reduction for '{1}' '{2}' named '{3}' of '{4}' currency. Total = '{5}'", DateTime.Now, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, _amount, PersistentContainer.Instance.Players[_id].Bank));
-                    sw.WriteLine();
-                    sw.Flush();
-                    sw.Close();
+                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                    {
+                        sw.WriteLine(string.Format("{0}: Bank reduction for '{1}' '{2}' named '{3}' of '{4}' currency. Total = '{5}'", DateTime.Now, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, _amount, PersistentContainer.Instance.Players[_id].Bank));
+                        sw.WriteLine();
+                        sw.Flush();
+                        sw.Close();
+                    }
+                }
+            }
+            else
+            {
+                ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_id);
+                if (cInfo != null)
+                {
+                    Phrases.Dict.TryGetValue("Bank10", out string phrase);
+                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -300,6 +312,7 @@ namespace ServerTools
                 {
                     Phrases.Dict.TryGetValue("Bank10", out string phrase2);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    return;
                 }
                 int maxAllowed;
                 if (itemValue.ItemClass.Stacknumber != null)

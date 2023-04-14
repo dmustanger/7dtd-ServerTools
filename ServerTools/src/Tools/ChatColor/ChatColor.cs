@@ -178,7 +178,7 @@ namespace ServerTools
             LoadXml();
         }
 
-        private static bool Expired(ClientInfo _cInfo, DateTime _expiry)
+        private static bool Expired(DateTime _expiry)
         {
             try
             {
@@ -200,7 +200,7 @@ namespace ServerTools
             {
                 if (ExpireDate.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime expiry))
                 {
-                    if (!Expired(_cInfo, expiry))
+                    if (!Expired(expiry))
                     {
                         Players.TryGetValue(_cInfo.PlatformId.CombinedString, out string[] colorTags);
                         Phrases.Dict.TryGetValue("ChatColor2", out string phrase);
@@ -214,7 +214,7 @@ namespace ServerTools
                 }
                 else if (ExpireDate.TryGetValue(_cInfo.CrossplatformId.CombinedString, out expiry))
                 {
-                    if (!Expired(_cInfo, expiry))
+                    if (!Expired(expiry))
                     {
                         Players.TryGetValue(_cInfo.CrossplatformId.CombinedString, out string[] colorTags);
                         Phrases.Dict.TryGetValue("ChatColor2", out string phrase);
@@ -246,7 +246,7 @@ namespace ServerTools
                 {
                     ExpireDate.TryGetValue(_cInfo.CrossplatformId.CombinedString, out expiry);
                 }
-                if (!Expired(_cInfo, expiry))
+                if (!Expired(expiry))
                 {
                     DateTime lastPrefixColorChange = DateTime.Now;
                     if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastPrefixColorChange != null)
@@ -305,7 +305,7 @@ namespace ServerTools
                 {
                     ExpireDate.TryGetValue(_cInfo.CrossplatformId.CombinedString, out expiry);
                 }
-                if (!Expired(_cInfo, expiry))
+                if (!Expired(expiry))
                 {
                     if (ColorList.Colors.Count > 0)
                     {
@@ -377,7 +377,7 @@ namespace ServerTools
                 {
                     ExpireDate.TryGetValue(_cInfo.CrossplatformId.CombinedString, out expiry);
                 }
-                if (!Expired(_cInfo, expiry))
+                if (!Expired(expiry))
                 {
                     DateTime lastNameColorChange = DateTime.Now;
                     if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastNameColorChange != null)
@@ -440,7 +440,7 @@ namespace ServerTools
                 {
                     ExpireDate.TryGetValue(_cInfo.CrossplatformId.CombinedString, out expiry);
                 }
-                if (!Expired(_cInfo, expiry))
+                if (!Expired(expiry))
                 {
                     if (ColorList.Colors.Count > 0)
                     {
@@ -503,218 +503,135 @@ namespace ServerTools
 
         public static string ApplyNameColor(ClientInfo _cInfo, EChatType _chatType, string _name)
         {
-            if (_name.Length < 8 || _name[7] != ']')
+            if (_name.Length < 1 || _name.Length > 7 && _name[0] == '[' && _name[7] == ']')
             {
-                string nameColor = "";
-                string prefix = "";
-                string prefixColor = "";
-                DateTime dt = new DateTime();
-                if (ExpireDate.ContainsKey(_cInfo.PlatformId.CombinedString))
+                return _name;
+            }
+            string nameColor = "";
+            string prefix = "";
+            string prefixColor = "";
+            DateTime dt = new DateTime();
+            if (ExpireDate.ContainsKey(_cInfo.PlatformId.CombinedString))
+            {
+                ExpireDate.TryGetValue(_cInfo.PlatformId.CombinedString, out dt);
+            }
+            else if (ExpireDate.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+            {
+                ExpireDate.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt);
+            }
+            if (DateTime.Now < dt)
+            {
+                string[] chatColorData;
+                Players.TryGetValue(_cInfo.PlatformId.CombinedString, out chatColorData);
+                if (chatColorData == null)
                 {
-                    ExpireDate.TryGetValue(_cInfo.PlatformId.CombinedString, out dt);
+                    Players.TryGetValue(_cInfo.CrossplatformId.CombinedString, out chatColorData);
                 }
-                else if (ExpireDate.ContainsKey(_cInfo.CrossplatformId.CombinedString))
+                nameColor = chatColorData[1];
+                prefix = chatColorData[2];
+                prefixColor = chatColorData[3];
+            }
+            else if (ChatHook.Normal_Player_Color_Prefix)
+            {
+                if (ChatHook.Normal_Player_Name_Color != "")
                 {
-                    ExpireDate.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt);
+                    nameColor = ChatHook.Normal_Player_Name_Color;
                 }
-                if (DateTime.Now < dt)
+                if (ChatHook.Normal_Player_Prefix != "")
                 {
-                    string[] chatColorData;
-                    Players.TryGetValue(_cInfo.PlatformId.CombinedString, out chatColorData);
-                    if (chatColorData == null)
-                    {
-                        Players.TryGetValue(_cInfo.CrossplatformId.CombinedString, out chatColorData);
-                    }
-                    nameColor = chatColorData[1];
-                    prefix = chatColorData[2];
-                    prefixColor = chatColorData[3];
+                    prefix = ChatHook.Normal_Player_Prefix;
                 }
-                else if (ChatHook.Normal_Player_Color_Prefix)
+                if (ChatHook.Normal_Player_Prefix_Color != "")
                 {
-                    if (ChatHook.Normal_Player_Name_Color != "")
-                    {
-                        nameColor = ChatHook.Normal_Player_Name_Color;
-                    }
-                    if (ChatHook.Normal_Player_Prefix != "")
-                    {
-                        prefix = ChatHook.Normal_Player_Prefix;
-                    }
-                    if (ChatHook.Normal_Player_Prefix_Color != "")
-                    {
-                        prefixColor = ChatHook.Normal_Player_Prefix_Color;
-                    }
+                    prefixColor = ChatHook.Normal_Player_Prefix_Color;
                 }
-                if (ClanManager.IsEnabled && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName != null &&
-                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName != "")
+            }
+            if (ClanManager.IsEnabled && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName != null &&
+                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName != "")
+            {
+                prefix = prefix.Insert(prefix.Length, PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName);
+            }
+            if (_chatType == EChatType.Friends)
+            {
+                prefix = prefix.Insert(0, "(Friends)");
+                if (ChatHook.Friend_Chat_Color.StartsWith("[") && ChatHook.Friend_Chat_Color.EndsWith("]"))
                 {
-                    prefix = prefix.Insert(prefix.Length, PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ClanName);
+                    prefix = prefix.Insert(0, ChatHook.Friend_Chat_Color);
                 }
-                if (_chatType == EChatType.Friends)
+                prefix = prefix.Insert(prefix.Length, "[-]");
+            }
+            else if (_chatType == EChatType.Party)
+            {
+                prefix = prefix.Insert(0, "(Party)");
+                if (ChatHook.Party_Chat_Color.StartsWith("[") && ChatHook.Party_Chat_Color.EndsWith("]"))
                 {
-                    prefix = prefix.Insert(0, "(Friends)");
-                    if (ChatHook.Friend_Chat_Color.StartsWith("[") && ChatHook.Friend_Chat_Color.EndsWith("]"))
-                    {
-                        prefix = prefix.Insert(0, ChatHook.Friend_Chat_Color);
-                    }
-                    prefix = prefix.Insert(prefix.Length, "[-]");
+                    prefix = prefix.Insert(0, ChatHook.Party_Chat_Color);
                 }
-                else if (_chatType == EChatType.Party)
+                prefix = prefix.Insert(prefix.Length, "[-]");
+            }
+            if (prefix != "" && prefixColor != "")
+            {
+                if (prefixColor.Contains(","))
                 {
-                    prefix = prefix.Insert(0, "(Party)");
-                    if (ChatHook.Party_Chat_Color.StartsWith("[") && ChatHook.Party_Chat_Color.EndsWith("]"))
+                    int count = 0, colorIndex = 0;
+                    string[] colors = prefixColor.Split(',');
+                    for (int i = 0; i < prefix.Length; i++)
                     {
-                        prefix = prefix.Insert(0, ChatHook.Party_Chat_Color);
-                    }
-                    prefix = prefix.Insert(prefix.Length, "[-]");
-                }
-                if (prefix != "" && prefixColor.StartsWith("[") && prefixColor.EndsWith("]"))
-                {
-                    if (prefixColor.Contains(","))
-                    {
-                        bool complete = false;
-                        int prefixIndex = 0;
-                        int colorCount = 0;
-                        string lastColor = "";
-                        string[] colors = prefixColor.Split(',');
-                        for (int i = 0; i < 20; i++)
+                        if (!Char.IsWhiteSpace(prefix[i]))
                         {
-                            if (complete)
+                            prefix = prefix.Insert(i, colors[colorIndex]);
+                            count++;
+                            colorIndex++;
+                            if (colorIndex == colors.Length)
                             {
-                                break;
-                            }
-                            for (int j = 0; j < colors.Length; j++)
-                            {
-                                if (prefixIndex < prefix.Length)
-                                {
-                                    if (prefix[prefixIndex] != ' ')
-                                    {
-                                        if (lastColor != colors[j])
-                                        {
-                                            prefix = prefix.Insert(prefixIndex, colors[j]);
-                                            prefixIndex += 8;
-                                            colorCount++;
-                                            lastColor = colors[j];
-                                        }
-                                        else
-                                        {
-                                            prefixIndex += 1;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        prefixIndex += 1;
-                                    }
-                                }
-                                else
-                                {
-                                    for (int k = 0; k < colorCount; k++)
-                                    {
-                                        prefix = prefix.Insert(prefixIndex, "[-]");
-                                    }
-                                    complete = true;
-                                    break;
-                                }
-                            }
-                            if (!complete)
-                            {
-                                if (prefixIndex < prefix.Length)
-                                {
-                                    colors.Reverse();
-                                }
-                                else
-                                {
-                                    for (int k = 0; k < colorCount; k++)
-                                    {
-                                        prefix = prefix.Insert(prefixIndex, "[-]");
-                                    }
-                                    complete = true;
-                                    break;
-                                }
+                                colorIndex = 0;
                             }
                         }
                     }
-                    else
+                    for (int j = 0; j < count; j++)
                     {
-                        prefix = prefix.Insert(0, prefixColor);
                         prefix = prefix.Insert(prefix.Length, "[-]");
                     }
                 }
-                if (nameColor != "" && nameColor.StartsWith("[") && nameColor.EndsWith("]"))
+                else
                 {
-                    if (nameColor.Contains(","))
+                    prefix = prefix.Insert(0, prefixColor);
+                    prefix = prefix.Insert(prefix.Length, "[-]");
+                }
+            }
+            if (nameColor != "")
+            {
+                if (nameColor.Contains(","))
+                {
+                    int count = 0, colorIndex = 0;
+                    string[] colors = nameColor.Split(',');
+                    for (int i = 0; i < _name.Length; i++)
                     {
-                        bool complete = false;
-                        int nameIndex = 0;
-                        int colorCount = 0;
-                        string lastColor = "";
-                        string[] colors = nameColor.Split(',');
-                        for (int i = 0; i < 20; i++)
+                        if (!Char.IsWhiteSpace(_name[i]))
                         {
-                            if (complete)
+                            _name = _name.Insert(i, colors[colorIndex]);
+                            count++;
+                            colorIndex++;
+                            if (colorIndex == colors.Length)
                             {
-                                break;
-                            }
-                            for (int j = 0; j < colors.Length; j++)
-                            {
-                                if (nameIndex < _name.Length)
-                                {
-                                    if (_name[nameIndex] != ' ')
-                                    {
-                                        if (lastColor != colors[j])
-                                        {
-                                            _name = _name.Insert(nameIndex, colors[j]);
-                                            nameIndex += 8;
-                                            colorCount++;
-                                            lastColor = colors[j];
-                                        }
-                                        else
-                                        {
-                                            nameIndex += 1;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        nameIndex += 1;
-                                    }
-                                }
-                                else
-                                {
-                                    for (int k = 0; k < colorCount; k++)
-                                    {
-                                        _name = _name.Insert(nameIndex, "[-]");
-                                    }
-                                    complete = true;
-                                    break;
-                                }
-                            }
-                            if (!complete)
-                            {
-                                if (nameIndex < _name.Length)
-                                {
-                                    colors.Reverse();
-                                }
-                                else
-                                {
-                                    for (int k = 0; k < colorCount; k++)
-                                    {
-                                        _name = _name.Insert(nameIndex, "[-]");
-                                    }
-                                    complete = true;
-                                    break;
-                                }
+                                colorIndex = 0;
                             }
                         }
                     }
-                    else
+                    for (int j = 0; j < count; j++)
                     {
-                        _name = _name.Insert(0, nameColor);
                         _name = _name.Insert(_name.Length, "[-]");
                     }
                 }
-                if (prefix != "")
+                else
                 {
-                    _name = string.Format("{0} {1}", prefix, _name);
+                    _name = _name.Insert(0, nameColor);
+                    _name = _name.Insert(_name.Length, "[-]");
                 }
+            }
+            if (prefix != "")
+            {
+                _name = string.Format("{0} {1}", prefix, _name);
             }
             return _name;
         }
@@ -745,8 +662,9 @@ namespace ServerTools
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- NameColor and") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_12345678901234567") && 
-                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
+                            !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_12345678901234567") && !nodeList[i].OuterXml.Contains("<Player Id=\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version") &&
+                            !nodeList[i].OuterXml.Contains("<Player Id=\"\""))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);
                         }

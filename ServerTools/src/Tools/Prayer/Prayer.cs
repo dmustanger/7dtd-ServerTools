@@ -308,7 +308,7 @@ namespace ServerTools
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType == XmlNodeType.Comment &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Version") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<Buff Name=\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Buff Name=\"buffPerkCharismaticNature"))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);

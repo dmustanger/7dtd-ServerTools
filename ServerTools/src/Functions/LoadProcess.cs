@@ -8,7 +8,7 @@ namespace ServerTools
     class LoadProcess
     {
         public static int Days_Before_Log_Delete = 5;
-        private static bool Loaded = false;
+        public static bool Loaded = false, ResettingChunks = false;
 
         public static void Load()
         {
@@ -141,7 +141,7 @@ namespace ServerTools
                     {
                         try
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("sleeperreset"), null);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("sleeperreset"), null);
                         }
                         catch (XmlException e)
                         {
@@ -220,13 +220,11 @@ namespace ServerTools
                         PersistentContainer.Instance.RegionReset = regionResets;
                     }
                     PersistentContainer.DataChange = true;
-                    if (RegionReset.IsEnabled)
+                    if (RegionReset.IsEnabled || ChunkReset.IsEnabled)
                     {
-                        RegionReset.Exec();
-                    }
-                    if (ChunkReset.IsEnabled)
-                    {
-                        ChunkReset.Exec();
+                        ResettingChunks = true;
+                        Timers.Chunk_Region_ResetTimer();
+                        Log.Out("[SERVERTOOLS] Running Region and Chunk reset in 10 seconds");
                     }
                     if (CleanBin.IsEnabled)
                     {
@@ -246,12 +244,12 @@ namespace ServerTools
                         CleanBin.Shop_Log = false;
                         CleanBin.Waypoints = false;
                         Config.WriteXml();
+                        Config.LoadXml();
                         ActiveTools.Exec(false);
                         Log.Out(string.Format("[SERVERTOOLS] ServerTools.bin has been cleaned. The Clean_Bin tool and all of its options are now disabled"));
                     }
                     Track.Cleanup();
                     ActiveTools.Exec(true);
-                    Timers.Set_Link_Delay();
                     Timers.PersistentDataSave();
                     Log.Out(string.Format("[SERVERTOOLS] Running ServerTools Config v.{0}", Config.Version));
                 }
@@ -276,6 +274,20 @@ namespace ServerTools
                     }
                 }
             }
+        }
+
+        public static void Chunk_Region_Reset()
+        {
+            if (RegionReset.IsEnabled)
+            {
+                RegionReset.Exec();
+            }
+            if (ChunkReset.IsEnabled)
+            {
+                ChunkReset.Exec();
+            }
+            ResettingChunks = false;
+            Log.Out("[SERVERTOOLS] Region and Chunk reset has completed");
         }
     }
 }

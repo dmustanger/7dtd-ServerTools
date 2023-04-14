@@ -276,18 +276,16 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Player Id=\"Steam_12345678909876543\" Reason=\"Suspected cheating.\" /> -->");
                     sw.WriteLine("    <!-- <Player Id=\"EOS_1a3b5c7a9b1c3a5b7c9a1b3c5a7b9c1a3\" Reason=\"Cheaters R Assho\" /> -->");
+                    sw.WriteLine("    <Player Id=\"\" Reason=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_12345678909876543") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"EOS_1a3b5c7a9b1c3a5b7c9a1b3c5a7b9c1a3") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"EOS_1a3b5c7a9b1c3a5b7c9a1b3c5a7b9c1a3") && !nodeList[i].OuterXml.Contains("<Player Id=\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
-                    sw.WriteLine("    <Player Id=\"\" Reason=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType != XmlNodeType.Comment)

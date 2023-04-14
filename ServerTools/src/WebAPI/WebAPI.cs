@@ -13,7 +13,7 @@ namespace ServerTools
 {
     public class WebAPI
     {
-        public static bool IsEnabled = false, IsRunning = false, Shutdown = false, Connected = false;
+        public static bool IsEnabled = false, IsRunning = false, Shutdown = false, Connected = false, LinksRequireUpdate = false;
         public static int Port = 8084;
         public static string Directory = "", Panel_Address = "", BaseAddress = "", Icon_Folder = "../Data/ItemIcons";
 
@@ -195,107 +195,108 @@ namespace ServerTools
                 if (Port == controlPanelPort || Port == telnetPanelPort)
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Web_API port was set identically to the server control panel or telnet port. " +
-                        "You must use a unique and unused port that is open to transmission. Web_API has been disabled. " +
-                        "This means the potential to use Discordian and various tool panels have been disabled"));
+                    "You must use a unique and unused port that is open to transmission. Web_API has been disabled. " +
+                    "This means the potential to use Discordian and various tool panels have been disabled"));
                     return;
                 }
                 if (Port > 1000 && Port < 65536)
                 {
                     if (HttpListener.IsSupported)
                     {
-                        if (SetBaseAddress())
+                        if (BaseAddress == "")
                         {
-                            Redirect = "http://" + BaseAddress + ":" + Port;
-                            Panel_Address = "http://" + BaseAddress + ":" + Port + "/st.html";
-                            using (HttpListener listener = new HttpListener())
+                            SetBaseAddress();
+                        }
+                        Redirect = "http://" + BaseAddress + ":" + Port;
+                        Panel_Address = "http://" + BaseAddress + ":" + Port + "/st.html";
+                        using (HttpListener listener = new HttpListener())
+                        {
+                            if (listener != null && !listener.IsListening)
                             {
-                                if (listener != null && !listener.IsListening)
+                                listener.Prefixes.Clear();
+                                if (!listener.Prefixes.Contains(string.Format("http://*:{0}/", Port)))
                                 {
-                                    listener.Prefixes.Clear();
-                                    if (!listener.Prefixes.Contains(string.Format("http://*:{0}/", Port)))
-                                    {
-                                        listener.Prefixes.Add(string.Format("http://*:{0}/", Port));
-                                        listener.Start();
-                                        Connected = true;
-                                        Log.Out(string.Format("[SERVERTOOLS] ServerTools web api has opened @ '{0}'", Redirect));
-                                    }
-                                    else
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] ServerTools web api was unable to connect due to the prefix already in use @ '{0}'", Panel_Address));
-                                        return;
-                                    }
+                                    listener.Prefixes.Add(string.Format("http://*:{0}/", Port));
+                                    listener.Start();
+                                    Connected = true;
+                                    Log.Out(string.Format("[SERVERTOOLS] ServerTools web api has opened @ '{0}'", Redirect));
                                 }
-                                while (listener != null && listener.IsListening)
+                                else
                                 {
-                                    HttpListenerContext context = listener.GetContext();
-                                    if (context != null)
+                                    Log.Out(string.Format("[SERVERTOOLS] ServerTools web api was unable to connect due to the prefix already in use @ '{0}'", Panel_Address));
+                                    return;
+                                }
+                            }
+                            while (listener != null && listener.IsListening)
+                            {
+                                HttpListenerContext context = listener.GetContext();
+                                if (context != null)
+                                {
+                                    bool Allowed = true;
+                                    HttpListenerRequest request = context.Request;
+                                    using (HttpListenerResponse response = context.Response)
                                     {
-                                        bool Allowed = true;
-                                        HttpListenerRequest request = context.Request;
-                                        using (HttpListenerResponse response = context.Response)
+                                        response.StatusCode = 403;
+                                        string ip = request.RemoteEndPoint.Address.ToString();
+                                        string uri = request.Url.AbsoluteUri;
+                                        if (Ban.Contains(ip))
                                         {
-                                            response.StatusCode = 403;
-                                            string ip = request.RemoteEndPoint.Address.ToString();
-                                            string uri = request.Url.AbsoluteUri;
-                                            if (Ban.Contains(ip))
+                                            Writer(string.Format("Request denied for banned IP: '{0}'", ip));
+                                            Allowed = false;
+                                        }
+                                        else if (TimeOut.ContainsKey(ip))
+                                        {
+                                            TimeOut.TryGetValue(ip, out DateTime timeout);
+                                            if (DateTime.Now >= timeout)
                                             {
-                                                Writer(string.Format("Request denied for banned IP: '{0}'", ip));
+                                                TimeOut.Remove(ip);
+                                                PersistentContainer.Instance.WebTimeoutList.Remove(ip);
+                                                PersistentContainer.DataChange = true;
+                                            }
+                                            else
+                                            {
+                                                Writer(string.Format("Request denied for IP '{0}' on timeout until '{1}'", ip, timeout));
                                                 Allowed = false;
                                             }
-                                            else if (TimeOut.ContainsKey(ip))
+                                        }
+                                        if (uri.Length > 111)
+                                        {
+                                            Writer(string.Format("URI request was too long. Request denied for IP '{0}'", ip));
+                                            Allowed = false;
+                                            response.StatusCode = 414;
+                                        }
+                                        else if (uri.ToLower().Contains("script") && !uri.Contains("JS/scripts.js") && !uri.Contains("JS/shopscripts.js") &&
+                                            !uri.Contains("JS/rioscripts.js") && !uri.Contains("JS/auctionscripts.js") && !uri.Contains("JS/imapscripts.js"))
+                                        {
+                                            if (!Ban.Contains(ip))
                                             {
-                                                TimeOut.TryGetValue(ip, out DateTime timeout);
-                                                if (DateTime.Now >= timeout)
+                                                if (TimeOut.ContainsKey(ip))
                                                 {
                                                     TimeOut.Remove(ip);
+                                                }
+                                                if (PersistentContainer.Instance.WebTimeoutList != null && PersistentContainer.Instance.WebTimeoutList.ContainsKey(ip))
+                                                {
                                                     PersistentContainer.Instance.WebTimeoutList.Remove(ip);
-                                                    PersistentContainer.DataChange = true;
+                                                }
+                                                Ban.Add(ip);
+                                                if (PersistentContainer.Instance.WebBanList != null)
+                                                {
+                                                    PersistentContainer.Instance.WebBanList.Add(ip);
                                                 }
                                                 else
                                                 {
-                                                    Writer(string.Format("Request denied for IP '{0}' on timeout until '{1}'", ip, timeout));
-                                                    Allowed = false;
+                                                    List<string> bannedIP = new List<string>();
+                                                    bannedIP.Add(ip);
+                                                    PersistentContainer.Instance.WebBanList = bannedIP;
                                                 }
+                                                PersistentContainer.DataChange = true;
                                             }
-                                            if (uri.Length > 111)
-                                            {
-                                                Writer(string.Format("URI request was too long. Request denied for IP '{0}'", ip));
-                                                Allowed = false;
-                                                response.StatusCode = 414;
-                                            }
-                                            else if (uri.ToLower().Contains("script") && !uri.Contains("JS/scripts.js") && !uri.Contains("JS/shopscripts.js") &&
-                                                !uri.Contains("JS/rioscripts.js") && !uri.Contains("JS/auctionscripts.js") && !uri.Contains("JS/imapscripts.js"))
-                                            {
-                                                if (!Ban.Contains(ip))
-                                                {
-                                                    if (TimeOut.ContainsKey(ip))
-                                                    {
-                                                        TimeOut.Remove(ip);
-                                                    }
-                                                    if (PersistentContainer.Instance.WebTimeoutList != null && PersistentContainer.Instance.WebTimeoutList.ContainsKey(ip))
-                                                    {
-                                                        PersistentContainer.Instance.WebTimeoutList.Remove(ip);
-                                                    }
-                                                    Ban.Add(ip);
-                                                    if (PersistentContainer.Instance.WebBanList != null)
-                                                    {
-                                                        PersistentContainer.Instance.WebBanList.Add(ip);
-                                                    }
-                                                    else
-                                                    {
-                                                        List<string> bannedIP = new List<string>();
-                                                        bannedIP.Add(ip);
-                                                        PersistentContainer.Instance.WebBanList = bannedIP;
-                                                    }
-                                                    PersistentContainer.DataChange = true;
-                                                }
-                                                Writer(string.Format("Banned IP '{0}'. Detected attempting to run a script against the server", ip));
-                                                Allowed = false;
-                                            }
-                                            if (Allowed)
-                                            {
-                                                IsAllowed(request, response, ip, uri);
-                                            }
+                                            Writer(string.Format("Banned IP '{0}'. Detected attempting to run a script against the server", ip));
+                                            Allowed = false;
+                                        }
+                                        if (Allowed)
+                                        {
+                                            IsAllowed(request, response, ip, uri);
                                         }
                                     }
                                 }
@@ -1515,7 +1516,7 @@ namespace ServerTools
                                                                         {
                                                                             Jail.Jailed.Remove(ppd.UserIdentifier.CombinedString);
                                                                             PersistentContainer.Instance.Players[ppd.UserIdentifier.CombinedString].JailTime = 0;
-                                                                            Writer(string.Format("Client {0} at IP {1} has unjailed {2}", clientData[0], _ip, ppd.UserIdentifier.CombinedString));
+                                                                            Writer(string.Format("Client '{0}' at IP '{1}' has unjailed '{2}'", clientData[0], _ip, ppd.UserIdentifier.CombinedString));
                                                                         }
                                                                         else if (Jail.Jail_Position != "")
                                                                         {
@@ -1523,7 +1524,7 @@ namespace ServerTools
                                                                             PersistentContainer.Instance.Players[ppd.UserIdentifier.CombinedString].JailTime = -1;
                                                                             PersistentContainer.Instance.Players[ppd.UserIdentifier.CombinedString].JailName = "-Unknown-";
                                                                             PersistentContainer.Instance.Players[ppd.UserIdentifier.CombinedString].JailDate = DateTime.Now;
-                                                                            Writer(string.Format("Client {0} at IP {1} has jailed {2}", clientData[0], _ip, ppd.UserIdentifier.CombinedString));
+                                                                            Writer(string.Format("Client '{0}' at IP '{1}' has jailed '{2}'", clientData[0], _ip, ppd.UserIdentifier.CombinedString));
                                                                         }
                                                                         PersistentContainer.DataChange = true;
                                                                         _response.StatusCode = 200;
@@ -1552,7 +1553,7 @@ namespace ServerTools
                                                     AuthorizedTime.Remove(clientData[0]);
                                                     _response.Redirect(Panel_Address);
                                                     _response.StatusCode = 401;
-                                                    Writer(string.Format("Client {0} has been logged out", clientData[0]));
+                                                    Writer(string.Format("Client '{0}' has been logged out", clientData[0]));
                                                 }
                                             }
                                             else
@@ -1589,8 +1590,8 @@ namespace ServerTools
                                                                 ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(clientData[2]);
                                                                 if (cInfo != null)
                                                                 {
-                                                                    Voting.ItemOrBlockCounter(cInfo, Voting.Reward_Count);
-                                                                    Writer(string.Format("Client {0} at IP {1} has rewarded {2} named {3}", clientData[0], _ip, cInfo.PlatformId.CombinedString, cInfo.playerName));
+                                                                    Voting.ItemOrBlockSpawn(cInfo, Voting.Reward_Count);
+                                                                    Writer(string.Format("Client '{0}' at IP '{1}' has given a vote reward to '{2}' named '{3}'", clientData[0], _ip, cInfo.PlatformId.CombinedString, cInfo.playerName));
                                                                     _response.StatusCode = 200;
                                                                 }
                                                                 else
@@ -1616,7 +1617,7 @@ namespace ServerTools
                                                     AuthorizedTime.Remove(clientData[0]);
                                                     _response.Redirect(Panel_Address);
                                                     _response.StatusCode = 401;
-                                                    Writer(string.Format("Client {0} has been logged out", clientData[0]));
+                                                    Writer(string.Format("Client '{0}' has been logged out", clientData[0]));
                                                 }
                                             }
                                             else

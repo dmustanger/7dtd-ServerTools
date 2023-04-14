@@ -64,6 +64,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Bed](#bed)
   - [Block_Logger](#block_logger)
   - [Block_Pickup](#block_pickup)
+  - [Blood_Moans](#blood_moans)
   - [Bloodmoon](#bloodmoon)
   - [Bloodmoon_Warrior](#bloodmoon_warrior)
   - [Bot_Response](#bot_response)
@@ -754,9 +755,22 @@ Allows players to pick up blocks that are not terrain, full health and inside of
 
 Players must type /pickup in chat to active it and then punch the block they desire to pickup.
 
-## Bloodmoon
+## Blood_Moans
 ```xml
-<Tool Name="Bloodmoon" Enable="True" Delay="60" Show_On_Respawn="True" />
+<Tool Name="Blood_Moans" Enable="False" />
+```
+### Attributes
+* __Enable__   
+Set True or False for Enable
+
+### Description
+During a bloodmoon, players will hear random sounds every 20 to 30 seconds.
+
+Sounds include zombie moans and groans, opening doors, footsteps, vomit and more.
+
+## Bloodmoans
+```xml
+<Tool Name="Blood_Moans" Enable="True" />
 ```
 ### Attributes
 * __Enable__  

@@ -190,7 +190,7 @@ namespace ServerTools
                     for (int i = 0; i < OldNodeList.Count; i++)
                     {
                         if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Bad Word=\"penis") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Version"))
+                            !OldNodeList[i].OuterXml.Contains("<!-- <Version") && !OldNodeList[i].OuterXml.Contains("<Bad Word=\""))
                         {
                             sw.WriteLine(OldNodeList[i].OuterXml);
                         }

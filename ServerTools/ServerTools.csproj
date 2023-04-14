@@ -47,6 +47,7 @@
     <Compile Include="src\AntiCheat\DupeLog\DupeLog.cs" />
     <Compile Include="src\AntiCheat\BlockChange\BlockChange.cs" />
     <Compile Include="src\AntiCheat\DamageDetector\DamageDetector.cs" />
+    <Compile Include="src\AntiCheat\GodMode\GodMode.cs" />
     <Compile Include="src\AntiCheat\InfiniteAmmo\InfiniteAmmo.cs" />
     <Compile Include="src\AntiCheat\MagicBullet\MagicBullet.cs" />
     <Compile Include="src\AntiCheat\NetPackages\NetPackageChat.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="src\AntiCheat\No_Vehicle_Drone\NoVehicleDrone.cs" />
     <Compile Include="src\AntiCheat\PlayerChecks\PlayerChecks.cs" />
     <Compile Include="src\AntiCheat\ProtectedZones\ProtectedZones.cs" />
+    <Compile Include="src\AntiCheat\InvalidBuffs\InvalidBuffs.cs" />
     <Compile Include="src\AntiCheat\SpeedDetector\SpeedDetector.cs" />
     <Compile Include="src\AntiCheat\XRayDetector\XRayDetector.cs" />
     <Compile Include="src\ConsoleCommands\BlockChatCommandConsole.cs" />

@@ -101,28 +101,24 @@ namespace ServerTools
                         int minX = 0, minZ = 0, maxX = 0, maxZ = 0;
                         if (value1 < 0)
                         {
-                            value1 += 1;
-                        }
-                        minX = value1 * 512;
-                        if (minX < 0)
-                        {
+                            minX = (value1 + 1) * 512;
                             maxX = minX - 512;
                         }
                         else
                         {
+                            minX = value1 * 512;
                             maxX = minX + 512;
                         }
+
+
                         if (value2 < 0)
                         {
-                            value2 += 1;
-                        }
-                        minZ = value2 * 512;
-                        if (minZ < 0)
-                        {
+                            minZ = (value2 + 1) * 512;
                             maxZ = minZ - 512;
                         }
                         else
                         {
+                            minZ = value2 * 512;
                             maxZ = minZ + 512;
                         }
                         Regions.Add(name, time);
@@ -311,7 +307,8 @@ namespace ServerTools
                     {
                         if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Region Name=\"r.0.0.7rg\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Region Name=\"r.-1.-1.7rg\"") &&
-                            !nodeList[i].OuterXml.Contains("<!-- Possible time") && !nodeList[i].OuterXml.Contains("<!-- <Version"))
+                            !nodeList[i].OuterXml.Contains("<!-- Possible time") && !nodeList[i].OuterXml.Contains("<Region Name=\"\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);
                         }
