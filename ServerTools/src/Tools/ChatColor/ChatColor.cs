@@ -87,13 +87,11 @@ namespace ServerTools
                             }
                             if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(nameColor))
                             {
-                                ColorList.Colors.TryGetValue(nameColor, out string colorArray);
-                                nameColor = colorArray;
+                                ColorList.Colors.TryGetValue(nameColor, out nameColor);
                             }
                             if (ColorList.Colors.Count > 0 && ColorList.Colors.ContainsKey(prefixColor))
                             {
-                                ColorList.Colors.TryGetValue(prefixColor, out string colorArray);
-                                prefixColor = colorArray;
+                                ColorList.Colors.TryGetValue(prefixColor, out prefixColor);
                             }
                             if (!Players.ContainsKey(id))
                             {

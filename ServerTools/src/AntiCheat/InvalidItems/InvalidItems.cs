@@ -406,7 +406,7 @@ namespace ServerTools
             {
                 Phrases.Dict.TryGetValue("InvalidItem4", out string phrase);
                 phrase = phrase.Replace("{ItemName}", _name);
-                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.entityId, phrase), null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.entityId, phrase), null);
                 Phrases.Dict.TryGetValue("InvalidItem2", out phrase);
                 phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
                 phrase = phrase.Replace("{ItemName}", _name);
@@ -469,7 +469,7 @@ namespace ServerTools
             try
             {
                 Phrases.Dict.TryGetValue("InvalidItem4", out string phrase);
-                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                 using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
                 {
                     sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' with invalid item '{3}'. The player has been kicked", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _name));

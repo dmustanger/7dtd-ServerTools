@@ -92,10 +92,17 @@ namespace ServerTools
                                 int y = (int)position.y;
                                 int z = (int)position.z;
                                 string mposition = x + "," + y + "," + z;
-                                Market.MarketBounds.center = new Vector3(x, y, z);
-                                int size = Market.Market_Size * 2;
-                                Market.MarketBounds.size = new Vector3(size, size, size);
                                 Market.Market_Position = mposition;
+                                Bounds bounds = new Bounds();
+                                bounds.center = new Vector3(x, y, z);
+                                int size = Market.Market_Size * 2;
+                                bounds.size = new Vector3(size, size, size);
+                                Market.MarketBounds[0] = bounds.min.x;
+                                Market.MarketBounds[1] = bounds.min.y;
+                                Market.MarketBounds[2] = bounds.min.z;
+                                Market.MarketBounds[3] = bounds.max.x;
+                                Market.MarketBounds[4] = bounds.max.y;
+                                Market.MarketBounds[5] = bounds.max.z;
                                 Phrases.Dict.TryGetValue("Market6", out string phrase);
                                 phrase = phrase.Replace("{Position}", mposition);
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] {0}", phrase));
@@ -113,10 +120,17 @@ namespace ServerTools
                                 if (int.TryParse(_params[3], out int z))
                                 {
                                     string mposition = x + "," + y + "," + z;
-                                    Market.MarketBounds.center = new Vector3(x, y, z);
-                                    int size = Market.Market_Size * 2;
-                                    Market.MarketBounds.size = new Vector3(size, size, size);
                                     Market.Market_Position = mposition;
+                                    Bounds bounds = new Bounds();
+                                    bounds.center = new Vector3(x, y, z);
+                                    int size = Market.Market_Size * 2;
+                                    bounds.size = new Vector3(size, size, size);
+                                    Market.MarketBounds[0] = bounds.min.x;
+                                    Market.MarketBounds[1] = bounds.min.y;
+                                    Market.MarketBounds[2] = bounds.min.z;
+                                    Market.MarketBounds[3] = bounds.max.x;
+                                    Market.MarketBounds[4] = bounds.max.y;
+                                    Market.MarketBounds[5] = bounds.max.z;
                                     Phrases.Dict.TryGetValue("Market6", out string phrase);
                                     phrase = phrase.Replace("{Position}", mposition);
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] {0}", phrase));

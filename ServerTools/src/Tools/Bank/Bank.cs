@@ -56,11 +56,11 @@ namespace ServerTools
             }
         }
 
-        public static void SubtractCurrencyFromBank(string _id, int _amount)
+        public static bool SubtractCurrencyFromBank(string _id, int _amount)
         {
             if (GeneralOperations.No_Currency)
             {
-                return;
+                return false;
             }
             if (PersistentContainer.Instance.Players[_id].Bank >= _amount)
             {
@@ -77,6 +77,7 @@ namespace ServerTools
                         sw.Close();
                     }
                 }
+                return true;
             }
             else
             {
@@ -86,6 +87,7 @@ namespace ServerTools
                     Phrases.Dict.TryGetValue("Bank10", out string phrase);
                     ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
+                return false;
             }
         }
 
@@ -334,31 +336,33 @@ namespace ServerTools
                 {
                     return;
                 }
-                SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, value);
-                using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                if (SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, value))
                 {
-                    sw.WriteLine(string.Format("{0}: '{1}' removed '{2}' from their bank", DateTime.Now, _cInfo.playerName, value));
-                    sw.WriteLine();
-                    sw.Flush();
-                    sw.Close();
+                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                    {
+                        sw.WriteLine(string.Format("{0}: '{1}' removed '{2}' from their bank", DateTime.Now, _cInfo.playerName, value));
+                        sw.WriteLine();
+                        sw.Flush();
+                        sw.Close();
+                    }
+                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                    {
+                        entityClass = EntityClass.FromString("item"),
+                        id = EntityFactory.nextEntityID++,
+                        itemStack = itemStack,
+                        pos = player.position,
+                        rot = new Vector3(20f, 0f, 20f),
+                        lifetime = 60f,
+                        belongsPlayerId = _cInfo.entityId
+                    });
+                    GameManager.Instance.World.SpawnEntityInWorld(entityItem);
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                    GameManager.Instance.World.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                    Phrases.Dict.TryGetValue("Bank8", out string phrase4);
+                    phrase4 = phrase4.Replace("{CoinName}", Wallet.Currency_Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase4 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    return;
                 }
-                var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                {
-                    entityClass = EntityClass.FromString("item"),
-                    id = EntityFactory.nextEntityID++,
-                    itemStack = itemStack,
-                    pos = player.position,
-                    rot = new Vector3(20f, 0f, 20f),
-                    lifetime = 60f,
-                    belongsPlayerId = _cInfo.entityId
-                });
-                GameManager.Instance.World.SpawnEntityInWorld(entityItem);
-                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                GameManager.Instance.World.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                Phrases.Dict.TryGetValue("Bank8", out string phrase4);
-                phrase4 = phrase4.Replace("{CoinName}", Wallet.Currency_Name);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase4 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                return;
             }
             catch (Exception e)
             {

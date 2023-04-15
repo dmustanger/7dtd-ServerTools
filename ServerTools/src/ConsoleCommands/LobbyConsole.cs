@@ -95,10 +95,17 @@ namespace ServerTools
                                 int y = (int)position.y;
                                 int z = (int)position.z;
                                 string lposition = x + "," + y + "," + z;
-                                Lobby.LobbyBounds.center = new Vector3(x, y, z);
-                                int size = Lobby.Lobby_Size * 2;
-                                Lobby.LobbyBounds.size = new Vector3(size, size, size);
                                 Lobby.Lobby_Position = lposition;
+                                Bounds bounds = new Bounds();
+                                bounds.center = new Vector3(x, y, z);
+                                int size = Lobby.Lobby_Size * 2;
+                                bounds.size = new Vector3(size, size, size);
+                                Lobby.LobbyBounds[0] = bounds.min.x;
+                                Lobby.LobbyBounds[1] = bounds.min.y;
+                                Lobby.LobbyBounds[2] = bounds.min.z;
+                                Lobby.LobbyBounds[3] = bounds.max.x;
+                                Lobby.LobbyBounds[4] = bounds.max.y;
+                                Lobby.LobbyBounds[5] = bounds.max.z;
                                 Phrases.Dict.TryGetValue("Lobby2", out string phrase);
                                 phrase = phrase.Replace("{Position}", lposition);
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] {0}", phrase));
@@ -116,10 +123,17 @@ namespace ServerTools
                                 if (int.TryParse(_params[3], out int z))
                                 {
                                     string lposition = x + "," + y + "," + z;
-                                    Lobby.LobbyBounds.center = new Vector3(x, y, z);
-                                    int size = Lobby.Lobby_Size * 2;
-                                    Lobby.LobbyBounds.size = new Vector3(size, size, size);
                                     Lobby.Lobby_Position = lposition;
+                                    Bounds bounds = new Bounds();
+                                    bounds.center = new Vector3(x, y, z);
+                                    int size = Lobby.Lobby_Size * 2;
+                                    bounds.size = new Vector3(size, size, size);
+                                    Lobby.LobbyBounds[0] = bounds.min.x;
+                                    Lobby.LobbyBounds[1] = bounds.min.y;
+                                    Lobby.LobbyBounds[2] = bounds.min.z;
+                                    Lobby.LobbyBounds[3] = bounds.max.x;
+                                    Lobby.LobbyBounds[4] = bounds.max.y;
+                                    Lobby.LobbyBounds[5] = bounds.max.z;
                                     Phrases.Dict.TryGetValue("Lobby2", out string phrase);
                                     phrase = phrase.Replace("{Position}", lposition);
                                     SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] {0}", phrase));

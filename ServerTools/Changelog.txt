@@ -1,5 +1,13 @@
 ﻿CHANGELOG
 
+20.6.13
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Fixed Bank withdrawl internal boolean value
+-Changed some Unity bounds to arrays due to an inherent issue
+using negative values within bound based containers
+
 20.6.12
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

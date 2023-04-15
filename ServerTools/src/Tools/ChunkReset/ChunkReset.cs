@@ -10,9 +10,9 @@ namespace ServerTools
     class ChunkReset
     {
         public static bool IsEnabled = false, IsRunning = false;
-
+        public static float[] Bounds = new float[6];
         public static Dictionary<string, string> Chunks = new Dictionary<string, string>();
-        public static List<Bounds> ChunkBounds = new List<Bounds>();
+        public static List<float[]> ChunkBounds = new List<float[]>();
         public static List<int> ChunkPlayer = new List<int>();
 
         private const string FileName = "ChunkReset.xml";
@@ -109,9 +109,13 @@ namespace ServerTools
                             }
                             chunk = regionFileManager.GetChunkSync(key);
                             Bounds bounds = chunk.GetAABB();
-                            Bounds chunkBounds = new Bounds();
-                            chunkBounds.SetMinMax(new Vector3(bounds.min.x, 0, bounds.min.z), new Vector3(bounds.max.x, 250, bounds.max.z));
-                            ChunkBounds.Add(chunkBounds);
+                            Bounds[0] = (bounds.min.x <= bounds.max.x) ? bounds.min.x : bounds.max.x;
+                            Bounds[1] = 0;
+                            Bounds[2] = (bounds.min.z <= bounds.max.z) ? bounds.min.z : bounds.max.z;
+                            Bounds[3] = (bounds.max.x >= bounds.min.x) ? bounds.max.x : bounds.min.x;
+                            Bounds[4] = 200;
+                            Bounds[5] = (bounds.max.z >= bounds.min.z) ? bounds.max.z : bounds.min.z;
+                            ChunkBounds.Add(Bounds);
                         }
                     }
                     regionFileManager.Cleanup();
@@ -199,7 +203,9 @@ namespace ServerTools
         {
             for (int i = 0; i < ChunkBounds.Count; i++)
             {
-                if (ChunkBounds[i].Contains(_player.position))
+                Bounds = ChunkBounds[i];
+                if (_player.position.x >= Bounds[0] && _player.position.y >= Bounds[1] && _player.position.z >= Bounds[2] &&
+                    _player.position.x <= Bounds[3] && _player.position.y <= Bounds[4] && _player.position.z <= Bounds[5])
                 {
                     if (!ChunkPlayer.Contains(_player.entityId))
                     {
@@ -227,8 +233,8 @@ namespace ServerTools
                     {
                         if (!PersistentContainer.Instance.ChunkReset.ContainsKey(chunk.Key))
                         {
-                            Bounds bounds = ChunkBounds[count];
-                            SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                            Bounds = ChunkBounds[count];
+                            SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", Bounds[0], Bounds[2], Bounds[3], Bounds[5]), null);
                             if (chunk.Value == "day")
                             {
                                 PersistentContainer.Instance.RegionReset.Add(chunk.Key, DateTime.Now.AddDays(1));
@@ -248,22 +254,22 @@ namespace ServerTools
                             PersistentContainer.Instance.ChunkReset.TryGetValue(chunk.Key, out DateTime lastReset);
                             if (chunk.Value == "day" && DateTime.Now >= lastReset)
                             {
-                                Bounds bounds = ChunkBounds[count];
-                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                                Bounds = ChunkBounds[count];
+                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", Bounds[0], Bounds[2], Bounds[3], Bounds[5]), null);
                                 PersistentContainer.Instance.ChunkReset[chunk.Key] = DateTime.Now;
                                 PersistentContainer.DataChange = true;
                             }
                             else if (chunk.Value == "week" && DateTime.Now >= lastReset)
                             {
-                                Bounds bounds = ChunkBounds[count];
-                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                                Bounds = ChunkBounds[count];
+                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", Bounds[0], Bounds[2], Bounds[3], Bounds[5]), null);
                                 PersistentContainer.Instance.ChunkReset[chunk.Key] = DateTime.Now;
                                 PersistentContainer.DataChange = true;
                             }
                             else if (chunk.Value == "month" && DateTime.Now >= lastReset)
                             {
-                                Bounds bounds = ChunkBounds[count];
-                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                                Bounds = ChunkBounds[count];
+                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", Bounds[0], Bounds[2], Bounds[3], Bounds[5]), null);
                                 PersistentContainer.Instance.ChunkReset[chunk.Key] = DateTime.Now;
                                 PersistentContainer.DataChange = true;
                             }

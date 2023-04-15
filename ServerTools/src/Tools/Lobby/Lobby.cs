@@ -11,12 +11,11 @@ namespace ServerTools
         public static int Delay_Between_Uses = 5, Lobby_Size = 25, Command_Cost = 0, Player_Killing_Mode = 0;
         public static string Lobby_Position = "0,0,0", Command_lobbyback = "lobbyback", Command_lback = "lback", 
             Command_set = "setlobby", Command_lobby = "lobby";
-
-        public static Bounds LobbyBounds = new Bounds();
+        public static float[] LobbyBounds = new float[6];
 
         public static void SetBounds(string _position)
         {
-            if (_position != "0,0,0" && _position != "0 0 0" && _position != "" && _position.Contains(","))
+            if (_position != "0,0,0" && _position != "" && _position.Contains(","))
             {
                 string[] cords = _position.Split(',').ToArray();
                 if (int.TryParse(cords[0], out int x))
@@ -26,9 +25,16 @@ namespace ServerTools
                         if (int.TryParse(cords[2], out int z))
                         {
                             Lobby_Position = _position;
-                            LobbyBounds.center = new Vector3(x, y, z);
+                            Bounds bounds = new Bounds();
+                            bounds.center = new Vector3(x, y, z);
                             int size = Lobby_Size * 2;
-                            LobbyBounds.size = new Vector3(size, size, size);
+                            bounds.size = new Vector3(size, size, size);
+                            LobbyBounds[0] = bounds.min.x;
+                            LobbyBounds[1] = bounds.min.y;
+                            LobbyBounds[2] = bounds.min.z;
+                            LobbyBounds[3] = bounds.max.x;
+                            LobbyBounds[4] = bounds.max.y;
+                            LobbyBounds[5] = bounds.max.z;
                             Log.Out(string.Format("[SERVERTOOLS] Lobby has been set to position '{0}'", _position));
                             return;
                         }
@@ -244,7 +250,8 @@ namespace ServerTools
 
         public static bool IsLobby(Vector3 _position)
         {
-            if (LobbyBounds.Contains(_position))
+            if (_position.x >= LobbyBounds[0] && _position.y >= LobbyBounds[1] && _position.z >= LobbyBounds[2] &&
+                _position.x <= LobbyBounds[3] && _position.y <= LobbyBounds[4] && _position.z <= LobbyBounds[5])
             {
                 return true;
             }
@@ -290,21 +297,6 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in Lobby.PvEViolation: {0}", e.Message));
             }
             return true;
-        }
-
-        public static void SetPosition(string _position)
-        {
-            if (_position != "0,0,0" && _position != "0 0 0" && _position != "" && _position.Contains(","))
-            {
-                string[] lobbyPosition = _position.Split(',');
-                int.TryParse(lobbyPosition[0], out int x);
-                int.TryParse(lobbyPosition[1], out int y);
-                int.TryParse(lobbyPosition[2], out int z);
-                LobbyBounds.center = new Vector3(x, y, z);
-                int size = Lobby_Size * 2;
-                LobbyBounds.size = new Vector3(size, size, size);
-                Lobby_Position = _position;
-            }
         }
     }
 }

@@ -10,9 +10,9 @@ namespace ServerTools
     public class RegionReset
     {
         public static bool IsEnabled = false, IsRunning = false;
-
+        public static int[] Bounds = new int[6];
         public static Dictionary<string, string> Regions = new Dictionary<string, string>();
-        public static List<Bounds> RegionBounds = new List<Bounds>();
+        public static List<int[]> RegionBounds = new List<int[]>();
         public static List<int> RegionPlayer = new List<int>();
 
         private const string file = "RegionReset.xml";
@@ -121,10 +121,16 @@ namespace ServerTools
                             minZ = value2 * 512;
                             maxZ = minZ + 512;
                         }
+
                         Regions.Add(name, time);
-                        Bounds regionBounds = new Bounds();
-                        regionBounds.SetMinMax(new Vector3(minX, 0, minZ), new Vector3(maxX, 250, maxZ));
-                        RegionBounds.Add(regionBounds);
+                        Bounds[0] = (minX <= maxX) ? minX : maxX;
+                        Bounds[1] = 0;
+                        Bounds[2] = (minZ <= maxZ) ? minZ : maxZ;
+                        Bounds[3] = (maxX >= minX) ? maxX : minX;
+                        Bounds[4] = 200;
+                        Bounds[5] = (maxZ >= minZ) ? maxZ : minZ;
+                        RegionBounds.Add(Bounds);
+                        Log.Out(string.Format("[SERVERTOOLS] Region reset added: '{0},{1},{2}' / '{3},{4},{5}'", Bounds[0], Bounds[1], Bounds[2], Bounds[3], Bounds[4], Bounds[5]));
                     }
                 }
                 else
@@ -210,7 +216,9 @@ namespace ServerTools
         {
             for (int i = 0; i < RegionBounds.Count; i++)
             {
-                if (RegionBounds[i].Contains(_player.position))
+                Bounds = RegionBounds[i];
+                if (_player.position.x >= Bounds[0] && _player.position.y >= Bounds[1] && _player.position.z >= Bounds[2] &&
+                    _player.position.x <= Bounds[3] && _player.position.y <= Bounds[4] && _player.position.z <= Bounds[5])
                 {
                     if (!RegionPlayer.Contains(_player.entityId))
                     {
@@ -234,13 +242,12 @@ namespace ServerTools
                 if (Regions.Count > 0)
                 {
                     int count = 0;
-                    Bounds bounds;
                     foreach (var region in Regions)
                     {
                         if (!PersistentContainer.Instance.RegionReset.ContainsKey(region.Key))
                         {
-                            bounds = RegionBounds[count];
-                            SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                            Bounds = RegionBounds[count];
+                            SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", Bounds[0], Bounds[2], Bounds[3], Bounds[5]), null);
                             if (region.Value == "day")
                             {
                                 PersistentContainer.Instance.RegionReset.Add(region.Key, DateTime.Now.AddDays(1));
@@ -260,22 +267,22 @@ namespace ServerTools
                             PersistentContainer.Instance.RegionReset.TryGetValue(region.Key, out DateTime lastReset);
                             if (region.Value == "day" && DateTime.Now >= lastReset)
                             {
-                                bounds = RegionBounds[count];
-                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                                Bounds = RegionBounds[count];
+                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", Bounds[0], Bounds[2], Bounds[3], Bounds[5]), null);
                                 PersistentContainer.Instance.RegionReset[region.Key] = DateTime.Now.AddDays(1);
                                 PersistentContainer.DataChange = true;
                             }
                             else if (region.Value == "week" && DateTime.Now >= lastReset)
                             {
-                                bounds = RegionBounds[count];
-                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                                Bounds = RegionBounds[count];
+                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", Bounds[0], Bounds[2], Bounds[3], Bounds[5]), null);
                                 PersistentContainer.Instance.RegionReset[region.Key] = DateTime.Now.AddDays(7);
                                 PersistentContainer.DataChange = true;
                             }
                             else if (region.Value == "month" && DateTime.Now >= lastReset)
                             {
-                                bounds = RegionBounds[count];
-                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), null);
+                                Bounds = RegionBounds[count];
+                                SdtdConsole.Instance.ExecuteSync(string.Format("chunkreset {0} {1} {2} {3}", Bounds[0], Bounds[2], Bounds[3], Bounds[5]), null);
                                 PersistentContainer.Instance.RegionReset[region.Key] = DateTime.Now.AddMonths(1);
                                 PersistentContainer.DataChange = true;
                             }

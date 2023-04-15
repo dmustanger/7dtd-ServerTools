@@ -12,7 +12,7 @@ namespace ServerTools
         public static string Market_Position = "0,0,0", Command_marketback = "marketback", Command_mback = "mback", 
             Command_set = "setmarket", Command_market = "market";
 
-        public static Bounds MarketBounds = new Bounds();
+        public static float[] MarketBounds = new float[6];
 
         public static void SetBounds(string _position)
         {
@@ -26,9 +26,16 @@ namespace ServerTools
                         if (int.TryParse(cords[2], out int z))
                         {
                             Market_Position = _position;
-                            MarketBounds.center = new Vector3(x, y, z);
+                            Bounds bounds = new Bounds();
+                            bounds.center = new Vector3(x, y, z);
                             int size = Market_Size * 2;
-                            MarketBounds.size = new Vector3(size, size, size);
+                            bounds.size = new Vector3(size, size, size);
+                            MarketBounds[0] = bounds.min.x;
+                            MarketBounds[1] = bounds.min.y;
+                            MarketBounds[2] = bounds.min.z;
+                            MarketBounds[3] = bounds.max.x;
+                            MarketBounds[4] = bounds.max.y;
+                            MarketBounds[5] = bounds.max.z;
                             Log.Out(string.Format("[SERVERTOOLS] Market has been set to position '{0}'", _position));
                             return;
                         }
@@ -101,7 +108,7 @@ namespace ServerTools
         {
             if (_timepassed >= _delay)
             {
-                if (Command_Cost >= 1 && Wallet.IsEnabled)
+                if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
                     CommandCost(_cInfo);
                 }
@@ -240,7 +247,8 @@ namespace ServerTools
 
         public static bool IsMarket(Vector3 _position)
         {
-            if (MarketBounds.Contains(_position))
+            if (_position.x >= MarketBounds[0] && _position.y >= MarketBounds[1] && _position.z >= MarketBounds[2] &&
+                _position.x <= MarketBounds[3] && _position.y <= MarketBounds[4] && _position.z <= MarketBounds[5])
             {
                 return true;
             }
