@@ -136,6 +136,12 @@ namespace ServerTools
                                     }
                                 }
                             }
+                            if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ReducedDelay)
+                            {
+                                int delay = Delay_Between_Uses / 2;
+                                Time(_cInfo, _home, timepassed, delay, _friends);
+                                return;
+                            }
                             Time(_cInfo, _home, timepassed, Delay_Between_Uses, _friends);
                         }
                         else
@@ -217,7 +223,14 @@ namespace ServerTools
                             return;
                         }
                     }
-                    CommandCost(_cInfo, _homeName, player.position, _friends);
+                    if (Wallet.IsEnabled && Command_Cost > 0)
+                    {
+                        CommandCost(_cInfo, _homeName, player.position, _friends);
+                    }
+                    else
+                    {
+                        Exec(_cInfo, _homeName, player.position, _friends);
+                    }
                 }
             }
             catch (Exception e)
@@ -230,12 +243,7 @@ namespace ServerTools
         {
             try
             {
-                int currency = 0;
-                if (Wallet.IsEnabled)
-                {
-                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                }
-                if (currency >= Command_Cost)
+                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
                 {
                     Exec(_cInfo, _homeName, _position, _friends);
                 }

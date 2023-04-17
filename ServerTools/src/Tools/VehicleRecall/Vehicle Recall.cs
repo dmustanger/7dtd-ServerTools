@@ -92,35 +92,77 @@ namespace ServerTools
                         {
                             lastVehicle = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastVehicle;
                         }
-                        if (DateTime.Now >= lastVehicle)
+                        TimeSpan varTime = DateTime.Now - lastVehicle;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                             {
-                                CommandCost(_cInfo, player, vehicleId);
-                            }
-                            else
-                            {
-                                TeleVehicle(_cInfo, player, vehicleId);
+                                if (ReservedSlots.Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt))
+                                {
+                                    if (DateTime.Now < dt)
+                                    {
+                                        int delay = Delay_Between_Uses / 2;
+                                        Time(_cInfo, player, timepassed, delay, vehicleId);
+                                        return;
+                                    }
+                                }
+                                else if (ReservedSlots.Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out dt))
+                                {
+                                    if (DateTime.Now < dt)
+                                    {
+                                        int delay = Delay_Between_Uses / 2;
+                                        Time(_cInfo, player, timepassed, delay, vehicleId);
+                                        return;
+                                    }
+                                }
                             }
                         }
-                        else
+                        if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ReducedDelay)
                         {
-                            Phrases.Dict.TryGetValue("VehicleRecall4", out string phrase2);
-                            phrase2 = phrase2.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
-                            phrase2 = phrase2.Replace("{Command_vehicle}", Command_vehicle);
-                            phrase2 = phrase2.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                            TimeSpan varTime = lastVehicle - DateTime.Now;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            int timepassed = (int)fractionalMinutes;
-                            phrase2 = phrase2.Replace("{TimeRemaining}", timepassed.ToString());
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            int delay = Delay_Between_Uses / 2;
+                            Time(_cInfo, player, timepassed, delay, vehicleId);
+                            return;
                         }
+                        Time(_cInfo, player, timepassed, Delay_Between_Uses, vehicleId);
                     }
                 }
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in VehicleTeleport.Exec: {0}", e.Message));
+            }
+        }
+
+        public static void Time(ClientInfo _cInfo, EntityPlayer _player, int _timepassed, int _delay, int _vehicleId)
+        {
+            try
+            {
+                if (_timepassed >= _delay)
+                {
+                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    {
+                        CommandCost(_cInfo, _player, _vehicleId);
+                    }
+                    else
+                    {
+                        TeleVehicle(_cInfo, _player, _vehicleId);
+                    }
+                }
+                else
+                {
+                    Phrases.Dict.TryGetValue("VehicleRecall4", out string phrase2);
+                    phrase2 = phrase2.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
+                    phrase2 = phrase2.Replace("{Command_vehicle}", Command_vehicle);
+                    phrase2 = phrase2.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                    phrase2 = phrase2.Replace("{TimeRemaining}", _timepassed.ToString());
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Animals.Time: {0}", e.Message));
             }
         }
 
@@ -145,28 +187,17 @@ namespace ServerTools
             {
                 for (int i = 0; i < vehicleListData.Count; i++)
                 {
-                    EntityVehicle vehicle = EntityFactory.CreateEntity(vehicleListData[i]) as EntityVehicle;
-                    if (vehicle == null || !vehicle.IsOwner(_cInfo.CrossplatformId))
+                    if (vehicleListData[i].id != _vehicleId)
                     {
                         continue;
                     }
-                    if (vehicle.entityId != _vehicleId)
-                    {
-                        continue;
-                    }
-                    else if (Vector3.Distance(vehicleListData[i].pos, _player.position) <= Distance)
+                    if (Vector3.Distance(vehicleListData[i].pos, _player.position) <= Distance)
                     {
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
                             Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                         }
-                        
-                        vehicle.position = new Vector3(_player.position.x + 1, _player.position.y + 0.002f, _player.position.z + 1);
-                        vehiclesActive(VehicleManager.Instance).Add(vehicle);
-                        GameManager.Instance.World.SpawnEntityInWorld(vehicle);
-                        vehiclesUnloaded(VehicleManager.Instance).RemoveAt(i);
-
-
+                        vehicleListData[i].pos = new Vector3(_player.position.x + 1, _player.position.y + 0.3f, _player.position.z + 1);
                         int delay = Delay_Between_Uses;
                         if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
@@ -188,6 +219,10 @@ namespace ServerTools
                                 }
                             }
                         }
+                        if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ReducedDelay)
+                        {
+                            delay = Delay_Between_Uses / 2;
+                        }
                         PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastVehicle = DateTime.Now.AddMinutes(delay);
                         PersistentContainer.DataChange = true;
                         Phrases.Dict.TryGetValue("VehicleRecall8", out string phrase2);
@@ -206,7 +241,7 @@ namespace ServerTools
             if (entity != null && entity is EntityVehicle)
             {
                 EntityVehicle vehicle = (EntityVehicle)entity;
-                if (!vehicle.IsOwner(_cInfo.CrossplatformId))
+                if (vehicle == null || !vehicle.IsOwner(_cInfo.CrossplatformId))
                 {
                     Phrases.Dict.TryGetValue("VehicleRecall6", out string phrase);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -243,6 +278,10 @@ namespace ServerTools
                                 delay = Delay_Between_Uses / 2;
                             }
                         }
+                    }
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ReducedDelay)
+                    {
+                        delay = Delay_Between_Uses / 2;
                     }
                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastVehicle = DateTime.Now.AddMinutes(delay);
                     PersistentContainer.DataChange = true;

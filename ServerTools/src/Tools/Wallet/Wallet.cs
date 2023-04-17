@@ -121,72 +121,74 @@ namespace ServerTools
         public static void AddCurrency(string _id, int _amount, bool _directAllowed)
         {
             ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_id);
-            if (cInfo != null)
+            if (cInfo == null || _amount < 1)
             {
-                EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
-                if (player != null)
+                return;
+            }
+            EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
+            if (player == null)
+            {
+                return;
+            }
+            if (!player.IsSpawned())
+            {
+                Timers.Wallet_Add_SingleUseTimer(cInfo.CrossplatformId.CombinedString, _amount, _directAllowed);
+            }
+            else
+            {
+                if (Bank.IsEnabled && Bank.Direct_Deposit && _directAllowed)
                 {
-                    if (player.IsSpawned())
+                    Bank.AddCurrencyToBank(cInfo.CrossplatformId.CombinedString, _amount);
+                    if (Bank.Deposit_Message)
                     {
-                        if (Bank.IsEnabled && Bank.Direct_Deposit && _directAllowed)
+                        Phrases.Dict.TryGetValue("Bank17", out string phrase);
+                        phrase = phrase.Replace("{Value}", _amount.ToString());
+                        phrase = phrase.Replace("{CoinName}", Currency_Name);
+                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                    return;
+                }
+                ItemValue itemValue = ItemClass.GetItem(GeneralOperations.Currency_Item, false);
+                if (itemValue != null)
+                {
+                    List<int> stackList = new List<int>();
+                    int maxStack = itemValue.ItemClass.Stacknumber.Value;
+                    if (_amount > maxStack)
+                    {
+                        for (int i = 0; i < 100; i++)
                         {
-                            Bank.AddCurrencyToBank(cInfo.CrossplatformId.CombinedString, _amount);
-                            if (Bank.Deposit_Message)
-                            {
-                                Phrases.Dict.TryGetValue("Bank17", out string phrase);
-                                phrase = phrase.Replace("{Value}", _amount.ToString());
-                                phrase = phrase.Replace("{CoinName}", Currency_Name);
-                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            }
-                            return;
-                        }
-                        ItemValue itemValue = ItemClass.GetItem(GeneralOperations.Currency_Item, false);
-                        if (itemValue != null)
-                        {
-                            List<int> stackList = new List<int>();
-                            int maxStack = itemValue.ItemClass.Stacknumber.Value;
                             if (_amount > maxStack)
                             {
-                                for (int i = 0; i < 100; i++)
-                                {
-                                    if (_amount > maxStack)
-                                    {
-                                        _amount = _amount - maxStack;
-                                        stackList.Add(maxStack);
-                                    }
-                                    else
-                                    {
-                                        stackList.Add(_amount);
-                                        break;
-                                    }
-                                }
+                                _amount = _amount - maxStack;
+                                stackList.Add(maxStack);
                             }
                             else
                             {
                                 stackList.Add(_amount);
-                            }
-                            for (int i = 0; i < stackList.Count; i++)
-                            {
-                                World world = GameManager.Instance.World;
-                                EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                                {
-                                    entityClass = EntityClass.FromString("item"),
-                                    id = EntityFactory.nextEntityID++,
-                                    itemStack = new ItemStack(itemValue, stackList[i]),
-                                    pos = world.Players.dict[cInfo.entityId].position,
-                                    rot = new Vector3(20f, 0f, 20f),
-                                    lifetime = 60f,
-                                    belongsPlayerId = cInfo.entityId
-                                });
-                                world.SpawnEntityInWorld(entityItem);
-                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
-                                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                break;
                             }
                         }
                     }
                     else
                     {
-                        Timers.Wallet_Add_SingleUseTimer(cInfo.CrossplatformId.CombinedString, _amount, _directAllowed);
+                        stackList.Add(_amount);
+                    }
+                    for (int i = 0; i < stackList.Count; i++)
+                    {
+                        World world = GameManager.Instance.World;
+                        EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                        {
+                            entityClass = EntityClass.FromString("item"),
+                            id = EntityFactory.nextEntityID++,
+                            itemStack = new ItemStack(itemValue, stackList[i]),
+                            pos = world.Players.dict[cInfo.entityId].position,
+                            rot = new Vector3(20f, 0f, 20f),
+                            lifetime = 60f,
+                            belongsPlayerId = cInfo.entityId
+                        });
+                        world.SpawnEntityInWorld(entityItem);
+                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
+                        world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                     }
                 }
             }
@@ -225,7 +227,7 @@ namespace ServerTools
         public static void RemoveCurrency(string _steamid, int _amount)
         {
             ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_steamid);
-            if (cInfo == null)
+            if (cInfo == null || _amount < 1)
             {
                 return;
             }
@@ -237,30 +239,27 @@ namespace ServerTools
             List<string[]> otherCurrency = new List<string[]>();
             otherCurrency = GetOtherCurrency(cInfo.CrossplatformId.CombinedString, otherCurrency);
             int count = GetCurrency(cInfo.CrossplatformId.CombinedString);
-            if (player.IsSpawned())
-            {
-                if (!GameEventManager.GameEventSequences.ContainsKey("action_currency"))
-                {
-                    return;
-                }
-                GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
-                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
-                if (count >= _amount)
-                {
-                    count -= _amount;
-                    if (count > 0)
-                    {
-                        UpdateMainCurrency.Add(cInfo.entityId, count);
-                        if (otherCurrency.Count > 0)
-                        {
-                            UpdateAltCurrency.Add(cInfo.entityId, otherCurrency);
-                        }
-                    }
-                }
-            }
-            else
+            if (!player.IsSpawned())
             {
                 Timers.Wallet_Remove_SingleUseTimer(cInfo.CrossplatformId.CombinedString, count);
+            }
+            if (!GameEventManager.GameEventSequences.ContainsKey("action_currency"))
+            {
+                return;
+            }
+            GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
+            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
+            if (count >= _amount)
+            {
+                count -= _amount;
+                if (count > 0)
+                {
+                    UpdateMainCurrency.Add(cInfo.entityId, count);
+                    if (otherCurrency.Count > 0)
+                    {
+                        UpdateAltCurrency.Add(cInfo.entityId, otherCurrency);
+                    }
+                }
             }
         }
     }

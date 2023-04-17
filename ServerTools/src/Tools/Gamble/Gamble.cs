@@ -87,6 +87,10 @@ namespace ServerTools
                             }
                         }
                     }
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ReducedDelay)
+                    {
+                        delay = Delay_Between_Uses / 2;
+                    }
                     if (timepassed >= delay)
                     {
                         int[] pot;

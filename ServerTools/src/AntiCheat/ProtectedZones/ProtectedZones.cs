@@ -50,13 +50,13 @@ namespace ServerTools
                     return;
                 }
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                List<int[]> oldProtections = ProtectedList;
                 ProtectedList.Clear();
-                string saveGameRegionDir = GameIO.GetSaveGameRegionDir();
-                RegionFileManager regionFileManager = new RegionFileManager(saveGameRegionDir, saveGameRegionDir, 0, true);
-                List<Chunk> chunks = new List<Chunk>();
                 if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
                 {
+                    List<int[]> oldProtections = ProtectedList;
+                    string saveGameRegionDir = GameIO.GetSaveGameRegionDir();
+                    RegionFileManager regionFileManager = new RegionFileManager(saveGameRegionDir, saveGameRegionDir, 0, true);
+                    List<Chunk> chunks = new List<Chunk>();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
                         if (childNodes[i].NodeType == XmlNodeType.Comment)

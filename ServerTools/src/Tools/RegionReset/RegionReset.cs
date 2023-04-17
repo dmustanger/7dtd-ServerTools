@@ -130,7 +130,6 @@ namespace ServerTools
                         Bounds[4] = 200;
                         Bounds[5] = (maxZ >= minZ) ? maxZ : minZ;
                         RegionBounds.Add(Bounds);
-                        Log.Out(string.Format("[SERVERTOOLS] Region reset added: '{0},{1},{2}' / '{3},{4},{5}'", Bounds[0], Bounds[1], Bounds[2], Bounds[3], Bounds[4], Bounds[5]));
                     }
                 }
                 else

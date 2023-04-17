@@ -37,7 +37,7 @@ namespace ServerTools
 
         public static void AddCurrencyToBank(string _id, int _amount)
         {
-            if (GeneralOperations.No_Currency)
+            if (GeneralOperations.No_Currency || _amount < 1)
             {
                 return;
             }
@@ -58,7 +58,7 @@ namespace ServerTools
 
         public static bool SubtractCurrencyFromBank(string _id, int _amount)
         {
-            if (GeneralOperations.No_Currency)
+            if (GeneralOperations.No_Currency || _amount < 1)
             {
                 return false;
             }
@@ -227,7 +227,7 @@ namespace ServerTools
                 {
                     return;
                 }
-                if (!int.TryParse(_amount, out int value))
+                if (!int.TryParse(_amount, out int value) || value < 1)
                 {
                     Phrases.Dict.TryGetValue("Bank6", out string phrase);
                     phrase = phrase.Replace("{Command_Prefix1}", ChatHook.Chat_Command_Prefix1);
@@ -304,16 +304,10 @@ namespace ServerTools
                     Log.Out(string.Format("[SERVERTOOLS] Bank operation failed. Unable to find item {0}. Check the Wallet Item_Name option matches an existing item", Wallet.Currency_Name));
                     return;
                 }
-                if (!int.TryParse(_amount, out int value))
+                if (!int.TryParse(_amount, out int value) || value < 1)
                 {
                     Phrases.Dict.TryGetValue("Bank6", out string phrase1);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    return;
-                }
-                if (GetCurrency(_cInfo.CrossplatformId.CombinedString) < value)
-                {
-                    Phrases.Dict.TryGetValue("Bank10", out string phrase2);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }
                 int maxAllowed;
@@ -392,7 +386,7 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }
-                if (!int.TryParse(idAndAmount[1], out int value))
+                if (!int.TryParse(idAndAmount[1], out int value) || value < 1)
                 {
                     Phrases.Dict.TryGetValue("Bank6", out string phrase2);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -424,24 +418,26 @@ namespace ServerTools
                         return;
                     }
                     TransferId.Remove(bankData.Key);
-                    SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, value);
-                    AddCurrencyToBank(cInfo2.CrossplatformId.CombinedString, value);
-                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                    if (SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, value))
                     {
-                        sw.WriteLine(string.Format("{0}: Bank transfer '{1}' '{2}' named '{3}' to '{4}' '{5}' named '{6}' of '{7}' currency", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, cInfo2.PlatformId.CombinedString, cInfo2.CrossplatformId.CombinedString, cInfo2.playerName, value));
-                        sw.WriteLine();
-                        sw.Flush();
-                        sw.Close();
+                        AddCurrencyToBank(cInfo2.CrossplatformId.CombinedString, value);
+                        using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                        {
+                            sw.WriteLine(string.Format("{0}: Bank transfer '{1}' '{2}' named '{3}' to '{4}' '{5}' named '{6}' of '{7}' currency", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, cInfo2.PlatformId.CombinedString, cInfo2.CrossplatformId.CombinedString, cInfo2.playerName, value));
+                            sw.WriteLine();
+                            sw.Flush();
+                            sw.Close();
+                        }
+                        Phrases.Dict.TryGetValue("Bank15", out string phrase6);
+                        phrase6 = phrase6.Replace("{Value}", value.ToString());
+                        phrase6 = phrase6.Replace("{PlayerName}", cInfo2.playerName);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase6 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue("Bank16", out string phrase7);
+                        phrase7 = phrase7.Replace("{Value}", value.ToString());
+                        phrase7 = phrase7.Replace("{PlayerName}", _cInfo.playerName);
+                        ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + phrase7 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        return;
                     }
-                    Phrases.Dict.TryGetValue("Bank15", out string phrase6);
-                    phrase6 = phrase6.Replace("{Value}", value.ToString());
-                    phrase6 = phrase6.Replace("{PlayerName}", cInfo2.playerName);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase6 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    Phrases.Dict.TryGetValue("Bank16", out string phrase7);
-                    phrase7 = phrase7.Replace("{Value}", value.ToString());
-                    phrase7 = phrase7.Replace("{PlayerName}", _cInfo.playerName);
-                    ChatHook.ChatMessage(cInfo2, Config.Chat_Response_Color + phrase7 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    return;
                 }
             }
             catch (Exception e)

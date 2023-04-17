@@ -17,7 +17,6 @@ namespace ServerTools
 
         private const string file = "Prayer.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static readonly Random Random = new Random();
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
@@ -170,7 +169,7 @@ namespace ServerTools
             {
                 if (Delay_Between_Uses < 1)
                 {
-                    if (Command_Cost >= 1 && Wallet.IsEnabled)
+                    if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
                         CommandCost(_cInfo);
                     }
@@ -202,6 +201,12 @@ namespace ServerTools
                             }
                         }
                     }
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ReducedDelay)
+                    {
+                        int delay = Delay_Between_Uses / 2;
+                        Time(_cInfo, timepassed, delay);
+                        return;
+                    }
                     Time(_cInfo, timepassed, Delay_Between_Uses);
                 }
             }
@@ -217,7 +222,7 @@ namespace ServerTools
             {
                 if (_timepassed >= _delay)
                 {
-                    if (Command_Cost >= 1 && Wallet.IsEnabled)
+                    if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
                         CommandCost(_cInfo);
                     }
@@ -247,12 +252,7 @@ namespace ServerTools
         {
             try
             {
-                int currency = 0;
-                if (Wallet.IsEnabled)
-                {
-                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
-                }
-                if (currency >= Command_Cost)
+                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
                 {
                     SetBuff(_cInfo);
                 }
@@ -276,7 +276,7 @@ namespace ServerTools
                 if (Dict.Count > 0)
                 {
                     List<string> Keys = new List<string>(Dict.Keys);
-                    string randomKey = Keys[Random.Next(Dict.Count)];
+                    string randomKey = Keys[new Random().Next(Dict.Count)];
                     string message = Dict[randomKey];
                     SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, randomKey), null);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);

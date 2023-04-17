@@ -1795,7 +1795,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine("<Tool Name=\"Vault\" />");
-                sw.WriteLine("<Tool Name=\"Vault\" Inside_Claim=\"False\" Slots=\"4\" Lines=\"1\" />");
+                sw.WriteLine("<Tool Name=\"Vault\" Inside_Claim=\"False\" Slots=\"0\" Lines=\"0\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set True or False for Inside_Claim");
@@ -1806,7 +1806,10 @@ namespace ServerTools
                 sw.WriteLine("They have limited slots due to how powerful this is. You can adjust the number of slots and lines are available. 48 slots is the maximum. 8 slots, 6 lines, 48 total.");
                 sw.WriteLine("Opening a second vault box will contain the same items as the first. This is similar to an Enderchest from Minecraft.");
                 sw.WriteLine("Slots controls how many item slots are available in a single line of their vault.");
-                sw.WriteLine("Lines controls how many item lines are available total of their vault.");
+                sw.WriteLine("Lines controls how many item lines are available total in their vault.");
+                sw.WriteLine("The recipe for this is automatically created. Disabling the tool will not disable the recipe, it makes the vault have 0 slots and 0 lines when opened.");
+                sw.WriteLine("If you are determined to remove this recipe, you can add ommission tags to the file. <!--  -->");
+                sw.WriteLine("You can not enable and disable recipes on a live server so it was done this way to avoid issues.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

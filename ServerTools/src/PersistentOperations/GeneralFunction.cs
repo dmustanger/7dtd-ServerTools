@@ -342,9 +342,6 @@ namespace ServerTools
                         sw.WriteLine("	<display_value value=\"xxx\"/>");
                         sw.WriteLine("	<stack_type value=\"replace\"/>");
                         sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
                         sw.WriteLine("	</effect_group>");
                         sw.WriteLine("</buff>");
@@ -354,15 +351,12 @@ namespace ServerTools
                         sw.WriteLine("	<display_value value=\"xxx\"/>");
                         sw.WriteLine("	<stack_type value=\"replace\"/>");
                         sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_ally_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target_tags=\"ally\"/>");
+                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
                         sw.WriteLine("		</triggered_effect>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_ally_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target_tags=\"ally\"/>");
+                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
                         sw.WriteLine("		</triggered_effect>");
                         sw.WriteLine("	</effect_group>");
                         sw.WriteLine("</buff>");
@@ -372,15 +366,12 @@ namespace ServerTools
                         sw.WriteLine("	<display_value value=\"xxx\"/>");
                         sw.WriteLine("	<stack_type value=\"replace\"/>");
                         sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_stranger_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
+                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
                         sw.WriteLine("		</triggered_effect>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_stranger_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
+                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
                         sw.WriteLine("		</triggered_effect>");
                         sw.WriteLine("	</effect_group>");
                         sw.WriteLine("</buff>");
@@ -390,15 +381,12 @@ namespace ServerTools
                         sw.WriteLine("	<display_value value=\"xxx\"/>");
                         sw.WriteLine("	<stack_type value=\"replace\"/>");
                         sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfBuffStart\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
+                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
                         sw.WriteLine("		</triggered_effect>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" tags=\"player\"/>");
+                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
                         sw.WriteLine("		</triggered_effect>");
                         sw.WriteLine("	</effect_group>");
                         sw.WriteLine("</buff>");
@@ -411,14 +399,11 @@ namespace ServerTools
                         sw.WriteLine("      <requirements>");
                         sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
                         sw.WriteLine("	    </requirements>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"base_set\" value=\"0\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_set\" value=\"0\"/>");
+                        sw.WriteLine("		<passive_effect name=\"GeneralDamageResist\" operation=\"base_add\" value=\"1\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"perc_add\" value=\"200\"/>");
+                        sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"perc_add\" value=\"200\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\"/>");
                         sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"base_set\" value=\"0\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_set\" value=\"0\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\" tags=\"explosive\"/>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_damage\"/>");
                         sw.WriteLine("	</effect_group>");
                         sw.WriteLine("</buff>");
@@ -429,16 +414,13 @@ namespace ServerTools
                         sw.WriteLine("	<duration value=\"1\"/>");
                         sw.WriteLine("	<effect_group>");
                         sw.WriteLine("      <requirements>");
-                        sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
+                        sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_stranger_zone\"/>");
                         sw.WriteLine("	    </requirements>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"base_set\" value=\"0\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_set\" value=\"0\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
+                        sw.WriteLine("		<passive_effect name=\"GeneralDamageResist\" operation=\"base_add\" value=\"1\"/>");
                         sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
                         sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"base_set\" value=\"0\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_set\" value=\"0\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\" tags=\"explosive\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\"/>");
+                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_damage\"/>");
                         sw.WriteLine("	</effect_group>");
                         sw.WriteLine("</buff>");
@@ -449,16 +431,13 @@ namespace ServerTools
                         sw.WriteLine("	<duration value=\"1\"/>");
                         sw.WriteLine("	<effect_group>");
                         sw.WriteLine("      <requirements>");
-                        sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
+                        sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_zone\"/>");
                         sw.WriteLine("	    </requirements>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"base_set\" value=\"0\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_set\" value=\"0\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
+                        sw.WriteLine("		<passive_effect name=\"GeneralDamageResist\" operation=\"base_add\" value=\"1\"/>");
                         sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
                         sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"base_set\" value=\"0\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_set\" value=\"0\" tags=\"explosive\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\" tags=\"explosive\"/>");
+                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\"/>");
+                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
                         sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_damage\"/>");
                         sw.WriteLine("	</effect_group>");
                         sw.WriteLine("</buff>");
@@ -737,18 +716,20 @@ namespace ServerTools
                 for (int i = 0; i < entityList.Count; i++)
                 {
                     Entity entity = entityList[i];
-                    if (entity == null || (!(entity is EntityZombie) && !(entity is EntityEnemyAnimal)) || !entity.IsSpawned() ||
-                        entity.IsDead() || entity.IsMarkedForUnload())
+                    if (entity == null || !entity.IsSpawned() || entity.IsDead() || entity.IsMarkedForUnload())
                     {
                         continue;
                     }
-                    if (Lobby.IsEnabled && Lobby.IsLobby(entity.position))
+                    if (entity is EntityZombie || entity is EntityEnemyAnimal)
                     {
-                        entity.MarkToUnload();
-                    }
-                    else if (Market.IsEnabled && Market.IsMarket(entity.position))
-                    {
-                        entity.MarkToUnload();
+                        if (Lobby.IsEnabled && Lobby.IsLobby(entity.position))
+                        {
+                            entity.MarkToUnload();
+                        }
+                        else if (Market.IsEnabled && Market.IsMarket(entity.position))
+                        {
+                            entity.MarkToUnload();
+                        }
                     }
                 }
                 Running = false;

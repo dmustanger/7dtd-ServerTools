@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.6.12";
+        public const string Version = "20.6.14";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -1120,6 +1120,16 @@ namespace ServerTools
                                     if (!bool.TryParse(line.GetAttribute("Zombie"), out Confetti.Zombie))
                                     {
                                         Log.Warning(string.Format("[SERVERTOOLS] Ignoring Confetti entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Zombie' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!line.HasAttribute("Sound"))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Confetti entry in ServerToolsConfig.xml because of missing 'Sound' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!bool.TryParse(line.GetAttribute("Sound"), out Confetti.Sound))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Confetti entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Sound' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
                                     break;
@@ -4550,7 +4560,7 @@ namespace ServerTools
                 sw.WriteLine("        <Tool Name=\"Clean_Bin\" Enable=\"{0}\" Auction=\"{1}\" Bank=\"{2}\" Bounties=\"{3}\" Delays=\"{4}\" />", CleanBin.IsEnabled, CleanBin.Auction, CleanBin.Bank, CleanBin.Bounties, CleanBin.Delays);
                 sw.WriteLine("        <Tool Name=\"Clean_Bin_Extended1\" Homes=\"{0}\" Jail=\"{1}\" Lobby=\"{2}\" Market=\"{3}\" New_Spawn_Tele=\"{4}\" />", CleanBin.Homes, CleanBin.Jail, CleanBin.Lobby, CleanBin.Market, CleanBin.New_Spawn_Tele);
                 sw.WriteLine("        <Tool Name=\"Clean_Bin_Extended2\" Poll=\"{0}\" Protected_Zones=\"{1}\" Shop_Log=\"{2}\" Waypoints=\"{3}\" />", CleanBin.Poll, CleanBin.Protected_Zones, CleanBin.Shop_Log, CleanBin.Waypoints);
-                sw.WriteLine("        <Tool Name=\"Confetti\" Enable=\"{0}\" Player=\"{1}\" Zombie=\"{2}\" />", Confetti.IsEnabled, Confetti.Player, Confetti.Zombie);
+                sw.WriteLine("        <Tool Name=\"Confetti\" Enable=\"{0}\" Player=\"{1}\" Zombie=\"{2}\" Sound=\"{3}\" />", Confetti.IsEnabled, Confetti.Player, Confetti.Zombie, Confetti.Sound);
                 sw.WriteLine("        <Tool Name=\"Console_Command_Log\" Enable=\"{0}\" />", ConsoleCommandLog.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Custom_Commands\" Enable=\"{0}\" />", CustomCommands.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Day7\" Enable=\"{0}\" />", Day7.IsEnabled);

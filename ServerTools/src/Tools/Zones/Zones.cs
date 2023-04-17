@@ -16,7 +16,7 @@ namespace ServerTools
         public static Dictionary<int, DateTime> Reminder = new Dictionary<int, DateTime>();
         public static Dictionary<int, string[]> ZonePlayer = new Dictionary<int, string[]>();
         public static List<string[]> ZoneList = new List<string[]>();
-        public static List<Bounds> ZoneBounds = new List<Bounds>();
+        public static List<float[]> ZoneBounds = new List<float[]>();
         public static Dictionary<int, string[]> ZoneSetup = new Dictionary<int, string[]>();
 
         private static string EventDelay = "";
@@ -68,8 +68,11 @@ namespace ServerTools
                 ZoneList.Clear();
                 ZoneBounds.Clear();
                 Reminder.Clear();
-                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
+                if (childNodes != null && childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
                 {
+                    string[] corner1, corner2;
+                    int x1, y1, x2, y2, z1, z2;
+                    Vector3 vector1, vector2;
                     for (int i = 0; i < childNodes.Count; i++)
                     {
                         if (childNodes[i].NodeType == XmlNodeType.Comment)
@@ -100,23 +103,84 @@ namespace ServerTools
                                     Log.Out(string.Format("[SERVERTOOLS] Ignoring Zones.xml entry. Improper format in corner1 or corner2 attribute: {0}", line.OuterXml));
                                     continue;
                                 }
-                                string[] corner1 = zone[1].Split(',');
-                                string[] corner2 = zone[2].Split(',');
-                                int.TryParse(corner1[0], out int x1);
-                                int.TryParse(corner1[1], out int y1);
-                                int.TryParse(corner1[2], out int z1);
-                                int.TryParse(corner2[0], out int x2);
-                                int.TryParse(corner2[1], out int y2);
-                                int.TryParse(corner2[2], out int z2);
-                                Vector3 vector1 = new Vector3((x1 <= x2) ? x1 : x2, (y1 <= y2) ? y1 : y2, (z1 <= z2) ? z1 : z2);
-                                Vector3 vector2 = new Vector3((x1 <= x2) ? x2 : x1, (y1 <= y2) ? y2 : y1, (z1 <= z2) ? z2 : z1);
+                                corner1 = zone[1].Split(',');
+                                corner2 = zone[2].Split(',');
+                                if (!int.TryParse(corner1[0], out x1))
+                                {
+                                    continue;
+                                }
+                                if (!int.TryParse(corner1[1], out y1))
+                                {
+                                    continue;
+                                }
+                                if (!int.TryParse(corner1[2], out z1))
+                                {
+                                    continue;
+                                }
+                                if (!int.TryParse(corner2[0], out x2))
+                                {
+                                    continue;
+                                }
+                                if (!int.TryParse(corner2[1], out y2))
+                                {
+                                    continue;
+                                }
+                                if (!int.TryParse(corner2[2], out z2))
+                                {
+                                    continue;
+                                }
+                                vector1 = new Vector3((x1 <= x2) ? x1 : x2, (y1 <= y2) ? y1 : y2, (z1 <= z2) ? z1 : z2);
+                                vector2 = new Vector3((x1 <= x2) ? x2 : x1, (y1 <= y2) ? y2 : y1, (z1 <= z2) ? z2 : z1);
                                 zone[1] = vector1.x + "," + vector1.y + "," + vector1.z;
                                 zone[2] = vector2.x + "," + vector2.y + "," + vector2.z;
-                                Bounds bounds = new Bounds();
-                                bounds.SetMinMax(vector1, vector2);
                                 if (!ZoneList.Contains(zone))
                                 {
                                     ZoneList.Add(zone);
+                                    float[] bounds = new float[6];
+                                    bounds[0] = vector1.x;
+                                    bounds[1] = vector1.y;
+                                    bounds[2] = vector1.z;
+                                    bounds[3] = vector2.x;
+                                    bounds[4] = vector2.y;
+                                    bounds[5] = vector2.z;
+                                    if (!ZoneBounds.Contains(bounds))
+                                    {
+                                        ZoneBounds.Add(bounds);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (!zone[1].Contains(","))
+                                {
+                                    Log.Out(string.Format("[SERVERTOOLS] Ignoring Zones.xml entry. Improper format in corner1 attribute: {0}", line.OuterXml));
+                                    continue;
+                                }
+                                corner1 = zone[1].Split(',');
+                                if (!int.TryParse(corner1[0], out x1))
+                                {
+                                    continue;
+                                }
+                                if (!int.TryParse(corner1[1], out y1))
+                                {
+                                    continue;
+                                }
+                                if (!int.TryParse(corner1[2], out z1))
+                                {
+                                    continue;
+                                }
+                                if (!int.TryParse(zone[2], out x2))
+                                {
+                                    continue;
+                                }
+                                if (!ZoneList.Contains(zone))
+                                {
+                                    ZoneList.Add(zone);
+                                    float[] bounds = new float[6];
+                                    bounds[0] = x1;
+                                    bounds[1] = y1;
+                                    bounds[2] = z1;
+                                    bounds[3] = x2;
                                     if (!ZoneBounds.Contains(bounds))
                                     {
                                         ZoneBounds.Add(bounds);
@@ -278,19 +342,19 @@ namespace ServerTools
                 switch (_zone[9])
                 {
                     case "0":
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
                         break;
                     case "1":
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
                         break;
                     case "2":
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
                         break;
                     case "3":
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
                         break;
                 }
@@ -312,16 +376,16 @@ namespace ServerTools
                 switch (_zone[9])
                 {
                     case "0":
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
                         break;
                     case "1":
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
                         break;
                     case "2":
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
                         break;
                     case "3":
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
                         break;
                 }
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup(string.Format("sgs PlayerKillingMode {0}", GeneralOperations.Player_Killing_Mode), true));
@@ -489,19 +553,13 @@ namespace ServerTools
             }
         }
 
-        public static bool InsideZone(Bounds _bounds, string[] _zone, float _X, float _Y, float _Z)
+        public static bool InsideZone(float[] _bounds, string[] _zone, float _X, float _Y, float _Z)
         {
             if (_zone[3].ToLower() == "true")
             {
-                string[] _corner1 = _zone[1].Split(',');
-                float.TryParse(_corner1[0], out float xMin);
-                float.TryParse(_corner1[2], out float zMin);
-                if (int.TryParse(_zone[2], out int _radius))
+                if (VectorCircle(_bounds[0], _bounds[2], _X, _Z, _bounds[3]))
                 {
-                    if (VectorCircle(xMin, zMin, _X, _Z, _radius))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             else
@@ -514,7 +572,7 @@ namespace ServerTools
             return false;
         }
 
-        public static bool VectorCircle(float xMin, float zMin, float _X, float _Z, int _radius)
+        public static bool VectorCircle(float xMin, float zMin, float _X, float _Z, float _radius)
         {
             if ((xMin - _X) * (xMin - _X) + (zMin - _Z) * (zMin - _Z) <= _radius * _radius)
             {
@@ -523,10 +581,11 @@ namespace ServerTools
             return false;
         }
 
-        public static bool VectorBox(Bounds _bounds, Vector3 _position)
+        public static bool VectorBox(float[] _bounds, Vector3 _position)
         {
 
-            if (_bounds.Contains(_position))
+            if (_position.x >= _bounds[0] && _position.y >= _bounds[1] && _position.z >= _bounds[2] &&
+                _position.x <= _bounds[3] && _position.y <= _bounds[4] && _position.z <= _bounds[5])
             {
                 return true;
             }

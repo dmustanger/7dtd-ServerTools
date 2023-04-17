@@ -6,99 +6,92 @@ namespace ServerTools
     class Vault
     {
         public static bool IsEnabled = false, Inside_Claim = false;
-        public static int Slots = 4, Lines = 1;
+        public static int Slots = 0, Lines = 0;
         public static Dictionary<Vector3i, string> VaultUser = new Dictionary<Vector3i, string>();
 
         public static bool Exec(int _entityIdThatOpenedIt, ref TileEntityLootContainer _container)
         {
-            Vector2i containerSize = _container.GetContainerSize();
             if (!IsEnabled)
             {
-                if (containerSize.x != 0 || containerSize.y != 0)
+                _container.SetContainerSize(new Vector2i(0, 0), true);
+                _container.SetModified();
+                if (VaultUser.ContainsKey(_container.ToWorldPos()))
                 {
-                    _container.SetContainerSize(new Vector2i(0, 0), true);
-                    _container.SetModified();
-                    if (VaultUser.ContainsKey(_container.ToWorldPos()))
-                    {
-                        VaultUser.Remove(_container.ToWorldPos());
-                    }
-                    return true;
+                    VaultUser.Remove(_container.ToWorldPos());
                 }
-            }
-            ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
-            if (cInfo == null)
-            {
-                if (containerSize.x != 0 || containerSize.y != 0)
+                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
+                if (cInfo != null)
                 {
-                    _container.SetContainerSize(new Vector2i(0, 0), true);
-                    _container.SetModified();
-                    if (VaultUser.ContainsKey(_container.ToWorldPos()))
-                    {
-                        VaultUser.Remove(_container.ToWorldPos());
-                    }
-                    return true;
+                    Phrases.Dict.TryGetValue("Vault2", out string phrase);
+                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
+                return true;
             }
             else
             {
-                if (Inside_Claim && !InsideClaim(cInfo))
-                {
-                    if (containerSize.x != 0 || containerSize.y != 0)
-                    {
-                        _container.SetContainerSize(new Vector2i(0, 0), true);
-                        _container.SetModified();
-                    }
-                    if (VaultUser.ContainsKey(_container.ToWorldPos()))
-                    {
-                        VaultUser.Remove(_container.ToWorldPos());
-                    }
-                    Phrases.Dict.TryGetValue("Vault1", out string phrase);
-                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    return true;
-                }
-                if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].VaultSize != null)
-                {
-                    int[] vaultSize = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].VaultSize;
-                    if (vaultSize != null && vaultSize.Length == 2 && vaultSize[0] > 0 && vaultSize[1] > 0)
-                    {
-                        if (containerSize.x != vaultSize[0] || containerSize.y != vaultSize[1])
-                        {
-                            _container.SetContainerSize(new Vector2i(vaultSize[0], vaultSize[1]), true);
-                        }
-                    }
-                    if (VaultUser.ContainsKey(_container.ToWorldPos()))
-                    {
-                        VaultUser[_container.ToWorldPos()] = cInfo.CrossplatformId.CombinedString;
-                    }
-                    else
-                    {
-                        VaultUser.Add(_container.ToWorldPos(), cInfo.CrossplatformId.CombinedString);
-                    }
-                    FillContainer(cInfo, ref _container);
-                }
-                else if (Slots > 0 && Lines > 0)
-                {
-                    if (containerSize.x != Slots || containerSize.y != Lines)
-                    {
-                        _container.SetContainerSize(new Vector2i(Slots, Lines), true);
-                    }
-                    if (VaultUser.ContainsKey(_container.ToWorldPos()))
-                    {
-                        VaultUser[_container.ToWorldPos()] = cInfo.CrossplatformId.CombinedString;
-                    }
-                    else
-                    {
-                        VaultUser.Add(_container.ToWorldPos(), cInfo.CrossplatformId.CombinedString);
-                    }
-                    FillContainer(cInfo, ref _container);
-                }
-                else
+                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
+                if (cInfo == null)
                 {
                     _container.SetContainerSize(new Vector2i(0, 0), true);
                     _container.SetModified();
                     if (VaultUser.ContainsKey(_container.ToWorldPos()))
                     {
                         VaultUser.Remove(_container.ToWorldPos());
+                    }
+                    return true;
+                }
+                else
+                {
+                    if (Inside_Claim && !InsideClaim(cInfo))
+                    {
+                        _container.SetContainerSize(new Vector2i(0, 0), true);
+                        _container.SetModified();
+                        if (VaultUser.ContainsKey(_container.ToWorldPos()))
+                        {
+                            VaultUser.Remove(_container.ToWorldPos());
+                        }
+                        Phrases.Dict.TryGetValue("Vault1", out string phrase);
+                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        return true;
+                    }
+                    if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].VaultSize != null)
+                    {
+                        int[] vaultSize = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].VaultSize;
+                        if (vaultSize != null && vaultSize.Length == 2 && vaultSize[0] > 0 && vaultSize[1] > 0)
+                        {
+                            _container.SetContainerSize(new Vector2i(vaultSize[0], vaultSize[1]), true);
+                        }
+                        if (VaultUser.ContainsKey(_container.ToWorldPos()))
+                        {
+                            VaultUser[_container.ToWorldPos()] = cInfo.CrossplatformId.CombinedString;
+                        }
+                        else
+                        {
+                            VaultUser.Add(_container.ToWorldPos(), cInfo.CrossplatformId.CombinedString);
+                        }
+                        FillContainer(cInfo, ref _container);
+                    }
+                    else if (Slots > 0 && Lines > 0)
+                    {
+                        _container.SetContainerSize(new Vector2i(Slots, Lines), true);
+                        if (VaultUser.ContainsKey(_container.ToWorldPos()))
+                        {
+                            VaultUser[_container.ToWorldPos()] = cInfo.CrossplatformId.CombinedString;
+                        }
+                        else
+                        {
+                            VaultUser.Add(_container.ToWorldPos(), cInfo.CrossplatformId.CombinedString);
+                        }
+                        FillContainer(cInfo, ref _container);
+                    }
+                    else
+                    {
+                        _container.SetContainerSize(new Vector2i(0, 0), true);
+                        _container.SetModified();
+                        if (VaultUser.ContainsKey(_container.ToWorldPos()))
+                        {
+                            VaultUser.Remove(_container.ToWorldPos());
+                        }
                     }
                 }
             }

@@ -103,6 +103,12 @@ namespace ServerTools
                         }
                     }
                 }
+                if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ReducedDelay)
+                {
+                    int delay = Delay_Between_Uses / 2;
+                    Time(_cInfo, timepassed, delay);
+                    return;
+                }
                 Time(_cInfo, timepassed, Delay_Between_Uses);
             }
         }

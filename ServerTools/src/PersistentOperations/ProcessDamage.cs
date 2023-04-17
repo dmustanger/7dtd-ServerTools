@@ -63,12 +63,12 @@ namespace ServerTools
                                         return false;
                                     }
                                 }
-                                if (Lobby.IsEnabled && Lobby.PvE && Lobby.IsLobby(victimPlayer.position) || Lobby.IsLobby(attackingPlayer.position))
+                                if (Lobby.IsEnabled && Lobby.PvE && (Lobby.IsLobby(victimPlayer.position) || Lobby.IsLobby(attackingPlayer.position)))
                                 {
                                     Lobby.PvEViolation(cInfoAttacker);
                                     return false;
                                 }
-                                if (Market.IsEnabled && Market.PvE && Market.IsMarket(victimPlayer.position) || Market.IsMarket(attackingPlayer.position))
+                                if (Market.IsEnabled && Market.PvE && (Market.IsMarket(victimPlayer.position) || Market.IsMarket(attackingPlayer.position)))
                                 {
                                     Market.PvEViolation(cInfoAttacker);
                                     return false;

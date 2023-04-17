@@ -3358,6 +3358,11 @@ namespace ServerTools
                         phrase = "The vault can only be accessed inside of a claimed spaced";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Vault1\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Vault2", out phrase))
+                    {
+                        phrase = "The vault is currently disabled. Your stored items are safe and will show when the vault is enabled";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Vault2\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************** InfiniteAmmo ******************** -->");

@@ -202,7 +202,7 @@ namespace ServerTools
             {
                 if (Delay_Between_Uses < 1)
                 {
-                    if (Command_Cost >= 1 && Wallet.IsEnabled)
+                    if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
                         CommandCost(_cInfo);
                     }
@@ -240,6 +240,12 @@ namespace ServerTools
                                 }
                             }
                         }
+                    }
+                    if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ReducedDelay)
+                    {
+                        int delay = Delay_Between_Uses / 2;
+                        Time(_cInfo, timepassed, delay);
+                        return;
                     }
                     Time(_cInfo, timepassed, Delay_Between_Uses);
                 }

@@ -1,5 +1,36 @@
 ﻿CHANGELOG
 
+20.6.14
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added internal code for circular Zones
+-Added command delay reduction for Vehicle_Recall tool
+-Added option Sound to Confetti tool. Controls whether the
+confetti noise will play when the confetti is activated
+-Fixed Vehicle_Recall when the vehicle is inside a unloaded
+chunk space
+-Fixed Shop tool crashing the server when the Shop.xml was 
+changed after initial load and server was live
+-Fixed various tools not applying the console based command
+delay reduction
+-Fixed Bank and Wallet operating with negative values
+-Fixed Lobby and Market to only remove zombies and enemy
+animals
+-Changed Vault to give a response in chat when the tool is  
+disabled and a VaultBox is opened in game
+-Changed Vault code to avoid rare size indifferences
+-Changed Vault option Slots and Lines to default 0. You must
+set these above 0 if you want to utilize the Vault. Max slots
+8, max lines 6
+-Changed Unity bounds to arrays for Zones tool due to a 
+inherent issue using negative values within bound based 
+containers
+-Updated console command st-RegionReset to match the current
+state of the tool
+*recommend deleting your existing 
+...Mods/ServerTools/Config/buffs.xml*
+
 20.6.13
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions
