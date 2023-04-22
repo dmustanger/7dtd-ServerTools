@@ -1157,7 +1157,7 @@ namespace ServerTools
                     {
                         phrase = "There was an error in the shop list. Unable to buy this item. Please alert an administrator";
                     }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"347\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Shop7\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Shop8", out phrase))
                     {
                         phrase = "The shop does not contain any items. Contact an administrator";

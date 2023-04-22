@@ -1,5 +1,25 @@
 ﻿CHANGELOG
 
+20.7.0
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added BonusVoteReward.xml to the Voting tool. This allows
+you to make a second list of rewards for the Weekly_Votes.
+They will receive items from this list when they reach the 
+Weekly_Votes count or the normal list if left blank
+-Added two options to Clean_Bin, Region_Reset and Chunk_Reset
+-Fixed Auto_Backup failing to release the output stream after
+the first backup proceeding a server start up
+-Fixed Region_Reset working in parallel with multiple entries
+-Fixed one of the Waypoint delete commands
+-Fixed Shop tool causing a server crash at random when the
+xml was saved
+-Fixed the remaining xml files that would create new blank
+samples at the time of upgrade
+-Changed Web_API to utilize the existing thread pool instead
+of an isolated thread
+
 20.6.14
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions
@@ -17,6 +37,7 @@ delay reduction
 -Fixed Bank and Wallet operating with negative values
 -Fixed Lobby and Market to only remove zombies and enemy
 animals
+-Fixed Zones not applying the PvPvE option correctly
 -Changed Vault to give a response in chat when the tool is  
 disabled and a VaultBox is opened in game
 -Changed Vault code to avoid rare size indifferences
@@ -29,7 +50,8 @@ containers
 -Updated console command st-RegionReset to match the current
 state of the tool
 *recommend deleting your existing 
-...Mods/ServerTools/Config/buffs.xml*
+...Mods/ServerTools/Config/buffs.xml and
+...Mods/ServerTools/Config/blocks.xml*
 
 20.6.13
 Built using Alpha 20 stable assets

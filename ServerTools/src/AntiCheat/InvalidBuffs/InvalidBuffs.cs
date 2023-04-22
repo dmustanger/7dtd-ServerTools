@@ -196,7 +196,7 @@ namespace ServerTools
                     sw.WriteLine("    <Invalid Buff=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Invalid Buff=\"godmode\"") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- <Invalid Buff=\"godmode\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Invalid Buff=\"twitch_immortal\"") && !nodeList[i].OuterXml.Contains("<!-- <Invalid Buff=\"twitch_tough1\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Invalid Buff=\"buffVolatileAura\"") && !nodeList[i].OuterXml.Contains("<!-- <Invalid Buff=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))

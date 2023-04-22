@@ -667,9 +667,7 @@ namespace ServerTools
             {
                 if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints != null && PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.ContainsKey(_waypoint))
                 {
-                    Dictionary<string, string> waypoints = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints;
-                    waypoints.Remove(_waypoint);
-                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints = waypoints;
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Waypoints.Remove(_waypoint);
                     PersistentContainer.DataChange = true;
                     Phrases.Dict.TryGetValue("Waypoints7", out string phrase);
                     phrase = phrase.Replace("{Name}", _waypoint);
@@ -788,14 +786,12 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Waypoint Name=\"Example\" Position=\"-500,20,500\" Cost=\"150\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Waypoint Name=\"Example") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
+                        if (!nodeList[i].OuterXml.Contains("<!-- <Waypoint Name=\"Example") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<Waypoint Name=\"\""))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
-                    sw.WriteLine();
-                    sw.WriteLine();
                     sw.WriteLine("    <Waypoint Name=\"\" Position=\"\" Cost=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {

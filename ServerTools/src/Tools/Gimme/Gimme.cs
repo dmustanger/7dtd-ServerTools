@@ -526,7 +526,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"boiled water\" MinCount=\"1\" MaxCount=\"6\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Secondary name") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- Secondary name") &&
                             !nodeList[i].OuterXml.Contains("<!-- Items that do") && !nodeList[i].OuterXml.Contains("<!-- <Item Name=\"drinkJarBoiledWater\"") &&
                             !nodeList[i].OuterXml.Contains("<Item Name=\"\"") && !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {

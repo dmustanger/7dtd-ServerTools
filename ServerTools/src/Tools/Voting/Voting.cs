@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Xml;
 using UnityEngine;
 
@@ -18,48 +17,57 @@ namespace ServerTools
         
         private static bool PosFound = false;
 
-        private static Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
-        private static List<string> Items = new List<string>();
+        private static Dictionary<string, int[]> Rewards = new Dictionary<string, int[]>();
+        private static Dictionary<string, int[]> BonusRewards = new Dictionary<string, int[]>();
+        private static List<string> RewardPayout, BonusPayout;
 
-        private const string file = "VoteReward.xml";
-        private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private const string fileReward = "VoteReward.xml";
+        private static readonly string FilePathReward = string.Format("{0}/{1}", API.ConfigPath, fileReward);
+        private static FileSystemWatcher FileWatcherReward = new FileSystemWatcher(API.ConfigPath, fileReward);
+
+        private const string fileBonus = "VoteRewardBonus.xml";
+        private static readonly string FilePathBonus = string.Format("{0}/{1}", API.ConfigPath, fileBonus);
+        private static FileSystemWatcher FileWatcherBonus = new FileSystemWatcher(API.ConfigPath, fileBonus);
 
         public static void Load()
         {
-            LoadXml();
-            InitFileWatcher();
+            LoadRewardXml();
+            LoadBonusXml();
+            InitFileWatchers();
         }
 
         public static void Unload()
         {
-            Dict.Clear();
-            Items.Clear();
-            FileWatcher.Dispose();
+            Rewards.Clear();
+            BonusRewards.Clear();
+            RewardPayout.Clear();
+            BonusPayout.Clear();
+            FileWatcherReward.Dispose();
+            FileWatcherBonus.Dispose();
             IsRunning = false;
         }
 
-        public static void LoadXml()
+        public static void LoadRewardXml()
         {
             try
             {
-                if (!File.Exists(FilePath))
+                if (!File.Exists(FilePathReward))
                 {
-                    UpdateXml();
+                    UpdateRewardXml();
                 }
                 XmlDocument xmlDoc = new XmlDocument();
                 try
                 {
-                    xmlDoc.Load(FilePath);
+                    xmlDoc.Load(FilePathReward);
                 }
                 catch (XmlException e)
                 {
-                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", fileReward, e.Message));
                     return;
                 }
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                Dict.Clear();
-                Items.Clear();
+                Rewards.Clear();
+                RewardPayout.Clear();
                 if (childNodes != null && childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
                 {
                     for (int i = 0; i < childNodes.Count; i++)
@@ -123,16 +131,16 @@ namespace ServerTools
                             {
                                 maxCount = 1;
                             }
-                            if (item != "" && !Dict.ContainsKey(item))
+                            if (item != "" && !Rewards.ContainsKey(item))
                             {
                                 int[] c = new int[] { minCount, maxCount, minQuality, maxQuality };
-                                Dict.Add(item, c);
+                                Rewards.Add(item, c);
                             }
                         }
                     }
-                    if (Dict.Count > 0)
+                    if (Rewards.Count > 0)
                     {
-                        Items = new List<string>(Dict.Keys);
+                        RewardPayout = new List<string>(Rewards.Keys);
                     }
                 }
                 else
@@ -140,12 +148,12 @@ namespace ServerTools
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
                     if (nodeList != null)
                     {
-                        File.Delete(FilePath);
-                        UpgradeXml(nodeList);
+                        File.Delete(FilePathReward);
+                        UpgradeRewardXml(nodeList);
                         return;
                     }
-                    File.Delete(FilePath);
-                    UpdateXml();
+                    File.Delete(FilePathReward);
+                    UpdateRewardXml();
                     return;
                 }
             }
@@ -153,22 +161,146 @@ namespace ServerTools
             {
                 if (e.Message == "Specified cast is not valid.")
                 {
-                    File.Delete(FilePath);
-                    UpdateXml();
+                    File.Delete(FilePathReward);
+                    UpdateRewardXml();
                 }
                 else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in VoteReward.LoadXml: {0}", e.Message));
+                    Log.Out(string.Format("[SERVERTOOLS] Error in Voting.LoadRewardXml: {0}", e.Message));
                 }
             }
         }
 
-        private static void UpdateXml()
+        public static void LoadBonusXml()
         {
             try
             {
-                FileWatcher.EnableRaisingEvents = false;
-                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                if (!File.Exists(FilePathBonus))
+                {
+                    UpdateBonusXml();
+                }
+                XmlDocument xmlDoc = new XmlDocument();
+                try
+                {
+                    xmlDoc.Load(FilePathBonus);
+                }
+                catch (XmlException e)
+                {
+                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", fileBonus, e.Message));
+                    return;
+                }
+                XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
+                BonusRewards.Clear();
+                BonusPayout.Clear();
+                if (childNodes != null && childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
+                {
+                    for (int i = 0; i < childNodes.Count; i++)
+                    {
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes)
+                        {
+                            continue;
+                        }
+                        if (line.HasAttribute("ItemOrBlock") && line.HasAttribute("MinCount") && line.HasAttribute("MaxCount") &&
+                            line.HasAttribute("MinQuality") && line.HasAttribute("MaxQuality"))
+                        {
+                            string item = line.GetAttribute("ItemOrBlock");
+                            if (item == "")
+                            {
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MinCount"), out int minCount))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinCount' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MaxCount"), out int maxCount))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxCount' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MinQuality"), out int minQuality))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MinQuality' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(line.GetAttribute("MaxQuality"), out int maxQuality))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Invalid (non-numeric) value for 'MaxQuality' attribute: {0}", line.OuterXml));
+                                continue;
+                            }
+                            ItemValue itemValue = ItemClass.GetItem(item, false);
+                            if (itemValue.type == ItemValue.None.type)
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Ignoring VoteReward.xml entry. Item not found: {0}", item));
+                                continue;
+                            }
+                            if (minCount > itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                minCount = itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (minCount < 1)
+                            {
+                                minCount = 1;
+                            }
+                            if (maxCount > itemValue.ItemClass.Stacknumber.Value)
+                            {
+                                maxCount = itemValue.ItemClass.Stacknumber.Value;
+                            }
+                            else if (maxCount < 1)
+                            {
+                                maxCount = 1;
+                            }
+                            if (item != "" && !BonusRewards.ContainsKey(item))
+                            {
+                                int[] c = new int[] { minCount, maxCount, minQuality, maxQuality };
+                                BonusRewards.Add(item, c);
+                            }
+                        }
+                    }
+                    if (BonusRewards.Count > 0)
+                    {
+                        BonusPayout = new List<string>(BonusRewards.Keys);
+                    }
+                }
+                else
+                {
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    if (nodeList != null)
+                    {
+                        File.Delete(FilePathBonus);
+                        UpgradeBonusXml(nodeList);
+                        return;
+                    }
+                    File.Delete(FilePathBonus);
+                    UpdateBonusXml();
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "Specified cast is not valid.")
+                {
+                    File.Delete(FilePathBonus);
+                    UpdateBonusXml();
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in Voting.LoadBonusXml: {0}", e.Message));
+                }
+            }
+        }
+
+        private static void UpdateRewardXml()
+        {
+            try
+            {
+                FileWatcherReward.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(FilePathReward, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<VoteRewards>");
@@ -176,48 +308,91 @@ namespace ServerTools
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
                     sw.WriteLine("    <!-- <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
                     sw.WriteLine("    <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
-                    if (Dict.Count > 0)
+                    if (Rewards.Count > 0)
                     {
-                        foreach (KeyValuePair<string, int[]> kvp in Dict)
+                        foreach (KeyValuePair<string, int[]> kvp in Rewards)
                         {
                             sw.WriteLine(string.Format("    <Reward ItemOrBlock=\"{0}\" MinCount=\"{1}\" MaxCount=\"{2}\" MinQuality=\"{3}\" MaxQuality=\"{4}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
                         }
                     }
                     sw.WriteLine("</VoteRewards>");
-                    sw.Flush();
-                    sw.Close();
+                    sw.Dispose();
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in VoteReward.UpdateXml: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Voting.UpdateRewardXml: {0}", e.Message));
             }
-            FileWatcher.EnableRaisingEvents = true;
+            FileWatcherReward.EnableRaisingEvents = true;
         }
 
-        private static void InitFileWatcher()
+        private static void UpdateBonusXml()
         {
-            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            FileWatcher.EnableRaisingEvents = true;
+            try
+            {
+                FileWatcherBonus.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(FilePathBonus, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<BonusVoteRewards>");
+                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
+                    sw.WriteLine("    <!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
+                    sw.WriteLine("    <!-- <Bonus ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
+                    sw.WriteLine("    <Bonus ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
+                    if (BonusRewards.Count > 0)
+                    {
+                        foreach (KeyValuePair<string, int[]> kvp in BonusRewards)
+                        {
+                            sw.WriteLine(string.Format("    <Bonus ItemOrBlock=\"{0}\" MinCount=\"{1}\" MaxCount=\"{2}\" MinQuality=\"{3}\" MaxQuality=\"{4}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
+                        }
+                    }
+                    sw.WriteLine("</BonusVoteRewards>");
+                    sw.Dispose();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Voting.UpdateBonusXml: {0}", e.Message));
+            }
+            FileWatcherBonus.EnableRaisingEvents = true;
+        }
+
+        private static void InitFileWatchers()
+        {
+            FileWatcherReward.Changed += new FileSystemEventHandler(OnRewardFileChanged);
+            FileWatcherReward.Created += new FileSystemEventHandler(OnRewardFileChanged);
+            FileWatcherReward.Deleted += new FileSystemEventHandler(OnRewardFileChanged);
+            FileWatcherReward.EnableRaisingEvents = true;
+            FileWatcherBonus.Changed += new FileSystemEventHandler(OnBonusFileChanged);
+            FileWatcherBonus.Created += new FileSystemEventHandler(OnBonusFileChanged);
+            FileWatcherBonus.Deleted += new FileSystemEventHandler(OnBonusFileChanged);
+            FileWatcherBonus.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
-        private static void OnFileChanged(object source, FileSystemEventArgs e)
+        private static void OnRewardFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!File.Exists(FilePath))
+            if (!File.Exists(FilePathReward))
             {
-                UpdateXml();
+                UpdateRewardXml();
             }
-            LoadXml();
+            LoadRewardXml();
+        }
+
+        private static void OnBonusFileChanged(object source, FileSystemEventArgs e)
+        {
+            if (!File.Exists(FilePathBonus))
+            {
+                UpdateBonusXml();
+            }
+            LoadBonusXml();
         }
 
         public static void Check(ClientInfo _cInfo)
         {
             try
             {
-                if (!Reward_Entity && Dict.Count == 0)
+                if (!Reward_Entity && Rewards.Count == 0)
                 {
                     Log.Out(string.Format("[SERVERTOOLS] No items available for reward. Check for an error in the VoteReward.xml file"));
                     Phrases.Dict.TryGetValue("VoteReward2", out string phrase);
@@ -256,7 +431,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in VoteReward.Check: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Voting.Check: {0}", e.Message));
             }
         }
 
@@ -321,7 +496,7 @@ namespace ServerTools
             {
                 for (int i = 0; i < _count; i++)
                 {
-                    ItemOrBlockRandom(_cInfo);
+                    ItemOrBlockRandom(_cInfo, false);
                 }
                 if (Weekly_Votes > 1)
                 {
@@ -344,7 +519,14 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].VoteWeekCount = 1;
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastVoteWeek = DateTime.Now;
-                            ItemOrBlockRandom(_cInfo);
+                            if (BonusPayout.Count > 0)
+                            {
+                                ItemOrBlockRandom(_cInfo, true);
+                            }
+                            else
+                            {
+                                ItemOrBlockRandom(_cInfo, false);
+                            }
                             Phrases.Dict.TryGetValue("VoteReward5", out string phrase);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
@@ -388,54 +570,68 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in VoteReward.ItemOrBlockCounter: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Voting.ItemOrBlockCounter: {0}", e.Message));
             }
         }
 
-        private static void ItemOrBlockRandom(ClientInfo _cInfo)
+        private static void ItemOrBlockRandom(ClientInfo _cInfo, bool _bonus)
         {
             try
             {
-                string randomItem = Items.RandomObject();
-                if (Dict.TryGetValue(randomItem, out int[] itemData))
+                string randomItem;
+                int[] itemData;
+                if (!_bonus)
                 {
-                    int count = itemData[0];
-                    if (itemData[0] != itemData[1] + 1)
+                    randomItem = RewardPayout.RandomObject();
+                    if (!Rewards.TryGetValue(randomItem, out itemData))
                     {
-                        count = new System.Random().Next(itemData[0], itemData[1] + 1);
+                        return;
                     }
-                    int quality = itemData[2];
-                    if (itemData[2] != itemData[3] + 1)
-                    {
-                        quality = new System.Random().Next(itemData[2], itemData[3] + 1);
-                    }
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type);
-                    itemValue.Quality = 0;
-                    itemValue.Modifications = new ItemValue[0];
-                    itemValue.CosmeticMods = new ItemValue[0];
-                    int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
-                    if (modSlots > 0)
-                    {
-                        itemValue.Modifications = new ItemValue[modSlots];
-                    }
-                    itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
-                    if (itemValue.HasQuality)
-                    {
-                        if (quality > 0)
-                        {
-                            itemValue.Quality = quality;
-                        }
-                        else
-                        {
-                            itemValue.Quality = 1;
-                        }
-                    }
-                    Give(_cInfo, itemValue, count);
                 }
+                else
+                {
+                    randomItem = BonusPayout.RandomObject();
+                    if (!BonusRewards.TryGetValue(randomItem, out itemData))
+                    {
+                        return;
+                    }
+                }
+                int count = itemData[0];
+                if (itemData[0] != itemData[1] + 1)
+                {
+                    count = new System.Random().Next(itemData[0], itemData[1] + 1);
+                }
+                int quality = itemData[2];
+                if (itemData[2] != itemData[3] + 1)
+                {
+                    quality = new System.Random().Next(itemData[2], itemData[3] + 1);
+                }
+                ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type);
+                itemValue.Quality = 0;
+                itemValue.Modifications = new ItemValue[0];
+                itemValue.CosmeticMods = new ItemValue[0];
+                int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
+                if (modSlots > 0)
+                {
+                    itemValue.Modifications = new ItemValue[modSlots];
+                }
+                itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
+                if (itemValue.HasQuality)
+                {
+                    if (quality > 0)
+                    {
+                        itemValue.Quality = quality;
+                    }
+                    else
+                    {
+                        itemValue.Quality = 1;
+                    }
+                }
+                Give(_cInfo, itemValue, count);
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in VoteReward.ItemOrBlockRandom: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Voting.ItemOrBlockRandom: {0}", e.Message));
             }
         }
 
@@ -464,7 +660,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in VoteReward.Give: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Voting.Give: {0}", e.Message));
             }
         }
 
@@ -472,7 +668,7 @@ namespace ServerTools
         {
             try
             {
-                Entityspawn(_cInfo);
+                Spawn(_cInfo);
                 if (Weekly_Votes > 0)
                 {
                     DateTime lastVoteWeek = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastVoteWeek;
@@ -486,9 +682,9 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].VoteWeekCount = 1;
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastVoteWeek = DateTime.Now;
-                            Entityspawn(_cInfo);
-                            Phrases.Dict.TryGetValue("VoteReward5", out string _phrase);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            Spawn(_cInfo);
+                            Phrases.Dict.TryGetValue("VoteReward5", out string phrase);
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {
@@ -525,11 +721,11 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in VoteReward.Entity: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Voting.Entity: {0}", e.Message));
             }
         }
 
-        private static void Entityspawn(ClientInfo _cInfo)
+        private static void Spawn(ClientInfo _cInfo)
         {
             try
             {
@@ -582,7 +778,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in VoteReward.Entityspawn: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Voting.EntitySpawn: {0}", e.Message));
             }
         }
 
@@ -644,28 +840,28 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList nodeList)
+        private static void UpgradeRewardXml(XmlNodeList nodeList)
         {
             try
             {
-                FileWatcher.EnableRaisingEvents = false;
-                using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
+                FileWatcherReward.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(FilePathReward, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<VoteRewards>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 1 for MinQuality and MaxQuality -->");
                     sw.WriteLine("    <!-- <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
-                    sw.WriteLine("    <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Items that") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- Items that") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Reward ItemOrBlock=\"meleeToolTorch\"") && !nodeList[i].OuterXml.Contains("<Reward ItemOrBlock=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
+                    sw.WriteLine("    <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType != XmlNodeType.Comment)
@@ -699,16 +895,81 @@ namespace ServerTools
                         }
                     }
                     sw.WriteLine("</VoteRewards>");
-                    sw.Flush();
-                    sw.Close();
+                    sw.Dispose();
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItems.UpgradeXml: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Voting.UpgradeRewardXml: {0}", e.Message));
             }
-            FileWatcher.EnableRaisingEvents = true;
-            LoadXml();
+            FileWatcherReward.EnableRaisingEvents = true;
+            LoadRewardXml();
+        }
+
+        private static void UpgradeBonusXml(XmlNodeList nodeList)
+        {
+            try
+            {
+                FileWatcherBonus.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(FilePathBonus, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<BonusVoteRewards>");
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Items that do not require a quality should be set to 1 for MinQuality and MaxQuality -->");
+                    sw.WriteLine("    <!-- <Bonus ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
+                    for (int i = 0; i < nodeList.Count; i++)
+                    {
+                        if (!nodeList[i].OuterXml.Contains("<!-- Items that") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Bonus ItemOrBlock=\"meleeToolTorch\"") && !nodeList[i].OuterXml.Contains("<Bonus ItemOrBlock=\"\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
+                        {
+                            sw.WriteLine(nodeList[i].OuterXml);
+                        }
+                    }
+                    sw.WriteLine("    <Bonus ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
+                    for (int i = 0; i < nodeList.Count; i++)
+                    {
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
+                        {
+                            XmlElement line = (XmlElement)nodeList[i];
+                            if (line.HasAttributes && line.Name == "Bonus")
+                            {
+                                string itemBlock = "", minCount = "", maxCount = "", minQuality = "", maxQuality = "";
+                                if (line.HasAttribute("ItemOrBlock"))
+                                {
+                                    itemBlock = line.GetAttribute("ItemOrBlock");
+                                }
+                                if (line.HasAttribute("MinCount"))
+                                {
+                                    minCount = line.GetAttribute("MinCount");
+                                }
+                                if (line.HasAttribute("MaxCount"))
+                                {
+                                    maxCount = line.GetAttribute("MaxCount");
+                                }
+                                if (line.HasAttribute("MinQuality"))
+                                {
+                                    minQuality = line.GetAttribute("MinQuality");
+                                }
+                                if (line.HasAttribute("MaxQuality"))
+                                {
+                                    maxQuality = line.GetAttribute("MaxQuality");
+                                }
+                                sw.WriteLine(string.Format("    <Bonus ItemOrBlock=\"{0}\" MinCount=\"{1}\" MaxCount=\"{2}\" MinQuality=\"{3}\" MaxQuality=\"{4}\" />", itemBlock, minCount, maxCount, minQuality, maxQuality));
+                            }
+                        }
+                    }
+                    sw.WriteLine("</BonusVoteRewards>");
+                    sw.Dispose();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Voting.UpgradeBonusXml: {0}", e.Message));
+            }
+            FileWatcherBonus.EnableRaisingEvents = true;
+            LoadBonusXml();
         }
     }
 }

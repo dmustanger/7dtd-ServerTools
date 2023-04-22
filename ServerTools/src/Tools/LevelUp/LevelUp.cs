@@ -371,7 +371,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Level Required=\"300\" Command=\"global MAX LEVEL! Congratulations {PlayerName}!\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Command triggers console") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- Command triggers console") &&
                             !nodeList[i].OuterXml.Contains("<!-- Possible variables") && !nodeList[i].OuterXml.Contains("<!-- <Level Required=\"300\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<Level Required=\"\""))
                         {

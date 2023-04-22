@@ -413,7 +413,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Item Name=\"gunPistolExample\" SecondaryName=\"pistol\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"3\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Item Name=\"gunPistolExample\"") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- <Item Name=\"gunPistolExample\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<Item Name=\"\""))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);

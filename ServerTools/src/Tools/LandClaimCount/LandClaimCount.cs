@@ -235,7 +235,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Player Id=\"EOS_7a6b5c6d1e1f9g1h2i345678911234567890\" Name=\"SaladFace\" Limit=\"2\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891\"") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"EOS_7a6b5c6d1e1f9g1h2i345678911234567890\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<Player Id=\"\""))
                         {

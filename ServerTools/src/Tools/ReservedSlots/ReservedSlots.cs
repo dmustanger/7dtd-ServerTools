@@ -321,10 +321,10 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123\" Name=\"Yoggi\" Expires=\"2050-01-11 07:30:00\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Version") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- <Version") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123") &&
-                            !nodeList[i].OuterXml.Contains("<Player Id=\""))
+                            !nodeList[i].OuterXml.Contains("<Player Id=\"\""))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);
                         }

@@ -1034,9 +1034,9 @@ namespace ServerTools
                                     Waypoints.DelPoint(_cInfo, _message);
                                     return false;
                                 }
-                                else if (messageLowerCase.StartsWith(Waypoints.Command_waypoint_delete + " ") && Permission(_cInfo, Waypoints.Command_waypoint_delete))
+                                else if (messageLowerCase.StartsWith(Waypoints.Command_way_delete + " ") && Permission(_cInfo, Waypoints.Command_way_delete))
                                 {
-                                    _message = messageLowerCase.Replace(Waypoints.Command_waypoint_delete + " ", "");
+                                    _message = messageLowerCase.Replace(Waypoints.Command_way_delete + " ", "");
                                     Waypoints.DelPoint(_cInfo, _message);
                                     return false;
                                 }

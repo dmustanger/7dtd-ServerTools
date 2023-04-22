@@ -169,8 +169,8 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Color Name=\"Rainbow\" Tags=\"[FF0000],[FF9933],[FFFF00],[009933],[0000CC],[9900CC],[FF33CC]\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Color Name=\"Red\"") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Color Name=\"Rainbow\"") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- <Color Name=\"Red\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Color Name=\"Rainbow\"") && !nodeList[i].OuterXml.Contains("<!-- <Color Name=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);

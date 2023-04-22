@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "20.6.14";
+        public const string Version = "20.7.0";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
 
@@ -1088,6 +1088,28 @@ namespace ServerTools
                                     if (!bool.TryParse(line.GetAttribute("Waypoints"), out CleanBin.Waypoints))
                                     {
                                         Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended2 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Waypoints' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    break;
+                                case "Clean_Bin_Extended3":
+                                    if (!line.HasAttribute("Region_Reset"))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended3 entry in ServerToolsConfig.xml because of missing 'Region_Reset' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!bool.TryParse(line.GetAttribute("Region_Reset"), out CleanBin.Region_Reset))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended3 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Region_Reset' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!line.HasAttribute("Chunk_Reset"))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended3 entry in ServerToolsConfig.xml because of missing 'Chunk_Reset' attribute: {0}", line.OuterXml));
+                                        continue;
+                                    }
+                                    if (!bool.TryParse(line.GetAttribute("Chunk_Reset"), out CleanBin.Chunk_Reset))
+                                    {
+                                        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clean_Bin_Extended3 entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Chunk_Reset' attribute: {0}", line.OuterXml));
                                         continue;
                                     }
                                     break;
@@ -4560,6 +4582,7 @@ namespace ServerTools
                 sw.WriteLine("        <Tool Name=\"Clean_Bin\" Enable=\"{0}\" Auction=\"{1}\" Bank=\"{2}\" Bounties=\"{3}\" Delays=\"{4}\" />", CleanBin.IsEnabled, CleanBin.Auction, CleanBin.Bank, CleanBin.Bounties, CleanBin.Delays);
                 sw.WriteLine("        <Tool Name=\"Clean_Bin_Extended1\" Homes=\"{0}\" Jail=\"{1}\" Lobby=\"{2}\" Market=\"{3}\" New_Spawn_Tele=\"{4}\" />", CleanBin.Homes, CleanBin.Jail, CleanBin.Lobby, CleanBin.Market, CleanBin.New_Spawn_Tele);
                 sw.WriteLine("        <Tool Name=\"Clean_Bin_Extended2\" Poll=\"{0}\" Protected_Zones=\"{1}\" Shop_Log=\"{2}\" Waypoints=\"{3}\" />", CleanBin.Poll, CleanBin.Protected_Zones, CleanBin.Shop_Log, CleanBin.Waypoints);
+                sw.WriteLine("        <Tool Name=\"Clean_Bin_Extended3\" Region_Reset=\"{0}\" Chunk_Reset=\"{1}\" />", CleanBin.Region_Reset, CleanBin.Chunk_Reset);
                 sw.WriteLine("        <Tool Name=\"Confetti\" Enable=\"{0}\" Player=\"{1}\" Zombie=\"{2}\" Sound=\"{3}\" />", Confetti.IsEnabled, Confetti.Player, Confetti.Zombie, Confetti.Sound);
                 sw.WriteLine("        <Tool Name=\"Console_Command_Log\" Enable=\"{0}\" />", ConsoleCommandLog.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Custom_Commands\" Enable=\"{0}\" />", CustomCommands.IsEnabled);

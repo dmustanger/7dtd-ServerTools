@@ -5,9 +5,9 @@ namespace ServerTools
 {
     class CleanBin
     {
-        public static bool IsEnabled = false, Auction = false, Bank = false, Bounties = false, Delays = false,
+        public static bool IsEnabled = false, Auction = false, Bank = false, Bounties = false, Chunk_Reset = false, Delays = false,
             Homes = false, Jail = false, Lobby = false, Market = false, New_Spawn_Tele = false, Poll = false,
-            Protected_Zones = false, Shop_Log = false, Waypoints = false;
+            Protected_Zones = false, Region_Reset = false, Shop_Log = false, Waypoints = false;
 
         public static void Exec()
         {
@@ -38,6 +38,10 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[id[i]].Bounty = 0;
                     PersistentContainer.Instance.Players[id[i]].BountyHunter = 0;
+                }
+                if (Chunk_Reset)
+                {
+                    PersistentContainer.Instance.ChunkReset = new Dictionary<string, DateTime>();
                 }
                 if (Delays)
                 {
@@ -83,12 +87,17 @@ namespace ServerTools
                 }
                 if (Protected_Zones)
                 {
-                    
+                    //ProtectedZones.DisableProtection();
+                    PersistentContainer.Instance.ProtectedZones = new List<string>();
                 }
                 if (New_Spawn_Tele)
                 {
                     PersistentContainer.Instance.Players[id[i]].NewSpawn = false;
                     PersistentContainer.Instance.Players[id[i]].NewSpawnPosition = string.Empty;
+                }
+                if (Region_Reset)
+                {
+                    PersistentContainer.Instance.RegionReset = new Dictionary<string, DateTime>();
                 }
                 if (Waypoints)
                 {

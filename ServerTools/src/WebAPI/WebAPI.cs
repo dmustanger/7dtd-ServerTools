@@ -26,10 +26,8 @@ namespace ServerTools
         public static Dictionary<string, DateTime> TimeOut = new Dictionary<string, DateTime>();
         public static List<string> Ban = new List<string>();
         
-
         private static string Redirect = "";
         private static List<string> PostURI = new List<string>();
-        private static Thread Thread;
         private static readonly Version HttpVersion = new Version(1, 1);
 
         private static readonly string file = string.Format("WebAPILog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
@@ -45,19 +43,14 @@ namespace ServerTools
         public static void Unload()
         {
             IsRunning = false;
-            if (Thread != null && Thread.IsAlive)
-            {
-                Thread.Abort();
-            }
         }
 
         private static void Start()
         {
-            Thread = new Thread(new ThreadStart(Exec))
+            ThreadManager.AddSingleTask(delegate (ThreadManager.TaskInfo _taskInfo)
             {
-                IsBackground = true
-            };
-            Thread.Start();
+                Exec();
+            });
         }
 
         public static bool SetBaseAddress()
@@ -320,10 +313,6 @@ namespace ServerTools
                     Log.Out(string.Format("[SERVERTOOLS] Error in WebAPI.Exec: {0}", e.Message));
                 }
                 Connected = false;
-                if (Thread != null && Thread.IsAlive)
-                {
-                    Thread.Abort();
-                }
                 if (IsEnabled && IsRunning && !GeneralOperations.Shutdown_Initiated)
                 {
                     Start();

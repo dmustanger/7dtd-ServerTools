@@ -651,8 +651,8 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Cost=\"0\" Bloodmoon=\"true\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Possible variables") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Custom Trigger") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- Possible variables") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Custom Trigger=\"Example\"") && !nodeList[i].OuterXml.Contains("<Custom Trigger=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);

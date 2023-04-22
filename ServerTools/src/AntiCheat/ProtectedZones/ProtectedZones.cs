@@ -462,7 +462,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Protected Corner1=\"-30,-20\" Corner2=\"10,50\" Active=\"True\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Protected Corner1=\"-30,-20\"") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- <Protected Corner1=\"-30,-20\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Protected Corner1=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {

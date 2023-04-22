@@ -398,7 +398,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Weapon Name=\"meleeToolRepairT0StoneAxe\" NewName=\"Stone Axe\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Weapon Name=\"\"") && 
+                        if (!nodeList[i].OuterXml.Contains("<Weapon Name=\"\"") && 
                             !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<!-- <Weapon Name=\"meleeToolRepairT0StoneAxe\""))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);

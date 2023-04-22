@@ -244,8 +244,6 @@ namespace ServerTools
                         }
                     }
                     sw.WriteLine("</Zones>");
-                    sw.Flush();
-                    sw.Close();
                     sw.Dispose();
                 }
             }
@@ -677,7 +675,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Do not use") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- Do not use") &&
                             !nodeList[i].OuterXml.Contains("<!-- Overlapping zones") && !nodeList[i].OuterXml.Contains("<!-- PvPvE") &&
                             !nodeList[i].OuterXml.Contains("<!-- EntryCommand") && !nodeList[i].OuterXml.Contains("<!-- Possible") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Zone Name=\"Example\"") && !nodeList[i].OuterXml.Contains("<Zone Name=\"\"") &&

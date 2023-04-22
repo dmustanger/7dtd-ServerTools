@@ -428,6 +428,7 @@ namespace ServerTools
             if (tenSecondTick >= 10)
             {
                 tenSecondTick = 0;
+                EventSchedule.Exec();
                 if (EntityCleanup.IsEnabled)
                 {
                     EntityCleanup.EntityCheck();
@@ -437,7 +438,6 @@ namespace ServerTools
             {
                 twentySecondTick = 0;
                 Track.Exec();
-                EventSchedule.Exec();
                 if (HighPingKicker.IsEnabled)
                 {
                     HighPingKicker.Exec();

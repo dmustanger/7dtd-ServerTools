@@ -294,8 +294,8 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Ticker Message=\"Type /commands for a list of the chat commands\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Possible variables") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Have a suggestion") && !nodeList[i].OuterXml.Contains("<Ticker Message=\"") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- Possible variables") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Have a suggestion") && !nodeList[i].OuterXml.Contains("<Ticker Message=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Type /commands") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {

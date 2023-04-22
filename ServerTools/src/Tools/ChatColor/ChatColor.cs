@@ -659,7 +659,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Player Id=\"Steam_12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"2050-01-11 07:30:00\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- NameColor and") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- NameColor and") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_12345678901234567") && !nodeList[i].OuterXml.Contains("<Player Id=\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version") &&
                             !nodeList[i].OuterXml.Contains("<Player Id=\"\""))

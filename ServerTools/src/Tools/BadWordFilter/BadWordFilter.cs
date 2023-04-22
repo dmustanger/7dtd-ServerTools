@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -15,8 +14,6 @@ namespace ServerTools
         private const string file = "BadWords.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-
-        private static XmlNodeList OldNodeList;
 
         public static void Load()
         {
@@ -50,67 +47,43 @@ namespace ServerTools
                     return;
                 }
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                if (childNodes != null && childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
                 {
                     Dict.Clear();
-                    if (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        for (int i = 0; i < childNodes.Count; i++)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            if (childNodes[i].NodeType == XmlNodeType.Comment)
-                            {
-                                continue;
-                            }
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (!line.HasAttributes || !line.HasAttribute("Word"))
-                            {
-                                continue;
-                            }
-                            string word = line.GetAttribute("Word").ToLower();
-                            if (word == "")
-                            {
-                                continue;
-                            }
-                            if (!Dict.Contains(word))
-                            {
-                                Dict.Add(word);
-                            }
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes || !line.HasAttribute("Word"))
+                        {
+                            continue;
+                        }
+                        string word = line.GetAttribute("Word").ToLower();
+                        if (word == "")
+                        {
+                            continue;
+                        }
+                        if (!Dict.Contains(word))
+                        {
+                            Dict.Add(word);
                         }
                     }
-                    else
+                }
+                else
+                {
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    if (nodeList != null)
                     {
-                        XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                        XmlNode node = nodeList[0];
-                        XmlElement line = (XmlElement)nodeList[0];
-                        if (line != null)
-                        {
-                            if (line.HasAttributes)
-                            {
-                                OldNodeList = nodeList;
-                                File.Delete(FilePath);
-                                UpgradeXml();
-                                return;
-                            }
-                            else
-                            {
-                                nodeList = node.ChildNodes;
-                                line = (XmlElement)nodeList[0];
-                                if (line != null)
-                                {
-                                    if (line.HasAttributes)
-                                    {
-                                        OldNodeList = nodeList;
-                                        File.Delete(FilePath);
-                                        UpgradeXml();
-                                        return;
-                                    }
-                                }
-                                File.Delete(FilePath);
-                                UpdateXml();
-                                Log.Out(string.Format("[SERVERTOOLS] The existing BadWords.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                            }
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -176,7 +149,7 @@ namespace ServerTools
             LoadXml();
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -187,20 +160,20 @@ namespace ServerTools
                     sw.WriteLine("<BadWordFilter>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Bad Word=\"penis\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Bad Word=\"penis") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Version") && !OldNodeList[i].OuterXml.Contains("<Bad Word=\""))
+                        if (!nodeList[i].OuterXml.Contains("<!-- <Bad Word=\"penis") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<Bad Word=\"\""))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine("    <Bad Word=\"\" />");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Bad")
                             {
                                 string word = "";

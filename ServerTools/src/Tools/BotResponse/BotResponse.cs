@@ -18,8 +18,6 @@ namespace ServerTools
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-        private static XmlNodeList OldNodeList;
-
         public static void Load()
         {
             LoadXml();
@@ -52,78 +50,54 @@ namespace ServerTools
                     return;
                 }
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                if (childNodes != null)
+                if (childNodes != null && childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
                 {
                     Dict.Clear();
-                    if (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
+                    for (int i = 0; i < childNodes.Count; i++)
                     {
-                        for (int i = 0; i < childNodes.Count; i++)
+                        if (childNodes[i].NodeType == XmlNodeType.Comment)
                         {
-                            if (childNodes[i].NodeType == XmlNodeType.Comment)
+                            continue;
+                        }
+                        XmlElement line = (XmlElement)childNodes[i];
+                        if (!line.HasAttributes)
+                        {
+                            continue;
+                        }
+                        if (line.HasAttribute("Message") && line.HasAttribute("Response") && line.HasAttribute("Exact") && line.HasAttribute("Whisper"))
+                        {
+                            string message = line.GetAttribute("Message").ToLower();
+                            if (message == "")
                             {
                                 continue;
                             }
-                            XmlElement line = (XmlElement)childNodes[i];
-                            if (!line.HasAttributes)
+                            string response = line.GetAttribute("Response");
+                            if (bool.TryParse(line.GetAttribute("Exact"), out bool exact))
                             {
-                                continue;
-                            }
-                            if (line.HasAttribute("Message") && line.HasAttribute("Response") && line.HasAttribute("Exact") && line.HasAttribute("Whisper"))
-                            {
-                                string message = line.GetAttribute("Message").ToLower();
-                                if (message == "")
+                                if (bool.TryParse(line.GetAttribute("Whisper"), out bool whisper))
                                 {
-                                    continue;
-                                }
-                                string response = line.GetAttribute("Response");
-                                if (bool.TryParse(line.GetAttribute("Exact"), out bool exact))
-                                {
-                                    if (bool.TryParse(line.GetAttribute("Whisper"), out bool whisper))
+                                    string[] values = { response, exact.ToString().ToLower(), whisper.ToString().ToLower() };
+                                    if (!Dict.ContainsKey(message))
                                     {
-                                        string[] values = { response, exact.ToString().ToLower(), whisper.ToString().ToLower() };
-                                        if (!Dict.ContainsKey(message))
-                                        {
-                                            Dict.Add(message, values);
-                                        }
+                                        Dict.Add(message, values);
                                     }
                                 }
                             }
                         }
                     }
-                    else
+                }
+                else
+                {
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    if (nodeList != null)
                     {
-                        XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                        XmlNode node = nodeList[0];
-                        XmlElement line = (XmlElement)nodeList[0];
-                        if (line != null)
-                        {
-                            if (line.HasAttributes)
-                            {
-                                OldNodeList = nodeList;
-                                File.Delete(FilePath);
-                                UpgradeXml();
-                                return;
-                            }
-                            else
-                            {
-                                nodeList = node.ChildNodes;
-                                line = (XmlElement)nodeList[0];
-                                if (line != null)
-                                {
-                                    if (line.HasAttributes)
-                                    {
-                                        OldNodeList = nodeList;
-                                        File.Delete(FilePath);
-                                        UpgradeXml();
-                                        return;
-                                    }
-                                }
-                                File.Delete(FilePath);
-                                UpdateXml();
-                                Log.Out(string.Format("[SERVERTOOLS] The existing BotResponse.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
-                            }
-                        }
+                        File.Delete(FilePath);
+                        UpgradeXml(nodeList);
+                        return;
                     }
+                    File.Delete(FilePath);
+                    UpdateXml();
+                    return;
                 }
             }
             catch (Exception e)
@@ -189,7 +163,7 @@ namespace ServerTools
             LoadXml();
         }
 
-        private static void UpgradeXml()
+        private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -200,20 +174,20 @@ namespace ServerTools
                     sw.WriteLine("<BotResponse>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Chat Message=\"Any admin on\" Response=\"From the skies comes a bolt of lightning\" /> -->");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType == XmlNodeType.Comment && !OldNodeList[i].OuterXml.Contains("<!-- <Chat Message=\"Any admin on\"") &&
-                            !OldNodeList[i].OuterXml.Contains("<!-- <Version"))
+                        if (!nodeList[i].OuterXml.Contains("<!-- <Chat Message=\"Any admin on\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<Chat Message=\"\""))
                         {
-                            sw.WriteLine(OldNodeList[i].OuterXml);
+                            sw.WriteLine(nodeList[i].OuterXml);
                         }
                     }
                     sw.WriteLine("    <Chat Message=\"\" Response=\"\" />");
-                    for (int i = 0; i < OldNodeList.Count; i++)
+                    for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (OldNodeList[i].NodeType != XmlNodeType.Comment)
+                        if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)OldNodeList[i];
+                            XmlElement line = (XmlElement)nodeList[i];
                             if (line.HasAttributes && line.Name == "Chat")
                             {
                                 string message = "", response = "", exact = "", whisper = "";

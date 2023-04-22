@@ -395,7 +395,7 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Location Name=\"zone2\" Corner1=\"-1,100,-1\" Corner2=\"-10,100,-10\" Destination=\"100,-1,100\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone1\"") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone1\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone2\"") && !nodeList[i].OuterXml.Contains("<Location Name=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {

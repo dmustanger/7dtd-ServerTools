@@ -727,9 +727,9 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Command Default=\"gimme\" Replacement=\"give\" Hidden=\"false\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- All capital letters in commands") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- All capital letters in commands") &&
                             !nodeList[i].OuterXml.Contains("<!-- Leave the default alone.") && !nodeList[i].OuterXml.Contains("<!-- If hidden is set to true") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Command Default=\"gimme") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Command Default=\"gimme") && !nodeList[i].OuterXml.Contains("<Command Default=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);

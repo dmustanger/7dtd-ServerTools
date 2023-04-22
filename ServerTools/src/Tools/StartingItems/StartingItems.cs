@@ -267,8 +267,8 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Item Name=\"foodCanChili") &&
-                            !nodeList[i].OuterXml.Contains("<Item Name=\"") && !nodeList[i].OuterXml.Contains("<!-- <Version"))
+                        if (!nodeList[i].OuterXml.Contains("<!-- <Item Name=\"foodCanChili") &&
+                            !nodeList[i].OuterXml.Contains("<Item Name=\"\"") && !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);
                         }

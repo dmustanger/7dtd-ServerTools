@@ -113,7 +113,7 @@ namespace ServerTools
                             Bounds[1] = 0;
                             Bounds[2] = (bounds.min.z <= bounds.max.z) ? bounds.min.z : bounds.max.z;
                             Bounds[3] = (bounds.max.x >= bounds.min.x) ? bounds.max.x : bounds.min.x;
-                            Bounds[4] = 200;
+                            Bounds[4] = 300;
                             Bounds[5] = (bounds.max.z >= bounds.min.z) ? bounds.max.z : bounds.min.z;
                             ChunkBounds.Add(Bounds);
                         }
@@ -299,9 +299,9 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Chunk Position=\"0,0\" Time=\"week\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- <Version") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- <Version") &&
                             !nodeList[i].OuterXml.Contains("<!-- A chunk") && !nodeList[i].OuterXml.Contains("<!-- Possible time") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Chunk Position"))
+                            !nodeList[i].OuterXml.Contains("<Chunk Position=\"\""))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);
                         }

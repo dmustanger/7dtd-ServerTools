@@ -188,8 +188,8 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Server Message=\"Welcome to the server\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType == XmlNodeType.Comment && !nodeList[i].OuterXml.Contains("<!-- Possible variables") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Server Message=\"Welcome") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- Possible variables") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Server Message=\"Welcome") && !nodeList[i].OuterXml.Contains("<!-- <Server Message=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);

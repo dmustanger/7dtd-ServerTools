@@ -17,7 +17,7 @@ namespace ServerTools
                 {
                     var schedule = Schedule.ToArray();
                     DateTime dateTime = DateTime.Now;
-                    DateTime dateTimeTwo = dateTime.AddSeconds(-22);
+                    DateTime dateTimeTwo = dateTime.AddSeconds(-15);
                     string[] split;
                     for (int i = 0; i < schedule.Length; i++)
                     {

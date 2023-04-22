@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 
 namespace ServerTools
 {
@@ -13,7 +12,6 @@ namespace ServerTools
         public static string Save_Destination = "", Target_Directory = "", Delay = "240";
 
         private static string EventDelay = "";
-        private static Thread BackupThread;
 
         public static void SetDelay(bool _reset)
         {
@@ -59,17 +57,26 @@ namespace ServerTools
 
         public static void Exec()
         {
-            Log.Out(string.Format("[SERVERTOOLS] Autobackup Exec"));
-            if (!IsRunning && !Shutdown.ShuttingDown)
+            if (!IsRunning)
             {
-                IsRunning = true;
-                Log.Out(string.Format("[SERVERTOOLS] Starting auto backup process"));
-                BackupThread = new Thread(new ThreadStart(Prepare))
+                if (!Shutdown.ShuttingDown)
                 {
-                    IsBackground = true,
-                    Priority = ThreadPriority.BelowNormal
-                };
-                BackupThread.Start();
+                    IsRunning = true;
+                    Log.Out(string.Format("[SERVERTOOLS] Starting auto backup process"));
+                    ThreadManager.AddSingleTask(delegate (ThreadManager.TaskInfo _taskInfo)
+                    {
+                        Prepare();
+                        IsRunning = false;
+                    });
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Autobackup skipped due to Shutdown process"));
+                }
+            }
+            else
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Autobackup was unable to start. Prior backup process did not complete or is stuck"));
             }
         }
 
@@ -143,8 +150,6 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Prepare: {0}", e.Message));
             }
-            BackupThread.Abort();
-            IsRunning = false;
         }
 
         private static void DeleteFiles(string[] _files)
@@ -247,13 +252,12 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            OutputStream.Finish();
-                            OutputStream.Close();
+                            OutputStream.Dispose();
                         }
                         Log.Out(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at '{0}'. File is named '{1}'", _destinationDirInfo, name + ".zip"));
                         Phrases.Dict.TryGetValue("AutoBackup2", out phrase);
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                        break;
+                        return;
                     }
                 }
             }

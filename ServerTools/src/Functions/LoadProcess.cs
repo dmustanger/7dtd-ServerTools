@@ -233,6 +233,7 @@ namespace ServerTools
                         CleanBin.Auction = false;
                         CleanBin.Bank = false;
                         CleanBin.Bounties = false;
+                        CleanBin.Chunk_Reset = false;
                         CleanBin.Delays = false;
                         CleanBin.Homes = false;
                         CleanBin.Jail = false;
@@ -241,6 +242,7 @@ namespace ServerTools
                         CleanBin.New_Spawn_Tele = false;
                         CleanBin.Poll = false;
                         CleanBin.Protected_Zones = false;
+                        CleanBin.Region_Reset = false;
                         CleanBin.Shop_Log = false;
                         CleanBin.Waypoints = false;
                         Config.WriteXml();

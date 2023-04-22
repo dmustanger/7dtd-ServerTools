@@ -13,7 +13,7 @@ namespace ServerTools
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine("This was drafted for version 20.6.10");
+                sw.WriteLine("This was drafted for version 20.7.0");
                 sw.WriteLine();
                 sw.WriteLine("If you find mistakes or the file is out of date, let the dev team know.");
                 sw.WriteLine();
@@ -74,6 +74,7 @@ namespace ServerTools
                 sw.WriteLine("Chat_Command_Response");
                 sw.WriteLine("Chat_Flood_Protection");
                 sw.WriteLine("Chat_Logger");
+                sw.WriteLine("Chunk_Reset");
                 sw.WriteLine("Clan_Manager");
                 sw.WriteLine("Clean_Bin");
                 sw.WriteLine("Confetti");
@@ -547,6 +548,20 @@ namespace ServerTools
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine();
                 sw.WriteLine("Logs all chat to a external file.");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine("<Tool Name=\"Chunk_Reset\" />");
+                sw.WriteLine("<Tool Name=\"Chunk_Reset\" Enable=\"False\" />");
+                sw.WriteLine();
+                sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine();
+                sw.WriteLine("Enabling will create a ChunkReset.xml.");
+                sw.WriteLine("Enter the chunk positions and time for reset into the ChunkReset.xml.");
+                sw.WriteLine("Entries to the file should list the positions of the first and second corners designated the intended chunk. The time can be entered as day, week or month />");
+                sw.WriteLine("The reset will only occur at the start of the server.");
+                sw.WriteLine("The ServerTools.bin keeps a record of when the chunk resets occur.");
+                sw.WriteLine("This can be cleared from the bin file using the Clean_Bin tool.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -1573,6 +1588,7 @@ namespace ServerTools
                 sw.WriteLine("Entries to the file should use the 'r.*.*.7rg' format or '*.*'. The time can be entered as day, week or month />");
                 sw.WriteLine("The reset will only occur at the start of the server.");
                 sw.WriteLine("The ServerTools.bin keeps a record of when the region resets occur.");
+                sw.WriteLine("This can be cleared from the bin file using the Clean_Bin tool.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -1839,10 +1855,13 @@ namespace ServerTools
                 sw.WriteLine("Set your server API_Key value found at https://7daystodie-servers.com for API_Key");
                 sw.WriteLine("Set a numeric value for Delay_Between_Rewards");
                 sw.WriteLine();
+                sw.WriteLine("A file named VoteRewards.xml will be created upon enabling. Enter the items you would like players to receive by name. Names are found in the items.xml for your server.");
+                sw.WriteLine("A file named BonusVoteRewards.xml will be created upon enabling.");
+                sw.WriteLine("This is not necessary to fill. Upon reaching the weekly vote count, they will receive items from this bonus list. If left blank, they receive the normal reward items");
                 sw.WriteLine("Enabling allows players to use chat command /reward after voting at https://7daystodie-servers.com for your server.");
-                sw.WriteLine("If a player has not voted, they will be told to vote at YourVotingSite value.");
-                sw.WriteLine("The APIKey is attached to your registered server listed in your server details at https://7daystodie-servers.com");
-                sw.WriteLine("DelayBetweenRewards controls how many hours a player must wait before being able to vote and receive a reward for voting.");
+                sw.WriteLine("If a player has not voted, they will be told to vote at Your_Voting_Site value.");
+                sw.WriteLine("The API_Key is attached to your registered server listed in your server details at https://7daystodie-servers.com");
+                sw.WriteLine("Delay_Between_Uses controls how many hours a player must wait before being able use /reward to receive items for voting.");
                 sw.WriteLine();
                 sw.WriteLine("Set a numeric value for Reward_Count");
                 sw.WriteLine("Set True or False for Reward_Entity");
