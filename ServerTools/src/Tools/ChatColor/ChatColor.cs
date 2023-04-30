@@ -137,7 +137,6 @@ namespace ServerTools
 
             using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
-                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ChatColor>");
                 sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                 sw.WriteLine("    <!-- NameColor and PrefixColor can come from the ColorList.xml -->");
@@ -652,7 +651,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<ChatColor>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- NameColor and PrefixColor can come from the ColorList.xml -->");

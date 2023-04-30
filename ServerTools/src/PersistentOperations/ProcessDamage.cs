@@ -34,8 +34,7 @@ namespace ServerTools
                                         {
                                             sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' '{6}' named '{7}' @ '{8}' using '{9}' for '{10}' damage. Distance '{11}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, cInfoVictim.PlatformId.CombinedString, cInfoVictim.CrossplatformId.CombinedString, cInfoVictim.playerName, cInfoVictim.latestPlayerData.ecd.pos, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, distance));
                                             sw.WriteLine();
-                                            sw.Flush();
-                                            sw.Close();
+                                            sw.Dispose();
                                         }
                                     }
                                     if (DamageDetector.IsEnabled && !DamageDetector.IsValidPvP(_victim as EntityPlayer, cInfoAttacker, ___strength, ___attackingItem))
@@ -96,8 +95,7 @@ namespace ServerTools
                                 {
                                     sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' named '{6}' @ '{7}' using '{8}' for '{9}' damage. Distance '{10}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, _victim.entityId, _victim.EntityClass.entityClassName, _victim.position, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, distance));
                                     sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
+                                    sw.Dispose();
                                 }
                             }
                             if (DamageDetector.IsEnabled && !DamageDetector.IsValidEntityDamage(attackingPlayer, cInfoAttacker, ___strength, ___attackingItem))
@@ -127,8 +125,7 @@ namespace ServerTools
                                 {
                                     sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' named '{6}' @ '{7}' using '{8}' for '{9}' damage. Distance '{10}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, _victim.entityId, _victim.EntityClass.entityClassName, _victim.position, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, distance));
                                     sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
+                                    sw.Dispose();
                                 }
                             }
                             if (DamageDetector.IsEnabled && !DamageDetector.IsValidEntityDamage(attackingPlayer, cInfoAttacker, ___strength, ___attackingItem))

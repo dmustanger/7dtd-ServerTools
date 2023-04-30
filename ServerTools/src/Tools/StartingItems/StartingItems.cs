@@ -147,7 +147,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<StartingItems>");
                     sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
                     sw.WriteLine("    <!-- <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" /> -->");
@@ -261,7 +260,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<StartingItems>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" /> -->");

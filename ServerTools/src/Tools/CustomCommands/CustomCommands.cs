@@ -136,7 +136,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {SetTeleport}, {RemoveTeleport}, {Teleport}, whisper, global -->");
@@ -644,7 +643,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {SetTeleport}, {RemoveTeleport}, {Teleport}, whisper, global -->");

@@ -561,18 +561,18 @@ namespace ServerTools
                 Dict.Remove("Bounties");
                 Log.Out(string.Format("[SERVERTOOLS] Bounties disabled"));
             }
-            if (BreakTime.IsEnabled)
+            if (BreakReminder.IsEnabled)
             {
-                if (!Dict.Contains("Break time"))
+                if (!Dict.Contains("Break reminder"))
                 {
-                    Dict.Add("Break time");
-                    Log.Out(string.Format("[SERVERTOOLS] Break time enabled"));
+                    Dict.Add("Break reminder");
+                    Log.Out(string.Format("[SERVERTOOLS] Break reminder enabled"));
                 }
             }
-            else if (Dict.Contains("Break time") && !_initiating)
+            else if (Dict.Contains("Break reminder") && !_initiating)
             {
-                Dict.Remove("Break time");
-                Log.Out(string.Format("[SERVERTOOLS] Break time disabled"));
+                Dict.Remove("Break reminder");
+                Log.Out(string.Format("[SERVERTOOLS] Break reminder disabled"));
             }
             if (ChatCommandLog.IsEnabled)
             {

@@ -51,11 +51,11 @@ namespace ServerTools
 
         private static void GameStartDone()
         {
-            Log.Out(string.Format("[SERVERTOOLS] The server has completed loading. Beginning to process ServerTools"));
+            Log.Out("[SERVERTOOLS] The server has completed loading. Beginning to process ServerTools");
             if (!Directory.Exists(ConfigPath))
             {
                 Directory.CreateDirectory(ConfigPath);
-                Log.Out(string.Format("[SERVERTOOLS] Created new ServerTools directory at '{0}'", ConfigPath));
+                Log.Out("[SERVERTOOLS] Created new ServerTools directory at '{0}'", ConfigPath);
             }
             LoadProcess.Load();
         }
@@ -409,7 +409,7 @@ namespace ServerTools
                     {
                         RegionReset.RegionPlayer.Remove(_cInfo.entityId);
                     }
-                    EventSchedule.RemoveBonusEntry("Bonus_" + id);
+                    EventSchedule.Expired.Add("Bonus_" + id);
                 }
                 else
                 {

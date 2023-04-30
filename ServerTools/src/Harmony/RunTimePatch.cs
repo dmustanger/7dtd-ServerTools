@@ -404,12 +404,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    MethodInfo postfix = typeof(Injections).GetMethod("NetPackageTileEntity_Setup_Postfix");
-                    if (postfix == null)
+                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackageTileEntity_Setup_Prefix");
+                    if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageTileEntity_Setup_Postfix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageTileEntity_Setup_Prefix"));
                     }
-                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
                 original = AccessTools.Method(typeof(GameManager), "DropContentOfLootContainerServer", new Type[] { typeof(BlockValue), typeof(Vector3i), typeof(int) });
@@ -501,6 +501,23 @@ namespace ServerTools
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
+
+                original = AccessTools.Method(typeof(TileEntity), "setModified");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: TileEntity.setModified Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("TileEntity_setModified_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: TileEntity_setModified_Prefix"));
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                
 
                 Log.Out(string.Format("[SERVERTOOLS] Runtime patching complete"));
             }

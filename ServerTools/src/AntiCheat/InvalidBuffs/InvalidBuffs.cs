@@ -110,9 +110,8 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<InvalidBuffs>");
-                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Invalid Buff=\"godmode\" /> -->");
                     sw.WriteLine("    <!-- <Invalid Buff=\"twitch_immortal\" /> -->");
                     sw.WriteLine("    <!-- <Invalid Buff=\"twitch_tough1\" /> -->");
@@ -186,7 +185,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<InvalidBuffs>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Invalid Buff=\"godmode\" /> -->");

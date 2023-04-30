@@ -14,12 +14,19 @@ namespace ServerTools
 
         private static string EventDelay = "";
 
-        public static void SetDelay()
+        public static void SetDelay(bool _reset, bool _first)
         {
             if (EventDelay != Time)
             {
+                if (!EventSchedule.Expired.Contains("Shutdown"))
+                {
+                    EventSchedule.Expired.Add("Shutdown");
+                }
                 EventDelay = Time;
-                EventSchedule.Clear("Shutdown_");
+                _reset = true;
+            }
+            if (_reset || _first)
+            {
                 if (Time.Contains(",") && Time.Contains(":"))
                 {
                     string[] times = Time.Split(',');
@@ -29,7 +36,15 @@ namespace ServerTools
                         int.TryParse(timeSplit[0], out int hours);
                         int.TryParse(timeSplit[1], out int minutes);
                         DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                        EventSchedule.Schedule.Add("Shutdown_" + time, time);
+                        if (DateTime.Now < time)
+                        {
+                            EventSchedule.AddToSchedule("Shutdown_" + time, time);
+                        }
+                        else
+                        {
+                            time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
+                            EventSchedule.AddToSchedule("Shutdown_" + time, time);
+                        }
                     }
                 }
                 else if (Time.Contains(":"))
@@ -38,14 +53,22 @@ namespace ServerTools
                     int.TryParse(timeSplit[0], out int hours);
                     int.TryParse(timeSplit[1], out int minutes);
                     DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                    EventSchedule.Schedule.Add("Shutdown_" + time, time);
+                    if (DateTime.Now < time)
+                    {
+                        EventSchedule.AddToSchedule("Shutdown_" + time, time);
+                    }
+                    else
+                    {
+                        time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
+                        EventSchedule.AddToSchedule("Shutdown_" + time, time);
+                    }
                 }
                 else
                 {
                     if (int.TryParse(Time, out int delay))
                     {
                         DateTime time = DateTime.Now.AddMinutes(delay);
-                        EventSchedule.Schedule.Add("Shutdown_" + time, time);
+                        EventSchedule.AddToSchedule("Shutdown_" + time, time);
                     }
                     else
                     {
@@ -73,7 +96,6 @@ namespace ServerTools
                 }
                 return;
             }
-            EventSchedule.Remove("Shutdown");
             StartShutdown(Countdown);
         }
 

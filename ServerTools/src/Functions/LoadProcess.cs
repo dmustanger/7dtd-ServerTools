@@ -132,7 +132,6 @@ namespace ServerTools
                     CommandList.Load();
                     InteractiveMap.SetWorldSize();
                     InteractiveMap.LocateMapFolder();
-                    EventSchedule.Schedule.Add("Reset_", DateTime.Today.AddDays(1).AddSeconds(1));
                     Mods.Load();
                     Phrases.Load();
                     HowToSetup.Load();
@@ -247,11 +246,9 @@ namespace ServerTools
                         CleanBin.Waypoints = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        ActiveTools.Exec(false);
                         Log.Out(string.Format("[SERVERTOOLS] ServerTools.bin has been cleaned. The Clean_Bin tool and all of its options are now disabled"));
                     }
                     Track.Cleanup();
-                    ActiveTools.Exec(true);
                     Timers.PersistentDataSave();
                     Log.Out(string.Format("[SERVERTOOLS] Running ServerTools Config v.{0}", Config.Version));
                 }

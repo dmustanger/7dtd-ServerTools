@@ -27,6 +27,7 @@ namespace ServerTools
 
         public static void Unload()
         {
+
             Dict.Clear();
             FileWatcher.Dispose();
             IsRunning = false;
@@ -114,9 +115,8 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Watchlist>");
-                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Player Id=\"Steam_12345678909876543\" Reason=\"Suspected cheating\" /> -->");
                     sw.WriteLine("    <!-- <Player Id=\"EOS_1a3b5c7a9b1c3a5b7c9a1b3c5a7b9c1a3\" Reason=\"Cheaters R Assho\" /> -->");
                     sw.WriteLine();
@@ -159,12 +159,19 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void SetDelay(bool _reset)
+        public static void SetDelay(bool _reset, bool _first)
         {
-            if (EventDelay != Delay || _reset)
+            if (EventDelay != Delay)
             {
+                if (!EventSchedule.Expired.Contains("WatchList"))
+                {
+                    EventSchedule.Expired.Add("WatchList");
+                }
                 EventDelay = Delay;
-                EventSchedule.Clear("WatchList_");
+                _reset = true;
+            }
+            if (_reset || _first)
+            {
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');
@@ -174,7 +181,15 @@ namespace ServerTools
                         int.TryParse(timeSplit[0], out int hours);
                         int.TryParse(timeSplit[1], out int minutes);
                         DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                        EventSchedule.Schedule.Add("WatchList_" + time, time);
+                        if (DateTime.Now < time)
+                        {
+                            EventSchedule.AddToSchedule("WatchList_" + time, time);
+                        }
+                        else
+                        {
+                            time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
+                            EventSchedule.AddToSchedule("WatchList_" + time, time);
+                        }
                     }
                 }
                 else if (Delay.Contains(":"))
@@ -183,14 +198,22 @@ namespace ServerTools
                     int.TryParse(timeSplit[0], out int hours);
                     int.TryParse(timeSplit[1], out int minutes);
                     DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                    EventSchedule.Schedule.Add("WatchList_" + time, time);
+                    if (DateTime.Now < time)
+                    {
+                        EventSchedule.AddToSchedule("WatchList_" + time, time);
+                    }
+                    else
+                    {
+                        time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
+                        EventSchedule.AddToSchedule("WatchList_" + time, time);
+                    }
                 }
                 else
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
                         DateTime time = DateTime.Now.AddMinutes(delay);
-                        EventSchedule.Schedule.Add("WatchList_" + time, time);
+                        EventSchedule.AddToSchedule("WatchList_" + time, time);
                     }
                     else
                     {
@@ -271,7 +294,6 @@ namespace ServerTools
                 File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Watchlist>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Player Id=\"Steam_12345678909876543\" Reason=\"Suspected cheating.\" /> -->");

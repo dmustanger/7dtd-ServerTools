@@ -67,7 +67,7 @@ namespace ServerTools
                         }
                         if (Shutdown.IsEnabled)
                         {
-                            Shutdown.SetDelay();
+                            Shutdown.SetDelay(true, false);
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled and the next shutdown has been reset");
                         }
                         else

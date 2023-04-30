@@ -598,7 +598,7 @@ public static class Injections
         return true;
     }
 
-    public static void NetPackageTileEntity_Setup_Postfix(NetPackageTileEntity __instance, TileEntity _te, byte _handle)
+    public static void NetPackageTileEntity_Setup_Prefix(NetPackageTileEntity __instance, TileEntity _te, byte _handle)
     {
         try
         {
@@ -618,7 +618,7 @@ public static class Injections
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageTileEntity_Setup_Postfix: {0}", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageTileEntity_Setup_Prefix: {0}", e.Message));
         }
     }
 
@@ -734,10 +734,11 @@ public static class Injections
 
     public static bool Log_Out_Prefix(string _txt)
     {
-        if ((OutputLog.Vehicle_Manager_Off && _txt.Contains("VehicleManager")) || _txt.Contains(OutputLog.lastOutput))
+        if (OutputLog.Vehicle_Manager_Off && _txt.Contains("VehicleManager") || _txt.Equals(OutputLog.lastOutput))
         {
             return false;
         }
+        OutputLog.lastOutput = _txt;
         return true;
     }
 
@@ -784,5 +785,11 @@ public static class Injections
                 KillNotice.Exec(__instance, ___entityThatKilledMe, ___RecordedDamage);
             }
         }
+    }
+
+    public static bool TileEntity_setModified_Prefix()
+    {
+
+        return true;
     }
 }

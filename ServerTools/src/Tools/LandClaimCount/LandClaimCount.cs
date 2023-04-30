@@ -117,9 +117,8 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LandClaimCount>");
-                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"SaladFace\" Limit=\"2\" /> -->");
                     sw.WriteLine("    <!-- <Player Id=\"EOS_7a6b5c6d1e1f9g1h2i345678911234567890\" Name=\"SaladFace\" Limit=\"2\" /> -->");
                     sw.WriteLine("    <Player Id=\"\" Name=\"\" Limit=\"\" />");
@@ -228,7 +227,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LandClaimCount>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"SaladFace\" Limit=\"2\" /> -->");

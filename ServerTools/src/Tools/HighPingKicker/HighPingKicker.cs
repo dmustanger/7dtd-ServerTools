@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -113,7 +114,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<HighPing>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Player Id=\"Steam_12345678909876543\" Name=\"Example\" /> -->");
@@ -164,32 +164,36 @@ namespace ServerTools
                 {
                     return;
                 }
-                int clientCount = clients.Count;
-                for (int i = 0; i < clientCount; i++)
+                ClientInfo cInfo;
+                for (int i = 0; i < clients.Count; i++)
                 {
-                    ClientInfo cInfo = clients[i];
-                    if (Dict.ContainsKey(cInfo.PlatformId.CombinedString) || Dict.ContainsKey(cInfo.CrossplatformId.CombinedString))
+                    cInfo = clients[i];
+                    if (cInfo != null)
                     {
-                        continue;
-                    }
-                    else if (cInfo.ping >= Max_Ping)
-                    {
-                        if (Violations.ContainsKey(cInfo.entityId))
+                        if ((cInfo.PlatformId != null && Dict.ContainsKey(cInfo.PlatformId.CombinedString)) || 
+                            (cInfo.CrossplatformId != null && Dict.ContainsKey(cInfo.CrossplatformId.CombinedString)))
                         {
-                            Violations[cInfo.entityId] += 1;
+                            continue;
                         }
-                        else
+                        else if (cInfo.ping >= Max_Ping)
                         {
-                            Violations.Add(cInfo.entityId, 1);
+                            if (Violations.ContainsKey(cInfo.entityId))
+                            {
+                                Violations[cInfo.entityId] += 1;
+                            }
+                            else
+                            {
+                                Violations.Add(cInfo.entityId, 1);
+                            }
+                            if (Violations[cInfo.entityId] >= Flags)
+                            {
+                                KickPlayer(cInfo);
+                            }
                         }
-                        if (Violations[cInfo.entityId] >= Flags)
+                        else if (Violations.ContainsKey(cInfo.entityId))
                         {
-                            KickPlayer(cInfo);
+                            Violations.Remove(cInfo.entityId);
                         }
-                    }
-                    else if (Violations.ContainsKey(cInfo.entityId))
-                    {
-                        Violations.Remove(cInfo.entityId);
                     }
                 }
             }
@@ -209,7 +213,10 @@ namespace ServerTools
                 phrase = phrase.Replace("{Value}", _cInfo.ping.ToString());
                 phrase = phrase.Replace("{MaxPing}", Max_Ping.ToString());
                 ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, phrase), null);
+                ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                {
+                    ThreadManager.StartCoroutine(KickPlayer(_cInfo, phrase));
+                }, null);
                 Log.Out(string.Format("[SERVERTOOLS] Kicked player with id '{0}' '{1}' named '{2}' for high ping violation of '{3}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _cInfo.ping));
                 return;
             }
@@ -219,6 +226,22 @@ namespace ServerTools
             }
         }
 
+        private static IEnumerator KickPlayer(ClientInfo _cInfo, string _phrase)
+        {
+            try
+            {
+                if (_cInfo != null)
+                {
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase), null);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Optimize.KickPlayer: {0}", e.StackTrace));
+            }
+            yield break;
+        }
+
         private static void UpgradeXml(XmlNodeList nodeList)
         {
             try
@@ -226,7 +249,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<HighPing>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Player Id=\"Steam_12345678909876543\" Name=\"Example\" /> -->");

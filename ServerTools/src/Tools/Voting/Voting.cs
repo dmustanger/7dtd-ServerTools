@@ -19,7 +19,8 @@ namespace ServerTools
 
         private static Dictionary<string, int[]> Rewards = new Dictionary<string, int[]>();
         private static Dictionary<string, int[]> BonusRewards = new Dictionary<string, int[]>();
-        private static List<string> RewardPayout, BonusPayout;
+        private static List<string> RewardPayout = new List<string>();
+        private static List<string> BonusPayout = new List<string>();
 
         private const string fileReward = "VoteReward.xml";
         private static readonly string FilePathReward = string.Format("{0}/{1}", API.ConfigPath, fileReward);
@@ -145,14 +146,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    if (nodeList != null)
+                    File.Delete(FilePathReward);
+                    if (childNodes != null && childNodes[0] != null)
                     {
-                        File.Delete(FilePathReward);
-                        UpgradeRewardXml(nodeList);
+                        UpgradeRewardXml(childNodes);
                         return;
                     }
-                    File.Delete(FilePathReward);
                     UpdateRewardXml();
                     return;
                 }
@@ -269,14 +268,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    if (nodeList != null)
+                    File.Delete(FilePathBonus);
+                    if (childNodes != null && childNodes[0] != null)
                     {
-                        File.Delete(FilePathBonus);
-                        UpgradeBonusXml(nodeList);
+                        UpgradeBonusXml(childNodes);
                         return;
                     }
-                    File.Delete(FilePathBonus);
                     UpdateBonusXml();
                     return;
                 }
@@ -302,7 +299,6 @@ namespace ServerTools
                 FileWatcherReward.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePathReward, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<VoteRewards>");
                     sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
@@ -333,9 +329,8 @@ namespace ServerTools
                 FileWatcherBonus.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePathBonus, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<BonusVoteRewards>");
-                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
                     sw.WriteLine("    <!-- <Bonus ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
                     sw.WriteLine("    <Bonus ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
@@ -847,7 +842,6 @@ namespace ServerTools
                 FileWatcherReward.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePathReward, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<VoteRewards>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 1 for MinQuality and MaxQuality -->");
@@ -913,7 +907,6 @@ namespace ServerTools
                 FileWatcherBonus.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePathBonus, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<BonusVoteRewards>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 1 for MinQuality and MaxQuality -->");

@@ -120,9 +120,8 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<InfoTicker>");
-                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName} -->");
                     sw.WriteLine("    <!-- <Ticker Message=\"Have a suggestion or complaint? Post on our forums or discord and let us know\" /> -->");
                     sw.WriteLine("    <!-- <Ticker Message=\"Type /commands for a list of the chat commands\" /> -->");
@@ -163,12 +162,19 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void SetDelay(bool _reset)
+        public static void SetDelay(bool _reset, bool _first)
         {
-            if (EventDelay != Delay || _reset)
+            if (EventDelay != Delay)
             {
+                if (!EventSchedule.Expired.Contains("InfoTicker"))
+                {
+                    EventSchedule.Expired.Add("InfoTicker");
+                }
                 EventDelay = Delay;
-                EventSchedule.Clear("InfoTicker_");
+                _reset = true;
+            }
+            if (_reset || _first)
+            {
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');
@@ -178,9 +184,14 @@ namespace ServerTools
                         int.TryParse(timeSplit[0], out int hours);
                         int.TryParse(timeSplit[1], out int minutes);
                         DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                        if (EventSchedule.Schedule.ContainsKey("InfoTicker_" + time))
+                        if (DateTime.Now < time)
                         {
-                            EventSchedule.Schedule.Add("InfoTicker_" + time, time);
+                            EventSchedule.AddToSchedule("InfoTicker_" + time, time);
+                        }
+                        else
+                        {
+                            time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
+                            EventSchedule.AddToSchedule("InfoTicker_" + time, time);
                         }
                     }
                 }
@@ -190,14 +201,22 @@ namespace ServerTools
                     int.TryParse(timeSplit[0], out int hours);
                     int.TryParse(timeSplit[1], out int minutes);
                     DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                    EventSchedule.Schedule.Add("InfoTicker_" + time, time);
+                    if (DateTime.Now < time)
+                    {
+                        EventSchedule.AddToSchedule("InfoTicker_" + time, time);
+                    }
+                    else
+                    {
+                        time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
+                        EventSchedule.AddToSchedule("InfoTicker_" + time, time);
+                    }
                 }
                 else
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
                         DateTime time = DateTime.Now.AddMinutes(delay);
-                        EventSchedule.Schedule.Add("InfoTicker_" + time, time);
+                        EventSchedule.AddToSchedule("InfoTicker_" + time, time);
                     }
                     else
                     {
@@ -286,7 +305,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<InfoTicker>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName} -->");
@@ -294,9 +312,8 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Ticker Message=\"Type /commands for a list of the chat commands\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- Possible variables") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Have a suggestion") && !nodeList[i].OuterXml.Contains("<Ticker Message=\"\"") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Type /commands") &&
+                        if (!nodeList[i].OuterXml.Contains("<!-- Possible variables") && !nodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Have a suggestion") &&
+                            !nodeList[i].OuterXml.Contains("<Ticker Message=\"\"") && !nodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Type /commands") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
                         {
                             sw.WriteLine(nodeList[i].OuterXml);

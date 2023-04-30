@@ -72,7 +72,7 @@ namespace ServerTools
 
         public static void DrawLottery()
         {
-            int winningNumbers = new System.Random().Next(100, LastNumber + 1);
+            int winningNumbers = new Random().Next(100, LastNumber + 1);
             string numbers = winningNumbers.ToString();
             Phrases.Dict.TryGetValue("Lottery4", out string phrase);
             ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
@@ -178,7 +178,7 @@ namespace ServerTools
         {
             if (Entries.Count > 0)
             {
-                int winningNumbers = new System.Random().Next(100, LastNumber + 1);
+                int winningNumbers = new Random().Next(100, LastNumber + 1);
                 string numbers = winningNumbers.ToString();
                 Phrases.Dict.TryGetValue("Lottery4", out string phrase);
                 ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);

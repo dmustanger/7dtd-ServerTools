@@ -121,7 +121,7 @@
     <Compile Include="src\Tools\Bank\Bank.cs" />
     <Compile Include="src\Tools\BlockLogger\BlockLogger.cs" />
     <Compile Include="src\Tools\BloodmoonWarrior\BloodmoonWarrior.cs" />
-    <Compile Include="src\Tools\BreakTime\BreakTime.cs" />
+    <Compile Include="src\Tools\BreakReminder\BreakReminder.cs" />
     <Compile Include="src\Tools\ChatColor\ColorList.cs" />
     <Compile Include="src\Tools\CleanBin\CleanBin.cs" />
     <Compile Include="src\Tools\ConsoleCommandLog\Console_Command_Log.cs" />

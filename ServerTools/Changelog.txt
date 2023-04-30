@@ -1,5 +1,19 @@
 ﻿CHANGELOG
 
+20.7.1
+Built using Alpha 20 stable assets
+Functioning with Alpha 20 stable. Untested with other versions
+
+-Added option to console command st-ResetPoi that prevents
+resetting POI that contain a player claim
+-Fixed Voting tool not working as intended
+-Changed console command st-vl to provide the vehicle owner id
+and name if available
+-Changed internal event scheduler to improve reliability
+of operation
+-Changed xpath file update for Wallet tool to avoid irregular 
+custom user entries that may offset the xml format
+
 20.7.0
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

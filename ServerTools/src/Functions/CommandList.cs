@@ -113,7 +113,6 @@ namespace ServerTools
             FileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
-                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<CommandList>");
                 sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                 sw.WriteLine("    <!-- Leave the default alone. Only edit the replacement to your desired command -->");
@@ -718,7 +717,6 @@ namespace ServerTools
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     List<string> commandList = Commands;
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<CommandList>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Leave the default alone. Only edit the replacement to your desired command -->");

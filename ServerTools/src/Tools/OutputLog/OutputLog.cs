@@ -42,19 +42,15 @@ namespace ServerTools
         {
             try
             {
-                if (!lastOutput.Equals(msg))
-                {
-                    lastOutput = msg;
-                    ActiveLog.Add(msg);
-                    //using (StreamWriter sw = new StreamWriter(Debug, true, Encoding.UTF8))
-                    //{
-                    //    sw.WriteLine(string.Format("msg: {0} / trace {1} / type {2}", msg, trace, type));
-                    //    sw.WriteLine();
-                    //    sw.Flush();
-                    //    sw.Close();
-                    //    sw.Dispose();
-                    //}
-                }
+                ActiveLog.Add(msg);
+                //using (StreamWriter sw = new StreamWriter(Debug, true, Encoding.UTF8))
+                //{
+                //    sw.WriteLine(string.Format("msg: {0} / trace {1} / type {2}", msg, trace, type));
+                //    sw.WriteLine();
+                //    sw.Flush();
+                //    sw.Close();
+                //    sw.Dispose();
+                //}
             }
             catch (Exception e)
             {

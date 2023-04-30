@@ -225,7 +225,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Zones>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Do not use decimals in the corner positions -->");
@@ -272,21 +271,67 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void SetDelay(bool _reset)
+        public static void SetDelay(bool _reset, bool _first)
         {
-            if (EventDelay != Reminder_Delay || _reset)
+            if (EventDelay != Reminder_Delay)
             {
-                EventDelay = Reminder_Delay;
-                EventSchedule.Clear("Zones_");
-                if (int.TryParse(Reminder_Delay, out int delay))
+                if (!EventSchedule.Expired.Contains("Zones"))
                 {
-                    DateTime time = DateTime.Now.AddMinutes(delay);
-                    EventSchedule.Schedule.Add("Zones_" + time, time);
+                    EventSchedule.Expired.Add("Zones");
+                }
+                EventDelay = Reminder_Delay;
+                _reset = true;
+            }
+            if (_reset || _first)
+            {
+                if (Reminder_Delay.Contains(",") && Reminder_Delay.Contains(":"))
+                {
+                    string[] times = Reminder_Delay.Split(',');
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        string[] timeSplit = times[i].Split(':');
+                        int.TryParse(timeSplit[0], out int hours);
+                        int.TryParse(timeSplit[1], out int minutes);
+                        DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                        if (DateTime.Now < time)
+                        {
+                            EventSchedule.AddToSchedule("Zones_" + time, time);
+                        }
+                        else
+                        {
+                            time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
+                            EventSchedule.AddToSchedule("Zones_" + time, time);
+                        }
+                    }
+                }
+                else if (Reminder_Delay.Contains(":"))
+                {
+                    string[] timeSplit = Reminder_Delay.Split(':');
+                    int.TryParse(timeSplit[0], out int hours);
+                    int.TryParse(timeSplit[1], out int minutes);
+                    DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                    if (DateTime.Now < time)
+                    {
+                        EventSchedule.AddToSchedule("Zones_" + time, time);
+                    }
+                    else
+                    {
+                        time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
+                        EventSchedule.AddToSchedule("Zones_" + time, time);
+                    }
                 }
                 else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Invalid Zones Reminder_Delay detected. Use a single integer"));
-                    Log.Out(string.Format("[SERVERTOOLS] Example: 20 or 40"));
+                    if (int.TryParse(Reminder_Delay, out int delay))
+                    {
+                        DateTime time = DateTime.Now.AddMinutes(delay);
+                        EventSchedule.AddToSchedule("Zones_" + time, time);
+                    }
+                    else
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Invalid Zones Reminder_Delay detected. Use a single integer"));
+                        Log.Out(string.Format("[SERVERTOOLS] Example: 20 or 40"));
+                    }
                 }
             }
         }
@@ -664,9 +709,8 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Zones>");
-                    sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
+                    sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Do not use decimals in the corner positions -->");
                     sw.WriteLine("    <!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
                     sw.WriteLine("    <!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");

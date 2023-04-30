@@ -120,14 +120,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
-                    if (nodeList != null)
+                    File.Delete(FilePath);
+                    if (childNodes != null && childNodes[0] != null)
                     {
-                        File.Delete(FilePath);
-                        UpgradeXml(nodeList);
+                        UpgradeXml(childNodes);
                         return;
                     }
-                    File.Delete(FilePath);
                     UpdateXml();
                     return;
                 }
@@ -153,7 +151,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Travel>");
                     sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
                     sw.WriteLine("    <!-- <Location Name=\"zone1\" Corner1=\"0,100,0\" Corner2=\"10,100,10\" Destination=\"-100,-1,-100\" /> -->");
@@ -388,7 +385,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Travel>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Location Name=\"zone1\" Corner1=\"0,100,0\" Corner2=\"10,100,10\" Destination=\"-100,-1,-100\" /> -->");

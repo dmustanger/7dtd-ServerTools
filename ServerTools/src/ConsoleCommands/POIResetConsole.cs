@@ -14,9 +14,10 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. st-rpoi <Size>\n" +
+                "  1. st-rpoi <Size> true/false\n" +
                 "1. Resets POI locations to their original state.\n" +
-                "*Note* <Size> can be small, medium, large or all.\n";
+                "*Note* <Size> can be small, medium, large or all.\n" +
+                "*Note* true/false controls if a POI containing a player claim will be reset.\n";
         }
 
         public override string[] GetCommands()
@@ -28,9 +29,9 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count != 1)
+                if (_params.Count != 2)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                     return;
                 }
                 if (GameManager.Instance == null && GameManager.Instance.GetDynamicPrefabDecorator() == null)
@@ -55,6 +56,11 @@ namespace ServerTools
                     Log.Out(string.Format("[SERVERTOOLS] Improper size: {0}", size));
                     return;
                 }
+                if (!bool.TryParse(_params[1].ToLower(), out bool result))
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Invalid true or false: {0}", _params[1]));
+                    return;
+                }
                 World world = GameManager.Instance.World;
                 ChunkCluster chunkCache = world.ChunkCache;
                 ChunkProviderGenerateWorld chunkProviderGenerateWorld = chunkCache.ChunkProvider as ChunkProviderGenerateWorld;
@@ -63,21 +69,33 @@ namespace ServerTools
                     Log.Out(string.Format("[SERVERTOOLS] Failed to reset POI"));
                     return;
                 }
+                PrefabInstance prefab;
                 Chunk[] neighbors = new Chunk[8];
                 Bounds bounds = new Bounds();
                 HashSetLong hashSet = new HashSetLong();
                 Vector3i max, min;
                 long hash;
                 int num, num2, num3, num4;
+                Dictionary<Vector3i, PersistentPlayerData> landClaims =  GameManager.Instance.persistentPlayers.m_lpBlockMap;
                 int prefabCount = dynamicPrefabs.Count;
                 for (int i = 0; i < prefabCount; i++)
                 {
-                    PrefabInstance prefab = dynamicPrefabs[i];
+                    prefab = dynamicPrefabs[i];
                     if (size == "all" || (prefab.boundingBoxSize.Volume() <= 40 && size == "small") || 
                         (prefab.boundingBoxSize.Volume() > 40 && prefab.boundingBoxSize.Volume() <= 80 && size == "medium") ||
                         (prefab.boundingBoxSize.Volume() > 80 && size == "large"))
                     {
                         bounds = prefab.GetAABB();
+                        if (!result)
+                        {
+                            foreach (var entry in landClaims)
+                            {
+                                if (bounds.Contains(entry.Key))
+                                {
+                                    continue;
+                                }
+                            }
+                        }
                         max = new Vector3i(bounds.max.x, bounds.max.y, bounds.max.z);
                         min = new Vector3i(bounds.min.x, bounds.min.y, bounds.min.z);
                         num = World.toChunkXZ(min.x);
@@ -106,7 +124,7 @@ namespace ServerTools
                 {
                     if (!chunkProviderGenerateWorld.GenerateSingleChunk(world.ChunkCache, key, true))
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Failed regenerating chunk at position {0}/{1}", WorldChunkCache.extractX(key) << 4, WorldChunkCache.extractZ(key) << 4));
+                        SdtdConsole.Instance.Output(string.Format("Failed regenerating chunk at position {0}/{1}", WorldChunkCache.extractX(key) << 4, WorldChunkCache.extractZ(key) << 4));
                     }
                 }
                 chunkProviderGenerateWorld.Cleanup();

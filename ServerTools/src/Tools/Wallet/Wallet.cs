@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 using UnityEngine;
 
@@ -21,25 +22,20 @@ namespace ServerTools
                 if (Item_Name != _item)
                 {
                     Item_Name = _item;
-                }
-                if (File.Exists(GeneralOperations.XPathDir + "items.xml"))
-                {
-                    string[] arrLines = File.ReadAllLines(GeneralOperations.XPathDir + "items.xml");
-                    for (int i = 0; i < arrLines.Length; i++)
+                    if (File.Exists(GeneralOperations.XPathDir + "items.xml"))
                     {
-                        if (arrLines[i].Contains("set xpath"))
-                        {
-                            if (arrLines[i].Contains(_item))
-                            {
-                                return;
-                            }
-                            else
-                            {
-                                arrLines[i] = string.Format("<set xpath=\"/items/item[@name='{0}']/property[@name='Tags']/@value\">dukes,currency</set>", _item);
-                                File.WriteAllLines(GeneralOperations.XPathDir + "items.xml", arrLines);
-                                break;
-                            }
-                        }
+                        File.Delete(GeneralOperations.XPathDir + "items.xml");
+                    }
+                    using (StreamWriter sw = new StreamWriter(GeneralOperations.XPathDir + "items.xml", false, Encoding.UTF8))
+                    {
+                        sw.WriteLine("<configs>");
+                        sw.WriteLine();
+                        sw.WriteLine(string.Format("<set xpath=\"/items/item[@name='{0}']/property[@name='Tags']/@value\">dukes,currency</set>", _item));
+                        sw.WriteLine("<!-- ..... Wallet and Bank currency ^ ..... -->");
+                        sw.WriteLine();
+                        sw.WriteLine("</configs>");
+                        sw.Flush();
+                        sw.Close();
                     }
                 }
             }

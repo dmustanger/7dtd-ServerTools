@@ -123,7 +123,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LoginNotice>");
                     sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
                     sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Macaroni\" Message=\"Time to kick ass and chew bubble gum\" Expiry=\"2050-01-11 07:30:00\" /> -->");
@@ -230,7 +229,6 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<LoginNotice>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Macaroni\" Message=\"Time to kick ass and chew bubble gum\" Expiry=\"2050-01-11 07:30:00\" /> -->");

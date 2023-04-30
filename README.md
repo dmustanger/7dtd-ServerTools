@@ -32,10 +32,10 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
 - [AntiCheat](#anticheat)
   - [Damage_Detector](#damage_detector)
   - [Dupe_Log](#dupe_log)
-  - [Family_Share_Prevention](#family_share_prevention)
   - [Flying_Detector](#flying_detector)
   - [Godmode_Detector](#godmode_detector)
   - [Infinite_Ammo](#infinite_ammo)
+  - [Invalid_Buffs](#invalid_buffs)
   - [Invalid_Items](#invalid_items)
   - [Invalid_Item_Stack](#invalid_item_stack)
   - [Jail](#jail)
@@ -46,7 +46,6 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [PvE_Violations](#pve_violations)
   - [Spectator_Detector](#spectator_detector)
   - [Speed_Detector](#speed_detector)
-  - [Tracking](#tracking)
   - [XRay_Detector](#xray_detector)
 
 # Tools
@@ -54,14 +53,17 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
 - [Tools](#tools)
   - [AdminChatCommands](#adminchatcommands)
   - [Admin_List](#admin_list)
+  - [Allocs_Map](#allocs_map)
   - [Animal_Tracking](#animal_tracking)
   - [Auction](#auction)
   - [Auto_Backup](#auto_backup)
   - [Auto_Party_Invite](#auto_party_invite)
+  - [Auto_Restart](#auto_restart)
   - [Auto_Save_World](#auto_save_world)
   - [Bad_Word_Filter](#bad_word_filter)
   - [Bank](#bank)
   - [Bed](#bed)
+  - [Big_Head](#big_head)
   - [Block_Logger](#block_logger)
   - [Block_Pickup](#block_pickup)
   - [Blood_Moans](#blood_moans)
@@ -76,12 +78,14 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Chat_Command_Response_Extended](#chat_command_response_extended)
   - [Chat_Flood_Protection](#chat_flood_protection)
   - [Chat_Logger](#chat_logger)
+  - [Chunk_Reset](#chunk_reset)
   - [Clan_Manager](#clan_manager)
   - [Clean_Bin](#clean_bin)
+  - [Confetti](#confetti)
   - [Console_Command_Log](#console_command_log)
-  - [Country_Ban](#country_ban)
   - [Custom_Commands](#custom_commands)
   - [Day7](#day7)
+  - [Died](#died)
   - [Discord_Bot & Discord_Bot_Extended](#discord_bot--discord_bot_extended)
   - [Dropped_Bag_Protection](#dropped_bag_protection)
   - [Entity_Cleanup & Entity_Cleanup_Extended](#entity_cleanup--entity_cleanup_extended)
@@ -99,6 +103,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Info_Ticker](#info_ticker)
   - [Kick_Vote](#kick_vote)
   - [Kill_Notice](#kill_notice)
+  - [Land_Claim_Count](#land_claim_count)
   - [Level_Up](#level_up)
   - [Lobby & Lobby_Extended](#lobby--lobby_extended)
   - [Location](#location)
@@ -116,6 +121,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Night_Alert](#night_alert)
   - [No_Vehicle_Pickup](#no_vehicle_pickup)
   - [Normal_Player_Color_Prefix](#normal_player_color_prefix)
+  - [Oversized_Traps](#oversized_traps)
   - [Player_List](#player_list)
   - [POI_Protection](#poi_protection)
   - [Poll](#poll)
@@ -123,6 +129,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Private_Message](#private_message)
   - [Public_Waypoints](#public_waypoints)
   - [Real_World_Time](#real_world_time)
+  - [Region_Reset](#region_reset)
   - [Report](#report)
   - [Reserved_Slots](#reserved_slots)
   - [Restart_Vote](#restart_vote)
@@ -135,8 +142,10 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Stuck](#stuck)
   - [Suicide](#suicide)
   - [Travel](#travel)
+  - [Vault](#vault)
   - [Vehicle_Recall & Vehicle_Rcall_Extended](#vehicle_recall--vehicle_rcall_extended)
   - [Voting & Voting_Extended](#voting--voting_extended)
+  - [Wall](#wall)
   - [Wallet](#wallet)
   - [Watch_List](#watch_list)
   - [Waypoints & Waypoints_Extended](#waypoints--waypoints_extended)
@@ -244,6 +253,23 @@ Set True or False for Enable
 
 ### Description
 Detects players using a hack to never run out of ammo in their guns and bans them.
+
+## Invalid_Buffs
+```xml
+<Tool Name="Invalid_Buffs" Enable="False" />
+```
+### Attributes
+* __Enable__  
+Set True or False for Enable
+
+### Description
+Enabling will create a InvalidBuffs.xml in your main xml folder for ServerTools
+
+Each entry in InvalidBuffs.xml is checked against each player.
+
+If any buffs on a player match the invalid buff list, a message will show in the server alerting everyone.
+
+The player is banned upon detection.
 
 ## Invalid_Items
 ```xml
@@ -521,7 +547,23 @@ Set a numeric value for Mod_Level
 Type /admins or !admins in chat to get a response showing the currently online administrators and moderators based on the ServerAdmin.xml. 
 
 Setting Admin_Level to 2 would show all online administrators
-tier 0-2 as admin in the chat response. 
+tier 0-2 as admin in the chat response.
+
+## Allocs_Map
+```xml
+<Tool Name="Allocs_Map" Enable="False" Link="" />
+```
+
+### Attributes
+* __Enable__  
+Set True or False to enable
+* __Link__  
+Set a numeric value for Admin_Level
+
+### Description
+Type /map in game for a pop up window with a clickable link that takes the player to allocs map via steam browser/overlay. 
+
+The Link provided is what players will be taken to when they click the link. 
 
 ## Animal_Tracking
 ```xml
@@ -644,6 +686,7 @@ Set True or False for Enable
 
 ### Description
 Allows a player to make a list of other players in game using entity id.
+
 It is recommended that you enable Player_List tool so players can view a list of other players entity id.
 
 If a player on this list joins the game while the list creator is the leader of a group that is not full or they are not in a group, it will auto invite the joining player.
@@ -658,6 +701,17 @@ Set True or False for Enable
 
 ### Description
 Automatically begins a timer on world start that will start a world save every time the Delay_Between_Saves expires.
+
+## Auto_Restart
+```xml
+<Tool Name="Auto_Restart" Enable="False" />
+```
+### Attributes  
+* __Enable__  
+Set True or False for Enable
+
+### Description
+Automatically restarts the server when it shuts down. This does not trigger a shutdown. It only restarts the server if it shuts down. This does not well for all users. Hosts typically have their own restart service.
 
 ## Bad_Word_Filter
 ```xml
@@ -731,16 +785,16 @@ Command_Cost controls the amount needed to run the command.
 
 Players type /bed to activate it
  
-## Block_Logger
+## Big_Head
 ```xml
-<Tool Name="Block_Logger" Enable="False" />
+<Tool Name="Big_Head" Enable="False" />
 ```
 ### Attributes
 * __Enable__   
 Set True or False for Enable
 
 ### Description
-Keeps a log of the blocks placed in the world. Their location, who placed them and what the block name is.
+Inflates regular zombie heads to over sized. Does not affect sleepers
 
 ## Block_Pickup
 ```xml
@@ -974,6 +1028,18 @@ Set the maximum amount of message a player can send in a single minute.
 Set True or False for Enable
 
 ### Description
+Logs all chat to a file for later review.
+
+## Chunk_Reset
+```xml
+<Tool Name="Chunk_Reset" Enable="True" />
+```
+### Attributes
+* __Enable__  
+Set True or False for Enable
+
+### Description
+Creates a ChunkReset.xml. Enter the desired positions to reset chunks within that space. Reset can occur daily, weekly or monthly
 
 ## Clan_Manager
 ```xml
@@ -1047,6 +1113,23 @@ Each option controls which data is removed from the ServerTools.bin file.
 
 The options are labeled by the tool name the data corresponds to, e.g. Bank, Auction.
 
+## Confetti
+```xml
+<Tool Name="Confetti" Enable="True" Player="True" Zombie="True" Sound="True" />
+```
+### Attributes
+* __Enable__  
+Set True or False for Enable
+* __Player__  
+Set True or False for Player
+* __Zombie__  
+Set True or False for Zombie
+* __Sound__  
+Set True or False for Sound
+
+### Description
+Zombies and/or players will launch confetti when they are killed. Enabling the sound plays a fun noise when it triggers
+
 ## Console_Command_Log
 ```xml
 <Tool Name="Console_Command_Log" Enable="True" />
@@ -1104,7 +1187,7 @@ Set True or False for Enable
 ### Description
 Enables the chat commands /day and /day7. 
 
-Using these will respond with the days left until a horde night as well as the current server FPS, count of mobs, animals, minibikes, and supply crates 
+Using these will respond with the days left until a horde night as well as the current server FPS, count of mobs, animals, minibikes, and supply crates.
 
 ## Died
 ```xml
@@ -1570,6 +1653,17 @@ Zombie controls whether it shows zombies killing a player.
 Animal controls whether it shows animals killing a player.
 Show_Level controls if the player level is shown in the notice.
 
+## Land_Claim_Count
+```xml
+<Tool Name="Land_Claim_Count" Enable="True" />
+```
+### Attributes
+* __Enable__  
+Set True or False for Enable
+
+### Description
+Enabling will create a LandClaimCount.xml. Controls how many land claims a player can have active on the map.
+
 ## Level_Up
 ```xml
 <Tool Name="Level_Up" Enable="True" Xml_Only="True" />
@@ -1897,6 +1991,17 @@ Enabling makes all standard players chat message show with a prefix and color.
 
 Prefix controls the prefix for the message.
 
+## Oversized_Traps
+```xml
+<Tool Name="Oversized_Traps" Enable="False" />
+```
+### Attributes
+* __Enable__  
+Set True or False for Enable
+
+### Description
+Player placed traps will have a large default footprint when placing them down. The model remains the same size.
+
 ## Player_List
 ```xml
 <Tool Name="Player_List" Enable="False" />
@@ -2000,7 +2105,18 @@ Enabling will show the real world time periodically based on the delay.
 
 Recommend changing the Time_Zone to match the time zone of the server host location. 
 
-This will not adjust for the difference
+This will not adjust for the difference.
+
+## Region_Reset
+```xml
+<Tool Name="Region_Reset" Enable="False" />
+```
+### Attributes
+* __Enable__  
+Set True or False for Enable
+
+### Description
+Enabling will create a RegionReset.xml. Entries will be set on a regular schedule. Daily, weekly or monthly. Resets occur at the start up of the server.
 
 ## Report
 ```xml
@@ -2255,6 +2371,31 @@ Corner1, corner2 and destination are represented by x, y, z coordinates.
 Command cost controls how much must be in a player's wallet to use the command.
 
 Set Player_Check to true so they must be far enough from players to use this command.
+
+## Vault
+```xml
+<Tool Name="Vault" Enable="True" />
+```
+### Attributes
+* __Enable__  
+Set True or False for Enable
+* __Inside_Claim__  
+Set True or False for Enable
+* __Slots__  
+Set a numeric values for Slots
+* __Lines__  
+Set a numeric values for Lines
+
+### Description
+Enabling allows the Vault to be accessed for each player. It will have a particular amount of slots and lines.
+
+3 slots and 2 lines would equal six slots total.
+
+Disabling the tool will not remove the recipe but does disable the available slots. Items already stored in the Vault will be safe regardless of the tool state.
+
+Items can also be removed from the Vault across maps.
+
+This is a very powerful tool and could be abused in the wrong hands. Be careful with how many slots are offered.
 
 ## Vehicle_Recall & Vehicle_Rcall_Extended
 ```xml

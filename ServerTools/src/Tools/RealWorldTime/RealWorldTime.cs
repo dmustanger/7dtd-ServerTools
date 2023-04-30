@@ -11,12 +11,19 @@ namespace ServerTools
 
         private static string EventDelay = "";
 
-        public static void SetDelay(bool _reset)
+        public static void SetDelay(bool _reset, bool _first)
         {
-            if (EventDelay != Delay || _reset)
+            if (EventDelay != Delay)
             {
+                if (!EventSchedule.Expired.Contains("RealWorldTime"))
+                {
+                    EventSchedule.Expired.Add("RealWorldTime");
+                }
                 EventDelay = Delay;
-                EventSchedule.Clear("RealWorldTime_");
+                _reset = true;
+            }
+            if (_reset || _first)
+            {
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');
@@ -26,7 +33,15 @@ namespace ServerTools
                         int.TryParse(timeSplit[0], out int hours);
                         int.TryParse(timeSplit[1], out int minutes);
                         DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                        EventSchedule.Schedule.Add("RealWorldTime_" + time, time);
+                        if (DateTime.Now < time)
+                        {
+                            EventSchedule.AddToSchedule("RealWorldTime_" + time, time);
+                        }
+                        else
+                        {
+                            time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
+                            EventSchedule.AddToSchedule("RealWorldTime_" + time, time);
+                        }
                     }
                 }
                 else if (Delay.Contains(":"))
@@ -35,14 +50,22 @@ namespace ServerTools
                     int.TryParse(timeSplit[0], out int hours);
                     int.TryParse(timeSplit[1], out int minutes);
                     DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                    EventSchedule.Schedule.Add("RealWorldTime_" + time, time);
+                    if (DateTime.Now < time)
+                    {
+                        EventSchedule.AddToSchedule("RealWorldTime_" + time, time);
+                    }
+                    else
+                    {
+                        time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
+                        EventSchedule.AddToSchedule("RealWorldTime_" + time, time);
+                    }
                 }
                 else
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
                         DateTime time = DateTime.Now.AddMinutes(delay);
-                        EventSchedule.Schedule.Add("RealWorldTime_" + time, time);
+                        EventSchedule.AddToSchedule("RealWorldTime_" + time, time);
                     }
                     else
                     {

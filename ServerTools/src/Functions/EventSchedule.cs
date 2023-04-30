@@ -6,137 +6,226 @@ namespace ServerTools
 {
     public class EventSchedule
     {
-        public static List<string> Expired = new List<string>();
         public static Dictionary<string, DateTime> Schedule = new Dictionary<string, DateTime>();
+        public static Dictionary<string, DateTime> NewEntries = new Dictionary<string, DateTime>();
+        public static List<string> Expired = new List<string>();
+
+        private static DateTime dateTime;
+        private static string[] split;
+        private static KeyValuePair<string, DateTime>[] expired;
 
         public static void Exec()
         {
             try
             {
+                if (Expired.Count > 0)
+                {
+                    expired = Schedule.ToArray();
+                    for (int i = 0; i < Expired.Count; i++)
+                    {
+                        for (int j = 0; j < expired.Length; j++)
+                        {
+                            if (expired[j].Key.Contains(Expired[i]))
+                            {
+                                Schedule.Remove(expired[j].Key);
+                            }
+                        }
+                    }
+                    Expired.Clear();
+                }
                 if (Schedule != null && Schedule.Count > 0)
                 {
-                    var schedule = Schedule.ToArray();
-                    DateTime dateTime = DateTime.Now;
-                    DateTime dateTimeTwo = dateTime.AddSeconds(-15);
-                    string[] split;
-                    for (int i = 0; i < schedule.Length; i++)
+                    dateTime = DateTime.Now;
+                    foreach (var entry in Schedule)
                     {
-                        split = schedule[i].Key.Split('_');
+                        split = entry.Key.Split('_');
                         switch (split[0])
                         {
                             case "AutoBackup":
-                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTimeTwo <= schedule[i].Value)
+                                if (dateTime >= entry.Value)
                                 {
-                                    Expired.Add(schedule[i].Key);
+                                    Expired.Add(entry.Key);
                                     AutoBackup.Exec();
-                                    AutoBackup.SetDelay(true);
+                                    AutoBackup.SetDelay(true, false);
                                 }
-                                continue;
+                                break;
                             case "AutoSaveWorld":
-                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTimeTwo <= schedule[i].Value)
+                                if (dateTime >= entry.Value)
                                 {
-                                    Expired.Add(schedule[i].Key);
-                                    AutoSaveWorld.SetDelay(true);
+                                    Expired.Add(entry.Key);
                                     AutoSaveWorld.Save();
+                                    AutoSaveWorld.SetDelay(true, false);
                                 }
-                                continue;
+                                break;
                             case "Bloodmoon":
-                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTimeTwo <= schedule[i].Value)
+                                if (dateTime >= entry.Value)
                                 {
-                                    Expired.Add(schedule[i].Key);
-                                    Bloodmoon.SetDelay(true);
+                                    Expired.Add(entry.Key);
                                     Bloodmoon.StatusCheck();
+                                    Bloodmoon.SetDelay(true, false);
                                 }
-                                continue;
+                                break;
                             case "Bonus":
-                                if (dateTime >= schedule[i].Value)
+                                if (dateTime >= entry.Value)
                                 {
-                                    Schedule.Remove(schedule[i].Key);
+                                    Expired.Add(entry.Key);
                                     if (GeneralOperations.SessionBonus(split[1]))
                                     {
-                                        Schedule.Add(schedule[i].Key, dateTime.AddMinutes(15));
+                                        AddToSchedule(entry.Key, dateTime.AddMinutes(15));
                                     }
                                 }
-                                continue;
-                            case "BreakTime":
-                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTimeTwo <= schedule[i].Value)
+                                break;
+                            case "BreakReminder":
+                                if (dateTime >= entry.Value)
                                 {
-                                    Expired.Add(schedule[i].Key);
-                                    BreakTime.Exec();
-                                    BreakTime.SetDelay(true);
+                                    Expired.Add(entry.Key);
+                                    try
+                                    {
+                                        BreakReminder.Exec();
+                                    }
+                                    finally
+                                    {
+                                        BreakReminder.SetDelay(true, false);
+                                    }
                                 }
-                                continue;
+                                break;
                             case "InfoTicker":
-                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTimeTwo <= schedule[i].Value)
+                                if (dateTime >= entry.Value)
                                 {
-                                    Expired.Add(schedule[i].Key);
-                                    InfoTicker.Exec();
-                                    InfoTicker.SetDelay(true);
+                                    Expired.Add(entry.Key);
+                                    try
+                                    {
+                                        InfoTicker.Exec();
+                                    }
+                                    finally
+                                    {
+                                        InfoTicker.SetDelay(true, false);
+                                    }
                                 }
-                                continue;
+                                break;
                             case "Lottery":
-                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTimeTwo <= schedule[i].Value)
+                                if (dateTime >= entry.Value)
                                 {
-                                    Expired.Add(schedule[i].Key);
-                                    Lottery.DrawLottery();
+                                    Expired.Add(entry.Key);
+                                    try
+                                    {
+                                        Lottery.DrawLottery();
+                                    }
+                                    catch
+                                    {
+                                        Log.Warning("[SERVERTOOLS] Failed to run the scheduled Lottery");
+                                    }
                                 }
-                                continue;
+                                break;
                             case "NightAlert":
-                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTimeTwo <= schedule[i].Value)
+                                if (dateTime >= entry.Value)
                                 {
-                                    Expired.Add(schedule[i].Key);
-                                    NightAlert.Exec();
-                                    NightAlert.SetDelay(true);
+                                    Expired.Add(entry.Key);
+                                    try
+                                    {
+                                        NightAlert.Exec();
+                                    }
+                                    finally
+                                    {
+                                        NightAlert.SetDelay(true, false);
+                                    }
                                 }
-                                continue;
+                                break;
                             case "PlayerLogs":
-                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTimeTwo <= schedule[i].Value)
+                                if (dateTime >= entry.Value)
                                 {
-                                    Expired.Add(schedule[i].Key);
-                                    PlayerLogs.SetDelay(true);
-                                    PlayerLogs.Exec();
+                                    Expired.Add(entry.Key);
+                                    try
+                                    {
+                                        PlayerLogs.Exec();
+                                    }
+                                    finally
+                                    {
+                                        PlayerLogs.SetDelay(true, false);
+                                    }
                                 }
-                                continue;
+                                break;
                             case "RealWorldTime":
-                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTimeTwo <= schedule[i].Value)
+                                if (dateTime >= entry.Value)
                                 {
-                                    Expired.Add(schedule[i].Key);
-                                    RealWorldTime.SetDelay(true);
-                                    RealWorldTime.Exec();
+                                    Expired.Add(entry.Key);
+                                    try
+                                    {
+                                        RealWorldTime.Exec();
+                                    }
+                                    finally
+                                    {
+                                        RealWorldTime.SetDelay(true, false);
+                                    }
                                 }
-                                continue;
-                            case "Reset":
-                                if (dateTime >= schedule[i].Value)
-                                {
-                                    Schedule.Remove(schedule[i].Key);
-                                    Reset();
-                                }
-                                continue;
+                                break;
                             case "Shutdown":
-                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTimeTwo <= schedule[i].Value)
+                                if (dateTime >= entry.Value)
                                 {
-                                    Expired.Add(schedule[i].Key);
-                                    Shutdown.PrepareShutdown();
+                                    Expired.Add(entry.Key);
+                                    try
+                                    {
+                                        Shutdown.PrepareShutdown();
+                                    }
+                                    catch 
+                                    {
+                                        Log.Warning("[SERVERTOOLS] Failed to run the scheduled Shutdown");
+                                    }
                                 }
-                                continue;
+                                break;
                             case "WatchList":
-                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTimeTwo <= schedule[i].Value)
+                                if (dateTime >= entry.Value)
                                 {
-                                    Expired.Add(schedule[i].Key);
-                                    WatchList.Exec();
-                                    WatchList.SetDelay(true);
+                                    Expired.Add(entry.Key);
+                                    try
+                                    {
+                                        WatchList.Exec();
+                                    }
+                                    finally
+                                    {
+                                        WatchList.SetDelay(true, false);
+                                    }
                                 }
-                                continue;
+                                break;
                             case "Zones":
-                                if (!Expired.Contains(schedule[i].Key) && dateTime >= schedule[i].Value && dateTimeTwo <= schedule[i].Value)
+                                if (dateTime >= entry.Value)
                                 {
-                                    Expired.Add(schedule[i].Key);
-                                    Zones.ReminderExec();
-                                    Zones.SetDelay(true);
+                                    Expired.Add(entry.Key);
+                                    try
+                                    {
+                                        Zones.ReminderExec();
+                                    }
+                                    finally
+                                    {
+                                        Zones.SetDelay(true, false);
+                                    }
                                 }
-                                continue;
+                                break;
                         }
                     }
+                    if (Expired.Count > 0)
+                    {
+                        expired = Schedule.ToArray();
+                        for (int i = 0; i < Expired.Count; i++)
+                        {
+                            for (int j = 0; j < expired.Length; j++)
+                            {
+                                if (expired[j].Key.Contains(Expired[i]))
+                                {
+                                    Schedule.Remove(expired[j].Key);
+                                }
+                            }
+                        }
+                        Expired.Clear();
+                    }
+                }
+                if (NewEntries.Count > 0)
+                {
+                    foreach (var entry in NewEntries)
+                    {
+                        Schedule.Add(entry.Key, entry.Value);
+                    }
+                    NewEntries.Clear();
                 }
             }
             catch (Exception e)
@@ -144,80 +233,12 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in EventSchedule.Exec: {0}", e.Message));
             }
         }
-
-        public static void Remove(string _classMethod)
+        
+        public static void AddToSchedule(string _toolName, DateTime _date)
         {
-            if (Schedule.ContainsKey(_classMethod))
+            if (!NewEntries.ContainsKey(_toolName))
             {
-                Schedule.Remove(_classMethod);
-            }
-        }
-
-        public static void Reset()
-        {
-            if (AutoBackup.IsEnabled)
-            {
-                AutoBackup.SetDelay(true);
-            }
-            if (AutoSaveWorld.IsEnabled)
-            {
-                AutoSaveWorld.SetDelay(true);
-            }
-            if (Bloodmoon.IsEnabled)
-            {
-                Bloodmoon.SetDelay(true);
-            }
-            if (BreakTime.IsEnabled)
-            {
-                BreakTime.SetDelay(true);
-            }
-            if (InfoTicker.IsEnabled)
-            {
-                InfoTicker.SetDelay(true);
-            }
-            if (NightAlert.IsEnabled)
-            {
-                NightAlert.SetDelay(true);
-            }
-            if (PlayerLogs.IsEnabled)
-            {
-                PlayerLogs.SetDelay(true);
-            }
-            if (RealWorldTime.IsEnabled)
-            {
-                RealWorldTime.SetDelay(true);
-            }
-            if (WatchList.IsEnabled)
-            {
-                WatchList.SetDelay(true);
-            }
-            if (Zones.IsEnabled)
-            {
-                Zones.SetDelay(true);
-            }
-            Schedule.Add("Reset_", DateTime.Today.AddDays(1).AddSeconds(1));
-        }
-
-        public static void Clear(string _toolName)
-        {
-            if (Schedule != null && Schedule.Count > 0)
-            {
-                var schedule = Schedule.ToArray();
-                for (int i = 0; i < schedule.Length; i++)
-                {
-                    if (schedule[i].Key.Contains(_toolName))
-                    {
-                        Schedule.Remove(_toolName);
-                    }
-                }
-            }
-        }
-
-        public static void RemoveBonusEntry(string _name)
-        {
-            if (Schedule.ContainsKey(_name))
-            {
-                Schedule.Remove(_name);
+                NewEntries.Add(_toolName, _date);
             }
         }
     }

@@ -11,14 +11,21 @@ namespace ServerTools
         public static int Backup_Count = 5, Compression_Level = 0;
         public static string Save_Destination = "", Target_Directory = "", Delay = "240";
 
-        private static string EventDelay = "";
+        public static string EventDelay = "";
 
-        public static void SetDelay(bool _reset)
+        public static void SetDelay(bool _reset, bool _first)
         {
-            if (EventDelay != Delay || _reset)
+            if (EventDelay != Delay)
             {
+                if (!EventSchedule.Expired.Contains("AutoBackup"))
+                {
+                    EventSchedule.Expired.Add("AutoBackup");
+                }
                 EventDelay = Delay;
-                EventSchedule.Clear("AutoBackup_");
+                _reset = true;
+            }
+            if (_reset || _first)
+            {
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');
@@ -28,7 +35,15 @@ namespace ServerTools
                         int.TryParse(timeSplit[0], out int hours);
                         int.TryParse(timeSplit[1], out int minutes);
                         DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                        EventSchedule.Schedule.Add("AutoBackup_" + time, time);
+                        if (DateTime.Now < time)
+                        {
+                            EventSchedule.AddToSchedule("AutoBackup_" + time, time);
+                        }
+                        else
+                        {
+                            time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
+                            EventSchedule.AddToSchedule("AutoBackup_" + time, time);
+                        }
                     }
                 }
                 else if (Delay.Contains(":"))
@@ -37,14 +52,22 @@ namespace ServerTools
                     int.TryParse(timeSplit[0], out int hours);
                     int.TryParse(timeSplit[1], out int minutes);
                     DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                    EventSchedule.Schedule.Add("AutoBackup_" + time, time);
+                    if (DateTime.Now < time)
+                    {
+                        EventSchedule.AddToSchedule("AutoBackup_" + time, time);
+                    }
+                    else
+                    {
+                        time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
+                        EventSchedule.AddToSchedule("AutoBackup_" + time, time);
+                    }
                 }
                 else
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
                         DateTime time = DateTime.Now.AddMinutes(delay);
-                        EventSchedule.Schedule.Add("AutoBackup_" + time, time);
+                        EventSchedule.AddToSchedule("AutoBackup_" + time, time);
                     }
                     else
                     {
@@ -62,11 +85,16 @@ namespace ServerTools
                 if (!Shutdown.ShuttingDown)
                 {
                     IsRunning = true;
-                    Log.Out(string.Format("[SERVERTOOLS] Starting auto backup process"));
                     ThreadManager.AddSingleTask(delegate (ThreadManager.TaskInfo _taskInfo)
                     {
-                        Prepare();
-                        IsRunning = false;
+                        try
+                        {
+                            Prepare();
+                        }
+                        finally
+                        {
+                            IsRunning = false;
+                        }
                     });
                 }
                 else
@@ -82,73 +110,67 @@ namespace ServerTools
 
         private static void Prepare()
         {
-            try
+            Log.Out(string.Format("[SERVERTOOLS] Starting auto backup process"));
+            string saveDirectory = Target_Directory;
+            if (string.IsNullOrEmpty(saveDirectory))
             {
-                string saveDirectory = Target_Directory;
+                saveDirectory = GameIO.GetSaveGameDir();
                 if (string.IsNullOrEmpty(saveDirectory))
                 {
-                    saveDirectory = GameIO.GetSaveGameDir();
-                    if (string.IsNullOrEmpty(saveDirectory))
+                    Log.Out(string.Format("[SERVERTOOLS] Auto backup can not locate a working directory to save. Provide a Save_Directory in your config file and try again."));
+                    return;
+                }
+            }
+            DirectoryInfo saveDirInfo = new DirectoryInfo(saveDirectory);//save dir
+            if (saveDirInfo != null)
+            {
+                if (string.IsNullOrEmpty(Save_Destination))
+                {
+                    if (!Directory.Exists(API.ConfigPath + "/WorldBackup"))
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Auto backup can not locate a working directory to save. Provide a Save_Directory in your config file and try again."));
-                        return;
+                        Directory.CreateDirectory(API.ConfigPath + "/WorldBackup");
+                        Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at '{0}' and backup resumed", API.ConfigPath + "/WorldBackup"));
+                    }
+                    string[] files = Directory.GetFiles(API.ConfigPath + "/WorldBackup/", "*.zip", SearchOption.AllDirectories);//get files from destination directory. This is the default destination
+                    if (files != null && files.Length > Backup_Count)//files are not null and too many exist
+                    {
+                        DeleteFiles(files);//exec file delete
+                        Log.Out(string.Format("[SERVERTOOLS] Auto backup clean up complete"));
+                    }
+                    DirectoryInfo destDirInfo = new DirectoryInfo(API.ConfigPath + "/WorldBackup/");//destination dir
+                    if (destDirInfo != null)
+                    {
+                        Save(destDirInfo.FullName, saveDirectory);//exec save method
                     }
                 }
-                DirectoryInfo saveDirInfo = new DirectoryInfo(saveDirectory);//save dir
-                if (saveDirInfo != null)
+                else
                 {
-                    if (string.IsNullOrEmpty(Save_Destination))
+                    string destination = Save_Destination.RemoveLineBreaks();
+                    if (!destination.EndsWith("/"))
                     {
-                        if (!Directory.Exists(API.ConfigPath + "/WorldBackup"))
-                        {
-                            Directory.CreateDirectory(API.ConfigPath + "/WorldBackup");
-                            Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at '{0}' and backup resumed", API.ConfigPath + "/WorldBackup"));
-                        }
-                        string[] files = Directory.GetFiles(API.ConfigPath + "/WorldBackup/", "*.zip", SearchOption.AllDirectories);//get files from destination directory. This is the default destination
-                        if (files != null && files.Length > Backup_Count)//files are not null and too many exist
-                        {
-                            DeleteFiles(files);//exec file delete
-                            Log.Out(string.Format("[SERVERTOOLS] Auto backup clean up complete"));
-                        }
-                        DirectoryInfo destDirInfo = new DirectoryInfo(API.ConfigPath + "/WorldBackup/");//destination dir
-                        if (destDirInfo != null)
-                        {
-                            Save(destDirInfo.FullName, saveDirectory);//exec save method
-                        }
+                        destination += "/";
+                    }
+                    if (!Directory.Exists(destination))
+                    {
+                        Directory.CreateDirectory(destination);
+                        Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at '{0}'. Auto backup resumed", destination));
+                    }
+                    string[] files = Directory.GetFiles(destination, "*.zip", SearchOption.AllDirectories);//get files from save directory. This is a custom location
+                    if (files != null && files.Length >= Backup_Count)//files are not null or empty
+                    {
+                        DeleteFiles(files);//exec file delete
+                        Log.Out(string.Format("[SERVERTOOLS] Auto backup clean up complete"));
+                    }
+                    DirectoryInfo destDirInfo = new DirectoryInfo(destination);//destination dir
+                    if (destDirInfo != null)
+                    {
+                        Save(destDirInfo.FullName, saveDirectory);//exec file save
                     }
                     else
                     {
-                        string destination = Save_Destination.RemoveLineBreaks();
-                        if (!destination.EndsWith("/"))
-                        {
-                            destination += "/";
-                        }
-                        if (!Directory.Exists(destination))
-                        {
-                            Directory.CreateDirectory(destination);
-                            Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at '{0}'. Auto backup resumed", destination));
-                        }
-                        string[] files = Directory.GetFiles(destination, "*.zip", SearchOption.AllDirectories);//get files from save directory. This is a custom location
-                        if (files != null && files.Length > Backup_Count)//files are not null or empty
-                        {
-                            DeleteFiles(files);//exec file delete
-                            Log.Out(string.Format("[SERVERTOOLS] Auto backup clean up complete"));
-                        }
-                        DirectoryInfo destDirInfo = new DirectoryInfo(destination);//destination dir
-                        if (destDirInfo != null)
-                        {
-                            Save(destDirInfo.FullName, saveDirectory);//exec file save
-                        }
-                        else
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Auto backup could not locate the save directory '{0}'", destination));
-                        }
+                        Log.Out(string.Format("[SERVERTOOLS] Auto backup could not locate the save directory '{0}'", destination));
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Prepare: {0}", e.Message));
             }
         }
 
@@ -166,7 +188,7 @@ namespace ServerTools
                         fileList.Add(fInfo);
                     }
                 }
-                if (fileList.Count > 0 && fileList.Count > Backup_Count)
+                if (fileList.Count > 0 && fileList.Count >= Backup_Count)
                 {
                     fileList.Sort((x, y) => DateTime.Compare(x.CreationTime, y.CreationTime));
                     fileList.Reverse();
@@ -255,8 +277,11 @@ namespace ServerTools
                             OutputStream.Dispose();
                         }
                         Log.Out(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at '{0}'. File is named '{1}'", _destinationDirInfo, name + ".zip"));
-                        Phrases.Dict.TryGetValue("AutoBackup2", out phrase);
-                        ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        if (GameManager.Instance.World.Players.Count > 0)
+                        {
+                            Phrases.Dict.TryGetValue("AutoBackup2", out phrase);
+                            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                        }
                         return;
                     }
                 }
