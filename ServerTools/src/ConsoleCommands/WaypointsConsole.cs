@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class WaypointConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable waypoints.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-wp off\n" +
@@ -31,7 +31,7 @@ namespace ServerTools
                    "8. Shows how many extra waypoint spots a player has\n" +
                    "9. Show a list of public waypoints\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Waypoint", "wp", "st-wp" };
         }

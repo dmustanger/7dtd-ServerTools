@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class PlayerStatCheckConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable player stat check.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-psc off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off player stat check\n" +
                    "2. Turn on player stat check\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-PlayerStatCheck", "psc", "st-psc" };
         }

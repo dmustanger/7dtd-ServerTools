@@ -6,12 +6,12 @@ namespace ServerTools
 {
     class CvarConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Edit or list the current cvar of a player";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-cvar edit <ID/EntityId/PlayerName> <CvarName> <Value>\n" +
@@ -20,7 +20,7 @@ namespace ServerTools
                    "2. Lists the cvars currently applied to a player\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Cvar", "cv", "st-cv" };
         }

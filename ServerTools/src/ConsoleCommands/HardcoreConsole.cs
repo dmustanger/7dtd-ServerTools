@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class HardcoreConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable hardcore.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-hc off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off hardcore\n" +
                    "2. Turn on hardcore\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Hardcore", "hc", "st-hc" };
         }

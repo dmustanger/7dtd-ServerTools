@@ -1,10 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<xml>
-  <ModInfo>
-    <Name value="Server Tools" />
-    <Description value="ServerTools for 7 Days to Die Dedicated Servers" />
-    <Author value="Dmustanger, ObsessiveCompulsive, Gik, Koi, Android_Data, Thunderbolt" />
-    <Version value="20.7.1" />
-    <Website value="https://github.com/dmustanger/7dtd-ServerTools/releases" />
-  </ModInfo>
-</xml>
+<ModInfo>
+  <Name value="ServerTools" />
+  <Version value="21.0.0" />
+  <DisplayName value="Server Tools" />
+  <Description value="ServerTools for 7 Days to Die Dedicated Servers" />
+  <Author value="Dmustanger, ObsessiveCompulsive, Gik, Koi, Android_Data, Thunderbolt" />
+  <Website value="https://github.com/dmustanger/7dtd-ServerTools/releases" />
+</ModInfo>

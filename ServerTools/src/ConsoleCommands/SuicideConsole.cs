@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class SuicideConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable suicide.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-Suicide off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off suicide\n" +
                    "2. Turn on suicide\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Suicide", "cide", "st-cide" };
         }

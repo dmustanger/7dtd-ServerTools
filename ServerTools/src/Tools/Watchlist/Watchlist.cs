@@ -238,8 +238,8 @@ namespace ServerTools
                         ClientInfo cInfo = clients[i];
                         if (cInfo != null && cInfo.PlatformId != null && cInfo.CrossplatformId != null)
                         {
-                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
-                                GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
+                            if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
+                                GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                             {
                                 if (Dict.ContainsKey(cInfo.PlatformId.CombinedString) ||
                                 Dict.ContainsKey(cInfo.CrossplatformId.CombinedString))

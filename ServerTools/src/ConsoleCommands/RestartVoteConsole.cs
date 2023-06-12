@@ -6,11 +6,11 @@ namespace ServerTools
 {
     class RestartVoteConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable restart vote.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-rv off\n" +
@@ -18,7 +18,7 @@ namespace ServerTools
                    "1. Turn off restart vote\n" +
                    "2. Turn on restart vote\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-RestartVote", "rv", "st-rv" };
         }

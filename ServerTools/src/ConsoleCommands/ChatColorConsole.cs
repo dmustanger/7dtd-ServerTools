@@ -6,11 +6,11 @@ namespace ServerTools
     class ChatColorConsole : ConsoleCmdAbstract
     {
 
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable, add, edit, delete a player from the chat color prefix list.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-ccp off\n" +
@@ -35,7 +35,7 @@ namespace ServerTools
                 "*Note*     The colors must be entered as 6 digit HTML color code or color names from the color list. Example FF0000, FFFF00, Red, Rainbow";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-ChatColorPrefix", "ccp", "st-ccp" };
         }

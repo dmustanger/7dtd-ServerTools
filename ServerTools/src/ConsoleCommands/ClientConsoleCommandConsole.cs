@@ -5,19 +5,19 @@ namespace ServerTools
 {
     class ClientConsoleCommandConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Force a client to run a console command";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-ccc <Id/EOS/EntityId/PlayerName> <Command>\n" +
                    "1. Forces the specified player to run this console command\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-ClientConsoleCommand", "ccc", "st-ccc" };
         }

@@ -274,8 +274,8 @@ namespace ServerTools
                                 {
                                     CustomCommands.CustomCommandList(_cInfo);
                                 }
-                                if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) <= Admin_Level ||
-                                    GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) <= Admin_Level)
+                                if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.PlatformId) <= Admin_Level ||
+                                    GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.CrossplatformId) <= Admin_Level)
                                 {
                                     GeneralOperations.AdminCommandList(_cInfo);
                                 }
@@ -751,8 +751,8 @@ namespace ServerTools
                                 {
                                     if (Auction.No_Admins)
                                     {
-                                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) <= Admin_Level ||
-                                            GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) <= Admin_Level)
+                                        if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.PlatformId) <= Admin_Level ||
+                                            GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.CrossplatformId) <= Admin_Level)
                                         {
                                             Phrases.Dict.TryGetValue("Auction13", out string phrase);
                                             ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -788,8 +788,8 @@ namespace ServerTools
                                 {
                                     if (Auction.No_Admins)
                                     {
-                                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level ||
-                                            GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > Admin_Level)
+                                        if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level ||
+                                            GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.CrossplatformId) > Admin_Level)
                                         {
                                             _message = messageLowerCase.Replace(Auction.Command_auction_sell + " ", "");
                                             Auction.SellItem(_cInfo, _message);
@@ -1183,8 +1183,8 @@ namespace ServerTools
                                         ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
-                                else if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) <= ExitCommand.Admin_Level ||
-                                    GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) <= ExitCommand.Admin_Level)
+                                else if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.PlatformId) <= ExitCommand.Admin_Level ||
+                                    GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.CrossplatformId) <= ExitCommand.Admin_Level)
                                 {
                                     ExitCommand.Disconnect(_cInfo);
                                 }
@@ -1517,7 +1517,7 @@ namespace ServerTools
 
         public static bool Permission(ClientInfo _cInfo, string _command)
         {
-            if (GameManager.Instance.adminTools.GetCommands().ContainsKey(_command))
+            if (GameManager.Instance.adminTools.Commands.GetCommands().ContainsKey(_command))
             {
                 if (!GameManager.Instance.adminTools.CommandAllowedFor(new string[] { _command }, _cInfo))
                 {

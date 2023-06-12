@@ -5,19 +5,19 @@ namespace ServerTools
 {
     class SecureVehicleAccessConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Attempts to set access to all secure vehicle.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-sva\n" +
                    "1. Attempts to set access to all secure vehicle\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-SecureVehicleAccess", "sva", "st-sva" };
         }

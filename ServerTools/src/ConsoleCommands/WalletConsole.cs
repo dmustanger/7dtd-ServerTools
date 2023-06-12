@@ -5,12 +5,12 @@ namespace ServerTools
 {
     class WalletConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable, disable, add, reduce, check wallet.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-wlt off\n" +
@@ -26,7 +26,7 @@ namespace ServerTools
                    
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Wallet", "wlt", "st-wlt" };
         }

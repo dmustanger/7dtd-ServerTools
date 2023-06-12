@@ -6,12 +6,12 @@ namespace ServerTools
 {
     class ProtectedZonesConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enabled, disable, add, remove or list protected spaces";
         }
     
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-pz off\n" +
@@ -37,7 +37,7 @@ namespace ServerTools
                    "*Make sure the corners used are opposite each other. Example NW with SE or SW with NE*\n";
         }
     
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-ProtectedZones", "pz", "st-pz" };
         }

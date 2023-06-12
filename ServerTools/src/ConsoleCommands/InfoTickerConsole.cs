@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class InfoTickerConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools]- Enable or disable infoTicker.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-it off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off info ticker\n" +
                    "2. Turn on info ticker\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-InfoTicker", "it", "st-it" };
         }

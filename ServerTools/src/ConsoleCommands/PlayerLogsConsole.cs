@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class PlayerLogsConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable player logs.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-plogs off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off player logs\n" +
                    "2. Turn on player logs\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-PlayerLogs", "plogs", "st-plogs" };
         }

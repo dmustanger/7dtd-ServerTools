@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class FriendTeleportConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable friend teleport.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-ft off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off friend teleport\n" +
                    "2. Turn on friend teleport\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-FriendTeleport", "ft", "st-ft" };
         }

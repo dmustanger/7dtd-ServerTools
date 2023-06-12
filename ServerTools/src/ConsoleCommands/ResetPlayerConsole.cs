@@ -6,17 +6,17 @@ namespace ServerTools
 {
     public class ResetPlayerConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Reset a players profile. * WARNING * Can not be undone without a backup.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage: st-rpp <EOS/EntityId/PlayerName>";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-ResetPlayerProfile", "rpp", "st-rpp" };
         }

@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class MotdConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable motd(messsage of the day).";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-md off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off the motd\n" +
                    "2. Turn on the motd\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Motd", "md", "st-md" };
         }

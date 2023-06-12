@@ -5,12 +5,12 @@ namespace ServerTools
 {
     class BlockChatCommandConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Blocks chat commands for a specific player";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-bcc <Id/EntityId/PlayerName>\n" +
@@ -19,7 +19,7 @@ namespace ServerTools
                 "2. Shows a list of the current players with blocked chat commands\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-BlockChatCommands", "bcc", "st-bcc" };
         }

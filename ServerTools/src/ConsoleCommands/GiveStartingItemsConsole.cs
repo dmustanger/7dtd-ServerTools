@@ -9,18 +9,18 @@ namespace ServerTools
 {
     public class GiveStartingItemsConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Gives the starting items from the xml list";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-st-gsi <EOS/EntityId/PlayerName>\n" +
                 "1. Gives a player the item(s) from the StatingItems.xml to their inventory unless full. Drops to the ground when full\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-GiveStartingItems", "gsi", "st-gsi" };
         }
@@ -41,7 +41,7 @@ namespace ServerTools
                         ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[0]);
                         if (cInfo != null)
                         {
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                             {
                                 ThreadManager.StartCoroutine(SpawnItems(cInfo));
                             }, null);

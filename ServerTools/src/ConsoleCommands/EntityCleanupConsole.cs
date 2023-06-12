@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class EntityCleanupConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable entity cleanup.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-ec off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off entity cleanup\n" +
                    "2. Turn on entity cleanup\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-EntityCleanup", "ec", "st-ec" };
         }

@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class PrayerConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable prayer.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-pray off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off prayer\n" +
                    "2. Turn on prayer\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Prayer", "pray", "st-pray" };
         }

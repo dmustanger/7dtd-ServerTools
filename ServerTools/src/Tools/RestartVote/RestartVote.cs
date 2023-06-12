@@ -34,8 +34,8 @@ namespace ServerTools
                         ClientInfo cInfoAdmin = clientList[i];
                         if (_cInfo != cInfoAdmin)
                         {
-                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) <= Admin_Level ||
-                                GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) <= Admin_Level)
+                            if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.PlatformId) <= Admin_Level ||
+                                GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.CrossplatformId) <= Admin_Level)
                             {
                                 adminOnline = true;
                                 Phrases.Dict.TryGetValue("RestartVote9", out string phrase);

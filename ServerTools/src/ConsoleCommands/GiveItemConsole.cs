@@ -8,12 +8,12 @@ namespace ServerTools
     public class GiveItemConsole : ConsoleCmdAbstract
     {
 
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Gives a item directly to a player's inventory. Drops to the ground if inventory is full.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-gi <EOS/EntityId/PlayerName> <Item> <Count> <Quality> <Durability>\n" +
@@ -34,7 +34,7 @@ namespace ServerTools
                 "8. Gives all players the item with 1 count 1 quality and 100 percent durability\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-GiveItem", "gi", "st-gi" };
         }
@@ -88,14 +88,14 @@ namespace ServerTools
                         }
                         if (_params[0].ToLower() == "all")
                         {
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                             {
                                 ThreadManager.StartCoroutine(SpawnItems(itemValue, itemCount, world));
                             }, null);
                         }
                         else
                         {
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                             {
                                 ThreadManager.StartCoroutine(SpawnItem(itemValue, itemCount, world, _params[0]));
                             }, null);

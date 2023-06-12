@@ -5,19 +5,19 @@ namespace ServerTools
 {
     class TraderListConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Lists the trader locations.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-tl\n" +
                 "1. Shows a list of trader locations\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Traderlist", "tl", "st-tl" };
         }

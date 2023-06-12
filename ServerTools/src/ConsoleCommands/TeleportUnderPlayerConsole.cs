@@ -6,19 +6,19 @@ namespace ServerTools
 {
     class TeleportUnderPlayerConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Teleports you under the target player.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-tup <EntityId/PlayerName/EOS>\n" +
                    "1. Teleports you under the target player\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-TeleportUnderPlayer", "tup", "st-tup" };
         }

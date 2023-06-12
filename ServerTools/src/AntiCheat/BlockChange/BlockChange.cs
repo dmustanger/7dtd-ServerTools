@@ -88,8 +88,8 @@ namespace ServerTools
                                 if (DamageDetector.IsEnabled)
                                 {
                                     int total = oldBlock.MaxDamage - oldBlockValue.damage;
-                                    if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
-                                        GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
+                                    if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
+                                        GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                                     {
                                         GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, oldBlockValue);
                                         DamagePenalty(total, player, cInfo);
@@ -120,8 +120,8 @@ namespace ServerTools
                             if (DamageDetector.IsEnabled)
                             {
                                 int total = oldBlock.MaxDamage - oldBlockValue.damage;
-                                if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
-                                    GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
+                                if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
+                                    GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                                 {
                                     GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, oldBlockValue);
                                     DamagePenalty(total, player, cInfo);
@@ -152,8 +152,8 @@ namespace ServerTools
                         if (BlockPickup.IsEnabled && BlockPickup.PickupEnabled.Contains(player.entityId) &&
                             player.inventory.holdingItemItemValue.GetItemId() == GeneralOperations.MeleeHandPlayer)
                         {
-                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) <= BlockPickup.Admin_Level ||
-                                GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) <= BlockPickup.Admin_Level)
+                            if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) <= BlockPickup.Admin_Level ||
+                                GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) <= BlockPickup.Admin_Level)
                             {
                                 GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
                                 GeneralOperations.ReturnBlock(cInfo, oldBlock.GetBlockName(), 1, "Pickup5");
@@ -203,8 +203,8 @@ namespace ServerTools
                         if (DamageDetector.IsEnabled)
                         {
                             int total = newBlockInfo.blockValue.damage - oldBlockValue.damage;
-                            if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
-                                GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
+                            if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
+                                GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                             {
                                 GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, oldBlockValue);
                                 DamagePenalty(total, player, cInfo);
@@ -234,8 +234,8 @@ namespace ServerTools
                         if (DamageDetector.IsEnabled)
                         {
                             int total = oldBlock.MaxDamage - oldBlockValue.damage + newBlockInfo.blockValue.damage;
-                            if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
-                                GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
+                            if (total >= DamageDetector.Block_Damage_Limit && GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
+                                GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                             {
                                 GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, oldBlockValue);
                                 DamagePenalty(total, player, cInfo);

@@ -6,11 +6,11 @@ namespace ServerTools
     public class DonorConsole : ConsoleCmdAbstract
     {
 
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Add, edit or remove a player from the reserved slots and chat color prefix list at the same time";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-don add <Id/EOS/EntityId/PlayerName> <NameColor> <Prefix> <PrefixColor> <DaysToExpire>\n" +
@@ -24,7 +24,7 @@ namespace ServerTools
                 "*Note*     Using the entity id or player name to add a player will only work if they are online. Use their Id or EOS when offline" +
                 "*Note*     The colors must be entered as 6 digit HTML color codes or colors from the ColorList.xml. Example [FF0000] or [FFFF00],[FFCC00] or Red";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Donor", "don", "st-don" };
         }

@@ -6,12 +6,12 @@ namespace ServerTools
 {
     class VoteConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable, disable voting. Reset player vote reward delay.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-vote off\n" +
@@ -28,7 +28,7 @@ namespace ServerTools
                    "6. Give a player a vote reward. Identical to running chat command /votereward. Does not count towards their delay\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Vote", "vo", "st-vo" };
         }

@@ -8,12 +8,12 @@ namespace ServerTools
         public static Dictionary<int, Vector3i[]> Vectors = new Dictionary<int, Vector3i[]>();
         public static Dictionary<string, Dictionary<Vector3i, BlockValue>> Undo = new Dictionary<string, Dictionary<Vector3i, BlockValue>>();
 
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Spawn active blocks in the world";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-sab\n" +
@@ -32,7 +32,7 @@ namespace ServerTools
                    "Think of the corners as opposites in a 3d rectangle or square. Everything in between the corners will be set as the block of choice\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-SpawnActiveBlocks", "sab", "st-sab" };
         }

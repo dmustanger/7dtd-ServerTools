@@ -7,12 +7,12 @@ namespace ServerTools
 {
     class SpawnEntityInRadiusConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Spawn multiple entity in a radius from a location or player.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-ser <X> <Y> <Z> r.<Radius> <Entity Id>\n" +
@@ -24,7 +24,7 @@ namespace ServerTools
                 "*Example*   st-ser Steam_76561191234567890 r.30 61 62 63 63\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-SpawnEntityRadius", "ser", "st-ser" };
         }

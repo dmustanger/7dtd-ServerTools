@@ -6,12 +6,12 @@ namespace ServerTools
     class StopServerCommandConsole : ConsoleCmdAbstract
     {
 
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Starts a countdown with an alert system for the time specified and then stops the server";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-StopServer <Minutes>\n" +
@@ -20,7 +20,7 @@ namespace ServerTools
                 "2. Cancels the shutdown\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-StopServer", "ss", "st-ss" };
         }
@@ -53,8 +53,8 @@ namespace ServerTools
                                 for (int i = 0; i < clientList.Count; i++)
                                 {
                                     ClientInfo cInfo = clientList[i];
-                                    if (!ExitCommand.Players.ContainsKey(cInfo.entityId) && (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > ExitCommand.Admin_Level &&
-                                        GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > ExitCommand.Admin_Level))
+                                    if (!ExitCommand.Players.ContainsKey(cInfo.entityId) && (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) > ExitCommand.Admin_Level &&
+                                        GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) > ExitCommand.Admin_Level))
                                     {
                                         EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                         if (player != null)

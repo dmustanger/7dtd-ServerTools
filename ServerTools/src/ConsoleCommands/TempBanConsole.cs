@@ -8,19 +8,19 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static int Admin_Level = 0;
 
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Ban a player temporarily.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-TempBan <EOS/EntityId/PlayerName> <Time>\n" +
                    "1. Temporarily ban a player by their Id for up to 60 minutes\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-TempBan", "tb", "st-tb" };
         }
@@ -41,8 +41,8 @@ namespace ServerTools
                 ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[0]);
                 if (cInfo != null)
                 {
-                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
-                        GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
+                    if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
+                        GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                     {
                         if (_time > 60)
                         {

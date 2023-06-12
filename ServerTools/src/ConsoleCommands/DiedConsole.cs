@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class DiedConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable death spot.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-ds off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off death spot\n" +
                    "2. Turn on death spot\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Died", "die", "st-die" };
         }

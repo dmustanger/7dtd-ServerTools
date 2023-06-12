@@ -5,18 +5,18 @@ namespace ServerTools
 {
     class RemoveItemAdminConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Removes an online player's items marked with the tag admin";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Removes all items from a online player that has the tag admin in Items.xml\n" +
                 "Usage: st-ria <EOS/EntityId/PlayerName>\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-RemoveItemAdmin", "ria", "st-ria" };
         }
@@ -39,7 +39,7 @@ namespace ServerTools
                         if (GameEventManager.GameEventSequences.ContainsKey("action_admin"))
                         {
                             GameEventManager.Current.HandleAction("action_admin", null, player, false, "");
-                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_admin", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
+                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_admin", cInfo.entityId, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed all items tagged admin from inventory and backpack of player '{0}'", cInfo.CrossplatformId.CombinedString));
                             return;
                         }

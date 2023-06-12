@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class Day7Console : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools]- Enable or disable day7.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-d7 off\n" +
@@ -19,7 +19,7 @@ namespace ServerTools
                    "2. Turn on day 7 alert\n" +
                    "3. Shows the current server fps, player, zombie, animal, days remaining before horde night, vehicle and supply crate totals\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Day7", "d7", "st-d7" };
         }

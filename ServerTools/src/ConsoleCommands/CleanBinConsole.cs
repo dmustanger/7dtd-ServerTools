@@ -5,12 +5,12 @@ namespace ServerTools
 {
     class CleanBinConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools]- Enable or disable clean bin.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-cb off\n" +
@@ -21,7 +21,7 @@ namespace ServerTools
                    "3. Cleans out the current ServerTools.bin using the settings from ServerToolsConfig.xml\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-CleanBin", "cb", "st-cb" };
         }

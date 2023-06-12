@@ -257,7 +257,7 @@ namespace ServerTools
                     {
                         return;
                     }
-                    if (GameManager.Instance.adminTools.GetCommands().ContainsKey(_command))
+                    if (GameManager.Instance.adminTools.Commands.GetCommands().ContainsKey(_command))
                     {
                         string[] commands = { _command };
                         if (!GameManager.Instance.adminTools.CommandAllowedFor(commands, _cInfo))

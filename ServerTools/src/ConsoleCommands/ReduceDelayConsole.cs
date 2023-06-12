@@ -5,12 +5,12 @@ namespace ServerTools
 {
     class ReduceDelayConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Add or remove a reduced command delay on a player.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-rd add <id/entityId/playerName>\n" +
@@ -20,7 +20,7 @@ namespace ServerTools
 
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-ReduceDelay", "rd", "st-rd" };
         }

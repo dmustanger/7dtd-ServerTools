@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class InvalidItemKickerConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable invalid item kicker.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-iik off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off invalid item kicker\n" +
                    "2. Turn on invalid item kicker\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-InvalidItemKicker", "iik", "st-iik" };
         }

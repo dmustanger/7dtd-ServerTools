@@ -9,12 +9,12 @@ namespace ServerTools
     {
         public static Dictionary<string, Dictionary<Vector3i, BlockValue>> Undo = new Dictionary<string, Dictionary<Vector3i, BlockValue>>();
 
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Generate and spawn a maze for players to run through.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-mz add {Blocks} {Floors}\n" +
@@ -28,7 +28,7 @@ namespace ServerTools
                    "Use wood, cobblestone, steel, brick or glass for the block name. It will default to concrete if the block can not be found";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Maze", "mz", "st-mz" };
         }
@@ -367,18 +367,18 @@ namespace ServerTools
                         {
                             List<BlockChangeInfo> reducedforPacket = blockList.GetRange(3600, blockList.Count - 1);
                             blockList.RemoveRange(3600, blockList.Count - 1);
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                             {
                                 ThreadManager.StartCoroutine(SetBlocks(blockList));
                             }, null);
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                             {
                                 ThreadManager.StartCoroutine(SetBlocks(reducedforPacket));
                             }, null);
                         }
                         else
                         {
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                             {
                                 ThreadManager.StartCoroutine(SetBlocks(blockList));
                             }, null);
@@ -427,18 +427,18 @@ namespace ServerTools
                         {
                             List<BlockChangeInfo> reducedforPacket = blockList.GetRange(3600, blockList.Count - 1);
                             blockList.RemoveRange(3600, blockList.Count - 1);
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                             {
                                 ThreadManager.StartCoroutine(SetBlocks(blockList));
                             }, null);
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                             {
                                 ThreadManager.StartCoroutine(SetBlocks(reducedforPacket));
                             }, null);
                         }
                         else
                         {
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                             {
                                 ThreadManager.StartCoroutine(SetBlocks(blockList));
                             }, null);
@@ -841,7 +841,7 @@ namespace ServerTools
                         blockCorrections.Add(blockList[i]);
                     }
                 }
-                ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                 {
                     ThreadManager.StartCoroutine(SetBlocks(blockCorrections));
                 }, null);

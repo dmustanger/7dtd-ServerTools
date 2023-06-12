@@ -7,19 +7,19 @@ namespace ServerTools
 {
     public class TeleportEntityConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Teleports a entity in the game";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Teleports a entity. Entity can not be a player.\n" +
                 "Usage: st-et <EntityId> <EntityId>\n" +
                 "Usage: st-et <EntityId> <X> <Y> <Z>\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-EntityTeleport", "et", "st-et" };
         }
@@ -62,7 +62,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Entity with id {0} can not be a player. Use a different command for teleporting players", _entityId1));
                         return;
                     }
-                    ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                    ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                     {
                         ThreadManager.StartCoroutine(SetPos(entity1, entity2.position));
                     }, null);
@@ -101,7 +101,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid entityId value: {0}", _z));
                         return;
                     }
-                    ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                    ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                     {
                         ThreadManager.StartCoroutine(SetPos(entity, new Vector3(_x, _y, _z)));
                     }, null);

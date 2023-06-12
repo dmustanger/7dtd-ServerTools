@@ -5,19 +5,19 @@ namespace ServerTools
 {
     class SecureDoorAccessConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Attempts to set access to all secure door.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-sda\n" +
                    "1. Attempts to set access to all secure door\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-SecureDoorAccess", "sda", "st-sda" };
         }

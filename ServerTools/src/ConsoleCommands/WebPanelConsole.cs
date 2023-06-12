@@ -6,12 +6,12 @@ namespace ServerTools
 {
     class WebPanelConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable, disable, restart web panel. Add, remove, reset, ban or list clients.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-web off\n" +
@@ -38,7 +38,7 @@ namespace ServerTools
                    "11. Shows a list of client id that has been added. Also shows banned and timed out IP address\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Webpanel", "web", "st-web" };
         }

@@ -5,12 +5,12 @@ namespace ServerTools
 {
     class ShopConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable, disable, add, remove and list items from shop.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-shop off\n" +
@@ -33,7 +33,7 @@ namespace ServerTools
                    "9. Shows a list and creates a text file of the shop sales for a specific player\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Shop", "shop" };
         }

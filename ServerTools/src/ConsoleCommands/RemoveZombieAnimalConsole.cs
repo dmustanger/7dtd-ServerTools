@@ -5,19 +5,19 @@ namespace ServerTools
 {
     class RemoveZombieAnimalConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Remove all zombies and animals on the map.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-rza\n" +
                 "1. Removes all current zombies and animals on the map\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-RemoveZombieAnimals", "rza", "st-rza" };
         }

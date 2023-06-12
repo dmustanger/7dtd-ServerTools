@@ -244,7 +244,7 @@ namespace ServerTools
                 return;
             }
             GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
-            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
+            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.entityId, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
             if (count >= _amount)
             {
                 count -= _amount;

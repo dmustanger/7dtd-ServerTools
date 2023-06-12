@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace ServerTools
 {
     class TestConsole : ConsoleCmdAbstract
     {
 
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Test a command";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-test\n" +
@@ -22,7 +20,7 @@ namespace ServerTools
                 "2. Disables the test\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Test", "test" };
         }

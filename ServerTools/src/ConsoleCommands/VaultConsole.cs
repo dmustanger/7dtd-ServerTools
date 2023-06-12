@@ -5,12 +5,12 @@ namespace ServerTools
 {
     class VaultConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable Vault.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-vault off\n" +
@@ -27,7 +27,7 @@ namespace ServerTools
                    "6. Clears all items from the specific player's vault\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Vault", "vault" };
         }

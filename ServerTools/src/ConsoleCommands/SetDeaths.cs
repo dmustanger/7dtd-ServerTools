@@ -5,19 +5,19 @@ namespace ServerTools
 {
     class SetDeathsConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Set the value of deaths for the specified player";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-deaths <EOS/EntityId/PlayerName> <Value>\n" +
                    "1. Sets the value of deaths\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-SetDeaths", "deaths", "st-deaths" };
         }

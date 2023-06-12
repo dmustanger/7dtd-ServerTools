@@ -6,12 +6,12 @@ namespace ServerTools
 {
     class TrackingConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Check if players have been tracked with in the specified range and location.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-track <Hours> <Block Range>\n" +
@@ -20,7 +20,7 @@ namespace ServerTools
                    "2. List players tracked with in the specified hours and block range from a specific location\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Tracking", "track", "st-track" };
         }

@@ -5,12 +5,12 @@ namespace ServerTools
 {
     class ExperienceBoostConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools]- Add or remove more experience given to a player upon killing a zombie.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-eb add {EOS/EntityId/Name} {Amount}\n" +
@@ -21,7 +21,7 @@ namespace ServerTools
                    "3. Shows the current experience boost for a player\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-ExperienceBoost", "eb", "st-eb" };
         }

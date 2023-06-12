@@ -5,19 +5,19 @@ namespace ServerTools
 {
     class SetPlayerKillsConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Set the value of player kills for the specified player";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-spk <EOS/EntityId/PlayerName> <Value>\n" +
                    "1. Sets the value of player kills\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-SetPlayerKills", "spk", "st-spk" };
         }

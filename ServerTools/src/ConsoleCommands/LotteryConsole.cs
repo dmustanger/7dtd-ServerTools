@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class LotteryConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable lottery.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-lott off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off lottery\n" +
                    "2. Turn on lottery\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Lottery", "lott", "st-lott" };
         }

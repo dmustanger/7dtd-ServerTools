@@ -744,10 +744,6 @@ namespace ServerTools
                         foreach (int i in entityTypesCollection)
                         {
                             EntityClass eClass = EntityClass.list[i];
-                            if (!eClass.bAllowUserInstantiate)
-                            {
-                                continue;
-                            }
                             if (Entity_Id == counter)
                             {
                                 Entity entity = EntityFactory.CreateEntity(i, new Vector3((float)x, (float)y, (float)z));

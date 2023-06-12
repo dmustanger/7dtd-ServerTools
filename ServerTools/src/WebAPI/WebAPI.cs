@@ -183,7 +183,7 @@ namespace ServerTools
         {
             try
             {
-                int controlPanelPort = GamePrefs.GetInt(EnumGamePrefs.ControlPanelPort);
+                int controlPanelPort = GamePrefs.GetInt(EnumGamePrefs.UNUSED_ControlPanelPort);
                 int telnetPanelPort = GamePrefs.GetInt(EnumGamePrefs.TelnetPort);
                 if (Port == controlPanelPort || Port == telnetPanelPort)
                 {

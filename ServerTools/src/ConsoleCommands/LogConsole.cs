@@ -5,12 +5,12 @@ namespace ServerTools
 {
     class LogConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Adds the specified entry to the current output log.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-Logs 'Entry for output log'\n" +
@@ -18,7 +18,7 @@ namespace ServerTools
 
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Logs", "log", "st-log" };
         }

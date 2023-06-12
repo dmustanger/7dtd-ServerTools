@@ -8,12 +8,12 @@ namespace ServerTools
 {
     class PollConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Open, cancel, stop, check, or list a poll for players to vote on.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-poll new <hours> <message>\n" +
@@ -31,7 +31,7 @@ namespace ServerTools
                 "6. Opens a poll from the list of old polls for this many hours.\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Poll", "poll" };
         }

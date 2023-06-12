@@ -1,7 +1,7 @@
 ﻿
 namespace ServerTools
 {
-    public class Mods
+    public class ModularLoader
     {
         public static bool Startup = false;
 
@@ -238,22 +238,6 @@ namespace ServerTools
             else if (!InteractiveMap.IsRunning && InteractiveMap.IsEnabled)
             {
                 InteractiveMap.Load();
-            }
-            if (RegionReset.IsRunning && !RegionReset.IsEnabled)
-            {
-                RegionReset.Unload();
-            }
-            else if (!RegionReset.IsRunning && RegionReset.IsEnabled)
-            {
-                RegionReset.Load();
-            }
-            if (ChunkReset.IsRunning && !ChunkReset.IsEnabled)
-            {
-                ChunkReset.Unload();
-            }
-            else if (!ChunkReset.IsRunning && ChunkReset.IsEnabled)
-            {
-                ChunkReset.Load();
             }
             if (BigHead.IsEnabled && !BigHead.IsRunning)
             {

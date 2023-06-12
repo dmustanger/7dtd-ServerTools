@@ -7,18 +7,18 @@ namespace ServerTools
 {
     public class RotateEntityConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Rotates an entity to face away from the command user";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Rotates an entity to face away from the command user. Entity being rotated can not be a player.\n" +
                 "Usage: st-erot <EntityId>\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-EntityRotate", "erot", "st-erot" };
         }
@@ -56,7 +56,7 @@ namespace ServerTools
                 EntityPlayer player = GeneralOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
                 if (player != null)
                 {
-                    ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                    ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                     {
                         ThreadManager.StartCoroutine(SetRot(entity, new Vector3(player.position.x, player.position.y, player.position.z)));
                     }, null);

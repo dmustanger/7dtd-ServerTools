@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class TravelConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable Travel.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-tvl off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off Travel\n" +
                    "2. Turn on Travel\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Travel", "tvl", "st-tvl" };
         }

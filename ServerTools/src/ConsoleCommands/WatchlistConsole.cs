@@ -5,12 +5,12 @@ namespace ServerTools
 {
     public class CommandWatchListConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable, add, remove and view steam ids on the watchlist.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-wl off\n" +
@@ -25,7 +25,7 @@ namespace ServerTools
                    "5. Lists all Id on the watch list";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-WatchList", "wl", "st-wl" };
         }

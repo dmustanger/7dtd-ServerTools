@@ -31,8 +31,8 @@ namespace ServerTools
                             EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                             if (player != null && player.IsSpawned() && player.IsAlive() && !TeleportDetector.Ommissions.Contains(player.entityId))
                             {
-                                int userPlatformPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId);
-                                int userCrossplatformPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId);
+                                int userPlatformPermissionLevel = GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId);
+                                int userCrossplatformPermissionLevel = GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId);
                                 if (SpectatorEnabled && userPlatformPermissionLevel > Spectator_Admin_Level && userCrossplatformPermissionLevel > Spectator_Admin_Level)
                                 {
                                     if (player.IsSpectator)
@@ -135,8 +135,8 @@ namespace ServerTools
                         ClientInfo cInfo = clientList[i];
                         if (cInfo != null && cInfo.PlatformId != null && cInfo.CrossplatformId != null)
                         {
-                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > XRayDetector.Admin_Level &&
-                                GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > XRayDetector.Admin_Level)
+                            if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) > XRayDetector.Admin_Level &&
+                                GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) > XRayDetector.Admin_Level)
                             {
                                 EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                 if (player != null)

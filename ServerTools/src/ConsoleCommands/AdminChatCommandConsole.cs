@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace ServerTools
 {
-    class AdminChatCommandsConsole : ConsoleCmdAbstract
+    public class AdminChatCommandsConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable admin chat commands.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-acc off\n" +
@@ -19,7 +19,7 @@ namespace ServerTools
                    "2. Turn on server admin chat commands\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-AdminChatCommands", "acc", "st-acc" };
         }

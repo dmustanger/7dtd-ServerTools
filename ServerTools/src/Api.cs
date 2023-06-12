@@ -252,8 +252,8 @@ namespace ServerTools
                         {
                             SpeedDetector.Flags.Remove(_cInfo.entityId);
                         }
-                        if (ExitCommand.IsEnabled && !ExitCommand.Players.ContainsKey(_cInfo.entityId) && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > ExitCommand.Admin_Level &&
-                        GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > ExitCommand.Admin_Level)
+                        if (ExitCommand.IsEnabled && !ExitCommand.Players.ContainsKey(_cInfo.entityId) && GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.PlatformId) > ExitCommand.Admin_Level &&
+                        GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.CrossplatformId) > ExitCommand.Admin_Level)
                         {
                             ExitCommand.Players.Add(_cInfo.entityId, player.position);
                         }
@@ -405,10 +405,10 @@ namespace ServerTools
                     {
                         DupeLog.OldInvs.Remove(_cInfo.entityId);
                     }
-                    if (RegionReset.RegionPlayer.Contains(_cInfo.entityId))
-                    {
-                        RegionReset.RegionPlayer.Remove(_cInfo.entityId);
-                    }
+                    //if (RegionReset.RegionPlayer.Contains(_cInfo.entityId))
+                    //{
+                    //    RegionReset.RegionPlayer.Remove(_cInfo.entityId);
+                    //}
                     EventSchedule.Expired.Add("Bonus_" + id);
                 }
                 else

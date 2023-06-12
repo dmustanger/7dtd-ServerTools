@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class KillNoticeConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable kill notice.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-kn off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off kill notice\n" +
                    "2. Turn on kill notice\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-KillNotice", "kn", "st-kn" };
         }

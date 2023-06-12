@@ -5,12 +5,12 @@ namespace ServerTools
 {
     class BanPlayerConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Bans a player but also removes their active claim blocks.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-bp <Id/EOS/EntityId/PlayerName> <Time> <Hours/Days/Years>\n" +
@@ -19,7 +19,7 @@ namespace ServerTools
                    "2. Ban a player for the specified time and remove all of their existing claim blocks while giving a reason for the ban\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-BanPlayer", "bp", "st-bp" };
         }

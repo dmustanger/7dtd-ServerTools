@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -123,7 +124,6 @@ namespace ServerTools
                     RunTimePatch.PatchAll();
                     Config.Load();
                     GeneralOperations.CreateCustomXUi();
-                    GeneralOperations.GetCurrencyName();
                     GeneralOperations.GetMeleeHandPlayer();
                     GeneralOperations.EntityIdList();
                     GeneralOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
@@ -132,7 +132,7 @@ namespace ServerTools
                     CommandList.Load();
                     InteractiveMap.SetWorldSize();
                     InteractiveMap.LocateMapFolder();
-                    Mods.Load();
+                    ModularLoader.Load();
                     Phrases.Load();
                     HowToSetup.Load();
                     GameManager.Instance.waitForTargetFPS.TargetFPS = 80;
@@ -213,18 +213,7 @@ namespace ServerTools
                         List<string[]> track = new List<string[]>();
                         PersistentContainer.Instance.Track = track;
                     }
-                    if (PersistentContainer.Instance.RegionReset == null)
-                    {
-                        Dictionary<string, DateTime> regionResets = new Dictionary<string, DateTime>();
-                        PersistentContainer.Instance.RegionReset = regionResets;
-                    }
                     PersistentContainer.DataChange = true;
-                    if (RegionReset.IsEnabled || ChunkReset.IsEnabled)
-                    {
-                        ResettingChunks = true;
-                        Timers.Chunk_Region_ResetTimer();
-                        Log.Out("[SERVERTOOLS] Running Region and Chunk reset in 10 seconds");
-                    }
                     if (CleanBin.IsEnabled)
                     {
                         CleanBin.Exec();
@@ -232,7 +221,6 @@ namespace ServerTools
                         CleanBin.Auction = false;
                         CleanBin.Bank = false;
                         CleanBin.Bounties = false;
-                        CleanBin.Chunk_Reset = false;
                         CleanBin.Delays = false;
                         CleanBin.Homes = false;
                         CleanBin.Jail = false;
@@ -241,7 +229,6 @@ namespace ServerTools
                         CleanBin.New_Spawn_Tele = false;
                         CleanBin.Poll = false;
                         CleanBin.Protected_Zones = false;
-                        CleanBin.Region_Reset = false;
                         CleanBin.Shop_Log = false;
                         CleanBin.Waypoints = false;
                         Config.WriteXml();
@@ -249,8 +236,9 @@ namespace ServerTools
                         Log.Out(string.Format("[SERVERTOOLS] ServerTools.bin has been cleaned. The Clean_Bin tool and all of its options are now disabled"));
                     }
                     Track.Cleanup();
+                    Timers.Currency_Tag_Timer();
                     Timers.PersistentDataSave();
-                    Log.Out(string.Format("[SERVERTOOLS] Running ServerTools Config v.{0}", Config.Version));
+                    Log.Out("[SERVERTOOLS] Running ServerTools Config v.{0}", Config.Version);
                 }
             }
             catch (Exception e)
@@ -275,18 +263,18 @@ namespace ServerTools
             }
         }
 
-        public static void Chunk_Region_Reset()
-        {
-            if (RegionReset.IsEnabled)
-            {
-                RegionReset.Exec();
-            }
-            if (ChunkReset.IsEnabled)
-            {
-                ChunkReset.Exec();
-            }
-            ResettingChunks = false;
-            Log.Out("[SERVERTOOLS] Region and Chunk reset has completed");
-        }
+        //public static void Chunk_Region_Reset()
+        //{
+        //    if (RegionReset.IsEnabled)
+        //    {
+        //        RegionReset.Exec();
+        //    }
+        //    if (ChunkReset.IsEnabled)
+        //    {
+        //        ChunkReset.Exec();
+        //    }
+        //    ResettingChunks = false;
+        //    Log.Out("[SERVERTOOLS] Region and Chunk reset has completed");
+        //}
     }
 }

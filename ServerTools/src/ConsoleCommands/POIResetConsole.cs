@@ -6,12 +6,12 @@ namespace ServerTools
 {
     class POIResetConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Resets POI locations.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-rpoi <Size> true/false\n" +
@@ -20,7 +20,7 @@ namespace ServerTools
                 "*Note* true/false controls if a POI containing a player claim will be reset.\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-ResetPoi", "rpoi", "st-rpoi" };
         }

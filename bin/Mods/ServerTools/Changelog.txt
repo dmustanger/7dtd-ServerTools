@@ -1,5 +1,28 @@
 ﻿CHANGELOG
 
+21.0.0
+Built using Alpha 21 experimental assets
+Functioning with Alpha 21 experimental. Untested with other versions
+
+-Updated for alpha 21 compatibility
+-Fixed custom currency being used for the Wallet tool. Initial
+check for a valid tagged item is now delayed by a timer
+-Removed Region_Reset and Chunk_Reset tools temporarily. The base
+game has it's own chunk reset and a region reset console command
+has been added by default. If the need for these tools changes, 
+they will be added again
+-Removed Net_Package_Detector tool and corresponding injections
+*You must delete your existing ServerTools Config folder to avoid 
+errors. Located at ...mods/ServerTools/Config.
+-Also recommend deleting your existing ServerTools.bin.
+Delete these ONLY if you have a version prior to 21.0.0 installed*
+
+Known issues: 
+-Vaultbox tool does not work consistently for all
+servers. Recommend keeping it disabled
+-Shop panel does not recognize two players using the same ip
+-RIO is not functioning as intended
+
 20.7.1
 Built using Alpha 20 stable assets
 Functioning with Alpha 20 stable. Untested with other versions

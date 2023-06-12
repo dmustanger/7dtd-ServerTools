@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using UnityEngine;
 
@@ -11,7 +10,7 @@ namespace ServerTools
     public class GeneralOperations
     {
         public static bool Running = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false, 
-            No_Currency = false, Net_Package_Detector = false, Debug = false, Allow_Bicycle = false, Encryption_Off = false;
+            No_Currency = false, Debug = false, Allow_Bicycle = false, Encryption_Off = false;
         public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0, 
             MeleeHandPlayer = 0;
         public static string AppPath, Currency_Item, XPathDir, Command_expire = "expire", Command_commands = "commands", Command_overlay = "overlay";
@@ -45,7 +44,6 @@ namespace ServerTools
                         sw.Flush();
                         sw.Close();
                     }
-                    XPathAlert("items.xml");
                 }
                 if (File.Exists(XPathDir + "gameevents.xml"))
                 {
@@ -142,7 +140,6 @@ namespace ServerTools
                         sw.Flush();
                         sw.Close();
                     }
-                    XPathAlert("gameevents.xml");
                 }
                 if (File.Exists(XPathDir + "XUi/windows.xml"))
                 {
@@ -297,36 +294,10 @@ namespace ServerTools
                         sw.WriteLine();
                         sw.WriteLine("</configs>");
                     }
-                    XPathAlert("windows.xml");
                 }
                 if (File.Exists(XPathDir + "buffs.xml"))
                 {
-                    List<string> buffContent = new List<string>();
-                    using (FileStream fs = new FileStream(XPathDir + "buffs.xml", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                    {
-                        using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
-                        {
-                            while (!sr.EndOfStream)
-                            {
-                                buffContent.Add(sr.ReadLine());
-                            }
-                        }
-                    }
-                    int count = 0;
-                    for (int i = 0; i < buffContent.Count; i++)
-                    {
-                        string line = buffContent[i];
-                        if (line.Contains("<buff name=\"pve_zone\"") || line.Contains("<buff name=\"pvp_ally_zone\"") || line.Contains("<buff name=\"pvp_stranger_zone\"") || 
-                            line.Contains("<buff name=\"pvp_zone\"") || line.Contains("<buff name=\"pvp_ally_damage\"") || line.Contains("<buff name=\"pvp_stranger_damage\"") ||
-                            line.Contains("<buff name=\"pvp_damage\"") || line.Contains("<buff name=\"region_reset\"") || line.Contains("<buff name=\"chunk_reset\""))
-                        {
-                            count += 1;
-                        }
-                    }
-                    if (count != 9)
-                    {
-                        File.Delete(XPathDir + "buffs.xml");
-                    }
+                    File.Delete(XPathDir + "buffs.xml");
                 }
                 if (!File.Exists(XPathDir + "buffs.xml"))
                 {
@@ -465,36 +436,10 @@ namespace ServerTools
                         sw.Flush();
                         sw.Close();
                     }
-                    XPathAlert("buffs.xml");
                 }
                 if (File.Exists(XPathDir + "XUi/xui.xml"))
                 {
-                    List<string> xuiContent = new List<string>();
-                    using (FileStream fs = new FileStream(XPathDir + "XUi/xui.xml", FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
-                        {
-                            while (!sr.EndOfStream)
-                            {
-                                xuiContent.Add(sr.ReadLine());
-                            }
-                        }
-                    }
-                    int count = 0;
-                    for (int i = 0; i < xuiContent.Count; i++)
-                    {
-                        string line = xuiContent[i];
-                        if (line.Contains("browserMap") || line.Contains("browserDiscord") || line.Contains("browserVote") ||
-                            line.Contains("browserRio") || line.Contains("browserShop") || line.Contains("browserAuction") ||
-                            line.Contains("browserIMap") || line.Contains("browserDonation"))
-                        {
-                            count += 1;
-                        }
-                    }
-                    if (count != 16)
-                    {
-                        File.Delete(XPathDir + "XUi/xui.xml");
-                    }
+                    File.Delete(XPathDir + "XUi/xui.xml");
                 }
                 if (!File.Exists(XPathDir + "XUi/xui.xml"))
                 {
@@ -540,34 +485,10 @@ namespace ServerTools
                         sw.WriteLine();
                         sw.WriteLine("</configs>");
                     }
-                    XPathAlert("xui.xml");
                 }
                 if (File.Exists(XPathDir + "blocks.xml"))
                 {
-                    List<string> windowContent = new List<string>();
-                    using (FileStream fs = new FileStream(XPathDir + "blocks.xml", FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
-                        {
-                            while (!sr.EndOfStream)
-                            {
-                                windowContent.Add(sr.ReadLine());
-                            }
-                        }
-                    }
-                    int count = 0;
-                    for (int i = 0; i < windowContent.Count; i++)
-                    {
-                        string line = windowContent[i];
-                        if (line.Contains("VaultBox") || line.Contains("movement,melee,bullet,arrow,rocket"))
-                        {
-                            count += 1;
-                        }
-                    }
-                    if (count != 2)
-                    {
-                        File.Delete(XPathDir + "blocks.xml");
-                    }
+                    File.Delete(XPathDir + "blocks.xml");
                 }
                 if (!File.Exists(XPathDir + "blocks.xml"))
                 {
@@ -578,33 +499,26 @@ namespace ServerTools
                         sw.WriteLine("<append xpath=\"/blocks\">");
                         sw.WriteLine();
                         sw.WriteLine("<block name=\"VaultBox\">");
-                        sw.WriteLine("  <property name=\"CreativeMode\" value=\"Player\"/>");
+                        sw.WriteLine("  <property name=\"CreativeMode\" value=\"Dev\"/>");
                         sw.WriteLine("  <property name=\"Tags\" value=\"storage\"/>");
                         sw.WriteLine("  <property name=\"Class\" value=\"SecureLoot\"/>");
                         sw.WriteLine("  <property name=\"CustomIcon\" value=\"cntChest02\"/>");
                         sw.WriteLine("  <property name=\"Material\" value=\"MwoodReinforced\"/>");
-                        sw.WriteLine("  <property name=\"StabilitySupport\" value=\"false\"/>");
-                        sw.WriteLine("  <property name=\"Shape\" value=\"Ext3dModel\"/>");
-                        sw.WriteLine("  <property name=\"Texture\" value=\"293\"/>");
-                        sw.WriteLine("  <property name=\"Mesh\" value=\"models\"/>");
-                        sw.WriteLine("  <property name=\"IsTerrainDecoration\" value=\"true\"/>");
+                        sw.WriteLine("  <property name=\"Shape\" value=\"ModelEntity\"/>");
+                        sw.WriteLine("  <property name=\"Model\" value=\"@:Entities/LootContainers/woodWritableCratePrefab.prefab\"/>");
+                        sw.WriteLine("  <property name=\"WaterFlow\" value=\"permitted\"/>");
+                        sw.WriteLine("  <property name=\"Path\" value=\"solid\"/>");
+                        sw.WriteLine("  <property name=\"Place\" value=\"TowardsPlacerInverted\"/>");
                         sw.WriteLine("  <property name=\"FuelValue\" value=\"300\"/>");
-                        sw.WriteLine("  <property name=\"Model\" value=\"LootContainers/chest02\" param1=\"main_mesh\"/>");
                         sw.WriteLine("  <property name=\"ShowModelOnFall\" value=\"false\"/>");
-                        sw.WriteLine("  <property name=\"HandleFace\" value=\"Bottom\"/>");
-                        sw.WriteLine("  <property name=\"ImposterExchange\" value=\"imposterQuarter\" param1=\"154\"/>");
-                        sw.WriteLine("  <property name=\"Collide\" value=\"movement,melee,bullet,arrow,rocket\"/>");
-                        sw.WriteLine("  <property name=\"LootList\" value=\"playerStorage\"/>");
+                        sw.WriteLine("  <property name=\"LootList\" value=\"playerWoodWritableStorage\"/>");
                         sw.WriteLine("  <property class=\"RepairItems\">");
                         sw.WriteLine("      <property name=\"resourceWood\" value=\"10\"/>");
                         sw.WriteLine("  </property>");
-                        sw.WriteLine("  <drop event=\"Destroy\" count=\"0\"/>");
+                        sw.WriteLine("  <drop event=\"Destroy\" name=\"resourceWood\" count=\"1,3\"/>");
                         sw.WriteLine("  <drop event=\"Fall\" name=\"terrDestroyedWoodDebris\" count=\"1\" prob=\"1\"/>");
-                        sw.WriteLine("  <property name=\"LPHardnessScale\" value=\"8\"/>");
-                        sw.WriteLine("  <property name=\"DescriptionKey\" value=\"cntSecureStorageChestDesc\"/>");
                         sw.WriteLine("  <property name=\"CanPickup\" value=\"false\"/>");
                         sw.WriteLine("  <property name=\"SellableToTrader\" value=\"false\"/>");
-                        sw.WriteLine("  <property name=\"FilterTags\" value=\"MC_playerBlocks,SC_decor\"/>");
                         sw.WriteLine("</block>");
                         sw.WriteLine();
                         sw.WriteLine("</append>");
@@ -663,11 +577,6 @@ namespace ServerTools
             }
         }
 
-        public static void XPathAlert(string _fileName)
-        {
-            Log.Warning(string.Format("[SERVERTOOLS] The file named '{0}' has been created or updated and is required for full functionality of ServerTools. Server restart is recommended", _fileName));
-        }
-
         public static void CheckArea()
         {
             if (!Running)
@@ -697,14 +606,14 @@ namespace ServerTools
                     {
                         Zones.ZoneCheck(cInfo, player);
                     }
-                    if (RegionReset.IsEnabled)
-                    {
-                        RegionReset.IsResetRegion(cInfo, player);
-                    }
-                    if (ChunkReset.IsEnabled)
-                    {
-                        ChunkReset.IsResetChunk(cInfo, player);
-                    }
+                    //if (RegionReset.IsEnabled)
+                    //{
+                    //    RegionReset.IsResetRegion(cInfo, player);
+                    //}
+                    //if (ChunkReset.IsEnabled)
+                    //{
+                    //    ChunkReset.IsResetChunk(cInfo, player);
+                    //}
                 }
                 List<Entity> entityList = GameManager.Instance.World.Entities.list;
                 if (entityList == null || entityList.Count < 1)
@@ -1115,14 +1024,11 @@ namespace ServerTools
                 int count = 1;
                 foreach (KeyValuePair<int, EntityClass> entityClass in EntityClass.list.Dict)
                 {
-                    if (entityClass.Value.bAllowUserInstantiate)
+                    if (!EntityId.ContainsKey(count))
                     {
-                        if (!EntityId.ContainsKey(count))
-                        {
-                            EntityId.Add(count, entityClass.Key);
-                        }
-                        count++;
+                        EntityId.Add(count, entityClass.Key);
                     }
+                    count++;
                 }
             }
         }
@@ -1191,33 +1097,20 @@ namespace ServerTools
             return pass;
         }
 
-        public static long ConvertIPToLong(string ipAddress)
-        {
-            try
-            {
-                if (IPAddress.TryParse(ipAddress, out IPAddress ip))
-                {
-                    byte[] bytes = ip.MapToIPv4().GetAddressBytes();
-                    return 16777216L * bytes[0] +
-                        65536 * bytes[1] +
-                        256 * bytes[2] +
-                        bytes[3];
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in GeneralOperationss.ConvertIPToLong: {0}", e.Message));
-            }
-            return 0;
-        }
-
         public static void GetCurrencyName()
         {
             List<ItemClass> itemClassCurrency = ItemClass.GetItemsWithTag(FastTags.Parse("currency"));
             if (itemClassCurrency != null && itemClassCurrency.Count > 0)
             {
                 Currency_Item = itemClassCurrency[0].Name;
-                Log.Out(string.Format("[SERVERTOOLS] Game currency and exchange set to item named '{0}'", Currency_Item));
+                Log.Out("[SERVERTOOLS] Game currency and exchange set to item named '{0}'", Currency_Item);
+                if (itemClassCurrency.Count > 1)
+                {
+                    for (int i = 1; i < itemClassCurrency.Count; i++)
+                    {
+                        Log.Out("[SERVERTOOLS] Alternative currency item named '{0}' was found with the Currency tag but is unused", itemClassCurrency[i].Name);
+                    }
+                }
             }
             else
             {

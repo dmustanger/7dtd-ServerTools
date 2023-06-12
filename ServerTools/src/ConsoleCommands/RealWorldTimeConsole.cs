@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class RealWorldTimeConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable real world time.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-rwt off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off real world time\n" +
                    "2. Turn on real world time\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-RealWorldTime", "rwt", "st-rwt" };
         }

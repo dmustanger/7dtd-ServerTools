@@ -12,8 +12,8 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (Admin_Only && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level &&
-                GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo.CrossplatformId) > Admin_Level)
+            if (Admin_Only && GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level &&
+                GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.CrossplatformId) > Admin_Level)
             {
                 return;
             }

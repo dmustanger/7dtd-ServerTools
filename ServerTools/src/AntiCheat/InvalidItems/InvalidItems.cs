@@ -175,8 +175,8 @@ namespace ServerTools
                     {
                         continue;
                     }
-                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) <= Admin_Level ||
-                        GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) <= Admin_Level)
+                    if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) <= Admin_Level ||
+                        GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) <= Admin_Level)
                     {
                         continue;
                     }
@@ -535,7 +535,7 @@ namespace ServerTools
                                 if (SecureLoot != null)
                                 {
                                     PlatformUserIdentifierAbs platformUserIdentifierAbs = SecureLoot.GetOwner();
-                                    if (platformUserIdentifierAbs != null && GameManager.Instance.adminTools.GetUserPermissionLevel(platformUserIdentifierAbs) > Admin_Level)
+                                    if (platformUserIdentifierAbs != null && GameManager.Instance.adminTools.Users.GetUserPermissionLevel(platformUserIdentifierAbs) > Admin_Level)
                                     {
                                         ItemStack[] items = SecureLoot.items;
                                         if (items == null)
@@ -574,7 +574,7 @@ namespace ServerTools
                                 if (SecureLoot != null)
                                 {
                                     PlatformUserIdentifierAbs platformUserIdentifierAbs = SecureLoot.GetOwner();
-                                    if (platformUserIdentifierAbs != null && GameManager.Instance.adminTools.GetUserPermissionLevel(platformUserIdentifierAbs) > Admin_Level)
+                                    if (platformUserIdentifierAbs != null && GameManager.Instance.adminTools.Users.GetUserPermissionLevel(platformUserIdentifierAbs) > Admin_Level)
                                     {
                                         ItemStack[] items = SecureLoot.items;
                                         if (items == null)

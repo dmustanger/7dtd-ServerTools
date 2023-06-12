@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class PlayerListConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable player list.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-plist off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off player list\n" +
                    "2. Turn on player list\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-PlayerList", "plist", "st-plist" };
         }

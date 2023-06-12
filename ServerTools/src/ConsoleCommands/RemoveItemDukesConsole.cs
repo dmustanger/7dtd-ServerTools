@@ -5,18 +5,18 @@ namespace ServerTools
 {
     class RemoveItemDukesConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Removes an online player's items marked with the tag dukes";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Removes all items from a online player that has the tag dukes in Items.xml\n" +
                 "Usage: st-rid <EOS/EntityId/PlayerName>\n" ;
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-RemoveItemDukes", "rid", "st-rid" };
         }
@@ -39,7 +39,7 @@ namespace ServerTools
                         if (GameEventManager.GameEventSequences.ContainsKey("action_dukes"))
                         {
                             GameEventManager.Current.HandleAction("action_dukes", null, player, false, "");
-                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_dukes", cInfo.playerName, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
+                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_dukes", cInfo.entityId, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
                             SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed all items tagged dukes from inventory and backpack of player id '{0}' '{1}' named '{2}'", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                             return;
                         }

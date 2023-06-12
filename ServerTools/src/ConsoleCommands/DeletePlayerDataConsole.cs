@@ -5,12 +5,12 @@ namespace ServerTools
 {
     class DeletePlayerDataConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Deletes all saved player data from ServerTools bin file";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-dpd\n" +
@@ -18,7 +18,7 @@ namespace ServerTools
                    "2. *Note* Be very careful running this command. It can not be reloaded without a backup\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-DeletePlayerData", "deleteplayerdata", "st-dpd" };
         }

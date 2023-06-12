@@ -6,11 +6,11 @@ namespace ServerTools
 {
     class PrivateMessageConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable private message.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-pm off\n" +
@@ -18,7 +18,7 @@ namespace ServerTools
                    "1. Turn off private message\n" +
                    "2. Turn on private message\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-PrivateMessage", "pmsg", "st-pm" };
         }

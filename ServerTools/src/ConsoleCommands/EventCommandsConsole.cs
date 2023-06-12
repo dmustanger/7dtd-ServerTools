@@ -9,12 +9,12 @@ namespace ServerTools
         public static Dictionary<string, int> Stage = new Dictionary<string, int>();
         public static Dictionary<string, List<string>> Setup = new Dictionary<string, List<string>>();
 
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - List and coordinate events.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-ev new <name>\n" +
@@ -37,7 +37,7 @@ namespace ServerTools
                 "9. Remove a single player from a running event, sending them back to their return point.\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Event", "ev", "st-ev" };
         }

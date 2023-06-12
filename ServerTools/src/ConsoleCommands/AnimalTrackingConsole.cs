@@ -5,12 +5,12 @@ namespace ServerTools
 {
     class AnimalTrackingConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable animal tracking.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-at off\n" +
@@ -22,7 +22,7 @@ namespace ServerTools
 
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-AnimalTracking", "at", "st-at" };
         }

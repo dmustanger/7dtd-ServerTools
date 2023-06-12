@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class GimmeConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable, disable, reset gimme.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-gim off\n" +
@@ -21,7 +21,7 @@ namespace ServerTools
                    "3. Reset the delay of all players\n" +
                    "4. Reset the delay of a player\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Gimme", "gim", "st-gim" };
         }

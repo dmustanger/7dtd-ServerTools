@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class ClanManagerConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools]- Enable or disable clan manager.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-cm off\n" +
@@ -25,7 +25,7 @@ namespace ServerTools
                    "5. Deletes a clan and all of its members from the clan system\n" +
                    "6. Deletes a player from the clan system\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-ClanManager", "clan", "st-cm" };
         }

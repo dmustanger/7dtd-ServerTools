@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class LocationConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable location.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-loc off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off chat command /loc\n" +
                    "2. Turn on chat command /loc\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Location", "loc", "st-loc" };
         }

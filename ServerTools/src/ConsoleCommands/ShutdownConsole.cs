@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class ShutdownConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable shutdown.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-sd off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off the auto shutdown process\n" +
                    "2. Turn on the auto shutdown process\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Shutdown", "sd", "st-sd" };
         }

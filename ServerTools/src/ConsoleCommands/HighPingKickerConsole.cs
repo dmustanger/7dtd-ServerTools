@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class HighPingKickerConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable high ping kicker.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-hpk off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off high ping kicker\n" +
                    "2. Turn on high ping kicker\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-HighPingKicker", "hpk", "st-hpk" };
         }

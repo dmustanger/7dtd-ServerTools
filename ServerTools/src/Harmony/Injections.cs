@@ -188,10 +188,10 @@ public static class Injections
         return true;
     }
 
-    public static bool GameManager_ExplosionServer_Prefix(int _playerId)
+    public static bool GameManager_ExplosionServer_Prefix(int _entityId)
     {
-        Entity entity = GeneralOperations.GetEntity(_playerId);
-        if ((entity == null || !entity.IsSpawned()) && _playerId != -1)
+        Entity entity = GeneralOperations.GetEntity(_entityId);
+        if ((entity == null || !entity.IsSpawned()) && _entityId != -1)
         {
             return false;
         }
@@ -205,8 +205,8 @@ public static class Injections
             ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(_entityIdThatOpenedIt);
             if (cInfo != null)
             {
-                if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > 0 &&
-                    GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > 0)
+                if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) > 0 &&
+                    GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) > 0)
                 {
                     if (DroppedBagProtection.IsEnabled && _te is TileEntityLootContainer)
                     {
@@ -383,7 +383,7 @@ public static class Injections
     {
         try
         {
-            if (__instance.Sender != null && InfiniteAmmo.IsEnabled)
+            if (InfiniteAmmo.IsEnabled)
             {
                 InfiniteAmmo.Process(__instance);
             }
@@ -396,7 +396,7 @@ public static class Injections
 
     public static void NetPackagePlayerInventory_ProcessPackage_Postfix(NetPackagePlayerInventory __instance)
     {
-        if (__instance.Sender != null && Wallet.IsEnabled && Wallet.UpdateMainCurrency.ContainsKey(__instance.Sender.entityId))
+        if (Wallet.IsEnabled && Wallet.UpdateMainCurrency.ContainsKey(__instance.Sender.entityId))
         {
             if (Wallet.UpdateMainCurrency.ContainsKey(__instance.Sender.entityId) && Wallet.UpdateMainCurrency.TryGetValue(__instance.Sender.entityId, out int mainCurrencyCount))
             {
@@ -451,51 +451,6 @@ public static class Injections
         return false;
     }
 
-    public static bool NetPackagePlayerStats_ProcessPackage_Prefix(NetPackagePlayerStats __instance)
-    {
-        if (__instance.Sender == null || (GeneralOperations.Net_Package_Detector && !PlayerStatsPackage.IsValid(__instance)))
-        {
-            return false;
-        }
-        return true;
-    }
-
-    public static bool NetPackageEntityAddScoreServer_ProcessPackage_Prefix(NetPackageEntityAddScoreServer __instance)
-    {
-        if (__instance.Sender == null || (GeneralOperations.Net_Package_Detector && !EntityAddScoreServerPackage.IsValid(__instance)))
-        {
-            return false;
-        }
-        return true;
-    }
-
-    public static bool NetPackageChat_ProcessPackage_Prefix(NetPackageChat __instance)
-    {
-        if (__instance.Sender == null || (GeneralOperations.Net_Package_Detector && !ChatPackage.IsValid(__instance)))
-        {
-            return false;
-        }
-        return true;
-    }
-
-    public static bool NetPackageEntityPosAndRot_ProcessPackage_Prefix(NetPackageEntityPosAndRot __instance)
-    {
-        if (__instance.Sender == null || (GeneralOperations.Net_Package_Detector && !EntityPosAndRotPackage.IsValid(__instance)))
-        {
-            return false;
-        }
-        return true;
-    }
-
-    public static bool NetPackagePlayerData_ProcessPackage_Prefix(NetPackagePlayerData __instance)
-    {
-        if (__instance.Sender == null || (GeneralOperations.Net_Package_Detector && !PlayerDataPackage.IsValid(__instance)))
-        {
-            return false;
-        }
-        return true;
-    }
-
     public static bool NetPackageDamageEntity_ProcessPackage_Prefix(int ___entityId, int ___attackerEntityId, ItemValue ___attackingItem, ushort ___strength)
     {
         Entity victim = GeneralOperations.GetEntity(___entityId);
@@ -512,7 +467,7 @@ public static class Injections
 
     public static void ClientInfo_SendPackage_Postfix(ClientInfo __instance, NetPackage _package)
     {
-        if (__instance != null && _package != null && (_package is NetPackageTeleportPlayer || _package is NetPackageEntityTeleport))
+        if (_package is NetPackageTeleportPlayer || _package is NetPackageEntityTeleport)
         {
             if (!TeleportDetector.Ommissions.Contains(__instance.entityId))
             {
@@ -548,29 +503,22 @@ public static class Injections
     {
         try
         {
-            if (__instance.Sender == null)
+            EntityPlayer player = GeneralOperations.GetEntityPlayer(NoVehicleDrone.riderId(__instance));
+            if (player != null)
             {
-                return false;
-            }
-            else
-            {
-                EntityPlayer player = GeneralOperations.GetEntityPlayer(NoVehicleDrone.riderId(__instance));
-                if (player != null)
+                if (player.IsDead())
                 {
-                    if (player.IsDead())
+                    return false;
+                }
+                else if (NoVehicleDrone.IsEnabled && !NoVehicleDrone.Exec(__instance, player))
+                {
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(player.entityId);
+                    if (cInfo != null)
                     {
-                        return false;
+                        Phrases.Dict.TryGetValue("NoVehicleDrone1", out string phrase);
+                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    else if (NoVehicleDrone.IsEnabled && !NoVehicleDrone.Exec(__instance, player))
-                    {
-                        ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(player.entityId);
-                        if (cInfo != null)
-                        {
-                            Phrases.Dict.TryGetValue("NoVehicleDrone1", out string phrase);
-                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                        return false;
-                    }
+                    return false;
                 }
             }
         }
@@ -734,11 +682,37 @@ public static class Injections
 
     public static bool Log_Out_Prefix(string _txt)
     {
-        if (OutputLog.Vehicle_Manager_Off && _txt.Contains("VehicleManager") || _txt.Equals(OutputLog.lastOutput))
+        if (OutputLog.Vehicle_Manager_Off && _txt.Contains("VehicleManager"))
         {
             return false;
         }
-        OutputLog.lastOutput = _txt;
+        if (_txt.Contains("INF"))
+        {
+            string modifiedString = _txt.Substring(_txt.IndexOf("INF") + 4);
+            if (modifiedString.Equals(OutputLog.lastOutput))
+            {
+                return false;
+            }
+            OutputLog.lastOutput = modifiedString;
+        }
+        else if (_txt.Contains("WRN"))
+        {
+            string modifiedString = _txt.Substring(_txt.IndexOf("WRN") + 4);
+            if (modifiedString.Equals(OutputLog.lastOutput))
+            {
+                return false;
+            }
+            OutputLog.lastOutput = modifiedString;
+        }
+        else if (_txt.Contains("ERR"))
+        {
+            string modifiedString = _txt.Substring(_txt.IndexOf("ERR") + 4);
+            if (modifiedString.Equals(OutputLog.lastOutput))
+            {
+                return false;
+            }
+            OutputLog.lastOutput = modifiedString;
+        }
         return true;
     }
 

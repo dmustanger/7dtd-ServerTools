@@ -6,12 +6,12 @@ namespace ServerTools
 {
     class LobbyConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Set, turn on or turn off the lobby.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-lob off\n" +
@@ -24,7 +24,7 @@ namespace ServerTools
                 "4. Sets the lobby position to the specified x y z location\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Lobby", "lob", "st-lob" };
         }

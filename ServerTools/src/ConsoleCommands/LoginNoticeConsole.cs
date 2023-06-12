@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class LoginNoticeConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable login notice.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-ln off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off login notice\n" +
                    "2. Turn on login notice\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-LoginNotice", "ln", "st-ln" };
         }

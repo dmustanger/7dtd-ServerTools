@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class GodmodeDetectorConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable godmode detector.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-gd off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off godmode detector\n" +
                    "2. Turn on godmode detector\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-GodmodeDetector", "gd", "st-gd" };
         }

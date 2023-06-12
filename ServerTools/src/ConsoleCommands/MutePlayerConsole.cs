@@ -6,11 +6,11 @@ namespace ServerTools
     public class MutedConsole : ConsoleCmdAbstract
     {
 
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Mutes a players chat.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-mt add <EOS/EntityId/PlayerName>\n" +
@@ -23,7 +23,7 @@ namespace ServerTools
                 "4. Lists all Id in the mute list\n" +
                 "*Note Use -1 for time to mute indefinitely*";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Mute", "mt", "st-mt" };
         }

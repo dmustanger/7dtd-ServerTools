@@ -6,12 +6,12 @@ namespace ServerTools
 {
     class VehicleListConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Lists or removes the vehicles in the world.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-vl\n" +
@@ -20,7 +20,7 @@ namespace ServerTools
                 "2. Remove all vehicles shown on the list\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-VehicleList", "vl", "st-vl" };
         }

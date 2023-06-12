@@ -5,12 +5,12 @@ namespace ServerTools
 {
     class BankConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable bank.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-bk off\n" +
@@ -21,7 +21,7 @@ namespace ServerTools
                    "3. Shows the current bank value of the specified player\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Bank", "bk", "st-bk" };
         }

@@ -8,12 +8,12 @@ namespace ServerTools
     {
         public static Dictionary<int, int> SetupStage = new Dictionary<int, int>();
 
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable, disable, add, remove or list zones.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-zns off\n" +
@@ -34,7 +34,7 @@ namespace ServerTools
                    "8. Use this to go forward a step in the setup process if you have already completed it\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Zones", "zns", "st-zns" };
         }

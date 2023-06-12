@@ -26,8 +26,8 @@ namespace ServerTools
                         ClientInfo cInfo = clientList[i];
                         if (cInfo != null && cInfo.PlatformId != null && cInfo.CrossplatformId != null)
                         {
-                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
-                                GameManager.Instance.adminTools.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
+                            if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) > Admin_Level &&
+                                GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) > Admin_Level)
                             {
                                 EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                 if (player != null && player.IsSpawned())

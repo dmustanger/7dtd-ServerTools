@@ -5,19 +5,19 @@ namespace ServerTools
 {
     class NextShutdownConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Shows the next scheduled shutdown";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-scheck\n" +
                    "1. Shows the next scheduled shutdown\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-ShutdownCheck", "scheck", "st-scheck" };
         }

@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class HomeConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable set home";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-hm off\n" +
@@ -25,7 +25,7 @@ namespace ServerTools
                    "5. Remove one extra home spot for a player\n" +
                    "6. Shows how many extra home spots a player has\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Home", "hm", "st-hm" };
         }

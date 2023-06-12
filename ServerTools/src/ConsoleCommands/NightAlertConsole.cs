@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class NightAlertConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable night alert.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-na off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off night alert\n" +
                    "2. Turn on night alert\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-NightAlert", "na", "st-na" };
         }

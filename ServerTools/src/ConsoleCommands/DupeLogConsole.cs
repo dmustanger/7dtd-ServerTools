@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class DupeLogConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable dupe log.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-dl off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off the dupe log\n" +
                    "2. Turn on the dupe log\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-DupeLog", "dl", "st-dl" };
         }

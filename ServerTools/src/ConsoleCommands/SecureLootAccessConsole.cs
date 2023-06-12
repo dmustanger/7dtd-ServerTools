@@ -5,19 +5,19 @@ namespace ServerTools
 {
     class SecureLootAccessConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Attempts to set access to all secure loot.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-sla\n" +
                    "1. Attempts to set access to all secure loot\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-SecureLootAccess", "sla", "st-sla" };
         }

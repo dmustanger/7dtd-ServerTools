@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class ChatFloodProtectionConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable chat flood protection.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-cfp off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off chat flood protection\n" +
                    "2. Turn on chat flood protection\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-ChatFloodProtection", "cfp", "st-cfp" };
         }

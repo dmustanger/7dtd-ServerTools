@@ -5,12 +5,12 @@ namespace ServerTools
 {
     public class ReservedSlotConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable, disable, add, edit, remove and view the reserved slots list.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-rs off\n" +
@@ -27,7 +27,7 @@ namespace ServerTools
                    "6. Lists all players on the reserved slots list";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-ReservedSlots", "rs", "st-rs" };
         }

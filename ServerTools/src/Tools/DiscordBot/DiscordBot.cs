@@ -52,26 +52,24 @@ namespace ServerTools
 
         public static void WebHook()
         {
-            try
+            if (Badwords.IsEnabled)
             {
-                if (Badwords.IsEnabled)
+                for (int i = 0; i < Badwords.Dict.Count; i++)
                 {
-                    for (int i = 0; i < Badwords.Dict.Count; i++)
+                    if (Queue[0].ToLower().Contains(Badwords.Dict[i]))
                     {
-                        if (Queue[0].ToLower().Contains(Badwords.Dict[i]))
-                        {
-                            Queue[0] = Queue[0].ToLower().Replace(Badwords.Dict[i], "***");
-                        }
+                        Queue[0] = Queue[0].ToLower().Replace(Badwords.Dict[i], "***");
                     }
                 }
+            }
+            try
+            {
                 using (WebClient client = new WebClient())
                 {
                     client.Headers[HttpRequestHeader.ContentType] = "application/json";
                     client.UploadString(Webhook, "{\"content\":\"" + Queue[0].Replace("\"", "") + "\"}");
                     client.Dispose();
-                    Queue.RemoveAt(0);
                 }
-                return;
             }
             catch (Exception e)
             {
@@ -94,8 +92,8 @@ namespace ServerTools
                         Log.Out(string.Format("[SERVERTOOLS] Error in DiscordBot.WebHook: {0}", e.Message));
                     }
                 }
-                Queue.RemoveAt(0);
             }
+            Queue.RemoveAt(0);
         }
     }
 }

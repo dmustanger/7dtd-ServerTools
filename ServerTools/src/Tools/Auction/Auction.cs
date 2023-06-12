@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Platform;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Xml;
 using UnityEngine;
@@ -301,10 +303,10 @@ namespace ServerTools
                                 }
                             }
                         }
-                        long ipLong = GeneralOperations.ConvertIPToLong(_cInfo.ip);
-                        if (duplicate || (ipLong >= GeneralOperations.ConvertIPToLong("10.0.0.0") && ipLong <= GeneralOperations.ConvertIPToLong("10.255.255.255")) ||
-                            (ipLong >= GeneralOperations.ConvertIPToLong("172.16.0.0") && ipLong <= GeneralOperations.ConvertIPToLong("172.31.255.255")) ||
-                            (ipLong >= GeneralOperations.ConvertIPToLong("192.168.0.0") && ipLong <= GeneralOperations.ConvertIPToLong("192.168.255.255")) ||
+                        uint ipInt = NetworkUtils.ToInt(_cInfo.ip);
+                        if (duplicate || (ipInt >= NetworkUtils.ToInt("10.0.0.0") && ipInt <= NetworkUtils.ToInt("10.255.255.255")) ||
+                            (ipInt >= NetworkUtils.ToInt("172.16.0.0") && ipInt <= NetworkUtils.ToInt("172.31.255.255")) ||
+                            (ipInt >= NetworkUtils.ToInt("192.168.0.0") && ipInt <= NetworkUtils.ToInt("192.168.255.255")) ||
                             _cInfo.ip == "127.0.0.1")
                         {
                             string securityId = "";

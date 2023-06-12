@@ -5,19 +5,19 @@ namespace ServerTools
 {
     public class RemoveEntityConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Removes an entity from the game";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Removes an entity from the game\n" +
                 "Usage: st-rem <EntityId>\n" +
                 "Usage: rem <EntityId>";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-RemoveEntity", "rem", "st-rem" };
         }

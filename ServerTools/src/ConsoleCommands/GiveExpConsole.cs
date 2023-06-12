@@ -5,19 +5,19 @@ namespace ServerTools
 {
     class GiveExpConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Gives experience to a player";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-ge <Id/EntityId/PlayerName> <Amount>\n" +
                 "1. Gives the specified amount of experience to the id or player name\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-GiveExperience", "ge", "st-ge" };
         }

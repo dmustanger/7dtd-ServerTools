@@ -170,10 +170,6 @@ namespace ServerTools
                     foreach (int i in entityTypesCollection)
                     {
                         EntityClass eClass = EntityClass.list[i];
-                        if (!eClass.bAllowUserInstantiate)
-                        {
-                            continue;
-                        }
                         if (randomId == counter)
                         {
                             EntityPlayer entityPlayer = GeneralOperations.GetEntityPlayer(_cInfo.entityId);

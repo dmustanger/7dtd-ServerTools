@@ -6,11 +6,11 @@ namespace ServerTools
 {
     class NewSpawnTeleConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools]- Enable or disable new spawn tele.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-nst off\n" +
@@ -22,7 +22,7 @@ namespace ServerTools
                    "3. Set the position a new player will teleport using the specified x y z location\n" +
                    "4. Set the position a new player will teleport using your current location\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-NewSpawnTele", "nst", "st-nst" };
         }

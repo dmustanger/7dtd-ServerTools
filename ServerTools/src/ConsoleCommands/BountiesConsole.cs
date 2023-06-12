@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class BountiesConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable bounties. Alter, remove or show a list of all current bounties";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-bty off\n" +
@@ -23,7 +23,7 @@ namespace ServerTools
                    "4. Removed the bount on a player\n" +
                    "5. Show a list of all current bounties\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Bounty", "bty", "st-bty" };
         }

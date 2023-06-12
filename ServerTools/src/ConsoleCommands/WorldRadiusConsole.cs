@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class WorldRadiusConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable world radius.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-wr off\n" +
@@ -21,7 +21,7 @@ namespace ServerTools
                    "3. Set the radius for normal players\n" +
                    "4. Set the radius for reserved players\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-WorldRadius", "wr", "st-wr" };
         }

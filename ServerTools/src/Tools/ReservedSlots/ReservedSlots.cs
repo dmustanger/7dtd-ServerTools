@@ -222,8 +222,8 @@ namespace ServerTools
 
         public static bool AdminCheck(ClientInfo _cInfo, PlatformUserIdentifierAbs _platformId, PlatformUserIdentifierAbs _crossplatformId)
         {
-            if (GameManager.Instance.adminTools.GetUserPermissionLevel(_platformId) <= Admin_Level || 
-                GameManager.Instance.adminTools.GetUserPermissionLevel(_crossplatformId) <= Admin_Level)
+            if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_platformId) <= Admin_Level || 
+                GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_crossplatformId) <= Admin_Level)
             {
                 return true;
             }

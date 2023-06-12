@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class VehicleTeleportConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable vehicle recall tool.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-recall off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off the vehicle recall tool\n" +
                    "2. Turn on the vehicle recall tool\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-VehicleRecall", "recall", "st-recall" };
         }

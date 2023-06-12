@@ -7,11 +7,11 @@ namespace ServerTools
     public class CommandJailConsole : ConsoleCmdAbstract
     {
 
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Turn on/off, add, remove, or list players in jail";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                 "  1. st-jl off\n" +
@@ -30,7 +30,7 @@ namespace ServerTools
                 "7. Lists all Id in the jail list" +
                 "*Note Use -1 for time to jail indefinitely*";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Jail", "jl", "st-jl" };
         }

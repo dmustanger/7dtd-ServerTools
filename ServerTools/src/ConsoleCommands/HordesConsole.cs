@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class HordesConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable hordes";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-hrd off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off extra hordes\n" +
                    "2. Turn on extra hordes\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Hordes", "hrd", "st-hrd" };
         }

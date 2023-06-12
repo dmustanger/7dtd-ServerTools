@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class MessageColorConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable message color.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-mc off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off message color\n" +
                    "2. Turn on message color\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-MessageColor", "mc", "st-mc" };
         }

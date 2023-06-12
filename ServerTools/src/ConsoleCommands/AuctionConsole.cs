@@ -9,12 +9,12 @@ namespace ServerTools
     {
         private static string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy")), filepath = string.Format("{0}/Logs/AuctionLogs/{1}", API.ConfigPath, file);
 
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable auction. Cancel, clear or list the auction items.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-auc off\n" +
@@ -35,7 +35,7 @@ namespace ServerTools
                    "8. Shows how many extra auction entries a player has\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Auction", "auc", "st-auc" };
         }

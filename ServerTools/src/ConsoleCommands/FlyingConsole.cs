@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class FlyingDetectorConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable, disable flying detection.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-fly off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off flight detection\n" +
                    "2. Turn on flight detection\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Flying", "fly", "st-fly" };
         }

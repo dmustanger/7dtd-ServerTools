@@ -6,11 +6,11 @@ namespace ServerTools
 {
     class KickVoteConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable kick vote.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-kv off\n" +
@@ -18,7 +18,7 @@ namespace ServerTools
                    "1. Turn off kick vote\n" +
                    "2. Turn on kick vote\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-KickVote", "kv", "st-kv" };
         }

@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class CustomCommandsConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable custom commands.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-cc off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off custom commands\n" +
                    "2. Turn on custom commands\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-CustomCommands", "custom", "st-cc" };
         }

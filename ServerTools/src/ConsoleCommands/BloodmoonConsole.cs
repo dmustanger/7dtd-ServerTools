@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class BloodmoonConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable bloodmoon alert.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-bm off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off the bloodmoon alert\n" +
                    "2. Turn on the bloodmoon alert\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Bloodmoon", "bm", "st-bm" };
         }

@@ -6,12 +6,12 @@ namespace ServerTools
 {
     class PhraseResetConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Reset the Phrases.xml file";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-pr\n" +
@@ -19,7 +19,7 @@ namespace ServerTools
                    "*Note*  This will wipe out all custom entries to this file\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-PhraseReset", "pr", "st-pr" };
         }

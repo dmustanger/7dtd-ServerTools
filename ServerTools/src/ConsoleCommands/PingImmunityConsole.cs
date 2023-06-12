@@ -5,12 +5,12 @@ namespace ServerTools
 {
     public class PingImmunityConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Add, remove and view ids on the ping immunity list.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-pi add <EOS/EntityId/PlayerName>\n" +
@@ -22,7 +22,7 @@ namespace ServerTools
                    "4. *Note* You can use the entity id or player name if they are online otherwise use their EOS";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-PingImmunity", "pi", "st-pi" };
         }

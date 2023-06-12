@@ -1,16 +1,15 @@
-﻿using System;
+﻿using ServerTools;
+using System;
 using System.Collections.Generic;
 
-namespace ServerTools
-{
     class AdminListConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools]- Enable or disable chat command admin list.";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-al off\n" +
@@ -19,7 +18,7 @@ namespace ServerTools
                    "2. Turn on your admin list\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-AdminList", "al", "st-al" };
         }
@@ -76,4 +75,3 @@ namespace ServerTools
             }
         }
     }
-}

@@ -5,15 +5,15 @@ namespace ServerTools
 {
     public class MaxPingConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Sets the max ping limit for the server.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage: st-mp <ping>";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-MaxPing", "mp", "st-mp" };
         }

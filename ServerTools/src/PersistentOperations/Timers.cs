@@ -209,7 +209,7 @@ namespace ServerTools
             };
         }
 
-        public static void Chunk_Region_ResetTimer()
+        public static void Currency_Tag_Timer()
         {
             System.Timers.Timer singleUseTimer = new System.Timers.Timer(10000)
             {
@@ -649,7 +649,7 @@ namespace ServerTools
 
         private static void Init9()
         {
-            LoadProcess.Chunk_Region_Reset();
+            GeneralOperations.GetCurrencyName();
         }
 
         private static void Init10(string _playerId, int _amount)

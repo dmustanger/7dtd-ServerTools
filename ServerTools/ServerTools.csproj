@@ -50,11 +50,6 @@
     <Compile Include="src\AntiCheat\GodMode\GodMode.cs" />
     <Compile Include="src\AntiCheat\InfiniteAmmo\InfiniteAmmo.cs" />
     <Compile Include="src\AntiCheat\MagicBullet\MagicBullet.cs" />
-    <Compile Include="src\AntiCheat\NetPackages\NetPackageChat.cs" />
-    <Compile Include="src\AntiCheat\NetPackages\NetPackageEntityAddScore.cs" />
-    <Compile Include="src\AntiCheat\NetPackages\NetPackageEntityPosAndRot.cs" />
-    <Compile Include="src\AntiCheat\NetPackages\NetPackagePlayerData.cs" />
-    <Compile Include="src\AntiCheat\NetPackages\NetPackagePlayerStats.cs" />
     <Compile Include="src\AntiCheat\No_Vehicle_Drone\NoVehicleDrone.cs" />
     <Compile Include="src\AntiCheat\PlayerChecks\PlayerChecks.cs" />
     <Compile Include="src\AntiCheat\ProtectedZones\ProtectedZones.cs" />
@@ -79,7 +74,6 @@
     <Compile Include="src\ConsoleCommands\ProtectedZonesConsole.cs" />
     <Compile Include="src\ConsoleCommands\PrayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\ReduceDelayConsole.cs" />
-    <Compile Include="src\ConsoleCommands\RegionResetConsole.cs" />
     <Compile Include="src\ConsoleCommands\RemoveItemDukesConsole.cs" />
     <Compile Include="src\ConsoleCommands\RemoveItemAdminConsole.cs" />
     <Compile Include="src\ConsoleCommands\RunGameEventConsole.cs" />
@@ -288,7 +282,7 @@
     <Compile Include="src\ConsoleCommands\PollConsole.cs" />
     <Compile Include="src\Tools\EntityCleanup\EntityCleanup.cs" />
     <Compile Include="src\Functions\Config.cs" />
-    <Compile Include="src\Functions\Mods.cs" />
+    <Compile Include="src\Functions\ModularLoader.cs" />
     <Compile Include="src\Functions\Phrases.cs" />
     <Compile Include="src\ConsoleCommands\MaxPingConsole.cs" />
     <Compile Include="src\ConsoleCommands\PingImmunityConsole.cs" />
@@ -329,7 +323,7 @@
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\7DaysToDieServers\DedicatedStable\7DaysToDieServer_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\Deobfuscation\Deobfuscated projects\7DaysToDie\21.0 Experimental\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AstarPathfindingProject, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">

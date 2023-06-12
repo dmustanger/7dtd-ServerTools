@@ -213,7 +213,7 @@ namespace ServerTools
                 phrase = phrase.Replace("{Value}", _cInfo.ping.ToString());
                 phrase = phrase.Replace("{MaxPing}", Max_Ping.ToString());
                 ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                ThreadManager.AddSingleTaskMainThread("Coroutine", delegate (ThreadManager.TaskInfo _taskInfo)
+                ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                 {
                     ThreadManager.StartCoroutine(KickPlayer(_cInfo, phrase));
                 }, null);

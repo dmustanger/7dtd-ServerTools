@@ -18,8 +18,8 @@ namespace ServerTools
                 for (int i = 0; i < clientList.Count; i++)
                 {
                     ClientInfo cInfoAdmin = clientList[i];
-                    int userPlatformID = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfoAdmin.PlatformId);
-                    int userCrossplatformID = GameManager.Instance.adminTools.GetUserPermissionLevel(cInfoAdmin.CrossplatformId);
+                    int userPlatformID = GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfoAdmin.PlatformId);
+                    int userCrossplatformID = GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfoAdmin.CrossplatformId);
                     if (userPlatformID <= Admin_Level ||
                         userCrossplatformID <= Admin_Level)
                     {

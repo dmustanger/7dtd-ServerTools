@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class ScoutPlayerConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable scout player.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-sp off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off scout player\n" +
                    "2. Turn on scout player\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-ScoutPlayer", "sp", "st-sp" };
         }

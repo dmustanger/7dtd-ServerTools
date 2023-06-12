@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class MuteVoteConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable mute vote.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-mv off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off mute vote\n" +
                    "2. Turn on mute vote\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-MuteVote", "mv", "st-mv" };
         }

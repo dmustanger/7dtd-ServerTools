@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class NormalPlayerColoringConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable normal player coloring.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-npc off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off normal player coloring\n" +
                    "2. Turn on normal player coloring\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-NormalPlayerColoring", "npc", "st-npc" };
         }

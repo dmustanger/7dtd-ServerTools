@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class FirstClaimBlockConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable, disable, reset first claim block.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-fcb off\n" +
@@ -19,7 +19,7 @@ namespace ServerTools
                    "2. Turn on first claim block\n" +
                    "3. Reset the status of a player's first claim block\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-FirstClaimBlock", "fcb", "st-fcb" };
         }

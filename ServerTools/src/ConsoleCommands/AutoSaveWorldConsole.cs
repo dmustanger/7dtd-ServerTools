@@ -5,11 +5,11 @@ namespace ServerTools
 {
     class AutoSaveWorldConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable auto save world.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-asw off\n" +
@@ -17,7 +17,7 @@ namespace ServerTools
                    "1. Turn off the world auto save\n" +
                    "2. Turn on the world auto save\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-AutoSaveWorld", "asw", "st-asw" };
         }

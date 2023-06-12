@@ -5,19 +5,19 @@ namespace ServerTools
 {
     public class TeleportBackpackConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Teleports a backpack in the game";
         }
 
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Teleports a backpack. Backpack can not be attached to a player.\n" +
                 "Usage: st-bt <BackpackId> <EntityId>\n" +
                 "Usage: st-bt <BackpackId> <X> <Y> <Z>\n";
         }
 
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-BackpackTeleport", "bt", "st-bt" };
         }

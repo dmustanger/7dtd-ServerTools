@@ -6,11 +6,11 @@ namespace ServerTools
 {
     class MarketConsole : ConsoleCmdAbstract
     {
-        public override string GetDescription()
+        protected override string getDescription()
         {
             return "[ServerTools] - Enable or disable market.";
         }
-        public override string GetHelp()
+        protected override string getHelp()
         {
             return "Usage:\n" +
                    "  1. st-mkt off\n" +
@@ -22,7 +22,7 @@ namespace ServerTools
                    "3. Sets the market position to your current location\n" +
                    "4. Sets the market position to the specified x y z location\n";
         }
-        public override string[] GetCommands()
+        protected override string[] getCommands()
         {
             return new string[] { "st-Market", "mkt", "st-mkt" };
         }
