@@ -39,7 +39,6 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Invalid_Items](#invalid_items)
   - [Invalid_Item_Stack](#invalid_item_stack)
   - [Jail](#jail)
-  - [Net_Package_Detector](#net_package_detector)
   - [Player_Logs](#player_logs)
   - [Player_Stats & Player_Stats_Extended](#player_stats--player_stats_extended)
   - [Protected_Zones](#protected_zones)
@@ -53,7 +52,6 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
 - [Tools](#tools)
   - [AdminChatCommands](#adminchatcommands)
   - [Admin_List](#admin_list)
-  - [Allocs_Map](#allocs_map)
   - [Animal_Tracking](#animal_tracking)
   - [Auction](#auction)
   - [Auto_Backup](#auto_backup)
@@ -78,7 +76,6 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Chat_Command_Response_Extended](#chat_command_response_extended)
   - [Chat_Flood_Protection](#chat_flood_protection)
   - [Chat_Logger](#chat_logger)
-  - [Chunk_Reset](#chunk_reset)
   - [Clan_Manager](#clan_manager)
   - [Clean_Bin](#clean_bin)
   - [Confetti](#confetti)
@@ -129,7 +126,6 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Private_Message](#private_message)
   - [Public_Waypoints](#public_waypoints)
   - [Real_World_Time](#real_world_time)
-  - [Region_Reset](#region_reset)
   - [Report](#report)
   - [Reserved_Slots](#reserved_slots)
   - [Restart_Vote](#restart_vote)
@@ -548,22 +544,6 @@ Type /admins or !admins in chat to get a response showing the currently online a
 
 Setting Admin_Level to 2 would show all online administrators
 tier 0-2 as admin in the chat response.
-
-## Allocs_Map
-```xml
-<Tool Name="Allocs_Map" Enable="False" Link="" />
-```
-
-### Attributes
-* __Enable__  
-Set True or False to enable
-* __Link__  
-Set a numeric value for Admin_Level
-
-### Description
-Type /map in game for a pop up window with a clickable link that takes the player to allocs map via steam browser/overlay. 
-
-The Link provided is what players will be taken to when they click the link. 
 
 ## Animal_Tracking
 ```xml
@@ -1029,17 +1009,6 @@ Set True or False for Enable
 
 ### Description
 Logs all chat to a file for later review.
-
-## Chunk_Reset
-```xml
-<Tool Name="Chunk_Reset" Enable="True" />
-```
-### Attributes
-* __Enable__  
-Set True or False for Enable
-
-### Description
-Creates a ChunkReset.xml. Enter the desired positions to reset chunks within that space. Reset can occur daily, weekly or monthly
 
 ## Clan_Manager
 ```xml
@@ -2106,17 +2075,6 @@ Enabling will show the real world time periodically based on the delay.
 Recommend changing the Time_Zone to match the time zone of the server host location. 
 
 This will not adjust for the difference.
-
-## Region_Reset
-```xml
-<Tool Name="Region_Reset" Enable="False" />
-```
-### Attributes
-* __Enable__  
-Set True or False for Enable
-
-### Description
-Enabling will create a RegionReset.xml. Entries will be set on a regular schedule. Daily, weekly or monthly. Resets occur at the start up of the server.
 
 ## Report
 ```xml
