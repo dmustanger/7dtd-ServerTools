@@ -1116,7 +1116,7 @@ namespace ServerTools
                                 if (Hardcore.Optional)
                                 {
                                     EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
-                                    if (player != null)
+                                    if (player != null && !PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreEnabled)
                                     {
                                         string[] stats = { _cInfo.playerName, "0", "0" };
                                         PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats = stats;

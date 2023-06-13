@@ -19,17 +19,20 @@ namespace ServerTools
             {
                 if (int.TryParse(stats[2], out int extraLives))
                 {
+                    if (extraLives < 0)
+                    {
+                        extraLives = 0;
+                    }
                     int lives;
                     if (_addDeath)
                     {
-                        stats[1] = (deaths + 1).ToString();
-                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats = stats;
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats[1] = (deaths + 1).ToString();
                         PersistentContainer.DataChange = true;
-                        lives = Max_Deaths - (deaths + 1) + extraLives;
+                        lives = Max_Deaths + extraLives - (deaths + 1);
                     }
                     else
                     {
-                        lives = Max_Deaths - deaths + extraLives;
+                        lives = Max_Deaths + extraLives - deaths;
                     }
                     if (lives > 0)
                     {

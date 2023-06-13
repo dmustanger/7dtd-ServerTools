@@ -10,7 +10,7 @@ namespace ServerTools
     public class GeneralOperations
     {
         public static bool Running = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false, 
-            No_Currency = false, Debug = false, Allow_Bicycle = false, Encryption_Off = false;
+            No_Currency = false, Allow_Bicycle = false;
         public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0, 
             MeleeHandPlayer = 0;
         public static string AppPath, Currency_Item, XPathDir, Command_expire = "expire", Command_commands = "commands", Command_overlay = "overlay";
@@ -158,14 +158,14 @@ namespace ServerTools
                     for (int i = 0; i < windowContent.Count; i++)
                     {
                         string line = windowContent[i];
-                        if (line.Contains(AllocsMap.Link) || line.Contains(DiscordLink.Link) || line.Contains(Voting.Link) ||
-                            line.Contains("rio.html") || line.Contains("shop.html") || line.Contains("auction.html") ||
-                            line.Contains("imap.html") || line.Contains(DonationLink.Link))
+                        if (line.Contains("browserDiscord") || line.Contains("browserVote") ||
+                            line.Contains("browserRio") || line.Contains("browserShop") || line.Contains("browserAuction") ||
+                            line.Contains("browserDonation"))
                         {
                             count += 1;
                         }
                     }
-                    if (count != 8)
+                    if (count != 6)
                     {
                         File.Delete(XPathDir + "XUi/windows.xml");
                     }
@@ -177,20 +177,6 @@ namespace ServerTools
                         sw.WriteLine("<configs>");
                         sw.WriteLine();
                         sw.WriteLine("<append xpath=\"/windows\">");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window name=\"browserMap\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"World Map\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
-                        sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", AllocsMap.Link));
-                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
-                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("  </window>");
                         sw.WriteLine();
                         sw.WriteLine("  <window name=\"browserDiscord\" controller=\"ServerInfo\">");
                         sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
@@ -258,20 +244,6 @@ namespace ServerTools
                         sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/auction.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
                         sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                         sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
-                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("  </window>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window name=\"browserIMap\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Interactive Map\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
-                        sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/imap.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
-                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
                         sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
                         sw.WriteLine("      </panel>");
                         sw.WriteLine("  </window>");
@@ -412,24 +384,6 @@ namespace ServerTools
                         sw.WriteLine("	</effect_group>");
                         sw.WriteLine("</buff>");
                         sw.WriteLine();
-                        sw.WriteLine("<buff name=\"region_reset\" name_key=\"Region_reset\" description_key=\"The region you are in will reset. Building here is NOT recommended\" icon=\"ui_game_symbol_brick\" icon_color=\"255, 153, 51\">");
-                        sw.WriteLine("	<display_value_key value=\"     Region will reset\"/>");
-                        sw.WriteLine("	<display_value value=\"xxx\"/>");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"region_reset\"/>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"chunk_reset\" name_key=\"Chunk_reset\" description_key=\"The chunk you are in will reset. Building here is NOT recommended\" icon=\"ui_game_symbol_brick\" icon_color=\"204, 102, 0\">");
-                        sw.WriteLine("	<display_value_key value=\"     Chunk will reset\"/>");
-                        sw.WriteLine("	<display_value value=\"xxx\"/>");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"chunk_reset\"/>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
                         sw.WriteLine("</append>");
                         sw.WriteLine();
                         sw.WriteLine("</configs>");
@@ -449,10 +403,6 @@ namespace ServerTools
                         sw.WriteLine();
                         sw.WriteLine("<append xpath=\"/xui/ruleset\">");
                         sw.WriteLine();
-                        sw.WriteLine("  <window_group name=\"browserMap\">");
-                        sw.WriteLine("      <window name=\"browserMap\" />");
-                        sw.WriteLine("  </window_group>");
-                        sw.WriteLine();
                         sw.WriteLine("  <window_group name=\"browserDiscord\">");
                         sw.WriteLine("      <window name=\"browserDiscord\" />");
                         sw.WriteLine("  </window_group>");
@@ -471,10 +421,6 @@ namespace ServerTools
                         sw.WriteLine();
                         sw.WriteLine("  <window_group name=\"browserAuction\">");
                         sw.WriteLine("      <window name=\"browserAuction\" />");
-                        sw.WriteLine("  </window_group>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window_group name=\"browserIMap\">");
-                        sw.WriteLine("      <window name=\"browserIMap\" />");
                         sw.WriteLine("  </window_group>");
                         sw.WriteLine();
                         sw.WriteLine("  <window_group name=\"browserDonation\">");
@@ -606,14 +552,6 @@ namespace ServerTools
                     {
                         Zones.ZoneCheck(cInfo, player);
                     }
-                    //if (RegionReset.IsEnabled)
-                    //{
-                    //    RegionReset.IsResetRegion(cInfo, player);
-                    //}
-                    //if (ChunkReset.IsEnabled)
-                    //{
-                    //    ChunkReset.IsResetChunk(cInfo, player);
-                    //}
                 }
                 List<Entity> entityList = GameManager.Instance.World.Entities.list;
                 if (entityList == null || entityList.Count < 1)

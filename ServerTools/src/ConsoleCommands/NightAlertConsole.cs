@@ -12,14 +12,14 @@ namespace ServerTools
         protected override string getHelp()
         {
             return "Usage:\n" +
-                   "  1. st-na off\n" +
-                   "  2. st-na on\n" +
+                   "  1. st-nal off\n" +
+                   "  2. st-nal on\n" +
                    "1. Turn off night alert\n" +
                    "2. Turn on night alert\n";
         }
         protected override string[] getCommands()
         {
-            return new string[] { "st-NightAlert", "na", "st-na" };
+            return new string[] { "st-NightAlert", "nal", "st-nal" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

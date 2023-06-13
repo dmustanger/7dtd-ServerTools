@@ -1,5 +1,18 @@
 ﻿CHANGELOG
 
+21.0.1
+Built using Alpha 21 experimental assets
+Functioning with Alpha 21 experimental. Untested with other versions
+
+-Fixed Hardcore tool not working as intended
+-Changed Kill_Notice tool to utilize the held items localized name
+first, default items.xml name as a secondary
+-Changed console command st-NightAlert alternatives to avoid
+conflicting with a default game command
+-Removed Allocs_Map and IMap tools. Features and functionality to
+integrate various tools with the map system will be done in a future
+patch as necessary
+
 21.0.0
 Built using Alpha 21 experimental assets
 Functioning with Alpha 21 experimental. Untested with other versions

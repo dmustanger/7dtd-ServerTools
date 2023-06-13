@@ -405,10 +405,6 @@ namespace ServerTools
                     {
                         DupeLog.OldInvs.Remove(_cInfo.entityId);
                     }
-                    //if (RegionReset.RegionPlayer.Contains(_cInfo.entityId))
-                    //{
-                    //    RegionReset.RegionPlayer.Remove(_cInfo.entityId);
-                    //}
                     EventSchedule.Expired.Add("Bonus_" + id);
                 }
                 else
