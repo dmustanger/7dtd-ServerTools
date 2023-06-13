@@ -23,10 +23,6 @@ Enable each part of the mod you want via ServerToolsConfig.xml<br>
 Once a module/tool is enabled, if it has an xml it will be generated and placed in the same ServerTools folder.<br>
 <br>
 
-# Optimization
-- [Optimization](#optimization)
-  - [Thread_Handle](#thread_handle)
-
 # AntiCheat
 
 - [AntiCheat](#anticheat)
